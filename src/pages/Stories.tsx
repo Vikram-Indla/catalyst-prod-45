@@ -11,6 +11,7 @@ import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { StoryDialog } from '@/components/forms/StoryDialog';
 import { Plus, Edit } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Stories() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,10 +70,12 @@ export default function Stories() {
           <h1 className="text-3xl font-bold">Stories</h1>
           <p className="text-muted-foreground">All user stories across teams</p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Story
-        </Button>
+        <PermissionGuard requiredRole="user" showMessage={false}>
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Story
+          </Button>
+        </PermissionGuard>
       </div>
 
       <div className="flex gap-4">
@@ -147,10 +150,12 @@ export default function Stories() {
             label: 'Details',
             content: selectedStory && (
               <div className="space-y-4">
-                <Button onClick={() => handleEdit(selectedStory)} className="w-full mb-4">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Story
-                </Button>
+                <PermissionGuard requiredRole="user" showMessage={false}>
+                  <Button onClick={() => handleEdit(selectedStory)} className="w-full mb-4">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Story
+                  </Button>
+                </PermissionGuard>
                 <div>
                   <label className="text-sm font-medium">Description</label>
                   <p className="text-sm text-muted-foreground mt-1">
