@@ -11,6 +11,7 @@ import { BusinessRequestDialog } from '@/components/forms/BusinessRequestDialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Edit } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function BusinessRequests() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,7 +70,9 @@ export default function BusinessRequests() {
             <h1 className="text-2xl font-bold">Business Requests</h1>
             <p className="text-sm text-muted-foreground">Portfolio backlog prioritization pipeline</p>
           </div>
-          <Button onClick={handleCreate}><Plus className="h-4 w-4 mr-2" />New Business Request</Button>
+          <PermissionGuard requiredRole="program_manager" showMessage={false}>
+            <Button onClick={handleCreate}><Plus className="h-4 w-4 mr-2" />New Business Request</Button>
+          </PermissionGuard>
         </div>
       </div>
 
@@ -126,10 +129,12 @@ export default function BusinessRequests() {
           tabs={[
             { id: 'overview', label: 'Overview', content: (
               <div className="space-y-4">
-                <Button onClick={() => handleEdit(selectedData)} className="w-full mb-4">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Business Request
-                </Button>
+                <PermissionGuard requiredRole="program_manager" showMessage={false}>
+                  <Button onClick={() => handleEdit(selectedData)} className="w-full mb-4">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Business Request
+                  </Button>
+                </PermissionGuard>
                 <div><label className="text-sm font-medium text-muted-foreground">Status</label>
                   <div className="mt-1">{getStatusBadge(selectedData.status || 'proposed')}</div></div>
                 <div className="grid grid-cols-2 gap-4">

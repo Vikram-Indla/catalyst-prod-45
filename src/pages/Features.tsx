@@ -17,6 +17,7 @@ import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Edit } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Features() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -106,7 +107,9 @@ export default function Features() {
             <h1 className="text-2xl font-bold">Features</h1>
             <p className="text-sm text-muted-foreground">Program-level features driving epic delivery</p>
           </div>
-          <Button onClick={handleCreate}><Plus className="h-4 w-4 mr-2" />New Feature</Button>
+          <PermissionGuard requiredRole="team_lead" showMessage={false}>
+            <Button onClick={handleCreate}><Plus className="h-4 w-4 mr-2" />New Feature</Button>
+          </PermissionGuard>
         </div>
       </div>
 
@@ -170,10 +173,12 @@ export default function Features() {
           tabs={[
             { id: 'overview', label: 'Overview', content: (
               <div className="space-y-4">
-                <Button onClick={() => handleEdit(selectedData)} className="w-full mb-4">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit Feature
-                </Button>
+                <PermissionGuard requiredRole="team_lead" showMessage={false}>
+                  <Button onClick={() => handleEdit(selectedData)} className="w-full mb-4">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Feature
+                  </Button>
+                </PermissionGuard>
                 <div><label className="text-sm font-medium text-muted-foreground">Status</label>
                   <div className="mt-1">{getStatusBadge(selectedData.status || 'funnel')}</div></div>
                 <div><label className="text-sm font-medium text-muted-foreground">Health</label>
