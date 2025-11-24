@@ -15,6 +15,8 @@ import Initiatives from "./pages/Initiatives";
 import BusinessRequests from "./pages/BusinessRequests";
 import Epics from "./pages/Epics";
 import Features from "./pages/Features";
+import PortfolioKanban from "./pages/PortfolioKanban";
+import ProgramRoom from "./pages/ProgramRoom";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,11 +39,11 @@ const App = () => (
               <Route path="/business-requests" element={<BusinessRequests />} />
               <Route path="/epics" element={<Epics />} />
               <Route path="/features" element={<Features />} />
-              <Route path="/portfolio-kanban" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Kanban</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/portfolio-kanban" element={<PortfolioKanban />} />
               <Route path="/portfolio-roadmap" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Roadmap</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/dependencies" element={<div className="p-8"><h1 className="text-2xl font-bold">Dependencies</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/portfolio-insights" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/program-room" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Room</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/program-room" element={<ProgramRoom />} />
               <Route path="/pis" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Increments</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/program-board" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Board</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/roam" element={<div className="p-8"><h1 className="text-2xl font-bold">ROAM Board</h1><p className="text-muted-foreground">Coming soon</p></div>} />
