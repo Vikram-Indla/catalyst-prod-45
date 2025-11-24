@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Edit } from 'lucide-react';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
+import { CommentsSection } from '@/components/shared/CommentsSection';
 
 export default function Themes() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -272,15 +273,22 @@ export default function Themes() {
                 </div>
               ),
             },
-            {
-              id: 'links',
-              label: 'Links',
-              content: (
-                <div className="space-y-4">
-                  <p className="text-sm text-muted-foreground">Linked initiatives and work items</p>
-                </div>
-              ),
-            },
+          {
+            id: 'links',
+            label: 'Links',
+            content: (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">Linked initiatives and work items</p>
+              </div>
+            ),
+          },
+          {
+            id: 'comments',
+            label: 'Comments',
+            content: (
+              <CommentsSection entityId={selectedTheme} entityType="theme" />
+            ),
+          },
           ]}
         />
       )}
