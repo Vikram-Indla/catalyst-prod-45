@@ -2,16 +2,21 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
+import { SubtaskDialog } from '@/components/forms/SubtaskDialog';
+import { Plus } from 'lucide-react';
 
 export default function Subtasks() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<'todo' | 'in_progress' | 'done' | ''>('');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingSubtask, setEditingSubtask] = useState<any>(null);
 
   const { data: subtasks } = useQuery({
     queryKey: ['subtasks', searchTerm, statusFilter],
@@ -39,11 +44,22 @@ export default function Subtasks() {
     setSelectedRows(newSelected);
   };
 
+  const handleCreate = () => {
+    setEditingSubtask(null);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Sub-tasks</h1>
-        <p className="text-muted-foreground">Technical tasks and work items</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Sub-tasks</h1>
+          <p className="text-muted-foreground">Technical tasks and work items</p>
+        </div>
+        <Button onClick={handleCreate}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Subtask
+        </Button>
       </div>
 
       <div className="flex gap-4">
@@ -103,6 +119,12 @@ export default function Subtasks() {
           ))}
         </TableBody>
       </Table>
+
+      <SubtaskDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        subtask={editingSubtask}
+      />
     </div>
   );
 }

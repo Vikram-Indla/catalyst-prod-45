@@ -2,17 +2,22 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
+import { SprintDialog } from '@/components/forms/SprintDialog';
 import { format } from 'date-fns';
+import { Plus } from 'lucide-react';
 
 export default function Sprints() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeamId, setSelectedTeamId] = useState<string>('');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingSprint, setEditingSprint] = useState<any>(null);
 
   const { data: teams } = useQuery({
     queryKey: ['teams'],
@@ -60,11 +65,22 @@ export default function Sprints() {
     return 'active';
   };
 
+  const handleCreate = () => {
+    setEditingSprint(null);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Sprints</h1>
-        <p className="text-muted-foreground">Manage team sprints and iterations</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Sprints</h1>
+          <p className="text-muted-foreground">Manage team sprints and iterations</p>
+        </div>
+        <Button onClick={handleCreate}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Sprint
+        </Button>
       </div>
 
       <div className="flex gap-4">
@@ -136,6 +152,12 @@ export default function Sprints() {
           })}
         </TableBody>
       </Table>
+
+      <SprintDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        sprint={editingSprint}
+      />
     </div>
   );
 }
