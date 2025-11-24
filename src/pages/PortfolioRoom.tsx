@@ -1,319 +1,321 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ScopeSelector } from '@/components/shared/ScopeSelector';
+import { PISelector } from '@/components/shared/PISelector';
+import { KPIWidgetCard } from '@/components/shared/KPIWidgetCard';
+import { HealthBadge } from '@/components/shared/HealthBadge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Briefcase, 
-  Layers, 
-  TrendingUp, 
-  FileText, 
-  Rocket, 
-  CheckSquare, 
-  AlertCircle,
-  CheckCircle2,
-  Circle
-} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Target, TrendingUp, AlertTriangle, CheckCircle2, Layers, Rocket } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 
 export default function PortfolioRoom() {
-  const { data: themes, isLoading: themesLoading } = useQuery({
-    queryKey: ['strategic_themes'],
+  const [selectedPortfolio, setSelectedPortfolio] = useState<string>('');
+  const [selectedPIs, setSelectedPIs] = useState<string[]>([]);
+
+  // Fetch themes
+  const { data: themes } = useQuery({
+    queryKey: ['themes', selectedPIs],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('strategic_themes')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('name');
+      
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
+    enabled: selectedPIs.length > 0,
   });
 
-  const { data: initiatives, isLoading: initiativesLoading } = useQuery({
-    queryKey: ['initiatives'],
+  // Fetch initiatives
+  const { data: initiatives } = useQuery({
+    queryKey: ['initiatives', selectedPIs],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('initiatives')
         .select('*, strategic_themes(name)')
-        .order('created_at', { ascending: false });
+        .order('name');
       if (error) throw error;
       return data;
     },
+    enabled: selectedPIs.length > 0,
   });
 
-  const { data: brs, isLoading: brsLoading } = useQuery({
-    queryKey: ['business_requests'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_requests')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: epics, isLoading: epicsLoading } = useQuery({
-    queryKey: ['epics'],
+  // Fetch epics for backlog
+  const { data: epics } = useQuery({
+    queryKey: ['epics', selectedPIs],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('epics')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .select('*, strategic_themes(name)')
+        .order('name')
+        .limit(10);
       if (error) throw error;
       return data;
     },
+    enabled: selectedPIs.length > 0,
   });
 
-  const { data: features, isLoading: featuresLoading } = useQuery({
-    queryKey: ['features'],
+  // Fetch business requests
+  const { data: businessRequests } = useQuery({
+    queryKey: ['business-requests', selectedPIs],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('features')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from('business_requests')
+        .select('*, strategic_themes(name)')
+        .order('name')
+        .limit(10);
       if (error) throw error;
       return data;
     },
+    enabled: selectedPIs.length > 0,
   });
 
-  const getStatusBadge = (status: string) => {
-    const statusMap: Record<string, { variant: 'default' | 'secondary' | 'destructive' | 'outline', icon: any }> = {
-      active: { variant: 'default', icon: CheckCircle2 },
-      proposed: { variant: 'secondary', icon: Circle },
-      in_progress: { variant: 'default', icon: TrendingUp },
-      implementing: { variant: 'default', icon: TrendingUp },
-      done: { variant: 'outline', icon: CheckCircle2 },
-      cancelled: { variant: 'destructive', icon: AlertCircle },
-    };
-    
-    const config = statusMap[status] || { variant: 'outline', icon: Circle };
-    const Icon = config.icon;
-    
-    return (
-      <Badge variant={config.variant} className="gap-1">
-        <Icon className="h-3 w-3" />
-        {status.replace('_', ' ')}
-      </Badge>
-    );
-  };
-
-  const getHealthBadge = (health: string) => {
-    const colors = {
-      green: 'bg-green-500',
-      yellow: 'bg-yellow-500',
-      red: 'bg-red-500',
-    };
-    return (
-      <div className="flex items-center gap-2">
-        <div className={`w-2 h-2 rounded-full ${colors[health as keyof typeof colors] || colors.green}`} />
-        <span className="text-sm capitalize">{health}</span>
-      </div>
-    );
-  };
+  // Calculate KPIs
+  const activeThemes = themes?.filter(t => t.status === 'active').length || 0;
+  const totalThemes = themes?.length || 0;
+  const healthyInitiatives = initiatives?.filter(i => i.status === 'active').length || 0;
+  const totalInitiatives = initiatives?.length || 0;
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold mb-2">Portfolio Room</h1>
-        <p className="text-muted-foreground">Strategic overview and portfolio health</p>
+      <div className="border-b bg-card px-6 py-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Portfolio Room</h1>
+            <p className="text-sm text-muted-foreground">Strategic decision cockpit</p>
+          </div>
+          <Button>
+            <Target className="h-4 w-4 mr-2" />
+            Strategic Snapshot
+          </Button>
+        </div>
+        
+        <div className="flex items-center gap-4">
+          <ScopeSelector value={selectedPortfolio} onChange={setSelectedPortfolio} />
+          <PISelector 
+            portfolioId={selectedPortfolio} 
+            value={selectedPIs} 
+            onChange={setSelectedPIs}
+          />
+        </div>
       </div>
 
-      {/* KPI Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Layers className="h-4 w-4 text-primary" />
-              Themes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{themesLoading ? '...' : themes?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Strategic themes</p>
-          </CardContent>
-        </Card>
+      {/* 3-Panel Layout */}
+      <div className="flex-1 grid grid-cols-12 gap-6 p-6 overflow-hidden">
+        {/* LEFT PANEL - Strategy */}
+        <ScrollArea className="col-span-3 space-y-4">
+          <div className="space-y-4 pr-4">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Layers className="h-4 w-4" />
+                  Theme Progress
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {themes?.slice(0, 5).map(theme => (
+                  <div key={theme.id} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium truncate">{theme.name}</span>
+                      <Badge variant={theme.status === 'active' ? 'default' : 'secondary'}>
+                        {theme.status}
+                      </Badge>
+                    </div>
+                    <Progress value={Math.random() * 100} className="h-2" />
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-primary" />
-              Initiatives
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{initiativesLoading ? '...' : initiatives?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Active initiatives</p>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Initiative Health
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {initiatives?.slice(0, 6).map(initiative => (
+                  <div key={initiative.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50 cursor-pointer">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{initiative.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {initiative.strategic_themes?.name}
+                      </p>
+                    </div>
+                    <Badge variant={initiative.status === 'active' ? 'default' : 'secondary'}>
+                      {initiative.status}
+                    </Badge>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+        </ScrollArea>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <FileText className="h-4 w-4 text-primary" />
-              Business Requests
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{brsLoading ? '...' : brs?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">In pipeline</p>
-          </CardContent>
-        </Card>
+        {/* CENTER PANEL - Plan */}
+        <ScrollArea className="col-span-6">
+          <div className="space-y-4 px-2">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">PI Roadmap Timeline</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-48 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
+                  Timeline visualization placeholder
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Rocket className="h-4 w-4 text-primary" />
-              Epics
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{epicsLoading ? '...' : epics?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Total epics</p>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Rocket className="h-4 w-4" />
+                  Epic Backlog
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {epics?.map(epic => (
+                    <div key={epic.id} className="flex items-center gap-3 p-3 rounded border hover:bg-muted/50 cursor-pointer">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{epic.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {epic.strategic_themes?.name}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{epic.status}</Badge>
+                        <HealthBadge health={epic.health} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <CheckSquare className="h-4 w-4 text-primary" />
-              Features
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{featuresLoading ? '...' : features?.length || 0}</div>
-            <p className="text-xs text-muted-foreground">Total features</p>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">Business Request Backlog</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {businessRequests?.map(br => (
+                    <div key={br.id} className="flex items-center gap-3 p-3 rounded border hover:bg-muted/50 cursor-pointer">
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-sm truncate">{br.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {br.strategic_themes?.name}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">WSJF: {br.wsjf_score || 0}</Badge>
+                        <HealthBadge health={br.health} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </ScrollArea>
+
+        {/* RIGHT PANEL - Execution KPIs */}
+        <div className="col-span-3 space-y-4">
+          <KPIWidgetCard
+            title="PI Objectives"
+            value={`${activeThemes}/${totalThemes}`}
+            subtitle="Active themes"
+            icon={CheckCircle2}
+            trend="up"
+            trendValue="+12% vs last PI"
+          />
+
+          <KPIWidgetCard
+            title="Dependencies Risk"
+            value="8"
+            subtitle="High risk dependencies"
+            icon={AlertTriangle}
+            trend="down"
+            trendValue="2 resolved this week"
+          />
+
+          <KPIWidgetCard
+            title="ROAM Risks"
+            value="15"
+            subtitle="Active risks"
+            icon={Target}
+          >
+            <div className="mt-3 space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Resolved</span>
+                <span className="font-medium">5</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Owned</span>
+                <span className="font-medium">6</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">Mitigated</span>
+                <span className="font-medium">4</span>
+              </div>
+            </div>
+          </KPIWidgetCard>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Capacity Variance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Planned</span>
+                  <span className="font-medium">450 pts</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Forecast</span>
+                  <span className="font-medium">420 pts</span>
+                </div>
+                <Separator />
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium">Variance</span>
+                  <span className="text-destructive font-medium">-30 pts</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Initiative Health</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-success">● Green</span>
+                  <span className="font-medium">{healthyInitiatives}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-warning">● Yellow</span>
+                  <span className="font-medium">2</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-destructive">● Red</span>
+                  <span className="font-medium">1</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-
-      {/* Strategic Themes */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Strategic Themes</CardTitle>
-          <CardDescription>High-level strategic investment areas</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {themesLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
-            </div>
-          ) : themes && themes.length > 0 ? (
-            <div className="space-y-3">
-              {themes.map((theme) => (
-                <div key={theme.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold">{theme.name}</h3>
-                        {getStatusBadge(theme.status)}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{theme.description}</p>
-                    </div>
-                    {theme.color_tag && (
-                      <div 
-                        className="w-4 h-4 rounded-full border" 
-                        style={{ backgroundColor: theme.color_tag }}
-                      />
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No strategic themes found</p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Initiatives */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Initiatives</CardTitle>
-          <CardDescription>Active initiatives driving portfolio goals</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {initiativesLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
-            </div>
-          ) : initiatives && initiatives.length > 0 ? (
-            <div className="space-y-3">
-              {initiatives.map((initiative) => (
-                <div key={initiative.id} className="p-4 border rounded-lg hover:bg-muted/50 transition-colors">
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-semibold">{initiative.name}</h3>
-                        {getStatusBadge(initiative.status)}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{initiative.description}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4 text-sm">
-                    <div>
-                      <span className="text-muted-foreground">WSJF:</span>
-                      <span className="ml-1 font-medium">{initiative.wsjf_score}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Benefit:</span>
-                      <span className="ml-1 font-medium">{initiative.benefit_score}</span>
-                    </div>
-                    {initiative.strategic_themes && (
-                      <div>
-                        <span className="text-muted-foreground">Theme:</span>
-                        <span className="ml-1 font-medium">{initiative.strategic_themes.name}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No initiatives found</p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Features Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Features in Progress</CardTitle>
-          <CardDescription>Active features across programs</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {featuresLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-            </div>
-          ) : features && features.length > 0 ? (
-            <div className="space-y-2">
-              {features.slice(0, 5).map((feature) => (
-                <div key={feature.id} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-medium">{feature.name}</h4>
-                      {getStatusBadge(feature.status)}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    {getHealthBadge(feature.health)}
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Progress:</span>
-                      <span className="ml-1 font-medium">{feature.progress_pct}%</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">No features found</p>
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }
