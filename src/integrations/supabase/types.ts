@@ -322,7 +322,6 @@ export type Database = {
       }
       epics: {
         Row: {
-          br_id: string | null
           created_at: string | null
           description: string | null
           end_date: string | null
@@ -338,7 +337,6 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
-          br_id?: string | null
           created_at?: string | null
           description?: string | null
           end_date?: string | null
@@ -354,7 +352,6 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
-          br_id?: string | null
           created_at?: string | null
           description?: string | null
           end_date?: string | null
