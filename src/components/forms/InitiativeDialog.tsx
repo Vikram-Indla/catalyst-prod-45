@@ -119,7 +119,7 @@ export function InitiativeDialog({ open, onOpenChange, initiative }: InitiativeD
                   <SelectValue placeholder="Select theme" />
                 </SelectTrigger>
                 <SelectContent>
-                  {themes?.map((theme) => (
+                  {themes?.filter(theme => theme.id).map((theme) => (
                     <SelectItem key={theme.id} value={theme.id}>
                       {theme.name}
                     </SelectItem>
