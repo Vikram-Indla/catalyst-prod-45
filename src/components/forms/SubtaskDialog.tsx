@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -33,6 +33,16 @@ export function SubtaskDialog({ open, onOpenChange, subtask, storyId }: SubtaskD
       return data;
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      setName(subtask?.name || '');
+      setDescription(subtask?.description || '');
+      setStatus(subtask?.status || 'todo');
+      setSelectedStoryId(subtask?.story_id || storyId || '');
+      setEstimateHours(subtask?.original_estimate_hours || 0);
+    }
+  }, [open, subtask, storyId]);
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {

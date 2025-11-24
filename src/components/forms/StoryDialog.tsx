@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -43,6 +43,18 @@ export function StoryDialog({ open, onOpenChange, story }: StoryDialogProps) {
       return data;
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      setName(story?.name || '');
+      setDescription(story?.description || '');
+      setAcceptanceCriteria(story?.acceptance_criteria || '');
+      setStatus(story?.status || 'todo');
+      setFeatureId(story?.feature_id || '');
+      setTeamId(story?.team_id || '');
+      setEstimatePoints(story?.estimate_points || 0);
+    }
+  }, [open, story]);
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {

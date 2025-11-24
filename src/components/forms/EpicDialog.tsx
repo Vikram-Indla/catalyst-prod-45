@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -45,6 +45,20 @@ export function EpicDialog({ open, onOpenChange, epic }: EpicDialogProps) {
       return data;
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      setName(epic?.name || '');
+      setDescription(epic?.description || '');
+      setStatus(epic?.status || 'proposed');
+      setHealth(epic?.health || 'green');
+      setThemeId(epic?.theme_id || '');
+      setProgramId(epic?.primary_program_id || '');
+      setEstimate(epic?.estimate || 0);
+      setStartDate(epic?.start_date || '');
+      setEndDate(epic?.end_date || '');
+    }
+  }, [open, epic]);
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
