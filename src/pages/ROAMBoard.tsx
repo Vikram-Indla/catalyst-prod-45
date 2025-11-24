@@ -3,16 +3,22 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { PISelector } from '@/components/shared/PISelector';
+import { RiskDialog } from '@/components/forms/RiskDialog';
 import { Database } from '@/integrations/supabase/types';
+import { Plus } from 'lucide-react';
+import { toast } from 'sonner';
 
 type RoamStatus = Database['public']['Enums']['roam_status'];
 
 export default function ROAMBoard() {
   const [selectedPIId, setSelectedPIId] = useState<string[]>([]);
   const [selectedProgramId, setSelectedProgramId] = useState<string>('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingRisk, setEditingRisk] = useState<any>(null);
 
   const { data: programs } = useQuery({
     queryKey: ['programs'],
@@ -76,6 +82,15 @@ export default function ROAMBoard() {
     }));
   };
 
+  const handleCreate = () => {
+    if (!selectedProgramId || selectedPIId.length === 0) {
+      toast.error('Please select a program and PI first');
+      return;
+    }
+    setEditingRisk(null);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
@@ -83,6 +98,10 @@ export default function ROAMBoard() {
           <h1 className="text-3xl font-bold">ROAM Board</h1>
           <p className="text-muted-foreground">Manage risks and opportunities</p>
         </div>
+        <Button onClick={handleCreate}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Risk
+        </Button>
       </div>
 
       <div className="flex gap-4">
@@ -176,6 +195,12 @@ export default function ROAMBoard() {
           </DragDropContext>
         </div>
       )}
+
+      <RiskDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        risk={editingRisk}
+      />
     </div>
   );
 }

@@ -6,14 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
+import { InitiativeDialog } from '@/components/forms/InitiativeDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Edit } from 'lucide-react';
 
 export default function Initiatives() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingInitiative, setEditingInitiative] = useState<any>(null);
 
   const { data: items, isLoading } = useQuery({
     queryKey: ['initiatives', searchQuery],
@@ -45,6 +48,16 @@ export default function Initiatives() {
     return <Badge variant={variants[status] || 'secondary'}>{status}</Badge>;
   };
 
+  const handleCreate = () => {
+    setEditingInitiative(null);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (initiative: any) => {
+    setEditingInitiative(initiative);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       <div className="border-b bg-card px-6 py-4">
@@ -53,7 +66,7 @@ export default function Initiatives() {
             <h1 className="text-2xl font-bold">Initiatives</h1>
             <p className="text-sm text-muted-foreground">Strategic initiatives driving portfolio goals</p>
           </div>
-          <Button><Plus className="h-4 w-4 mr-2" />New Initiative</Button>
+          <Button onClick={handleCreate}><Plus className="h-4 w-4 mr-2" />New Initiative</Button>
         </div>
       </div>
 
@@ -108,6 +121,10 @@ export default function Initiatives() {
           tabs={[
             { id: 'overview', label: 'Overview', content: (
               <div className="space-y-4">
+                <Button onClick={() => handleEdit(selectedData)} className="w-full mb-4">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Initiative
+                </Button>
                 <div><label className="text-sm font-medium text-muted-foreground">Status</label>
                   <div className="mt-1">{getStatusBadge(selectedData.status || 'proposed')}</div></div>
                 <div><label className="text-sm font-medium text-muted-foreground">Theme</label>
@@ -126,6 +143,12 @@ export default function Initiatives() {
           ]}
         />
       )}
+
+      <InitiativeDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        initiative={editingInitiative}
+      />
     </div>
   );
 }

@@ -7,14 +7,17 @@ import { Badge } from '@/components/ui/badge';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { HealthBadge } from '@/components/shared/HealthBadge';
+import { EpicDialog } from '@/components/forms/EpicDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Edit } from 'lucide-react';
 
 export default function Epics() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingEpic, setEditingEpic] = useState<any>(null);
 
   const { data: items, isLoading } = useQuery({
     queryKey: ['epics', searchQuery],
@@ -48,6 +51,16 @@ export default function Epics() {
     return <Badge variant={variants[status] || 'secondary'}>{status.replace('_', ' ')}</Badge>;
   };
 
+  const handleCreate = () => {
+    setEditingEpic(null);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (epic: any) => {
+    setEditingEpic(epic);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       <div className="border-b bg-card px-6 py-4">
@@ -56,7 +69,7 @@ export default function Epics() {
             <h1 className="text-2xl font-bold">Epics</h1>
             <p className="text-sm text-muted-foreground">Large initiatives broken into deliverable features</p>
           </div>
-          <Button><Plus className="h-4 w-4 mr-2" />New Epic</Button>
+          <Button onClick={handleCreate}><Plus className="h-4 w-4 mr-2" />New Epic</Button>
         </div>
       </div>
 
@@ -117,6 +130,10 @@ export default function Epics() {
           tabs={[
             { id: 'overview', label: 'Overview', content: (
               <div className="space-y-4">
+                <Button onClick={() => handleEdit(selectedData)} className="w-full mb-4">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Epic
+                </Button>
                 <div><label className="text-sm font-medium text-muted-foreground">Status</label>
                   <div className="mt-1">{getStatusBadge(selectedData.status || 'proposed')}</div></div>
                 <div><label className="text-sm font-medium text-muted-foreground">Health</label>
@@ -136,6 +153,12 @@ export default function Epics() {
           ]}
         />
       )}
+
+      <EpicDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        epic={editingEpic}
+      />
     </div>
   );
 }
