@@ -17,6 +17,16 @@ import Epics from "./pages/Epics";
 import Features from "./pages/Features";
 import PortfolioKanban from "./pages/PortfolioKanban";
 import ProgramRoom from "./pages/ProgramRoom";
+import ProgramBoard from "./pages/ProgramBoard";
+import ROAMBoard from "./pages/ROAMBoard";
+import CapacityPlanning from "./pages/CapacityPlanning";
+import TeamRoom from "./pages/TeamRoom";
+import SprintBoard from "./pages/SprintBoard";
+import Backlog from "./pages/Backlog";
+import Sprints from "./pages/Sprints";
+import Stories from "./pages/Stories";
+import Subtasks from "./pages/Subtasks";
+import Releases from "./pages/Releases";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,18 +55,18 @@ const App = () => (
               <Route path="/portfolio-insights" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/program-room" element={<ProgramRoom />} />
               <Route path="/pis" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Increments</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/program-board" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Board</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/roam" element={<div className="p-8"><h1 className="text-2xl font-bold">ROAM Board</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/capacity" element={<div className="p-8"><h1 className="text-2xl font-bold">Capacity Planning</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/program-board" element={<ProgramBoard />} />
+              <Route path="/roam" element={<ROAMBoard />} />
+              <Route path="/capacity" element={<CapacityPlanning />} />
               <Route path="/release-train-calendar" element={<div className="p-8"><h1 className="text-2xl font-bold">Release Calendar</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/team-room" element={<div className="p-8"><h1 className="text-2xl font-bold">Team Room</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/sprints" element={<div className="p-8"><h1 className="text-2xl font-bold">Sprints</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/sprint-board" element={<div className="p-8"><h1 className="text-2xl font-bold">Sprint Board</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/work-items/stories" element={<div className="p-8"><h1 className="text-2xl font-bold">Stories</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/work-items/subtasks" element={<div className="p-8"><h1 className="text-2xl font-bold">Sub-tasks</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/releases" element={<div className="p-8"><h1 className="text-2xl font-bold">Releases</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/team-room" element={<TeamRoom />} />
+              <Route path="/backlog" element={<Backlog />} />
+              <Route path="/sprints" element={<Sprints />} />
+              <Route path="/sprint-board" element={<SprintBoard />} />
+              <Route path="/work-items/stories" element={<Stories />} />
+              <Route path="/work-items/subtasks" element={<Subtasks />} />
+              <Route path="/releases" element={<Releases />} />
               <Route path="/insights/portfolio" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/insights/program" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/insights/team" element={<div className="p-8"><h1 className="text-2xl font-bold">Team Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
