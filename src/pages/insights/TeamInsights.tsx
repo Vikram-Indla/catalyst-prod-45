@@ -115,22 +115,72 @@ export default function TeamInsights() {
           <div className="grid grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Velocity Trend</CardTitle>
+                <CardTitle>Story Status Distribution</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                  Chart: Points completed per sprint over time
+                <div className="space-y-4">
+                  {['todo', 'in_progress', 'done'].map((status) => {
+                    const count = stories?.filter(s => s.status === status).length || 0;
+                    const percentage = metrics.total > 0 ? Math.round((count / metrics.total) * 100) : 0;
+                    return (
+                      <div key={status} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm capitalize">{status.replace('_', ' ')}</span>
+                          <span className="text-sm font-medium">{count} ({percentage}%)</span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div
+                            className="bg-primary h-2 rounded-full transition-all"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Story Completion Rate</CardTitle>
+                <CardTitle>Points Overview</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                  Chart: % of stories completed per sprint
+                <div className="space-y-6">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-primary">{metrics.completedPoints}</div>
+                    <div className="text-sm text-muted-foreground">Points Completed</div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Progress</span>
+                      <span className="font-medium">
+                        {metrics.totalPoints > 0 
+                          ? `${Math.round((metrics.completedPoints / metrics.totalPoints) * 100)}%`
+                          : '0%'}
+                      </span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-3">
+                      <div
+                        className="bg-success h-3 rounded-full transition-all"
+                        style={{ 
+                          width: `${metrics.totalPoints > 0 
+                            ? (metrics.completedPoints / metrics.totalPoints) * 100 
+                            : 0}%` 
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t">
+                    <div>
+                      <div className="text-2xl font-bold">{metrics.totalPoints}</div>
+                      <div className="text-xs text-muted-foreground">Total Points</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold">{selectedTeam?.velocity_baseline || 0}</div>
+                      <div className="text-xs text-muted-foreground">Baseline Velocity</div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
