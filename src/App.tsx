@@ -16,8 +16,12 @@ import BusinessRequests from "./pages/BusinessRequests";
 import Epics from "./pages/Epics";
 import Features from "./pages/Features";
 import PortfolioKanban from "./pages/PortfolioKanban";
+import PortfolioRoadmap from "./pages/PortfolioRoadmap";
+import Dependencies from "./pages/Dependencies";
+import PortfolioInsights from "./pages/PortfolioInsights";
 import ProgramRoom from "./pages/ProgramRoom";
 import ProgramBoard from "./pages/ProgramBoard";
+import ProgramIncrements from "./pages/ProgramIncrements";
 import ROAMBoard from "./pages/ROAMBoard";
 import CapacityPlanning from "./pages/CapacityPlanning";
 import TeamRoom from "./pages/TeamRoom";
@@ -27,6 +31,7 @@ import Sprints from "./pages/Sprints";
 import Stories from "./pages/Stories";
 import Subtasks from "./pages/Subtasks";
 import Releases from "./pages/Releases";
+import OrgSetup from "./pages/admin/OrgSetup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,11 +55,11 @@ const App = () => (
               <Route path="/epics" element={<Epics />} />
               <Route path="/features" element={<Features />} />
               <Route path="/portfolio-kanban" element={<PortfolioKanban />} />
-              <Route path="/portfolio-roadmap" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Roadmap</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/dependencies" element={<div className="p-8"><h1 className="text-2xl font-bold">Dependencies</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/portfolio-insights" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/portfolio-roadmap" element={<PortfolioRoadmap />} />
+              <Route path="/dependencies" element={<Dependencies />} />
+              <Route path="/portfolio-insights" element={<PortfolioInsights />} />
               <Route path="/program-room" element={<ProgramRoom />} />
-              <Route path="/pis" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Increments</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/pis" element={<ProgramIncrements />} />
               <Route path="/program-board" element={<ProgramBoard />} />
               <Route path="/roam" element={<ROAMBoard />} />
               <Route path="/capacity" element={<CapacityPlanning />} />
@@ -72,7 +77,7 @@ const App = () => (
               <Route path="/insights/team" element={<div className="p-8"><h1 className="text-2xl font-bold">Team Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/insights/predictability" element={<div className="p-8"><h1 className="text-2xl font-bold">Predictability</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/insights/dependency-risk" element={<div className="p-8"><h1 className="text-2xl font-bold">Dependency Risk</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/admin/org-setup" element={<div className="p-8"><h1 className="text-2xl font-bold">Organization Setup</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/admin/org-setup" element={<OrgSetup />} />
               <Route path="/admin/hierarchy" element={<div className="p-8"><h1 className="text-2xl font-bold">Hierarchy Configuration</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/admin/custom-fields" element={<div className="p-8"><h1 className="text-2xl font-bold">Custom Fields</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/admin/boards" element={<div className="p-8"><h1 className="text-2xl font-bold">Board Configuration</h1><p className="text-muted-foreground">Coming soon</p></div>} />
