@@ -63,12 +63,11 @@ export default function DependencyRisk() {
         <p className="text-muted-foreground">Track and manage dependency risks</p>
       </div>
 
-      <Select value={selectedProgramId} onValueChange={setSelectedProgramId}>
+      <Select value={selectedProgramId || undefined} onValueChange={setSelectedProgramId}>
         <SelectTrigger className="w-[240px]">
           <SelectValue placeholder="All Programs" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Programs</SelectItem>
           {programs?.map((program) => (
             <SelectItem key={program.id} value={program.id}>
               {program.name}
