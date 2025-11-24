@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { ScopeSelector } from '@/components/shared/ScopeSelector';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
+import { PIDialog } from '@/components/forms/PIDialog';
 import { format } from 'date-fns';
+import { Plus, Edit } from 'lucide-react';
 
 export default function ProgramIncrements() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,6 +19,8 @@ export default function ProgramIncrements() {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedPI, setSelectedPI] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingPI, setEditingPI] = useState<any>(null);
 
   const { data: programIncrements } = useQuery({
     queryKey: ['program-increments', selectedPortfolioId, searchTerm],
@@ -64,11 +69,27 @@ export default function ProgramIncrements() {
     return { label: 'Active', variant: 'default' as const };
   };
 
+  const handleCreate = () => {
+    setEditingPI(null);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (pi: any) => {
+    setEditingPI(pi);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Program Increments</h1>
-        <p className="text-muted-foreground">Manage PI planning and execution cycles</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Program Increments</h1>
+          <p className="text-muted-foreground">Manage PI planning and execution cycles</p>
+        </div>
+        <Button onClick={handleCreate}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create PI
+        </Button>
       </div>
 
       <div className="flex gap-4">
@@ -142,6 +163,10 @@ export default function ProgramIncrements() {
             label: 'Details',
             content: selectedPI && (
               <div className="space-y-4">
+                <Button onClick={() => handleEdit(selectedPI)} className="w-full mb-4">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit PI
+                </Button>
                 <div>
                   <label className="text-sm font-medium">Portfolio</label>
                   <p className="text-sm text-muted-foreground mt-1">
@@ -164,6 +189,12 @@ export default function ProgramIncrements() {
             ),
           },
         ]}
+      />
+
+      <PIDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        pi={editingPI}
       />
     </div>
   );

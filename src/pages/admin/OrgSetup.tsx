@@ -1,11 +1,19 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Building2, Users, Layers } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Building2, Users, Layers, Plus } from 'lucide-react';
+import { PortfolioDialog } from '@/components/forms/PortfolioDialog';
+import { ProgramDialog } from '@/components/forms/ProgramDialog';
+import { TeamDialog } from '@/components/forms/TeamDialog';
 
 export default function OrgSetup() {
+  const [portfolioDialogOpen, setPortfolioDialogOpen] = useState(false);
+  const [programDialogOpen, setProgramDialogOpen] = useState(false);
+  const [teamDialogOpen, setTeamDialogOpen] = useState(false);
   const { data: portfolios } = useQuery({
     queryKey: ['admin-portfolios'],
     queryFn: async () => {
@@ -80,8 +88,16 @@ export default function OrgSetup() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Portfolios</CardTitle>
-          <CardDescription>Manage portfolio-level organization</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Portfolios</CardTitle>
+              <CardDescription>Manage portfolio-level organization</CardDescription>
+            </div>
+            <Button onClick={() => setPortfolioDialogOpen(true)} size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Portfolio
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -113,8 +129,16 @@ export default function OrgSetup() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Programs</CardTitle>
-          <CardDescription>ARTs and program-level organization</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Programs</CardTitle>
+              <CardDescription>ARTs and program-level organization</CardDescription>
+            </div>
+            <Button onClick={() => setProgramDialogOpen(true)} size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Program
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -148,8 +172,16 @@ export default function OrgSetup() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Teams</CardTitle>
-          <CardDescription>Agile team configuration</CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Teams</CardTitle>
+              <CardDescription>Agile team configuration</CardDescription>
+            </div>
+            <Button onClick={() => setTeamDialogOpen(true)} size="sm">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Team
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <Table>
@@ -178,6 +210,19 @@ export default function OrgSetup() {
           </Table>
         </CardContent>
       </Card>
+
+      <PortfolioDialog
+        open={portfolioDialogOpen}
+        onOpenChange={setPortfolioDialogOpen}
+      />
+      <ProgramDialog
+        open={programDialogOpen}
+        onOpenChange={setProgramDialogOpen}
+      />
+      <TeamDialog
+        open={teamDialogOpen}
+        onOpenChange={setTeamDialogOpen}
+      />
     </div>
   );
 }
