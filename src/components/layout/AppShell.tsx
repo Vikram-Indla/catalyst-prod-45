@@ -124,6 +124,7 @@ const navigation: NavItem[] = [
       { title: 'Board Configuration', path: '/admin/boards', icon: FolderKanban },
       { title: 'Permissions', path: '/admin/permissions', icon: Users },
       { title: 'Integrations', path: '/admin/integrations', icon: Link2 },
+      { title: 'Activity Log', path: '/admin/activity-log', icon: ClipboardList },
     ],
   },
 ];

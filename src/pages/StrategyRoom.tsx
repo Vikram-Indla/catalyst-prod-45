@@ -7,11 +7,17 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ObjectiveDialog } from '@/components/forms/ObjectiveDialog';
+import { KeyResultDialog } from '@/components/forms/KeyResultDialog';
 import { Target, TrendingUp, Plus, ChevronRight } from 'lucide-react';
 
 export default function StrategyRoom() {
   const [activeTab, setActiveTab] = useState('portfolio');
   const [selectedObjective, setSelectedObjective] = useState<string | null>(null);
+  const [objectiveDialogOpen, setObjectiveDialogOpen] = useState(false);
+  const [keyResultDialogOpen, setKeyResultDialogOpen] = useState(false);
+  const [editingObjectiveId, setEditingObjectiveId] = useState<string | undefined>();
+  const [editingKeyResultId, setEditingKeyResultId] = useState<string | undefined>();
 
   // Fetch objectives
   const { data: objectives } = useQuery({
@@ -68,7 +74,7 @@ export default function StrategyRoom() {
             <h1 className="text-2xl font-bold">Strategy Room</h1>
             <p className="text-sm text-muted-foreground">Objectives and Key Results</p>
           </div>
-          <Button>
+          <Button onClick={() => { setEditingObjectiveId(undefined); setObjectiveDialogOpen(true); }}>
             <Plus className="h-4 w-4 mr-2" />
             New Objective
           </Button>
@@ -92,7 +98,11 @@ export default function StrategyRoom() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold">Objectives</h3>
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => { setEditingObjectiveId(undefined); setObjectiveDialogOpen(true); }}
+                  >
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
@@ -197,7 +207,11 @@ export default function StrategyRoom() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold">Key Results</h3>
                   {selectedObjective && (
-                    <Button variant="ghost" size="sm">
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => { setEditingKeyResultId(undefined); setKeyResultDialogOpen(true); }}
+                    >
                       <Plus className="h-4 w-4" />
                     </Button>
                   )}
@@ -241,6 +255,20 @@ export default function StrategyRoom() {
           </div>
         </TabsContent>
       </Tabs>
+
+      <ObjectiveDialog
+        open={objectiveDialogOpen}
+        onClose={() => { setObjectiveDialogOpen(false); setEditingObjectiveId(undefined); }}
+        objectiveId={editingObjectiveId}
+        scopeType={activeTab as 'company' | 'portfolio' | 'program'}
+      />
+
+      <KeyResultDialog
+        open={keyResultDialogOpen}
+        onClose={() => { setKeyResultDialogOpen(false); setEditingKeyResultId(undefined); }}
+        keyResultId={editingKeyResultId}
+        objectiveId={selectedObjective || undefined}
+      />
     </div>
   );
 }

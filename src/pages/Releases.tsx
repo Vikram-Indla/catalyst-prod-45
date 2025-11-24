@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,7 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
+import { ReleaseDialog } from '@/components/forms/ReleaseDialog';
 import { format } from 'date-fns';
+import { Plus } from 'lucide-react';
 
 export default function Releases() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,6 +20,8 @@ export default function Releases() {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedRelease, setSelectedRelease] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingReleaseId, setEditingReleaseId] = useState<string | undefined>();
 
   const { data: releases } = useQuery({
     queryKey: ['releases', searchTerm, statusFilter],
@@ -49,11 +54,22 @@ export default function Releases() {
     setSelectedRows(newSelected);
   };
 
+  const handleEdit = (release: any) => {
+    setEditingReleaseId(release.id);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="p-8 space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Releases</h1>
-        <p className="text-muted-foreground">Manage release planning and tracking</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Releases</h1>
+          <p className="text-muted-foreground">Manage release planning and tracking</p>
+        </div>
+        <Button onClick={() => { setEditingReleaseId(undefined); setDialogOpen(true); }}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Release
+        </Button>
       </div>
 
       <div className="flex gap-4">
@@ -174,10 +190,19 @@ export default function Releases() {
                     {selectedRelease.readiness_pct || 0}% complete
                   </p>
                 </div>
+                <Button onClick={() => handleEdit(selectedRelease)} className="w-full mt-4">
+                  Edit Release
+                </Button>
               </div>
             ),
           },
         ]}
+      />
+
+      <ReleaseDialog
+        open={dialogOpen}
+        onClose={() => { setDialogOpen(false); setEditingReleaseId(undefined); }}
+        releaseId={editingReleaseId}
       />
     </div>
   );

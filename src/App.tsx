@@ -37,6 +37,7 @@ import CustomFields from "./pages/admin/CustomFields";
 import BoardConfig from "./pages/admin/BoardConfig";
 import Permissions from "./pages/admin/Permissions";
 import Integrations from "./pages/admin/Integrations";
+import ActivityLog from "./pages/admin/ActivityLog";
 import ProgramInsights from "./pages/insights/ProgramInsights";
 import TeamInsights from "./pages/insights/TeamInsights";
 import Predictability from "./pages/insights/Predictability";
@@ -92,6 +93,7 @@ const App = () => (
               <Route path="/admin/boards" element={<BoardConfig />} />
               <Route path="/admin/permissions" element={<Permissions />} />
               <Route path="/admin/integrations" element={<Integrations />} />
+              <Route path="/admin/activity-log" element={<ActivityLog />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
