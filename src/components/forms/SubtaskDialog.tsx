@@ -117,7 +117,7 @@ export function SubtaskDialog({ open, onOpenChange, subtask, storyId }: SubtaskD
                   <SelectValue placeholder="Select story" />
                 </SelectTrigger>
                 <SelectContent>
-                  {stories?.map((story) => (
+                  {stories?.filter(story => story.id).map((story) => (
                     <SelectItem key={story.id} value={story.id}>
                       {story.name}
                     </SelectItem>
