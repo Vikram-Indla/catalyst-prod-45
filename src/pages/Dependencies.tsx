@@ -12,6 +12,7 @@ import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { DependencyDialog } from '@/components/forms/DependencyDialog';
 import { AlertCircle, ArrowRight, Plus } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Dependencies() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -90,10 +91,12 @@ export default function Dependencies() {
           <h1 className="text-3xl font-bold">Dependencies</h1>
           <p className="text-muted-foreground">Manage cross-team and cross-program dependencies</p>
         </div>
-        <Button onClick={() => { setEditingDependencyId(undefined); setDialogOpen(true); }}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Dependency
-        </Button>
+        <PermissionGuard requiredRole="team_lead" showMessage={false}>
+          <Button onClick={() => { setEditingDependencyId(undefined); setDialogOpen(true); }}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Dependency
+          </Button>
+        </PermissionGuard>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -273,9 +276,11 @@ export default function Dependencies() {
                     {selectedDependency.risk_level}
                   </Badge>
                 </div>
-                <Button onClick={() => handleEdit(selectedDependency)} className="w-full mt-4">
-                  Edit Dependency
-                </Button>
+                <PermissionGuard requiredRole="team_lead" showMessage={false}>
+                  <Button onClick={() => handleEdit(selectedDependency)} className="w-full mt-4">
+                    Edit Dependency
+                  </Button>
+                </PermissionGuard>
               </div>
             ),
           },

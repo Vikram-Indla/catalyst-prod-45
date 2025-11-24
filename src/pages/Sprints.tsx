@@ -11,6 +11,7 @@ import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { SprintDialog } from '@/components/forms/SprintDialog';
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Sprints() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -77,10 +78,12 @@ export default function Sprints() {
           <h1 className="text-3xl font-bold">Sprints</h1>
           <p className="text-muted-foreground">Manage team sprints and iterations</p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Sprint
-        </Button>
+        <PermissionGuard requiredRole="team_lead" showMessage={false}>
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Sprint
+          </Button>
+        </PermissionGuard>
       </div>
 
       <div className="flex gap-4">

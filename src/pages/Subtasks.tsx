@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { SubtaskDialog } from '@/components/forms/SubtaskDialog';
 import { Plus } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Subtasks() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,10 +57,12 @@ export default function Subtasks() {
           <h1 className="text-3xl font-bold">Sub-tasks</h1>
           <p className="text-muted-foreground">Technical tasks and work items</p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Subtask
-        </Button>
+        <PermissionGuard requiredRole="user" showMessage={false}>
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Subtask
+          </Button>
+        </PermissionGuard>
       </div>
 
       <div className="flex gap-4">
