@@ -1,10 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { Download, Settings2, Edit3 } from 'lucide-react';
+import { Download, Upload, Settings2, Edit3 } from 'lucide-react';
 
 interface ListScreenToolbarProps {
   onColumnChooser?: () => void;
   onBulkEdit?: () => void;
   onExport?: () => void;
+  onImport?: () => void;
   selectedCount?: number;
 }
 
@@ -12,6 +13,7 @@ export function ListScreenToolbar({
   onColumnChooser, 
   onBulkEdit, 
   onExport,
+  onImport,
   selectedCount = 0 
 }: ListScreenToolbarProps) {
   return (
@@ -29,6 +31,13 @@ export function ListScreenToolbar({
           <Button variant="outline" size="sm" onClick={onBulkEdit} disabled={selectedCount === 0}>
             <Edit3 className="h-4 w-4 mr-2" />
             Bulk Edit
+          </Button>
+        )}
+        
+        {onImport && (
+          <Button variant="outline" size="sm" onClick={onImport}>
+            <Upload className="h-4 w-4 mr-2" />
+            Import
           </Button>
         )}
         

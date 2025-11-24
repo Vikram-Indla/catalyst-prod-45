@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { exportToCSV } from '@/lib/exportUtils';
+import { ImportDialog } from '@/components/shared/ImportDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -16,7 +19,10 @@ export default function Initiatives() {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [editingInitiative, setEditingInitiative] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: items, isLoading } = useQuery({
     queryKey: ['initiatives', searchQuery],
@@ -58,6 +64,34 @@ export default function Initiatives() {
     setDialogOpen(true);
   };
 
+  const importMutation = useMutation({
+    mutationFn: async (data: any[]) => {
+      const { error } = await supabase.from('initiatives').insert(data.map(row => ({
+        name: row.name,
+        description: row.description || null,
+        status: row.status || 'proposed',
+        theme_id: row.theme_id || null,
+        wsjf_score: row.wsjf_score || 0,
+        benefit_score: row.benefit_score || 0,
+      })));
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['initiatives'] });
+      toast({ title: 'Initiatives imported successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Failed to import initiatives', variant: 'destructive' });
+    }
+  });
+
+  const handleExport = () => {
+    if (items && items.length > 0) {
+      exportToCSV(items, 'initiatives', ['name', 'description', 'status', 'wsjf_score', 'benefit_score']);
+      toast({ title: 'Initiatives exported successfully' });
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       <div className="border-b bg-card px-6 py-4">
@@ -78,7 +112,7 @@ export default function Initiatives() {
           </div>
         </div>
 
-        <ListScreenToolbar selectedCount={selectedRows.length} onColumnChooser={() => {}} onBulkEdit={() => {}} onExport={() => {}} />
+        <ListScreenToolbar selectedCount={selectedRows.length} onColumnChooser={() => {}} onBulkEdit={() => {}} onExport={handleExport} onImport={() => setImportDialogOpen(true)} />
 
         <div className="flex-1 border rounded-lg overflow-auto">
           <Table>
@@ -148,6 +182,13 @@ export default function Initiatives() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         initiative={editingInitiative}
+      />
+      <ImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImport={(data) => importMutation.mutate(data)}
+        title="Import Initiatives"
+        requiredFields={['name']}
       />
     </div>
   );
