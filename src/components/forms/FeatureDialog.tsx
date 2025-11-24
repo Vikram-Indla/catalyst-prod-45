@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -54,6 +54,20 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
       return data;
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      setName(feature?.name || '');
+      setDescription(feature?.description || '');
+      setStatus(feature?.status || 'funnel');
+      setHealth(feature?.health || 'green');
+      setEpicId(feature?.epic_id || '');
+      setProgramId(feature?.program_id || '');
+      setPiId(feature?.pi_id || '');
+      setEstimatePoints(feature?.estimate_points || 0);
+      setWsjfScore(feature?.wsjf_score || 0);
+    }
+  }, [open, feature]);
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {

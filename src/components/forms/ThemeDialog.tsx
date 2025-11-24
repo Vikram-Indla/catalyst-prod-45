@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
@@ -24,6 +24,17 @@ export function ThemeDialog({ open, onOpenChange, theme }: ThemeDialogProps) {
   const [colorTag, setColorTag] = useState(theme?.color_tag || '#3B82F6');
 
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (open) {
+      setName(theme?.name || '');
+      setDescription(theme?.description || '');
+      setStatus(theme?.status || 'proposed');
+      setStartDate(theme?.start_date || '');
+      setEndDate(theme?.end_date || '');
+      setColorTag(theme?.color_tag || '#3B82F6');
+    }
+  }, [open, theme]);
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
