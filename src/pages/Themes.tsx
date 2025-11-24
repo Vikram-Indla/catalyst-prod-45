@@ -14,6 +14,8 @@ import { Plus, Search, Edit } from 'lucide-react';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
 import { CommentsSection } from '@/components/shared/CommentsSection';
+import { useUserRole } from '@/hooks/useUserRole';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Themes() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -24,6 +26,7 @@ export default function Themes() {
   const [editingTheme, setEditingTheme] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isTeamLead, isProgramManager } = useUserRole();
 
   const { data: themes, isLoading } = useQuery({
     queryKey: ['strategic_themes', searchQuery],
@@ -125,10 +128,12 @@ export default function Themes() {
             <h1 className="text-2xl font-bold">Strategic Themes</h1>
             <p className="text-sm text-muted-foreground">High-level strategic investment areas</p>
           </div>
-          <Button onClick={handleCreate}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Theme
-          </Button>
+          <PermissionGuard requiredRole="team_lead" showMessage={false}>
+            <Button onClick={handleCreate}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Theme
+            </Button>
+          </PermissionGuard>
         </div>
       </div>
 
@@ -232,10 +237,12 @@ export default function Themes() {
               label: 'Overview',
               content: (
                 <div className="space-y-4">
-                  <Button onClick={() => handleEdit(selectedThemeData)} className="w-full mb-4">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Theme
-                  </Button>
+                  <PermissionGuard requiredRole="team_lead" showMessage={false}>
+                    <Button onClick={() => handleEdit(selectedThemeData)} className="w-full mb-4">
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit Theme
+                    </Button>
+                  </PermissionGuard>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Status</label>
                     <div className="mt-1">{getStatusBadge(selectedThemeData.status || 'proposed')}</div>
