@@ -3,13 +3,15 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
-import { AlertCircle, ArrowRight } from 'lucide-react';
+import { DependencyDialog } from '@/components/forms/DependencyDialog';
+import { AlertCircle, ArrowRight, Plus } from 'lucide-react';
 
 export default function Dependencies() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -18,6 +20,8 @@ export default function Dependencies() {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedDependency, setSelectedDependency] = useState<any>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingDependencyId, setEditingDependencyId] = useState<string | undefined>();
 
   const { data: dependencies } = useQuery({
     queryKey: ['all-dependencies', searchTerm, statusFilter, riskFilter],
@@ -74,6 +78,11 @@ export default function Dependencies() {
 
   const stats = getDependencyCount();
 
+  const handleEdit = (dependency: any) => {
+    setEditingDependencyId(dependency.id);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
@@ -81,6 +90,10 @@ export default function Dependencies() {
           <h1 className="text-3xl font-bold">Dependencies</h1>
           <p className="text-muted-foreground">Manage cross-team and cross-program dependencies</p>
         </div>
+        <Button onClick={() => { setEditingDependencyId(undefined); setDialogOpen(true); }}>
+          <Plus className="h-4 w-4 mr-2" />
+          Create Dependency
+        </Button>
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -260,10 +273,19 @@ export default function Dependencies() {
                     {selectedDependency.risk_level}
                   </Badge>
                 </div>
+                <Button onClick={() => handleEdit(selectedDependency)} className="w-full mt-4">
+                  Edit Dependency
+                </Button>
               </div>
             ),
           },
         ]}
+      />
+
+      <DependencyDialog
+        open={dialogOpen}
+        onClose={() => { setDialogOpen(false); setEditingDependencyId(undefined); }}
+        dependencyId={editingDependencyId}
       />
     </div>
   );
