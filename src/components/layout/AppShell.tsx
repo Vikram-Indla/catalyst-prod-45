@@ -3,6 +3,8 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { NotificationBell } from '@/components/shared/NotificationBell';
+import { GlobalSearch } from '@/components/shared/GlobalSearch';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -165,22 +167,15 @@ export function AppShell() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="relative hidden md:block">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search... (⌘K)"
-              className="w-64 pl-8"
-            />
+          <div className="hidden md:block">
+            <GlobalSearch />
           </div>
           
           <Button variant="default" size="sm" className="hidden sm:flex">
             Create
           </Button>
 
-          <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
-          </Button>
+          <NotificationBell />
 
           <Button variant="ghost" size="icon">
             <HelpCircle className="h-5 w-5" />
