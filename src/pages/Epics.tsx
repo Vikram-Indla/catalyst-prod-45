@@ -32,7 +32,7 @@ export default function Epics() {
     queryFn: async () => {
       let query = supabase
         .from('epics')
-        .select('*, strategic_themes(name), business_requests(name), programs(name)')
+        .select('*, strategic_themes(name), programs(name)')
         .order('name');
 
       if (searchQuery) {
@@ -77,7 +77,6 @@ export default function Epics() {
         status: row.status || 'proposed',
         health: row.health || 'green',
         theme_id: row.theme_id || null,
-        br_id: row.br_id || null,
       })));
       if (error) throw error;
     },
@@ -128,7 +127,6 @@ export default function Epics() {
                 <TableHead className="w-12"><Checkbox /></TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Theme</TableHead>
-                <TableHead>BR</TableHead>
                 <TableHead>Program</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Health</TableHead>
@@ -137,14 +135,13 @@ export default function Epics() {
             </TableHeader>
             <TableBody>
               {isLoading ? (
-                <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
               ) : items && items.length > 0 ? (
                 items.map((item) => (
                   <TableRow key={item.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedItem(item.id)}>
                     <TableCell onClick={(e) => e.stopPropagation()}><Checkbox /></TableCell>
                     <TableCell className="font-medium">{item.name}</TableCell>
                     <TableCell className="text-sm">{item.strategic_themes?.name || '-'}</TableCell>
-                    <TableCell className="text-sm truncate max-w-[150px]">{item.business_requests?.name || '-'}</TableCell>
                     <TableCell className="text-sm">{item.programs?.name || '-'}</TableCell>
                     <TableCell>{getStatusBadge(item.status || 'proposed')}</TableCell>
                     <TableCell><HealthBadge health={item.health} /></TableCell>
@@ -156,7 +153,7 @@ export default function Epics() {
                   </TableRow>
                 ))
               ) : (
-                <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No epics found</TableCell></TableRow>
+                <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">No epics found</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

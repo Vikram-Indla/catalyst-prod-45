@@ -45,7 +45,7 @@ const Index = () => {
               <Briefcase className="h-8 w-8 text-primary mb-4" />
               <h3 className="text-lg font-semibold mb-2">Portfolio Management</h3>
               <p className="text-sm text-muted-foreground">
-                Strategic themes, initiatives, and business requests with full traceability.
+                Strategic themes, initiatives, and epics with full value stream traceability.
               </p>
             </div>
             

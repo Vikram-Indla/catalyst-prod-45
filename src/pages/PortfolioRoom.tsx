@@ -63,21 +63,6 @@ export default function PortfolioRoom() {
     enabled: selectedPIs.length > 0,
   });
 
-  // Fetch business requests
-  const { data: businessRequests } = useQuery({
-    queryKey: ['business-requests', selectedPIs],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_requests')
-        .select('*, strategic_themes(name)')
-        .order('name')
-        .limit(10);
-      if (error) throw error;
-      return data;
-    },
-    enabled: selectedPIs.length > 0,
-  });
-
   // Calculate KPIs
   const activeThemes = themes?.filter(t => t.status === 'active').length || 0;
   const totalThemes = themes?.length || 0;
@@ -205,29 +190,6 @@ export default function PortfolioRoom() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Business Request Backlog</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {businessRequests?.map(br => (
-                    <div key={br.id} className="flex items-center gap-3 p-3 rounded border hover:bg-muted/50 cursor-pointer">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{br.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {br.strategic_themes?.name}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">WSJF: {br.wsjf_score || 0}</Badge>
-                        <HealthBadge health={br.health} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </ScrollArea>
 

@@ -29,7 +29,6 @@ interface PermissionGrantDialogProps {
 const entityTypes = [
   'strategic_themes',
   'initiatives',
-  'business_requests',
   'epics',
   'features',
   'stories',
