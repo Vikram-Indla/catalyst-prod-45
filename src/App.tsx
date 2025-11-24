@@ -9,6 +9,8 @@ import { AppShell } from "./components/layout/AppShell";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PortfolioRoom from "./pages/PortfolioRoom";
+import StrategyRoom from "./pages/StrategyRoom";
+import Themes from "./pages/Themes";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,8 +27,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route element={<ProtectedRoute><AppShell /></ProtectedRoute>}>
               <Route path="/portfolio-room" element={<PortfolioRoom />} />
-              <Route path="/strategy-room" element={<div className="p-8"><h1 className="text-2xl font-bold">Strategy Room</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/themes" element={<div className="p-8"><h1 className="text-2xl font-bold">Strategic Themes</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/strategy-room" element={<StrategyRoom />} />
+              <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<div className="p-8"><h1 className="text-2xl font-bold">Initiatives</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/business-requests" element={<div className="p-8"><h1 className="text-2xl font-bold">Business Requests</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/epics" element={<div className="p-8"><h1 className="text-2xl font-bold">Epics</h1><p className="text-muted-foreground">Coming soon</p></div>} />
