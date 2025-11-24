@@ -7,6 +7,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Trash2, Edit, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
+import { usePermission } from '@/hooks/usePermission';
+import { useAuth } from '@/lib/auth';
 
 interface CommentsSectionProps {
   entityId: string;
@@ -19,6 +21,9 @@ export function CommentsSection({ entityId, entityType }: CommentsSectionProps) 
   const [editContent, setEditContent] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { hasPermission: canEdit } = usePermission(entityType, 'edit');
+  const { hasPermission: canDelete } = usePermission(entityType, 'delete');
 
   const { data: comments, isLoading } = useQuery({
     queryKey: ['comments', entityId, entityType],
@@ -113,22 +118,24 @@ export function CommentsSection({ entityId, entityType }: CommentsSectionProps) 
   return (
     <div className="space-y-4">
       {/* Add comment */}
-      <div className="space-y-2">
-        <Textarea
-          placeholder="Add a comment..."
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          className="min-h-[80px]"
-        />
-        <Button 
-          onClick={handleSubmit} 
-          disabled={!newComment.trim() || addCommentMutation.isPending}
-          size="sm"
-        >
-          <Send className="h-4 w-4 mr-2" />
-          Post Comment
-        </Button>
-      </div>
+      {canEdit && (
+        <div className="space-y-2">
+          <Textarea
+            placeholder="Add a comment..."
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            className="min-h-[80px]"
+          />
+          <Button 
+            onClick={handleSubmit} 
+            disabled={!newComment.trim() || addCommentMutation.isPending}
+            size="sm"
+          >
+            <Send className="h-4 w-4 mr-2" />
+            Post Comment
+          </Button>
+        </div>
+      )}
 
       {/* Comments list */}
       <div className="space-y-4">
@@ -152,24 +159,30 @@ export function CommentsSection({ entityId, entityType }: CommentsSectionProps) 
                       {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
                     </span>
                   </div>
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => startEdit(comment)}
-                      className="h-7 w-7 p-0"
-                    >
-                      <Edit className="h-3 w-3" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => deleteCommentMutation.mutate(comment.id)}
-                      className="h-7 w-7 p-0"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  </div>
+                  {(comment.user_id === user?.id || canDelete) && (
+                    <div className="flex gap-1">
+                      {comment.user_id === user?.id && canEdit && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => startEdit(comment)}
+                          className="h-7 w-7 p-0"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                      )}
+                      {(comment.user_id === user?.id || canDelete) && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteCommentMutation.mutate(comment.id)}
+                          className="h-7 w-7 p-0"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </div>
                 
                 {editingId === comment.id ? (
