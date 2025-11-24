@@ -5,15 +5,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Building2, Users, Layers, Plus } from 'lucide-react';
+import { Building2, Users, Layers, Plus, UserCog } from 'lucide-react';
 import { PortfolioDialog } from '@/components/forms/PortfolioDialog';
 import { ProgramDialog } from '@/components/forms/ProgramDialog';
 import { TeamDialog } from '@/components/forms/TeamDialog';
+import { PortfolioMembersDialog } from '@/components/admin/PortfolioMembersDialog';
+import { ProgramMembersDialog } from '@/components/admin/ProgramMembersDialog';
+import { TeamMembersDialog } from '@/components/admin/TeamMembersDialog';
 
 export default function OrgSetup() {
   const [portfolioDialogOpen, setPortfolioDialogOpen] = useState(false);
   const [programDialogOpen, setProgramDialogOpen] = useState(false);
   const [teamDialogOpen, setTeamDialogOpen] = useState(false);
+  const [portfolioMembersDialog, setPortfolioMembersDialog] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' });
+  const [programMembersDialog, setProgramMembersDialog] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' });
+  const [teamMembersDialog, setTeamMembersDialog] = useState<{ open: boolean; id: string; name: string }>({ open: false, id: '', name: '' });
   const { data: portfolios } = useQuery({
     queryKey: ['admin-portfolios'],
     queryFn: async () => {
@@ -106,6 +112,7 @@ export default function OrgSetup() {
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Programs</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -119,6 +126,16 @@ export default function OrgSetup() {
                   </TableCell>
                   <TableCell>
                     {programs?.filter(p => p.portfolio_id === portfolio.id).length || 0}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setPortfolioMembersDialog({ open: true, id: portfolio.id, name: portfolio.name })}
+                    >
+                      <UserCog className="h-4 w-4 mr-2" />
+                      Manage Members
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -148,6 +165,7 @@ export default function OrgSetup() {
                 <TableHead>Portfolio</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Teams</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -162,6 +180,16 @@ export default function OrgSetup() {
                   </TableCell>
                   <TableCell>
                     {teams?.filter(t => t.program_id === program.id).length || 0}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setProgramMembersDialog({ open: true, id: program.id, name: program.name })}
+                    >
+                      <UserCog className="h-4 w-4 mr-2" />
+                      Manage Members
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -191,6 +219,7 @@ export default function OrgSetup() {
                 <TableHead>Program</TableHead>
                 <TableHead>Velocity Baseline</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -203,6 +232,16 @@ export default function OrgSetup() {
                     <Badge variant={team.status === 'active' ? 'default' : 'outline'} className="capitalize">
                       {team.status}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setTeamMembersDialog({ open: true, id: team.id, name: team.name })}
+                    >
+                      <UserCog className="h-4 w-4 mr-2" />
+                      Manage Members
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -222,6 +261,25 @@ export default function OrgSetup() {
       <TeamDialog
         open={teamDialogOpen}
         onOpenChange={setTeamDialogOpen}
+      />
+      
+      <PortfolioMembersDialog
+        open={portfolioMembersDialog.open}
+        onOpenChange={(open) => setPortfolioMembersDialog({ ...portfolioMembersDialog, open })}
+        portfolioId={portfolioMembersDialog.id}
+        portfolioName={portfolioMembersDialog.name}
+      />
+      <ProgramMembersDialog
+        open={programMembersDialog.open}
+        onOpenChange={(open) => setProgramMembersDialog({ ...programMembersDialog, open })}
+        programId={programMembersDialog.id}
+        programName={programMembersDialog.name}
+      />
+      <TeamMembersDialog
+        open={teamMembersDialog.open}
+        onOpenChange={(open) => setTeamMembersDialog({ ...teamMembersDialog, open })}
+        teamId={teamMembersDialog.id}
+        teamName={teamMembersDialog.name}
       />
     </div>
   );
