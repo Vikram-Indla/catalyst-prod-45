@@ -96,12 +96,11 @@ export default function Backlog() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
-        <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+        <Select value={selectedTeamId || undefined} onValueChange={setSelectedTeamId}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Teams" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Teams</SelectItem>
             {teams?.map((team) => (
               <SelectItem key={team.id} value={team.id}>
                 {team.name}
@@ -109,12 +108,11 @@ export default function Backlog() {
             ))}
           </SelectContent>
         </Select>
-        <Select value={selectedFeatureId} onValueChange={setSelectedFeatureId}>
+        <Select value={selectedFeatureId || undefined} onValueChange={setSelectedFeatureId}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Features" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Features</SelectItem>
             {features?.map((feature) => (
               <SelectItem key={feature.id} value={feature.id}>
                 {feature.name}

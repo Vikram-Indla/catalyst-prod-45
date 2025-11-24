@@ -93,12 +93,11 @@ export default function Sprints() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
-        <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
+        <Select value={selectedTeamId || undefined} onValueChange={setSelectedTeamId}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Teams" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Teams</SelectItem>
             {teams?.map((team) => (
               <SelectItem key={team.id} value={team.id}>
                 {team.name}

@@ -136,23 +136,21 @@ export default function Dependencies() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
-        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}>
+        <Select value={statusFilter || undefined} onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Status</SelectItem>
             <SelectItem value="open">Open</SelectItem>
             <SelectItem value="in_progress">In Progress</SelectItem>
             <SelectItem value="done">Done</SelectItem>
           </SelectContent>
         </Select>
-        <Select value={riskFilter} onValueChange={(value) => setRiskFilter(value as typeof riskFilter)}>
+        <Select value={riskFilter || undefined} onValueChange={(value) => setRiskFilter(value as typeof riskFilter)}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Risk Levels" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Risk Levels</SelectItem>
             <SelectItem value="low">Low</SelectItem>
             <SelectItem value="med">Medium</SelectItem>
             <SelectItem value="high">High</SelectItem>

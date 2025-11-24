@@ -56,12 +56,11 @@ export default function CustomFields() {
       </div>
 
       <div className="flex gap-4">
-        <Select value={entityFilter} onValueChange={setEntityFilter}>
+        <Select value={entityFilter || undefined} onValueChange={setEntityFilter}>
           <SelectTrigger className="w-[240px]">
             <SelectValue placeholder="All Entity Types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Entity Types</SelectItem>
             <SelectItem value="initiative">Initiative</SelectItem>
             <SelectItem value="epic">Epic</SelectItem>
             <SelectItem value="feature">Feature</SelectItem>

@@ -83,12 +83,11 @@ export default function ActivityLog() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
           />
-          <Select value={entityTypeFilter} onValueChange={setEntityTypeFilter}>
+          <Select value={entityTypeFilter || undefined} onValueChange={setEntityTypeFilter}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="All Entity Types" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Entity Types</SelectItem>
               {uniqueEntityTypes.map((type) => (
                 <SelectItem key={type} value={type}>
                   {type}
@@ -96,12 +95,11 @@ export default function ActivityLog() {
               ))}
             </SelectContent>
           </Select>
-          <Select value={actionFilter} onValueChange={setActionFilter}>
+          <Select value={actionFilter || undefined} onValueChange={setActionFilter}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="All Actions" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Actions</SelectItem>
               {uniqueActions.map((action) => (
                 <SelectItem key={action} value={action}>
                   {action}
