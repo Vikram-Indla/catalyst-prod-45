@@ -11,6 +11,10 @@ import Auth from "./pages/Auth";
 import PortfolioRoom from "./pages/PortfolioRoom";
 import StrategyRoom from "./pages/StrategyRoom";
 import Themes from "./pages/Themes";
+import Initiatives from "./pages/Initiatives";
+import BusinessRequests from "./pages/BusinessRequests";
+import Epics from "./pages/Epics";
+import Features from "./pages/Features";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,10 +33,10 @@ const App = () => (
               <Route path="/portfolio-room" element={<PortfolioRoom />} />
               <Route path="/strategy-room" element={<StrategyRoom />} />
               <Route path="/themes" element={<Themes />} />
-              <Route path="/initiatives" element={<div className="p-8"><h1 className="text-2xl font-bold">Initiatives</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/business-requests" element={<div className="p-8"><h1 className="text-2xl font-bold">Business Requests</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/epics" element={<div className="p-8"><h1 className="text-2xl font-bold">Epics</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/features" element={<div className="p-8"><h1 className="text-2xl font-bold">Features</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/initiatives" element={<Initiatives />} />
+              <Route path="/business-requests" element={<BusinessRequests />} />
+              <Route path="/epics" element={<Epics />} />
+              <Route path="/features" element={<Features />} />
               <Route path="/portfolio-kanban" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Kanban</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/portfolio-roadmap" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Roadmap</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/dependencies" element={<div className="p-8"><h1 className="text-2xl font-bold">Dependencies</h1><p className="text-muted-foreground">Coming soon</p></div>} />
