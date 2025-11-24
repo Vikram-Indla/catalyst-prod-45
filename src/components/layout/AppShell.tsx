@@ -66,7 +66,6 @@ const navigation: NavItem[] = [
       { title: 'Strategy Room', path: '/strategy-room', icon: Target },
       { title: 'Themes', path: '/themes', icon: Layers },
       { title: 'Initiatives', path: '/initiatives', icon: TrendingUp },
-      { title: 'Business Requests', path: '/business-requests', icon: FileText },
       { title: 'Epics', path: '/epics', icon: Rocket },
       { title: 'Features', path: '/features', icon: CheckSquare },
       { title: 'Portfolio Kanban', path: '/portfolio-kanban', icon: FolderKanban },

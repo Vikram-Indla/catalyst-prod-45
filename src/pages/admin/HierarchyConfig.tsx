@@ -76,7 +76,7 @@ export default function HierarchyConfig() {
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div>
                 <div className="font-medium">Portfolio Level</div>
-                <div className="text-sm text-muted-foreground">Strategic Themes → Initiatives → Business Requests</div>
+                <div className="text-sm text-muted-foreground">Strategic Themes → Initiatives</div>
               </div>
             </div>
             <div className="flex items-center justify-between p-3 border rounded-lg">

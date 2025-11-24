@@ -116,69 +116,6 @@ export type Database = {
         }
         Relationships: []
       }
-      business_requests: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          estimate_swag: number | null
-          health: Database["public"]["Enums"]["health_status"] | null
-          id: string
-          initiative_id: string | null
-          name: string
-          owner_id: string | null
-          status: Database["public"]["Enums"]["br_status"] | null
-          target_pi_ids: Json | null
-          theme_id: string | null
-          updated_at: string | null
-          wsjf_score: number | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          estimate_swag?: number | null
-          health?: Database["public"]["Enums"]["health_status"] | null
-          id?: string
-          initiative_id?: string | null
-          name: string
-          owner_id?: string | null
-          status?: Database["public"]["Enums"]["br_status"] | null
-          target_pi_ids?: Json | null
-          theme_id?: string | null
-          updated_at?: string | null
-          wsjf_score?: number | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          estimate_swag?: number | null
-          health?: Database["public"]["Enums"]["health_status"] | null
-          id?: string
-          initiative_id?: string | null
-          name?: string
-          owner_id?: string | null
-          status?: Database["public"]["Enums"]["br_status"] | null
-          target_pi_ids?: Json | null
-          theme_id?: string | null
-          updated_at?: string | null
-          wsjf_score?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "business_requests_initiative_id_fkey"
-            columns: ["initiative_id"]
-            isOneToOne: false
-            referencedRelation: "initiatives"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "business_requests_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "strategic_themes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       capacity_allocations: {
         Row: {
           capacity_points: number | null
@@ -433,13 +370,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "epics_br_id_fkey"
-            columns: ["br_id"]
-            isOneToOne: false
-            referencedRelation: "business_requests"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "epics_primary_program_id_fkey"
             columns: ["primary_program_id"]

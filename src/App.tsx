@@ -12,7 +12,6 @@ import PortfolioRoom from "./pages/PortfolioRoom";
 import StrategyRoom from "./pages/StrategyRoom";
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
-import BusinessRequests from "./pages/BusinessRequests";
 import Epics from "./pages/Epics";
 import Features from "./pages/Features";
 import PortfolioKanban from "./pages/PortfolioKanban";
@@ -64,7 +63,6 @@ const App = () => (
               <Route path="/strategy-room" element={<StrategyRoom />} />
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
-              <Route path="/business-requests" element={<BusinessRequests />} />
               <Route path="/epics" element={<Epics />} />
               <Route path="/features" element={<Features />} />
               <Route path="/portfolio-kanban" element={<PortfolioKanban />} />

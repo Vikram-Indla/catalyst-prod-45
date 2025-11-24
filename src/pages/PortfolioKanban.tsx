@@ -11,12 +11,10 @@ import { Plus, GripVertical } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
-type CardType = 'br-epic' | 'epic';
-type SwimlaneType = 'theme' | 'initiative';
+type SwimlaneType = 'theme';
 
 export default function PortfolioKanban() {
-  const [cardType, setCardType] = useState<CardType>('epic');
-  const [swimlaneType, setSwimlaneType] = useState<SwimlaneType>('theme');
+  const [swimlaneType] = useState<SwimlaneType>('theme');
   const queryClient = useQueryClient();
 
   // Fetch epics
@@ -25,20 +23,7 @@ export default function PortfolioKanban() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('epics')
-        .select('*, strategic_themes(name), business_requests(name)')
-        .order('name');
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  // Fetch business requests
-  const { data: businessRequests } = useQuery({
-    queryKey: ['business-requests-kanban'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('business_requests')
-        .select('*, strategic_themes(name), initiatives(name)')
+        .select('*, strategic_themes(name)')
         .order('name');
       if (error) throw error;
       return data;
@@ -85,23 +70,7 @@ export default function PortfolioKanban() {
     },
   });
 
-  // Update BR status
-  const updateBRStatus = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: any }) => {
-      const { error } = await supabase
-        .from('business_requests')
-        .update({ status })
-        .eq('id', id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['business-requests-kanban'] });
-    },
-  });
-
-  const columns = cardType === 'epic' 
-    ? ['proposed', 'analyzing', 'approved', 'in_progress', 'done']
-    : ['proposed', 'analyzing', 'approved', 'in_progress', 'done', 'cancelled'];
+  const columns = ['proposed', 'analyzing', 'approved', 'in_progress', 'done'];
 
   const columnLabels: Record<string, string> = {
     proposed: 'Proposed',
@@ -113,27 +82,11 @@ export default function PortfolioKanban() {
   };
 
   const getItemsForColumn = (columnStatus: string, swimlaneId?: string) => {
-    if (cardType === 'epic') {
-      return epics?.filter(epic => {
-        const statusMatch = epic.status === columnStatus;
-        if (!swimlaneId) return statusMatch;
-        if (swimlaneType === 'theme') {
-          return statusMatch && epic.theme_id === swimlaneId;
-        }
-        return statusMatch;
-      }) || [];
-    } else {
-      return businessRequests?.filter(br => {
-        const statusMatch = br.status === columnStatus;
-        if (!swimlaneId) return statusMatch;
-        if (swimlaneType === 'theme') {
-          return statusMatch && br.theme_id === swimlaneId;
-        } else if (swimlaneType === 'initiative') {
-          return statusMatch && br.initiative_id === swimlaneId;
-        }
-        return statusMatch;
-      }) || [];
-    }
+    return epics?.filter(epic => {
+      const statusMatch = epic.status === columnStatus;
+      if (!swimlaneId) return statusMatch;
+      return statusMatch && epic.theme_id === swimlaneId;
+    }) || [];
   };
 
   const handleDragEnd = (result: DropResult) => {
@@ -145,15 +98,10 @@ export default function PortfolioKanban() {
     if (sourceStatus === destStatus) return;
 
     const itemId = result.draggableId;
-    
-    if (cardType === 'epic') {
-      updateEpicStatus.mutate({ id: itemId, status: destStatus });
-    } else {
-      updateBRStatus.mutate({ id: itemId, status: destStatus });
-    }
+    updateEpicStatus.mutate({ id: itemId, status: destStatus });
   };
 
-  const swimlanes = swimlaneType === 'theme' ? themes : initiatives;
+  const swimlanes = themes;
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -174,23 +122,8 @@ export default function PortfolioKanban() {
 
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Card Type:</span>
-            <Tabs value={cardType} onValueChange={(v) => setCardType(v as CardType)}>
-              <TabsList>
-                <TabsTrigger value="epic">Epic</TabsTrigger>
-                <TabsTrigger value="br-epic">BR/Epic</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Swimlanes:</span>
-            <Tabs value={swimlaneType} onValueChange={(v) => setSwimlaneType(v as SwimlaneType)}>
-              <TabsList>
-                <TabsTrigger value="theme">Theme</TabsTrigger>
-                <TabsTrigger value="initiative">Initiative</TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <span className="text-sm font-medium">View:</span>
+            <span className="text-sm text-muted-foreground">Epics by Theme</span>
           </div>
         </div>
       </div>
@@ -244,15 +177,10 @@ export default function PortfolioKanban() {
                                     >
                                       <div {...provided.dragHandleProps} className="flex items-start gap-2">
                                         <GripVertical className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                                        <div className="flex-1 min-w-0">
+                                         <div className="flex-1 min-w-0">
                                           <p className="font-medium text-sm mb-2 line-clamp-2">{item.name}</p>
                                           <div className="flex items-center gap-2 flex-wrap">
                                             <HealthBadge health={item.health} />
-                                            {cardType === 'br-epic' && item.wsjf_score && (
-                                              <Badge variant="outline" className="text-xs">
-                                                WSJF: {item.wsjf_score}
-                                              </Badge>
-                                            )}
                                             {item.estimate && (
                                               <Badge variant="outline" className="text-xs">
                                                 {item.estimate}
@@ -292,13 +220,7 @@ export default function PortfolioKanban() {
                           }`}
                         >
                           <div className="space-y-2">
-                            {getItemsForColumn(column).filter(item => {
-                              if (cardType === 'epic') {
-                                return !item.theme_id;
-                              } else {
-                                return swimlaneType === 'theme' ? !item.theme_id : !(item as any).initiative_id;
-                              }
-                            }).map((item, index) => (
+                            {getItemsForColumn(column).filter(item => !item.theme_id).map((item, index) => (
                               <Draggable key={item.id} draggableId={item.id} index={index}>
                                 {(provided, snapshot) => (
                                   <Card
@@ -310,13 +232,13 @@ export default function PortfolioKanban() {
                                   >
                                     <div {...provided.dragHandleProps} className="flex items-start gap-2">
                                       <GripVertical className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />
-                                      <div className="flex-1 min-w-0">
+                                       <div className="flex-1 min-w-0">
                                         <p className="font-medium text-sm mb-2 line-clamp-2">{item.name}</p>
                                         <div className="flex items-center gap-2 flex-wrap">
                                           <HealthBadge health={item.health} />
-                                          {cardType === 'br-epic' && (item as any).wsjf_score && (
+                                          {item.estimate && (
                                             <Badge variant="outline" className="text-xs">
-                                              WSJF: {(item as any).wsjf_score}
+                                              {item.estimate}
                                             </Badge>
                                           )}
                                         </div>
