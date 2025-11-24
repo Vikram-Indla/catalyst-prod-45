@@ -9,6 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Plus, GripVertical } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 type CardType = 'br-epic' | 'epic';
 type SwimlaneType = 'theme' | 'initiative';
@@ -163,10 +164,12 @@ export default function PortfolioKanban() {
             <h1 className="text-2xl font-bold">Portfolio Kanban</h1>
             <p className="text-sm text-muted-foreground">Visualize portfolio work flow</p>
           </div>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            New Item
-          </Button>
+          <PermissionGuard requiredRole="program_manager" showMessage={false}>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              New Item
+            </Button>
+          </PermissionGuard>
         </div>
 
         <div className="flex items-center gap-4">

@@ -11,6 +11,7 @@ import { RiskDialog } from '@/components/forms/RiskDialog';
 import { Database } from '@/integrations/supabase/types';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 type RoamStatus = Database['public']['Enums']['roam_status'];
 
@@ -98,10 +99,12 @@ export default function ROAMBoard() {
           <h1 className="text-3xl font-bold">ROAM Board</h1>
           <p className="text-muted-foreground">Manage risks and opportunities</p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Risk
-        </Button>
+        <PermissionGuard requiredRole="team_lead" showMessage={false}>
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Risk
+          </Button>
+        </PermissionGuard>
       </div>
 
       <div className="flex gap-4">

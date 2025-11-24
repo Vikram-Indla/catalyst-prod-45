@@ -1587,6 +1587,18 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      user_in_portfolio: {
+        Args: { _portfolio_id: string; _user_id: string }
+        Returns: boolean
+      }
+      user_in_program: {
+        Args: { _program_id: string; _user_id: string }
+        Returns: boolean
+      }
+      user_in_team: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin" | "program_manager" | "team_lead" | "user"
