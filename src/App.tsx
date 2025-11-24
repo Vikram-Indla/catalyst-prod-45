@@ -45,6 +45,7 @@ import TeamInsights from "./pages/insights/TeamInsights";
 import Predictability from "./pages/insights/Predictability";
 import DependencyRisk from "./pages/insights/DependencyRisk";
 import NotFound from "./pages/NotFound";
+import { AdminGuard } from "./components/admin/AdminGuard";
 
 const queryClient = new QueryClient();
 
@@ -89,14 +90,14 @@ const App = () => (
               <Route path="/insights/team" element={<TeamInsights />} />
               <Route path="/insights/predictability" element={<Predictability />} />
               <Route path="/insights/dependency-risk" element={<DependencyRisk />} />
-              <Route path="/admin/org-setup" element={<OrgSetup />} />
-              <Route path="/admin/hierarchy" element={<HierarchyConfig />} />
-              <Route path="/admin/custom-fields" element={<CustomFields />} />
-              <Route path="/admin/boards" element={<BoardConfig />} />
-              <Route path="/admin/user-roles" element={<UserRoles />} />
-              <Route path="/admin/permissions" element={<Permissions />} />
-              <Route path="/admin/integrations" element={<Integrations />} />
-              <Route path="/admin/activity-log" element={<ActivityLog />} />
+              <Route path="/admin/org-setup" element={<AdminGuard><OrgSetup /></AdminGuard>} />
+              <Route path="/admin/hierarchy" element={<AdminGuard><HierarchyConfig /></AdminGuard>} />
+              <Route path="/admin/custom-fields" element={<AdminGuard><CustomFields /></AdminGuard>} />
+              <Route path="/admin/boards" element={<AdminGuard><BoardConfig /></AdminGuard>} />
+              <Route path="/admin/user-roles" element={<AdminGuard><UserRoles /></AdminGuard>} />
+              <Route path="/admin/permissions" element={<AdminGuard><Permissions /></AdminGuard>} />
+              <Route path="/admin/integrations" element={<AdminGuard><Integrations /></AdminGuard>} />
+              <Route path="/admin/activity-log" element={<AdminGuard><ActivityLog /></AdminGuard>} />
               <Route path="/profile" element={<UserProfile />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

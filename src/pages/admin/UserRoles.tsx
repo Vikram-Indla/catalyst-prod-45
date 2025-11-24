@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Shield, Trash2 } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 const ROLE_LABELS = {
   admin: 'Admin',
@@ -135,7 +136,8 @@ export default function UserRoles() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
+    <PermissionGuard requiredRole="admin">
+      <div className="container mx-auto py-8 space-y-8">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">User Roles</h1>
@@ -233,5 +235,6 @@ export default function UserRoles() {
         )}
       </Card>
     </div>
+    </PermissionGuard>
   );
 }
