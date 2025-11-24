@@ -1,0 +1,141 @@
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
+import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
+import { HealthBadge } from '@/components/shared/HealthBadge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Plus, Search } from 'lucide-react';
+
+export default function Epics() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+
+  const { data: items, isLoading } = useQuery({
+    queryKey: ['epics', searchQuery],
+    queryFn: async () => {
+      let query = supabase
+        .from('epics')
+        .select('*, strategic_themes(name), business_requests(name), programs(name)')
+        .order('name');
+
+      if (searchQuery) {
+        query = query.ilike('name', `%${searchQuery}%`);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const selectedData = items?.find(i => i.id === selectedItem);
+
+  const getStatusBadge = (status: string) => {
+    const variants: Record<string, "default" | "destructive" | "outline" | "secondary"> = {
+      proposed: 'secondary',
+      analyzing: 'secondary',
+      approved: 'default',
+      in_progress: 'default',
+      done: 'outline',
+      cancelled: 'destructive',
+    };
+    return <Badge variant={variants[status] || 'secondary'}>{status.replace('_', ' ')}</Badge>;
+  };
+
+  return (
+    <div className="h-full flex flex-col bg-background">
+      <div className="border-b bg-card px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold">Epics</h1>
+            <p className="text-sm text-muted-foreground">Large initiatives broken into deliverable features</p>
+          </div>
+          <Button><Plus className="h-4 w-4 mr-2" />New Epic</Button>
+        </div>
+      </div>
+
+      <div className="flex-1 flex flex-col p-6 space-y-4 overflow-hidden">
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search epics..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
+          </div>
+        </div>
+
+        <ListScreenToolbar selectedCount={selectedRows.length} onColumnChooser={() => {}} onBulkEdit={() => {}} onExport={() => {}} />
+
+        <div className="flex-1 border rounded-lg overflow-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12"><Checkbox /></TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>Theme</TableHead>
+                <TableHead>BR</TableHead>
+                <TableHead>Program</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Health</TableHead>
+                <TableHead>Dates</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">Loading...</TableCell></TableRow>
+              ) : items && items.length > 0 ? (
+                items.map((item) => (
+                  <TableRow key={item.id} className="cursor-pointer hover:bg-muted/50" onClick={() => setSelectedItem(item.id)}>
+                    <TableCell onClick={(e) => e.stopPropagation()}><Checkbox /></TableCell>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell className="text-sm">{item.strategic_themes?.name || '-'}</TableCell>
+                    <TableCell className="text-sm truncate max-w-[150px]">{item.business_requests?.name || '-'}</TableCell>
+                    <TableCell className="text-sm">{item.programs?.name || '-'}</TableCell>
+                    <TableCell>{getStatusBadge(item.status || 'proposed')}</TableCell>
+                    <TableCell><HealthBadge health={item.health} /></TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {item.start_date && item.end_date 
+                        ? `${new Date(item.start_date).toLocaleDateString()} - ${new Date(item.end_date).toLocaleDateString()}`
+                        : '-'}
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">No epics found</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {selectedData && (
+        <RightDetailsPanel open={!!selectedItem} onClose={() => setSelectedItem(null)} title={selectedData.name}
+          tabs={[
+            { id: 'overview', label: 'Overview', content: (
+              <div className="space-y-4">
+                <div><label className="text-sm font-medium text-muted-foreground">Status</label>
+                  <div className="mt-1">{getStatusBadge(selectedData.status || 'proposed')}</div></div>
+                <div><label className="text-sm font-medium text-muted-foreground">Health</label>
+                  <div className="mt-1"><HealthBadge health={selectedData.health} /></div></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div><label className="text-sm font-medium text-muted-foreground">Start Date</label>
+                    <p className="mt-1 text-sm">{selectedData.start_date ? new Date(selectedData.start_date).toLocaleDateString() : '-'}</p></div>
+                  <div><label className="text-sm font-medium text-muted-foreground">End Date</label>
+                    <p className="mt-1 text-sm">{selectedData.end_date ? new Date(selectedData.end_date).toLocaleDateString() : '-'}</p></div>
+                </div>
+                <div><label className="text-sm font-medium text-muted-foreground">Description</label>
+                  <p className="mt-1 text-sm">{selectedData.description || 'No description'}</p></div>
+              </div>
+            )},
+            { id: 'links', label: 'Links', content: <p className="text-sm text-muted-foreground">Linked features and stories</p> },
+            { id: 'forecast', label: 'Forecast', content: <p className="text-sm text-muted-foreground">PI planning and estimates</p> },
+          ]}
+        />
+      )}
+    </div>
+  );
+}
