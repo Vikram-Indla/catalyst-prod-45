@@ -38,6 +38,7 @@ import BoardConfig from "./pages/admin/BoardConfig";
 import Permissions from "./pages/admin/Permissions";
 import Integrations from "./pages/admin/Integrations";
 import ActivityLog from "./pages/admin/ActivityLog";
+import UserRoles from "./pages/admin/UserRoles";
 import UserProfile from "./pages/UserProfile";
 import ProgramInsights from "./pages/insights/ProgramInsights";
 import TeamInsights from "./pages/insights/TeamInsights";
@@ -92,6 +93,7 @@ const App = () => (
               <Route path="/admin/hierarchy" element={<HierarchyConfig />} />
               <Route path="/admin/custom-fields" element={<CustomFields />} />
               <Route path="/admin/boards" element={<BoardConfig />} />
+              <Route path="/admin/user-roles" element={<UserRoles />} />
               <Route path="/admin/permissions" element={<Permissions />} />
               <Route path="/admin/integrations" element={<Integrations />} />
               <Route path="/admin/activity-log" element={<ActivityLog />} />

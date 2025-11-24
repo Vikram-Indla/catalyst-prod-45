@@ -124,6 +124,7 @@ const navigation: NavItem[] = [
       { title: 'Hierarchy Config', path: '/admin/hierarchy', icon: GitMerge },
       { title: 'Custom Fields', path: '/admin/custom-fields', icon: FileText },
       { title: 'Board Configuration', path: '/admin/boards', icon: FolderKanban },
+      { title: 'User Roles', path: '/admin/user-roles', icon: Users },
       { title: 'Permissions', path: '/admin/permissions', icon: Users },
       { title: 'Integrations', path: '/admin/integrations', icon: Link2 },
       { title: 'Activity Log', path: '/admin/activity-log', icon: ClipboardList },
