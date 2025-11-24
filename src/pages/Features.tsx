@@ -7,15 +7,18 @@ import { Badge } from '@/components/ui/badge';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { HealthBadge } from '@/components/shared/HealthBadge';
+import { FeatureDialog } from '@/components/forms/FeatureDialog';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Edit } from 'lucide-react';
 
 export default function Features() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingFeature, setEditingFeature] = useState<any>(null);
 
   const { data: items, isLoading } = useQuery({
     queryKey: ['features', searchQuery],
@@ -48,6 +51,16 @@ export default function Features() {
     return <Badge variant={variants[status] || 'secondary'}>{status}</Badge>;
   };
 
+  const handleCreate = () => {
+    setEditingFeature(null);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (feature: any) => {
+    setEditingFeature(feature);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       <div className="border-b bg-card px-6 py-4">
@@ -56,7 +69,7 @@ export default function Features() {
             <h1 className="text-2xl font-bold">Features</h1>
             <p className="text-sm text-muted-foreground">Program-level features driving epic delivery</p>
           </div>
-          <Button><Plus className="h-4 w-4 mr-2" />New Feature</Button>
+          <Button onClick={handleCreate}><Plus className="h-4 w-4 mr-2" />New Feature</Button>
         </div>
       </div>
 
@@ -120,6 +133,10 @@ export default function Features() {
           tabs={[
             { id: 'overview', label: 'Overview', content: (
               <div className="space-y-4">
+                <Button onClick={() => handleEdit(selectedData)} className="w-full mb-4">
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit Feature
+                </Button>
                 <div><label className="text-sm font-medium text-muted-foreground">Status</label>
                   <div className="mt-1">{getStatusBadge(selectedData.status || 'funnel')}</div></div>
                 <div><label className="text-sm font-medium text-muted-foreground">Health</label>
@@ -145,6 +162,12 @@ export default function Features() {
           ]}
         />
       )}
+
+      <FeatureDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        feature={editingFeature}
+      />
     </div>
   );
 }

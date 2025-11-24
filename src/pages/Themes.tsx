@@ -6,14 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
+import { ThemeDialog } from '@/components/forms/ThemeDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, Edit } from 'lucide-react';
 
 export default function Themes() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingTheme, setEditingTheme] = useState<any>(null);
 
   const { data: themes, isLoading } = useQuery({
     queryKey: ['strategic_themes', searchQuery],
@@ -63,6 +66,16 @@ export default function Themes() {
     );
   };
 
+  const handleCreate = () => {
+    setEditingTheme(null);
+    setDialogOpen(true);
+  };
+
+  const handleEdit = (theme: any) => {
+    setEditingTheme(theme);
+    setDialogOpen(true);
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
@@ -72,7 +85,7 @@ export default function Themes() {
             <h1 className="text-2xl font-bold">Strategic Themes</h1>
             <p className="text-sm text-muted-foreground">High-level strategic investment areas</p>
           </div>
-          <Button>
+          <Button onClick={handleCreate}>
             <Plus className="h-4 w-4 mr-2" />
             New Theme
           </Button>
@@ -178,6 +191,10 @@ export default function Themes() {
               label: 'Overview',
               content: (
                 <div className="space-y-4">
+                  <Button onClick={() => handleEdit(selectedThemeData)} className="w-full mb-4">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit Theme
+                  </Button>
                   <div>
                     <label className="text-sm font-medium text-muted-foreground">Status</label>
                     <div className="mt-1">{getStatusBadge(selectedThemeData.status || 'proposed')}</div>
@@ -227,6 +244,12 @@ export default function Themes() {
           ]}
         />
       )}
+
+      <ThemeDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        theme={editingTheme}
+      />
     </div>
   );
 }
