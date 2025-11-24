@@ -32,6 +32,15 @@ import Stories from "./pages/Stories";
 import Subtasks from "./pages/Subtasks";
 import Releases from "./pages/Releases";
 import OrgSetup from "./pages/admin/OrgSetup";
+import HierarchyConfig from "./pages/admin/HierarchyConfig";
+import CustomFields from "./pages/admin/CustomFields";
+import BoardConfig from "./pages/admin/BoardConfig";
+import Permissions from "./pages/admin/Permissions";
+import Integrations from "./pages/admin/Integrations";
+import ProgramInsights from "./pages/insights/ProgramInsights";
+import TeamInsights from "./pages/insights/TeamInsights";
+import Predictability from "./pages/insights/Predictability";
+import DependencyRisk from "./pages/insights/DependencyRisk";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,17 +81,17 @@ const App = () => (
               <Route path="/work-items/stories" element={<Stories />} />
               <Route path="/work-items/subtasks" element={<Subtasks />} />
               <Route path="/releases" element={<Releases />} />
-              <Route path="/insights/portfolio" element={<div className="p-8"><h1 className="text-2xl font-bold">Portfolio Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/insights/program" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/insights/team" element={<div className="p-8"><h1 className="text-2xl font-bold">Team Insights</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/insights/predictability" element={<div className="p-8"><h1 className="text-2xl font-bold">Predictability</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/insights/dependency-risk" element={<div className="p-8"><h1 className="text-2xl font-bold">Dependency Risk</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/insights/portfolio" element={<PortfolioInsights />} />
+              <Route path="/insights/program" element={<ProgramInsights />} />
+              <Route path="/insights/team" element={<TeamInsights />} />
+              <Route path="/insights/predictability" element={<Predictability />} />
+              <Route path="/insights/dependency-risk" element={<DependencyRisk />} />
               <Route path="/admin/org-setup" element={<OrgSetup />} />
-              <Route path="/admin/hierarchy" element={<div className="p-8"><h1 className="text-2xl font-bold">Hierarchy Configuration</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/admin/custom-fields" element={<div className="p-8"><h1 className="text-2xl font-bold">Custom Fields</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/admin/boards" element={<div className="p-8"><h1 className="text-2xl font-bold">Board Configuration</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/admin/permissions" element={<div className="p-8"><h1 className="text-2xl font-bold">Permissions</h1><p className="text-muted-foreground">Coming soon</p></div>} />
-              <Route path="/admin/integrations" element={<div className="p-8"><h1 className="text-2xl font-bold">Integrations</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/admin/hierarchy" element={<HierarchyConfig />} />
+              <Route path="/admin/custom-fields" element={<CustomFields />} />
+              <Route path="/admin/boards" element={<BoardConfig />} />
+              <Route path="/admin/permissions" element={<Permissions />} />
+              <Route path="/admin/integrations" element={<Integrations />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

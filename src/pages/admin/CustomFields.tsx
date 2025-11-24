@@ -1,0 +1,128 @@
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+
+export default function CustomFields() {
+  const [entityFilter, setEntityFilter] = useState<string>('');
+
+  const { data: customFields } = useQuery({
+    queryKey: ['custom-field-defs', entityFilter],
+    queryFn: async () => {
+      let query = supabase.from('custom_field_defs').select('*').order('entity_type');
+      
+      if (entityFilter) {
+        query = query.eq('entity_type', entityFilter);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const getFieldTypeBadge = (type: string) => {
+    const colors: Record<string, string> = {
+      text: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+      number: 'bg-green-500/10 text-green-500 border-green-500/20',
+      date: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+      select: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+      multi_select: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+      boolean: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20',
+    };
+    
+    return colors[type] || '';
+  };
+
+  const groupedFields = customFields?.reduce((acc, field) => {
+    if (!acc[field.entity_type]) {
+      acc[field.entity_type] = [];
+    }
+    acc[field.entity_type].push(field);
+    return acc;
+  }, {} as Record<string, typeof customFields>);
+
+  return (
+    <div className="p-8 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold">Custom Fields</h1>
+          <p className="text-muted-foreground">Extend work items with custom attributes</p>
+        </div>
+      </div>
+
+      <div className="flex gap-4">
+        <Select value={entityFilter} onValueChange={setEntityFilter}>
+          <SelectTrigger className="w-[240px]">
+            <SelectValue placeholder="All Entity Types" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">All Entity Types</SelectItem>
+            <SelectItem value="initiative">Initiative</SelectItem>
+            <SelectItem value="epic">Epic</SelectItem>
+            <SelectItem value="feature">Feature</SelectItem>
+            <SelectItem value="story">Story</SelectItem>
+            <SelectItem value="theme">Theme</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {groupedFields && Object.entries(groupedFields).map(([entityType, fields]) => (
+        <Card key={entityType}>
+          <CardHeader>
+            <CardTitle className="capitalize">{entityType} Fields</CardTitle>
+            <CardDescription>Custom fields for {entityType} entities</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Field Name</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Required</TableHead>
+                  <TableHead>Options</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {fields.map((field) => (
+                  <TableRow key={field.id}>
+                    <TableCell className="font-medium">{field.name}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className={getFieldTypeBadge(field.field_type)}>
+                        {field.field_type.replace('_', ' ')}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Checkbox checked={field.required || false} disabled />
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {field.options_json ? (
+                        <span className="text-xs">
+                          {JSON.stringify(field.options_json).substring(0, 50)}...
+                        </span>
+                      ) : (
+                        '-'
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ))}
+
+      {(!customFields || customFields.length === 0) && (
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            No custom fields configured yet
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+}
