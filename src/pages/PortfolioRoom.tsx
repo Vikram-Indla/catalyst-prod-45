@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Target, TrendingUp, AlertTriangle, CheckCircle2, Layers, Rocket } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function PortfolioRoom() {
   const [selectedPortfolio, setSelectedPortfolio] = useState<string>('');
@@ -92,10 +93,12 @@ export default function PortfolioRoom() {
             <h1 className="text-2xl font-bold">Portfolio Room</h1>
             <p className="text-sm text-muted-foreground">Strategic decision cockpit</p>
           </div>
-          <Button>
-            <Target className="h-4 w-4 mr-2" />
-            Strategic Snapshot
-          </Button>
+          <PermissionGuard requiredRole="program_manager" showMessage={false}>
+            <Button>
+              <Target className="h-4 w-4 mr-2" />
+              Strategic Snapshot
+            </Button>
+          </PermissionGuard>
         </div>
         
         <div className="flex items-center gap-4">

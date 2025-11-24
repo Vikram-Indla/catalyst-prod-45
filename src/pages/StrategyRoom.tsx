@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { ObjectiveDialog } from '@/components/forms/ObjectiveDialog';
 import { KeyResultDialog } from '@/components/forms/KeyResultDialog';
 import { Target, TrendingUp, Plus, ChevronRight } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function StrategyRoom() {
   const [activeTab, setActiveTab] = useState('portfolio');
@@ -74,10 +75,12 @@ export default function StrategyRoom() {
             <h1 className="text-2xl font-bold">Strategy Room</h1>
             <p className="text-sm text-muted-foreground">Objectives and Key Results</p>
           </div>
-          <Button onClick={() => { setEditingObjectiveId(undefined); setObjectiveDialogOpen(true); }}>
-            <Plus className="h-4 w-4 mr-2" />
-            New Objective
-          </Button>
+          <PermissionGuard requiredRole="program_manager" showMessage={false}>
+            <Button onClick={() => { setEditingObjectiveId(undefined); setObjectiveDialogOpen(true); }}>
+              <Plus className="h-4 w-4 mr-2" />
+              New Objective
+            </Button>
+          </PermissionGuard>
         </div>
       </div>
 
