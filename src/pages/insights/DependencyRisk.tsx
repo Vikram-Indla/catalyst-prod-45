@@ -106,11 +106,31 @@ export default function DependencyRisk() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Risk Distribution Over Time</CardTitle>
+          <CardTitle>Risk Level Distribution</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[400px] flex items-center justify-center text-muted-foreground">
-            Chart: Dependency risk trends by month
+          <div className="grid grid-cols-3 gap-6">
+            <div className="space-y-2 text-center p-6 border rounded-lg border-destructive/20 bg-destructive/5">
+              <div className="text-4xl font-bold text-destructive">{metrics.high}</div>
+              <div className="text-sm font-medium">High Risk</div>
+              <div className="text-xs text-muted-foreground">
+                {metrics.total > 0 ? `${Math.round((metrics.high / metrics.total) * 100)}%` : '0%'} of total
+              </div>
+            </div>
+            <div className="space-y-2 text-center p-6 border rounded-lg border-warning/20 bg-warning/5">
+              <div className="text-4xl font-bold text-warning">{metrics.med}</div>
+              <div className="text-sm font-medium">Medium Risk</div>
+              <div className="text-xs text-muted-foreground">
+                {metrics.total > 0 ? `${Math.round((metrics.med / metrics.total) * 100)}%` : '0%'} of total
+              </div>
+            </div>
+            <div className="space-y-2 text-center p-6 border rounded-lg border-success/20 bg-success/5">
+              <div className="text-4xl font-bold text-success">{metrics.low}</div>
+              <div className="text-sm font-medium">Low Risk</div>
+              <div className="text-xs text-muted-foreground">
+                {metrics.total > 0 ? `${Math.round((metrics.low / metrics.total) * 100)}%` : '0%'} of total
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

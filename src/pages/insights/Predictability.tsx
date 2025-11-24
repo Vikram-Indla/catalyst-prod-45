@@ -105,38 +105,86 @@ export default function Predictability() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Predictability Trend</CardTitle>
+              <CardTitle>Delivery Metrics</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[400px] flex items-center justify-center text-muted-foreground">
-                Chart: Predictability % over last 5 PIs
+              <div className="grid grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Feature Delivery</h3>
+                  <div className="relative pt-1">
+                    <div className="flex mb-2 items-center justify-between">
+                      <div>
+                        <span className="text-xs font-semibold inline-block text-primary">
+                          Completion Rate
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-semibold inline-block text-primary">
+                          {metrics.predictability}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="overflow-hidden h-4 mb-4 text-xs flex rounded bg-muted">
+                      <div
+                        style={{ width: `${metrics.predictability}%` }}
+                        className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-primary transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold">{metrics.planned}</div>
+                      <div className="text-sm text-muted-foreground">Planned</div>
+                    </div>
+                    <div className="text-center p-4 border rounded-lg bg-success/10">
+                      <div className="text-2xl font-bold text-success">{metrics.completed}</div>
+                      <div className="text-sm text-muted-foreground">Completed</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Points Delivery</h3>
+                  <div className="relative pt-1">
+                    <div className="flex mb-2 items-center justify-between">
+                      <div>
+                        <span className="text-xs font-semibold inline-block text-primary">
+                          Points Completion
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs font-semibold inline-block text-primary">
+                          {metrics.plannedPoints > 0 
+                            ? Math.round((metrics.completedPoints / metrics.plannedPoints) * 100)
+                            : 0}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="overflow-hidden h-4 mb-4 text-xs flex rounded bg-muted">
+                      <div
+                        style={{ 
+                          width: `${metrics.plannedPoints > 0 
+                            ? (metrics.completedPoints / metrics.plannedPoints) * 100 
+                            : 0}%` 
+                        }}
+                        className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-accent transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 border rounded-lg">
+                      <div className="text-2xl font-bold">{metrics.plannedPoints}</div>
+                      <div className="text-sm text-muted-foreground">Planned</div>
+                    </div>
+                    <div className="text-center p-4 border rounded-lg bg-accent/10">
+                      <div className="text-2xl font-bold text-accent">{metrics.completedPoints}</div>
+                      <div className="text-sm text-muted-foreground">Delivered</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
-
-          <div className="grid grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Feature Completion by PI</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                  Chart: Planned vs Completed features
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Points Delivery Trend</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                  Chart: Planned vs Delivered points per PI
-                </div>
-              </CardContent>
-            </Card>
-          </div>
         </div>
       )}
     </div>
