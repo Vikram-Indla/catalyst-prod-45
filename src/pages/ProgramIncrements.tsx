@@ -12,6 +12,7 @@ import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { PIDialog } from '@/components/forms/PIDialog';
 import { format } from 'date-fns';
 import { Plus, Edit } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function ProgramIncrements() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -86,10 +87,12 @@ export default function ProgramIncrements() {
           <h1 className="text-3xl font-bold">Program Increments</h1>
           <p className="text-muted-foreground">Manage PI planning and execution cycles</p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create PI
-        </Button>
+        <PermissionGuard requiredRole="program_manager" showMessage={false}>
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create PI
+          </Button>
+        </PermissionGuard>
       </div>
 
       <div className="flex gap-4">
@@ -163,10 +166,12 @@ export default function ProgramIncrements() {
             label: 'Details',
             content: selectedPI && (
               <div className="space-y-4">
-                <Button onClick={() => handleEdit(selectedPI)} className="w-full mb-4">
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit PI
-                </Button>
+                <PermissionGuard requiredRole="program_manager" showMessage={false}>
+                  <Button onClick={() => handleEdit(selectedPI)} className="w-full mb-4">
+                    <Edit className="h-4 w-4 mr-2" />
+                    Edit PI
+                  </Button>
+                </PermissionGuard>
                 <div>
                   <label className="text-sm font-medium">Portfolio</label>
                   <p className="text-sm text-muted-foreground mt-1">

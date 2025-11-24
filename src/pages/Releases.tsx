@@ -13,6 +13,7 @@ import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ReleaseDialog } from '@/components/forms/ReleaseDialog';
 import { format } from 'date-fns';
 import { Plus } from 'lucide-react';
+import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Releases() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -66,10 +67,12 @@ export default function Releases() {
           <h1 className="text-3xl font-bold">Releases</h1>
           <p className="text-muted-foreground">Manage release planning and tracking</p>
         </div>
-        <Button onClick={() => { setEditingReleaseId(undefined); setDialogOpen(true); }}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Release
-        </Button>
+        <PermissionGuard requiredRole="team_lead" showMessage={false}>
+          <Button onClick={() => { setEditingReleaseId(undefined); setDialogOpen(true); }}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Release
+          </Button>
+        </PermissionGuard>
       </div>
 
       <div className="flex gap-4">
@@ -190,9 +193,11 @@ export default function Releases() {
                     {selectedRelease.readiness_pct || 0}% complete
                   </p>
                 </div>
-                <Button onClick={() => handleEdit(selectedRelease)} className="w-full mt-4">
-                  Edit Release
-                </Button>
+                <PermissionGuard requiredRole="team_lead" showMessage={false}>
+                  <Button onClick={() => handleEdit(selectedRelease)} className="w-full mt-4">
+                    Edit Release
+                  </Button>
+                </PermissionGuard>
               </div>
             ),
           },
