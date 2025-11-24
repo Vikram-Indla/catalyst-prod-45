@@ -41,12 +41,11 @@ export default function BoardConfig() {
       </div>
 
       <div className="flex gap-4">
-        <Select value={boardTypeFilter} onValueChange={(value) => setboardTypeFilter(value as typeof boardTypeFilter)}>
+        <Select value={boardTypeFilter || undefined} onValueChange={(value) => setboardTypeFilter(value as typeof boardTypeFilter)}>
           <SelectTrigger className="w-[240px]">
             <SelectValue placeholder="All Board Types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Board Types</SelectItem>
             <SelectItem value="portfolio_kanban">Portfolio Kanban</SelectItem>
             <SelectItem value="program_board">Program Board</SelectItem>
             <SelectItem value="sprint_board">Sprint Board</SelectItem>
