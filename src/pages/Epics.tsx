@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { exportToCSV } from '@/lib/exportUtils';
 import { ImportDialog } from '@/components/shared/ImportDialog';
+import { CommentsSection } from '@/components/shared/CommentsSection';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -184,6 +185,7 @@ export default function Epics() {
             )},
             { id: 'links', label: 'Links', content: <p className="text-sm text-muted-foreground">Linked features and stories</p> },
             { id: 'forecast', label: 'Forecast', content: <p className="text-sm text-muted-foreground">PI planning and estimates</p> },
+            { id: 'comments', label: 'Comments', content: <CommentsSection entityId={selectedItem} entityType="epic" /> },
           ]}
         />
       )}
