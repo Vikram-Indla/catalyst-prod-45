@@ -195,12 +195,11 @@ export default function Permissions() {
       </div>
 
       <div className="flex items-center justify-between">
-        <Select value={roleFilter} onValueChange={setRoleFilter}>
+        <Select value={roleFilter || undefined} onValueChange={setRoleFilter}>
           <SelectTrigger className="w-[240px]">
             <SelectValue placeholder="All Roles" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Roles</SelectItem>
             {roles?.map((role) => (
               <SelectItem key={role.id} value={role.id}>
                 {role.name}
