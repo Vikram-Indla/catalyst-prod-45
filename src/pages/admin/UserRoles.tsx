@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { BulkRoleAssignment } from '@/components/admin/BulkRoleAssignment';
 import {
   Table,
   TableBody,
@@ -42,6 +43,7 @@ export default function UserRoles() {
   const queryClient = useQueryClient();
   const [selectedUserId, setSelectedUserId] = useState<string>('');
   const [selectedRole, setSelectedRole] = useState<string>('');
+  const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
 
   // Fetch all profiles
   const { data: profiles } = useQuery({
@@ -143,7 +145,13 @@ export default function UserRoles() {
           <h1 className="text-3xl font-bold">User Roles</h1>
           <p className="text-muted-foreground">Manage user roles and permissions</p>
         </div>
-        <Shield className="h-8 w-8 text-primary" />
+        <div className="flex items-center gap-2">
+          <Button onClick={() => setBulkDialogOpen(true)} variant="outline">
+            <Shield className="h-4 w-4 mr-2" />
+            Bulk Assignment
+          </Button>
+          <Shield className="h-8 w-8 text-primary" />
+        </div>
       </div>
 
       {/* Assign Role Section */}
@@ -235,6 +243,8 @@ export default function UserRoles() {
         )}
       </Card>
     </div>
+
+      <BulkRoleAssignment open={bulkDialogOpen} onOpenChange={setBulkDialogOpen} />
     </PermissionGuard>
   );
 }

@@ -1549,6 +1549,36 @@ export type Database = {
           },
         ]
       }
+      user_role_history: {
+        Row: {
+          action: string
+          changed_by: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          action: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          action?: string
+          changed_by?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -1575,6 +1605,32 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bulk_assign_roles: {
+        Args: {
+          _notes?: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_ids: string[]
+        }
+        Returns: undefined
+      }
+      bulk_remove_roles: {
+        Args: {
+          _notes?: string
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_ids: string[]
+        }
+        Returns: undefined
+      }
+      check_permission: {
+        Args: {
+          _action: Database["public"]["Enums"]["permission_action"]
+          _entity_type: string
+          _scope_id?: string
+          _scope_type?: Database["public"]["Enums"]["permission_scope"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       create_notification: {
         Args: {
           p_entity_id?: string

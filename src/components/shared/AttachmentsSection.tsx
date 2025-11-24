@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Upload, Download, Trash2, File, FileText, Image as ImageIcon, Film } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { usePermission } from '@/hooks/usePermission';
+import { useAuth } from '@/lib/auth';
 
 interface AttachmentsSectionProps {
   entityId: string;
@@ -16,6 +18,9 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
   const [uploading, setUploading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { hasPermission: canEdit } = usePermission(entityType, 'edit');
+  const { hasPermission: canDelete } = usePermission(entityType, 'delete');
 
   const { data: attachments, isLoading } = useQuery({
     queryKey: ['attachments', entityId],
@@ -143,24 +148,26 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
 
   return (
     <div className="space-y-4">
-      <div>
-        <input
-          type="file"
-          id="file-upload"
-          className="hidden"
-          onChange={handleFileSelect}
-          multiple
-          disabled={uploading}
-        />
-        <Button
-          onClick={() => document.getElementById('file-upload')?.click()}
-          disabled={uploading}
-          className="w-full"
-        >
-          <Upload className="h-4 w-4 mr-2" />
-          {uploading ? 'Uploading...' : 'Upload Files'}
-        </Button>
-      </div>
+      {canEdit && (
+        <div>
+          <input
+            type="file"
+            id="file-upload"
+            className="hidden"
+            onChange={handleFileSelect}
+            multiple
+            disabled={uploading}
+          />
+          <Button
+            onClick={() => document.getElementById('file-upload')?.click()}
+            disabled={uploading}
+            className="w-full"
+          >
+            <Upload className="h-4 w-4 mr-2" />
+            {uploading ? 'Uploading...' : 'Upload Files'}
+          </Button>
+        </div>
+      )}
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading attachments...</p>
@@ -188,13 +195,15 @@ export function AttachmentsSection({ entityId, entityType }: AttachmentsSectionP
                   >
                     <Download className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => deleteMutation.mutate(attachment)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  {(attachment.uploaded_by === user?.id || canDelete) && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteMutation.mutate(attachment)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </Card>
