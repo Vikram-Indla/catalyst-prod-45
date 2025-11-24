@@ -82,12 +82,11 @@ export default function Releases() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
-        <Select value={statusFilter} onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}>
+        <Select value={statusFilter || undefined} onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}>
           <SelectTrigger className="w-[200px]">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Status</SelectItem>
             <SelectItem value="planned">Planned</SelectItem>
             <SelectItem value="ready">Ready</SelectItem>
             <SelectItem value="shipped">Shipped</SelectItem>
