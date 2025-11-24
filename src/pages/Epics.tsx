@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { exportToCSV } from '@/lib/exportUtils';
+import { ImportDialog } from '@/components/shared/ImportDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +20,10 @@ export default function Epics() {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [editingEpic, setEditingEpic] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: items, isLoading } = useQuery({
     queryKey: ['epics', searchQuery],
@@ -61,6 +67,34 @@ export default function Epics() {
     setDialogOpen(true);
   };
 
+  const importMutation = useMutation({
+    mutationFn: async (data: any[]) => {
+      const { error } = await supabase.from('epics').insert(data.map(row => ({
+        name: row.name,
+        description: row.description || null,
+        status: row.status || 'proposed',
+        health: row.health || 'green',
+        theme_id: row.theme_id || null,
+        br_id: row.br_id || null,
+      })));
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      toast({ title: 'Epics imported successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Failed to import epics', variant: 'destructive' });
+    }
+  });
+
+  const handleExport = () => {
+    if (items && items.length > 0) {
+      exportToCSV(items, 'epics', ['name', 'description', 'status', 'health', 'start_date', 'end_date']);
+      toast({ title: 'Epics exported successfully' });
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       <div className="border-b bg-card px-6 py-4">
@@ -81,7 +115,7 @@ export default function Epics() {
           </div>
         </div>
 
-        <ListScreenToolbar selectedCount={selectedRows.length} onColumnChooser={() => {}} onBulkEdit={() => {}} onExport={() => {}} />
+        <ListScreenToolbar selectedCount={selectedRows.length} onColumnChooser={() => {}} onBulkEdit={() => {}} onExport={handleExport} onImport={() => setImportDialogOpen(true)} />
 
         <div className="flex-1 border rounded-lg overflow-auto">
           <Table>
@@ -158,6 +192,13 @@ export default function Epics() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         epic={editingEpic}
+      />
+      <ImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImport={(data) => importMutation.mutate(data)}
+        title="Import Epics"
+        requiredFields={['name']}
       />
     </div>
   );

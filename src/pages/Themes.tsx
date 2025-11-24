@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,16 +7,22 @@ import { Badge } from '@/components/ui/badge';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { ThemeDialog } from '@/components/forms/ThemeDialog';
+import { ImportDialog } from '@/components/shared/ImportDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Edit } from 'lucide-react';
+import { exportToCSV } from '@/lib/exportUtils';
+import { useToast } from '@/hooks/use-toast';
 
 export default function Themes() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [editingTheme, setEditingTheme] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: themes, isLoading } = useQuery({
     queryKey: ['strategic_themes', searchQuery],
@@ -76,6 +82,39 @@ export default function Themes() {
     setDialogOpen(true);
   };
 
+  const importThemesMutation = useMutation({
+    mutationFn: async (data: any[]) => {
+      const themesToInsert = data.map(row => ({
+        name: row.name,
+        description: row.description || null,
+        status: row.status || 'proposed',
+        start_date: row.start_date || null,
+        end_date: row.end_date || null,
+        color_tag: row.color_tag || null,
+      }));
+      const { error } = await supabase.from('strategic_themes').insert(themesToInsert);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['strategic_themes'] });
+      toast({ title: 'Themes imported successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Failed to import themes', variant: 'destructive' });
+    }
+  });
+
+  const handleExport = () => {
+    if (themes && themes.length > 0) {
+      exportToCSV(themes, 'strategic-themes', ['name', 'description', 'status', 'start_date', 'end_date', 'color_tag']);
+      toast({ title: 'Themes exported successfully' });
+    }
+  };
+
+  const handleImport = (data: any[]) => {
+    importThemesMutation.mutate(data);
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
@@ -111,7 +150,8 @@ export default function Themes() {
           selectedCount={selectedRows.length}
           onColumnChooser={() => {}}
           onBulkEdit={() => {}}
-          onExport={() => {}}
+          onExport={handleExport}
+          onImport={() => setImportDialogOpen(true)}
         />
 
         {/* Data Grid */}
@@ -249,6 +289,14 @@ export default function Themes() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         theme={editingTheme}
+      />
+
+      <ImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImport={handleImport}
+        title="Import Strategic Themes"
+        requiredFields={['name']}
       />
     </div>
   );

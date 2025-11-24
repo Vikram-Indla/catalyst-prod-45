@@ -1,6 +1,9 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { exportToCSV } from '@/lib/exportUtils';
+import { ImportDialog } from '@/components/shared/ImportDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +21,10 @@ export default function Features() {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [editingFeature, setEditingFeature] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: items, isLoading } = useQuery({
     queryKey: ['features', searchQuery],
@@ -61,6 +67,35 @@ export default function Features() {
     setDialogOpen(true);
   };
 
+  const importMutation = useMutation({
+    mutationFn: async (data: any[]) => {
+      const { error } = await supabase.from('features').insert(data.map(row => ({
+        name: row.name,
+        description: row.description || null,
+        status: row.status || 'funnel',
+        health: row.health || 'green',
+        epic_id: row.epic_id,
+        program_id: row.program_id,
+        estimate_points: row.estimate_points || 0,
+      })));
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      toast({ title: 'Features imported successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Failed to import features', variant: 'destructive' });
+    }
+  });
+
+  const handleExport = () => {
+    if (items && items.length > 0) {
+      exportToCSV(items, 'features', ['name', 'description', 'status', 'health', 'estimate_points', 'wsjf_score']);
+      toast({ title: 'Features exported successfully' });
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       <div className="border-b bg-card px-6 py-4">
@@ -81,7 +116,7 @@ export default function Features() {
           </div>
         </div>
 
-        <ListScreenToolbar selectedCount={selectedRows.length} onColumnChooser={() => {}} onBulkEdit={() => {}} onExport={() => {}} />
+        <ListScreenToolbar selectedCount={selectedRows.length} onColumnChooser={() => {}} onBulkEdit={() => {}} onExport={handleExport} onImport={() => setImportDialogOpen(true)} />
 
         <div className="flex-1 border rounded-lg overflow-auto">
           <Table>
@@ -167,6 +202,13 @@ export default function Features() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         feature={editingFeature}
+      />
+      <ImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImport={(data) => importMutation.mutate(data)}
+        title="Import Features"
+        requiredFields={['name', 'epic_id', 'program_id']}
       />
     </div>
   );
