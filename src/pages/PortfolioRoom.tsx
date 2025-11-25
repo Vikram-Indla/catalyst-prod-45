@@ -5,6 +5,7 @@ import { ScopeSelector } from '@/components/shared/ScopeSelector';
 import { PISelector } from '@/components/shared/PISelector';
 import { KPIWidgetCard } from '@/components/shared/KPIWidgetCard';
 import { HealthBadge } from '@/components/shared/HealthBadge';
+import { PIRoadmapTimeline } from '@/components/shared/PIRoadmapTimeline';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -157,16 +158,10 @@ export default function PortfolioRoom() {
         <div className="col-span-6 h-full overflow-hidden">
           <ScrollArea className="h-full">
             <div className="space-y-4 px-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">PI Roadmap Timeline</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-48 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
-                    Timeline visualization placeholder
-                  </div>
-                </CardContent>
-              </Card>
+              <PIRoadmapTimeline 
+                portfolioId={selectedPortfolio} 
+                selectedPIs={selectedPIs}
+              />
 
               <Card>
                 <CardHeader>
