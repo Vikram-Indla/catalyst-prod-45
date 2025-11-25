@@ -1,0 +1,213 @@
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { HealthBadge } from '@/components/shared/HealthBadge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { format, differenceInDays, parseISO } from 'date-fns';
+import { cn } from '@/lib/utils';
+
+interface PIRoadmapTimelineProps {
+  portfolioId: string;
+  selectedPIs: string[];
+}
+
+export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelineProps) {
+  // Fetch Program Increments
+  const { data: pis, isLoading: pisLoading } = useQuery({
+    queryKey: ['pis-timeline', portfolioId, selectedPIs],
+    queryFn: async () => {
+      let query = supabase
+        .from('program_increments')
+        .select('*')
+        .eq('portfolio_id', portfolioId)
+        .order('start_date');
+
+      if (selectedPIs.length > 0) {
+        query = query.in('id', selectedPIs);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!portfolioId,
+  });
+
+  // Fetch epics with their themes
+  const { data: epics, isLoading: epicsLoading } = useQuery({
+    queryKey: ['epics-timeline', selectedPIs],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epics')
+        .select('*, strategic_themes(name, color_tag)')
+        .order('start_date');
+      if (error) throw error;
+      return data;
+    },
+    enabled: selectedPIs.length > 0,
+  });
+
+  if (pisLoading || epicsLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">PI Roadmap Timeline</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-48 w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!pis || pis.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">PI Roadmap Timeline</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="h-48 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
+            Select a portfolio and PI to view the timeline
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Calculate timeline dimensions
+  const earliestPI = pis[0];
+  const latestPI = pis[pis.length - 1];
+  const timelineStart = parseISO(earliestPI.start_date);
+  const timelineEnd = parseISO(latestPI.end_date);
+  const totalDays = differenceInDays(timelineEnd, timelineStart);
+
+  // Calculate position for each epic
+  const getEpicPosition = (epic: any) => {
+    if (!epic.start_date || !epic.end_date) return null;
+    
+    const epicStart = parseISO(epic.start_date);
+    const epicEnd = parseISO(epic.end_date);
+    const startOffset = differenceInDays(epicStart, timelineStart);
+    const duration = differenceInDays(epicEnd, epicStart);
+
+    return {
+      left: (startOffset / totalDays) * 100,
+      width: (duration / totalDays) * 100,
+    };
+  };
+
+  // Group epics by theme
+  const epicsByTheme = epics?.reduce((acc, epic) => {
+    const themeName = epic.strategic_themes?.name || 'Unassigned';
+    if (!acc[themeName]) {
+      acc[themeName] = [];
+    }
+    acc[themeName].push(epic);
+    return acc;
+  }, {} as Record<string, any[]>);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-sm">PI Roadmap Timeline</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {/* PI Headers */}
+          <div className="flex gap-1 mb-4">
+            {pis.map((pi) => {
+              const piStart = parseISO(pi.start_date);
+              const piEnd = parseISO(pi.end_date);
+              const piDuration = differenceInDays(piEnd, piStart);
+              const widthPercent = (piDuration / totalDays) * 100;
+
+              return (
+                <div
+                  key={pi.id}
+                  className="text-center"
+                  style={{ width: `${widthPercent}%` }}
+                >
+                  <div className="text-xs font-semibold bg-primary/10 rounded px-2 py-1">
+                    {pi.name}
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    {format(piStart, 'MMM d')} - {format(piEnd, 'MMM d')}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Timeline Grid */}
+          <div className="relative border-t pt-4 space-y-3">
+            {epicsByTheme && Object.entries(epicsByTheme).map(([themeName, themeEpics], themeIdx) => (
+              <div key={themeName} className="space-y-2">
+                <div className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                  <div className="h-px flex-1 bg-border" />
+                  <span>{themeName}</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+                
+                {themeEpics.map((epic, epicIdx) => {
+                  const position = getEpicPosition(epic);
+                  if (!position) return null;
+
+                  return (
+                    <div key={epic.id} className="relative h-10">
+                      <div
+                        className={cn(
+                          "absolute h-8 rounded-md border-2 flex items-center px-2 gap-2 cursor-pointer transition-all hover:shadow-md hover:z-10",
+                          epic.status === 'done' ? "bg-success/10 border-success" :
+                          epic.status === 'in_progress' ? "bg-primary/10 border-primary" :
+                          epic.status === 'cancelled' ? "bg-muted border-muted-foreground" :
+                          "bg-muted/50 border-border"
+                        )}
+                        style={{
+                          left: `${position.left}%`,
+                          width: `${position.width}%`,
+                        }}
+                        title={`${epic.name} - ${epic.status}`}
+                      >
+                        <span className="text-xs font-medium truncate flex-1">
+                          {epic.name}
+                        </span>
+                        <HealthBadge health={epic.health} />
+                        <Badge variant="outline" className="text-xs">
+                          {epic.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+
+            {(!epics || epics.length === 0) && (
+              <div className="h-32 flex items-center justify-center text-sm text-muted-foreground">
+                No epics with dates in selected PIs
+              </div>
+            )}
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center gap-4 text-xs text-muted-foreground pt-4 border-t">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-primary/10 border-2 border-primary" />
+              <span>In Progress</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-success/10 border-2 border-success" />
+              <span>Done</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-muted/50 border-2 border-border" />
+              <span>Planned</span>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
