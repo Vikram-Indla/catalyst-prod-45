@@ -6,6 +6,7 @@ import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Calendar, User, TrendingUp, Target, Layers } from 'lucide-react';
@@ -277,35 +278,44 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
                                 {epicFeatures.map((feature) => (
                                   <div
                                     key={feature.id}
-                                    className="flex items-center justify-between p-2 rounded border bg-card hover:bg-muted/50 transition-colors"
+                                    className="p-3 rounded border bg-card hover:bg-muted/50 transition-colors space-y-2"
                                   >
-                                    <div className="flex-1 min-w-0 mr-2">
-                                      <p className="text-sm font-medium truncate">{feature.name}</p>
-                                      <div className="flex items-center gap-2 mt-1">
-                                        {feature.estimate_points && (
-                                          <span className="text-xs text-muted-foreground">
-                                            {feature.estimate_points} pts
-                                          </span>
-                                        )}
-                                        {feature.progress_pct !== null && feature.progress_pct !== undefined && (
-                                          <span className="text-xs text-muted-foreground">
-                                            {feature.progress_pct}% done
-                                          </span>
-                                        )}
+                                    <div className="flex items-start justify-between gap-2">
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium truncate">{feature.name}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                          {feature.estimate_points && (
+                                            <span className="text-xs text-muted-foreground">
+                                              {feature.estimate_points} pts
+                                            </span>
+                                          )}
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center gap-1 shrink-0">
+                                        <HealthBadge health={feature.health} />
+                                        <Badge 
+                                          variant={
+                                            feature.status === 'done' ? 'default' :
+                                            feature.status === 'implementing' ? 'secondary' :
+                                            'outline'
+                                          }
+                                          className="text-xs"
+                                        >
+                                          {feature.status}
+                                        </Badge>
                                       </div>
                                     </div>
-                                    <div className="flex items-center gap-1 shrink-0">
-                                      <HealthBadge health={feature.health} />
-                                      <Badge 
-                                        variant={
-                                          feature.status === 'done' ? 'default' :
-                                          feature.status === 'implementing' ? 'secondary' :
-                                          'outline'
-                                        }
-                                        className="text-xs"
-                                      >
-                                        {feature.status}
-                                      </Badge>
+                                    
+                                    {/* Progress Bar */}
+                                    <div className="space-y-1">
+                                      <div className="flex items-center justify-between text-xs">
+                                        <span className="text-muted-foreground">Progress</span>
+                                        <span className="font-medium">{feature.progress_pct || 0}%</span>
+                                      </div>
+                                      <Progress 
+                                        value={feature.progress_pct || 0} 
+                                        className="h-2"
+                                      />
                                     </div>
                                   </div>
                                 ))}
