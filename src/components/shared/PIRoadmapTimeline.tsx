@@ -4,8 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Calendar, User, TrendingUp, Target, Layers } from 'lucide-react';
+import { useState } from 'react';
 
 interface PIRoadmapTimelineProps {
   portfolioId: string;
@@ -13,6 +17,8 @@ interface PIRoadmapTimelineProps {
 }
 
 export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelineProps) {
+  const [selectedEpic, setSelectedEpic] = useState<any>(null);
+  
   // Fetch Program Increments
   const { data: pis, isLoading: pisLoading } = useQuery({
     queryKey: ['pis-timeline', portfolioId, selectedPIs],
@@ -155,30 +161,97 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
                   if (!position) return null;
 
                   return (
-                    <div key={epic.id} className="relative h-10">
-                      <div
-                        className={cn(
-                          "absolute h-8 rounded-md border-2 flex items-center px-2 gap-2 cursor-pointer transition-all hover:shadow-md hover:z-10",
-                          epic.status === 'done' ? "bg-success/10 border-success" :
-                          epic.status === 'in_progress' ? "bg-primary/10 border-primary" :
-                          epic.status === 'cancelled' ? "bg-muted border-muted-foreground" :
-                          "bg-muted/50 border-border"
-                        )}
-                        style={{
-                          left: `${position.left}%`,
-                          width: `${position.width}%`,
-                        }}
-                        title={`${epic.name} - ${epic.status}`}
-                      >
-                        <span className="text-xs font-medium truncate flex-1">
-                          {epic.name}
-                        </span>
-                        <HealthBadge health={epic.health} />
-                        <Badge variant="outline" className="text-xs">
-                          {epic.status}
-                        </Badge>
-                      </div>
-                    </div>
+                    <Popover key={epic.id}>
+                      <PopoverTrigger asChild>
+                        <div className="relative h-10">
+                          <div
+                            className={cn(
+                              "absolute h-8 rounded-md border-2 flex items-center px-2 gap-2 cursor-pointer transition-all hover:shadow-md hover:z-10",
+                              epic.status === 'done' ? "bg-success/10 border-success hover:bg-success/20" :
+                              epic.status === 'in_progress' ? "bg-primary/10 border-primary hover:bg-primary/20" :
+                              epic.status === 'cancelled' ? "bg-muted border-muted-foreground" :
+                              "bg-muted/50 border-border hover:bg-muted"
+                            )}
+                            style={{
+                              left: `${position.left}%`,
+                              width: `${position.width}%`,
+                            }}
+                            onClick={() => setSelectedEpic(epic)}
+                          >
+                            <span className="text-xs font-medium truncate flex-1">
+                              {epic.name}
+                            </span>
+                            <HealthBadge health={epic.health} />
+                            <Badge variant="outline" className="text-xs">
+                              {epic.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-96" align="start">
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="font-semibold text-base mb-1">{epic.name}</h4>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline">{epic.status}</Badge>
+                              <HealthBadge health={epic.health} />
+                            </div>
+                          </div>
+
+                          {epic.description && (
+                            <>
+                              <Separator />
+                              <div>
+                                <p className="text-sm text-muted-foreground">{epic.description}</p>
+                              </div>
+                            </>
+                          )}
+
+                          <Separator />
+
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-2 text-sm">
+                              <Layers className="h-4 w-4 text-muted-foreground" />
+                              <span className="text-muted-foreground">Theme:</span>
+                              <span className="font-medium">{epic.strategic_themes?.name || 'None'}</span>
+                            </div>
+
+                            {epic.start_date && epic.end_date && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <Calendar className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Timeline:</span>
+                                <span className="font-medium">
+                                  {format(parseISO(epic.start_date), 'MMM d, yyyy')} - {format(parseISO(epic.end_date), 'MMM d, yyyy')}
+                                </span>
+                              </div>
+                            )}
+
+                            {epic.estimate && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Estimate:</span>
+                                <span className="font-medium">{epic.estimate} points</span>
+                              </div>
+                            )}
+
+                            {epic.owner_id && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <User className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-muted-foreground">Owner:</span>
+                                <span className="font-medium">Assigned</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <Separator />
+
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>Duration: {epic.start_date && epic.end_date ? differenceInDays(parseISO(epic.end_date), parseISO(epic.start_date)) : 0} days</span>
+                            <span>ID: {epic.id.slice(0, 8)}</span>
+                          </div>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   );
                 })}
               </div>
