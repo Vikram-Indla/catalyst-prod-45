@@ -108,18 +108,29 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
   const timelineEnd = parseISO(latestPI.end_date);
   const totalDays = differenceInDays(timelineEnd, timelineStart);
 
-  // Calculate position for each epic
+  // Calculate position for each epic, constrained to timeline boundaries
   const getEpicPosition = (epic: any) => {
     if (!epic.start_date || !epic.end_date) return null;
     
     const epicStart = parseISO(epic.start_date);
     const epicEnd = parseISO(epic.end_date);
-    const startOffset = differenceInDays(epicStart, timelineStart);
-    const duration = differenceInDays(epicEnd, epicStart);
+    
+    // Clip epic to timeline boundaries
+    const clippedStart = epicStart < timelineStart ? timelineStart : epicStart;
+    const clippedEnd = epicEnd > timelineEnd ? timelineEnd : epicEnd;
+    
+    // If epic is completely outside timeline, don't show it
+    if (clippedStart > timelineEnd || clippedEnd < timelineStart) return null;
+    
+    const startOffset = differenceInDays(clippedStart, timelineStart);
+    const duration = differenceInDays(clippedEnd, clippedStart);
+
+    const left = (startOffset / totalDays) * 100;
+    const width = (duration / totalDays) * 100;
 
     return {
-      left: (startOffset / totalDays) * 100,
-      width: (duration / totalDays) * 100,
+      left: Math.max(0, Math.min(left, 100)),
+      width: Math.max(0, Math.min(width, 100 - left)),
     };
   };
 
@@ -182,19 +193,18 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
                   return (
                     <Popover key={epic.id}>
                       <PopoverTrigger asChild>
-                        <div className="relative h-10 w-full overflow-visible">
+                        <div className="relative h-10 w-full">
                           <div
                             className={cn(
-                              "absolute h-8 rounded-md border-2 flex items-center px-2 gap-2 cursor-pointer transition-all hover:shadow-md hover:z-10 overflow-hidden",
+                              "absolute h-8 rounded-md border-2 flex items-center px-2 gap-2 cursor-pointer transition-all hover:shadow-md hover:z-10",
                               epic.status === 'done' ? "bg-success/10 border-success hover:bg-success/20" :
                               epic.status === 'in_progress' ? "bg-primary/10 border-primary hover:bg-primary/20" :
                               epic.status === 'cancelled' ? "bg-muted border-muted-foreground" :
                               "bg-muted/50 border-border hover:bg-muted"
                             )}
                             style={{
-                              left: `${Math.max(0, Math.min(position.left, 95))}%`,
-                              width: `${Math.min(position.width, 100 - position.left)}%`,
-                              maxWidth: '95%'
+                              left: `${position.left}%`,
+                              width: `${position.width}%`,
                             }}
                             onClick={() => setSelectedEpic(epic)}
                           >
