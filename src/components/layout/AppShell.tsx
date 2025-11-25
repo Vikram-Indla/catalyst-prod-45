@@ -191,7 +191,7 @@ function AppSidebarContent() {
                     <SectionIcon className="h-4 w-4 shrink-0" />
                     {!isCollapsed && (
                       <>
-                        <span className="flex-1 text-left">{section.title}</span>
+                        <span className="flex-1 text-left whitespace-nowrap">{section.title}</span>
                         <ChevronDown
                           className={cn(
                             'h-4 w-4 transition-transform shrink-0',
@@ -216,8 +216,8 @@ function AppSidebarContent() {
                                 className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-muted rounded-md transition-colors"
                                 activeClassName="bg-muted text-primary font-medium"
                               >
-                                <ChildIcon className="h-3.5 w-3.5" />
-                                <span>{child.title}</span>
+                                <ChildIcon className="h-3.5 w-3.5 shrink-0" />
+                                <span className="whitespace-nowrap">{child.title}</span>
                               </NavLink>
                             </SidebarMenuButton>
                           </SidebarMenuItem>
