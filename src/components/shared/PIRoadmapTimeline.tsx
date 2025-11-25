@@ -138,8 +138,8 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
       <CardHeader>
         <CardTitle className="text-sm">PI Roadmap Timeline</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+      <CardContent className="overflow-x-auto">
+        <div className="space-y-4 min-w-[800px]">
           {/* PI Headers */}
           <div className="flex gap-1 mb-4">
             {pis.map((pi) => {
@@ -166,7 +166,7 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
           </div>
 
           {/* Timeline Grid */}
-          <div className="relative border-t pt-4 space-y-3 min-h-[200px]">
+          <div className="relative border-t pt-4 space-y-3 min-h-[200px] overflow-visible">
             {epicsByTheme && Object.entries(epicsByTheme).map(([themeName, themeEpics], themeIdx) => (
               <div key={themeName} className="space-y-2">
                 <div className="text-xs font-medium text-muted-foreground flex items-center gap-2">
@@ -182,18 +182,19 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
                   return (
                     <Popover key={epic.id}>
                       <PopoverTrigger asChild>
-                        <div className="relative h-10 w-full">
+                        <div className="relative h-10 w-full overflow-visible">
                           <div
                             className={cn(
-                              "absolute h-8 rounded-md border-2 flex items-center px-2 gap-2 cursor-pointer transition-all hover:shadow-md hover:z-10 min-w-[120px]",
+                              "absolute h-8 rounded-md border-2 flex items-center px-2 gap-2 cursor-pointer transition-all hover:shadow-md hover:z-10 overflow-hidden",
                               epic.status === 'done' ? "bg-success/10 border-success hover:bg-success/20" :
                               epic.status === 'in_progress' ? "bg-primary/10 border-primary hover:bg-primary/20" :
                               epic.status === 'cancelled' ? "bg-muted border-muted-foreground" :
                               "bg-muted/50 border-border hover:bg-muted"
                             )}
                             style={{
-                              left: `${position.left}%`,
-                              width: `${position.width}%`,
+                              left: `${Math.max(0, Math.min(position.left, 95))}%`,
+                              width: `${Math.min(position.width, 100 - position.left)}%`,
+                              maxWidth: '95%'
                             }}
                             onClick={() => setSelectedEpic(epic)}
                           >
@@ -201,7 +202,7 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
                               {epic.name}
                             </span>
                             <HealthBadge health={epic.health} />
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs shrink-0">
                               {epic.status}
                             </Badge>
                           </div>
