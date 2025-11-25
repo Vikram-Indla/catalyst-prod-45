@@ -54,6 +54,22 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
     enabled: selectedPIs.length > 0,
   });
 
+  // Fetch features for the selected epic
+  const { data: epicFeatures } = useQuery({
+    queryKey: ['epic-features', selectedEpic?.id],
+    queryFn: async () => {
+      if (!selectedEpic?.id) return [];
+      const { data, error } = await supabase
+        .from('features')
+        .select('id, name, status, health, estimate_points, progress_pct')
+        .eq('epic_id', selectedEpic.id)
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedEpic?.id,
+  });
+
   if (pisLoading || epicsLoading) {
     return (
       <Card>
@@ -239,6 +255,64 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
                                 <User className="h-4 w-4 text-muted-foreground" />
                                 <span className="text-muted-foreground">Owner:</span>
                                 <span className="font-medium">Assigned</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <Separator />
+
+                          {/* Features Breakdown */}
+                          <div>
+                            <div className="flex items-center justify-between mb-3">
+                              <h5 className="text-sm font-semibold">Features ({epicFeatures?.length || 0})</h5>
+                              {epicFeatures && epicFeatures.length > 0 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  {Math.round((epicFeatures.filter(f => f.status === 'done').length / epicFeatures.length) * 100)}% Complete
+                                </Badge>
+                              )}
+                            </div>
+                            
+                            {epicFeatures && epicFeatures.length > 0 ? (
+                              <div className="space-y-2 max-h-48 overflow-y-auto">
+                                {epicFeatures.map((feature) => (
+                                  <div
+                                    key={feature.id}
+                                    className="flex items-center justify-between p-2 rounded border bg-card hover:bg-muted/50 transition-colors"
+                                  >
+                                    <div className="flex-1 min-w-0 mr-2">
+                                      <p className="text-sm font-medium truncate">{feature.name}</p>
+                                      <div className="flex items-center gap-2 mt-1">
+                                        {feature.estimate_points && (
+                                          <span className="text-xs text-muted-foreground">
+                                            {feature.estimate_points} pts
+                                          </span>
+                                        )}
+                                        {feature.progress_pct !== null && feature.progress_pct !== undefined && (
+                                          <span className="text-xs text-muted-foreground">
+                                            {feature.progress_pct}% done
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1 shrink-0">
+                                      <HealthBadge health={feature.health} />
+                                      <Badge 
+                                        variant={
+                                          feature.status === 'done' ? 'default' :
+                                          feature.status === 'implementing' ? 'secondary' :
+                                          'outline'
+                                        }
+                                        className="text-xs"
+                                      >
+                                        {feature.status}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="text-center py-4 text-sm text-muted-foreground border-2 border-dashed rounded">
+                                No features in this epic
                               </div>
                             )}
                           </div>
