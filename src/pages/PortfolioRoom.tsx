@@ -70,9 +70,9 @@ export default function PortfolioRoom() {
   const totalInitiatives = initiatives?.length || 0;
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4 space-y-4">
+      <div className="border-b bg-card px-6 py-4 space-y-4 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Portfolio Room</h1>
@@ -97,188 +97,195 @@ export default function PortfolioRoom() {
       </div>
 
       {/* 3-Panel Layout */}
-      <div className="flex-1 grid grid-cols-12 gap-6 p-6 overflow-hidden">
+      <div className="flex-1 grid grid-cols-12 gap-6 p-6 overflow-hidden min-h-0">
         {/* LEFT PANEL - Strategy */}
-        <ScrollArea className="col-span-3 space-y-4">
-          <div className="space-y-4 pr-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Layers className="h-4 w-4" />
-                  Theme Progress
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {themes?.slice(0, 5).map(theme => (
-                  <div key={theme.id} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium truncate">{theme.name}</span>
-                      <Badge variant={theme.status === 'active' ? 'default' : 'secondary'}>
-                        {theme.status}
-                      </Badge>
-                    </div>
-                    <Progress value={Math.random() * 100} className="h-2" />
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" />
-                  Initiative Health
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {initiatives?.slice(0, 6).map(initiative => (
-                  <div key={initiative.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50 cursor-pointer">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{initiative.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        {initiative.strategic_themes?.name}
-                      </p>
-                    </div>
-                    <Badge variant={initiative.status === 'active' ? 'default' : 'secondary'}>
-                      {initiative.status}
-                    </Badge>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-        </ScrollArea>
-
-        {/* CENTER PANEL - Plan */}
-        <ScrollArea className="col-span-6">
-          <div className="space-y-4 px-2">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">PI Roadmap Timeline</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-48 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
-                  Timeline visualization placeholder
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <Rocket className="h-4 w-4" />
-                  Epic Backlog
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {epics?.map(epic => (
-                    <div key={epic.id} className="flex items-center gap-3 p-3 rounded border hover:bg-muted/50 cursor-pointer">
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{epic.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {epic.strategic_themes?.name}
-                        </p>
+        <div className="col-span-3 h-full overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="space-y-4 pr-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Layers className="h-4 w-4" />
+                    Theme Progress
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {themes?.slice(0, 5).map(theme => (
+                    <div key={theme.id} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium truncate">{theme.name}</span>
+                        <Badge variant={theme.status === 'active' ? 'default' : 'secondary'}>
+                          {theme.status}
+                        </Badge>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">{epic.status}</Badge>
-                        <HealthBadge health={epic.health} />
-                      </div>
+                      <Progress value={Math.random() * 100} className="h-2" />
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-          </div>
-        </ScrollArea>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4" />
+                    Initiative Health
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {initiatives?.slice(0, 6).map(initiative => (
+                    <div key={initiative.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50 cursor-pointer">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{initiative.name}</p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {initiative.strategic_themes?.name}
+                        </p>
+                      </div>
+                      <Badge variant={initiative.status === 'active' ? 'default' : 'secondary'}>
+                        {initiative.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* CENTER PANEL - Plan */}
+        <div className="col-span-6 h-full overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="space-y-4 px-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">PI Roadmap Timeline</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-48 flex items-center justify-center border-2 border-dashed rounded-lg text-muted-foreground">
+                    Timeline visualization placeholder
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm flex items-center gap-2">
+                    <Rocket className="h-4 w-4" />
+                    Epic Backlog
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {epics?.map(epic => (
+                      <div key={epic.id} className="flex items-center gap-3 p-3 rounded border hover:bg-muted/50 cursor-pointer">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">{epic.name}</p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {epic.strategic_themes?.name}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{epic.status}</Badge>
+                          <HealthBadge health={epic.health} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </ScrollArea>
+        </div>
 
         {/* RIGHT PANEL - Execution KPIs */}
-        <div className="col-span-3 space-y-4">
-          <KPIWidgetCard
-            title="PI Objectives"
-            value={`${activeThemes}/${totalThemes}`}
-            subtitle="Active themes"
-            icon={CheckCircle2}
-            trend="up"
-            trendValue="+12% vs last PI"
-          />
+        <div className="col-span-3 h-full overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="space-y-4 pr-4">
+              <KPIWidgetCard
+                title="PI Objectives"
+                value={`${activeThemes}/${totalThemes}`}
+                subtitle="Active themes"
+                icon={CheckCircle2}
+                trend="up"
+                trendValue="+12% vs last PI"
+              />
 
-          <KPIWidgetCard
-            title="Dependencies Risk"
-            value="8"
-            subtitle="High risk dependencies"
-            icon={AlertTriangle}
-            trend="down"
-            trendValue="2 resolved this week"
-          />
+              <KPIWidgetCard
+                title="Dependencies Risk"
+                value="8"
+                subtitle="High risk dependencies"
+                icon={AlertTriangle}
+                trend="down"
+                trendValue="2 resolved this week"
+              />
 
-          <KPIWidgetCard
-            title="ROAM Risks"
-            value="15"
-            subtitle="Active risks"
-            icon={Target}
-          >
-            <div className="mt-3 space-y-1">
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Resolved</span>
-                <span className="font-medium">5</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Owned</span>
-                <span className="font-medium">6</span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span className="text-muted-foreground">Mitigated</span>
-                <span className="font-medium">4</span>
-              </div>
+              <KPIWidgetCard
+                title="ROAM Risks"
+                value="15"
+                subtitle="Active risks"
+                icon={Target}
+              >
+                <div className="mt-3 space-y-1">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Resolved</span>
+                    <span className="font-medium">5</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Owned</span>
+                    <span className="font-medium">6</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-muted-foreground">Mitigated</span>
+                    <span className="font-medium">4</span>
+                  </div>
+                </div>
+              </KPIWidgetCard>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Capacity Variance</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Planned</span>
+                      <span className="font-medium">450 pts</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Forecast</span>
+                      <span className="font-medium">420 pts</span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">Variance</span>
+                      <span className="text-destructive font-medium">-30 pts</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Initiative Health</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-success">● Green</span>
+                      <span className="font-medium">{healthyInitiatives}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-warning">● Yellow</span>
+                      <span className="font-medium">2</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-destructive">● Red</span>
+                      <span className="font-medium">1</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </KPIWidgetCard>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Capacity Variance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Planned</span>
-                  <span className="font-medium">450 pts</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Forecast</span>
-                  <span className="font-medium">420 pts</span>
-                </div>
-                <Separator />
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">Variance</span>
-                  <span className="text-destructive font-medium">-30 pts</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Initiative Health</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-success">● Green</span>
-                  <span className="font-medium">{healthyInitiatives}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-warning">● Yellow</span>
-                  <span className="font-medium">2</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-destructive">● Red</span>
-                  <span className="font-medium">1</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          </ScrollArea>
         </div>
       </div>
     </div>
