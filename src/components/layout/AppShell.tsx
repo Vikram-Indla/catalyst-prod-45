@@ -233,20 +233,18 @@ function AppSidebarContent() {
                           const isChildActive = currentPath === child.path;
                           return (
                             <SidebarMenuItem key={child.path}>
-                              <SidebarMenuButton asChild>
-                                <NavLink
-                                  to={child.path}
-                                  className={cn(
-                                    "flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors w-full",
-                                    isChildActive 
-                                      ? "bg-muted text-primary font-medium" 
-                                      : "hover:bg-muted/50 text-muted-foreground"
-                                  )}
-                                >
-                                  <ChildIcon className="h-3.5 w-3.5 shrink-0" />
-                                  <span className="truncate">{child.title}</span>
-                                </NavLink>
-                              </SidebarMenuButton>
+                              <NavLink
+                                to={child.path}
+                                className={cn(
+                                  "flex items-center gap-2 px-3 py-2 text-sm rounded-md transition-colors w-full",
+                                  isChildActive 
+                                    ? "bg-primary/10 text-primary font-medium" 
+                                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                )}
+                              >
+                                <ChildIcon className="h-3.5 w-3.5 shrink-0" />
+                                <span className="truncate">{child.title}</span>
+                              </NavLink>
                             </SidebarMenuItem>
                           );
                         })}
