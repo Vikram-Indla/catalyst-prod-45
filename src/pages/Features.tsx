@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useSearchParams } from 'react-router-dom';
 import { exportToCSV } from '@/lib/exportUtils';
 import { ImportDialog } from '@/components/shared/ImportDialog';
 import { CommentsSection } from '@/components/shared/CommentsSection';
@@ -28,6 +29,17 @@ export default function Features() {
   const [editingFeature, setEditingFeature] = useState<any>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Handle feature selection from URL parameter
+  useEffect(() => {
+    const selectedId = searchParams.get('selected');
+    if (selectedId) {
+      setSelectedItem(selectedId);
+      // Clear the URL parameter after setting the selection
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const { data: items, isLoading } = useQuery({
     queryKey: ['features', searchQuery],

@@ -9,8 +9,9 @@ import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { Calendar, User, TrendingUp, Target, Layers } from 'lucide-react';
+import { Calendar, User, TrendingUp, Target, Layers, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface PIRoadmapTimelineProps {
   portfolioId: string;
@@ -19,6 +20,7 @@ interface PIRoadmapTimelineProps {
 
 export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelineProps) {
   const [selectedEpic, setSelectedEpic] = useState<any>(null);
+  const navigate = useNavigate();
   
   // Fetch Program Increments
   const { data: pis, isLoading: pisLoading } = useQuery({
@@ -278,11 +280,15 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
                                 {epicFeatures.map((feature) => (
                                   <div
                                     key={feature.id}
-                                    className="p-3 rounded border bg-card hover:bg-muted/50 transition-colors space-y-2"
+                                    onClick={() => navigate(`/features?selected=${feature.id}`)}
+                                    className="p-3 rounded border bg-card hover:bg-primary/5 transition-colors space-y-2 cursor-pointer group"
                                   >
                                     <div className="flex items-start justify-between gap-2">
                                       <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium truncate">{feature.name}</p>
+                                        <div className="flex items-center gap-2">
+                                          <p className="text-sm font-medium truncate">{feature.name}</p>
+                                          <ExternalLink className="h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                                        </div>
                                         <div className="flex items-center gap-2 mt-1">
                                           {feature.estimate_points && (
                                             <span className="text-xs text-muted-foreground">
