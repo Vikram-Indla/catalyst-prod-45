@@ -149,9 +149,9 @@ export function AppShell() {
   };
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-background">
+    <div className="h-screen w-full flex flex-col overflow-hidden bg-background">
       {/* Top Header */}
-      <header className="h-14 border-b bg-background flex items-center justify-between px-4 flex-shrink-0">
+      <header className="h-14 border-b bg-card flex items-center justify-between px-4 flex-shrink-0 z-50">
         <div className="flex items-center gap-4">
           <Button
             variant="ghost"
@@ -208,13 +208,13 @@ export function AppShell() {
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden min-h-0">
         {/* Sidebar */}
         <aside
           className={cn(
-            'border-r bg-muted/10 transition-all duration-300 flex-shrink-0',
+            'border-r bg-muted/10 transition-all duration-300 flex-shrink-0 h-full',
             sidebarOpen ? 'w-64' : 'w-0 lg:w-16',
-            'lg:relative absolute inset-y-0 left-0 z-40 lg:z-0'
+            'lg:relative absolute inset-y-0 left-0 z-30 lg:z-0 bg-background'
           )}
         >
           <ScrollArea className="h-full">
@@ -274,7 +274,7 @@ export function AppShell() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto min-h-0 w-full">
           <Outlet />
         </main>
       </div>
