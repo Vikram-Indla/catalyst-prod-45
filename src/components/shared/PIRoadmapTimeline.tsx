@@ -166,7 +166,7 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
           </div>
 
           {/* Timeline Grid */}
-          <div className="relative border-t pt-4 space-y-3">
+          <div className="relative border-t pt-4 space-y-3 min-h-[200px]">
             {epicsByTheme && Object.entries(epicsByTheme).map(([themeName, themeEpics], themeIdx) => (
               <div key={themeName} className="space-y-2">
                 <div className="text-xs font-medium text-muted-foreground flex items-center gap-2">
@@ -182,10 +182,10 @@ export function PIRoadmapTimeline({ portfolioId, selectedPIs }: PIRoadmapTimelin
                   return (
                     <Popover key={epic.id}>
                       <PopoverTrigger asChild>
-                        <div className="relative h-10">
+                        <div className="relative h-10 w-full">
                           <div
                             className={cn(
-                              "absolute h-8 rounded-md border-2 flex items-center px-2 gap-2 cursor-pointer transition-all hover:shadow-md hover:z-10",
+                              "absolute h-8 rounded-md border-2 flex items-center px-2 gap-2 cursor-pointer transition-all hover:shadow-md hover:z-10 min-w-[120px]",
                               epic.status === 'done' ? "bg-success/10 border-success hover:bg-success/20" :
                               epic.status === 'in_progress' ? "bg-primary/10 border-primary hover:bg-primary/20" :
                               epic.status === 'cancelled' ? "bg-muted border-muted-foreground" :
