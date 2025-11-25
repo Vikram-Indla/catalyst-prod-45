@@ -230,13 +230,18 @@ function AppSidebarContent() {
                       <SidebarMenu>
                         {section.children.map((child) => {
                           const ChildIcon = child.icon;
+                          const isChildActive = currentPath === child.path;
                           return (
                             <SidebarMenuItem key={child.path}>
                               <SidebarMenuButton asChild>
                                 <NavLink
                                   to={child.path}
-                                  className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-muted rounded-md transition-colors"
-                                  activeClassName="bg-muted text-primary font-medium"
+                                  className={cn(
+                                    "flex items-center gap-2 px-2 py-1.5 text-sm rounded-md transition-colors w-full",
+                                    isChildActive 
+                                      ? "bg-muted text-primary font-medium" 
+                                      : "hover:bg-muted/50 text-muted-foreground"
+                                  )}
                                 >
                                   <ChildIcon className="h-3.5 w-3.5 shrink-0" />
                                   <span className="truncate">{child.title}</span>
