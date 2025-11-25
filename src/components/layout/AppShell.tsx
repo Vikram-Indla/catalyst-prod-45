@@ -19,6 +19,12 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -170,68 +176,85 @@ function AppSidebarContent() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r">
-      <SidebarContent>
-        <ScrollArea className="flex-1">
-          {navigation.map((section) => {
-            const SectionIcon = section.icon;
-            const isExpanded = expandedSections.includes(section.title);
-            const isActive = isSectionActive(section);
+    <TooltipProvider delayDuration={0}>
+      <Sidebar collapsible="icon" className="border-r">
+        <SidebarContent>
+          <ScrollArea className="flex-1">
+            {navigation.map((section) => {
+              const SectionIcon = section.icon;
+              const isExpanded = expandedSections.includes(section.title);
+              const isActive = isSectionActive(section);
 
-            return (
-              <SidebarGroup key={section.title} className="px-2 py-0">
-                <SidebarGroupLabel asChild>
-                  <button
-                    onClick={() => toggleSection(section.title)}
-                    className={cn(
-                      'flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm font-medium hover:bg-accent transition-colors',
-                      isActive && 'bg-accent text-accent-foreground'
-                    )}
-                  >
-                    <SectionIcon className="h-4 w-4 shrink-0" />
-                    {!isCollapsed && (
-                      <>
-                        <span className="flex-1 text-left whitespace-nowrap">{section.title}</span>
+              return (
+                <SidebarGroup key={section.title} className="px-2 py-0">
+                  <SidebarGroupLabel asChild>
+                    {isCollapsed ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            onClick={() => toggleSection(section.title)}
+                            className={cn(
+                              'flex w-full items-center justify-center gap-2 rounded-md px-2 py-2 text-sm font-medium hover:bg-accent transition-colors',
+                              isActive && 'bg-accent text-accent-foreground'
+                            )}
+                          >
+                            <SectionIcon className="h-4 w-4 shrink-0" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="flex items-center gap-4">
+                          {section.title}
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : (
+                      <button
+                        onClick={() => toggleSection(section.title)}
+                        className={cn(
+                          'flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm font-medium hover:bg-accent transition-colors',
+                          isActive && 'bg-accent text-accent-foreground'
+                        )}
+                      >
+                        <SectionIcon className="h-4 w-4 shrink-0" />
+                        <span className="flex-1 text-left truncate">{section.title}</span>
                         <ChevronDown
                           className={cn(
                             'h-4 w-4 transition-transform shrink-0',
                             isExpanded && 'rotate-180'
                           )}
                         />
-                      </>
+                      </button>
                     )}
-                  </button>
-                </SidebarGroupLabel>
+                  </SidebarGroupLabel>
 
-                {!isCollapsed && isExpanded && section.children && (
-                  <SidebarGroupContent>
-                    <SidebarMenu>
-                      {section.children.map((child) => {
-                        const ChildIcon = child.icon;
-                        return (
-                          <SidebarMenuItem key={child.path}>
-                            <SidebarMenuButton asChild>
-                              <NavLink
-                                to={child.path}
-                                className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-muted rounded-md transition-colors"
-                                activeClassName="bg-muted text-primary font-medium"
-                              >
-                                <ChildIcon className="h-3.5 w-3.5 shrink-0" />
-                                <span className="whitespace-nowrap">{child.title}</span>
-                              </NavLink>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        );
-                      })}
-                    </SidebarMenu>
-                  </SidebarGroupContent>
-                )}
-              </SidebarGroup>
-            );
-          })}
-        </ScrollArea>
-      </SidebarContent>
-    </Sidebar>
+                  {!isCollapsed && isExpanded && section.children && (
+                    <SidebarGroupContent>
+                      <SidebarMenu>
+                        {section.children.map((child) => {
+                          const ChildIcon = child.icon;
+                          return (
+                            <SidebarMenuItem key={child.path}>
+                              <SidebarMenuButton asChild>
+                                <NavLink
+                                  to={child.path}
+                                  className="flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-muted rounded-md transition-colors"
+                                  activeClassName="bg-muted text-primary font-medium"
+                                >
+                                  <ChildIcon className="h-3.5 w-3.5 shrink-0" />
+                                  <span className="truncate">{child.title}</span>
+                                </NavLink>
+                              </SidebarMenuButton>
+                            </SidebarMenuItem>
+                          );
+                        })}
+                      </SidebarMenu>
+                    </SidebarGroupContent>
+                  )}
+                </SidebarGroup>
+              );
+            })}
+          </ScrollArea>
+        </SidebarContent>
+      </Sidebar>
+    </TooltipProvider>
   );
 }
 
