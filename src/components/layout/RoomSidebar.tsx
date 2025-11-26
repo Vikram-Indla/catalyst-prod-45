@@ -15,7 +15,7 @@ import { NavLink } from '@/components/NavLink';
 import {
   Target, Layers, TrendingUp, Rocket, CheckSquare, FolderKanban, Map, Link2, BarChart,
   LayoutDashboard, Calendar, AlertTriangle, BarChart3, ListTodo, ClipboardList,
-  Settings, GitMerge, FileText, Users,
+  Settings, GitMerge, FileText, Users, Zap, Activity,
 } from 'lucide-react';
 
 /**
@@ -97,6 +97,7 @@ const programViews: ViewGroup[] = [
       { title: 'PI Planning', path: '/pis', icon: Calendar },
       { title: 'Capacity Planning', path: '/capacity', icon: BarChart3 },
       { title: 'Release Calendar', path: '/release-train-calendar', icon: Calendar },
+      { title: 'Value Stream', path: '/value-stream', icon: TrendingUp },
     ],
   },
   {
@@ -155,6 +156,9 @@ const adminViews: ViewGroup[] = [
     views: [
       { title: 'Integrations', path: '/admin/integrations', icon: Link2 },
       { title: 'Activity Log', path: '/admin/activity-log', icon: ClipboardList },
+      { title: 'Reports Discovery', path: '/reports-discovery', icon: BarChart },
+      { title: 'PI Wizard', path: '/pi-wizard', icon: Zap },
+      { title: 'Jira Integration', path: '/jira-integration', icon: Link2 },
     ],
   },
 ];

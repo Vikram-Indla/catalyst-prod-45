@@ -273,10 +273,13 @@ export type Database = {
       }
       dependencies: {
         Row: {
+          blocked_days: number | null
           created_at: string | null
+          criticality_score: number | null
           due_iteration_id: string | null
           from_feature_id: string
           id: string
+          resolution_plan: string | null
           risk_level: Database["public"]["Enums"]["risk_level"] | null
           status: Database["public"]["Enums"]["dependency_status"] | null
           to_feature_id: string
@@ -284,10 +287,13 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          blocked_days?: number | null
           created_at?: string | null
+          criticality_score?: number | null
           due_iteration_id?: string | null
           from_feature_id: string
           id?: string
+          resolution_plan?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
           status?: Database["public"]["Enums"]["dependency_status"] | null
           to_feature_id: string
@@ -295,10 +301,13 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          blocked_days?: number | null
           created_at?: string | null
+          criticality_score?: number | null
           due_iteration_id?: string | null
           from_feature_id?: string
           id?: string
+          resolution_plan?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
           status?: Database["public"]["Enums"]["dependency_status"] | null
           to_feature_id?: string
@@ -388,6 +397,45 @@ export type Database = {
             columns: ["theme_id"]
             isOneToOne: false
             referencedRelation: "strategic_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      feature_pi_objective_links: {
+        Row: {
+          contribution_pct: number | null
+          created_at: string | null
+          feature_id: string
+          id: string
+          pi_objective_id: string
+        }
+        Insert: {
+          contribution_pct?: number | null
+          created_at?: string | null
+          feature_id: string
+          id?: string
+          pi_objective_id: string
+        }
+        Update: {
+          contribution_pct?: number | null
+          created_at?: string | null
+          feature_id?: string
+          id?: string
+          pi_objective_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_pi_objective_links_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_pi_objective_links_pi_objective_id_fkey"
+            columns: ["pi_objective_id"]
+            isOneToOne: false
+            referencedRelation: "pi_objectives"
             referencedColumns: ["id"]
           },
         ]
@@ -1099,6 +1147,63 @@ export type Database = {
         }
         Relationships: []
       }
+      predictability_metrics: {
+        Row: {
+          actual_bv: number | null
+          commitment_reliability: number | null
+          completed_features: number | null
+          created_at: string | null
+          id: string
+          pi_id: string
+          planned_bv: number | null
+          planned_features: number | null
+          predictability_score: number | null
+          program_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_bv?: number | null
+          commitment_reliability?: number | null
+          completed_features?: number | null
+          created_at?: string | null
+          id?: string
+          pi_id: string
+          planned_bv?: number | null
+          planned_features?: number | null
+          predictability_score?: number | null
+          program_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_bv?: number | null
+          commitment_reliability?: number | null
+          completed_features?: number | null
+          created_at?: string | null
+          id?: string
+          pi_id?: string
+          planned_bv?: number | null
+          planned_features?: number | null
+          predictability_score?: number | null
+          program_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictability_metrics_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictability_metrics_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -1404,6 +1509,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      report_definitions: {
+        Row: {
+          category: string
+          config_json: Json | null
+          created_at: string | null
+          description: string | null
+          enabled: boolean | null
+          id: string
+          name: string
+          report_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          category: string
+          config_json?: Json | null
+          created_at?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          id?: string
+          name: string
+          report_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string
+          config_json?: Json | null
+          created_at?: string | null
+          description?: string | null
+          enabled?: boolean | null
+          id?: string
+          name?: string
+          report_type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       risks: {
         Row: {
@@ -1836,6 +1977,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      value_stream_metrics: {
+        Row: {
+          created_at: string | null
+          cycle_time_days: number | null
+          flow_efficiency: number | null
+          id: string
+          lead_time_days: number | null
+          metric_date: string
+          portfolio_id: string
+          throughput: number | null
+          wip_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          cycle_time_days?: number | null
+          flow_efficiency?: number | null
+          id?: string
+          lead_time_days?: number | null
+          metric_date: string
+          portfolio_id: string
+          throughput?: number | null
+          wip_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          cycle_time_days?: number | null
+          flow_efficiency?: number | null
+          id?: string
+          lead_time_days?: number | null
+          metric_date?: string
+          portfolio_id?: string
+          throughput?: number | null
+          wip_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "value_stream_metrics_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

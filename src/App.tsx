@@ -40,6 +40,10 @@ import Permissions from "./pages/admin/Permissions";
 import Integrations from "./pages/admin/Integrations";
 import ActivityLog from "./pages/admin/ActivityLog";
 import UserRoles from "./pages/admin/UserRoles";
+import ReportsDiscovery from "./pages/admin/ReportsDiscovery";
+import PIWizard from "./pages/admin/PIWizard";
+import JiraIntegration from "./pages/admin/JiraIntegration";
+import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
 import ProgramInsights from "./pages/insights/ProgramInsights";
 import TeamInsights from "./pages/insights/TeamInsights";
@@ -100,6 +104,10 @@ const App = () => (
               <Route path="/admin/permissions" element={<AdminGuard><Permissions /></AdminGuard>} />
               <Route path="/admin/integrations" element={<AdminGuard><Integrations /></AdminGuard>} />
               <Route path="/admin/activity-log" element={<AdminGuard><ActivityLog /></AdminGuard>} />
+              <Route path="/reports-discovery" element={<AdminGuard><ReportsDiscovery /></AdminGuard>} />
+              <Route path="/pi-wizard" element={<AdminGuard><PIWizard /></AdminGuard>} />
+              <Route path="/jira-integration" element={<AdminGuard><JiraIntegration /></AdminGuard>} />
+              <Route path="/value-stream" element={<ValueStreamView />} />
               <Route path="/profile" element={<UserProfile />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
