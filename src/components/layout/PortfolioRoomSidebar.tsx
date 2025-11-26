@@ -41,16 +41,16 @@ type MenuItem =
 
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
-  { id: 'epics', label: 'Epics', icon: Diamond, path: '/portfolio/:portfolioId/epics' },
-  { id: 'backlog', label: 'Backlog', icon: List, path: '/portfolio/:portfolioId/backlog' },
-  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/portfolio/:portfolioId/roadmaps' },
-  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/portfolio/:portfolioId/objective-tree' },
+  { id: 'epics', label: 'Epics', icon: Diamond, path: '/backlog/epics' },
+  { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics' },
+  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps' },
+  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/portfolio/:portfolioId/forecast' },
-  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/portfolio/:portfolioId/capacity' },
+  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity' },
   { type: 'divider' },
   { id: 'more-items', label: 'More items', icon: MoreHorizontal, expandable: true },
-  { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
+  { id: 'reports', label: 'Reports', icon: FileText, path: '/reports-discovery' },
   { id: 'more-pages', label: 'More pages', icon: FolderTree, expandable: true },
   { type: 'divider' },
   { id: 'programs', label: 'Programs', icon: UsersIcon, path: '/portfolio/:portfolioId/programs' },
@@ -67,14 +67,20 @@ export function PortfolioRoomSidebar({
   const location = useLocation();
 
   const handleNavigation = (path: string) => {
-    const resolvedPath = path.replace(':portfolioId', portfolioId);
+    // Don't resolve portfolioId for global routes
+    const resolvedPath = path.includes(':portfolioId') 
+      ? path.replace(':portfolioId', portfolioId)
+      : path;
     navigate(resolvedPath + (selectedPI ? `?pi=${selectedPI}` : ''));
   };
 
   const isActive = (path?: string) => {
     if (!path) return false;
-    const resolvedPath = path.replace(':portfolioId', portfolioId);
-    return location.pathname === resolvedPath;
+    // Check both resolved portfolio path and global path
+    const resolvedPath = path.includes(':portfolioId')
+      ? path.replace(':portfolioId', portfolioId)
+      : path;
+    return location.pathname === resolvedPath || location.pathname.startsWith(resolvedPath);
   };
 
   return (
