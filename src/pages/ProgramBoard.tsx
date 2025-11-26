@@ -13,7 +13,8 @@ import { HealthBadge } from '@/components/shared/HealthBadge';
 import { WSJFBadge } from '@/components/shared/WSJFBadge';
 import { PISelector } from '@/components/shared/PISelector';
 import { DependencyConnector } from '@/components/shared/DependencyConnector';
-import { AlertCircle, AlertTriangle, Calendar, Users, TrendingUp } from 'lucide-react';
+import FeaturePIObjectiveLinkDialog from '@/components/forms/FeaturePIObjectiveLinkDialog';
+import { AlertCircle, AlertTriangle, Calendar, Users, TrendingUp, Target } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -33,6 +34,7 @@ export default function ProgramBoard() {
   // Local state for board configuration
   const [swimlaneByTeam, setSwimlaneByTeam] = useState(true);
   const [showUnassigned, setShowUnassigned] = useState(true);
+  const [linkingFeatureId, setLinkingFeatureId] = useState<string | null>(null);
 
   const { data: programs } = useQuery({
     queryKey: ['programs'],
@@ -265,44 +267,56 @@ export default function ProgramBoard() {
                               {getFeaturesByIteration(iteration.id, team.id).map((feature, index) => (
                                 <Draggable key={feature.id} draggableId={feature.id} index={index}>
                                   {(provided) => (
-                                    <div
-                                   ref={provided.innerRef}
-                                   {...provided.draggableProps}
-                                   {...provided.dragHandleProps}
-                                   data-feature-id={feature.id}
-                                   className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
-                                     feature.blocked ? 'border-destructive border-2' : ''
-                                   }`}
-                                    >
-                                      <div className="flex items-start justify-between gap-2">
-                                        <span className="text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
-                                        <div className="flex items-center gap-1">
-                                          {feature.blocked && (
-                                            <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
-                                          )}
-                                          <HealthBadge health={feature.health} />
-                                        </div>
-                                      </div>
-                                      <div className="flex items-center gap-2 flex-wrap">
-                                        <Badge variant="outline" className="text-xs">
-                                          {feature.epics?.name}
-                                        </Badge>
-                                        {feature.estimate_points && (
-                                          <Badge variant="secondary" className="text-xs">
-                                            {feature.estimate_points} pts
-                                          </Badge>
-                                        )}
-                                        {feature.wsjf_score && (
-                                          <WSJFBadge 
-                                            score={feature.wsjf_score}
-                                            businessValue={feature.business_value}
-                                            timeCriticality={feature.time_criticality}
-                                            riskReduction={feature.risk_reduction}
-                                            jobSize={feature.job_size}
-                                          />
-                                        )}
-                                      </div>
-                                    </div>
+                                     <div
+                                       ref={provided.innerRef}
+                                       {...provided.draggableProps}
+                                       {...provided.dragHandleProps}
+                                       data-feature-id={feature.id}
+                                       className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
+                                         feature.blocked ? 'border-destructive border-2' : ''
+                                       }`}
+                                     >
+                                       <div className="flex items-start justify-between gap-2">
+                                         <span className="text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
+                                         <div className="flex items-center gap-1">
+                                           {feature.blocked && (
+                                             <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                                           )}
+                                           <HealthBadge health={feature.health} />
+                                         </div>
+                                       </div>
+                                       <div className="flex items-center gap-2 flex-wrap">
+                                         <Badge variant="outline" className="text-xs">
+                                           {feature.epics?.name}
+                                         </Badge>
+                                         {feature.estimate_points && (
+                                           <Badge variant="secondary" className="text-xs">
+                                             {feature.estimate_points} pts
+                                           </Badge>
+                                         )}
+                                         {feature.wsjf_score && (
+                                           <WSJFBadge 
+                                             score={feature.wsjf_score}
+                                             businessValue={feature.business_value}
+                                             timeCriticality={feature.time_criticality}
+                                             riskReduction={feature.risk_reduction}
+                                             jobSize={feature.job_size}
+                                           />
+                                         )}
+                                       </div>
+                                       <Button
+                                         variant="ghost"
+                                         size="sm"
+                                         className="w-full h-7 text-xs"
+                                         onClick={(e) => {
+                                           e.stopPropagation();
+                                           setLinkingFeatureId(feature.id);
+                                         }}
+                                       >
+                                         <Target className="h-3 w-3 mr-1" />
+                                         Link to Objectives
+                                       </Button>
+                                     </div>
                                   )}
                                 </Draggable>
                               ))}
@@ -533,6 +547,16 @@ export default function ProgramBoard() {
             )}
           </div>
         </DragDropContext>
+      )}
+
+      {linkingFeatureId && selectedProgramId && selectedPIIds?.[0] && (
+        <FeaturePIObjectiveLinkDialog
+          featureId={linkingFeatureId}
+          programId={selectedProgramId}
+          piId={selectedPIIds[0]}
+          open={!!linkingFeatureId}
+          onOpenChange={() => setLinkingFeatureId(null)}
+        />
       )}
     </div>
   );

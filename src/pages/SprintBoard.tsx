@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -7,15 +7,34 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Database } from '@/integrations/supabase/types';
+import { useToast } from '@/hooks/use-toast';
+import { Settings, AlertCircle } from 'lucide-react';
 
 type StoryStatus = Database['public']['Enums']['story_status'];
 
+interface ColumnConfig {
+  status: StoryStatus;
+  title: string;
+  wipLimit?: number;
+}
+
 export default function SprintBoard() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [selectedTeamId, setSelectedTeamId] = useState<string>('');
   const [selectedSprintId, setSelectedSprintId] = useState<string>('');
   const [swimlaneByAssignee, setSwimlaneByAssignee] = useState(false);
+  const [configDialogOpen, setConfigDialogOpen] = useState(false);
+  const [columns, setColumns] = useState<ColumnConfig[]>([
+    { status: 'todo', title: 'To Do', wipLimit: 10 },
+    { status: 'in_progress', title: 'In Progress', wipLimit: 5 },
+    { status: 'done', title: 'Done' },
+  ]);
 
   const { data: teams } = useQuery({
     queryKey: ['teams'],
@@ -47,7 +66,7 @@ export default function SprintBoard() {
       if (!selectedSprintId) return [];
       const { data, error } = await supabase
         .from('stories')
-        .select('*, features(name)')
+        .select('*, features(name), profiles!stories_assignee_id_fkey(full_name)')
         .eq('sprint_id', selectedSprintId);
       if (error) throw error;
       return data;
@@ -55,23 +74,41 @@ export default function SprintBoard() {
     enabled: !!selectedSprintId,
   });
 
+  const updateStoryMutation = useMutation({
+    mutationFn: async ({ storyId, status }: { storyId: string; status: StoryStatus }) => {
+      const { error } = await supabase
+        .from('stories')
+        .update({ status })
+        .eq('id', storyId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['stories'] });
+      toast({ title: "Story updated", description: "Status changed successfully" });
+    },
+  });
+
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
 
     const storyId = result.draggableId;
     const newStatus = result.destination.droppableId as StoryStatus;
+    
+    // Check WIP limit
+    const targetColumn = columns.find(c => c.status === newStatus);
+    const currentCount = getStoriesByStatus(newStatus).length;
+    
+    if (targetColumn?.wipLimit && currentCount >= targetColumn.wipLimit && newStatus !== 'done') {
+      toast({
+        title: "WIP Limit Exceeded",
+        description: `Cannot exceed ${targetColumn.wipLimit} items in ${targetColumn.title}`,
+        variant: "destructive",
+      });
+      return;
+    }
 
-    await supabase
-      .from('stories')
-      .update({ status: newStatus })
-      .eq('id', storyId);
+    updateStoryMutation.mutate({ storyId, status: newStatus });
   };
-
-  const columns: { status: StoryStatus; title: string }[] = [
-    { status: 'todo', title: 'To Do' },
-    { status: 'in_progress', title: 'In Progress' },
-    { status: 'done', title: 'Done' },
-  ];
 
   const getStoriesByStatus = (status: StoryStatus, assigneeId?: string) => {
     return stories?.filter(s => {
@@ -82,8 +119,87 @@ export default function SprintBoard() {
   };
 
   const getUniqueAssignees = () => {
-    const assignees = stories?.filter(s => s.assignee_id).map(s => s.assignee_id);
-    return [...new Set(assignees)];
+    const assignees = stories?.filter(s => s.assignee_id).map(s => ({
+      id: s.assignee_id,
+      name: (s.profiles as any)?.full_name || 'Unassigned'
+    }));
+    const uniqueMap = new Map();
+    assignees?.forEach(a => uniqueMap.set(a.id, a));
+    return Array.from(uniqueMap.values());
+  };
+
+  const renderStoryCard = (story: any) => (
+    <div className="p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow">
+      <div className="font-medium text-sm line-clamp-2">{story.name}</div>
+      <div className="flex items-center justify-between">
+        <Badge variant="outline" className="text-xs">
+          {story.features?.name}
+        </Badge>
+        {story.estimate_points && (
+          <Badge variant="secondary" className="text-xs">
+            {story.estimate_points} pts
+          </Badge>
+        )}
+      </div>
+      {story.assignee_id && (
+        <div className="flex items-center gap-2">
+          <Avatar className="h-5 w-5">
+            <AvatarFallback className="text-xs">
+              {((story.profiles as any)?.full_name || 'U').slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <span className="text-xs text-muted-foreground">
+            {(story.profiles as any)?.full_name || 'Unassigned'}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderColumn = (column: ColumnConfig, assigneeId?: string) => {
+    const columnStories = getStoriesByStatus(column.status, assigneeId);
+    const isOverLimit = column.wipLimit && columnStories.length > column.wipLimit;
+
+    return (
+      <Droppable key={`${column.status}-${assigneeId || 'all'}`} droppableId={column.status}>
+        {(provided, snapshot) => (
+          <Card
+            ref={provided.innerRef}
+            {...provided.droppableProps}
+            className={`p-4 min-h-[400px] ${snapshot.isDraggingOver ? 'bg-accent/5' : ''}`}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-medium flex items-center gap-2">
+                <span>{column.title}</span>
+                <Badge variant="secondary">{columnStories.length}</Badge>
+              </h4>
+              {column.wipLimit && (
+                <div className={`text-xs flex items-center gap-1 ${isOverLimit ? 'text-destructive' : 'text-muted-foreground'}`}>
+                  {isOverLimit && <AlertCircle className="h-3 w-3" />}
+                  <span>Limit: {column.wipLimit}</span>
+                </div>
+              )}
+            </div>
+            <div className="space-y-2">
+              {columnStories.map((story, index) => (
+                <Draggable key={story.id} draggableId={story.id} index={index}>
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      {renderStoryCard(story)}
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
+          </Card>
+        )}
+      </Droppable>
+    );
   };
 
   return (
@@ -91,15 +207,21 @@ export default function SprintBoard() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Sprint Board</h1>
-          <p className="text-muted-foreground">Manage sprint work items</p>
+          <p className="text-muted-foreground">Manage sprint work items with WIP limits</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Switch
-            id="swimlane-mode"
-            checked={swimlaneByAssignee}
-            onCheckedChange={setSwimlaneByAssignee}
-          />
-          <Label htmlFor="swimlane-mode">Swimlane by Assignee</Label>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Switch
+              id="swimlane-mode"
+              checked={swimlaneByAssignee}
+              onCheckedChange={setSwimlaneByAssignee}
+            />
+            <Label htmlFor="swimlane-mode">Swimlane by Assignee</Label>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setConfigDialogOpen(true)}>
+            <Settings className="h-4 w-4 mr-2" />
+            Configure
+          </Button>
         </div>
       </div>
 
@@ -135,114 +257,69 @@ export default function SprintBoard() {
         <DragDropContext onDragEnd={handleDragEnd}>
           {swimlaneByAssignee ? (
             <div className="space-y-6">
-              {getUniqueAssignees().map((assigneeId) => (
-                <div key={assigneeId} className="space-y-2">
-                  <h3 className="text-lg font-semibold">Assignee {assigneeId?.slice(0, 8)}</h3>
+              {getUniqueAssignees().map((assignee) => (
+                <div key={assignee.id} className="space-y-2">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Avatar className="h-6 w-6">
+                      <AvatarFallback className="text-xs">
+                        {assignee.name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    {assignee.name}
+                  </h3>
                   <div className="grid grid-cols-3 gap-4">
-                    {columns.map((column) => (
-                      <Droppable key={column.status} droppableId={column.status}>
-                        {(provided) => (
-                          <Card
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                            className="p-4 min-h-[200px]"
-                          >
-                            <h4 className="font-medium mb-3">{column.title}</h4>
-                            <div className="space-y-2">
-                              {getStoriesByStatus(column.status, assigneeId).map((story, index) => (
-                                <Draggable key={story.id} draggableId={story.id} index={index}>
-                                  {(provided) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      className="p-3 bg-card border rounded-lg space-y-2"
-                                    >
-                                      <div className="font-medium text-sm line-clamp-2">{story.name}</div>
-                                      <div className="flex items-center justify-between">
-                                        <Badge variant="outline" className="text-xs">
-                                          {story.features?.name}
-                                        </Badge>
-                                        {story.estimate_points && (
-                                          <Badge variant="secondary" className="text-xs">
-                                            {story.estimate_points} pts
-                                          </Badge>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-                                </Draggable>
-                              ))}
-                              {provided.placeholder}
-                            </div>
-                          </Card>
-                        )}
-                      </Droppable>
-                    ))}
+                    {columns.map((column) => renderColumn(column, assignee.id))}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-4">
-              {columns.map((column) => (
-                <Droppable key={column.status} droppableId={column.status}>
-                  {(provided) => (
-                    <Card
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className="p-4 min-h-[600px]"
-                    >
-                      <h4 className="font-medium mb-4 flex items-center justify-between">
-                        <span>{column.title}</span>
-                        <Badge variant="secondary">
-                          {getStoriesByStatus(column.status).length}
-                        </Badge>
-                      </h4>
-                      <div className="space-y-2">
-                        {getStoriesByStatus(column.status).map((story, index) => (
-                          <Draggable key={story.id} draggableId={story.id} index={index}>
-                            {(provided) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className="p-3 bg-card border rounded-lg space-y-2"
-                              >
-                                <div className="font-medium text-sm line-clamp-2">{story.name}</div>
-                                <div className="flex items-center justify-between">
-                                  <Badge variant="outline" className="text-xs">
-                                    {story.features?.name}
-                                  </Badge>
-                                  {story.estimate_points && (
-                                    <Badge variant="secondary" className="text-xs">
-                                      {story.estimate_points} pts
-                                    </Badge>
-                                  )}
-                                </div>
-                                {story.assignee_id && (
-                                  <div className="flex items-center gap-2">
-                                    <Avatar className="h-5 w-5">
-                                      <AvatarFallback className="text-xs">
-                                        {story.assignee_id.slice(0, 2).toUpperCase()}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                        {provided.placeholder}
-                      </div>
-                    </Card>
-                  )}
-                </Droppable>
-              ))}
+              {columns.map((column) => renderColumn(column))}
             </div>
           )}
         </DragDropContext>
       )}
+
+      <Dialog open={configDialogOpen} onOpenChange={setConfigDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Board Configuration</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {columns.map((column, index) => (
+              <div key={column.status} className="space-y-2">
+                <Label>{column.title}</Label>
+                <div className="flex gap-2">
+                  <Input
+                    value={column.title}
+                    onChange={(e) => {
+                      const newColumns = [...columns];
+                      newColumns[index].title = e.target.value;
+                      setColumns(newColumns);
+                    }}
+                    placeholder="Column name"
+                  />
+                  <Input
+                    type="number"
+                    value={column.wipLimit || ''}
+                    onChange={(e) => {
+                      const newColumns = [...columns];
+                      newColumns[index].wipLimit = e.target.value ? parseInt(e.target.value) : undefined;
+                      setColumns(newColumns);
+                    }}
+                    placeholder="WIP limit"
+                    className="w-32"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setConfigDialogOpen(false)}>Save Configuration</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
