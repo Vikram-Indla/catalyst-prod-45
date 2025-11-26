@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useOKRHeatmap } from '@/hooks/useOKRHeatmap';
 
 interface HeatmapCell {
   percentage: number | null;
@@ -64,6 +65,7 @@ function getHeatmapCellColor(avgScore: number | null): string {
 }
 
 export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }: OkrHeatmapProps) {
+  const { data: heatmapData, isLoading } = useOKRHeatmap(selectedSnapshot, programIncrements);
   const [activeCell, setActiveCell] = useState<string | null>(null);
 
   const handleCellClick = (level: string, pi: string) => {

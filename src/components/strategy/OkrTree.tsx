@@ -4,141 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-
-interface OKRTreeItem {
-  id: string;
-  numericId: number;
-  title: string;
-  tier: 'strategic_goal' | 'portfolio' | 'program' | 'team';
-  score: number | null;
-  keyResultsProgress: number;
-  owner: {
-    id: string;
-    name: string;
-    avatar?: string;
-    initials: string;
-    avatarColor?: string;
-  };
-  children: OKRTreeItem[];
-  isExpanded?: boolean;
-}
+import { useOKRTree } from '@/hooks/useOKRTree';
 
 interface OkrTreeProps {
   selectedSnapshot: string;
   onObjectiveClick: (objective: any) => void;
 }
-
-// Mock data matching the specification
-const mockOkrTree: OKRTreeItem[] = [
-  {
-    id: 'sg-139',
-    numericId: 139,
-    title: 'Capitalize on Emerging Technology Trends',
-    tier: 'strategic_goal',
-    score: 0.6,
-    keyResultsProgress: 60,
-    owner: {
-      id: 'u-1',
-      name: 'Executive Team',
-      initials: 'ET',
-      avatarColor: '#6554C0'
-    },
-    children: [
-      {
-        id: 'po-3593',
-        numericId: 3593,
-        title: 'Become market leader in mobile investment and banking space',
-        tier: 'portfolio',
-        score: 0.8,
-        keyResultsProgress: 80,
-        owner: {
-          id: 'u-2',
-          name: 'Steve Elliott',
-          initials: 'SE',
-          avatarColor: '#36B37E'
-        },
-        children: [
-          {
-            id: 'pro-3595',
-            numericId: 3595,
-            title: 'Become Leading Financial App in Android Marketplace',
-            tier: 'program',
-            score: 0.9,
-            keyResultsProgress: 90,
-            owner: {
-              id: 'u-3',
-              name: 'Sarah Johnson',
-              initials: 'SJ',
-              avatarColor: '#0052CC'
-            },
-            children: [
-              {
-                id: 'to-3594',
-                numericId: 3594,
-                title: 'Grow Android Daily Active Users',
-                tier: 'team',
-                score: 0.4,
-                keyResultsProgress: 40,
-                owner: {
-                  id: 'u-4',
-                  name: 'Bob Owner',
-                  initials: 'BO',
-                  avatarColor: '#FFAB00'
-                },
-                children: []
-              },
-              {
-                id: 'to-3598',
-                numericId: 3598,
-                title: 'High Android Marketplace Rating',
-                tier: 'team',
-                score: 0.6,
-                keyResultsProgress: 60,
-                owner: {
-                  id: 'u-5',
-                  name: 'Alice Manager',
-                  initials: 'AM',
-                  avatarColor: '#00B8D9'
-                },
-                children: []
-              },
-              {
-                id: 'to-3599',
-                numericId: 3599,
-                title: 'Increase user retention and reduce churn',
-                tier: 'team',
-                score: 0.6,
-                keyResultsProgress: 60,
-                owner: {
-                  id: 'u-6',
-                  name: 'Carol Lead',
-                  initials: 'CL',
-                  avatarColor: '#6554C0'
-                },
-                children: []
-              }
-            ]
-          },
-          {
-            id: 'pro-3597',
-            numericId: 3597,
-            title: 'Become Leading Financial App in iOS Marketplace',
-            tier: 'program',
-            score: 0.7,
-            keyResultsProgress: 70,
-            owner: {
-              id: 'u-7',
-              name: 'David PM',
-              initials: 'DP',
-              avatarColor: '#36B37E'
-            },
-            children: []
-          }
-        ]
-      }
-    ]
-  }
-];
 
 function getScoreColor(score: number | null): string {
   if (score === null) return 'hsl(var(--okr-score-none))';
@@ -163,7 +34,8 @@ function getLevelLabel(tier: string): string {
 }
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(['sg-139', 'po-3593', 'pro-3595']));
+  const { data: treeData = [], isLoading } = useOKRTree(selectedSnapshot);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
 
   const toggleExpand = (id: string) => {
@@ -176,7 +48,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
     setExpandedIds(newExpanded);
   };
 
-  const renderObjective = (item: OKRTreeItem, depth: number = 0, parentTier?: string) => {
+  const renderObjective = (item: any, depth: number = 0, parentTier?: string) => {
     const hasChildren = item.children.length > 0;
     const isExpanded = expandedIds.has(item.id);
     const showLevelHeader = !parentTier || parentTier !== item.tier;
@@ -184,7 +56,6 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
 
     return (
       <div key={item.id}>
-        {/* Level Header - shows when tier changes */}
         {showLevelHeader && (
           <div
             className="grid items-center py-3 px-4 bg-muted/50 border-b font-semibold text-sm"
@@ -200,7 +71,6 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
           </div>
         )}
 
-        {/* Objective Row */}
         <div
           className="grid items-center py-3 px-4 border-b hover:bg-muted/30 cursor-pointer transition-colors"
           style={{
@@ -209,7 +79,6 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
           }}
           onClick={() => onObjectiveClick(item)}
         >
-          {/* Title column with expand arrow */}
           <div className="flex items-center gap-2">
             {hasChildren ? (
               <button
@@ -220,7 +89,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
                 className="flex items-center justify-center w-5 h-5 text-muted-foreground hover:text-foreground transition-transform"
                 style={{ transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)' }}
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 w-4" />
               </button>
             ) : (
               <div className="w-5" />
@@ -229,7 +98,6 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
             <span className="text-sm text-primary hover:underline">{item.title}</span>
           </div>
 
-          {/* Progress Bar */}
           <div className="flex justify-center px-2">
             <div className="w-full max-w-[120px] h-2 bg-border rounded-full overflow-hidden">
               <div
@@ -242,19 +110,14 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
             </div>
           </div>
 
-          {/* Score */}
           <div className="text-center">
-            <span
-              className="text-sm font-semibold"
-              style={{ color: getScoreColor(item.score) }}
-            >
+            <span className="text-sm font-semibold" style={{ color: getScoreColor(item.score) }}>
               {formatScore(item.score)}
             </span>
           </div>
 
-          {/* Owner Avatar */}
           <div className="flex justify-center">
-            <Avatar className="h-8 w-8" style={{ backgroundColor: item.owner.avatarColor }}>
+            <Avatar className="h-8 w-8" style={{ backgroundColor: item.owner.avatarColor || '#6554C0' }}>
               <AvatarFallback className="text-white text-xs font-semibold">
                 {item.owner.initials}
               </AvatarFallback>
@@ -262,11 +125,22 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
           </div>
         </div>
 
-        {/* Children */}
-        {isExpanded && item.children.map((child) => renderObjective(child, depth + 1, item.tier))}
+        {isExpanded && item.children.map((child: any) => renderObjective(child, depth + 1, item.tier))}
       </div>
     );
   };
+
+  if (isLoading) {
+    return (
+      <Card className="border rounded-lg">
+        <CardContent className="p-8">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border rounded-lg">
@@ -297,7 +171,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
       </CardHeader>
       <CardContent>
         <div className="border rounded-md overflow-hidden">
-          {mockOkrTree.map((item) => renderObjective(item, 0))}
+          {treeData.length > 0 ? (
+            treeData.map((item) => renderObjective(item, 0))
+          ) : (
+            <div className="p-8 text-center text-muted-foreground">
+              No objectives found for this snapshot
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
