@@ -12,6 +12,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { WSJFBadge } from '@/components/shared/WSJFBadge';
 import { PISelector } from '@/components/shared/PISelector';
+import { DependencyConnector } from '@/components/shared/DependencyConnector';
 import { AlertCircle, AlertTriangle, Calendar, Users, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
@@ -209,7 +210,7 @@ export default function ProgramBoard() {
 
       {selectedProgramId && selectedPIIds.length > 0 && (
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="space-y-6">
+          <div id="program-board-container" className="space-y-6 relative">
             {swimlaneByTeam ? (
               teams?.map((team) => (
                 <div key={team.id} className="space-y-2">
@@ -265,12 +266,13 @@ export default function ProgramBoard() {
                                 <Draggable key={feature.id} draggableId={feature.id} index={index}>
                                   {(provided) => (
                                     <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
-                                        feature.blocked ? 'border-destructive border-2' : ''
-                                      }`}
+                                   ref={provided.innerRef}
+                                   {...provided.draggableProps}
+                                   {...provided.dragHandleProps}
+                                   data-feature-id={feature.id}
+                                   className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
+                                     feature.blocked ? 'border-destructive border-2' : ''
+                                   }`}
                                     >
                                       <div className="flex items-start justify-between gap-2">
                                         <span className="text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
@@ -357,12 +359,13 @@ export default function ProgramBoard() {
                             <Draggable key={feature.id} draggableId={feature.id} index={index}>
                               {(provided) => (
                                 <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
-                                    feature.blocked ? 'border-destructive border-2' : ''
-                                  }`}
+                                 ref={provided.innerRef}
+                                 {...provided.draggableProps}
+                                 {...provided.dragHandleProps}
+                                 data-feature-id={feature.id}
+                                 className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
+                                   feature.blocked ? 'border-destructive border-2' : ''
+                                 }`}
                                 >
                                   <div className="flex items-start justify-between gap-2">
                                     <span className="text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
@@ -427,12 +430,13 @@ export default function ProgramBoard() {
                           <Draggable key={feature.id} draggableId={feature.id} index={index}>
                             {(provided) => (
                               <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
-                                  feature.blocked ? 'border-destructive border-2' : ''
-                                }`}
+                               ref={provided.innerRef}
+                               {...provided.draggableProps}
+                               {...provided.dragHandleProps}
+                               data-feature-id={feature.id}
+                               className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
+                                 feature.blocked ? 'border-destructive border-2' : ''
+                               }`}
                               >
                                 <div className="flex items-start justify-between gap-2">
                                   <span className="text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
@@ -474,26 +478,56 @@ export default function ProgramBoard() {
               </div>
             )}
 
+            {/* Visual Dependency Connectors */}
+            {dependencies && dependencies.length > 0 && (
+              <DependencyConnector 
+                dependencies={dependencies} 
+                containerId="program-board-container" 
+              />
+            )}
+
+            {/* Dependencies Legend */}
             {dependencies && dependencies.length > 0 && (
               <Card className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <AlertCircle className="h-4 w-4 text-warning" />
-                  <h4 className="font-medium">Dependencies</h4>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className="h-4 w-4 text-muted-foreground" />
+                    <h4 className="font-medium">Dependencies ({dependencies.length})</h4>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-px bg-primary" />
+                      <span>Sequential</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-px border-t-2 border-dashed border-primary" />
+                      <span>Concurrent</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  {dependencies.map((dep) => (
-                    <div key={dep.id} className="text-sm flex items-center gap-2">
-                      <Badge variant="outline">{dep.from_feature?.name}</Badge>
-                      <span className="text-muted-foreground">→</span>
-                      <Badge variant="outline">{dep.to_feature?.name}</Badge>
-                      <Badge className={`ml-auto ${
-                        dep.risk_level === 'high' ? 'bg-destructive' :
-                        dep.risk_level === 'med' ? 'bg-warning' : 'bg-success'
-                      }`}>
+                <div className="grid grid-cols-3 gap-2">
+                  {dependencies.slice(0, 6).map((dep) => (
+                    <div key={dep.id} className="text-xs flex items-center gap-2 p-2 rounded bg-muted/50">
+                      <Badge 
+                        variant={
+                          dep.risk_level === 'high' ? 'destructive' :
+                          dep.risk_level === 'med' ? 'secondary' : 
+                          'outline'
+                        }
+                        className="h-5 px-1.5"
+                      >
                         {dep.risk_level}
                       </Badge>
+                      <span className="truncate text-muted-foreground">
+                        {dep.from_feature?.name?.slice(0, 12)}... → {dep.to_feature?.name?.slice(0, 12)}...
+                      </span>
                     </div>
                   ))}
+                  {dependencies.length > 6 && (
+                    <div className="text-xs flex items-center justify-center p-2 rounded bg-muted/50 text-muted-foreground">
+                      +{dependencies.length - 6} more
+                    </div>
+                  )}
                 </div>
               </Card>
             )}
