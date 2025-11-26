@@ -49,11 +49,9 @@ const menuItems: MenuItem[] = [
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/portfolio/:portfolioId/forecast' },
-  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity' },
   { id: 'more-items', label: 'More items', icon: MoreHorizontal, expandable: true },
   { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
   { id: 'more-pages', label: 'More pages', icon: FolderTree, expandable: true },
-  { id: 'programs', label: 'Programs', icon: UsersIcon, expandable: true },
 ];
 
 export function PortfolioRoomSidebar({ 
@@ -106,21 +104,11 @@ export function PortfolioRoomSidebar({
       </button>
 
       <div className="h-full flex flex-col overflow-hidden">
-        {/* Portfolio Context Header */}
-        <div className={cn("p-4 border-b", !expanded && "px-2")}>
+        {/* Context Filters */}
+        <div className={cn("p-4 border-b space-y-4", !expanded && "px-2")}>
           {expanded ? (
             <>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-                  DS
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-foreground truncate">Digital Services</div>
-                  <div className="text-xs text-muted-foreground">Portfolio</div>
-                </div>
-              </div>
-
-              {/* Program Increment Filter - Always shown */}
+              {/* Program Increment Filter */}
               <div>
                 <label className="text-[10px] font-semibold text-muted-foreground uppercase mb-1.5 block tracking-wide">
                   PROGRAM INCREMENT
@@ -133,6 +121,36 @@ export function PortfolioRoomSidebar({
                     <SelectItem value="pi-5">PI-5</SelectItem>
                     <SelectItem value="pi-6">PI-6</SelectItem>
                     <SelectItem value="pi-7">PI-7</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Team Filter */}
+              <div>
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase mb-1.5 block tracking-wide">
+                  TEAM
+                </label>
+                <Select>
+                  <SelectTrigger className="h-9 text-sm w-full bg-background">
+                    <SelectValue placeholder="PI-5 List" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pi-5-list">PI-5 List</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Epic Filter */}
+              <div>
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase mb-1.5 block tracking-wide">
+                  EPIC
+                </label>
+                <Select>
+                  <SelectTrigger className="h-9 text-sm w-full bg-background">
+                    <SelectValue placeholder="Select Epic" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="epic-1">Epic 1</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -175,7 +193,7 @@ export function PortfolioRoomSidebar({
           <div className="border-t">
             <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors">
               <Settings className="h-5 w-5 text-muted-foreground" />
-              <span className="text-left">Portfolios settings</span>
+              <span className="text-left">Settings</span>
             </button>
           </div>
         )}
