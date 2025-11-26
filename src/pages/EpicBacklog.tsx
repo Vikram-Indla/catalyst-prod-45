@@ -14,7 +14,10 @@ import { EpicBacklogKanbanColumn } from '@/components/epic-backlog/EpicBacklogKa
 import { EpicDetailsPanel } from '@/components/epic-backlog/EpicDetailsPanel';
 import { EpicColumnsDialog } from '@/components/epic-backlog/EpicColumnsDialog';
 import { EpicFiltersDialog } from '@/components/epic-backlog/EpicFiltersDialog';
-import { Search, Download, Settings, Filter, TrendingUp } from 'lucide-react';
+import { UnassignedBacklogSlideout } from '@/components/epic-backlog/UnassignedBacklogSlideout';
+import { PullRankDialog } from '@/components/epic-backlog/PullRankDialog';
+import { WSJFPrioritizationDialog } from '@/components/epic-backlog/WSJFPrioritizationDialog';
+import { Search, Download, Settings, Filter, TrendingUp, Layers, ArrowUpDown } from 'lucide-react';
 
 export default function EpicBacklog() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,6 +30,10 @@ export default function EpicBacklog() {
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [showUnassigned, setShowUnassigned] = useState(false);
+  const [unassignedSlideoutOpen, setUnassignedSlideoutOpen] = useState(false);
+  const [pullRankDialogOpen, setPullRankDialogOpen] = useState(false);
+  const [wsjfDialogOpen, setWsjfDialogOpen] = useState(false);
+  const [selectedEpicsForAction, setSelectedEpicsForAction] = useState<string[]>([]);
   const { toast } = useToast();
 
   // Fetch portfolios
@@ -111,6 +118,11 @@ export default function EpicBacklog() {
       return data || [];
     },
   });
+
+  // Get unassigned epics (not assigned to any PI)
+  const unassignedEpics = epics?.filter(epic => 
+    !epic.epic_program_increments || epic.epic_program_increments.length === 0
+  ) || [];
 
   // Calculate PI Progress
   const piProgress = selectedPI && selectedProgram ? { planned: 0, accepted: 0, percentage: 0 } : null;
@@ -201,9 +213,24 @@ export default function EpicBacklog() {
             Export
           </Button>
 
-          <Button variant="outline" size="sm">
+          {selectedProgram && (
+            <Button variant="outline" size="sm" onClick={() => setPullRankDialogOpen(true)}>
+              <ArrowUpDown className="h-4 w-4 mr-2" />
+              Pull Rank
+            </Button>
+          )}
+
+          <Button variant="outline" size="sm" onClick={() => {
+            setSelectedEpicsForAction(epics?.map(e => e.id) || []);
+            setWsjfDialogOpen(true);
+          }}>
             <TrendingUp className="h-4 w-4 mr-2" />
             Prioritize
+          </Button>
+
+          <Button variant="outline" size="sm" onClick={() => setUnassignedSlideoutOpen(true)}>
+            <Layers className="h-4 w-4 mr-2" />
+            Unassigned ({unassignedEpics.length})
           </Button>
         </div>
 
@@ -284,6 +311,28 @@ export default function EpicBacklog() {
       {/* Dialogs */}
       <EpicColumnsDialog open={columnsDialogOpen} onOpenChange={setColumnsDialogOpen} />
       <EpicFiltersDialog open={filtersDialogOpen} onOpenChange={setFiltersDialogOpen} />
+      
+      {/* Slideouts and Action Dialogs */}
+      <UnassignedBacklogSlideout
+        open={unassignedSlideoutOpen}
+        onClose={() => setUnassignedSlideoutOpen(false)}
+        epics={unassignedEpics}
+        onEpicSelect={setSelectedEpic}
+      />
+      
+      <PullRankDialog
+        open={pullRankDialogOpen}
+        onOpenChange={setPullRankDialogOpen}
+        epicIds={epics?.map(e => e.id) || []}
+        onSuccess={refetch}
+      />
+      
+      <WSJFPrioritizationDialog
+        open={wsjfDialogOpen}
+        onOpenChange={setWsjfDialogOpen}
+        epicIds={selectedEpicsForAction}
+        onSuccess={refetch}
+      />
     </div>
   );
 }

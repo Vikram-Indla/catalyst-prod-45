@@ -6,6 +6,7 @@ import {
 const workItems = [
   { key: 'themes', label: 'Themes', icon: Layers, color: 'bg-emerald-500' },
   { key: 'epics', label: 'Epics', icon: Diamond, color: 'bg-blue-500' },
+  { key: 'epic-backlog', label: 'Backlog → Epics', icon: Diamond, color: 'bg-purple-600' },
   { key: 'capabilities', label: 'Capabilities', icon: Box, color: 'bg-amber-500' },
   { key: 'features', label: 'Features', icon: Zap, color: 'bg-purple-500' },
   { key: 'stories', label: 'Stories', icon: BookOpen, color: 'bg-teal-500' },

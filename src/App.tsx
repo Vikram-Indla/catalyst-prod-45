@@ -68,6 +68,7 @@ import OKRHeatmap from "./pages/enterprise/OKRHeatmap";
 import OKRTree from "./pages/enterprise/OKRTree";
 import RoadmapsPage from "./pages/enterprise/Roadmaps";
 import SelfTest from "./pages/dev/SelfTest";
+import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 
 const queryClient = new QueryClient();
 
@@ -154,6 +155,7 @@ const App = () => (
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/items/:type" element={<PlaceholderPage />} />
               <Route path="/dev/self-test" element={<SelfTest />} />
+              <Route path="/dev/epic-backlog-tests" element={<EpicBacklogTests />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
