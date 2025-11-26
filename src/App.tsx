@@ -7,14 +7,11 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { AppShell } from "./components/layout/AppShell";
 import { JiraAlignShell } from "./components/layout/JiraAlignShell";
-import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Home from "./pages/jira-align/Home";
 import PortfolioRoomPage from "./pages/jira-align/PortfolioRoomPage";
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
-import PortfolioRoom from "./pages/PortfolioRoom";
 import StrategyRoom from "./pages/StrategyRoom";
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
@@ -69,26 +66,13 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Navigate to="/home" replace />} />
               <Route path="/auth" element={<Auth />} />
               
-              {/* Jira Align Style Routes */}
+              {/* All Routes - Jira Align Style */}
               <Route element={<ProtectedRoute><JiraAlignShell /></ProtectedRoute>}>
                 <Route path="/home" element={<Home />} />
-                <Route path="/portfolio-room-jira" element={<PortfolioRoomPage />} />
-                <Route path="/jira/epics" element={<PlaceholderPage />} />
-                <Route path="/jira/backlog" element={<PlaceholderPage />} />
-                <Route path="/jira/roadmaps" element={<PlaceholderPage />} />
-                <Route path="/jira/objective-tree" element={<PlaceholderPage />} />
-                <Route path="/jira/work-tree" element={<PlaceholderPage />} />
-                <Route path="/jira/forecast" element={<PlaceholderPage />} />
-                <Route path="/jira/capacity" element={<PlaceholderPage />} />
-                <Route path="/items/:type" element={<PlaceholderPage />} />
-              </Route>
-              
-              {/* Original Catalyst Routes */}
-            <Route element={<ProtectedRoute><AppShell /></ProtectedRoute>}>
-              <Route path="/portfolio-room" element={<PortfolioRoom />} />
+              <Route path="/portfolio-room" element={<PortfolioRoomPage />} />
               <Route path="/strategy-room" element={<StrategyRoom />} />
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
@@ -131,6 +115,7 @@ const App = () => (
               <Route path="/jira-integration" element={<AdminGuard><JiraIntegration /></AdminGuard>} />
               <Route path="/value-stream" element={<ValueStreamView />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/items/:type" element={<PlaceholderPage />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
