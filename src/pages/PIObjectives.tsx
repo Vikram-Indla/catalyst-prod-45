@@ -61,18 +61,35 @@ export default function PIObjectives() {
   const { data: objectives } = useQuery({
     queryKey: ['pi-objectives', selectedProgramId, selectedPIId],
     queryFn: async () => {
-      // Note: This requires a pi_objectives table to be created
-      // For now, returning empty array as placeholder
-      return [] as PIObjective[];
+      const { data, error } = await supabase
+        .from('pi_objectives')
+        .select('*')
+        .eq('program_id', selectedProgramId!)
+        .eq('pi_id', selectedPIId!)
+        .order('committed', { ascending: false })
+        .order('stretch', { ascending: true })
+        .order('name');
+      if (error) throw error;
+      return data as PIObjective[];
     },
     enabled: !!selectedProgramId && !!selectedPIId,
   });
 
   const mutation = useMutation({
     mutationFn: async (data: any) => {
-      // Placeholder for actual implementation
-      // Requires pi_objectives table with columns: id, pi_id, program_id, name, description, committed, planned_bv, actual_bv, stretch
-      toast.info('PI Objectives table needs to be created in database');
+      const { id, ...payload } = data;
+      if (id) {
+        const { error } = await supabase
+          .from('pi_objectives')
+          .update(payload)
+          .eq('id', id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('pi_objectives')
+          .insert([payload]);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pi-objectives'] });
