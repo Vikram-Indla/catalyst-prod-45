@@ -18,6 +18,7 @@ import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
+import EpicBacklog from "./pages/EpicBacklog";
 import Features from "./pages/Features";
 import Capabilities from "./pages/Capabilities";
 import Defects from "./pages/Defects";
@@ -104,6 +105,7 @@ const App = () => (
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Epics />} />
+              <Route path="/backlog/epics" element={<EpicBacklog />} />
               <Route path="/features" element={<Features />} />
               <Route path="/items/capabilities" element={<Capabilities />} />
               <Route path="/items/defects" element={<Defects />} />
