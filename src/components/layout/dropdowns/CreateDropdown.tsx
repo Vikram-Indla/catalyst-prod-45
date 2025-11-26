@@ -16,15 +16,15 @@ const workItems = [
 ];
 
 const otherItems = [
-  { label: 'Objective', icon: Target },
-  { label: 'Dependency', icon: GitBranch },
-  { label: 'Ideation', icon: Lightbulb },
-  { label: 'Risk', icon: AlertTriangle },
-  { label: 'Impediment', icon: Shield },
-  { label: 'Sprint', icon: Calendar },
-  { label: 'Program Increment', icon: Package },
-  { label: 'Release Vehicle (Fix Version)', icon: Package },
-  { label: 'Success Criteria', icon: Award }
+  { label: 'Objective', icon: Target, color: 'bg-slate-600' },
+  { label: 'Dependency', icon: GitBranch, color: 'bg-slate-600' },
+  { label: 'Ideation', icon: Lightbulb, color: 'bg-slate-600' },
+  { label: 'Risk', icon: AlertTriangle, color: 'bg-slate-600' },
+  { label: 'Impediment', icon: Shield, color: 'bg-slate-600' },
+  { label: 'Sprint', icon: Calendar, color: 'bg-slate-600' },
+  { label: 'Program Increment', icon: Package, color: 'bg-slate-600' },
+  { label: 'Release Vehicle (Fix Version)', icon: Package, color: 'bg-slate-600' },
+  { label: 'Success Criteria', icon: Award, color: 'bg-slate-600' }
 ];
 
 interface CreateDropdownProps {
@@ -65,8 +65,8 @@ export function CreateDropdown({ onClose }: CreateDropdownProps) {
               onClick={() => handleClick(item.label)}
               className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-accent text-left"
             >
-              <div className="w-6 h-6 rounded bg-muted flex items-center justify-center">
-                <item.icon className="h-4 w-4" />
+              <div className={`w-6 h-6 rounded ${item.color} flex items-center justify-center`}>
+                <item.icon className="h-3.5 w-3.5 text-white" />
               </div>
               <span className="text-sm">{item.label}</span>
             </button>

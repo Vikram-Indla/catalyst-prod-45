@@ -16,15 +16,15 @@ const workItems = [
 ];
 
 const otherItems = [
-  { label: 'Objectives', icon: Target, path: '/items/objectives' },
-  { label: 'Dependencies', icon: GitBranch, path: '/items/dependencies' },
-  { label: 'Ideation', icon: Lightbulb, path: '/items/ideation' },
-  { label: 'Risks', icon: AlertTriangle, path: '/items/risks' },
-  { label: 'Impediments', icon: Shield, path: '/items/impediments' },
-  { label: 'Sprints', icon: Calendar, path: '/items/sprints' },
-  { label: 'Program Increments', icon: Package, path: '/items/program-increments' },
-  { label: 'Release Vehicles (Fix Versions)', icon: Package, path: '/items/release-vehicles' },
-  { label: 'Success Criteria', icon: Award, path: '/items/success-criteria' }
+  { label: 'Objectives', icon: Target, path: '/items/objectives', color: 'bg-slate-600' },
+  { label: 'Dependencies', icon: GitBranch, path: '/items/dependencies', color: 'bg-slate-600' },
+  { label: 'Ideation', icon: Lightbulb, path: '/items/ideation', color: 'bg-slate-600' },
+  { label: 'Risks', icon: AlertTriangle, path: '/items/risks', color: 'bg-slate-600' },
+  { label: 'Impediments', icon: Shield, path: '/items/impediments', color: 'bg-slate-600' },
+  { label: 'Sprints', icon: Calendar, path: '/items/sprints', color: 'bg-slate-600' },
+  { label: 'Program Increments', icon: Package, path: '/items/program-increments', color: 'bg-slate-600' },
+  { label: 'Release Vehicles (Fix Versions)', icon: Package, path: '/items/release-vehicles', color: 'bg-slate-600' },
+  { label: 'Success Criteria', icon: Award, path: '/items/success-criteria', color: 'bg-slate-600' }
 ];
 
 interface ItemsDropdownProps {
@@ -64,8 +64,8 @@ export function ItemsDropdown({ onClose }: ItemsDropdownProps) {
               onClick={() => handleClick(item.path)}
               className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-accent text-left"
             >
-              <div className="w-6 h-6 rounded bg-muted flex items-center justify-center">
-                <item.icon className="h-4 w-4" />
+              <div className={`w-6 h-6 rounded ${item.color} flex items-center justify-center`}>
+                <item.icon className="h-3.5 w-3.5 text-white" />
               </div>
               <span className="text-sm">{item.label}</span>
             </button>
