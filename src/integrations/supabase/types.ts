@@ -607,6 +607,50 @@ export type Database = {
           },
         ]
       }
+      goals: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          level: string
+          owner_user_id: string | null
+          snapshot_id: string
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          level: string
+          owner_user_id?: string | null
+          snapshot_id: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          level?: string
+          owner_user_id?: string | null
+          snapshot_id?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "goals_snapshot_id_fkey"
+            columns: ["snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "strategy_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hierarchy_configs: {
         Row: {
           created_at: string | null
@@ -1278,6 +1322,7 @@ export type Database = {
           confidence_score: number | null
           created_at: string | null
           end_date: string | null
+          goal_id: string | null
           id: string
           level: string | null
           name: string
@@ -1299,6 +1344,7 @@ export type Database = {
           confidence_score?: number | null
           created_at?: string | null
           end_date?: string | null
+          goal_id?: string | null
           id?: string
           level?: string | null
           name: string
@@ -1320,6 +1366,7 @@ export type Database = {
           confidence_score?: number | null
           created_at?: string | null
           end_date?: string | null
+          goal_id?: string | null
           id?: string
           level?: string | null
           name?: string
@@ -1340,6 +1387,13 @@ export type Database = {
             columns: ["anchor_sprint_id"]
             isOneToOne: false
             referencedRelation: "anchor_sprints"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objectives_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "goals"
             referencedColumns: ["id"]
           },
           {
@@ -2026,6 +2080,57 @@ export type Database = {
           },
         ]
       }
+      roadmap_items: {
+        Row: {
+          created_at: string | null
+          end_date: string
+          has_milestone_flag: boolean
+          has_star_marker: boolean
+          id: string
+          program_increment_id: string
+          start_date: string
+          updated_at: string | null
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          end_date: string
+          has_milestone_flag?: boolean
+          has_star_marker?: boolean
+          id?: string
+          program_increment_id: string
+          start_date: string
+          updated_at?: string | null
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string | null
+          end_date?: string
+          has_milestone_flag?: boolean
+          has_star_marker?: boolean
+          id?: string
+          program_increment_id?: string
+          start_date?: string
+          updated_at?: string | null
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roadmap_items_program_increment_id_fkey"
+            columns: ["program_increment_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roadmap_items_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shared_service_allocations: {
         Row: {
           allocated_points: number | null
@@ -2264,10 +2369,12 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
+          end_date: string | null
           id: string
           is_active: boolean | null
           mission: string | null
           name: string
+          start_date: string | null
           updated_at: string | null
           values: Json | null
           vision: string | null
@@ -2275,10 +2382,12 @@ export type Database = {
         Insert: {
           created_at?: string | null
           description?: string | null
+          end_date?: string | null
           id?: string
           is_active?: boolean | null
           mission?: string | null
           name: string
+          start_date?: string | null
           updated_at?: string | null
           values?: Json | null
           vision?: string | null
@@ -2286,10 +2395,12 @@ export type Database = {
         Update: {
           created_at?: string | null
           description?: string | null
+          end_date?: string | null
           id?: string
           is_active?: boolean | null
           mission?: string | null
           name?: string
+          start_date?: string | null
           updated_at?: string | null
           values?: Json | null
           vision?: string | null
