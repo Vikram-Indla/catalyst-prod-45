@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 interface Epic {
@@ -22,6 +25,7 @@ interface EpicBacklogKanbanColumnProps {
 
 export function EpicBacklogKanbanColumn({ epics, programIncrements, onEpicSelect, onRefetch }: EpicBacklogKanbanColumnProps) {
   const { toast } = useToast();
+  const [loadMode, setLoadMode] = useState<'estimated' | 'actual'>('estimated');
 
   const updatePIMutation = useMutation({
     mutationFn: async ({ epicId, piId }: { epicId: string; piId: string | null }) => {
@@ -70,8 +74,43 @@ export function EpicBacklogKanbanColumn({ epics, programIncrements, onEpicSelect
     }
   });
 
+  // Calculate load indicators
+  const getLoadIndicator = (piId: string) => {
+    const piEpics = epicsByPI[piId] || [];
+    const totalPoints = piEpics.reduce((sum, epic) => sum + (epic.points_estimate || 0), 0);
+    const estimatedCapacity = 100; // Default capacity per PI
+    const loadPercentage = (totalPoints / estimatedCapacity) * 100;
+    
+    let color = 'bg-success';
+    if (loadPercentage > 100) color = 'bg-destructive';
+    else if (loadPercentage > 80) color = 'bg-warning';
+    
+    return { totalPoints, estimatedCapacity, loadPercentage: Math.min(loadPercentage, 100), color };
+  };
+
   return (
     <div className="p-6 h-full overflow-auto">
+      {/* Mode Toggle */}
+      <div className="mb-6 flex items-center gap-2">
+        <span className="text-sm font-medium">Load Mode:</span>
+        <div className="flex gap-1 border rounded-md p-1">
+          <Button
+            size="sm"
+            variant={loadMode === 'estimated' ? 'default' : 'ghost'}
+            onClick={() => setLoadMode('estimated')}
+          >
+            Estimated
+          </Button>
+          <Button
+            size="sm"
+            variant={loadMode === 'actual' ? 'default' : 'ghost'}
+            onClick={() => setLoadMode('actual')}
+          >
+            Actual
+          </Button>
+        </div>
+      </div>
+      
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${programIncrements.length + 1}, minmax(250px, 1fr))` }}>
           {/* Unassigned Column */}
@@ -121,11 +160,40 @@ export function EpicBacklogKanbanColumn({ epics, programIncrements, onEpicSelect
           {/* PI Columns */}
           {programIncrements.map((pi) => {
             const piEpics = epicsByPI[pi.id] || [];
+            const { totalPoints, estimatedCapacity, loadPercentage, color } = getLoadIndicator(pi.id);
+            
             return (
               <div key={pi.id} className="flex flex-col">
-                <div className="mb-4">
+                <div className="mb-4 space-y-3">
                   <h3 className="font-semibold text-lg">{pi.name}</h3>
                   <p className="text-sm text-muted-foreground">{piEpics.length} epics</p>
+                  
+                  {/* Load Indicator */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-medium">
+                        {loadMode === 'estimated' ? 'Est. Load' : 'Actual Load'}
+                      </span>
+                      <span className="font-mono">
+                        {totalPoints} / {estimatedCapacity} pts
+                      </span>
+                    </div>
+                    <Progress value={loadPercentage} className="h-2" />
+                    <div className="flex items-center justify-between text-xs">
+                      <span className={`font-semibold ${
+                        loadPercentage > 100 ? 'text-destructive' : 
+                        loadPercentage > 80 ? 'text-warning' : 
+                        'text-success'
+                      }`}>
+                        {loadPercentage.toFixed(0)}% capacity
+                      </span>
+                      {loadPercentage > 100 && (
+                        <Badge variant="destructive" className="text-[10px] px-1 py-0">
+                          Overloaded
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 </div>
                 <Droppable droppableId={pi.id}>
                   {(provided, snapshot) => (
