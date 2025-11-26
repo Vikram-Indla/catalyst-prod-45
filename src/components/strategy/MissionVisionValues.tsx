@@ -2,10 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StrategySnapshot } from '@/data/strategyMockData';
 
 interface MissionVisionValuesProps {
-  snapshot: StrategySnapshot;
+  snapshot: any;
 }
 
 export function MissionVisionValues({ snapshot }: MissionVisionValuesProps) {
+  const values = Array.isArray(snapshot.values) 
+    ? snapshot.values 
+    : typeof snapshot.values === 'string' 
+      ? JSON.parse(snapshot.values) 
+      : [];
+      
   return (
     <div className="grid grid-cols-3 gap-4">
       <Card>
@@ -36,7 +42,7 @@ export function MissionVisionValues({ snapshot }: MissionVisionValuesProps) {
         </CardHeader>
         <CardContent>
           <ul className="space-y-2">
-            {snapshot.values.map((value, index) => (
+            {values.map((value: string, index: number) => (
               <li key={index} className="text-sm text-muted-foreground leading-relaxed">
                 • {value}
               </li>

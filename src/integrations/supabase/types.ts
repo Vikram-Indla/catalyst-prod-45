@@ -47,6 +47,44 @@ export type Database = {
         }
         Relationships: []
       }
+      anchor_sprints: {
+        Row: {
+          code: string
+          created_at: string | null
+          end_date: string
+          id: string
+          name: string
+          program_increment_id: string | null
+          start_date: string
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          end_date: string
+          id?: string
+          name: string
+          program_increment_id?: string | null
+          start_date: string
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          end_date?: string
+          id?: string
+          name?: string
+          program_increment_id?: string | null
+          start_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "anchor_sprints_program_increment_id_fkey"
+            columns: ["program_increment_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       attachments: {
         Row: {
           created_at: string
@@ -739,6 +777,51 @@ export type Database = {
           },
         ]
       }
+      key_result_checkins: {
+        Row: {
+          checked_in_at: string
+          created_at: string | null
+          created_by_user_id: string | null
+          id: string
+          key_result_id: string | null
+          note_richtext: string | null
+          value: number
+        }
+        Insert: {
+          checked_in_at?: string
+          created_at?: string | null
+          created_by_user_id?: string | null
+          id?: string
+          key_result_id?: string | null
+          note_richtext?: string | null
+          value: number
+        }
+        Update: {
+          checked_in_at?: string
+          created_at?: string | null
+          created_by_user_id?: string | null
+          id?: string
+          key_result_id?: string | null
+          note_richtext?: string | null
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "key_result_checkins_created_by_user_id_fkey"
+            columns: ["created_by_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "key_result_checkins_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "key_results_v2"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       key_results: {
         Row: {
           created_at: string | null
@@ -773,6 +856,63 @@ export type Database = {
             columns: ["objective_id"]
             isOneToOne: false
             referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      key_results_v2: {
+        Row: {
+          baseline_value: number | null
+          created_at: string | null
+          current_value: number | null
+          due_date: string | null
+          goal_value: number
+          id: string
+          metric_type: string
+          objective_id: string | null
+          owner_user_id: string | null
+          summary: string
+          updated_at: string | null
+        }
+        Insert: {
+          baseline_value?: number | null
+          created_at?: string | null
+          current_value?: number | null
+          due_date?: string | null
+          goal_value: number
+          id?: string
+          metric_type: string
+          objective_id?: string | null
+          owner_user_id?: string | null
+          summary: string
+          updated_at?: string | null
+        }
+        Update: {
+          baseline_value?: number | null
+          created_at?: string | null
+          current_value?: number | null
+          due_date?: string | null
+          goal_value?: number
+          id?: string
+          metric_type?: string
+          objective_id?: string | null
+          owner_user_id?: string | null
+          summary?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "key_results_v2_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "key_results_v2_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -812,6 +952,106 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      objective_dependencies: {
+        Row: {
+          created_at: string | null
+          id: string
+          label: string
+          objective_id: string | null
+          state: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          label: string
+          objective_id?: string | null
+          state?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          label?: string
+          objective_id?: string | null
+          state?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_dependencies_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      objective_epic_links: {
+        Row: {
+          created_at: string | null
+          epic_id: string | null
+          id: string
+          objective_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          epic_id?: string | null
+          id?: string
+          objective_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          epic_id?: string | null
+          id?: string
+          objective_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_epic_links_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objective_epic_links_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      objective_impediments: {
+        Row: {
+          created_at: string | null
+          id: string
+          label: string
+          objective_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          label: string
+          objective_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          label?: string
+          objective_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_impediments_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       objective_initiative_links: {
         Row: {
@@ -876,6 +1116,38 @@ export type Database = {
         }
         Relationships: []
       }
+      objective_risks: {
+        Row: {
+          created_at: string | null
+          id: string
+          label: string
+          objective_id: string | null
+          roam_state: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          label: string
+          objective_id?: string | null
+          roam_state?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          label?: string
+          objective_id?: string | null
+          roam_state?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_risks_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       objective_theme_links: {
         Row: {
           created_at: string | null
@@ -914,47 +1186,102 @@ export type Database = {
       }
       objectives: {
         Row: {
+          anchor_sprint_id: string | null
+          blocked: boolean | null
           confidence: Database["public"]["Enums"]["confidence_level"] | null
+          confidence_score: number | null
           created_at: string | null
           end_date: string | null
           id: string
+          level: string | null
           name: string
           objective_level_id: string
           owner_id: string | null
+          parent_goal_id: string | null
+          parent_objective_id: string | null
+          program_increment_ids: Json | null
           progress_pct: number | null
+          snapshot_id: string | null
           start_date: string | null
+          status: string | null
           updated_at: string | null
         }
         Insert: {
+          anchor_sprint_id?: string | null
+          blocked?: boolean | null
           confidence?: Database["public"]["Enums"]["confidence_level"] | null
+          confidence_score?: number | null
           created_at?: string | null
           end_date?: string | null
           id?: string
+          level?: string | null
           name: string
           objective_level_id: string
           owner_id?: string | null
+          parent_goal_id?: string | null
+          parent_objective_id?: string | null
+          program_increment_ids?: Json | null
           progress_pct?: number | null
+          snapshot_id?: string | null
           start_date?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
+          anchor_sprint_id?: string | null
+          blocked?: boolean | null
           confidence?: Database["public"]["Enums"]["confidence_level"] | null
+          confidence_score?: number | null
           created_at?: string | null
           end_date?: string | null
           id?: string
+          level?: string | null
           name?: string
           objective_level_id?: string
           owner_id?: string | null
+          parent_goal_id?: string | null
+          parent_objective_id?: string | null
+          program_increment_ids?: Json | null
           progress_pct?: number | null
+          snapshot_id?: string | null
           start_date?: string | null
+          status?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "objectives_anchor_sprint_id_fkey"
+            columns: ["anchor_sprint_id"]
+            isOneToOne: false
+            referencedRelation: "anchor_sprints"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "objectives_objective_level_id_fkey"
             columns: ["objective_level_id"]
             isOneToOne: false
             referencedRelation: "objective_levels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objectives_parent_goal_id_fkey"
+            columns: ["parent_goal_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_goals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objectives_parent_objective_id_fkey"
+            columns: ["parent_objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objectives_snapshot_id_fkey"
+            columns: ["snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "strategy_snapshots"
             referencedColumns: ["id"]
           },
         ]
@@ -1770,6 +2097,44 @@ export type Database = {
           },
         ]
       }
+      strategic_goals: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          health_status: string | null
+          id: string
+          snapshot_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          health_status?: string | null
+          id?: string
+          snapshot_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          health_status?: string | null
+          id?: string
+          snapshot_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategic_goals_snapshot_id_fkey"
+            columns: ["snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "strategy_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       strategic_themes: {
         Row: {
           color_tag: string | null
@@ -1806,6 +2171,42 @@ export type Database = {
           start_date?: string | null
           status?: Database["public"]["Enums"]["theme_status"] | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      strategy_snapshots: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          mission: string | null
+          name: string
+          updated_at: string | null
+          values: Json | null
+          vision: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          mission?: string | null
+          name: string
+          updated_at?: string | null
+          values?: Json | null
+          vision?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          mission?: string | null
+          name?: string
+          updated_at?: string | null
+          values?: Json | null
+          vision?: string | null
         }
         Relationships: []
       }
