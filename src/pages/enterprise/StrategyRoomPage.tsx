@@ -10,10 +10,11 @@ import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
 import { OkrHeatmap } from '@/components/strategy/OkrHeatmap';
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawer } from '@/components/strategy/ObjectiveDrawer';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import {
   mockStrategySnapshots,
   mockProgramIncrements,
-  Objective,
   ObjectiveLevel,
 } from '@/data/strategyMockData';
 
@@ -22,11 +23,24 @@ export default function StrategyRoomPage() {
   const [selectedPIs] = useState(['PI-5', 'PI-6', 'PI-7']);
   const [filterLevel, setFilterLevel] = useState<ObjectiveLevel | undefined>(undefined);
   const [filterPI, setFilterPI] = useState<string | undefined>(undefined);
-  const [selectedObjective, setSelectedObjective] = useState<Objective | null>(null);
+  const [selectedObjective, setSelectedObjective] = useState<any>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [snapshotSearchQuery, setSnapshotSearchQuery] = useState('');
 
-  const selectedSnapshot = mockStrategySnapshots.find((s) => s.id === selectedSnapshotId);
+  // Fetch snapshots from database
+  const { data: snapshots = [] } = useQuery({
+    queryKey: ['strategy-snapshots'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('strategy_snapshots')
+        .select('*')
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const selectedSnapshot = snapshots.find((s) => s.id === selectedSnapshotId) || mockStrategySnapshots.find((s) => s.id === selectedSnapshotId);
 
   const handleLevelClick = (level: string) => {
     const levelMap: Record<string, ObjectiveLevel> = {
@@ -56,12 +70,13 @@ export default function StrategyRoomPage() {
     setFilterPI(pi);
   };
 
-  const handleObjectiveClick = (objective: Objective) => {
+  const handleObjectiveClick = (objective: any) => {
     setSelectedObjective(objective);
     setDrawerOpen(true);
   };
 
-  const filteredSnapshots = mockStrategySnapshots.filter((s) =>
+  const allSnapshots = [...snapshots, ...mockStrategySnapshots];
+  const filteredSnapshots = allSnapshots.filter((s) =>
     s.name.toLowerCase().includes(snapshotSearchQuery.toLowerCase())
   );
 
@@ -132,8 +147,6 @@ export default function StrategyRoomPage() {
       {/* OKR Tree */}
       <OkrTree
         selectedSnapshot={selectedSnapshotId}
-        filterLevel={filterLevel}
-        filterPI={filterPI}
         onObjectiveClick={handleObjectiveClick}
       />
 
