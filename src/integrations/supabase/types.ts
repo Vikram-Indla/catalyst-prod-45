@@ -917,6 +917,56 @@ export type Database = {
           },
         ]
       }
+      milestones: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          due_date: string
+          id: string
+          milestone_type: string | null
+          start_date: string | null
+          state: string | null
+          title: string
+          updated_at: string | null
+          work_item_id: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date: string
+          id?: string
+          milestone_type?: string | null
+          start_date?: string | null
+          state?: string | null
+          title: string
+          updated_at?: string | null
+          work_item_id?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          due_date?: string
+          id?: string
+          milestone_type?: string | null
+          start_date?: string | null
+          state?: string | null
+          title?: string
+          updated_at?: string | null
+          work_item_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestones_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           created_at: string
@@ -1180,6 +1230,42 @@ export type Database = {
             columns: ["theme_id"]
             isOneToOne: false
             referencedRelation: "strategic_themes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      objective_work_items: {
+        Row: {
+          created_at: string | null
+          id: string
+          objective_id: string
+          work_item_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          objective_id: string
+          work_item_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          objective_id?: string
+          work_item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_work_items_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objective_work_items_work_item_id_fkey"
+            columns: ["work_item_id"]
+            isOneToOne: false
+            referencedRelation: "features"
             referencedColumns: ["id"]
           },
         ]
