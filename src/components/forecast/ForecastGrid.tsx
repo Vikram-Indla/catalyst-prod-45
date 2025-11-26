@@ -323,36 +323,39 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                 <th className="text-left p-3 font-medium text-sm w-[50px] sticky left-0 bg-muted/50 z-20">
                   <span className="sr-only">Drag</span>
                 </th>
-                <th className="text-left p-3 font-medium text-sm w-[300px] sticky left-[50px] bg-muted/50 z-20 border-r">
-                  Work Item
+                <th className="text-left p-3 font-medium text-sm w-[250px] sticky left-[50px] bg-muted/50 z-20 border-r">
+                  Epic
                 </th>
               
-              {/* Zone 2: Scrollable default columns */}
-              <th className="text-left p-3 font-medium text-sm min-w-[120px] bg-muted/50">Theme</th>
-              <th className="text-left p-3 font-medium text-sm min-w-[120px] bg-muted/50">Owner</th>
-              <th className="text-right p-3 font-medium text-sm min-w-[120px] bg-muted/50 border-r">PI Estimate</th>
+                {/* Zone 2: Scrollable default columns per screenshot */}
+                <th className="text-left p-3 font-medium text-sm min-w-[150px] bg-muted/50">Theme</th>
+                <th className="text-left p-3 font-medium text-sm min-w-[120px] bg-muted/50">Owner</th>
+                <th className="text-right p-3 font-medium text-sm min-w-[100px] bg-muted/50">PI estimate</th>
+                <th className="text-right p-3 font-medium text-sm min-w-[120px] bg-muted/50">Program estimate</th>
+                <th className="text-right p-3 font-medium text-sm min-w-[120px] bg-muted/50">Team estimate</th>
+                <th className="text-right p-3 font-medium text-sm min-w-[100px] bg-muted/50 border-r">Capacity %</th>
               
-              {/* Zone 3: Estimate input matrix */}
-              {capacities.map((capacity, idx) => (
-                <th
-                  key={capacity.id}
-                  className={cn(
-                    "text-right p-3 font-medium text-sm min-w-[140px] bg-muted/50",
-                    isOverCapacity(capacity.program_id, capacity.team_id) && "bg-destructive/10 text-destructive",
-                    idx < capacities.length - 1 && "border-r"
-                  )}
-                >
-                  <div className="font-semibold">
-                    {viewLevel === 'program' ? capacity.programs?.name : capacity.teams?.name}
-                  </div>
-                  <div className={cn(
-                    "text-xs font-normal mt-1",
-                    isOverCapacity(capacity.program_id, capacity.team_id) && "font-semibold"
-                  )}>
-                    {calculateTotalForContext(capacity.program_id, capacity.team_id)}/{capacity.available_capacity} pts
-                  </div>
-                </th>
-              ))}
+                {/* Zone 3: Estimate input matrix (Pts columns) */}
+                {capacities.map((capacity, idx) => (
+                  <th
+                    key={capacity.id}
+                    className={cn(
+                      "text-right p-3 font-medium text-sm min-w-[100px]",
+                      isOverCapacity(capacity.program_id, capacity.team_id) ? "bg-destructive text-destructive-foreground" : "bg-muted/50",
+                      idx < capacities.length - 1 && "border-r"
+                    )}
+                  >
+                    <div className="font-semibold text-xs">
+                      {viewLevel === 'program' ? capacity.programs?.name : capacity.teams?.name}
+                    </div>
+                    <div className={cn(
+                      "text-xs font-normal mt-1",
+                      isOverCapacity(capacity.program_id, capacity.team_id) && "font-bold"
+                    )}>
+                      {calculateTotalForContext(capacity.program_id, capacity.team_id)}/{capacity.available_capacity}
+                    </div>
+                  </th>
+                ))}
               </tr>
             </thead>
             <Droppable droppableId="forecast-items">
@@ -400,18 +403,33 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                                 </div>
                               </td>
                 
-                {/* Zone 2: Scrollable columns */}
-                <td className="p-3 text-sm text-muted-foreground">
-                  {/* TODO: Fetch and display theme */}
-                  -
-                </td>
-                <td className="p-3 text-sm text-muted-foreground">
-                  {/* TODO: Fetch and display owner */}
-                  -
-                </td>
-                <td className="p-3 text-right text-sm font-semibold border-r">
-                  {piEstimate}
-                </td>
+                              {/* Zone 2: Scrollable default columns */}
+                              <td className="p-3 text-sm text-muted-foreground">
+                                {/* TODO: Fetch theme from epics.theme_id join */}
+                                -
+                              </td>
+                              <td className="p-3 text-sm text-muted-foreground">
+                                {/* TODO: Fetch owner from owner_id */}
+                                -
+                              </td>
+                              <td className="p-3 text-right text-sm font-semibold">
+                                {piEstimate}
+                              </td>
+                              <td className="p-3 text-right text-sm font-medium">
+                                {forecasts
+                                  .filter(f => f.work_item_id === item.id && f.program_id && !f.team_id)
+                                  .reduce((sum, f) => sum + (f.estimate || 0), 0) || 'No data'}
+                              </td>
+                              <td className="p-3 text-right text-sm font-medium">
+                                {forecasts
+                                  .filter(f => f.work_item_id === item.id && f.team_id)
+                                  .reduce((sum, f) => sum + (f.estimate || 0), 0) || 'No data'}
+                              </td>
+                              <td className="p-3 text-right text-sm font-medium border-r">
+                                {piEstimate > 0 && capacities.length > 0
+                                  ? `${Math.round((piEstimate / capacities.reduce((sum, c) => sum + c.available_capacity, 0)) * 100)}%`
+                                  : '0%'}
+                              </td>
                 
                 {/* Zone 3: Estimate inputs */}
                 {capacities.map((capacity, idx) => {
