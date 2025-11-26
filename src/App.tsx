@@ -90,8 +90,8 @@ const App = () => (
               <Route path="/home" element={<Home />} />
               <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
               <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
-              <Route path="/portfolio/:portfolioId/epics" element={<PlaceholderPage />} />
-              <Route path="/portfolio/:portfolioId/backlog" element={<PlaceholderPage />} />
+              <Route path="/portfolio/:portfolioId/epics" element={<Navigate to="/backlog/epics" replace />} />
+              <Route path="/portfolio/:portfolioId/backlog" element={<Navigate to="/backlog/epics" replace />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<PlaceholderPage />} />
@@ -105,7 +105,7 @@ const App = () => (
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
-              <Route path="/epics" element={<Epics />} />
+              <Route path="/epics" element={<Navigate to="/backlog/epics" replace />} />
               <Route path="/backlog/epics" element={<EpicBacklog />} />
               <Route path="/features" element={<Features />} />
               <Route path="/items/capabilities" element={<Capabilities />} />
