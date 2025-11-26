@@ -36,18 +36,18 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/:tier/:id/room', tiers: ['portfolio', 'program', 'team'] },
+  { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio-room', tiers: ['portfolio', 'program', 'team'] },
   { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
   { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives', tiers: ['portfolio', 'program'] },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics', tiers: ['portfolio', 'program'] },
-  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps', tiers: ['enterprise', 'portfolio', 'program'] },
+  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['enterprise', 'portfolio', 'program'] },
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree', tiers: ['enterprise', 'portfolio'] },
-  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/:tier/:id/work-tree', tiers: ['portfolio', 'program'] },
-  { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/:tier/:id/forecast', tiers: ['portfolio', 'program'] },
+  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/value-stream', tiers: ['portfolio', 'program'] },
+  { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
   { id: 'program-board', label: 'Program Board', icon: Boxes, path: '/program-board', tiers: ['program'] },
   { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
-  { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports', tiers: ['portfolio', 'program'] },
+  { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['portfolio', 'program'] },
   { id: 'more-pages', label: 'More pages', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
 ];
 
@@ -98,18 +98,13 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   const currentProgram = programs.find(p => p.id === programId);
 
   const handleNavigation = (path: string) => {
-    let resolvedPath = path
-      .replace(':tier', tier)
-      .replace(':id', portfolioId || programId || '');
-    
-    navigate(resolvedPath);
+    if (path === '#') return; // Don't navigate for expandable items
+    navigate(path);
   };
 
   const isActive = (path: string) => {
-    const resolvedPath = path
-      .replace(':tier', tier)
-      .replace(':id', portfolioId || programId || '');
-    return location.pathname === resolvedPath || location.pathname.startsWith(resolvedPath);
+    if (path === '#') return false;
+    return location.pathname === path || location.pathname.startsWith(path);
   };
 
   const getFilteredMenuItems = () => {
