@@ -64,13 +64,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Missions")}
             />
-            <text x={centerX} y={y1 + 50} textAnchor="middle" fill="white" fontSize="18" fontWeight="600">
+            <text x={centerX} y={y1 + 48} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
               Missions
             </text>
-            <text x={centerX} y={y1 + 70} textAnchor="middle" fill="white" fontSize="11" opacity="0.95">
+            <text x={centerX} y={y1 + 65} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
               Why do we exist?
             </text>
-            <text x={level2.right + 80} y={(y1 + y2) / 2 + 5} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="24" fontWeight="600">
+            <text x={level2.right - 40} y={y2 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               1
             </text>
 
@@ -83,13 +83,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Visions")}
             />
-            <text x={centerX} y={y2 + 45} textAnchor="middle" fill="white" fontSize="18" fontWeight="600">
+            <text x={centerX} y={y2 + 43} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
               Visions
             </text>
-            <text x={centerX} y={y2 + 63} textAnchor="middle" fill="white" fontSize="11" opacity="0.95">
+            <text x={centerX} y={y2 + 60} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
               What value do we provide?
             </text>
-            <text x={level3.right + 80} y={(y2 + y3) / 2 + 5} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="24" fontWeight="600">
+            <text x={level3.right - 40} y={y3 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               1
             </text>
 
@@ -102,13 +102,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Values")}
             />
-            <text x={centerX} y={y3 + 45} textAnchor="middle" fill="white" fontSize="18" fontWeight="600">
+            <text x={centerX} y={y3 + 43} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
               Values
             </text>
-            <text x={centerX} y={y3 + 63} textAnchor="middle" fill="white" fontSize="11" opacity="0.95">
+            <text x={centerX} y={y3 + 60} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
               How do we behave?
             </text>
-            <text x={level4.right + 80} y={(y3 + y4) / 2 + 5} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="24" fontWeight="600">
+            <text x={level4.right - 40} y={y4 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               6
             </text>
 
@@ -121,13 +121,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("North Stars")}
             />
-            <text x={centerX} y={y4 + 40} textAnchor="middle" fill="white" fontSize="18" fontWeight="600">
+            <text x={centerX} y={y4 + 38} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
               North Stars
             </text>
-            <text x={centerX} y={y4 + 58} textAnchor="middle" fill="white" fontSize="11" opacity="0.95">
-              What is our organization's single measurable goal?
+            <text x={centerX} y={y4 + 55} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
+              What is our organization&apos;s single measurable goal?
             </text>
-            <text x={level5.right + 80} y={(y4 + y5) / 2 + 5} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="24" fontWeight="600">
+            <text x={level5.right - 40} y={y5 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               1
             </text>
 
@@ -140,13 +140,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Long Term Goals")}
             />
-            <text x={centerX} y={y5 + 40} textAnchor="middle" fill="white" fontSize="18" fontWeight="600">
+            <text x={centerX} y={y5 + 38} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
               Long Term Goals
             </text>
-            <text x={centerX} y={y5 + 58} textAnchor="middle" fill="white" fontSize="11" opacity="0.95">
+            <text x={centerX} y={y5 + 55} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
               How will we succeed long-term?
             </text>
-            <text x={level6.right + 80} y={(y5 + y6) / 2 + 5} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="24" fontWeight="600">
+            <text x={level6.right - 40} y={y6 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               3
             </text>
 
@@ -159,13 +159,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Long Term Strategies")}
             />
-            <text x={centerX} y={y6 + 42} textAnchor="middle" fill="white" fontSize="18" fontWeight="600">
+            <text x={centerX} y={y6 + 40} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
               Long Term Strategies
             </text>
-            <text x={centerX} y={y6 + 60} textAnchor="middle" fill="white" fontSize="11" opacity="0.95">
+            <text x={centerX} y={y6 + 57} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
               What is our approach to long-term success?
             </text>
-            <text x={level7.right + 80} y={(y6 + y7) / 2 + 5} textAnchor="middle" fill="hsl(var(--foreground))" fontSize="24" fontWeight="600">
+            <text x={level7.right - 40} y={y7 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               8
             </text>
 
@@ -178,13 +178,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Yearly Goals")}
             />
-            <text x={level7.left + 50} y={y7 + 48} fill="white" fontSize="26" fontWeight="700">
+            <text x={level7.left + 35} y={y7 + 32} fill="white" fontSize="22" fontWeight="700">
               34
             </text>
-            <text x={(level7.left + centerX) / 2 + 20} y={y7 + 50} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+            <text x={(level7.left + centerX) / 2 + 15} y={y7 + 48} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Yearly Goals
             </text>
-            <text x={(level7.left + centerX) / 2 + 20} y={y7 + 68} textAnchor="middle" fill="white" fontSize="10" opacity="0.95">
+            <text x={(level7.left + centerX) / 2 + 15} y={y7 + 65} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
               How will we succeed this year?
             </text>
 
@@ -196,11 +196,11 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Themes")}
             />
-            <text x={(centerX + level7.right) / 2} y={y7 + 50} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
-              Themes
-            </text>
-            <text x={level7.right - 50} y={y7 + 48} fill="white" fontSize="26" fontWeight="700">
+            <text x={level7.right - 35} y={y7 + 32} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               32
+            </text>
+            <text x={(centerX + level7.right) / 2 - 15} y={y7 + 48} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+              Themes
             </text>
 
             {/* Vertical divider for split layer */}
@@ -215,11 +215,11 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Portfolio Objectives")}
             />
-            <text x={level8.left + 50} y={y8 + 55} fill="white" fontSize="26" fontWeight="700">
+            <text x={level8.left + 40} y={y8 + 35} fill="white" fontSize="22" fontWeight="700">
               82
             </text>
-            <text x={(level8.left + centerX) / 2 + 30} y={y8 + 58} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
-              Portfolio Objective
+            <text x={(level8.left + centerX) / 2 + 20} y={y8 + 58} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+              Portfolio Objectives
             </text>
 
             <path
@@ -230,11 +230,11 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Epics")}
             />
-            <text x={(centerX + level8.right) / 2} y={y8 + 58} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
-              Epics
-            </text>
-            <text x={level8.right - 60} y={y8 + 55} fill="white" fontSize="26" fontWeight="700">
+            <text x={level8.right - 45} y={y8 + 35} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               147
+            </text>
+            <text x={(centerX + level8.right) / 2 - 20} y={y8 + 58} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+              Epics
             </text>
 
             {/* Vertical divider for split layer */}
@@ -249,11 +249,11 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Program Objectives")}
             />
-            <text x={level9.left + 60} y={y9 + 50} fill="white" fontSize="26" fontWeight="700">
+            <text x={level9.left + 50} y={y9 + 35} fill="white" fontSize="22" fontWeight="700">
               160
             </text>
-            <text x={(level9.left + centerX) / 2 + 40} y={y9 + 52} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
-              Program Objective
+            <text x={(level9.left + centerX) / 2 + 30} y={y9 + 50} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+              Program Objectives
             </text>
 
             <path
@@ -264,11 +264,11 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Features")}
             />
-            <text x={(centerX + level9.right) / 2 - 30} y={y9 + 52} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
-              Features
-            </text>
-            <text x={level9.right - 70} y={y9 + 50} fill="white" fontSize="26" fontWeight="700">
+            <text x={level9.right - 60} y={y9 + 35} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               513
+            </text>
+            <text x={(centerX + level9.right) / 2 - 25} y={y9 + 50} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+              Features
             </text>
 
             {/* Vertical divider for split layer */}
