@@ -198,21 +198,37 @@ export default function EpicBacklog() {
     }
   };
 
+  // Separate assigned and unassigned epics
+  const assignedEpics = epics?.filter(epic => 
+    epic.epic_program_increments && epic.epic_program_increments.length > 0
+  ) || [];
+
   return (
     <div className="flex flex-col bg-background h-full">
-      {/* Configuration Bar */}
-      <div className="border-b bg-card px-6 py-4 space-y-4 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Epic Backlog</h1>
-            <p className="text-sm text-muted-foreground">Manage and prioritize epics across your portfolio</p>
+      {/* Top Bar */}
+      <div className="border-b bg-card px-6 py-3 flex-shrink-0">
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-2xl font-bold">Epic Backlog</h1>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm">
+              <Settings className="h-4 w-4 mr-2" />
+              Orphan Objects
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setColumnsDialogOpen(true)}>
+              <Settings className="h-4 w-4 mr-2" />
+              Columns Shown
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setFiltersDialogOpen(true)}>
+              <Filter className="h-4 w-4 mr-2" />
+              Filters
+            </Button>
           </div>
         </div>
 
-        {/* Filters and Controls */}
-        <div className="flex items-center gap-4 flex-wrap">
+        {/* Filters Row */}
+        <div className="flex items-center gap-3">
           <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select Portfolio" />
             </SelectTrigger>
             <SelectContent>
@@ -221,7 +237,7 @@ export default function EpicBacklog() {
           </Select>
 
           <Select value={selectedProgram} onValueChange={setSelectedProgram} disabled={!selectedPortfolio}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select Program" />
             </SelectTrigger>
             <SelectContent>
@@ -230,7 +246,7 @@ export default function EpicBacklog() {
           </Select>
 
           <Select value={selectedPI || 'all'} onValueChange={(v) => setSelectedPI(v === 'all' ? '' : v)} disabled={!selectedPortfolio}>
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select PI" />
             </SelectTrigger>
             <SelectContent>
@@ -248,110 +264,153 @@ export default function EpicBacklog() {
               className="pl-9"
             />
           </div>
-
-          <Button variant="outline" size="sm" onClick={() => setColumnsDialogOpen(true)}>
-            <Settings className="h-4 w-4 mr-2" />
-            Columns
-          </Button>
-
-          <Button variant="outline" size="sm" onClick={() => setFiltersDialogOpen(true)}>
-            <Filter className="h-4 w-4 mr-2" />
-            Filters
-          </Button>
-
-          <Button variant="outline" size="sm" onClick={handleExport} disabled={!epics || epics.length === 0}>
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-
-          {selectedProgram && (
-            <Button variant="outline" size="sm" onClick={() => setPullRankDialogOpen(true)}>
-              <ArrowUpDown className="h-4 w-4 mr-2" />
-              Pull Rank
-            </Button>
-          )}
-
-          <Button variant="outline" size="sm" onClick={() => {
-            setSelectedEpicsForAction(epics?.map(e => e.id) || []);
-            setWsjfDialogOpen(true);
-          }}>
-            <TrendingUp className="h-4 w-4 mr-2" />
-            Prioritize
-          </Button>
-
-          <Button variant="outline" size="sm" onClick={() => setUnassignedSlideoutOpen(true)}>
-            <Layers className="h-4 w-4 mr-2" />
-            Unassigned ({unassignedEpics.length})
-          </Button>
         </div>
-
-        {/* PI Progress Bar */}
-        {selectedPI && piProgress && (
-          <div className="bg-muted/50 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium">PI Progress</span>
-              <span className="text-sm text-muted-foreground">
-                {piProgress.accepted} / {piProgress.planned} points ({piProgress.percentage}%)
-              </span>
-            </div>
-            <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
-              <div
-                className="bg-primary h-full transition-all"
-                style={{ width: `${piProgress.percentage}%` }}
-              />
-            </div>
-          </div>
-        )}
       </div>
 
-      {/* View Tabs */}
-      <div className="border-b">
-        <Tabs value={view} onValueChange={(v) => setView(v as any)} className="px-6">
+      {/* Theme Backlog / Backlog Toggle */}
+      <div className="border-b px-6">
+        <Tabs value="backlog" className="w-auto">
           <TabsList>
-            <TabsTrigger value="list">List View</TabsTrigger>
-            <TabsTrigger value="kanban">Kanban Views</TabsTrigger>
+            <TabsTrigger value="theme-backlog">Theme Backlog</TabsTrigger>
+            <TabsTrigger value="backlog">Backlog</TabsTrigger>
           </TabsList>
         </Tabs>
       </div>
 
-      {/* Kanban Subview Selector */}
-      {view === 'kanban' && (
-        <div className="border-b px-6 py-2">
-          <Tabs value={kanbanSubview} onValueChange={(v) => setKanbanSubview(v as any)}>
-            <TabsList>
-              <TabsTrigger value="state">State View</TabsTrigger>
-              <TabsTrigger value="process">Process Flow View</TabsTrigger>
-              <TabsTrigger value="column">Column View (PI)</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-      )}
+      {/* Main Content - Two Column Layout */}
+      <div className="flex-1 overflow-hidden flex gap-4 p-6">
+        {/* Left Section: Epics for PI */}
+        <div className="flex-1 flex flex-col border rounded-lg bg-card overflow-hidden">
+          <div className="border-b px-4 py-3 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">
+                Epics for {selectedPI ? programIncrements?.find(pi => pi.id === selectedPI)?.name : 'All PIs'}
+              </h2>
+              <div className="flex items-center gap-2">
+                <Tabs value={view} onValueChange={(v) => setView(v as any)}>
+                  <TabsList>
+                    <TabsTrigger value="list">List</TabsTrigger>
+                    <TabsTrigger value="kanban">Kanban</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Total Items: {assignedEpics.length}</span>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => {
+                  setSelectedEpicsForAction(assignedEpics.map(e => e.id));
+                  setWsjfDialogOpen(true);
+                }}>
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Prioritize
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleExport} disabled={assignedEpics.length === 0}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+                {selectedProgram && (
+                  <Button variant="outline" size="sm" onClick={() => setPullRankDialogOpen(true)}>
+                    <ArrowUpDown className="h-4 w-4 mr-2" />
+                    Pull Rank
+                  </Button>
+                )}
+              </div>
+            </div>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        {view === 'list' && (
-          <EpicBacklogListView
-            epics={epics || []}
-            onEpicSelect={setSelectedEpic}
-            onRefetch={refetch}
-            selectedProgram={selectedProgram}
-            selectedPI={selectedPI}
-          />
-        )}
-        {view === 'kanban' && kanbanSubview === 'state' && (
-          <EpicBacklogKanbanState epics={epics || []} onEpicSelect={setSelectedEpic} onRefetch={refetch} />
-        )}
-        {view === 'kanban' && kanbanSubview === 'process' && (
-          <EpicBacklogKanbanProcess epics={epics || []} onEpicSelect={setSelectedEpic} onRefetch={refetch} />
-        )}
-        {view === 'kanban' && kanbanSubview === 'column' && (
-          <EpicBacklogKanbanColumn
-            epics={epics || []}
-            programIncrements={programIncrements || []}
-            onEpicSelect={setSelectedEpic}
-            onRefetch={refetch}
-          />
-        )}
+            {/* PI Progress Bar */}
+            {selectedPI && piProgress && (
+              <div className="bg-muted/50 rounded-lg p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">PI Progress</span>
+                  <span className="text-sm text-muted-foreground">
+                    {piProgress.accepted} / {piProgress.planned} points ({piProgress.percentage}%)
+                  </span>
+                </div>
+                <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
+                  <div
+                    className="bg-primary h-full transition-all"
+                    style={{ width: `${piProgress.percentage}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Kanban Subview Selector */}
+            {view === 'kanban' && (
+              <Tabs value={kanbanSubview} onValueChange={(v) => setKanbanSubview(v as any)}>
+                <TabsList>
+                  <TabsTrigger value="state">State</TabsTrigger>
+                  <TabsTrigger value="process">Process</TabsTrigger>
+                  <TabsTrigger value="column">Column</TabsTrigger>
+                </TabsList>
+              </Tabs>
+            )}
+          </div>
+
+          <div className="flex-1 overflow-auto">
+            {view === 'list' && (
+              <EpicBacklogListView
+                epics={assignedEpics}
+                onEpicSelect={setSelectedEpic}
+                onRefetch={refetch}
+                selectedProgram={selectedProgram}
+                selectedPI={selectedPI}
+              />
+            )}
+            {view === 'kanban' && kanbanSubview === 'state' && (
+              <EpicBacklogKanbanState epics={assignedEpics} onEpicSelect={setSelectedEpic} onRefetch={refetch} />
+            )}
+            {view === 'kanban' && kanbanSubview === 'process' && (
+              <EpicBacklogKanbanProcess epics={assignedEpics} onEpicSelect={setSelectedEpic} onRefetch={refetch} />
+            )}
+            {view === 'kanban' && kanbanSubview === 'column' && (
+              <EpicBacklogKanbanColumn
+                epics={assignedEpics}
+                programIncrements={programIncrements || []}
+                onEpicSelect={setSelectedEpic}
+                onRefetch={refetch}
+              />
+            )}
+          </div>
+        </div>
+
+        {/* Right Section: Unassigned Backlog */}
+        <div className="w-[400px] flex flex-col border rounded-lg bg-card overflow-hidden">
+          <div className="border-b px-4 py-3 space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Unassigned Backlog</h2>
+            </div>
+            
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Total Items: {unassignedEpics.length}</span>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => {
+                  setSelectedEpicsForAction(unassignedEpics.map(e => e.id));
+                  setWsjfDialogOpen(true);
+                }}>
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Prioritize
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleExport} disabled={unassignedEpics.length === 0}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-auto">
+            <EpicBacklogListView
+              epics={unassignedEpics}
+              onEpicSelect={setSelectedEpic}
+              onRefetch={refetch}
+              selectedProgram={selectedProgram}
+              selectedPI={selectedPI}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Epic Details Panel */}
