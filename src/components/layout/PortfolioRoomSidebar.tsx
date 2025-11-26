@@ -49,12 +49,9 @@ const menuItems: MenuItem[] = [
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/portfolio/:portfolioId/forecast' },
-  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity' },
   { id: 'more-items', label: 'More items', icon: MoreHorizontal, expandable: true },
   { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
   { id: 'more-pages', label: 'More pages', icon: FolderTree, expandable: true },
-  { type: 'divider' },
-  { id: 'programs', label: 'Programs', icon: UsersIcon, expandable: true },
 ];
 
 export function PortfolioRoomSidebar({ 
