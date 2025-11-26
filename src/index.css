@@ -92,6 +92,20 @@
     --sprint-header-bg: 244 245 247;
     --sprint-divider: 223 225 230;
     --pi-header-bg: 235 236 240;
+    
+    /* Drag States (Phase 3) */
+    --bar-dragging: 0 82 204 / 0.1;
+    --bar-drop-target: 0 82 204 / 0.2;
+    --drag-handle-hover: 255 255 255 / 0.8;
+    
+    /* Modified Indicator */
+    --modified-dot: 255 139 0;
+    --modified-border: 255 139 0;
+    
+    /* Sidebar */
+    --sidebar-bg: 250 251 252;
+    --sidebar-section-header: 107 119 140;
+    --checkbox-checked: 0 82 204;
 
     /* Neutral Scale */
     --neutral-0: 0 0% 100%;
