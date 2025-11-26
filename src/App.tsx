@@ -55,6 +55,10 @@ import Predictability from "./pages/insights/Predictability";
 import DependencyRisk from "./pages/insights/DependencyRisk";
 import NotFound from "./pages/NotFound";
 import { AdminGuard } from "./components/admin/AdminGuard";
+import OKRHeatmap from "./pages/enterprise/OKRHeatmap";
+import OKRTree from "./pages/enterprise/OKRTree";
+import RoadmapsPage from "./pages/enterprise/Roadmaps";
+import SelfTest from "./pages/dev/SelfTest";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +81,9 @@ const App = () => (
               <Route path="/portfolio-room" element={<PortfolioRoomPage />} />
               <Route path="/strategy-room" element={<StrategyRoom />} />
               <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
+              <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
+              <Route path="/enterprise/okr-tree" element={<OKRTree />} />
+              <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Epics />} />
@@ -120,6 +127,7 @@ const App = () => (
               <Route path="/value-stream" element={<ValueStreamView />} />
               <Route path="/profile" element={<UserProfile />} />
               <Route path="/items/:type" element={<PlaceholderPage />} />
+              <Route path="/dev/self-test" element={<SelfTest />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

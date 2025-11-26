@@ -107,6 +107,32 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-spring: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     
+    /* Jira Align UI Tokens */
+    --s0: 0px;
+    --s1: 4px;
+    --s2: 8px;
+    --s3: 12px;
+    --s4: 16px;
+    --s5: 20px;
+    --s6: 24px;
+    --s7: 32px;
+    --s8: 40px;
+    --s9: 48px;
+    
+    --sidebar-w: 260px;
+    --topnav-h: 56px;
+    --pagehdr-h: 56px;
+    --toolbar-h: 48px;
+    --grid-row: 32px;
+    --grid-hdr: 40px;
+    --timeline-hdr: 32px;
+    --bar-h: 20px;
+    
+    --font-xs: 11px;
+    --font-sm: 12px;
+    --font-md: 14px;
+    --font-lg: 16px;
+    
     /* Sidebar Colors */
     --sidebar-background: 215 28% 17%;
     --sidebar-foreground: 0 0% 98%;
