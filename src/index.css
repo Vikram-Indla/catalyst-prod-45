@@ -77,6 +77,21 @@
     --bar-future: 151 160 175;
     --bar-epic: 0 184 217;
     --bar-theme: 101 84 192;
+    
+    /* Status Pills */
+    --pill-on-track-bg: 54 179 126;
+    --pill-at-risk-bg: 255 153 31;
+    --pill-off-track-bg: 222 53 11;
+    
+    /* Milestone Colors */
+    --milestone-color: 0 184 217;
+    --milestone-star: 255 171 0;
+    --milestone-star-outline: 184 134 11;
+    
+    /* Sprint Headers */
+    --sprint-header-bg: 244 245 247;
+    --sprint-divider: 223 225 230;
+    --pi-header-bg: 235 236 240;
 
     /* Neutral Scale */
     --neutral-0: 0 0% 100%;
