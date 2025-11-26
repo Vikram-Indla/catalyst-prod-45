@@ -109,7 +109,6 @@ const App = () => (
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Navigate to="/backlog/epics" replace />} />
-              <Route path="/backlog/epics" element={<EpicBacklogWithSidebar />} />
               <Route path="/features" element={<Features />} />
               <Route path="/items/capabilities" element={<Capabilities />} />
               <Route path="/items/defects" element={<Defects />} />
@@ -162,6 +161,10 @@ const App = () => (
               <Route path="/dev/forecast-self-test" element={<ForecastSelfTest />} />
               <Route path="/dev/sources" element={<SourcesReference />} />
             </Route>
+            
+            {/* Epic Backlog - Standalone with its own sidebar */}
+            <Route path="/backlog/epics" element={<ProtectedRoute><EpicBacklogWithSidebar /></ProtectedRoute>} />
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
             </Routes>
