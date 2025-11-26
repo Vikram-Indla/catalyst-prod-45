@@ -7,11 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Settings, Filter, ArrowUpDown } from 'lucide-react';
+import { ChevronDown, Settings, Filter, ArrowUpDown, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { ForecastGrid } from '@/components/forecast/ForecastGrid';
 import { ForecastFiltersDialog } from '@/components/forecast/ForecastFiltersDialog';
 import { ForecastColumnsDialog } from '@/components/forecast/ForecastColumnsDialog';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function Forecast() {
   const { portfolioId } = useParams();
@@ -21,11 +22,16 @@ export default function Forecast() {
   const queryClient = useQueryClient();
   const [viewLevel, setViewLevel] = useState<'team' | 'program'>('program');
   const [workItemLevel, setWorkItemLevel] = useState<'epics' | 'capabilities' | 'features'>('epics');
+  const [estimateUnit, setEstimateUnit] = useState<'points' | 'team_weeks' | 'member_weeks'>('points');
   const [selectedPIs, setSelectedPIs] = useState<string[]>(piParam ? [piParam] : []);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [columnsOpen, setColumnsOpen] = useState(false);
   const [expandedPIs, setExpandedPIs] = useState<Set<string>>(new Set());
   const [piSelectorOpen, setPiSelectorOpen] = useState(false);
+
+  // Feature flags
+  const weeksUnitEnabled = useFeatureFlag('forecast_weeks_unit');
+  const exportEnabled = useFeatureFlag('forecast_export');
 
   // Fetch program increments
   const { data: pis = [] } = useQuery({
@@ -146,6 +152,30 @@ export default function Forecast() {
               <ArrowUpDown className="h-4 w-4 mr-2" />
               Apply Backlog Rank
             </Button>
+            
+            {/* Estimate Unit Selector - Feature Flagged */}
+            {weeksUnitEnabled && (
+              <Select value={estimateUnit} onValueChange={(value: any) => setEstimateUnit(value)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="points">Points</SelectItem>
+                  <SelectItem value="team_weeks">Team Weeks</SelectItem>
+                  <SelectItem value="member_weeks">Member Weeks</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+            
+            {/* Export Button - Feature Flagged */}
+            {exportEnabled && (
+              <Button variant="outline" size="sm" onClick={() => {
+                toast.info('CSV export functionality coming soon');
+              }}>
+                <Download className="h-4 w-4 mr-2" />
+                Export CSV
+              </Button>
+            )}
           </div>
         </div>
       </div>
