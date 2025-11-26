@@ -80,15 +80,14 @@ export function PortfolioRoomSidebar({
   return (
     <aside 
       className={cn(
-        "h-full border-r bg-card transition-all duration-300 flex-shrink-0",
-        "lg:relative absolute lg:translate-x-0 z-30",
-        expanded ? "w-[280px]" : "w-16 -translate-x-full lg:translate-x-0"
+        "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative",
+        expanded ? "w-[280px]" : "w-16"
       )}
     >
       {/* Toggle Handle */}
       <button
         onClick={onToggle}
-        className="absolute -right-3 top-6 z-10 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent"
+        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
         aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         {expanded ? (
