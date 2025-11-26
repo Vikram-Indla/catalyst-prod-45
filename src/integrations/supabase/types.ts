@@ -154,6 +154,62 @@ export type Database = {
         }
         Relationships: []
       }
+      capabilities: {
+        Row: {
+          capability_key: string | null
+          created_at: string | null
+          deleted_at: string | null
+          description: string | null
+          epic_id: string | null
+          global_rank: number | null
+          id: string
+          name: string
+          owner_id: string | null
+          parked_at: string | null
+          rank_within_epic: number | null
+          state: Database["public"]["Enums"]["epic_state"] | null
+          updated_at: string | null
+        }
+        Insert: {
+          capability_key?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          epic_id?: string | null
+          global_rank?: number | null
+          id?: string
+          name: string
+          owner_id?: string | null
+          parked_at?: string | null
+          rank_within_epic?: number | null
+          state?: Database["public"]["Enums"]["epic_state"] | null
+          updated_at?: string | null
+        }
+        Update: {
+          capability_key?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          epic_id?: string | null
+          global_rank?: number | null
+          id?: string
+          name?: string
+          owner_id?: string | null
+          parked_at?: string | null
+          rank_within_epic?: number | null
+          state?: Database["public"]["Enums"]["epic_state"] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capabilities_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       capacity_allocations: {
         Row: {
           actual_capacity_points: number | null
@@ -376,49 +432,124 @@ export type Database = {
           },
         ]
       }
+      epic_program_increments: {
+        Row: {
+          created_at: string | null
+          epic_id: string
+          id: string
+          pi_id: string
+          pi_rank: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          epic_id: string
+          id?: string
+          pi_id: string
+          pi_rank?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          epic_id?: string
+          id?: string
+          pi_id?: string
+          pi_rank?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_program_increments_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_program_increments_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       epics: {
         Row: {
           created_at: string | null
+          deleted_at: string | null
           description: string | null
           end_date: string | null
+          epic_key: string | null
           estimate: number | null
+          global_rank: number | null
           health: Database["public"]["Enums"]["health_status"] | null
           id: string
+          mvp: boolean | null
           name: string
           owner_id: string | null
+          parked_at: string | null
+          points_estimate: number | null
+          portfolio_id: string | null
+          portfolio_rank: number | null
           primary_program_id: string | null
+          process_step_id: string | null
+          program_rank: number | null
           start_date: string | null
+          state: Database["public"]["Enums"]["epic_state"] | null
           status: Database["public"]["Enums"]["epic_status"] | null
+          tags: string[] | null
           theme_id: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           end_date?: string | null
+          epic_key?: string | null
           estimate?: number | null
+          global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
+          mvp?: boolean | null
           name: string
           owner_id?: string | null
+          parked_at?: string | null
+          points_estimate?: number | null
+          portfolio_id?: string | null
+          portfolio_rank?: number | null
           primary_program_id?: string | null
+          process_step_id?: string | null
+          program_rank?: number | null
           start_date?: string | null
+          state?: Database["public"]["Enums"]["epic_state"] | null
           status?: Database["public"]["Enums"]["epic_status"] | null
+          tags?: string[] | null
           theme_id?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           end_date?: string | null
+          epic_key?: string | null
           estimate?: number | null
+          global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
+          mvp?: boolean | null
           name?: string
           owner_id?: string | null
+          parked_at?: string | null
+          points_estimate?: number | null
+          portfolio_id?: string | null
+          portfolio_rank?: number | null
           primary_program_id?: string | null
+          process_step_id?: string | null
+          program_rank?: number | null
           start_date?: string | null
+          state?: Database["public"]["Enums"]["epic_state"] | null
           status?: Database["public"]["Enums"]["epic_status"] | null
+          tags?: string[] | null
           theme_id?: string | null
           updated_at?: string | null
         }
@@ -435,6 +566,20 @@ export type Database = {
             columns: ["theme_id"]
             isOneToOne: false
             referencedRelation: "strategic_themes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_epics_portfolio"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_epics_process_step"
+            columns: ["process_step_id"]
+            isOneToOne: false
+            referencedRelation: "process_steps"
             referencedColumns: ["id"]
           },
         ]
@@ -486,6 +631,7 @@ export type Database = {
           blocked: boolean | null
           blocked_reason: string | null
           business_value: number | null
+          capability_id: string | null
           created_at: string | null
           description: string | null
           epic_id: string
@@ -502,6 +648,7 @@ export type Database = {
           planned_start_date: string | null
           program_id: string
           progress_pct: number | null
+          rank_within_epic: number | null
           risk_reduction: number | null
           status: Database["public"]["Enums"]["feature_status"] | null
           team_id: string | null
@@ -516,6 +663,7 @@ export type Database = {
           blocked?: boolean | null
           blocked_reason?: string | null
           business_value?: number | null
+          capability_id?: string | null
           created_at?: string | null
           description?: string | null
           epic_id: string
@@ -532,6 +680,7 @@ export type Database = {
           planned_start_date?: string | null
           program_id: string
           progress_pct?: number | null
+          rank_within_epic?: number | null
           risk_reduction?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
           team_id?: string | null
@@ -546,6 +695,7 @@ export type Database = {
           blocked?: boolean | null
           blocked_reason?: string | null
           business_value?: number | null
+          capability_id?: string | null
           created_at?: string | null
           description?: string | null
           epic_id?: string
@@ -562,6 +712,7 @@ export type Database = {
           planned_start_date?: string | null
           program_id?: string
           progress_pct?: number | null
+          rank_within_epic?: number | null
           risk_reduction?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
           team_id?: string | null
@@ -570,6 +721,13 @@ export type Database = {
           wsjf_score?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "features_capability_id_fkey"
+            columns: ["capability_id"]
+            isOneToOne: false
+            referencedRelation: "capabilities"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "features_epic_id_fkey"
             columns: ["epic_id"]
@@ -1671,6 +1829,79 @@ export type Database = {
           },
         ]
       }
+      process_flows: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          program_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          program_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          program_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_flows_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      process_steps: {
+        Row: {
+          created_at: string | null
+          exit_criteria: string | null
+          id: string
+          name: string
+          process_flow_id: string
+          sort_order: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          exit_criteria?: string | null
+          id?: string
+          name: string
+          process_flow_id: string
+          sort_order: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          exit_criteria?: string | null
+          id?: string
+          name?: string
+          process_flow_id?: string
+          sort_order?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "process_steps_process_flow_id_fkey"
+            columns: ["process_flow_id"]
+            isOneToOne: false
+            referencedRelation: "process_flows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -2224,6 +2455,7 @@ export type Database = {
       stories: {
         Row: {
           acceptance_criteria: string | null
+          accepted_at: string | null
           assignee_id: string | null
           created_at: string | null
           description: string | null
@@ -2231,6 +2463,7 @@ export type Database = {
           feature_id: string
           id: string
           name: string
+          points_loe: number | null
           sprint_id: string | null
           status: Database["public"]["Enums"]["story_status"] | null
           team_id: string | null
@@ -2238,6 +2471,7 @@ export type Database = {
         }
         Insert: {
           acceptance_criteria?: string | null
+          accepted_at?: string | null
           assignee_id?: string | null
           created_at?: string | null
           description?: string | null
@@ -2245,6 +2479,7 @@ export type Database = {
           feature_id: string
           id?: string
           name: string
+          points_loe?: number | null
           sprint_id?: string | null
           status?: Database["public"]["Enums"]["story_status"] | null
           team_id?: string | null
@@ -2252,6 +2487,7 @@ export type Database = {
         }
         Update: {
           acceptance_criteria?: string | null
+          accepted_at?: string | null
           assignee_id?: string | null
           created_at?: string | null
           description?: string | null
@@ -2259,6 +2495,7 @@ export type Database = {
           feature_id?: string
           id?: string
           name?: string
+          points_loe?: number | null
           sprint_id?: string | null
           status?: Database["public"]["Enums"]["story_status"] | null
           team_id?: string | null
@@ -2702,6 +2939,7 @@ export type Database = {
       confidence_level: "high" | "med" | "low"
       dependency_status: "open" | "in_progress" | "done"
       dependency_type: "sequential" | "concurrent"
+      epic_state: "not_started" | "in_progress" | "accepted"
       epic_status:
         | "proposed"
         | "analyzing"
@@ -2895,6 +3133,7 @@ export const Constants = {
       confidence_level: ["high", "med", "low"],
       dependency_status: ["open", "in_progress", "done"],
       dependency_type: ["sequential", "concurrent"],
+      epic_state: ["not_started", "in_progress", "accepted"],
       epic_status: [
         "proposed",
         "analyzing",
