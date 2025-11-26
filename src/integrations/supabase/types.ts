@@ -490,6 +490,8 @@ export type Database = {
           portfolio_id: string | null
           portfolio_rank: number | null
           primary_program_id: string | null
+          process_flow_entered_at: string | null
+          process_step_entered_at: string | null
           process_step_id: string | null
           program_rank: number | null
           start_date: string | null
@@ -517,6 +519,8 @@ export type Database = {
           portfolio_id?: string | null
           portfolio_rank?: number | null
           primary_program_id?: string | null
+          process_flow_entered_at?: string | null
+          process_step_entered_at?: string | null
           process_step_id?: string | null
           program_rank?: number | null
           start_date?: string | null
@@ -544,6 +548,8 @@ export type Database = {
           portfolio_id?: string | null
           portfolio_rank?: number | null
           primary_program_id?: string | null
+          process_flow_entered_at?: string | null
+          process_step_entered_at?: string | null
           process_step_id?: string | null
           program_rank?: number | null
           start_date?: string | null
@@ -2761,6 +2767,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_epic_backlog_preferences: {
+        Row: {
+          created_at: string | null
+          id: string
+          labels_display: string | null
+          last_kanban_subview: string | null
+          last_view: string | null
+          selected_columns_main: Json | null
+          selected_columns_small: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          labels_display?: string | null
+          last_kanban_subview?: string | null
+          last_view?: string | null
+          selected_columns_main?: Json | null
+          selected_columns_small?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          labels_display?: string | null
+          last_kanban_subview?: string | null
+          last_view?: string | null
+          selected_columns_main?: Json | null
+          selected_columns_small?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       user_role_history: {
         Row: {
