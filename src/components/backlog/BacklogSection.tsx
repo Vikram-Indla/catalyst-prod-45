@@ -1,24 +1,49 @@
-import { BacklogSection as BacklogSectionType, Program } from '@/types/backlog.types';
+import { BacklogSection as BacklogSectionType, Epic, Program } from '@/types/backlog.types';
 import { QuickAddRow } from './QuickAddRow';
 import { ColumnHeaders } from './ColumnHeaders';
 import { EpicRow } from './EpicRow';
 import { PIProgressBar } from './PIProgressBar';
-import { Minus, Plus, Move } from 'lucide-react';
+import { LabelsDropdown, LabelConfig } from './LabelsDropdown';
+import { Minus, Plus, Move, Zap, Upload } from 'lucide-react';
 
 interface BacklogSectionProps {
   section: BacklogSectionType;
   programs: Program[];
+  selectedEpicId: string | null;
+  expandedEpicIds: Set<string>;
+  visibleColumns: string[];
+  labelConfig: LabelConfig;
   onToggleExpand: (sectionId: string) => void;
+  onToggleEpicExpand: (epicId: string) => void;
   onAddEpic: (title: string, programId: string) => void;
   onEpicClick: (epicId: string) => void;
+  onDragStart: (e: React.DragEvent, epic: Epic, sectionId: string) => void;
+  onDragOver: (e: React.DragEvent, epicId: string, sectionId: string) => void;
+  onDrop: (e: React.DragEvent, epicId: string, sectionId: string) => void;
+  onContextMenu: (e: React.MouseEvent, epic: Epic, sectionId: string) => void;
+  onPrioritize: (sectionId: string) => void;
+  onExport: (sectionId: string) => void;
+  onLabelConfigChange: (config: LabelConfig) => void;
 }
 
 export function BacklogSection({ 
   section, 
   programs, 
-  onToggleExpand, 
+  selectedEpicId,
+  expandedEpicIds,
+  visibleColumns,
+  labelConfig,
+  onToggleExpand,
+  onToggleEpicExpand,
   onAddEpic, 
-  onEpicClick 
+  onEpicClick,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onContextMenu,
+  onPrioritize,
+  onExport,
+  onLabelConfigChange
 }: BacklogSectionProps) {
   return (
     <div className="mx-6 mb-4 border border-[#DFE1E6] rounded bg-white">
@@ -38,13 +63,25 @@ export function BacklogSection({
         </span>
 
         <div className="ml-auto flex items-center gap-4">
-          <button className="flex items-center gap-1.5 px-2 py-1 text-sm text-[#6B778C] hover:bg-[#EBECF0] hover:text-[#172B4D] rounded transition-colors">
-            <span>⚡</span>
+          <button 
+            className="flex items-center gap-1.5 px-2 py-1 text-sm text-[#6B778C] hover:bg-[#EBECF0] hover:text-[#172B4D] rounded transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              onPrioritize(section.id);
+            }}
+          >
+            <Zap className="w-4 h-4" />
             Prioritize
           </button>
           
-          <button className="flex items-center gap-1.5 px-2 py-1 text-sm text-[#6B778C] hover:bg-[#EBECF0] hover:text-[#172B4D] rounded transition-colors">
-            <span>📤</span>
+          <button 
+            className="flex items-center gap-1.5 px-2 py-1 text-sm text-[#6B778C] hover:bg-[#EBECF0] hover:text-[#172B4D] rounded transition-colors"
+            onClick={(e) => {
+              e.stopPropagation();
+              onExport(section.id);
+            }}
+          >
+            <Upload className="w-4 h-4" />
             Export
           </button>
 
@@ -67,9 +104,26 @@ export function BacklogSection({
           ) : (
             <>
               <QuickAddRow programs={programs} onAdd={onAddEpic} />
+              <LabelsDropdown 
+                config={labelConfig}
+                onChange={onLabelConfigChange}
+              />
               <ColumnHeaders />
               {section.items.map((epic) => (
-                <EpicRow key={epic.id} epic={epic} onEpicClick={onEpicClick} />
+                <EpicRow 
+                  key={epic.id} 
+                  epic={epic}
+                  isSelected={selectedEpicId === epic.id}
+                  isExpanded={expandedEpicIds.has(epic.id)}
+                  visibleColumns={visibleColumns}
+                  labelDisplayMode={labelConfig.displayMode}
+                  onEpicClick={onEpicClick}
+                  onToggleExpand={onToggleEpicExpand}
+                  onDragStart={(e) => onDragStart(e, epic, section.id)}
+                  onDragOver={(e) => onDragOver(e, epic.id, section.id)}
+                  onDrop={(e) => onDrop(e, epic.id, section.id)}
+                  onContextMenu={(e) => onContextMenu(e, epic, section.id)}
+                />
               ))}
             </>
           )}
