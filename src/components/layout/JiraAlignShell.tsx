@@ -3,19 +3,23 @@ import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   Home, Search, Bell, CheckSquare, HelpCircle, Settings, 
-  User, ChevronDown, LayoutGrid, Star
+  User, ChevronDown, LayoutGrid
 } from 'lucide-react';
 import { PortfolioDropdown } from './dropdowns/PortfolioDropdown';
 import { StarredDropdown } from './dropdowns/StarredDropdown';
 import { ItemsDropdown } from './dropdowns/ItemsDropdown';
 import { CreateDropdown } from './dropdowns/CreateDropdown';
 import { NotificationsPanel } from './dropdowns/NotificationsPanel';
+import { LeftContextPanel } from './LeftContextPanel';
+import { GlobalSearch } from './GlobalSearch';
+import { JiraAlignContextProvider } from '@/contexts/JiraAlignContext';
 
 export function JiraAlignShell() {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [notificationCount, setNotificationCount] = useState(2);
+  const [searchOpen, setSearchOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = (name: string) => {
@@ -25,6 +29,19 @@ export function JiraAlignShell() {
   const closeDropdown = () => setActiveDropdown(null);
 
   const isActive = (path: string) => location.pathname === path;
+
+  // Global keyboard shortcut for search (Cmd+K / Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,7 +60,8 @@ export function JiraAlignShell() {
   }, [activeDropdown]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background" ref={dropdownRef}>
+    <JiraAlignContextProvider>
+      <div className="min-h-screen flex flex-col bg-background" ref={dropdownRef}>
       {/* Global Header */}
       <header className="h-14 border-b bg-card flex items-center px-2 gap-4 sticky top-0 z-50">
         {/* Left: Logo + Primary Menus */}
@@ -150,7 +168,11 @@ export function JiraAlignShell() {
 
         {/* Right: Icons */}
         <div className="flex items-center gap-2 pr-2">
-          <Button variant="ghost" size="icon">
+          <Button 
+            variant="ghost" 
+            size="icon"
+            onClick={() => setSearchOpen(true)}
+          >
             <Search className="h-5 w-5" />
           </Button>
           <div className="relative">
@@ -189,10 +211,17 @@ export function JiraAlignShell() {
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-1">
-        <Outlet />
-      </main>
-    </div>
+      {/* Global Search Dialog */}
+      <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
+
+      {/* Main Content with Context Panel */}
+        <div className="flex flex-1 overflow-hidden">
+          <LeftContextPanel />
+          <main className="flex-1 overflow-auto">
+            <Outlet />
+          </main>
+        </div>
+      </div>
+    </JiraAlignContextProvider>
   );
 }
