@@ -9,22 +9,22 @@ const workItems = [
   { label: 'Themes', icon: Layers, path: '/items/themes', color: 'bg-emerald-500' },
   { label: 'Epics', icon: Diamond, path: '/items/epics', color: 'bg-blue-500' },
   { label: 'Capabilities', icon: Box, path: '/items/capabilities', color: 'bg-amber-500' },
-  { label: 'Features', icon: Zap, path: '/items/features', color: 'bg-purple-600' },
+  { label: 'Features', icon: Zap, path: '/items/features', color: 'bg-purple-500' },
   { label: 'Stories', icon: BookOpen, path: '/items/stories', color: 'bg-teal-500' },
   { label: 'Defects', icon: AlertCircle, path: '/items/defects', color: 'bg-red-500' },
-  { label: 'Tasks', icon: CheckSquare, path: '/items/tasks', color: 'bg-blue-400' }
+  { label: 'Tasks', icon: CheckSquare, path: '/items/tasks', color: 'bg-blue-500' }
 ];
 
 const otherItems = [
-  { label: 'Objectives', icon: Target, path: '/items/objectives', color: 'bg-slate-600' },
-  { label: 'Dependencies', icon: GitBranch, path: '/items/dependencies', color: 'bg-slate-600' },
-  { label: 'Ideation', icon: Lightbulb, path: '/items/ideation', color: 'bg-slate-600' },
-  { label: 'Risks', icon: AlertTriangle, path: '/items/risks', color: 'bg-slate-600' },
-  { label: 'Impediments', icon: Shield, path: '/items/impediments', color: 'bg-slate-600' },
-  { label: 'Sprints', icon: Calendar, path: '/items/sprints', color: 'bg-slate-600' },
-  { label: 'Program Increments', icon: Package, path: '/items/program-increments', color: 'bg-slate-600' },
-  { label: 'Release Vehicles (Fix Versions)', icon: Package, path: '/items/release-vehicles', color: 'bg-slate-600' },
-  { label: 'Success Criteria', icon: Award, path: '/items/success-criteria', color: 'bg-slate-600' }
+  { label: 'Objectives', icon: Target, path: '/items/objectives', color: 'bg-slate-500' },
+  { label: 'Dependencies', icon: GitBranch, path: '/items/dependencies', color: 'bg-slate-500' },
+  { label: 'Ideation', icon: Lightbulb, path: '/items/ideation', color: 'bg-slate-500' },
+  { label: 'Risks', icon: AlertTriangle, path: '/items/risks', color: 'bg-slate-500' },
+  { label: 'Impediments', icon: Shield, path: '/items/impediments', color: 'bg-slate-500' },
+  { label: 'Sprints', icon: Calendar, path: '/items/sprints', color: 'bg-slate-500' },
+  { label: 'Program Increments', icon: Package, path: '/items/program-increments', color: 'bg-slate-500' },
+  { label: 'Release Vehicles (Fix Versions)', icon: Package, path: '/items/release-vehicles', color: 'bg-slate-500' },
+  { label: 'Success Criteria', icon: Award, path: '/items/success-criteria', color: 'bg-slate-500' }
 ];
 
 interface ItemsDropdownProps {
