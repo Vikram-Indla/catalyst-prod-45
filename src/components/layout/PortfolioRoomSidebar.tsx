@@ -1,232 +1,203 @@
-import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
-  FolderKanban, Diamond, Layers, Map, Target, GitBranch, Calendar, 
-  BarChart3, ChevronRight, Settings, ChevronDown, Search
+  ChevronLeft, 
+  ChevronRight, 
+  Settings,
+  LayoutDashboard,
+  Diamond,
+  List,
+  Map,
+  GitBranch,
+  Network,
+  TrendingUp,
+  Users as UsersIcon,
+  MoreHorizontal,
+  FileText,
+  FolderTree
 } from 'lucide-react';
-
-const navItems = [
-  { label: 'Portfolio Room', icon: FolderKanban, path: '/portfolio-room' },
-  { label: 'Epics', icon: Diamond, path: '/jira/epics' },
-  { label: 'Backlog', icon: Layers, path: '/jira/backlog' },
-  { label: 'Roadmaps', icon: Map, path: '/jira/roadmaps' },
-  { label: 'Objective tree', icon: Target, path: '/jira/objective-tree' },
-  { label: 'Work tree', icon: GitBranch, path: '/jira/work-tree' },
-  { label: 'Forecast', icon: Calendar, path: '/jira/forecast' },
-  { label: 'Capacity', icon: BarChart3, path: '/jira/capacity' }
-];
-
-const piData = [
-  { id: 'pi-5', name: 'PI-5', dates: '11/29/2024 - 2/20/2025', status: 'selected' },
-  { id: 'pi-9', name: 'PI-9', dates: '3/11/2025 - 4/10/2025', status: 'planning' },
-  { id: 'pi-6', name: 'PI-6', dates: '2/21/2025 - 5/15/2025', status: 'planning' },
-  { id: 'pi-10', name: 'PI-10', dates: '4/11/2025 - 7/3/2025', status: 'planning' },
-  { id: 'pi-8', name: 'PI-8', dates: '6/26/2025 - 7/1/2025', status: 'planning' },
-  { id: 'pi-7', name: 'PI-7', dates: '5/16/2025 - 8/15/2025', status: 'planning' },
-  { id: 'pi-1', name: 'PI-1', dates: '11/29/2023 - 1/26/2024', status: 'done' }
-];
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 interface PortfolioRoomSidebarProps {
-  portfolio: string;
+  portfolioId: string;
+  expanded: boolean;
+  onToggle: () => void;
+  selectedPI: string | null;
+  onPIChange: (pi: string | null) => void;
 }
 
-export function PortfolioRoomSidebar({ portfolio }: PortfolioRoomSidebarProps) {
+type MenuItem = 
+  | { id: string; label: string; icon: any; path: string; expandable?: never }
+  | { id: string; label: string; icon: any; expandable: true; path?: never }
+  | { type: 'divider' };
+
+const menuItems: MenuItem[] = [
+  { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
+  { id: 'epics', label: 'Epics', icon: Diamond, path: '/portfolio/:portfolioId/epics' },
+  { id: 'backlog', label: 'Backlog', icon: List, path: '/portfolio/:portfolioId/backlog' },
+  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/portfolio/:portfolioId/roadmaps' },
+  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/portfolio/:portfolioId/objective-tree' },
+  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
+  { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/portfolio/:portfolioId/forecast' },
+  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/portfolio/:portfolioId/capacity' },
+  { type: 'divider' },
+  { id: 'more-items', label: 'More items', icon: MoreHorizontal, expandable: true },
+  { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
+  { id: 'more-pages', label: 'More pages', icon: FolderTree, expandable: true },
+  { type: 'divider' },
+  { id: 'programs', label: 'Programs', icon: UsersIcon, path: '/portfolio/:portfolioId/programs' },
+];
+
+export function PortfolioRoomSidebar({ 
+  portfolioId, 
+  expanded, 
+  onToggle,
+  selectedPI,
+  onPIChange 
+}: PortfolioRoomSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [piSelectorOpen, setPiSelectorOpen] = useState(false);
-  const [selectedPIs, setSelectedPIs] = useState<string[]>(['pi-5']);
-  const [stagedPIs, setStagedPIs] = useState<string[]>(['pi-5']);
-  const [piSearch, setPiSearch] = useState('');
 
-  const handlePIToggle = (piId: string) => {
-    setStagedPIs(prev =>
-      prev.includes(piId) ? prev.filter(id => id !== piId) : [...prev, piId]
-    );
+  const handleNavigation = (path: string) => {
+    const resolvedPath = path.replace(':portfolioId', portfolioId);
+    navigate(resolvedPath + (selectedPI ? `?pi=${selectedPI}` : ''));
   };
 
-  const handleApply = () => {
-    setSelectedPIs(stagedPIs);
-    setPiSelectorOpen(false);
-  };
-
-  const handleCancel = () => {
-    setStagedPIs(selectedPIs);
-    setPiSelectorOpen(false);
-  };
-
-  const handleClearAll = () => {
-    setStagedPIs([]);
-  };
-
-  const filteredPIs = piData.filter(pi =>
-    pi.name.toLowerCase().includes(piSearch.toLowerCase()) ||
-    pi.dates.includes(piSearch)
-  );
-
-  const groupedPIs = {
-    selected: filteredPIs.filter(pi => stagedPIs.includes(pi.id)),
-    inProgress: filteredPIs.filter(pi => pi.status === 'inprogress' && !stagedPIs.includes(pi.id)),
-    planning: filteredPIs.filter(pi => pi.status === 'planning' && !stagedPIs.includes(pi.id)),
-    done: filteredPIs.filter(pi => pi.status === 'done' && !stagedPIs.includes(pi.id))
+  const isActive = (path?: string) => {
+    if (!path) return false;
+    const resolvedPath = path.replace(':portfolioId', portfolioId);
+    return location.pathname === resolvedPath;
   };
 
   return (
-    <div className="w-64 border-r bg-card flex flex-col">
-      {/* Portfolio Context */}
-      <div className="p-4 border-b">
-        <div className="flex items-center gap-2 mb-1">
-          <div className="w-8 h-8 bg-primary/10 rounded flex items-center justify-center">
-            <FolderKanban className="h-4 w-4 text-primary" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-medium text-sm truncate">{portfolio}</h3>
-            <p className="text-xs text-muted-foreground">Portfolio</p>
-          </div>
-          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+    <aside 
+      className={cn(
+        "relative border-r bg-card transition-all duration-300 flex-shrink-0",
+        expanded ? "w-[280px]" : "w-16"
+      )}
+    >
+      {/* Toggle Handle */}
+      <button
+        onClick={onToggle}
+        className="absolute -right-3 top-6 z-10 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent"
+        aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+      >
+        {expanded ? (
+          <ChevronLeft className="h-4 w-4" />
+        ) : (
+          <ChevronRight className="h-4 w-4" />
+        )}
+      </button>
+
+      <div className="h-full flex flex-col overflow-hidden">
+        {/* Portfolio Context Header */}
+        <div className={cn("p-3 border-b", !expanded && "px-2")}>
+          {expanded ? (
+            <>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold">
+                  DS
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium truncate">Digital Services</div>
+                  <div className="text-xs text-muted-foreground">Portfolio</div>
+                </div>
+              </div>
+
+              {/* Program Increment Selector */}
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Program Increment
+                </label>
+                <Select value={selectedPI || undefined} onValueChange={onPIChange}>
+                  <SelectTrigger className="h-9 text-sm">
+                    <SelectValue placeholder="Select PI" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel className="text-xs font-semibold text-muted-foreground uppercase">Selected</SelectLabel>
+                      <SelectItem value="pi-5">PI-5 (Dec 2024 – Feb 2025)</SelectItem>
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel className="text-xs font-semibold text-muted-foreground uppercase">In Progress</SelectLabel>
+                      <SelectItem value="pi-6">PI-6 (Mar 2025 – May 2025)</SelectItem>
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel className="text-xs font-semibold text-muted-foreground uppercase">Planning</SelectLabel>
+                      <SelectItem value="pi-7">PI-7 (Jun 2025 – Aug 2025)</SelectItem>
+                    </SelectGroup>
+                    <SelectGroup>
+                      <SelectLabel className="text-xs font-semibold text-muted-foreground uppercase">Done</SelectLabel>
+                      <SelectItem value="pi-4">PI-4 (Sep 2024 – Nov 2024)</SelectItem>
+                      <SelectItem value="pi-3">PI-3 (Jun 2024 – Aug 2024)</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          ) : (
+            <div className="flex justify-center">
+              <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold">
+                DS
+              </div>
+            </div>
+          )}
         </div>
-      </div>
 
-      {/* PI Selector */}
-      <div className="p-4 border-b">
-        <p className="text-xs font-semibold text-muted-foreground mb-2">PROGRAM INCREMENT</p>
-        <Button
-          variant="outline"
-          size="sm"
-          className="w-full justify-between"
-          onClick={() => setPiSelectorOpen(!piSelectorOpen)}
-        >
-          <span className="text-sm">{selectedPIs.length > 0 ? selectedPIs.map(id => piData.find(p => p.id === id)?.name).join(', ') : 'Select PI'}</span>
-          <ChevronDown className="h-4 w-4" />
-        </Button>
+        {/* Navigation Menu */}
+        <nav className="flex-1 overflow-y-auto py-2">
+          <div className="space-y-0.5 px-2">
+            {menuItems.map((item, index) => {
+              if ('type' in item && item.type === 'divider') {
+                return <div key={`divider-${index}`} className="my-2 border-t" />;
+              }
 
-        {piSelectorOpen && (
-          <div className="absolute left-64 top-[9rem] w-80 bg-popover border rounded-md shadow-lg z-50">
-            <div className="p-3 border-b">
-              <div className="relative">
-                <Input
-                  placeholder="Search Program Increment"
-                  value={piSearch}
-                  onChange={(e) => setPiSearch(e.target.value)}
-                  className="pr-8"
-                />
-                <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              </div>
-            </div>
+              if (!('id' in item)) return null;
 
-            <ScrollArea className="max-h-96">
-              <div className="p-2">
-                {groupedPIs.selected.length > 0 && (
-                  <>
-                    <p className="text-xs font-semibold text-muted-foreground px-3 py-2">SELECTED</p>
-                    {groupedPIs.selected.map((pi) => (
-                      <div key={pi.id} className="flex items-center gap-2 px-3 py-2">
-                        <Checkbox
-                          checked={stagedPIs.includes(pi.id)}
-                          onCheckedChange={() => handlePIToggle(pi.id)}
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{pi.name}</p>
-                          <p className="text-xs text-muted-foreground">{pi.dates}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                )}
+              const Icon = item.icon;
+              const active = isActive('path' in item ? item.path : undefined);
 
-                {groupedPIs.planning.length > 0 && (
-                  <>
-                    <p className="text-xs font-semibold text-muted-foreground px-3 py-2 mt-2">PLANNING</p>
-                    {groupedPIs.planning.map((pi) => (
-                      <div key={pi.id} className="flex items-center gap-2 px-3 py-2">
-                        <Checkbox
-                          checked={stagedPIs.includes(pi.id)}
-                          onCheckedChange={() => handlePIToggle(pi.id)}
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{pi.name}</p>
-                          <p className="text-xs text-muted-foreground">{pi.dates}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                )}
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => 'path' in item && item.path && handleNavigation(item.path)}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+                    "hover:bg-accent",
+                    active && "bg-accent/50 border-l-2 border-primary font-medium",
+                    !expanded && "justify-center px-2"
+                  )}
+                  title={!expanded ? item.label : undefined}
+                >
+                  {Icon && <Icon className="h-[18px] w-[18px] flex-shrink-0" />}
+                  {expanded && <span className="truncate">{item.label}</span>}
+                  {expanded && 'expandable' in item && item.expandable && (
+                    <ChevronRight className="h-4 w-4 ml-auto" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
 
-                {groupedPIs.done.length > 0 && (
-                  <>
-                    <p className="text-xs font-semibold text-muted-foreground px-3 py-2 mt-2">DONE</p>
-                    {groupedPIs.done.map((pi) => (
-                      <div key={pi.id} className="flex items-center gap-2 px-3 py-2">
-                        <Checkbox
-                          checked={stagedPIs.includes(pi.id)}
-                          onCheckedChange={() => handlePIToggle(pi.id)}
-                        />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{pi.name}</p>
-                          <p className="text-xs text-muted-foreground">{pi.dates}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
-            </ScrollArea>
-
-            <div className="p-3 border-t flex gap-2">
-              <Button size="sm" onClick={handleApply} className="flex-1">Apply</Button>
-              <Button size="sm" variant="outline" onClick={handleClearAll}>Clear all</Button>
-              <Button size="sm" variant="ghost" onClick={handleCancel}>Cancel</Button>
-            </div>
+        {/* Footer */}
+        {expanded && (
+          <div className="p-3 border-t">
+            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm hover:bg-accent">
+              <Settings className="h-[18px] w-[18px]" />
+              <span>Portfolio settings</span>
+            </button>
           </div>
         )}
       </div>
-
-      {/* Navigation */}
-      <ScrollArea className="flex-1">
-        <nav className="p-2">
-          {navItems.map((item) => (
-            <button
-              key={item.path}
-              onClick={() => navigate(item.path)}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded text-sm ${
-                location.pathname === item.path
-                  ? 'bg-primary/10 text-primary font-medium'
-                  : 'hover:bg-accent'
-              }`}
-            >
-              <item.icon className="h-4 w-4" />
-              <span>{item.label}</span>
-            </button>
-          ))}
-
-          <button className="w-full flex items-center justify-between px-3 py-2 rounded text-sm hover:bg-accent mt-2">
-            <div className="flex items-center gap-3">
-              <Layers className="h-4 w-4" />
-              <span>More items</span>
-            </div>
-            <ChevronRight className="h-4 w-4" />
-          </button>
-
-          <button className="w-full flex items-center justify-between px-3 py-2 rounded text-sm hover:bg-accent">
-            <div className="flex items-center gap-3">
-              <BarChart3 className="h-4 w-4" />
-              <span>Reports</span>
-            </div>
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </nav>
-      </ScrollArea>
-
-      {/* Settings */}
-      <div className="p-4 border-t">
-        <button className="w-full flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-          <Settings className="h-4 w-4" />
-          <span>Portfolios settings</span>
-        </button>
-      </div>
-    </div>
+    </aside>
   );
 }

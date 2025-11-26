@@ -45,7 +45,13 @@ export default function PortfolioRoomPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-3.5rem)]">
-      <PortfolioRoomSidebar portfolio={portfolio} />
+      <PortfolioRoomSidebar 
+        portfolioId="1"
+        expanded={true}
+        onToggle={() => {}}
+        selectedPI={null}
+        onPIChange={() => {}}
+      />
       
       <div className="flex-1 flex flex-col">
         {/* Page Header */}
