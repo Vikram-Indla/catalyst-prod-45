@@ -1,23 +1,64 @@
 import { Epic } from '@/types/backlog.types';
 import { StatusDot } from './StatusDot';
 import { LabelPill } from './LabelPill';
+import { DragHandle } from './DragHandle';
 import { Check, ChevronRight } from 'lucide-react';
 
 interface EpicRowProps {
   epic: Epic;
+  isSelected: boolean;
+  isExpanded: boolean;
+  visibleColumns: string[];
+  labelDisplayMode: "full" | "abbreviated" | "hidden";
   onEpicClick: (epicId: string) => void;
+  onToggleExpand: (epicId: string) => void;
+  onDragStart: (e: React.DragEvent, epic: Epic) => void;
+  onDragOver: (e: React.DragEvent, epicId: string) => void;
+  onDrop: (e: React.DragEvent, epicId: string) => void;
+  onContextMenu: (e: React.MouseEvent, epic: Epic) => void;
 }
 
-export function EpicRow({ epic, onEpicClick }: EpicRowProps) {
+export function EpicRow({ 
+  epic,
+  isSelected,
+  isExpanded,
+  visibleColumns,
+  labelDisplayMode,
+  onEpicClick,
+  onToggleExpand,
+  onDragStart,
+  onDragOver,
+  onDrop,
+  onContextMenu
+}: EpicRowProps) {
+  const shouldShowLabels = labelDisplayMode !== "hidden";
+  const shouldAbbreviate = labelDisplayMode === "abbreviated";
+
   return (
     <div 
-      className="grid grid-cols-[40px_50px_70px_1fr_auto_70px_50px_100px] items-center px-4 py-2 border-b border-[#EBECF0] bg-white hover:bg-[#F4F5F7] transition-colors cursor-pointer"
+      className={`relative group grid grid-cols-[40px_50px_70px_1fr_auto_70px_50px_100px] items-center px-4 py-2 border-b border-[#EBECF0] hover:bg-[#F4F5F7] transition-colors cursor-pointer ${
+        isSelected ? "bg-[#E9F2FF] border-l-4 border-l-[#0052CC]" : "bg-white"
+      }`}
       onClick={() => onEpicClick(epic.id)}
+      onDragOver={(e) => onDragOver(e, epic.id)}
+      onDrop={(e) => onDrop(e, epic.id)}
+      onContextMenu={(e) => onContextMenu(e, epic)}
     >
+      {/* Drag Handle */}
+      <DragHandle onDragStart={(e) => onDragStart(e, epic)} />
+
       {/* Expand Arrow */}
       <div className="flex items-center justify-center">
         {epic.hasChildren && (
-          <button className="w-6 h-6 flex items-center justify-center text-[#6B778C] hover:text-[#172B4D]">
+          <button 
+            className={`w-6 h-6 flex items-center justify-center text-[#6B778C] hover:text-[#172B4D] transition-transform ${
+              isExpanded ? "rotate-90" : ""
+            }`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleExpand(epic.id);
+            }}
+          >
             <ChevronRight className="w-4 h-4" />
           </button>
         )}
@@ -45,26 +86,38 @@ export function EpicRow({ epic, onEpicClick }: EpicRowProps) {
       </div>
 
       {/* Label Pills */}
-      <div className="flex gap-1 flex-wrap justify-end">
-        {epic.labels.slice(0, 6).map((label) => (
-          <LabelPill key={label.id} label={label} />
-        ))}
-      </div>
+      {shouldShowLabels && (
+        <div className="flex gap-1 flex-wrap justify-end">
+          {epic.labels.slice(0, 6).map((label) => (
+            <LabelPill 
+              key={label.id} 
+              label={label} 
+              abbreviated={shouldAbbreviate}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Points */}
-      <div className="text-sm text-[#172B4D] text-right">
-        {epic.points}
-      </div>
+      {visibleColumns.includes("points") && (
+        <div className="text-sm text-[#172B4D] text-right">
+          {epic.points}
+        </div>
+      )}
 
       {/* MVP */}
-      <div className="text-sm text-[#6B778C] text-center">
-        {epic.mvp ? 'Yes' : 'No'}
-      </div>
+      {visibleColumns.includes("mvp") && (
+        <div className="text-sm text-[#6B778C] text-center">
+          {epic.mvp ? 'Yes' : 'No'}
+        </div>
+      )}
 
       {/* Process Step */}
-      <div className="text-sm text-[#6B778C] truncate">
-        {epic.processStep}
-      </div>
+      {visibleColumns.includes("processStep") && (
+        <div className="text-sm text-[#6B778C] truncate">
+          {epic.processStep}
+        </div>
+      )}
     </div>
   );
 }

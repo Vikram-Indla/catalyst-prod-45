@@ -42,6 +42,7 @@ import Forecast from "./pages/Forecast";
 import TeamRoom from "./pages/TeamRoom";
 import SprintBoard from "./pages/SprintBoard";
 import Backlog from "./pages/Backlog";
+import BacklogPage from "./pages/BacklogPage";
 import Sprints from "./pages/Sprints";
 import Stories from "./pages/Stories";
 import Subtasks from "./pages/Subtasks";
@@ -132,6 +133,7 @@ const App = () => (
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/team-room" element={<TeamRoom />} />
               <Route path="/backlog" element={<Backlog />} />
+              <Route path="/backlog-phase2" element={<BacklogPage />} />
               <Route path="/sprints" element={<Sprints />} />
               <Route path="/sprint-board" element={<SprintBoard />} />
               <Route path="/work-items/stories" element={<Stories />} />

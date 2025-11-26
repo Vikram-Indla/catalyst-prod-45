@@ -1,5 +1,7 @@
-import { Eye, Grid3X3, Filter, Search, List, LayoutGrid, Circle } from 'lucide-react';
+import { Eye, Filter, Search, List, LayoutGrid, Circle } from 'lucide-react';
 import { ViewingDropdown } from './ViewingDropdown';
+import { ColumnsDropdown, ColumnConfig } from './ColumnsDropdown';
+import { LabelsDropdown, LabelConfig } from './LabelsDropdown';
 import { ViewingOption } from '@/types/backlog.types';
 
 interface BacklogHeaderProps {
@@ -10,6 +12,10 @@ interface BacklogHeaderProps {
   onSearchChange: (value: string) => void;
   activeView: 'list' | 'kanban' | 'unassigned';
   onViewChange: (view: 'list' | 'kanban' | 'unassigned') => void;
+  columnConfig: ColumnConfig[];
+  onColumnConfigChange: (config: ColumnConfig[]) => void;
+  labelConfig: LabelConfig;
+  onLabelConfigChange: (config: LabelConfig) => void;
 }
 
 export function BacklogHeader({
@@ -19,7 +25,11 @@ export function BacklogHeader({
   searchTerm,
   onSearchChange,
   activeView,
-  onViewChange
+  onViewChange,
+  columnConfig,
+  onColumnConfigChange,
+  labelConfig,
+  onLabelConfigChange
 }: BacklogHeaderProps) {
   return (
     <div className="flex items-center justify-between px-6 py-4 border-b border-[#DFE1E6] bg-white">
@@ -38,10 +48,10 @@ export function BacklogHeader({
           Orphan Objects
         </button>
 
-        <button className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-[#6B778C] hover:bg-[#F4F5F7] hover:text-[#172B4D] rounded transition-colors">
-          <Grid3X3 className="w-4 h-4" />
-          Columns Shown
-        </button>
+        <ColumnsDropdown 
+          columns={columnConfig}
+          onChange={onColumnConfigChange}
+        />
 
         <button className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-[#6B778C] hover:bg-[#F4F5F7] hover:text-[#172B4D] rounded transition-colors">
           <Filter className="w-4 h-4" />
