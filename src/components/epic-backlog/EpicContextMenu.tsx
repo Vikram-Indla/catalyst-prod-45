@@ -37,7 +37,18 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
   });
 
   const duplicateMutation = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (newName: string) => {
+      // Check if name already exists
+      const { data: existing } = await supabase
+        .from('epics')
+        .select('id')
+        .eq('name', newName)
+        .single();
+      
+      if (existing) {
+        throw new Error('Epic with this name already exists');
+      }
+
       const { data: original } = await supabase
         .from('epics')
         .select('*')
@@ -51,7 +62,7 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
         .insert({
           ...original,
           id: undefined,
-          name: `${original.name} (Copy)`,
+          name: newName,
           epic_key: undefined,
           global_rank: original.global_rank + 1,
           created_at: undefined,
@@ -63,6 +74,14 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
     onSuccess: () => {
       onRefetch();
       toast({ title: 'Epic duplicated successfully' });
+    },
+    onError: (error: Error) => {
+      toast({ 
+        title: error.message === 'Epic with this name already exists' 
+          ? 'Epic name already exists - please choose a different name' 
+          : 'Failed to duplicate epic', 
+        variant: 'destructive' 
+      });
     },
   });
 
@@ -150,6 +169,13 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
     }
   };
 
+  const handleDuplicate = () => {
+    const newName = prompt('Enter name for duplicated epic:', '');
+    if (newName && newName.trim()) {
+      duplicateMutation.mutate(newName.trim());
+    }
+  };
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
@@ -158,7 +184,7 @@ export function EpicContextMenu({ epicId, onRefetch, children }: EpicContextMenu
           <ExternalLink className="h-4 w-4 mr-2" />
           Open in new tab
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => duplicateMutation.mutate()}>
+        <ContextMenuItem onClick={handleDuplicate}>
           <Copy className="h-4 w-4 mr-2" />
           Duplicate
         </ContextMenuItem>

@@ -8,6 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { usePermission } from '@/hooks/usePermission';
 import { WSJFBadge } from '@/components/shared/WSJFBadge';
 import { TrendingUp, Save } from 'lucide-react';
 
@@ -32,6 +33,7 @@ interface EpicWSJF {
 export function WSJFPrioritizationDialog({ open, onOpenChange, epicIds, onSuccess }: WSJFPrioritizationDialogProps) {
   const [epics, setEpics] = useState<EpicWSJF[]>([]);
   const { toast } = useToast();
+  const canManageEstimation = usePermission('epics', 'edit');
 
   const { data: fetchedEpics } = useQuery({
     queryKey: ['epics-wsjf', epicIds],
@@ -96,13 +98,17 @@ export function WSJFPrioritizationDialog({ open, onOpenChange, epicIds, onSucces
 
   const applyRankingMutation = useMutation({
     mutationFn: async () => {
-      // Sort by WSJF score and apply to global ranking
+      // Sort by WSJF score (descending) and apply to global ranking
       const sorted = [...epics].sort((a, b) => b.wsjf_score - a.wsjf_score);
       
+      // Apply ranks: higher WSJF = lower rank number (higher priority)
       for (let i = 0; i < sorted.length; i++) {
         await supabase
           .from('epics')
-          .update({ global_rank: i })
+          .update({ 
+            global_rank: i,
+            points_estimate: sorted[i].wsjf_score,
+          })
           .eq('id', sorted[i].id);
       }
     },
@@ -111,7 +117,28 @@ export function WSJFPrioritizationDialog({ open, onOpenChange, epicIds, onSucces
       onSuccess();
       onOpenChange(false);
     },
+    onError: () => {
+      toast({ title: 'Failed to apply WSJF ranking', variant: 'destructive' });
+    },
   });
+
+  if (!canManageEstimation) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Permission Denied</DialogTitle>
+          </DialogHeader>
+          <div className="py-4 text-muted-foreground">
+            You do not have permission to manage epic estimation and prioritization.
+          </div>
+          <div className="flex justify-end">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Close</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
