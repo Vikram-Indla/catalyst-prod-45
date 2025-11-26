@@ -14,6 +14,20 @@ interface ForecastGridProps {
 export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridProps) {
   const queryClient = useQueryClient();
 
+  // Fetch assignments to determine which cells should be enabled
+  const { data: assignments = [] } = useQuery({
+    queryKey: ['work-item-assignments', workItemLevel],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('work_item_assignments')
+        .select('*')
+        .eq('work_item_type', workItemLevel.slice(0, -1));
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   // Fetch work items for this PI
   const { data: workItems = [], isLoading: workItemsLoading } = useQuery({
     queryKey: ['forecast-work-items', piId, workItemLevel],
@@ -175,34 +189,44 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-muted/50 border-b sticky top-0 z-10">
-            <th className="text-left p-3 font-medium text-sm min-w-[300px] sticky left-0 bg-muted/50">
-              Work Item
-            </th>
-            <th className="text-left p-3 font-medium text-sm min-w-[120px]">Theme</th>
-            <th className="text-left p-3 font-medium text-sm min-w-[120px]">Owner</th>
-            <th className="text-right p-3 font-medium text-sm min-w-[120px]">PI Estimate</th>
-            {capacities.map(capacity => (
-              <th
-                key={capacity.id}
-                className={cn(
-                  "text-right p-3 font-medium text-sm min-w-[120px]",
-                  isOverCapacity(capacity.program_id, capacity.team_id) && "bg-destructive/10 text-destructive"
-                )}
-              >
-                <div>
-                  {viewLevel === 'program' ? capacity.programs?.name : capacity.teams?.name}
-                </div>
-                <div className="text-xs font-normal">
-                  ({calculateTotalForContext(capacity.program_id, capacity.team_id)}/{capacity.available_capacity})
-                </div>
+    <div className="border rounded-lg overflow-hidden bg-card">
+      <div className="overflow-x-auto">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-muted/50 border-b">
+              {/* Zone 1: Sticky left columns */}
+              <th className="text-left p-3 font-medium text-sm w-[300px] sticky left-0 bg-muted/50 z-20 border-r">
+                Work Item
               </th>
-            ))}
-          </tr>
-        </thead>
+              
+              {/* Zone 2: Scrollable default columns */}
+              <th className="text-left p-3 font-medium text-sm min-w-[120px] bg-muted/50">Theme</th>
+              <th className="text-left p-3 font-medium text-sm min-w-[120px] bg-muted/50">Owner</th>
+              <th className="text-right p-3 font-medium text-sm min-w-[120px] bg-muted/50 border-r">PI Estimate</th>
+              
+              {/* Zone 3: Estimate input matrix */}
+              {capacities.map((capacity, idx) => (
+                <th
+                  key={capacity.id}
+                  className={cn(
+                    "text-right p-3 font-medium text-sm min-w-[140px] bg-muted/50",
+                    isOverCapacity(capacity.program_id, capacity.team_id) && "bg-destructive/10 text-destructive",
+                    idx < capacities.length - 1 && "border-r"
+                  )}
+                >
+                  <div className="font-semibold">
+                    {viewLevel === 'program' ? capacity.programs?.name : capacity.teams?.name}
+                  </div>
+                  <div className={cn(
+                    "text-xs font-normal mt-1",
+                    isOverCapacity(capacity.program_id, capacity.team_id) && "font-semibold"
+                  )}>
+                    {calculateTotalForContext(capacity.program_id, capacity.team_id)}/{capacity.available_capacity} pts
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
         <tbody>
           {workItems.map((item) => {
             const piEstimate = forecasts
@@ -215,15 +239,18 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
               'F-' + (item.id as string).slice(0, 4);
 
             return (
-              <tr key={item.id as string} className="border-b hover:bg-muted/30 transition-colors">
-                <td className="p-3 sticky left-0 bg-background">
+              <tr key={item.id as string} className="border-b hover:bg-muted/30 transition-colors group">
+                {/* Zone 1: Sticky left */}
+                <td className="p-3 sticky left-0 bg-background group-hover:bg-muted/30 z-10 border-r">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-xs text-muted-foreground font-mono">
                       {itemKey}
                     </span>
-                    <span className="text-sm font-medium">{item.name as string}</span>
+                    <span className="text-sm font-medium truncate">{item.name as string}</span>
                   </div>
                 </td>
+                
+                {/* Zone 2: Scrollable columns */}
                 <td className="p-3 text-sm text-muted-foreground">
                   {/* TODO: Fetch and display theme */}
                   -
@@ -232,14 +259,27 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                   {/* TODO: Fetch and display owner */}
                   -
                 </td>
-                <td className="p-3 text-right text-sm font-medium">
+                <td className="p-3 text-right text-sm font-semibold border-r">
                   {piEstimate}
                 </td>
-                {capacities.map(capacity => {
+                
+                {/* Zone 3: Estimate inputs */}
+                {capacities.map((capacity, idx) => {
                   const value = getForecastValue(item.id as string, capacity.program_id, capacity.team_id);
+                  const isAssigned = workItems.some(wi => 
+                    wi.id === item.id && 
+                    assignments.some(a => 
+                      a.work_item_id === wi.id &&
+                      ((capacity.program_id && a.program_id === capacity.program_id && !a.team_id) ||
+                       (capacity.team_id && a.team_id === capacity.team_id))
+                    )
+                  );
                   
                   return (
-                    <td key={capacity.id} className="p-3">
+                    <td key={capacity.id} className={cn(
+                      "p-2",
+                      idx < capacities.length - 1 && "border-r"
+                    )}>
                       <Input
                         type="number"
                         min="0"
@@ -251,8 +291,12 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                           capacity.team_id,
                           e.target.value
                         )}
-                        className="w-full text-right"
-                        placeholder="0"
+                        disabled={!isAssigned}
+                        className={cn(
+                          "w-full text-right h-9 text-sm",
+                          !isAssigned && "bg-muted/30 cursor-not-allowed"
+                        )}
+                        placeholder={isAssigned ? "0" : "-"}
                       />
                     </td>
                   );
@@ -263,5 +307,6 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
         </tbody>
       </table>
     </div>
+  </div>
   );
 }
