@@ -6,13 +6,13 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const workItems = [
-  { label: 'Theme', icon: Layers },
-  { label: 'Epic', icon: Diamond },
-  { label: 'Capability', icon: Box },
-  { label: 'Feature', icon: Zap },
-  { label: 'Story', icon: BookOpen },
-  { label: 'Defect', icon: AlertCircle },
-  { label: 'Task', icon: CheckSquare }
+  { label: 'Theme', icon: Layers, color: 'bg-emerald-500' },
+  { label: 'Epic', icon: Diamond, color: 'bg-blue-500' },
+  { label: 'Capability', icon: Box, color: 'bg-amber-500' },
+  { label: 'Feature', icon: Zap, color: 'bg-purple-600' },
+  { label: 'Story', icon: BookOpen, color: 'bg-teal-500' },
+  { label: 'Defect', icon: AlertCircle, color: 'bg-red-500' },
+  { label: 'Task', icon: CheckSquare, color: 'bg-blue-400' }
 ];
 
 const otherItems = [
@@ -51,8 +51,8 @@ export function CreateDropdown({ onClose }: CreateDropdownProps) {
               onClick={() => handleClick(item.label)}
               className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-accent text-left"
             >
-              <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
-                <item.icon className="h-4 w-4 text-primary" />
+              <div className={`w-6 h-6 rounded ${item.color} flex items-center justify-center`}>
+                <item.icon className="h-3.5 w-3.5 text-white" />
               </div>
               <span className="text-sm">{item.label}</span>
             </button>

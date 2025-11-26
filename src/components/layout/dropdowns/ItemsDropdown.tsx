@@ -6,13 +6,13 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const workItems = [
-  { label: 'Themes', icon: Layers, path: '/items/themes' },
-  { label: 'Epics', icon: Diamond, path: '/items/epics' },
-  { label: 'Capabilities', icon: Box, path: '/items/capabilities' },
-  { label: 'Features', icon: Zap, path: '/items/features' },
-  { label: 'Stories', icon: BookOpen, path: '/items/stories' },
-  { label: 'Defects', icon: AlertCircle, path: '/items/defects' },
-  { label: 'Tasks', icon: CheckSquare, path: '/items/tasks' }
+  { label: 'Themes', icon: Layers, path: '/items/themes', color: 'bg-emerald-500' },
+  { label: 'Epics', icon: Diamond, path: '/items/epics', color: 'bg-blue-500' },
+  { label: 'Capabilities', icon: Box, path: '/items/capabilities', color: 'bg-amber-500' },
+  { label: 'Features', icon: Zap, path: '/items/features', color: 'bg-purple-600' },
+  { label: 'Stories', icon: BookOpen, path: '/items/stories', color: 'bg-teal-500' },
+  { label: 'Defects', icon: AlertCircle, path: '/items/defects', color: 'bg-red-500' },
+  { label: 'Tasks', icon: CheckSquare, path: '/items/tasks', color: 'bg-blue-400' }
 ];
 
 const otherItems = [
@@ -50,8 +50,8 @@ export function ItemsDropdown({ onClose }: ItemsDropdownProps) {
               onClick={() => handleClick(item.path)}
               className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-accent text-left"
             >
-              <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
-                <item.icon className="h-4 w-4 text-primary" />
+              <div className={`w-6 h-6 rounded ${item.color} flex items-center justify-center`}>
+                <item.icon className="h-3.5 w-3.5 text-white" />
               </div>
               <span className="text-sm">{item.label}</span>
             </button>
