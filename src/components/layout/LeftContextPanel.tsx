@@ -11,9 +11,6 @@ import {
   Network,
   TrendingUp,
   Users as UsersIcon,
-  MoreHorizontal,
-  FileText,
-  FolderTree,
   Target,
   Boxes,
 } from 'lucide-react';
@@ -26,9 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { useJiraAlignContext, TierType } from '@/contexts/JiraAlignContext';
 
@@ -72,9 +66,6 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     snapshotId,
     setSnapshotId,
   } = useJiraAlignContext();
-  
-  const [piSelectionOpen, setPiSelectionOpen] = useState(false);
-  const [tempPiIds, setTempPiIds] = useState<string[]>(piIds);
 
   // Mock data - in production these would come from API
   const portfolios = [
@@ -121,22 +112,6 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     return menuItems.filter(item => !item.tiers || item.tiers.includes(tier));
   };
 
-  const handleApplyPiSelection = () => {
-    setPiIds(tempPiIds);
-    setPiSelectionOpen(false);
-  };
-
-  const handleClearPiSelection = () => {
-    setTempPiIds([]);
-  };
-
-  const pisByStatus = {
-    selected: pis.filter(pi => pi.status === 'selected'),
-    'in-progress': pis.filter(pi => pi.status === 'in-progress'),
-    planning: pis.filter(pi => pi.status === 'planning'),
-    done: pis.filter(pi => pi.status === 'done'),
-  };
-
   return (
     <aside
       className={cn(
@@ -160,37 +135,20 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Context Header */}
-        <div className={cn("p-3 border-b", !expanded && "px-2")}>
+        <div className={cn("p-4 border-b space-y-4", !expanded && "px-2")}>
           {expanded ? (
             <>
-              {/* Entity Selector */}
+              {/* Portfolio Selector - Simple */}
               {tier === 'portfolio' && (
-                <div className="mb-3">
+                <div>
                   <Select value={portfolioId || undefined} onValueChange={setPortfolioId}>
-                    <SelectTrigger className="h-auto p-2">
-                      {currentPortfolio ? (
-                        <div className="flex items-center gap-2 w-full">
-                          <div className={`w-8 h-8 rounded ${currentPortfolio.color} flex items-center justify-center text-white text-xs font-semibold flex-shrink-0`}>
-                            {currentPortfolio.abbr}
-                          </div>
-                          <div className="flex-1 min-w-0 text-left">
-                            <div className="text-sm font-medium truncate">{currentPortfolio.name}</div>
-                            <div className="text-xs text-muted-foreground">Portfolio</div>
-                          </div>
-                        </div>
-                      ) : (
-                        <SelectValue placeholder="Select Portfolio" />
-                      )}
+                    <SelectTrigger className="h-12 justify-start text-left">
+                      <SelectValue placeholder="Select Portfolio" />
                     </SelectTrigger>
                     <SelectContent>
                       {portfolios.map(portfolio => (
                         <SelectItem key={portfolio.id} value={portfolio.id}>
-                          <div className="flex items-center gap-2">
-                            <div className={`w-6 h-6 rounded ${portfolio.color} flex items-center justify-center text-white text-xs font-semibold`}>
-                              {portfolio.abbr}
-                            </div>
-                            <span>{portfolio.name}</span>
-                          </div>
+                          {portfolio.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -198,14 +156,12 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 </div>
               )}
 
+              {/* Program Selector - Simple */}
               {tier === 'program' && (
-                <div className="mb-3">
+                <div>
                   <Select value={programId || undefined} onValueChange={setProgramId}>
-                    <SelectTrigger className="h-auto p-2">
-                      <div className="text-left">
-                        <div className="text-sm font-medium">{currentProgram?.name || 'Select Program'}</div>
-                        <div className="text-xs text-muted-foreground">Program</div>
-                      </div>
+                    <SelectTrigger className="h-12 justify-start text-left">
+                      <SelectValue placeholder="Select Program" />
                     </SelectTrigger>
                     <SelectContent>
                       {programs.map(program => (
@@ -218,10 +174,11 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 </div>
               )}
 
-              {tier === 'enterprise' && snapshotId && (
-                <div className="mb-3">
-                  <Select value={snapshotId} onValueChange={setSnapshotId}>
-                    <SelectTrigger className="h-9 text-sm">
+              {/* Snapshot Selector - Simple */}
+              {tier === 'enterprise' && (
+                <div>
+                  <Select value={snapshotId || undefined} onValueChange={setSnapshotId}>
+                    <SelectTrigger className="h-12 justify-start text-left">
                       <SelectValue placeholder="Select Snapshot" />
                     </SelectTrigger>
                     <SelectContent>
@@ -235,96 +192,33 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 </div>
               )}
 
-              {/* Program Increment Multi-Selector */}
+              {/* Program Increment Section */}
               {(tier === 'portfolio' || tier === 'program') && (
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     Program Increment
                   </label>
-                  
-                  {!piSelectionOpen ? (
-                    <Button
-                      variant="outline"
-                      className="w-full h-9 justify-start text-sm font-normal"
-                      onClick={() => {
-                        setTempPiIds(piIds);
-                        setPiSelectionOpen(true);
-                      }}
-                    >
-                      {piIds.length === 0 ? (
-                        <span className="text-muted-foreground">Select PIs</span>
-                      ) : piIds.length === 1 ? (
-                        pis.find(pi => pi.id === piIds[0])?.code
-                      ) : (
-                        `${piIds.length} PIs selected`
-                      )}
-                    </Button>
-                  ) : (
-                    <div className="border rounded-md bg-background">
-                      <ScrollArea className="h-[280px]">
-                        <div className="p-2 space-y-3">
-                          {Object.entries(pisByStatus).map(([status, items]) => (
-                            items.length > 0 && (
-                              <div key={status}>
-                                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-2 py-1">
-                                  {status.replace('-', ' ')}
-                                </div>
-                                {items.map(pi => (
-                                  <label
-                                    key={pi.id}
-                                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-accent rounded cursor-pointer"
-                                  >
-                                    <Checkbox
-                                      checked={tempPiIds.includes(pi.id)}
-                                      onCheckedChange={(checked) => {
-                                        setTempPiIds(prev =>
-                                          checked
-                                            ? [...prev, pi.id]
-                                            : prev.filter(id => id !== pi.id)
-                                        );
-                                      }}
-                                    />
-                                    <div className="flex-1 text-sm">
-                                      <div className="font-medium">{pi.code}</div>
-                                      <div className="text-xs text-muted-foreground">{pi.dates}</div>
-                                    </div>
-                                  </label>
-                                ))}
-                              </div>
-                            )
-                          ))}
-                        </div>
-                      </ScrollArea>
-                      <div className="border-t p-2 flex gap-2">
-                        <Button size="sm" className="flex-1" onClick={handleApplyPiSelection}>
-                          Apply
-                        </Button>
-                        <Button size="sm" variant="outline" onClick={handleClearPiSelection}>
-                          Clear
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => setPiSelectionOpen(false)}>
-                          Cancel
-                        </Button>
-                      </div>
-                    </div>
-                  )}
+                  <Select value={piIds[0] || undefined} onValueChange={(value) => setPiIds([value])}>
+                    <SelectTrigger className="h-12 justify-start text-left">
+                      <SelectValue placeholder="Select PIs" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pis.map(pi => (
+                        <SelectItem key={pi.id} value={pi.id}>
+                          {pi.code} ({pi.dates})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </>
-          ) : (
-            <div className="flex justify-center">
-              {currentPortfolio && (
-                <div className={`w-8 h-8 rounded ${currentPortfolio.color} flex items-center justify-center text-white text-xs font-semibold`}>
-                  {currentPortfolio.abbr}
-                </div>
-              )}
-            </div>
-          )}
+          ) : null}
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 overflow-y-auto py-2">
-          <div className="space-y-0.5 px-2">
+        <nav className="flex-1 overflow-y-auto border-b">
+          <div className="py-4 space-y-1">
             {getFilteredMenuItems().map((item) => {
               const Icon = item.icon;
               const active = isActive(item.path);
@@ -334,18 +228,15 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                   key={item.id}
                   onClick={() => handleNavigation(item.path)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
-                    "hover:bg-accent",
-                    active && "bg-accent/50 border-l-2 border-primary font-medium",
+                    "w-full flex items-center gap-3 px-4 py-3 text-base transition-colors",
+                    "hover:bg-accent/50",
+                    active && "bg-accent text-accent-foreground",
                     !expanded && "justify-center px-2"
                   )}
                   title={!expanded ? item.label : undefined}
                 >
-                  <Icon className="h-[18px] w-[18px] flex-shrink-0" />
+                  <Icon className="h-5 w-5 flex-shrink-0" />
                   {expanded && <span className="truncate">{item.label}</span>}
-                  {expanded && item.expandable && (
-                    <ChevronRight className="h-4 w-4 ml-auto" />
-                  )}
                 </button>
               );
             })}
@@ -354,9 +245,9 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
         {/* Footer */}
         {expanded && (
-          <div className="p-3 border-t">
-            <button className="w-full flex items-center gap-3 px-3 py-2 rounded-md text-sm hover:bg-accent">
-              <Settings className="h-[18px] w-[18px]" />
+          <div className="p-4">
+            <button className="w-full flex items-center gap-3 px-4 py-3 text-base hover:bg-accent/50 transition-colors">
+              <Settings className="h-5 w-5" />
               <span>Settings</span>
             </button>
           </div>
