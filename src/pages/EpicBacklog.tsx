@@ -165,7 +165,7 @@ export default function EpicBacklog() {
               <SelectValue placeholder="Select Portfolio" />
             </SelectTrigger>
             <SelectContent>
-              {portfolios?.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+              {portfolios?.filter(p => p.id).map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
             </SelectContent>
           </Select>
 
@@ -174,16 +174,16 @@ export default function EpicBacklog() {
               <SelectValue placeholder="Select Program" />
             </SelectTrigger>
             <SelectContent>
-              {programs?.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+              {programs?.filter(p => p.id).map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
             </SelectContent>
           </Select>
 
-          <Select value={selectedPI} onValueChange={setSelectedPI} disabled={!selectedPortfolio}>
+          <Select value={selectedPI || 'all'} onValueChange={(v) => setSelectedPI(v === 'all' ? '' : v)} disabled={!selectedPortfolio}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="Select PI" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All PIs</SelectItem>
+              <SelectItem value="all">All PIs</SelectItem>
               {programIncrements?.map((pi) => <SelectItem key={pi.id} value={pi.id}>{pi.name}</SelectItem>)}
             </SelectContent>
           </Select>
