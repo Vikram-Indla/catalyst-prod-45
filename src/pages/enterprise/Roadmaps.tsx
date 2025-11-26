@@ -103,13 +103,13 @@ export default function Roadmaps() {
 
   const allSprints = useMemo(() => {
     return programIncrements.flatMap(pi => 
-      pi.sprints.map(sprint => ({
+      (pi.sprints || []).map(sprint => ({
         ...sprint,
         piId: pi.id,
         piName: pi.name,
       }))
     );
-  }, []);
+  }, [programIncrements]);
 
   const getBarPositionSprint = (startDate: string): number => {
     const start = new Date(startDate);
