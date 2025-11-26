@@ -28,9 +28,9 @@ export function JiraAlignShell() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Global Header */}
-      <header className="h-14 border-b bg-card flex items-center px-4 gap-4 sticky top-0 z-50">
+      <header className="h-14 border-b bg-card flex items-center px-2 gap-4 sticky top-0 z-50">
         {/* Left: Logo + Primary Menus */}
-        <div className="flex items-center gap-6 flex-1">
+        <div className="flex items-center gap-6 flex-1 pl-2">
           <div 
             className="flex items-center gap-2 cursor-pointer" 
             onClick={() => navigate('/home')}
@@ -132,7 +132,7 @@ export function JiraAlignShell() {
         </div>
 
         {/* Right: Icons */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 pr-2">
           <Button variant="ghost" size="icon">
             <Search className="h-5 w-5" />
           </Button>
