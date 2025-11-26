@@ -199,9 +199,9 @@ export default function EpicBacklog() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="flex flex-col bg-background h-full">
       {/* Configuration Bar */}
-      <div className="border-b bg-card px-6 py-4 space-y-4">
+      <div className="border-b bg-card px-6 py-4 space-y-4 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Epic Backlog</h1>

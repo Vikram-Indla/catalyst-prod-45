@@ -18,7 +18,7 @@ import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
-import EpicBacklog from "./pages/EpicBacklog";
+import EpicBacklogWithSidebar from "./pages/EpicBacklogWithSidebar";
 import Features from "./pages/Features";
 import Capabilities from "./pages/Capabilities";
 import Defects from "./pages/Defects";
@@ -106,7 +106,7 @@ const App = () => (
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Navigate to="/backlog/epics" replace />} />
-              <Route path="/backlog/epics" element={<EpicBacklog />} />
+              <Route path="/backlog/epics" element={<EpicBacklogWithSidebar />} />
               <Route path="/features" element={<Features />} />
               <Route path="/items/capabilities" element={<Capabilities />} />
               <Route path="/items/defects" element={<Defects />} />
