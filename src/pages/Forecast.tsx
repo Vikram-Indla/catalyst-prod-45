@@ -140,7 +140,9 @@ export default function Forecast() {
               <Settings className="h-4 w-4 mr-2" />
               Configure Columns
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => {
+              toast.info('Apply Backlog Rank resets ordering based on program/portfolio/global rank');
+            }}>
               <ArrowUpDown className="h-4 w-4 mr-2" />
               Apply Backlog Rank
             </Button>

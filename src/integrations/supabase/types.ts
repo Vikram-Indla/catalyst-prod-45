@@ -2926,6 +2926,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_forecast_preferences: {
+        Row: {
+          created_at: string | null
+          filters: Json
+          id: string
+          updated_at: string | null
+          user_id: string
+          visible_columns: Json
+        }
+        Insert: {
+          created_at?: string | null
+          filters?: Json
+          id?: string
+          updated_at?: string | null
+          user_id: string
+          visible_columns?: Json
+        }
+        Update: {
+          created_at?: string | null
+          filters?: Json
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+          visible_columns?: Json
+        }
+        Relationships: []
+      }
       user_role_history: {
         Row: {
           action: string
@@ -3059,6 +3086,44 @@ export type Database = {
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_item_forecast_ranks: {
+        Row: {
+          created_at: string | null
+          id: string
+          pi_id: string
+          rank: number
+          updated_at: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          pi_id: string
+          rank?: number
+          updated_at?: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          pi_id?: string
+          rank?: number
+          updated_at?: string | null
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_forecast_ranks_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
             referencedColumns: ["id"]
           },
         ]
