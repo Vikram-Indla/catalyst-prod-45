@@ -12,7 +12,8 @@ import {
   Users as UsersIcon,
   MoreHorizontal,
   FileText,
-  FolderTree
+  FolderTree,
+  Target
 } from 'lucide-react';
 import {
   Select,
@@ -31,6 +32,8 @@ interface PortfolioRoomSidebarProps {
   onToggle: () => void;
   selectedPI: string | null;
   onPIChange: (pi: string | null) => void;
+  showTeamFilter?: boolean;
+  showEpicFilter?: boolean;
 }
 
 type MenuItem = 
@@ -40,18 +43,18 @@ type MenuItem =
 
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
+  { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives' },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps' },
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/portfolio/:portfolioId/forecast' },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity' },
-  { type: 'divider' },
   { id: 'more-items', label: 'More items', icon: MoreHorizontal, expandable: true },
-  { id: 'reports', label: 'Reports', icon: FileText, path: '/reports-discovery' },
+  { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
   { id: 'more-pages', label: 'More pages', icon: FolderTree, expandable: true },
   { type: 'divider' },
-  { id: 'programs', label: 'Programs', icon: UsersIcon, path: '/portfolio/:portfolioId/programs' },
+  { id: 'programs', label: 'Programs', icon: UsersIcon, expandable: true },
 ];
 
 export function PortfolioRoomSidebar({ 
@@ -59,7 +62,9 @@ export function PortfolioRoomSidebar({
   expanded, 
   onToggle,
   selectedPI,
-  onPIChange 
+  onPIChange,
+  showTeamFilter = false,
+  showEpicFilter = false
 }: PortfolioRoomSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -106,9 +111,14 @@ export function PortfolioRoomSidebar({
         <div className={cn("p-3 border-b", !expanded && "px-2")}>
           {expanded ? (
             <>
-              <div className="mb-3">
-                <h2 className="text-sm font-semibold">Digital Services</h2>
-                <p className="text-xs text-muted-foreground">Portfolio</p>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold">
+                  DS
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium truncate">Digital Services</div>
+                  <div className="text-xs text-muted-foreground">Portfolio</div>
+                </div>
               </div>
 
               {/* Filter Dropdowns */}
@@ -144,36 +154,40 @@ export function PortfolioRoomSidebar({
                   </Select>
                 </div>
                 
-                {/* Team Selector */}
-                <div>
-                  <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
-                    Team
-                  </label>
-                  <Select>
-                    <SelectTrigger className="h-8 text-xs w-full">
-                      <SelectValue placeholder="PI-5 List" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pi-5-list">PI-5 List</SelectItem>
-                      <SelectItem value="all">All Teams</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/* Team Selector - conditional */}
+                {showTeamFilter && (
+                  <div>
+                    <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
+                      Team
+                    </label>
+                    <Select>
+                      <SelectTrigger className="h-8 text-xs w-full">
+                        <SelectValue placeholder="PI-5 List" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pi-5-list">PI-5 List</SelectItem>
+                        <SelectItem value="all">All Teams</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 
-                {/* Epic Selector */}
-                <div>
-                  <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
-                    Epic
-                  </label>
-                  <Select>
-                    <SelectTrigger className="h-8 text-xs w-full">
-                      <SelectValue placeholder="Select Epic" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Epics</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {/* Epic Selector - conditional */}
+                {showEpicFilter && (
+                  <div>
+                    <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
+                      Epic
+                    </label>
+                    <Select>
+                      <SelectTrigger className="h-8 text-xs w-full">
+                        <SelectValue placeholder="Select Epic" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Epics</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
               </div>
             </>
           ) : null}
@@ -220,7 +234,7 @@ export function PortfolioRoomSidebar({
           <div className="p-2 border-t">
             <button className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-accent transition-colors">
               <Settings className="h-4 w-4" />
-              <span>Settings</span>
+              <span>Portfolios settings</span>
             </button>
           </div>
         )}

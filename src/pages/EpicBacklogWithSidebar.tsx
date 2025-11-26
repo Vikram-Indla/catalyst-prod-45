@@ -17,6 +17,8 @@ export default function EpicBacklogWithSidebar() {
         onToggle={() => setSidebarExpanded(!sidebarExpanded)}
         selectedPI={selectedPI}
         onPIChange={setSelectedPI}
+        showTeamFilter={true}
+        showEpicFilter={true}
       />
       <div className="flex-1 overflow-auto">
         <EpicBacklog />
