@@ -141,15 +141,14 @@ export function ObjectiveDrawer({ objective, open, onClose }: ObjectiveDrawerPro
               {/* Aligned Work Items */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">
-                    Aligned work items{' '}
-                    {Object.values(objective.alignedWorkItems).flat().length}
+                  <h3 className="text-2xl font-bold">
+                    Aligned work items {Object.values(objective.alignedWorkItems).flat().length}
                   </h3>
                 </div>
 
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="themes">
-                    <AccordionTrigger>
+                    <AccordionTrigger className="text-xl font-semibold hover:no-underline">
                       Themes ({objective.alignedWorkItems.themeIds.length})
                     </AccordionTrigger>
                     <AccordionContent>
@@ -166,7 +165,7 @@ export function ObjectiveDrawer({ objective, open, onClose }: ObjectiveDrawerPro
                   </AccordionItem>
 
                   <AccordionItem value="epics">
-                    <AccordionTrigger>
+                    <AccordionTrigger className="text-xl font-semibold hover:no-underline">
                       Epics ({objective.alignedWorkItems.epicIds.length})
                     </AccordionTrigger>
                     <AccordionContent>
@@ -189,7 +188,7 @@ export function ObjectiveDrawer({ objective, open, onClose }: ObjectiveDrawerPro
                   </AccordionItem>
 
                   <AccordionItem value="dependencies">
-                    <AccordionTrigger>
+                    <AccordionTrigger className="text-xl font-semibold hover:no-underline">
                       Dependencies ({objective.alignedWorkItems.dependencyIds.length})
                     </AccordionTrigger>
                     <AccordionContent>
@@ -198,7 +197,7 @@ export function ObjectiveDrawer({ objective, open, onClose }: ObjectiveDrawerPro
                   </AccordionItem>
 
                   <AccordionItem value="risks">
-                    <AccordionTrigger>
+                    <AccordionTrigger className="text-xl font-semibold hover:no-underline">
                       Risks ({objective.alignedWorkItems.riskIds.length})
                     </AccordionTrigger>
                     <AccordionContent>
@@ -210,7 +209,7 @@ export function ObjectiveDrawer({ objective, open, onClose }: ObjectiveDrawerPro
 
               {/* Hierarchy */}
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Hierarchy</h3>
+                <h3 className="text-xl font-semibold">Hierarchy</h3>
                 <p className="text-sm text-muted-foreground">
                   {objective.parentId
                     ? `Parent: Objective ${objective.parentId}`
