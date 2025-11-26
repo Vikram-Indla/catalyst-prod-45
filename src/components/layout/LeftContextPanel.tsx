@@ -38,6 +38,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/:tier/:id/room', tiers: ['portfolio', 'program', 'team'] },
   { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
+  { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives', tiers: ['portfolio', 'program'] },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics', tiers: ['portfolio', 'program'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps', tiers: ['enterprise', 'portfolio', 'program'] },
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree', tiers: ['enterprise', 'portfolio'] },
@@ -45,6 +46,9 @@ const menuItems: MenuItem[] = [
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/:tier/:id/forecast', tiers: ['portfolio', 'program'] },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
   { id: 'program-board', label: 'Program Board', icon: Boxes, path: '/program-board', tiers: ['program'] },
+  { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
+  { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports', tiers: ['portfolio', 'program'] },
+  { id: 'more-pages', label: 'More pages', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
 ];
 
 interface LeftContextPanelProps {
@@ -155,16 +159,16 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 </div>
               )}
 
-              {/* Three-column filter row for Portfolio/Program */}
+              {/* Filter dropdowns for Portfolio/Program */}
               {(tier === 'portfolio' || tier === 'program') && (
-                <div className="grid grid-cols-3 gap-2 mb-2">
+                <div className="space-y-2 mb-2">
                   <div>
                     <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
-                      Program Increment
+                      PROGRAM INCREMENT
                     </label>
                     <Select value={piIds[0] || undefined} onValueChange={(value) => setPiIds([value])}>
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue placeholder="PI" />
+                      <SelectTrigger className="h-8 text-xs w-full">
+                        <SelectValue placeholder="Select PI" />
                       </SelectTrigger>
                       <SelectContent>
                         {pis.map(pi => (
@@ -180,10 +184,11 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                       Team
                     </label>
                     <Select>
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue placeholder="All Teams" />
+                      <SelectTrigger className="h-8 text-xs w-full">
+                        <SelectValue placeholder="PI-5 List" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="pi-5-list">PI-5 List</SelectItem>
                         <SelectItem value="all">All Teams</SelectItem>
                       </SelectContent>
                     </Select>
@@ -193,8 +198,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                       Epic
                     </label>
                     <Select>
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue placeholder="All Epics" />
+                      <SelectTrigger className="h-8 text-xs w-full">
+                        <SelectValue placeholder="Select Epic" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="all">All Epics</SelectItem>
