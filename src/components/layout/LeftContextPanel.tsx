@@ -36,7 +36,7 @@ interface MenuItem {
 }
 
 const menuItems: MenuItem[] = [
-  { id: 'room', label: 'Room', icon: LayoutDashboard, path: '/:tier/:id/room', tiers: ['portfolio', 'program', 'team'] },
+  { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/:tier/:id/room', tiers: ['portfolio', 'program', 'team'] },
   { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics', tiers: ['portfolio', 'program'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps', tiers: ['enterprise', 'portfolio', 'program'] },
@@ -135,50 +135,83 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Context Header */}
-        <div className={cn("p-4 border-b space-y-4", !expanded && "px-2")}>
+        <div className={cn("p-3 border-b", !expanded && "px-2")}>
           {expanded ? (
             <>
-              {/* Portfolio Selector - Simple */}
-              {tier === 'portfolio' && (
-                <div>
-                  <Select value={portfolioId || undefined} onValueChange={setPortfolioId}>
-                    <SelectTrigger className="h-12 justify-start text-left">
-                      <SelectValue placeholder="Select Portfolio" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {portfolios.map(portfolio => (
-                        <SelectItem key={portfolio.id} value={portfolio.id}>
-                          {portfolio.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {/* Portfolio/Program/Enterprise Name */}
+              {tier === 'portfolio' && currentPortfolio && (
+                <div className="mb-3">
+                  <h2 className="text-sm font-semibold">{currentPortfolio.name}</h2>
                 </div>
               )}
-
-              {/* Program Selector - Simple */}
-              {tier === 'program' && (
-                <div>
-                  <Select value={programId || undefined} onValueChange={setProgramId}>
-                    <SelectTrigger className="h-12 justify-start text-left">
-                      <SelectValue placeholder="Select Program" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {programs.map(program => (
-                        <SelectItem key={program.id} value={program.id}>
-                          {program.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              {tier === 'program' && currentProgram && (
+                <div className="mb-3">
+                  <h2 className="text-sm font-semibold">{currentProgram.name}</h2>
                 </div>
               )}
-
-              {/* Snapshot Selector - Simple */}
               {tier === 'enterprise' && (
-                <div>
+                <div className="mb-3">
+                  <h2 className="text-sm font-semibold">Enterprise</h2>
+                </div>
+              )}
+
+              {/* Three-column filter row for Portfolio/Program */}
+              {(tier === 'portfolio' || tier === 'program') && (
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                  <div>
+                    <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
+                      Program Increment
+                    </label>
+                    <Select value={piIds[0] || undefined} onValueChange={(value) => setPiIds([value])}>
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue placeholder="PI" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pis.map(pi => (
+                          <SelectItem key={pi.id} value={pi.id}>
+                            {pi.code}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
+                      Team
+                    </label>
+                    <Select>
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue placeholder="All Teams" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Teams</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
+                      Epic
+                    </label>
+                    <Select>
+                      <SelectTrigger className="h-8 text-xs">
+                        <SelectValue placeholder="All Epics" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Epics</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
+
+              {/* Snapshot selector for Enterprise */}
+              {tier === 'enterprise' && (
+                <div className="mb-2">
+                  <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
+                    Snapshot
+                  </label>
                   <Select value={snapshotId || undefined} onValueChange={setSnapshotId}>
-                    <SelectTrigger className="h-12 justify-start text-left">
+                    <SelectTrigger className="h-8 text-xs">
                       <SelectValue placeholder="Select Snapshot" />
                     </SelectTrigger>
                     <SelectContent>
@@ -191,34 +224,13 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                   </Select>
                 </div>
               )}
-
-              {/* Program Increment Section */}
-              {(tier === 'portfolio' || tier === 'program') && (
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Program Increment
-                  </label>
-                  <Select value={piIds[0] || undefined} onValueChange={(value) => setPiIds([value])}>
-                    <SelectTrigger className="h-12 justify-start text-left">
-                      <SelectValue placeholder="Select PIs" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {pis.map(pi => (
-                        <SelectItem key={pi.id} value={pi.id}>
-                          {pi.code} ({pi.dates})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
             </>
           ) : null}
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 overflow-y-auto border-b">
-          <div className="py-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto">
+          <div className="py-2">
             {getFilteredMenuItems().map((item) => {
               const Icon = item.icon;
               const active = isActive(item.path);
@@ -228,15 +240,15 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                   key={item.id}
                   onClick={() => handleNavigation(item.path)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 text-base transition-colors",
-                    "hover:bg-accent/50",
-                    active && "bg-accent text-accent-foreground",
+                    "w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors",
+                    "hover:bg-accent",
+                    active && "bg-primary/10 text-primary font-medium border-l-2 border-primary",
                     !expanded && "justify-center px-2"
                   )}
                   title={!expanded ? item.label : undefined}
                 >
-                  <Icon className="h-5 w-5 flex-shrink-0" />
-                  {expanded && <span className="truncate">{item.label}</span>}
+                  <Icon className="h-4 w-4 flex-shrink-0" />
+                  {expanded && <span className="truncate text-left">{item.label}</span>}
                 </button>
               );
             })}
@@ -245,9 +257,9 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
         {/* Footer */}
         {expanded && (
-          <div className="p-4">
-            <button className="w-full flex items-center gap-3 px-4 py-3 text-base hover:bg-accent/50 transition-colors">
-              <Settings className="h-5 w-5" />
+          <div className="p-2 border-t">
+            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-accent transition-colors">
+              <Settings className="h-4 w-4" />
               <span>Settings</span>
             </button>
           </div>
