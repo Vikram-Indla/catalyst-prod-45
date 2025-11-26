@@ -42,15 +42,17 @@ const loadData = [
 export default function PortfolioRoomPage() {
   const [searchParams] = useSearchParams();
   const portfolio = searchParams.get('portfolio') || 'Digital Services';
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [selectedPI, setSelectedPI] = useState<string | null>(null);
 
   return (
     <div className="flex min-h-[calc(100vh-3.5rem)]">
       <PortfolioRoomSidebar 
         portfolioId="1"
-        expanded={true}
-        onToggle={() => {}}
-        selectedPI={null}
-        onPIChange={() => {}}
+        expanded={sidebarExpanded}
+        onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        selectedPI={selectedPI}
+        onPIChange={setSelectedPI}
       />
       
       <div className="flex-1 flex flex-col">
