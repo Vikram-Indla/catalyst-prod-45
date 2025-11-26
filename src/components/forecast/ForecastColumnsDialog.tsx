@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useForecastPreferences } from '@/hooks/useForecastPreferences';
+import { toast } from 'sonner';
 
 interface ForecastColumnsDialogProps {
   open: boolean;
@@ -24,7 +26,12 @@ const DEFAULT_COLUMNS = [
 ];
 
 export function ForecastColumnsDialog({ open, onOpenChange }: ForecastColumnsDialogProps) {
-  const [columns, setColumns] = useState(DEFAULT_COLUMNS);
+  const { preferences, updatePreferences } = useForecastPreferences();
+  const visibleColumns = Array.isArray(preferences.visible_columns) ? preferences.visible_columns : [];
+  const [columns, setColumns] = useState(DEFAULT_COLUMNS.map(col => ({
+    ...col,
+    enabled: visibleColumns.includes(col.id)
+  })));
 
   const toggleColumn = (id: string) => {
     setColumns(prev => prev.map(col =>
@@ -33,7 +40,17 @@ export function ForecastColumnsDialog({ open, onOpenChange }: ForecastColumnsDia
   };
 
   const handleRestoreDefaults = () => {
-    setColumns(DEFAULT_COLUMNS);
+    const defaults = DEFAULT_COLUMNS.map(col => ({ ...col, enabled: col.id === 'theme' || col.id === 'owner' || col.id === 'pi_estimate' }));
+    setColumns(defaults);
+    updatePreferences({ visible_columns: defaults.filter(c => c.enabled).map(c => c.id) });
+    toast.success('Restored default columns');
+  };
+
+  const handleSave = () => {
+    const visibleColumns = columns.filter(c => c.enabled).map(c => c.id);
+    updatePreferences({ visible_columns: visibleColumns });
+    toast.success('Column preferences saved');
+    onOpenChange(false);
   };
 
   return (
@@ -71,7 +88,7 @@ export function ForecastColumnsDialog({ open, onOpenChange }: ForecastColumnsDia
           <Button variant="outline" onClick={handleRestoreDefaults}>
             Restore Defaults
           </Button>
-          <Button onClick={() => onOpenChange(false)}>
+          <Button onClick={handleSave}>
             Apply
           </Button>
         </DialogFooter>

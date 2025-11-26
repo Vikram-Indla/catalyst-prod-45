@@ -4,6 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { GripVertical } from 'lucide-react';
+import { ForecastContextMenu } from './ForecastContextMenu';
 
 interface ForecastGridProps {
   piId: string;
@@ -13,6 +16,7 @@ interface ForecastGridProps {
 
 export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridProps) {
   const queryClient = useQueryClient();
+  const [orderedWorkItems, setOrderedWorkItems] = useState<any[]>([]);
 
   // Fetch assignments to determine which cells should be enabled
   const { data: assignments = [] } = useQuery({
@@ -56,6 +60,34 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
       }
     },
   });
+
+  // Fetch forecast ranks
+  const { data: ranks = [] } = useQuery({
+    queryKey: ['forecast-ranks', piId, workItemLevel],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('work_item_forecast_ranks')
+        .select('*')
+        .eq('pi_id', piId)
+        .eq('work_item_type', workItemLevel.slice(0, -1))
+        .order('rank', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Update ordered items when work items or ranks change
+  useEffect(() => {
+    if (workItems.length > 0) {
+      const rankedItems = [...workItems].sort((a, b) => {
+        const rankA = ranks.find(r => r.work_item_id === a.id)?.rank ?? 999999;
+        const rankB = ranks.find(r => r.work_item_id === b.id)?.rank ?? 999999;
+        return rankA - rankB;
+      });
+      setOrderedWorkItems(rankedItems);
+    }
+  }, [workItems, ranks]);
 
   // Fetch capacity plans
   const { data: capacities = [] } = useQuery({
@@ -107,6 +139,24 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
       teamId?: string;
       estimate: number;
     }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Check permission
+      const { data: roleData } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+
+      const isEditor = roleData?.role === 'admin' || 
+                      roleData?.role === 'program_manager' || 
+                      roleData?.role === 'team_lead';
+      
+      if (!isEditor) {
+        throw new Error('You do not have permission to edit forecasts');
+      }
+
       const { data, error } = await supabase
         .from('forecast_entries')
         .upsert({
@@ -117,7 +167,7 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
           team_id: teamId,
           estimate,
           unit: 'points',
-          updated_by: (await supabase.auth.getUser()).data.user?.id,
+          updated_by: user.id,
         }, {
           onConflict: 'work_item_id,work_item_type,pi_id,program_id,team_id',
         });
@@ -129,9 +179,9 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
       queryClient.invalidateQueries({ queryKey: ['forecast-entries'] });
       toast.success('Forecast updated');
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Failed to update forecast:', error);
-      toast.error('Failed to update forecast');
+      toast.error(error.message || 'Failed to update forecast');
     },
   });
 
@@ -180,6 +230,80 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
     return total > available;
   };
 
+  // Rank mutation
+  const updateRankMutation = useMutation({
+    mutationFn: async ({ workItemId, newRank }: { workItemId: string; newRank: number }) => {
+      const { error } = await supabase
+        .from('work_item_forecast_ranks')
+        .upsert({
+          work_item_id: workItemId,
+          work_item_type: workItemLevel.slice(0, -1),
+          pi_id: piId,
+          rank: newRank,
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'work_item_id,work_item_type,pi_id',
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['forecast-ranks'] });
+      toast.success('Rank updated');
+    },
+    onError: (error) => {
+      console.error('Failed to update rank:', error);
+      toast.error('Failed to update rank');
+    },
+  });
+
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+
+    const items = Array.from(orderedWorkItems);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setOrderedWorkItems(items);
+
+    // Update ranks in database
+    items.forEach((item, index) => {
+      updateRankMutation.mutate({ workItemId: item.id as string, newRank: index });
+    });
+  };
+
+  const handleRankAction = (workItemId: string, action: 'top' | 'bottom' | 'up' | 'down') => {
+    const currentIndex = orderedWorkItems.findIndex(item => item.id === workItemId);
+    if (currentIndex === -1) return;
+
+    const items = Array.from(orderedWorkItems);
+    const [item] = items.splice(currentIndex, 1);
+
+    let newIndex = currentIndex;
+    switch (action) {
+      case 'top':
+        newIndex = 0;
+        break;
+      case 'bottom':
+        newIndex = items.length;
+        break;
+      case 'up':
+        newIndex = Math.max(0, currentIndex - 1);
+        break;
+      case 'down':
+        newIndex = Math.min(items.length, currentIndex + 1);
+        break;
+    }
+
+    items.splice(newIndex, 0, item);
+    setOrderedWorkItems(items);
+
+    // Update ranks in database
+    items.forEach((item, index) => {
+      updateRankMutation.mutate({ workItemId: item.id as string, newRank: index });
+    });
+  };
+
   if (workItemsLoading) {
     return <div className="p-4 text-center text-muted-foreground">Loading...</div>;
   }
@@ -189,15 +313,19 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
   }
 
   return (
-    <div className="border rounded-lg overflow-hidden bg-card">
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="bg-muted/50 border-b">
-              {/* Zone 1: Sticky left columns */}
-              <th className="text-left p-3 font-medium text-sm w-[300px] sticky left-0 bg-muted/50 z-20 border-r">
-                Work Item
-              </th>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="border rounded-lg overflow-hidden bg-card">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="bg-muted/50 border-b">
+                {/* Zone 1: Sticky left columns */}
+                <th className="text-left p-3 font-medium text-sm w-[50px] sticky left-0 bg-muted/50 z-20">
+                  <span className="sr-only">Drag</span>
+                </th>
+                <th className="text-left p-3 font-medium text-sm w-[300px] sticky left-[50px] bg-muted/50 z-20 border-r">
+                  Work Item
+                </th>
               
               {/* Zone 2: Scrollable default columns */}
               <th className="text-left p-3 font-medium text-sm min-w-[120px] bg-muted/50">Theme</th>
@@ -225,10 +353,12 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                   </div>
                 </th>
               ))}
-            </tr>
-          </thead>
-        <tbody>
-          {workItems.map((item) => {
+              </tr>
+            </thead>
+            <Droppable droppableId="forecast-items">
+              {(provided) => (
+                <tbody ref={provided.innerRef} {...provided.droppableProps}>
+                  {orderedWorkItems.map((item, index) => {
             const piEstimate = forecasts
               .filter(f => f.work_item_id === item.id)
               .reduce((sum, f) => sum + (f.estimate || 0), 0);
@@ -238,17 +368,37 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
               'capability_key' in item ? item.capability_key :
               'F-' + (item.id as string).slice(0, 4);
 
-            return (
-              <tr key={item.id as string} className="border-b hover:bg-muted/30 transition-colors group">
-                {/* Zone 1: Sticky left */}
-                <td className="p-3 sticky left-0 bg-background group-hover:bg-muted/30 z-10 border-r">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground font-mono">
-                      {itemKey}
-                    </span>
-                    <span className="text-sm font-medium truncate">{item.name as string}</span>
-                  </div>
-                </td>
+                    return (
+                      <Draggable key={item.id as string} draggableId={item.id as string} index={index}>
+                        {(provided, snapshot) => (
+                          <ForecastContextMenu
+                            onMoveToTop={() => handleRankAction(item.id as string, 'top')}
+                            onMoveToBottom={() => handleRankAction(item.id as string, 'bottom')}
+                            onMoveUp={() => handleRankAction(item.id as string, 'up')}
+                            onMoveDown={() => handleRankAction(item.id as string, 'down')}
+                          >
+                            <tr
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={cn(
+                                "border-b hover:bg-muted/30 transition-colors group",
+                                snapshot.isDragging && "bg-muted/50 shadow-lg"
+                              )}
+                            >
+                              {/* Zone 1: Drag handle + Sticky left */}
+                              <td className="p-3 sticky left-0 bg-background group-hover:bg-muted/30 z-10">
+                                <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing">
+                                  <GripVertical className="h-4 w-4 text-muted-foreground" />
+                                </div>
+                              </td>
+                              <td className="p-3 sticky left-[50px] bg-background group-hover:bg-muted/30 z-10 border-r">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs text-muted-foreground font-mono">
+                                    {itemKey}
+                                  </span>
+                                  <span className="text-sm font-medium truncate">{item.name as string}</span>
+                                </div>
+                              </td>
                 
                 {/* Zone 2: Scrollable columns */}
                 <td className="p-3 text-sm text-muted-foreground">
@@ -299,14 +449,21 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                         placeholder={isAssigned ? "0" : "-"}
                       />
                     </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  </div>
+                              );
+                            })}
+                            </tr>
+                          </ForecastContextMenu>
+                        )}
+                      </Draggable>
+                    );
+                  })}
+                  {provided.placeholder}
+                </tbody>
+              )}
+            </Droppable>
+          </table>
+        </div>
+      </div>
+    </DragDropContext>
   );
 }
