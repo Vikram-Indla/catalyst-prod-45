@@ -249,10 +249,10 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Program Objectives")}
             />
-            <text x={level9.left + 50} y={y9 + 35} fill="white" fontSize="22" fontWeight="700">
+            <text x={level9.left + 50} y={(y9 + y10) / 2 - 5} fill="white" fontSize="22" fontWeight="700">
               160
             </text>
-            <text x={(level9.left + centerX) / 2 + 30} y={y9 + 50} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={(level9.left + centerX) / 2 + 30} y={(y9 + y10) / 2 + 8} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Program Objectives
             </text>
 
@@ -264,10 +264,10 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Features")}
             />
-            <text x={level9.right - 60} y={y9 + 35} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
+            <text x={level9.right - 60} y={(y9 + y10) / 2 - 5} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
               513
             </text>
-            <text x={(centerX + level9.right) / 2 - 25} y={y9 + 50} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={(centerX + level9.right) / 2 - 25} y={(y9 + y10) / 2 + 8} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Features
             </text>
 
