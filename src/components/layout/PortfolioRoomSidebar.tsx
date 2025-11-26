@@ -80,8 +80,9 @@ export function PortfolioRoomSidebar({
   return (
     <aside 
       className={cn(
-        "relative border-r bg-card transition-all duration-300 flex-shrink-0",
-        expanded ? "w-[280px]" : "w-16"
+        "h-full border-r bg-card transition-all duration-300 flex-shrink-0",
+        "lg:relative absolute lg:translate-x-0 z-30",
+        expanded ? "w-[280px]" : "w-16 -translate-x-full lg:translate-x-0"
       )}
     >
       {/* Toggle Handle */}
