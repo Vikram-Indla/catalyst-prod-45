@@ -100,6 +100,26 @@ export default function ForecastSelfTest() {
       status: 'pending',
       message: 'Manual test: Toggle columns and verify they persist after refresh',
     },
+    {
+      name: 'Feature Flag - Weeks Unit',
+      status: 'pending',
+      message: 'Manual test: Enable forecast_weeks_unit flag and verify unit selector appears',
+    },
+    {
+      name: 'Feature Flag - Export',
+      status: 'pending',
+      message: 'Manual test: Enable forecast_export flag and verify export button appears',
+    },
+    {
+      name: 'Permission Gating - Edit',
+      status: 'pending',
+      message: 'Manual test: Login as non-editor role and verify forecast cells are read-only',
+    },
+    {
+      name: 'Over-Capacity Warning',
+      status: 'pending',
+      message: 'Manual test: Enter estimates exceeding capacity and verify RED highlighting',
+    },
   ];
 
   return (
