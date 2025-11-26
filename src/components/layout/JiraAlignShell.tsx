@@ -49,7 +49,11 @@ export function JiraAlignShell() {
             >
               Home
             </Button>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant={isActive('/enterprise/strategy-room') ? 'secondary' : 'ghost'} 
+              size="sm"
+              onClick={() => { navigate('/enterprise/strategy-room'); closeDropdown(); }}
+            >
               Enterprise
             </Button>
             <div className="relative">

@@ -13,6 +13,7 @@ import Home from "./pages/jira-align/Home";
 import PortfolioRoomPage from "./pages/jira-align/PortfolioRoomPage";
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 import StrategyRoom from "./pages/StrategyRoom";
+import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
@@ -71,9 +72,10 @@ const App = () => (
               
               {/* All Routes - Jira Align Style */}
               <Route element={<ProtectedRoute><JiraAlignShell /></ProtectedRoute>}>
-                <Route path="/home" element={<Home />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/portfolio-room" element={<PortfolioRoomPage />} />
               <Route path="/strategy-room" element={<StrategyRoom />} />
+              <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Epics />} />
