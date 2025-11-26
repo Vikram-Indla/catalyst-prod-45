@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { PortfolioRoomSidebar } from '@/components/layout/PortfolioRoomSidebar';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,22 +41,11 @@ const loadData = [
 export default function PortfolioRoomPage() {
   const [searchParams] = useSearchParams();
   const portfolio = searchParams.get('portfolio') || 'Digital Services';
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [selectedPI, setSelectedPI] = useState<string | null>(null);
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)]">
-      <PortfolioRoomSidebar 
-        portfolioId="1"
-        expanded={sidebarExpanded}
-        onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-        selectedPI={selectedPI}
-        onPIChange={setSelectedPI}
-      />
-      
-      <div className="flex-1 flex flex-col">
-        {/* Page Header */}
-        <div className="border-b bg-card p-4">
+    <div className="flex flex-col h-full w-full bg-background">
+      {/* Page Header */}
+      <div className="border-b bg-card p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
               <Star className="h-5 w-5 text-muted-foreground" />
@@ -85,18 +73,18 @@ export default function PortfolioRoomPage() {
               <Settings className="h-4 w-4 mr-2" />
               View Configuration
             </Button>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm">Financials</Button>
-            <Button variant="ghost" size="sm">Resources</Button>
-            <Button variant="ghost" size="sm">Execution</Button>
-          </div>
         </div>
+        <div className="flex gap-2">
+          <Button variant="ghost" size="sm">Financials</Button>
+          <Button variant="ghost" size="sm">Resources</Button>
+          <Button variant="ghost" size="sm">Execution</Button>
+        </div>
+      </div>
 
-        {/* 3 Column Layout */}
-        <div className="flex-1 grid grid-cols-12 gap-4 p-4 overflow-auto">
-          {/* Column 1: Theme Progress */}
-          <div className="col-span-3">
+      {/* 3 Column Layout */}
+      <div className="flex-1 grid grid-cols-12 gap-4 p-4 overflow-auto">
+        {/* Column 1: Theme Progress */}
+        <div className="col-span-3">
             <Card className="p-4">
               <h2 className="font-semibold mb-4">Theme Program Increment Progress</h2>
               <div className="space-y-4">
@@ -114,12 +102,12 @@ export default function PortfolioRoomPage() {
                     </div>
                   </div>
                 ))}
-              </div>
-            </Card>
-          </div>
+            </div>
+          </Card>
+        </div>
 
-          {/* Column 2: Roadmap */}
-          <div className="col-span-6">
+        {/* Column 2: Roadmap */}
+        <div className="col-span-6">
             <Card className="p-4 mb-4">
               <h2 className="font-semibold mb-3">Program Increment Roadmap</h2>
               <div className="h-24 bg-muted/30 rounded flex items-center justify-between px-4 mb-4">
@@ -192,12 +180,12 @@ export default function PortfolioRoomPage() {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </Card>
-          </div>
+            </div>
+          </Card>
+        </div>
 
-          {/* Column 3: PI Load */}
-          <div className="col-span-3">
+        {/* Column 3: PI Load */}
+        <div className="col-span-3">
             <Card className="p-4">
               <h2 className="font-semibold mb-3">Program Increment Load</h2>
               <div className="bg-muted/30 rounded p-3 mb-4">
@@ -228,6 +216,5 @@ export default function PortfolioRoomPage() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
