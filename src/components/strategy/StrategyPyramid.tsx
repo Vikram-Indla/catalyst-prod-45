@@ -64,13 +64,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Missions")}
             />
-            <text x={centerX} y={y1 + 48} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+            <text x={centerX} y={y1 + 55} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Missions
             </text>
-            <text x={centerX} y={y1 + 65} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
+            <text x={centerX} y={y1 + 70} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
               Why do we exist?
             </text>
-            <text x={level2.right - 40} y={y2 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
+            <text x={level2.right - 50} y={y2 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
               1
             </text>
 
@@ -83,13 +83,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Visions")}
             />
-            <text x={centerX} y={y2 + 43} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+            <text x={centerX} y={y2 + 48} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Visions
             </text>
-            <text x={centerX} y={y2 + 60} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
+            <text x={centerX} y={y2 + 63} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
               What value do we provide?
             </text>
-            <text x={level3.right - 40} y={y3 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
+            <text x={level3.right - 50} y={y3 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
               1
             </text>
 
@@ -102,13 +102,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Values")}
             />
-            <text x={centerX} y={y3 + 43} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+            <text x={centerX} y={y3 + 48} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Values
             </text>
-            <text x={centerX} y={y3 + 60} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
+            <text x={centerX} y={y3 + 63} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
               How do we behave?
             </text>
-            <text x={level4.right - 40} y={y4 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
+            <text x={level4.right - 50} y={y4 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
               6
             </text>
 
@@ -121,13 +121,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("North Stars")}
             />
-            <text x={centerX} y={y4 + 38} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+            <text x={centerX} y={y4 + 43} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               North Stars
             </text>
-            <text x={centerX} y={y4 + 55} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
+            <text x={centerX} y={y4 + 60} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
               What is our organization&apos;s single measurable goal?
             </text>
-            <text x={level5.right - 40} y={y5 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
+            <text x={level5.right - 50} y={y5 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
               1
             </text>
 
@@ -140,13 +140,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Long Term Goals")}
             />
-            <text x={centerX} y={y5 + 38} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+            <text x={centerX} y={y5 + 43} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Long Term Goals
             </text>
-            <text x={centerX} y={y5 + 55} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
+            <text x={centerX} y={y5 + 60} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
               How will we succeed long-term?
             </text>
-            <text x={level6.right - 40} y={y6 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
+            <text x={level6.right - 50} y={y6 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
               3
             </text>
 
@@ -159,13 +159,13 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Long Term Strategies")}
             />
-            <text x={centerX} y={y6 + 40} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
+            <text x={centerX} y={y6 + 45} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Long Term Strategies
             </text>
-            <text x={centerX} y={y6 + 57} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
+            <text x={centerX} y={y6 + 62} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
               What is our approach to long-term success?
             </text>
-            <text x={level7.right - 40} y={y7 - 15} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
+            <text x={level7.right - 50} y={y7 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
               8
             </text>
 
