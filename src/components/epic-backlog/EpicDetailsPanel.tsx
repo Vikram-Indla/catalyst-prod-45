@@ -4,8 +4,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
 import { CommentsSection } from '@/components/shared/CommentsSection';
-import { X } from 'lucide-react';
+import { Calendar, DollarSign, Target, TrendingUp, AlertCircle, CheckCircle2, X } from 'lucide-react';
 
 interface EpicDetailsPanelProps {
   epicId: string;
@@ -174,28 +177,245 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
               </div>
             </TabsContent>
 
-            <TabsContent value="intake" className="m-0 p-6">
-              <p className="text-sm text-muted-foreground">Intake form customization available</p>
+            <TabsContent value="intake" className="m-0 p-6 space-y-6">
+              <div>
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Target className="h-4 w-4" />
+                  Intake Information
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium">Business Case</label>
+                    <Textarea 
+                      placeholder="Describe the business case..." 
+                      className="mt-1"
+                      rows={3}
+                      defaultValue={epic.description || ''}
+                      disabled
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium">Requested By</label>
+                      <Input className="mt-1" placeholder="Stakeholder name" disabled />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Request Date</label>
+                      <Input type="date" className="mt-1" disabled />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Strategic Alignment</label>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {epic.strategic_themes && (
+                        <Badge variant="outline">{epic.strategic_themes.name}</Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </TabsContent>
 
-            <TabsContent value="benefits" className="m-0 p-6">
-              <p className="text-sm text-muted-foreground">Benefits tracking and analysis</p>
+            <TabsContent value="benefits" className="m-0 p-6 space-y-6">
+              <div>
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Expected Benefits
+                </h3>
+                <div className="space-y-4">
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Revenue Impact</span>
+                      <Badge variant="outline">$0</Badge>
+                    </div>
+                    <Progress value={0} className="h-2" />
+                  </div>
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Cost Savings</span>
+                      <Badge variant="outline">$0</Badge>
+                    </div>
+                    <Progress value={0} className="h-2" />
+                  </div>
+                  <div className="p-4 border rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Efficiency Gains</span>
+                      <Badge variant="outline">0%</Badge>
+                    </div>
+                    <Progress value={0} className="h-2" />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium">Qualitative Benefits</label>
+                    <Textarea 
+                      placeholder="Describe non-quantifiable benefits..." 
+                      className="mt-1"
+                      rows={3}
+                      disabled
+                    />
+                  </div>
+                </div>
+              </div>
             </TabsContent>
 
-            <TabsContent value="value" className="m-0 p-6">
-              <p className="text-sm text-muted-foreground">Value scorecard and analysis</p>
+            <TabsContent value="value" className="m-0 p-6 space-y-6">
+              <div>
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <DollarSign className="h-4 w-4" />
+                  Value Scorecard
+                </h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 border rounded-lg">
+                      <label className="text-sm font-medium text-muted-foreground">Business Value</label>
+                      <div className="text-2xl font-bold mt-2">-</div>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <label className="text-sm font-medium text-muted-foreground">Risk Reduction</label>
+                      <div className="text-2xl font-bold mt-2">-</div>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <label className="text-sm font-medium text-muted-foreground">Time Criticality</label>
+                      <div className="text-2xl font-bold mt-2">-</div>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <label className="text-sm font-medium text-muted-foreground">Job Size</label>
+                      <div className="text-2xl font-bold mt-2">{epic.points_estimate || '-'}</div>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-primary/10 border-2 border-primary rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-semibold">WSJF Score</span>
+                      <div className="text-3xl font-bold text-primary">-</div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      (Business Value + Risk Reduction + Time Criticality) / Job Size
+                    </p>
+                  </div>
+                </div>
+              </div>
             </TabsContent>
 
-            <TabsContent value="milestones" className="m-0 p-6">
-              <p className="text-sm text-muted-foreground">Milestone tracking (up to 30 per epic)</p>
+            <TabsContent value="milestones" className="m-0 p-6 space-y-6">
+              <div>
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Milestones
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <CheckCircle2 className="h-5 w-5 text-success" />
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">Epic Approval</div>
+                      <div className="text-xs text-muted-foreground">
+                        {epic.start_date || 'Not set'}
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-success">Complete</Badge>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg">
+                    <AlertCircle className="h-5 w-5 text-warning" />
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">PI Planning</div>
+                      <div className="text-xs text-muted-foreground">
+                        {epic.epic_program_increments?.[0]?.program_increments?.name || 'Unassigned'}
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-warning">In Progress</Badge>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 border rounded-lg opacity-50">
+                    <AlertCircle className="h-5 w-5 text-muted-foreground" />
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">Epic Complete</div>
+                      <div className="text-xs text-muted-foreground">
+                        {epic.end_date || 'Not set'}
+                      </div>
+                    </div>
+                    <Badge variant="outline">Pending</Badge>
+                  </div>
+                </div>
+              </div>
             </TabsContent>
 
-            <TabsContent value="spend" className="m-0 p-6">
-              <p className="text-sm text-muted-foreground">Budget and spend tracking</p>
+            <TabsContent value="spend" className="m-0 p-6 space-y-6">
+              <div>
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <DollarSign className="h-4 w-4" />
+                  Budget & Spend
+                </h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="p-4 border rounded-lg">
+                      <label className="text-sm font-medium text-muted-foreground">Budget</label>
+                      <div className="text-xl font-bold mt-2">$0</div>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <label className="text-sm font-medium text-muted-foreground">Actual Spend</label>
+                      <div className="text-xl font-bold mt-2">$0</div>
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <label className="text-sm font-medium text-muted-foreground">Remaining</label>
+                      <div className="text-xl font-bold mt-2">$0</div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">Burn Rate</span>
+                      <span className="text-sm text-muted-foreground">0% utilized</span>
+                    </div>
+                    <Progress value={0} className="h-3" />
+                  </div>
+                  <div className="mt-6">
+                    <label className="text-sm font-medium">Cost Breakdown</label>
+                    <div className="mt-2 space-y-2">
+                      <div className="flex items-center justify-between p-2 border-b">
+                        <span className="text-sm">Labor</span>
+                        <span className="text-sm font-medium">$0</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 border-b">
+                        <span className="text-sm">Infrastructure</span>
+                        <span className="text-sm font-medium">$0</span>
+                      </div>
+                      <div className="flex items-center justify-between p-2 border-b">
+                        <span className="text-sm">Other</span>
+                        <span className="text-sm font-medium">$0</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </TabsContent>
 
-            <TabsContent value="forecast" className="m-0 p-6">
-              <p className="text-sm text-muted-foreground">PI-by-PI forecasting</p>
+            <TabsContent value="forecast" className="m-0 p-6 space-y-6">
+              <div>
+                <h3 className="font-semibold mb-4 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  PI Forecast
+                </h3>
+                <div className="space-y-3">
+                  {epic.epic_program_increments?.length > 0 ? (
+                    epic.epic_program_increments.map((epi: any, i: number) => (
+                      <div key={i} className="p-4 border rounded-lg">
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="font-medium">{epi.program_increments.name}</span>
+                          <Badge variant="outline">{epic.points_estimate || 0} points</Badge>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-muted-foreground">Forecast Completion</span>
+                            <span className="font-medium">0%</span>
+                          </div>
+                          <Progress value={0} className="h-2" />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No PI assignments yet</p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </TabsContent>
 
             <TabsContent value="comments" className="m-0 p-6">
