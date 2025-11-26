@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { CommentsSection } from '@/components/shared/CommentsSection';
+import { ForecastTab } from '@/components/forecast/ForecastTab';
 import { Calendar, DollarSign, Target, TrendingUp, AlertCircle, CheckCircle2, X } from 'lucide-react';
 
 interface EpicDetailsPanelProps {
@@ -385,37 +386,8 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
               </div>
             </TabsContent>
 
-            <TabsContent value="forecast" className="m-0 p-6 space-y-6">
-              <div>
-                <h3 className="font-semibold mb-4 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4" />
-                  PI Forecast
-                </h3>
-                <div className="space-y-3">
-                  {epic.epic_program_increments?.length > 0 ? (
-                    epic.epic_program_increments.map((epi: any, i: number) => (
-                      <div key={i} className="p-4 border rounded-lg">
-                        <div className="flex items-center justify-between mb-3">
-                          <span className="font-medium">{epi.program_increments.name}</span>
-                          <Badge variant="outline">{epic.points_estimate || 0} points</Badge>
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">Forecast Completion</span>
-                            <span className="font-medium">0%</span>
-                          </div>
-                          <Progress value={0} className="h-2" />
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8 text-muted-foreground">
-                      <AlertCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>No PI assignments yet</p>
-                    </div>
-                  )}
-                </div>
-              </div>
+            <TabsContent value="forecast" className="m-0">
+              <ForecastTab workItemId={epicId} workItemType="epic" />
             </TabsContent>
 
             <TabsContent value="comments" className="m-0 p-6">

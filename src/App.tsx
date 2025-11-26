@@ -38,6 +38,7 @@ import ProgramIncrements from "./pages/ProgramIncrements";
 import PIObjectives from "./pages/PIObjectives";
 import ROAMBoard from "./pages/ROAMBoard";
 import CapacityPlanning from "./pages/CapacityPlanning";
+import Forecast from "./pages/Forecast";
 import TeamRoom from "./pages/TeamRoom";
 import SprintBoard from "./pages/SprintBoard";
 import Backlog from "./pages/Backlog";
@@ -95,7 +96,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<PlaceholderPage />} />
-              <Route path="/portfolio/:portfolioId/forecast" element={<PlaceholderPage />} />
+              <Route path="/portfolio/:portfolioId/forecast" element={<Forecast />} />
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoom />} />

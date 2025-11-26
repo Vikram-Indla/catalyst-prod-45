@@ -264,6 +264,61 @@ export type Database = {
           },
         ]
       }
+      capacity_plans: {
+        Row: {
+          available_capacity: number
+          created_at: string | null
+          id: string
+          pi_id: string
+          program_id: string | null
+          team_id: string | null
+          unit: string
+          updated_at: string | null
+        }
+        Insert: {
+          available_capacity?: number
+          created_at?: string | null
+          id?: string
+          pi_id: string
+          program_id?: string | null
+          team_id?: string | null
+          unit?: string
+          updated_at?: string | null
+        }
+        Update: {
+          available_capacity?: number
+          created_at?: string | null
+          id?: string
+          pi_id?: string
+          program_id?: string | null
+          team_id?: string | null
+          unit?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capacity_plans_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capacity_plans_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capacity_plans_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comments: {
         Row: {
           content: string
@@ -764,6 +819,73 @@ export type Database = {
           },
           {
             foreignKeyName: "features_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forecast_entries: {
+        Row: {
+          created_at: string | null
+          estimate: number
+          id: string
+          in_scope: boolean | null
+          pi_id: string
+          program_id: string | null
+          team_id: string | null
+          unit: string
+          updated_at: string | null
+          updated_by: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          estimate?: number
+          id?: string
+          in_scope?: boolean | null
+          pi_id: string
+          program_id?: string | null
+          team_id?: string | null
+          unit?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string | null
+          estimate?: number
+          id?: string
+          in_scope?: boolean | null
+          pi_id?: string
+          program_id?: string | null
+          team_id?: string | null
+          unit?: string
+          updated_at?: string | null
+          updated_by?: string | null
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "forecast_entries_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forecast_entries_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "forecast_entries_team_id_fkey"
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
@@ -2895,6 +3017,48 @@ export type Database = {
             columns: ["portfolio_id"]
             isOneToOne: false
             referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_item_assignments: {
+        Row: {
+          created_at: string | null
+          id: string
+          program_id: string | null
+          team_id: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          program_id?: string | null
+          team_id?: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          program_id?: string | null
+          team_id?: string | null
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_assignments_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_item_assignments_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
         ]
