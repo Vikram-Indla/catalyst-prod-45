@@ -1,6 +1,14 @@
 import { useState, useMemo } from 'react';
-import { Star, Settings, Filter, Upload, Grid3x3, Calendar } from 'lucide-react';
+import { Star, Settings, Filter, Upload, Grid3x3, Calendar, List, ZoomIn, ZoomOut, Flag, Check, Settings2, Diamond } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+interface ItemMilestone {
+  id: string;
+  name: string;
+  date: string;
+  completed: boolean;
+}
 
 interface RoadmapItem {
   id: string;
@@ -8,16 +16,85 @@ interface RoadmapItem {
   title: string;
   type: 'theme' | 'epic' | 'feature' | 'capability';
   state: 'not_started' | 'in_progress' | 'accepted' | 'blocked';
+  status?: 'on_track' | 'at_risk' | 'off_track';
   startDate: string;
   dueDate: string;
   items: number;
   storyPoints: number;
   progress?: number;
+  parentId?: string;
+  parentType?: string;
   children?: RoadmapItem[];
+  milestones?: ItemMilestone[];
+  hasDependencies?: boolean;
+  dependenciesResolved?: boolean;
 }
+
+interface Sprint {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+}
+
+interface ProgramIncrement {
+  id: string;
+  name: string;
+  startDate: string;
+  endDate: string;
+  sprints: Sprint[];
+}
+
+type ViewMode = 'calendar' | 'sprint';
+type GroupByMode = 'themes' | 'epics' | 'features' | 'epic_by_theme' | 'feature_by_epic';
 
 const MONTH_WIDTH = 100;
 const DAY_WIDTH = MONTH_WIDTH / 30;
+const SPRINT_WIDTH = 50;
+
+const programIncrements: ProgramIncrement[] = [
+  {
+    id: 'pi-6',
+    name: 'PI-6',
+    startDate: '2024-07-19',
+    endDate: '2024-10-10',
+    sprints: [
+      { id: 's24', name: 'S24', startDate: '2024-07-19', endDate: '2024-08-01' },
+      { id: 's25', name: 'S25', startDate: '2024-08-02', endDate: '2024-08-15' },
+      { id: 's26', name: 'S26', startDate: '2024-08-16', endDate: '2024-08-29' },
+      { id: 's27', name: 'S27', startDate: '2024-08-30', endDate: '2024-09-12' },
+      { id: 's28', name: 'S28', startDate: '2024-09-13', endDate: '2024-09-26' },
+      { id: 's29', name: 'S29', startDate: '2024-09-27', endDate: '2024-10-10' },
+    ],
+  },
+  {
+    id: 'pi-7',
+    name: 'PI-7',
+    startDate: '2024-10-11',
+    endDate: '2025-01-02',
+    sprints: [
+      { id: 's30', name: 'S30', startDate: '2024-10-11', endDate: '2024-10-24' },
+      { id: 's31', name: 'S31', startDate: '2024-10-25', endDate: '2024-11-07' },
+      { id: 's32', name: 'S32', startDate: '2024-11-08', endDate: '2024-11-21' },
+      { id: 's33', name: 'S33', startDate: '2024-11-22', endDate: '2024-12-05' },
+      { id: 's34', name: 'S34', startDate: '2024-12-06', endDate: '2024-12-19' },
+    ],
+  },
+  {
+    id: 'pi-8',
+    name: 'PI-8',
+    startDate: '2025-01-03',
+    endDate: '2025-04-04',
+    sprints: [
+      { id: 'pi71', name: 'PI71', startDate: '2025-01-03', endDate: '2025-01-16' },
+      { id: 'pi72', name: 'PI72', startDate: '2025-01-17', endDate: '2025-01-30' },
+      { id: 'pi73', name: 'PI73', startDate: '2025-01-31', endDate: '2025-02-13' },
+      { id: 'pi74', name: 'PI74', startDate: '2025-02-14', endDate: '2025-02-27' },
+      { id: 'pi75', name: 'PI75', startDate: '2025-02-28', endDate: '2025-03-13' },
+      { id: 'pi76', name: 'PI76', startDate: '2025-03-14', endDate: '2025-04-04' },
+    ],
+  },
+];
 
 const seedData: RoadmapItem[] = [
   {
@@ -83,10 +160,17 @@ const seedData: RoadmapItem[] = [
     title: 'Advanced Voice Activation for Trades',
     type: 'epic',
     state: 'accepted',
+    status: 'on_track',
     startDate: '2024-08-01',
     dueDate: '2024-10-30',
     items: 2,
     storyPoints: 16,
+    milestones: [
+      { id: 'm1', name: 'Design Complete', date: '2024-09-01', completed: true },
+      { id: 'm2', name: 'Dev Complete', date: '2024-09-20', completed: true },
+      { id: 'm3', name: 'QA Sign-off', date: '2024-10-15', completed: false },
+      { id: 'm4', name: 'Release', date: '2024-10-28', completed: false },
+    ],
   },
   {
     id: 'e-3',
@@ -127,11 +211,14 @@ const seedData: RoadmapItem[] = [
     title: 'AI for Improved Call Center Interactions',
     type: 'epic',
     state: 'in_progress',
+    status: 'on_track',
     startDate: '2024-08-01',
     dueDate: '2024-12-01',
     items: 12,
     storyPoints: 67,
     progress: 82,
+    hasDependencies: true,
+    dependenciesResolved: false,
   },
   {
     id: 'e-499',
@@ -191,10 +278,58 @@ export default function Roadmaps() {
   const [items] = useState<RoadmapItem[]>(seedData);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
+  const [hoveredMilestone, setHoveredMilestone] = useState<ItemMilestone | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [viewMode, setViewMode] = useState<ViewMode>('calendar');
+  const [groupBy, setGroupBy] = useState<GroupByMode>('epics');
+  const [showMilestones, setShowMilestones] = useState(true);
+  const [zoomLevel, setZoomLevel] = useState(1); // 0.5 to 2
 
   const timelineStart = new Date('2024-08-01');
   const timelineEnd = new Date('2025-04-30');
+
+  const allSprints = useMemo(() => {
+    return programIncrements.flatMap(pi => 
+      pi.sprints.map(sprint => ({
+        ...sprint,
+        piId: pi.id,
+        piName: pi.name,
+      }))
+    );
+  }, []);
+
+  const getBarPositionSprint = (startDate: string): number => {
+    const start = new Date(startDate);
+    const sprintIndex = allSprints.findIndex(s => 
+      new Date(s.startDate) <= start && new Date(s.endDate) >= start
+    );
+    
+    if (sprintIndex === -1) return 0;
+    
+    const sprint = allSprints[sprintIndex];
+    const sprintStart = new Date(sprint.startDate);
+    const daysIntoSprint = Math.floor((start.getTime() - sprintStart.getTime()) / (1000 * 60 * 60 * 24));
+    const sprintDuration = 14;
+    const offset = (daysIntoSprint / sprintDuration) * SPRINT_WIDTH;
+    
+    return (sprintIndex * SPRINT_WIDTH) + offset;
+  };
+
+  const getBarWidthSprint = (startDate: string, endDate: string): number => {
+    const startIndex = allSprints.findIndex(s => 
+      new Date(s.startDate) <= new Date(startDate) && 
+      new Date(s.endDate) >= new Date(startDate)
+    );
+    const endIndex = allSprints.findIndex(s => 
+      new Date(s.startDate) <= new Date(endDate) && 
+      new Date(s.endDate) >= new Date(endDate)
+    );
+    
+    if (startIndex === -1 || endIndex === -1) return 100;
+    
+    const sprintCount = endIndex - startIndex + 1;
+    return Math.max(sprintCount * SPRINT_WIDTH, 50);
+  };
 
   const months = useMemo(() => {
     const result = [];
@@ -257,32 +392,99 @@ export default function Roadmaps() {
 
       {/* Toolbar */}
       <div className="flex items-center gap-3 px-6 py-3 border-b border-border">
-        <select className="h-9 px-3 text-sm border rounded-md border-border">
-          <option>Work</option>
-        </select>
-        <select className="h-9 px-3 text-sm border rounded-md border-border">
-          <option>Feature by...</option>
-        </select>
-        <select className="h-9 px-3 text-sm border rounded-md border-border">
-          <option>Program R...</option>
-        </select>
-        <div className="flex gap-1">
-          <Button variant="outline" size="icon" className="w-9 h-9">
-            <Grid3x3 className="w-4 h-4" />
-          </Button>
-          <Button variant="outline" size="icon" className="w-9 h-9">
+        <Select value="work">
+          <SelectTrigger className="w-[140px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="work">Work</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        <Select value={groupBy} onValueChange={(value) => setGroupBy(value as GroupByMode)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Feature by..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="themes">Themes</SelectItem>
+            <SelectItem value="epics">Epics</SelectItem>
+            <SelectItem value="features">Features</SelectItem>
+            <div className="h-px bg-border my-1" />
+            <SelectItem value="epic_by_theme">Epic by Theme</SelectItem>
+            <SelectItem value="feature_by_epic">Feature by Epic</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        <Select value="program">
+          <SelectTrigger className="w-[160px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="program">Program R...</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        <div className="flex border border-border rounded-md overflow-hidden">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={`w-9 h-9 rounded-none ${viewMode === 'calendar' ? 'bg-primary/10 text-primary' : ''}`}
+            onClick={() => setViewMode('calendar')}
+          >
             <Calendar className="w-4 h-4" />
           </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className={`w-9 h-9 rounded-none border-l border-border ${viewMode === 'sprint' ? 'bg-primary/10 text-primary' : ''}`}
+            onClick={() => setViewMode('sprint')}
+          >
+            <List className="w-4 h-4" />
+          </Button>
         </div>
-        <span className="ml-auto text-sm text-muted-foreground">{items.length} items loaded</span>
+        
+        <div className="flex items-center gap-2 ml-auto">
+          <button
+            onClick={() => setShowMilestones(!showMilestones)}
+            className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-muted/50 transition-colors ${
+              showMilestones ? 'text-primary' : 'text-muted-foreground'
+            }`}
+          >
+            <Diamond className="w-4 h-4" />
+            Milestones and objectives
+          </button>
+          <span className="text-sm text-muted-foreground">{items.length} items loaded</span>
+        </div>
       </div>
 
-      {/* Timeline Slider */}
-      <div className="px-6 py-3 bg-muted/30">
-        <div className="relative h-2 rounded-full bg-border">
-          <div className="absolute top-0 left-0 h-full rounded-full w-1/3 bg-muted-foreground" />
-          <div className="absolute w-4 h-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground top-1/2 left-1/3" />
-        </div>
+      {/* Zoom Controls */}
+      <div className="flex items-center gap-3 px-6 py-3 bg-muted/30 border-b border-border">
+        <Button
+          variant="outline"
+          size="icon"
+          className="w-8 h-8"
+          onClick={() => setZoomLevel(Math.max(0.5, zoomLevel - 0.25))}
+        >
+          <ZoomOut className="w-4 h-4" />
+        </Button>
+        <input
+          type="range"
+          min="0.5"
+          max="2"
+          step="0.25"
+          value={zoomLevel}
+          onChange={(e) => setZoomLevel(Number(e.target.value))}
+          className="flex-1"
+        />
+        <Button
+          variant="outline"
+          size="icon"
+          className="w-8 h-8"
+          onClick={() => setZoomLevel(Math.min(2, zoomLevel + 0.25))}
+        >
+          <ZoomIn className="w-4 h-4" />
+        </Button>
+        <span className="text-xs text-muted-foreground min-w-[60px] text-right">{Math.round(zoomLevel * 100)}%</span>
       </div>
 
       {/* Gantt Container */}
@@ -329,59 +531,158 @@ export default function Roadmaps() {
 
         {/* Timeline Panel */}
         <div className="flex-1 overflow-x-auto overflow-y-auto">
-          <div style={{ minWidth: months.length * MONTH_WIDTH }}>
-            {/* Quarter Headers */}
-            <div className="flex h-7 bg-muted border-b border-border sticky top-0 z-10">
-              {quarters.map(q => (
-                <div key={q.name} className="flex items-center justify-center text-xs font-semibold border-r border-border" style={{ width: q.months.length * MONTH_WIDTH }}>
-                  {q.name}
+          <div style={{ minWidth: viewMode === 'calendar' ? months.length * MONTH_WIDTH * zoomLevel : allSprints.length * SPRINT_WIDTH * zoomLevel }}>
+            {viewMode === 'calendar' ? (
+              <>
+                {/* Quarter Headers */}
+                <div className="flex h-7 bg-muted border-b border-border sticky top-0 z-10">
+                  {quarters.map(q => (
+                    <div key={q.name} className="flex items-center justify-center text-xs font-semibold border-r border-border" style={{ width: q.months.length * MONTH_WIDTH * zoomLevel }}>
+                      {q.name}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            {/* Month Headers */}
-            <div className="flex h-6 bg-muted border-b border-border sticky top-7 z-10">
-              {months.map(month => (
-                <div key={month.name + month.date.toISOString()} className="flex items-center justify-center text-[11px] text-muted-foreground border-r border-border/50" style={{ width: MONTH_WIDTH }}>
-                  {month.name}
+                {/* Month Headers */}
+                <div className="flex h-6 bg-muted border-b border-border sticky top-7 z-10">
+                  {months.map(month => (
+                    <div key={month.name + month.date.toISOString()} className="flex items-center justify-center text-[11px] text-muted-foreground border-r border-border/50" style={{ width: MONTH_WIDTH * zoomLevel }}>
+                      {month.name}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <>
+                {/* PI Headers */}
+                <div className="flex h-7 bg-muted border-b border-border sticky top-0 z-10">
+                  {programIncrements.map(pi => (
+                    <div key={pi.id} className="flex items-center justify-center text-xs font-semibold bg-muted/80 border-r-2 border-border" style={{ width: pi.sprints.length * SPRINT_WIDTH * zoomLevel }}>
+                      {pi.name}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Sprint Headers */}
+                <div className="flex h-6 bg-muted border-b border-border sticky top-7 z-10">
+                  {allSprints.map((sprint, idx) => {
+                    const isLastInPI = idx === allSprints.length - 1 || 
+                                       allSprints[idx + 1]?.piId !== sprint.piId;
+                    return (
+                      <div 
+                        key={sprint.id} 
+                        className={`flex items-center justify-center text-[11px] text-muted-foreground ${isLastInPI ? 'border-r-2 border-border' : 'border-r border-border/50'}`}
+                        style={{ width: SPRINT_WIDTH * zoomLevel }}
+                      >
+                        {sprint.name}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
 
             {/* Milestones Row */}
-            <div className="relative h-5 bg-muted border-b border-border sticky top-[52px] z-10">
-              <div className="absolute" style={{ left: getBarPosition('2024-09-15', timelineStart) + 50, top: '50%', transform: 'translate(-50%, -50%)' }}>
-                <div className="w-3 h-3 rounded-full bg-cyan-500 border-2 border-background" />
+            {showMilestones && (
+              <div className="relative h-5 bg-muted border-b border-border sticky top-[52px] z-10">
+                {items.flatMap(item => 
+                  item.milestones?.map(milestone => {
+                    const left = viewMode === 'calendar'
+                      ? getBarPosition(milestone.date, timelineStart) * zoomLevel
+                      : getBarPositionSprint(milestone.date) * zoomLevel;
+                    return (
+                      <div 
+                        key={milestone.id} 
+                        className="absolute cursor-pointer" 
+                        style={{ left, top: '50%', transform: 'translate(-50%, -50%)' }}
+                        onMouseEnter={(e) => {
+                          setHoveredMilestone(milestone);
+                          setTooltipPos({ x: e.clientX, y: e.clientY });
+                        }}
+                        onMouseLeave={() => setHoveredMilestone(null)}
+                      >
+                        <div className="w-3 h-3 rounded-full bg-[hsl(var(--milestone-color))] border-2 border-background" />
+                      </div>
+                    );
+                  }) || []
+                )}
               </div>
-              <div className="absolute" style={{ left: getBarPosition('2024-11-01', timelineStart) + 50, top: '50%', transform: 'translate(-50%, -50%)' }}>
-                <div className="w-3 h-3 rounded-full bg-cyan-500 border-2 border-background" />
-              </div>
-            </div>
+            )}
 
             {/* Gantt Rows */}
-            {items.map(item => (
-              <div key={item.id} className="relative h-10 border-b border-border/50">
-                <div
-                  className="absolute top-1 h-8 rounded flex items-center px-2 text-xs font-medium text-white cursor-pointer transition-shadow hover:shadow-lg hover:z-10"
-                  style={{
-                    left: getBarPosition(item.startDate, timelineStart),
-                    width: getBarWidth(item.startDate, item.dueDate),
-                    backgroundColor: getBarColor(item.state),
-                  }}
-                  onMouseEnter={(e) => handleBarHover(item, e)}
-                  onMouseLeave={() => setHoveredItem(null)}
-                >
-                  <span className="font-semibold">{item.numericId}</span>
-                  <span className="mx-1">-</span>
-                  <span className="truncate">{item.title}</span>
+            {items.map(item => {
+              const left = viewMode === 'calendar' 
+                ? getBarPosition(item.startDate, timelineStart) * zoomLevel
+                : getBarPositionSprint(item.startDate) * zoomLevel;
+              const width = viewMode === 'calendar'
+                ? getBarWidth(item.startDate, item.dueDate) * zoomLevel
+                : getBarWidthSprint(item.startDate, item.dueDate) * zoomLevel;
+              
+              return (
+                <div key={item.id} className="relative h-10 border-b border-border/50">
+                  <div
+                    className="absolute top-1 h-8 rounded flex items-center px-2 text-xs font-medium text-white cursor-pointer transition-shadow hover:shadow-lg hover:z-10 gap-2"
+                    style={{
+                      left,
+                      width,
+                      backgroundColor: getBarColor(item.state),
+                    }}
+                    onMouseEnter={(e) => handleBarHover(item, e)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                  >
+                    <span className="font-semibold">{item.numericId}</span>
+                    <span className="mx-0.5">-</span>
+                    <span className="truncate flex-1">{item.title}</span>
+                    
+                    {/* Milestones on bar */}
+                    {showMilestones && item.milestones && item.milestones.length > 0 && width > 200 && (
+                      <div className="flex gap-0.5">
+                        {item.milestones.slice(0, 4).map(m => (
+                          <span key={m.id} className={m.completed ? 'text-yellow-400' : 'text-yellow-200/50'}>
+                            ★
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {/* Status pill */}
+                    {item.status && width > 250 && (
+                      <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
+                        item.status === 'on_track' ? 'bg-green-600' :
+                        item.status === 'at_risk' ? 'bg-orange-500' :
+                        'bg-red-600'
+                      }`}>
+                        {item.status === 'on_track' ? 'On Track' : item.status === 'at_risk' ? 'At Risk' : 'Off Track'}
+                      </div>
+                    )}
+                    
+                    {/* Progress */}
+                    {item.progress != null && width > 300 && (
+                      <span className="text-[11px] font-semibold opacity-90">{item.progress}%</span>
+                    )}
+                    
+                    {/* Dependency icons */}
+                    {item.hasDependencies && width > 150 && (
+                      <div className="flex gap-1">
+                        {item.dependenciesResolved ? (
+                          <Check className="w-3 h-3" />
+                        ) : (
+                          <Flag className="w-3 h-3 text-red-300" />
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* End gear icon */}
+                    <Settings2 className="w-4 h-4 absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 hover:opacity-100 transition-opacity" />
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Tooltip */}
+      {/* Tooltips */}
       {hoveredItem && (
         <div
           className="fixed z-50 px-4 py-3 text-xs text-white rounded shadow-lg pointer-events-none bg-foreground"
@@ -393,6 +694,19 @@ export default function Roadmaps() {
             <span>{new Date(items.find(i => i.id === hoveredItem)?.startDate || '').toLocaleDateString('en-US')}</span>
             <span className="opacity-70">Due date:</span>
             <span>{new Date(items.find(i => i.id === hoveredItem)?.dueDate || '').toLocaleDateString('en-US')}</span>
+          </div>
+        </div>
+      )}
+      
+      {hoveredMilestone && (
+        <div
+          className="fixed z-50 px-3 py-2 text-xs text-white rounded shadow-lg pointer-events-none bg-foreground"
+          style={{ left: tooltipPos.x + 10, top: tooltipPos.y + 10 }}
+        >
+          <div className="font-semibold mb-1">{hoveredMilestone.name}</div>
+          <div className="opacity-70">{new Date(hoveredMilestone.date).toLocaleDateString('en-US')}</div>
+          <div className={`text-[10px] mt-1 ${hoveredMilestone.completed ? 'text-green-300' : 'text-yellow-300'}`}>
+            {hoveredMilestone.completed ? '✓ Completed' : 'Pending'}
           </div>
         </div>
       )}
