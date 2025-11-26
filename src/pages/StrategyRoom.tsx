@@ -20,13 +20,18 @@ export default function StrategyRoom() {
   const [editingObjectiveId, setEditingObjectiveId] = useState<string | undefined>();
   const [editingKeyResultId, setEditingKeyResultId] = useState<string | undefined>();
 
-  // Fetch objectives
+  // Fetch objectives with linked work
   const { data: objectives } = useQuery({
     queryKey: ['objectives'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('objectives')
-        .select('*, objective_levels(name, scope_type)')
+        .select(`
+          *,
+          objective_levels(name, scope_type),
+          objective_theme_links(theme_id, strategic_themes(name)),
+          objective_initiative_links(initiative_id, initiatives(name))
+        `)
         .order('name');
       if (error) throw error;
       return data;
@@ -174,9 +179,35 @@ export default function StrategyRoom() {
                           </div>
                         )}
 
-                        <div className="pt-4 border-t">
-                          <h4 className="font-medium text-sm mb-2">Linked Work Items</h4>
-                          <p className="text-xs text-muted-foreground">No linked items yet</p>
+                        <div className="pt-4 border-t space-y-3">
+                          <div>
+                            <h4 className="font-medium text-sm mb-2">Linked Themes</h4>
+                            {objective.objective_theme_links?.length > 0 ? (
+                              <div className="space-y-1">
+                                {objective.objective_theme_links.map((link: any) => (
+                                  <Badge key={link.theme_id} variant="outline" className="mr-1">
+                                    {link.strategic_themes?.name}
+                                  </Badge>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">No linked themes</p>
+                            )}
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-sm mb-2">Linked Initiatives</h4>
+                            {objective.objective_initiative_links?.length > 0 ? (
+                              <div className="space-y-1">
+                                {objective.objective_initiative_links.map((link: any) => (
+                                  <Badge key={link.initiative_id} variant="secondary" className="mr-1">
+                                    {link.initiatives?.name}
+                                  </Badge>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-xs text-muted-foreground">No linked initiatives</p>
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>

@@ -22,6 +22,7 @@ import PortfolioInsights from "./pages/PortfolioInsights";
 import ProgramRoom from "./pages/ProgramRoom";
 import ProgramBoard from "./pages/ProgramBoard";
 import ProgramIncrements from "./pages/ProgramIncrements";
+import PIObjectives from "./pages/PIObjectives";
 import ROAMBoard from "./pages/ROAMBoard";
 import CapacityPlanning from "./pages/CapacityPlanning";
 import TeamRoom from "./pages/TeamRoom";
@@ -74,6 +75,7 @@ const App = () => (
               <Route path="/program-room" element={<ProgramRoom />} />
               <Route path="/pis" element={<ProgramIncrements />} />
               <Route path="/program-board" element={<ProgramBoard />} />
+              <Route path="/pi-objectives" element={<PIObjectives />} />
               <Route path="/roam" element={<ROAMBoard />} />
               <Route path="/capacity" element={<CapacityPlanning />} />
               <Route path="/release-train-calendar" element={<div className="p-8"><h1 className="text-2xl font-bold">Release Calendar</h1><p className="text-muted-foreground">Coming soon</p></div>} />

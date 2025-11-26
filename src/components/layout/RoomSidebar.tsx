@@ -87,6 +87,7 @@ const programViews: ViewGroup[] = [
     views: [
       { title: 'Program Room', path: '/program-room', icon: LayoutDashboard },
       { title: 'Program Board', path: '/program-board', icon: FolderKanban },
+      { title: 'PI Objectives', path: '/pi-objectives', icon: Target },
       { title: 'ROAM Board', path: '/roam', icon: AlertTriangle },
     ],
   },

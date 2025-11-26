@@ -9,6 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 
 const formSchema = z.object({
@@ -18,6 +20,8 @@ const formSchema = z.object({
   end_date: z.string().optional(),
   confidence: z.enum(['high', 'med', 'low']),
   progress_pct: z.number().min(0).max(100).optional(),
+  theme_ids: z.array(z.string()).optional(),
+  initiative_ids: z.array(z.string()).optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -42,6 +46,8 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
       end_date: '',
       confidence: 'med',
       progress_pct: 0,
+      theme_ids: [],
+      initiative_ids: [],
     },
   });
 
@@ -53,6 +59,32 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
         query = query.eq('scope_type', scopeType);
       }
       const { data, error } = await query.order('name');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: themes } = useQuery({
+    queryKey: ['strategic-themes'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('strategic_themes')
+        .select('id, name')
+        .eq('status', 'active')
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: initiatives } = useQuery({
+    queryKey: ['initiatives'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('initiatives')
+        .select('id, name')
+        .in('status', ['proposed', 'active'])
+        .order('name');
       if (error) throw error;
       return data;
     },
@@ -72,6 +104,32 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
     enabled: isEdit,
   });
 
+  const { data: existingThemeLinks } = useQuery({
+    queryKey: ['objective-theme-links', objectiveId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('objective_theme_links')
+        .select('theme_id')
+        .eq('objective_id', objectiveId!);
+      if (error) throw error;
+      return data.map(link => link.theme_id);
+    },
+    enabled: isEdit,
+  });
+
+  const { data: existingInitiativeLinks } = useQuery({
+    queryKey: ['objective-initiative-links', objectiveId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('objective_initiative_links')
+        .select('initiative_id')
+        .eq('objective_id', objectiveId!);
+      if (error) throw error;
+      return data.map(link => link.initiative_id);
+    },
+    enabled: isEdit,
+  });
+
   useEffect(() => {
     if (existingObjective) {
       form.reset({
@@ -81,9 +139,11 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
         end_date: existingObjective.end_date || '',
         confidence: existingObjective.confidence || 'med',
         progress_pct: existingObjective.progress_pct || 0,
+        theme_ids: existingThemeLinks || [],
+        initiative_ids: existingInitiativeLinks || [],
       });
     }
-  }, [existingObjective, form]);
+  }, [existingObjective, existingThemeLinks, existingInitiativeLinks, form]);
 
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
@@ -96,6 +156,8 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
         progress_pct: data.progress_pct || 0,
       };
 
+      let objId = objectiveId;
+      
       if (isEdit) {
         const { error } = await supabase
           .from('objectives')
@@ -103,7 +165,34 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
           .eq('id', objectiveId);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from('objectives').insert(payload);
+        const { data: newObj, error } = await supabase
+          .from('objectives')
+          .insert(payload)
+          .select()
+          .single();
+        if (error) throw error;
+        objId = newObj.id;
+      }
+
+      // Update theme links
+      await supabase.from('objective_theme_links').delete().eq('objective_id', objId);
+      if (data.theme_ids && data.theme_ids.length > 0) {
+        const themeLinks = data.theme_ids.map(themeId => ({
+          objective_id: objId,
+          theme_id: themeId,
+        }));
+        const { error } = await supabase.from('objective_theme_links').insert(themeLinks);
+        if (error) throw error;
+      }
+
+      // Update initiative links
+      await supabase.from('objective_initiative_links').delete().eq('objective_id', objId);
+      if (data.initiative_ids && data.initiative_ids.length > 0) {
+        const initiativeLinks = data.initiative_ids.map(initiativeId => ({
+          objective_id: objId,
+          initiative_id: initiativeId,
+        }));
+        const { error } = await supabase.from('objective_initiative_links').insert(initiativeLinks);
         if (error) throw error;
       }
     },
@@ -237,6 +326,64 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
                       onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="theme_ids"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Linked Themes</FormLabel>
+                  <ScrollArea className="h-32 border rounded-md p-3">
+                    {themes?.map((theme) => (
+                      <div key={theme.id} className="flex items-center space-x-2 py-1">
+                        <Checkbox
+                          checked={field.value?.includes(theme.id)}
+                          onCheckedChange={(checked) => {
+                            const current = field.value || [];
+                            field.onChange(
+                              checked
+                                ? [...current, theme.id]
+                                : current.filter((id) => id !== theme.id)
+                            );
+                          }}
+                        />
+                        <label className="text-sm">{theme.name}</label>
+                      </div>
+                    ))}
+                  </ScrollArea>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="initiative_ids"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Linked Initiatives</FormLabel>
+                  <ScrollArea className="h-32 border rounded-md p-3">
+                    {initiatives?.map((initiative) => (
+                      <div key={initiative.id} className="flex items-center space-x-2 py-1">
+                        <Checkbox
+                          checked={field.value?.includes(initiative.id)}
+                          onCheckedChange={(checked) => {
+                            const current = field.value || [];
+                            field.onChange(
+                              checked
+                                ? [...current, initiative.id]
+                                : current.filter((id) => id !== initiative.id)
+                            );
+                          }}
+                        />
+                        <label className="text-sm">{initiative.name}</label>
+                      </div>
+                    ))}
+                  </ScrollArea>
                   <FormMessage />
                 </FormItem>
               )}
