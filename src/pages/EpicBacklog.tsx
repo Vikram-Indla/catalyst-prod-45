@@ -175,8 +175,51 @@ export default function EpicBacklog() {
     !epic.epic_program_increments || epic.epic_program_increments.length === 0
   ) || [];
 
-  // Calculate PI Progress
-  const piProgress = selectedPI && selectedProgram ? { planned: 0, accepted: 0, percentage: 0 } : null;
+  // Calculate PI Progress per Jira Align spec:
+  // ((Sum of LOE points for all accepted stories) / (Sum of LOE points for all stories)) * 100
+  // Include orphan stories; exclude misaligned stories
+  const { data: piProgressData } = useQuery({
+    queryKey: ['pi-progress', selectedPI, selectedProgram],
+    queryFn: async () => {
+      if (!selectedPI || !selectedProgram) return null;
+      
+      // Get all stories for features in this epic backlog + orphan stories
+      const { data: stories, error } = await supabase
+        .from('stories')
+        .select(`
+          id,
+          loe_points,
+          status,
+          sprint_id,
+          sprints(id, pi_id),
+          features(epic_id, epics(primary_program_id))
+        `)
+        .or(`features.epics.primary_program_id.eq.${selectedProgram},features.is.null`);
+      
+      if (error || !stories) return { planned: 0, accepted: 0, percentage: 0 };
+      
+      // Filter to only include stories in selected PI (and exclude misaligned)
+      const relevantStories = stories.filter((story: any) => {
+        const storyPI = story.sprints?.pi_id;
+        // Include if: assigned to selected PI, or orphan in selected program
+        return storyPI === selectedPI || (!story.features && !storyPI);
+      });
+      
+      const totalPoints = relevantStories.reduce((sum: number, s: any) => sum + (s.loe_points || 0), 0);
+      const acceptedPoints = relevantStories
+        .filter((s: any) => s.status === 'accepted')
+        .reduce((sum: number, s: any) => sum + (s.loe_points || 0), 0);
+      
+      return {
+        planned: totalPoints,
+        accepted: acceptedPoints,
+        percentage: totalPoints > 0 ? Math.round((acceptedPoints / totalPoints) * 100) : 0,
+      };
+    },
+    enabled: !!(selectedPI && selectedProgram),
+  });
+  
+  const piProgress = piProgressData || null;
 
   const handleExport = () => {
     if (epics && epics.length > 0) {
@@ -225,8 +268,8 @@ export default function EpicBacklog() {
           </div>
         </div>
 
-        {/* Filters Row */}
-        <div className="flex items-center gap-3">
+      {/* Filters Row */}
+        <div className="flex items-center gap-3 flex-wrap">
           <Select value={selectedPortfolio} onValueChange={setSelectedPortfolio}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select Portfolio" />
@@ -264,6 +307,17 @@ export default function EpicBacklog() {
               className="pl-9"
             />
           </div>
+
+          {/* Labels Dropdown */}
+          <Select value={labelsDisplay} onValueChange={(v) => setLabelsDisplay(v as any)}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Labels" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="program">Program</SelectItem>
+              <SelectItem value="parent">Parent</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -357,6 +411,7 @@ export default function EpicBacklog() {
                 onRefetch={refetch}
                 selectedProgram={selectedProgram}
                 selectedPI={selectedPI}
+                labelsDisplay={labelsDisplay}
               />
             )}
             {view === 'kanban' && kanbanSubview === 'state' && (
@@ -408,6 +463,7 @@ export default function EpicBacklog() {
               onRefetch={refetch}
               selectedProgram={selectedProgram}
               selectedPI={selectedPI}
+              labelsDisplay={labelsDisplay}
             />
           </div>
         </div>
