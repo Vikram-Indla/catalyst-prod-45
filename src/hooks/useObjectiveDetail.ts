@@ -53,6 +53,19 @@ export function useObjectiveDetail(objectiveId?: string) {
         `)
         .eq('objective_id', objectiveId);
 
+      // Fetch key result check-ins for each key result
+      const keyResultsWithCheckins = await Promise.all(
+        (keyResults || []).map(async (kr) => {
+          const { data: checkins } = await supabase
+            .from('key_result_checkins')
+            .select('id, checked_in_at, value, note_richtext, created_by_user_id')
+            .eq('key_result_id', kr.id)
+            .order('checked_in_at', { ascending: false });
+          
+          return { ...kr, checkins: checkins || [] };
+        })
+      );
+
       // Fetch linked epics
       const { data: epicLinks } = await supabase
         .from('objective_epic_links')
@@ -93,7 +106,7 @@ export function useObjectiveDetail(objectiveId?: string) {
 
       return {
         ...objective,
-        keyResults: keyResults || [],
+        keyResults: keyResultsWithCheckins,
         epics: epicLinks?.map(link => link.epics).filter(Boolean) || [],
         risks: risks || [],
         dependencies: dependencies || [],
@@ -154,6 +167,59 @@ export function useUpdateKeyResult() {
     },
     onError: () => {
       toast.error('Failed to update key result');
+    },
+  });
+}
+
+export function useCreateCheckIn() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ keyResultId, value, note, date }: { keyResultId: string; value: number; note: string; date: Date }) => {
+      const { data, error } = await supabase
+        .from('key_result_checkins')
+        .insert({
+          key_result_id: keyResultId,
+          value,
+          note_richtext: note,
+          checked_in_at: date.toISOString(),
+          created_by_user_id: (await supabase.auth.getUser()).data.user?.id,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      // Update current value on key result
+      await supabase
+        .from('key_results_v2')
+        .update({ current_value: value })
+        .eq('id', keyResultId);
+      
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['objective-detail'] });
+      toast.success('Check-in created');
+    },
+  });
+}
+
+export function useDeleteCheckIn() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (checkinId: string) => {
+      const { error } = await supabase
+        .from('key_result_checkins')
+        .delete()
+        .eq('id', checkinId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['objective-detail'] });
+      toast.success('Check-in deleted');
     },
   });
 }
