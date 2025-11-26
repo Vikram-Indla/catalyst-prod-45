@@ -20,6 +20,7 @@ import Epics from "./pages/Epics";
 import Features from "./pages/Features";
 import PortfolioKanban from "./pages/PortfolioKanban";
 import PortfolioRoadmap from "./pages/PortfolioRoadmap";
+import Roadmaps from "./pages/Roadmaps";
 import Dependencies from "./pages/Dependencies";
 import PortfolioInsights from "./pages/PortfolioInsights";
 import ProgramRoom from "./pages/ProgramRoom";
@@ -81,7 +82,8 @@ const App = () => (
               <Route path="/epics" element={<Epics />} />
               <Route path="/features" element={<Features />} />
               <Route path="/portfolio-kanban" element={<PortfolioKanban />} />
-              <Route path="/portfolio-roadmap" element={<PortfolioRoadmap />} />
+          <Route path="/portfolio-roadmap" element={<PortfolioRoadmap />} />
+          <Route path="/roadmaps" element={<Roadmaps />} />
               <Route path="/dependencies" element={<Dependencies />} />
               <Route path="/portfolio-insights" element={<PortfolioInsights />} />
               <Route path="/program-room" element={<ProgramRoom />} />
