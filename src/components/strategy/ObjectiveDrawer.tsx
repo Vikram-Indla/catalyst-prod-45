@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { X, Star, Share2, MoreVertical, MessageCircle, Plus, BarChart, CheckCircle, Maximize2, Pencil, ChevronRight, ChevronDown } from 'lucide-react';
 import { CheckInModal } from './CheckInModal';
-import { useObjectiveDetail, useUpdateObjective } from '@/hooks/useObjectiveDetail';
+import { useObjectiveDetail, useUpdateObjective, useCreateCheckIn, useDeleteCheckIn } from '@/hooks/useObjectiveDetail';
 
 interface ObjectiveDrawerProps {
   objectiveId: string | null;
@@ -27,6 +27,10 @@ export function ObjectiveDrawer({ objectiveId, open, onClose }: ObjectiveDrawerP
   
   const { data: objective, isLoading } = useObjectiveDetail(objectiveId || undefined);
   const updateObjective = useUpdateObjective();
+  const createCheckIn = useCreateCheckIn();
+  const deleteCheckIn = useDeleteCheckIn();
+
+  const selectedKeyResult = objective?.keyResults?.find((kr: any) => kr.id === selectedKeyResultId);
 
   if (!open) return null;
 
@@ -137,13 +141,20 @@ export function ObjectiveDrawer({ objectiveId, open, onClose }: ObjectiveDrawerP
         </SheetContent>
       </Sheet>
 
-      {selectedKeyResultId && (
+      {selectedKeyResultId && selectedKeyResult && (
         <CheckInModal
-          keyResultId={selectedKeyResultId}
+          keyResult={selectedKeyResult}
+          checkins={selectedKeyResult.checkins || []}
           open={checkInModalOpen}
           onClose={() => {
             setCheckInModalOpen(false);
             setSelectedKeyResultId(null);
+          }}
+          onUpdate={(value, note, date) => {
+            createCheckIn.mutate({ keyResultId: selectedKeyResultId, value, note, date });
+          }}
+          onDelete={(checkinId) => {
+            deleteCheckIn.mutate(checkinId);
           }}
         />
       )}

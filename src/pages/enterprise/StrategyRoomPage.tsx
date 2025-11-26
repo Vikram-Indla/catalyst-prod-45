@@ -72,7 +72,6 @@ export default function StrategyRoomPage() {
 
   const handleObjectiveClick = (objective: any) => {
     setSelectedObjective(objective);
-    setDrawerOpen(true);
   };
 
   const allSnapshots = [...snapshots, ...mockStrategySnapshots];
@@ -152,9 +151,9 @@ export default function StrategyRoomPage() {
 
       {/* Objective Drawer */}
       <ObjectiveDrawer
-        objective={selectedObjective}
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
+        objectiveId={selectedObjective?.id || null}
+        open={!!selectedObjective}
+        onClose={() => setSelectedObjective(null)}
       />
     </div>
   );

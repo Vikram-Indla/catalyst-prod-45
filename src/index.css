@@ -58,13 +58,25 @@
     --health-red: 0 84% 60%;
     --health-gray: 220 9% 46%;
 
-    /* Work Item Type Colors */
+    /* Workitem Type Colors */
     --workitem-theme: 258 90% 66%;
     --workitem-epic: 239 84% 67%;
     --workitem-feature: 221 83% 53%;
     --workitem-story: 142 71% 45%;
     --workitem-subtask: 215 16% 47%;
     --workitem-defect: 0 84% 60%;
+
+    /* Roadmap Bar Colors */
+    --bar-not-started: 25 114 255;
+    --bar-in-progress: 54 179 126;
+    --bar-in-progress-light: 171 245 209;
+    --bar-accepted: 54 179 126;
+    --bar-done: 54 179 126;
+    --bar-blocked: 255 86 48;
+    --bar-at-risk: 255 116 82;
+    --bar-future: 151 160 175;
+    --bar-epic: 0 184 217;
+    --bar-theme: 101 84 192;
 
     /* Neutral Scale */
     --neutral-0: 0 0% 100%;
