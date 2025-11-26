@@ -1,7 +1,11 @@
-import { useState, useMemo } from 'react';
-import { Star, Settings, Filter, Upload, Grid3x3, Calendar, List, ZoomIn, ZoomOut, Flag, Check, Settings2, Diamond } from 'lucide-react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { Star, Settings, Filter, Upload, Grid3x3, Calendar, List, ZoomIn, ZoomOut, Flag, Check, Settings2, Diamond, Undo, Redo, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { PISelectorPanel } from '@/components/roadmaps/PISelectorPanel';
+import { SyncModal } from '@/components/roadmaps/SyncModal';
+import { useRoadmapStore } from '@/stores/roadmapStore';
+import { addDays } from 'date-fns';
 
 interface ItemMilestone {
   id: string;
@@ -275,7 +279,7 @@ function getBarWidth(startDate: string, endDate: string): number {
 }
 
 export default function Roadmaps() {
-  const [items] = useState<RoadmapItem[]>(seedData);
+  const [items, setItems] = useState<RoadmapItem[]>(seedData);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [hoveredMilestone, setHoveredMilestone] = useState<ItemMilestone | null>(null);
@@ -283,10 +287,26 @@ export default function Roadmaps() {
   const [viewMode, setViewMode] = useState<ViewMode>('calendar');
   const [groupBy, setGroupBy] = useState<GroupByMode>('epics');
   const [showMilestones, setShowMilestones] = useState(true);
-  const [zoomLevel, setZoomLevel] = useState(1); // 0.5 to 2
+  const [zoomLevel, setZoomLevel] = useState(1);
+  
+  // Roadmap store
+  const {
+    pendingChanges,
+    addPendingChange,
+    dragState,
+    setDragState,
+    resetDragState,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    openSyncModal,
+  } = useRoadmapStore();
 
   const timelineStart = new Date('2024-08-01');
   const timelineEnd = new Date('2025-04-30');
+  
+  const timelineRef = useRef<HTMLDivElement>(null);
 
   const allSprints = useMemo(() => {
     return programIncrements.flatMap(pi => 
@@ -366,96 +386,277 @@ export default function Roadmaps() {
     setTooltipPos({ x: e.clientX, y: e.clientY });
   };
 
-  return (
-    <div className="flex flex-col h-screen bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-        <div className="flex items-center gap-2">
-          <Star className="w-5 h-5 text-muted-foreground" />
-          <h1 className="text-xl font-semibold text-foreground">Live Roadmap</h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" className="gap-2">
-            <Settings className="w-4 h-4" />
-            View Configuration
-          </Button>
-          <Button variant="ghost" size="sm" className="gap-2">
-            <Filter className="w-4 h-4" />
-            Filter
-          </Button>
-          <Button variant="default" size="sm" className="gap-2">
-            <Upload className="w-4 h-4" />
-            Export
-          </Button>
-        </div>
-      </div>
+  // Drag handlers
+  const handleDragStart = (e: React.MouseEvent, item: RoadmapItem, type: 'move' | 'resize-left' | 'resize-right') => {
+    e.stopPropagation();
+    setDragState({
+      isDragging: true,
+      dragType: type,
+      itemId: item.id,
+      originalStart: new Date(item.startDate),
+      originalEnd: new Date(item.dueDate),
+      currentStart: new Date(item.startDate),
+      currentEnd: new Date(item.dueDate),
+      startX: e.clientX,
+    });
+  };
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-3 px-6 py-3 border-b border-border">
-        <Select value="work">
-          <SelectTrigger className="w-[140px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="work">Work</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        <Select value={groupBy} onValueChange={(value) => setGroupBy(value as GroupByMode)}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Feature by..." />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="themes">Themes</SelectItem>
-            <SelectItem value="epics">Epics</SelectItem>
-            <SelectItem value="features">Features</SelectItem>
-            <div className="h-px bg-border my-1" />
-            <SelectItem value="epic_by_theme">Epic by Theme</SelectItem>
-            <SelectItem value="feature_by_epic">Feature by Epic</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        <Select value="program">
-          <SelectTrigger className="w-[160px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="program">Program R...</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        <div className="flex border border-border rounded-md overflow-hidden">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className={`w-9 h-9 rounded-none ${viewMode === 'calendar' ? 'bg-primary/10 text-primary' : ''}`}
-            onClick={() => setViewMode('calendar')}
-          >
-            <Calendar className="w-4 h-4" />
-          </Button>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className={`w-9 h-9 rounded-none border-l border-border ${viewMode === 'sprint' ? 'bg-primary/10 text-primary' : ''}`}
-            onClick={() => setViewMode('sprint')}
-          >
-            <List className="w-4 h-4" />
-          </Button>
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!dragState.isDragging || !dragState.itemId || !dragState.originalStart || !dragState.originalEnd) return;
+
+      const deltaX = e.clientX - dragState.startX;
+      const pixelsPerDay = viewMode === 'calendar' ? (DAY_WIDTH * zoomLevel) : (SPRINT_WIDTH / 14 * zoomLevel);
+      const deltaDays = Math.round(deltaX / pixelsPerDay);
+
+      if (dragState.dragType === 'move') {
+        const newStart = addDays(dragState.originalStart, deltaDays);
+        const newEnd = addDays(dragState.originalEnd, deltaDays);
+        setDragState({ currentStart: newStart, currentEnd: newEnd });
+      } else if (dragState.dragType === 'resize-left') {
+        const newStart = addDays(dragState.originalStart, deltaDays);
+        if (newStart < dragState.currentEnd!) {
+          setDragState({ currentStart: newStart });
+        }
+      } else if (dragState.dragType === 'resize-right') {
+        const newEnd = addDays(dragState.originalEnd, deltaDays);
+        if (newEnd > dragState.currentStart!) {
+          setDragState({ currentEnd: newEnd });
+        }
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (!dragState.isDragging || !dragState.itemId) return;
+
+      const hasChanged =
+        dragState.currentStart?.getTime() !== dragState.originalStart?.getTime() ||
+        dragState.currentEnd?.getTime() !== dragState.originalEnd?.getTime();
+
+      if (hasChanged && dragState.currentStart && dragState.currentEnd && dragState.originalStart && dragState.originalEnd) {
+        const item = items.find(i => i.id === dragState.itemId);
+        if (item) {
+          let changeType: 'start_date' | 'due_date' | 'both' = 'both';
+          if (dragState.currentStart.getTime() !== dragState.originalStart.getTime() &&
+              dragState.currentEnd.getTime() === dragState.originalEnd.getTime()) {
+            changeType = 'start_date';
+          } else if (dragState.currentStart.getTime() === dragState.originalStart.getTime() &&
+                     dragState.currentEnd.getTime() !== dragState.originalEnd.getTime()) {
+            changeType = 'due_date';
+          }
+
+          addPendingChange({
+            itemId: item.id,
+            itemTitle: item.title,
+            changeType,
+            originalStart: dragState.originalStart,
+            originalEnd: dragState.originalEnd,
+            newStart: dragState.currentStart,
+            newEnd: dragState.currentEnd,
+          });
+
+          // Update local item
+          setItems(prev =>
+            prev.map(i =>
+              i.id === item.id
+                ? { ...i, startDate: dragState.currentStart!.toISOString(), dueDate: dragState.currentEnd!.toISOString() }
+                : i
+            )
+          );
+        }
+      }
+
+      resetDragState();
+    };
+
+    if (dragState.isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [dragState, viewMode, zoomLevel, items, setDragState, resetDragState, addPendingChange, setItems]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isMac = navigator.platform.includes('Mac');
+      const cmdKey = isMac ? e.metaKey : e.ctrlKey;
+
+      if (cmdKey && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        if (canUndo()) undo();
+      } else if (cmdKey && e.key === 'z' && e.shiftKey) {
+        e.preventDefault();
+        if (canRedo()) redo();
+      } else if (cmdKey && e.key === 's') {
+        e.preventDefault();
+        if (pendingChanges.length > 0) {
+          openSyncModal();
+        }
+      } else if (e.key === 'Escape') {
+        if (dragState.isDragging) {
+          resetDragState();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [canUndo, canRedo, undo, redo, pendingChanges, openSyncModal, dragState, resetDragState]);
+
+  // Check if item has pending changes
+  const hasChanges = (itemId: string) => {
+    return pendingChanges.some(c => c.itemId === itemId);
+  };
+
+  // Get current dates for item (including pending changes)
+  const getCurrentDates = (item: RoadmapItem) => {
+    if (dragState.isDragging && dragState.itemId === item.id && dragState.currentStart && dragState.currentEnd) {
+      return {
+        startDate: dragState.currentStart.toISOString(),
+        dueDate: dragState.currentEnd.toISOString(),
+      };
+    }
+    return { startDate: item.startDate, dueDate: item.dueDate };
+  };
+
+  return (
+    <div className="flex h-screen bg-background">
+      {/* PI Selector Panel */}
+      <PISelectorPanel />
+      
+      {/* Main Content */}
+      <div className="flex flex-col flex-1 overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <div className="flex items-center gap-2">
+            <Star className="w-5 h-5 text-muted-foreground" />
+            <h1 className="text-xl font-semibold text-foreground">Live Roadmap</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Settings className="w-4 h-4" />
+              View Configuration
+            </Button>
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Filter className="w-4 h-4" />
+              Filter
+            </Button>
+            <Button variant="default" size="sm" className="gap-2">
+              <Upload className="w-4 h-4" />
+              Export
+            </Button>
+          </div>
         </div>
-        
-        <div className="flex items-center gap-2 ml-auto">
-          <button
-            onClick={() => setShowMilestones(!showMilestones)}
-            className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-muted/50 transition-colors ${
-              showMilestones ? 'text-primary' : 'text-muted-foreground'
-            }`}
-          >
-            <Diamond className="w-4 h-4" />
-            Milestones and objectives
-          </button>
-          <span className="text-sm text-muted-foreground">{items.length} items loaded</span>
+
+        {/* Toolbar */}
+        <div className="flex items-center gap-3 px-6 py-3 border-b border-border">
+          {/* Undo/Redo */}
+          <div className="flex border border-border rounded overflow-hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-9 h-9 rounded-none"
+              onClick={undo}
+              disabled={!canUndo()}
+              title="Undo (Ctrl+Z)"
+            >
+              <Undo className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-9 h-9 rounded-none border-l border-border"
+              onClick={redo}
+              disabled={!canRedo()}
+              title="Redo (Ctrl+Shift+Z)"
+            >
+              <Redo className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          <Select value="work">
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="work">Work</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value={groupBy} onValueChange={(value) => setGroupBy(value as GroupByMode)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Feature by..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="themes">Themes</SelectItem>
+              <SelectItem value="epics">Epics</SelectItem>
+              <SelectItem value="features">Features</SelectItem>
+              <div className="h-px bg-border my-1" />
+              <SelectItem value="epic_by_theme">Epic by Theme</SelectItem>
+              <SelectItem value="feature_by_epic">Feature by Epic</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <Select value="program">
+            <SelectTrigger className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="program">Program R...</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <div className="flex border border-border rounded-md overflow-hidden">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={`w-9 h-9 rounded-none ${viewMode === 'calendar' ? 'bg-primary/10 text-primary' : ''}`}
+              onClick={() => setViewMode('calendar')}
+            >
+              <Calendar className="w-4 h-4" />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className={`w-9 h-9 rounded-none border-l border-border ${viewMode === 'sprint' ? 'bg-primary/10 text-primary' : ''}`}
+              onClick={() => setViewMode('sprint')}
+            >
+              <List className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          <div className="flex items-center gap-2 ml-auto">
+            {/* Pending Changes Indicator */}
+            {pendingChanges.length > 0 && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-[hsl(var(--modified-dot))]/10 border border-[hsl(var(--modified-dot))] rounded text-[hsl(var(--modified-dot))] text-sm">
+                <span className="font-semibold">{pendingChanges.length} changes</span>
+                <Button
+                  size="sm"
+                  onClick={openSyncModal}
+                  className="h-7 gap-1.5"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Sync
+                </Button>
+              </div>
+            )}
+            
+            <button
+              onClick={() => setShowMilestones(!showMilestones)}
+              className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded hover:bg-muted/50 transition-colors ${
+                showMilestones ? 'text-primary' : 'text-muted-foreground'
+              }`}
+            >
+              <Diamond className="w-4 h-4" />
+              Milestones and objectives
+            </button>
+            <span className="text-sm text-muted-foreground">{items.length} items loaded</span>
+          </div>
         </div>
-      </div>
 
       {/* Zoom Controls */}
       <div className="flex items-center gap-3 px-6 py-3 bg-muted/30 border-b border-border">
@@ -611,25 +812,48 @@ export default function Roadmaps() {
 
             {/* Gantt Rows */}
             {items.map(item => {
+              const currentDates = getCurrentDates(item);
               const left = viewMode === 'calendar' 
-                ? getBarPosition(item.startDate, timelineStart) * zoomLevel
-                : getBarPositionSprint(item.startDate) * zoomLevel;
+                ? getBarPosition(currentDates.startDate, timelineStart) * zoomLevel
+                : getBarPositionSprint(currentDates.startDate) * zoomLevel;
               const width = viewMode === 'calendar'
-                ? getBarWidth(item.startDate, item.dueDate) * zoomLevel
-                : getBarWidthSprint(item.startDate, item.dueDate) * zoomLevel;
+                ? getBarWidth(currentDates.startDate, currentDates.dueDate) * zoomLevel
+                : getBarWidthSprint(currentDates.startDate, currentDates.dueDate) * zoomLevel;
+              
+              const isModified = hasChanges(item.id);
+              const isDraggingThis = dragState.isDragging && dragState.itemId === item.id;
               
               return (
                 <div key={item.id} className="relative h-10 border-b border-border/50">
                   <div
-                    className="absolute top-1 h-8 rounded flex items-center px-2 text-xs font-medium text-white cursor-pointer transition-shadow hover:shadow-lg hover:z-10 gap-2"
+                    className={`absolute top-1 h-8 rounded flex items-center px-2 text-xs font-medium text-white transition-shadow hover:z-10 gap-2 ${
+                      isDraggingThis ? 'opacity-80 shadow-2xl cursor-grabbing' : 'cursor-grab hover:shadow-lg'
+                    }`}
                     style={{
                       left,
                       width,
                       backgroundColor: getBarColor(item.state),
                     }}
-                    onMouseEnter={(e) => handleBarHover(item, e)}
-                    onMouseLeave={() => setHoveredItem(null)}
+                    onMouseDown={(e) => handleDragStart(e, item, 'move')}
+                    onMouseEnter={(e) => !dragState.isDragging && handleBarHover(item, e)}
+                    onMouseLeave={() => !dragState.isDragging && setHoveredItem(null)}
                   >
+                    {/* Modified indicator */}
+                    {isModified && (
+                      <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-[hsl(var(--modified-dot))] rounded-full" />
+                    )}
+                    
+                    {/* Left resize handle */}
+                    <div
+                      className="absolute left-0 top-0 bottom-0 w-2 cursor-ew-resize hover:bg-white/20 group"
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        handleDragStart(e, item, 'resize-left');
+                      }}
+                    >
+                      <div className="absolute left-0.5 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-white/60 rounded group-hover:bg-white/80" />
+                    </div>
+                    
                     <span className="font-semibold">{item.numericId}</span>
                     <span className="mx-0.5">-</span>
                     <span className="truncate flex-1">{item.title}</span>
@@ -638,7 +862,7 @@ export default function Roadmaps() {
                     {showMilestones && item.milestones && item.milestones.length > 0 && width > 200 && (
                       <div className="flex gap-0.5">
                         {item.milestones.slice(0, 4).map(m => (
-                          <span key={m.id} className={m.completed ? 'text-yellow-400' : 'text-yellow-200/50'}>
+                          <span key={m.id} className={m.completed ? 'text-[hsl(var(--milestone-star))]' : 'text-[hsl(var(--milestone-star))]/40'}>
                             ★
                           </span>
                         ))}
@@ -648,9 +872,9 @@ export default function Roadmaps() {
                     {/* Status pill */}
                     {item.status && width > 250 && (
                       <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                        item.status === 'on_track' ? 'bg-green-600' :
-                        item.status === 'at_risk' ? 'bg-orange-500' :
-                        'bg-red-600'
+                        item.status === 'on_track' ? 'bg-[hsl(var(--pill-on-track-bg))]' :
+                        item.status === 'at_risk' ? 'bg-[hsl(var(--pill-at-risk-bg))]' :
+                        'bg-[hsl(var(--pill-off-track-bg))]'
                       }`}>
                         {item.status === 'on_track' ? 'On Track' : item.status === 'at_risk' ? 'At Risk' : 'Off Track'}
                       </div>
@@ -672,8 +896,19 @@ export default function Roadmaps() {
                       </div>
                     )}
                     
+                    {/* Right resize handle */}
+                    <div
+                      className="absolute right-0 top-0 bottom-0 w-2 cursor-ew-resize hover:bg-white/20 group"
+                      onMouseDown={(e) => {
+                        e.stopPropagation();
+                        handleDragStart(e, item, 'resize-right');
+                      }}
+                    >
+                      <div className="absolute right-0.5 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-white/60 rounded group-hover:bg-white/80" />
+                    </div>
+                    
                     {/* End gear icon */}
-                    <Settings2 className="w-4 h-4 absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 hover:opacity-100 transition-opacity" />
+                    <Settings2 className="w-4 h-4 absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 hover:opacity-100 transition-opacity pointer-events-none" />
                   </div>
                 </div>
               );
@@ -710,6 +945,9 @@ export default function Roadmaps() {
           </div>
         </div>
       )}
+      
+      {/* Sync Modal */}
+      <SyncModal />
     </div>
   );
 }
