@@ -24,7 +24,23 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
   const [programId, setProgramId] = useState(feature?.program_id || '');
   const [piId, setPiId] = useState(feature?.pi_id || '');
   const [estimatePoints, setEstimatePoints] = useState(feature?.estimate_points || 0);
-  const [wsjfScore, setWsjfScore] = useState(feature?.wsjf_score || 0);
+  
+  // WSJF component fields (auto-calculate wsjf_score)
+  const [businessValue, setBusinessValue] = useState(feature?.business_value || 0);
+  const [timeCriticality, setTimeCriticality] = useState(feature?.time_criticality || 0);
+  const [riskReduction, setRiskReduction] = useState(feature?.risk_reduction || 0);
+  const [jobSize, setJobSize] = useState(feature?.job_size || 0);
+  
+  // Additional Jira Align fields
+  const [blocked, setBlocked] = useState(feature?.blocked || false);
+  const [blockedReason, setBlockedReason] = useState(feature?.blocked_reason || '');
+  const [acceptanceCriteria, setAcceptanceCriteria] = useState(feature?.acceptance_criteria || '');
+  const [notes, setNotes] = useState(feature?.notes || '');
+  
+  // Calculate WSJF score automatically
+  const calculatedWSJF = jobSize > 0 
+    ? ((businessValue + timeCriticality + riskReduction) / jobSize).toFixed(2)
+    : '0.00';
 
   const queryClient = useQueryClient();
 
@@ -65,7 +81,14 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
       setProgramId(feature?.program_id || '');
       setPiId(feature?.pi_id || '');
       setEstimatePoints(feature?.estimate_points || 0);
-      setWsjfScore(feature?.wsjf_score || 0);
+      setBusinessValue(feature?.business_value || 0);
+      setTimeCriticality(feature?.time_criticality || 0);
+      setRiskReduction(feature?.risk_reduction || 0);
+      setJobSize(feature?.job_size || 0);
+      setBlocked(feature?.blocked || false);
+      setBlockedReason(feature?.blocked_reason || '');
+      setAcceptanceCriteria(feature?.acceptance_criteria || '');
+      setNotes(feature?.notes || '');
     }
   }, [open, feature]);
 
@@ -109,7 +132,14 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
       program_id: programId,
       pi_id: piId || null,
       estimate_points: estimatePoints,
-      wsjf_score: wsjfScore,
+      business_value: businessValue,
+      time_criticality: timeCriticality,
+      risk_reduction: riskReduction,
+      job_size: jobSize,
+      blocked,
+      blocked_reason: blocked ? blockedReason : null,
+      acceptance_criteria: acceptanceCriteria || null,
+      notes: notes || null,
     });
   };
 
@@ -215,26 +245,117 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
               </Select>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="points">Estimate Points</Label>
-              <Input
-                id="points"
-                type="number"
-                value={estimatePoints}
-                onChange={(e) => setEstimatePoints(Number(e.target.value))}
-              />
-            </div>
-            <div>
-              <Label htmlFor="wsjf">WSJF Score</Label>
-              <Input
-                id="wsjf"
-                type="number"
-                value={wsjfScore}
-                onChange={(e) => setWsjfScore(Number(e.target.value))}
-              />
+          
+          {/* WSJF Components */}
+          <div>
+            <Label className="font-semibold">WSJF Components (0-100 each)</Label>
+            <p className="text-xs text-muted-foreground mb-3">
+              WSJF = (Business Value + Time Criticality + Risk Reduction) / Job Size = {calculatedWSJF}
+            </p>
+            <div className="grid grid-cols-4 gap-3">
+              <div>
+                <Label htmlFor="business-value" className="text-xs">Business Value</Label>
+                <Input
+                  id="business-value"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={businessValue}
+                  onChange={(e) => setBusinessValue(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="time-criticality" className="text-xs">Time Criticality</Label>
+                <Input
+                  id="time-criticality"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={timeCriticality}
+                  onChange={(e) => setTimeCriticality(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="risk-reduction" className="text-xs">Risk Reduction</Label>
+                <Input
+                  id="risk-reduction"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={riskReduction}
+                  onChange={(e) => setRiskReduction(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <Label htmlFor="job-size" className="text-xs">Job Size</Label>
+                <Input
+                  id="job-size"
+                  type="number"
+                  min="0"
+                  max="100"
+                  value={jobSize}
+                  onChange={(e) => setJobSize(Number(e.target.value))}
+                />
+              </div>
             </div>
           </div>
+          
+          <div>
+            <Label htmlFor="points">Estimate Points</Label>
+            <Input
+              id="points"
+              type="number"
+              value={estimatePoints}
+              onChange={(e) => setEstimatePoints(Number(e.target.value))}
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="acceptance">Acceptance Criteria</Label>
+            <Textarea
+              id="acceptance"
+              value={acceptanceCriteria}
+              onChange={(e) => setAcceptanceCriteria(e.target.value)}
+              rows={2}
+              placeholder="Define acceptance criteria..."
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={2}
+              placeholder="Additional notes..."
+            />
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <input
+              id="blocked"
+              type="checkbox"
+              checked={blocked}
+              onChange={(e) => setBlocked(e.target.checked)}
+              className="h-4 w-4"
+            />
+            <Label htmlFor="blocked" className="cursor-pointer">Blocked</Label>
+          </div>
+          
+          {blocked && (
+            <div>
+              <Label htmlFor="blocked-reason">Blocking Reason *</Label>
+              <Textarea
+                id="blocked-reason"
+                value={blockedReason}
+                onChange={(e) => setBlockedReason(e.target.value)}
+                rows={2}
+                placeholder="Why is this feature blocked?"
+                required={blocked}
+              />
+            </div>
+          )}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel

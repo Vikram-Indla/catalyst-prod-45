@@ -1,20 +1,37 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigation } from '@/contexts/NavigationContext';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { HealthBadge } from '@/components/shared/HealthBadge';
+import { WSJFBadge } from '@/components/shared/WSJFBadge';
 import { PISelector } from '@/components/shared/PISelector';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Calendar, Users, TrendingUp } from 'lucide-react';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+
+/**
+ * Program Board for PI Planning
+ * Source: https://help.jiraalign.com/hc/en-us/articles/115005049268-Program-board
+ * Source: https://scaledagileframework.com/program-board/
+ * 
+ * Displays features organized by iterations (columns) and teams (optional swimlanes)
+ * Supports drag-drop for feature planning, dependency visualization, and risk flagging
+ */
 
 export default function ProgramBoard() {
-  const [selectedPIId, setSelectedPIId] = useState<string[]>([]);
-  const [selectedProgramId, setSelectedProgramId] = useState<string>('');
+  const queryClient = useQueryClient();
+  const { selectedProgramId, setSelectedProgramId, selectedPIIds, setSelectedPIIds } = useNavigation();
+  
+  // Local state for board configuration
   const [swimlaneByTeam, setSwimlaneByTeam] = useState(true);
+  const [showUnassigned, setShowUnassigned] = useState(true);
 
   const { data: programs } = useQuery({
     queryKey: ['programs'],
@@ -24,20 +41,27 @@ export default function ProgramBoard() {
       return data;
     },
   });
+  
+  // Initialize from navigation context
+  useEffect(() => {
+    if (!selectedProgramId && programs?.[0]) {
+      setSelectedProgramId(programs[0].id);
+    }
+  }, [programs, selectedProgramId, setSelectedProgramId]);
 
   const { data: iterations } = useQuery({
-    queryKey: ['iterations', selectedPIId],
+    queryKey: ['iterations', selectedPIIds],
     queryFn: async () => {
-      if (!selectedPIId.length) return [];
+      if (!selectedPIIds.length) return [];
       const { data, error } = await supabase
         .from('iterations')
         .select('*')
-        .in('pi_id', selectedPIId)
+        .in('pi_id', selectedPIIds)
         .order('start_date');
       if (error) throw error;
       return data;
     },
-    enabled: selectedPIId.length > 0,
+    enabled: selectedPIIds.length > 0,
   });
 
   const { data: teams } = useQuery({
@@ -56,18 +80,18 @@ export default function ProgramBoard() {
   });
 
   const { data: features } = useQuery({
-    queryKey: ['features', selectedProgramId, selectedPIId],
+    queryKey: ['features', selectedProgramId, selectedPIIds],
     queryFn: async () => {
-      if (!selectedProgramId || !selectedPIId.length) return [];
+      if (!selectedProgramId || !selectedPIIds.length) return [];
       const { data, error } = await supabase
         .from('features')
-        .select('*, epics(name)')
+        .select('*, epics(name), teams(name)')
         .eq('program_id', selectedProgramId)
-        .in('pi_id', selectedPIId);
+        .in('pi_id', selectedPIIds);
       if (error) throw error;
       return data;
     },
-    enabled: !!selectedProgramId && selectedPIId.length > 0,
+    enabled: !!selectedProgramId && selectedPIIds.length > 0,
   });
 
   const { data: dependencies } = useQuery({
@@ -84,25 +108,58 @@ export default function ProgramBoard() {
     enabled: !!selectedProgramId,
   });
 
+  // Mutation for updating feature iteration assignment
+  const updateFeatureMutation = useMutation({
+    mutationFn: async ({ featureId, iterationId }: { featureId: string; iterationId: string }) => {
+      const { error } = await supabase
+        .from('features')
+        .update({ iteration_id: iterationId })
+        .eq('id', featureId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      toast.success('Feature moved successfully');
+    },
+    onError: () => {
+      toast.error('Failed to move feature');
+    },
+  });
+  
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
 
     const featureId = result.draggableId;
-    const newIterationId = result.destination.droppableId;
+    const newIterationId = result.destination.droppableId === 'unassigned' 
+      ? null 
+      : result.destination.droppableId;
 
-    await supabase
-      .from('features')
-      .update({ iteration_id: newIterationId })
-      .eq('id', featureId);
+    updateFeatureMutation.mutate({ 
+      featureId, 
+      iterationId: newIterationId as string 
+    });
   };
 
-  const getFeaturesByIteration = (iterationId: string, teamId?: string) => {
+  const getFeaturesByIteration = (iterationId: string | null, teamId?: string) => {
     return features?.filter(f => {
-      const matchesIteration = f.iteration_id === iterationId;
+      const matchesIteration = iterationId === null 
+        ? !f.iteration_id 
+        : f.iteration_id === iterationId;
+      
       if (!swimlaneByTeam || !teamId) return matchesIteration;
-      // In real scenario, features would have team_id
-      return matchesIteration;
+      
+      return matchesIteration && f.team_id === teamId;
     }) || [];
+  };
+  
+  // Calculate iteration metrics
+  const getIterationMetrics = (iterationId: string) => {
+    const iterationFeatures = getFeaturesByIteration(iterationId);
+    const totalPoints = iterationFeatures.reduce((sum, f) => sum + (f.estimate_points || 0), 0);
+    const blocked = iterationFeatures.filter(f => f.blocked).length;
+    const risks = iterationFeatures.filter(f => f.health === 'red').length;
+    
+    return { totalPoints, blocked, risks, count: iterationFeatures.length };
   };
 
   return (
@@ -138,10 +195,19 @@ export default function ProgramBoard() {
           </SelectContent>
         </Select>
 
-        <PISelector value={selectedPIId} onChange={setSelectedPIId} />
+        <PISelector value={selectedPIIds} onChange={setSelectedPIIds} />
+        
+        <div className="ml-auto flex items-center gap-2">
+          <Switch
+            id="show-unassigned"
+            checked={showUnassigned}
+            onCheckedChange={setShowUnassigned}
+          />
+          <Label htmlFor="show-unassigned">Show Unassigned</Label>
+        </div>
       </div>
 
-      {selectedProgramId && selectedPIId.length > 0 && (
+      {selectedProgramId && selectedPIIds.length > 0 && (
         <DragDropContext onDragEnd={handleDragEnd}>
           <div className="space-y-6">
             {swimlaneByTeam ? (
@@ -155,9 +221,45 @@ export default function ProgramBoard() {
                           <Card
                             ref={provided.innerRef}
                             {...provided.droppableProps}
-                            className="p-4 min-h-[200px]"
+                            className="p-4 min-h-[200px] border-2"
                           >
-                            <h4 className="font-medium mb-2">{iteration.name}</h4>
+                            <div className="space-y-2 mb-3">
+                              <div className="flex items-center justify-between">
+                                <h4 className="font-medium">{iteration.name}</h4>
+                                {iteration.start_date && (
+                                  <Badge variant="outline" className="text-xs">
+                                    <Calendar className="h-3 w-3 mr-1" />
+                                    {format(new Date(iteration.start_date), 'MMM d')}
+                                  </Badge>
+                                )}
+                              </div>
+                              {(() => {
+                                const metrics = getIterationMetrics(iteration.id);
+                                return (
+                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                    <span>{metrics.count} features</span>
+                                    <span>•</span>
+                                    <span>{metrics.totalPoints} pts</span>
+                                    {metrics.blocked > 0 && (
+                                      <>
+                                        <span>•</span>
+                                        <Badge variant="destructive" className="h-4 px-1">
+                                          {metrics.blocked} blocked
+                                        </Badge>
+                                      </>
+                                    )}
+                                    {metrics.risks > 0 && (
+                                      <>
+                                        <span>•</span>
+                                        <Badge variant="destructive" className="h-4 px-1">
+                                          {metrics.risks} at risk
+                                        </Badge>
+                                      </>
+                                    )}
+                                  </div>
+                                );
+                              })()}
+                            </div>
                             <div className="space-y-2">
                               {getFeaturesByIteration(iteration.id, team.id).map((feature, index) => (
                                 <Draggable key={feature.id} draggableId={feature.id} index={index}>
@@ -166,20 +268,36 @@ export default function ProgramBoard() {
                                       ref={provided.innerRef}
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
-                                      className="p-3 bg-card border rounded-lg space-y-1"
+                                      className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
+                                        feature.blocked ? 'border-destructive border-2' : ''
+                                      }`}
                                     >
                                       <div className="flex items-start justify-between gap-2">
-                                        <span className="text-sm font-medium line-clamp-2">{feature.name}</span>
-                                        <HealthBadge health={feature.health} />
+                                        <span className="text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
+                                        <div className="flex items-center gap-1">
+                                          {feature.blocked && (
+                                            <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                                          )}
+                                          <HealthBadge health={feature.health} />
+                                        </div>
                                       </div>
-                                      <div className="flex items-center gap-2">
+                                      <div className="flex items-center gap-2 flex-wrap">
                                         <Badge variant="outline" className="text-xs">
                                           {feature.epics?.name}
                                         </Badge>
                                         {feature.estimate_points && (
-                                          <span className="text-xs text-muted-foreground">
+                                          <Badge variant="secondary" className="text-xs">
                                             {feature.estimate_points} pts
-                                          </span>
+                                          </Badge>
+                                        )}
+                                        {feature.wsjf_score && (
+                                          <WSJFBadge 
+                                            score={feature.wsjf_score}
+                                            businessValue={feature.business_value}
+                                            timeCriticality={feature.time_criticality}
+                                            riskReduction={feature.risk_reduction}
+                                            jobSize={feature.job_size}
+                                          />
                                         )}
                                       </div>
                                     </div>
@@ -203,9 +321,37 @@ export default function ProgramBoard() {
                       <Card
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className="p-4 min-h-[400px]"
+                        className="p-4 min-h-[400px] border-2"
                       >
-                        <h4 className="font-medium mb-4">{iteration.name}</h4>
+                        <div className="space-y-2 mb-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium">{iteration.name}</h4>
+                            {iteration.start_date && (
+                              <Badge variant="outline" className="text-xs">
+                                <Calendar className="h-3 w-3 mr-1" />
+                                {format(new Date(iteration.start_date), 'MMM d')}
+                              </Badge>
+                            )}
+                          </div>
+                          {(() => {
+                            const metrics = getIterationMetrics(iteration.id);
+                            return (
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                <span>{metrics.count} features</span>
+                                <span>•</span>
+                                <span>{metrics.totalPoints} pts</span>
+                                {metrics.blocked > 0 && (
+                                  <>
+                                    <span>•</span>
+                                    <Badge variant="destructive" className="h-4 px-1">
+                                      {metrics.blocked} blocked
+                                    </Badge>
+                                  </>
+                                )}
+                              </div>
+                            );
+                          })()}
+                        </div>
                         <div className="space-y-2">
                           {getFeaturesByIteration(iteration.id).map((feature, index) => (
                             <Draggable key={feature.id} draggableId={feature.id} index={index}>
@@ -214,20 +360,42 @@ export default function ProgramBoard() {
                                   ref={provided.innerRef}
                                   {...provided.draggableProps}
                                   {...provided.dragHandleProps}
-                                  className="p-3 bg-card border rounded-lg space-y-1"
+                                  className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
+                                    feature.blocked ? 'border-destructive border-2' : ''
+                                  }`}
                                 >
                                   <div className="flex items-start justify-between gap-2">
-                                    <span className="text-sm font-medium line-clamp-2">{feature.name}</span>
-                                    <HealthBadge health={feature.health} />
+                                    <span className="text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
+                                    <div className="flex items-center gap-1">
+                                      {feature.blocked && (
+                                        <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                                      )}
+                                      <HealthBadge health={feature.health} />
+                                    </div>
                                   </div>
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-2 flex-wrap">
                                     <Badge variant="outline" className="text-xs">
                                       {feature.epics?.name}
                                     </Badge>
+                                    {feature.teams && (
+                                      <Badge variant="secondary" className="text-xs gap-1">
+                                        <Users className="h-3 w-3" />
+                                        {feature.teams.name}
+                                      </Badge>
+                                    )}
                                     {feature.estimate_points && (
-                                      <span className="text-xs text-muted-foreground">
+                                      <Badge variant="secondary" className="text-xs">
                                         {feature.estimate_points} pts
-                                      </span>
+                                      </Badge>
+                                    )}
+                                    {feature.wsjf_score && (
+                                      <WSJFBadge 
+                                        score={feature.wsjf_score}
+                                        businessValue={feature.business_value}
+                                        timeCriticality={feature.time_criticality}
+                                        riskReduction={feature.risk_reduction}
+                                        jobSize={feature.job_size}
+                                      />
                                     )}
                                   </div>
                                 </div>
@@ -240,6 +408,69 @@ export default function ProgramBoard() {
                     )}
                   </Droppable>
                 ))}
+              </div>
+            )}
+            
+            {/* Unassigned Features Column */}
+            {showUnassigned && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold mb-3">Unassigned Features</h3>
+                <Droppable droppableId="unassigned">
+                  {(provided) => (
+                    <Card
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className="p-4 min-h-[200px] border-dashed border-2"
+                    >
+                      <div className="space-y-2">
+                        {getFeaturesByIteration(null).map((feature, index) => (
+                          <Draggable key={feature.id} draggableId={feature.id} index={index}>
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
+                                  feature.blocked ? 'border-destructive border-2' : ''
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-2">
+                                  <span className="text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
+                                  <div className="flex items-center gap-1">
+                                    {feature.blocked && (
+                                      <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                                    )}
+                                    <HealthBadge health={feature.health} />
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <Badge variant="outline" className="text-xs">
+                                    {feature.epics?.name}
+                                  </Badge>
+                                  {feature.estimate_points && (
+                                    <Badge variant="secondary" className="text-xs">
+                                      {feature.estimate_points} pts
+                                    </Badge>
+                                  )}
+                                  {feature.wsjf_score && (
+                                    <WSJFBadge 
+                                      score={feature.wsjf_score}
+                                      businessValue={feature.business_value}
+                                      timeCriticality={feature.time_criticality}
+                                      riskReduction={feature.risk_reduction}
+                                      jobSize={feature.job_size}
+                                    />
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </div>
+                    </Card>
+                  )}
+                </Droppable>
               </div>
             )}
 
