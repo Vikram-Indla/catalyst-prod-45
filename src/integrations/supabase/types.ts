@@ -118,31 +118,40 @@ export type Database = {
       }
       capacity_allocations: {
         Row: {
+          actual_capacity_points: number | null
           capacity_points: number | null
           created_at: string | null
           id: string
           iteration_id: string
+          load_factor: number | null
           locked_baseline: boolean | null
           team_id: string
           updated_at: string | null
+          velocity_baseline: number | null
         }
         Insert: {
+          actual_capacity_points?: number | null
           capacity_points?: number | null
           created_at?: string | null
           id?: string
           iteration_id: string
+          load_factor?: number | null
           locked_baseline?: boolean | null
           team_id: string
           updated_at?: string | null
+          velocity_baseline?: number | null
         }
         Update: {
+          actual_capacity_points?: number | null
           capacity_points?: number | null
           created_at?: string | null
           id?: string
           iteration_id?: string
+          load_factor?: number | null
           locked_baseline?: boolean | null
           team_id?: string
           updated_at?: string | null
+          velocity_baseline?: number | null
         }
         Relationships: [
           {
@@ -970,6 +979,63 @@ export type Database = {
         }
         Relationships: []
       }
+      pi_objectives: {
+        Row: {
+          actual_bv: number | null
+          committed: boolean
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          pi_id: string
+          planned_bv: number | null
+          program_id: string
+          stretch: boolean
+          updated_at: string | null
+        }
+        Insert: {
+          actual_bv?: number | null
+          committed?: boolean
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          pi_id: string
+          planned_bv?: number | null
+          program_id: string
+          stretch?: boolean
+          updated_at?: string | null
+        }
+        Update: {
+          actual_bv?: number | null
+          committed?: boolean
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          pi_id?: string
+          planned_bv?: number | null
+          program_id?: string
+          stretch?: boolean
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pi_objectives_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pi_objectives_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_members: {
         Row: {
           created_at: string | null
@@ -1402,6 +1468,96 @@ export type Database = {
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_service_allocations: {
+        Row: {
+          allocated_points: number | null
+          created_at: string | null
+          id: string
+          iteration_id: string
+          shared_service_id: string
+          team_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          allocated_points?: number | null
+          created_at?: string | null
+          id?: string
+          iteration_id: string
+          shared_service_id: string
+          team_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          allocated_points?: number | null
+          created_at?: string | null
+          id?: string
+          iteration_id?: string
+          shared_service_id?: string
+          team_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_service_allocations_iteration_id_fkey"
+            columns: ["iteration_id"]
+            isOneToOne: false
+            referencedRelation: "iterations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_service_allocations_shared_service_id_fkey"
+            columns: ["shared_service_id"]
+            isOneToOne: false
+            referencedRelation: "shared_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shared_service_allocations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shared_services: {
+        Row: {
+          allocation_type: string | null
+          capacity_points: number | null
+          created_at: string | null
+          id: string
+          name: string
+          portfolio_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          allocation_type?: string | null
+          capacity_points?: number | null
+          created_at?: string | null
+          id?: string
+          name: string
+          portfolio_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          allocation_type?: string | null
+          capacity_points?: number | null
+          created_at?: string | null
+          id?: string
+          name?: string
+          portfolio_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shared_services_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
             referencedColumns: ["id"]
           },
         ]
