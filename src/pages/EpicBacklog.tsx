@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { exportToCSV } from '@/lib/exportUtils';
+import { useEpicBacklogPreferences } from '@/hooks/useEpicBacklogPreferences';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -20,6 +21,8 @@ import { WSJFPrioritizationDialog } from '@/components/epic-backlog/WSJFPrioriti
 import { Search, Download, Settings, Filter, TrendingUp, Layers, ArrowUpDown } from 'lucide-react';
 
 export default function EpicBacklog() {
+  const { preferences, isLoading: prefsLoading, updatePreferences } = useEpicBacklogPreferences();
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPortfolio, setSelectedPortfolio] = useState<string>('');
   const [selectedProgram, setSelectedProgram] = useState<string>('');
@@ -27,6 +30,9 @@ export default function EpicBacklog() {
   const [selectedEpic, setSelectedEpic] = useState<string | null>(null);
   const [view, setView] = useState<'list' | 'kanban'>('list');
   const [kanbanSubview, setKanbanSubview] = useState<'state' | 'process' | 'column'>('state');
+  const [selectedColumnsMain, setSelectedColumnsMain] = useState<string[]>([]);
+  const [selectedColumnsSmall, setSelectedColumnsSmall] = useState<string[]>([]);
+  const [labelsDisplay, setLabelsDisplay] = useState<'program' | 'parent'>('program');
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [showUnassigned, setShowUnassigned] = useState(false);
@@ -35,6 +41,51 @@ export default function EpicBacklog() {
   const [wsjfDialogOpen, setWsjfDialogOpen] = useState(false);
   const [selectedEpicsForAction, setSelectedEpicsForAction] = useState<string[]>([]);
   const { toast } = useToast();
+
+  // Load preferences on mount
+  useEffect(() => {
+    if (preferences && !prefsLoading) {
+      setView(preferences.last_view || 'list');
+      setKanbanSubview(preferences.last_kanban_subview || 'state');
+      setSelectedColumnsMain(preferences.selected_columns_main || []);
+      setSelectedColumnsSmall(preferences.selected_columns_small || []);
+      setLabelsDisplay(preferences.labels_display || 'program');
+    }
+  }, [preferences, prefsLoading]);
+
+  // Save view preference when changed
+  useEffect(() => {
+    if (!prefsLoading && preferences) {
+      updatePreferences({ last_view: view });
+    }
+  }, [view]);
+
+  // Save kanban subview preference when changed
+  useEffect(() => {
+    if (!prefsLoading && preferences) {
+      updatePreferences({ last_kanban_subview: kanbanSubview });
+    }
+  }, [kanbanSubview]);
+
+  // Save columns preferences when changed
+  useEffect(() => {
+    if (!prefsLoading && preferences && selectedColumnsMain.length > 0) {
+      updatePreferences({ selected_columns_main: selectedColumnsMain });
+    }
+  }, [selectedColumnsMain]);
+
+  useEffect(() => {
+    if (!prefsLoading && preferences && selectedColumnsSmall.length > 0) {
+      updatePreferences({ selected_columns_small: selectedColumnsSmall });
+    }
+  }, [selectedColumnsSmall]);
+
+  // Save labels display preference when changed
+  useEffect(() => {
+    if (!prefsLoading && preferences) {
+      updatePreferences({ labels_display: labelsDisplay });
+    }
+  }, [labelsDisplay]);
 
   // Fetch portfolios
   const { data: portfolios } = useQuery({
@@ -309,7 +360,16 @@ export default function EpicBacklog() {
       )}
 
       {/* Dialogs */}
-      <EpicColumnsDialog open={columnsDialogOpen} onOpenChange={setColumnsDialogOpen} />
+      <EpicColumnsDialog 
+        open={columnsDialogOpen} 
+        onOpenChange={setColumnsDialogOpen}
+        selectedColumnsMain={selectedColumnsMain}
+        selectedColumnsSmall={selectedColumnsSmall}
+        onColumnsChange={(main, small) => {
+          setSelectedColumnsMain(main);
+          setSelectedColumnsSmall(small);
+        }}
+      />
       <EpicFiltersDialog open={filtersDialogOpen} onOpenChange={setFiltersDialogOpen} />
       
       {/* Slideouts and Action Dialogs */}
