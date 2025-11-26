@@ -8,11 +8,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { ReleaseDialog } from '@/components/forms/ReleaseDialog';
 import { format } from 'date-fns';
-import { Plus } from 'lucide-react';
+import { Plus, CheckCircle, AlertCircle } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 
 export default function Releases() {
@@ -40,6 +42,44 @@ export default function Releases() {
     },
   });
 
+  const { data: releaseFeatures } = useQuery({
+    queryKey: ['release-features', selectedRelease?.id],
+    queryFn: async () => {
+      if (!selectedRelease) return [];
+      const { data, error } = await supabase
+        .from('release_feature_links')
+        .select('*, features(name, status, estimate_points)')
+        .eq('release_id', selectedRelease.id);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedRelease,
+  });
+
+  const { data: releaseStories } = useQuery({
+    queryKey: ['release-stories', selectedRelease?.id],
+    queryFn: async () => {
+      if (!selectedRelease) return [];
+      const { data, error } = await supabase
+        .from('release_story_links')
+        .select('*, stories(name, status, estimate_points)')
+        .eq('release_id', selectedRelease.id);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!selectedRelease,
+  });
+
+  const calculateReadiness = () => {
+    if (!releaseFeatures?.length) return { ready: 0, total: 0, pct: 0 };
+    
+    const total = releaseFeatures.length;
+    const ready = releaseFeatures.filter(rf => rf.features?.status === 'done').length;
+    const pct = Math.round((ready / total) * 100);
+    
+    return { ready, total, pct };
+  };
+
   const handleRowClick = (release: any) => {
     setSelectedRelease(release);
     setDetailsOpen(true);
@@ -60,12 +100,14 @@ export default function Releases() {
     setDialogOpen(true);
   };
 
+  const readiness = calculateReadiness();
+
   return (
     <div className="p-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Releases</h1>
-          <p className="text-muted-foreground">Manage release planning and tracking</p>
+          <p className="text-muted-foreground">Release management with feature/story tracking</p>
         </div>
         <PermissionGuard requiredRole="team_lead" showMessage={false}>
           <Button onClick={() => { setEditingReleaseId(undefined); setDialogOpen(true); }}>
@@ -99,12 +141,11 @@ export default function Releases() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-12">
-              <Checkbox />
-            </TableHead>
+            <TableHead className="w-12"><Checkbox /></TableHead>
             <TableHead>Release</TableHead>
             <TableHead>Vehicle</TableHead>
             <TableHead>Target Date</TableHead>
+            <TableHead>Features</TableHead>
             <TableHead>Readiness</TableHead>
             <TableHead>Status</TableHead>
           </TableRow>
@@ -133,6 +174,11 @@ export default function Releases() {
               </TableCell>
               <TableCell>
                 {release.target_date ? format(new Date(release.target_date), 'MMM d, yyyy') : '-'}
+              </TableCell>
+              <TableCell>
+                <Badge variant="outline">
+                  {releaseFeatures?.length || 0} features
+                </Badge>
               </TableCell>
               <TableCell>
                 <div className="space-y-1 min-w-[120px]">
@@ -187,9 +233,9 @@ export default function Releases() {
                 </div>
                 <div>
                   <label className="text-sm font-medium">Readiness</label>
-                  <Progress value={selectedRelease.readiness_pct || 0} className="mt-2" />
+                  <Progress value={readiness.pct} className="mt-2" />
                   <p className="text-sm text-muted-foreground mt-1">
-                    {selectedRelease.readiness_pct || 0}% complete
+                    {readiness.ready} of {readiness.total} features completed ({readiness.pct}%)
                   </p>
                 </div>
                 <PermissionGuard requiredRole="team_lead" showMessage={false}>
@@ -197,6 +243,69 @@ export default function Releases() {
                     Edit Release
                   </Button>
                 </PermissionGuard>
+              </div>
+            ),
+          },
+          {
+            id: 'features',
+            label: 'Features',
+            content: (
+              <div className="space-y-3">
+                {releaseFeatures?.map((rf) => (
+                  <div key={rf.id} className="p-3 border rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{rf.features?.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {rf.features?.estimate_points} points
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {rf.features?.status === 'done' ? (
+                          <CheckCircle className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <AlertCircle className="h-5 w-5 text-amber-500" />
+                        )}
+                        <Badge variant="outline" className="capitalize">
+                          {rf.features?.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {(!releaseFeatures || releaseFeatures.length === 0) && (
+                  <p className="text-center text-muted-foreground py-4">
+                    No features linked to this release
+                  </p>
+                )}
+              </div>
+            ),
+          },
+          {
+            id: 'stories',
+            label: 'Stories',
+            content: (
+              <div className="space-y-3">
+                {releaseStories?.map((rs) => (
+                  <div key={rs.id} className="p-3 border rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{rs.stories?.name}</div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {rs.stories?.estimate_points} points
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="capitalize">
+                        {rs.stories?.status}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+                {(!releaseStories || releaseStories.length === 0) && (
+                  <p className="text-center text-muted-foreground py-4">
+                    No stories linked to this release
+                  </p>
+                )}
               </div>
             ),
           },
