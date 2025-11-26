@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,8 @@ interface ForecastGridProps {
 export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridProps) {
   const queryClient = useQueryClient();
   const [orderedWorkItems, setOrderedWorkItems] = useState<any[]>([]);
+  const [pendingUpdates, setPendingUpdates] = useState<Record<string, string>>({});
+  const saveTimeoutRef = useRef<Record<string, NodeJS.Timeout>>({});
 
   // Fetch assignments to determine which cells should be enabled
   const { data: assignments = [] } = useQuery({
@@ -185,24 +187,59 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
     },
   });
 
-  const handleEstimateChange = (
+  // Debounced save on blur
+  const handleInputChange = useCallback((key: string, value: string) => {
+    setPendingUpdates(prev => ({ ...prev, [key]: value }));
+  }, []);
+
+  const handleInputBlur = useCallback((
     workItemId: string,
     programId: string | undefined,
     teamId: string | undefined,
-    value: string
+    key: string
   ) => {
-    const estimate = parseFloat(value) || 0;
-    
-    updateForecastMutation.mutate({
-      workItemId,
-      workItemType: workItemLevel.slice(0, -1), // Remove 's' from plural
-      programId,
-      teamId,
-      estimate,
-    });
-  };
+    const value = pendingUpdates[key];
+    if (value === undefined) return;
 
-  const getForecastValue = (workItemId: string, programId?: string, teamId?: string) => {
+    // Clear any existing timeout for this input
+    if (saveTimeoutRef.current[key]) {
+      clearTimeout(saveTimeoutRef.current[key]);
+    }
+
+    // Debounce the save by 300ms
+    saveTimeoutRef.current[key] = setTimeout(() => {
+      const estimate = parseFloat(value) || 0;
+      
+      updateForecastMutation.mutate({
+        workItemId,
+        workItemType: workItemLevel.slice(0, -1),
+        programId,
+        teamId,
+        estimate,
+      });
+
+      // Clear the pending update
+      setPendingUpdates(prev => {
+        const next = { ...prev };
+        delete next[key];
+        return next;
+      });
+    }, 300);
+  }, [pendingUpdates, workItemLevel, updateForecastMutation]);
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      Object.values(saveTimeoutRef.current).forEach(timeout => clearTimeout(timeout));
+    };
+  }, []);
+
+  const getForecastValue = (workItemId: string, programId?: string, teamId?: string, key?: string) => {
+    // Check pending updates first
+    if (key && pendingUpdates[key] !== undefined) {
+      return pendingUpdates[key];
+    }
+    
     const entry = forecasts.find(f =>
       f.work_item_id === workItemId &&
       f.program_id === programId &&
@@ -227,7 +264,18 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
   const isOverCapacity = (programId?: string, teamId?: string) => {
     const total = calculateTotalForContext(programId, teamId);
     const available = getAvailableCapacity(programId, teamId);
-    return total > available;
+    return total > available && available > 0;
+  };
+
+  // Check if a work item row is over capacity (any cell red)
+  const isRowOverCapacity = (workItemId: string) => {
+    return capacities.some(capacity => {
+      const total = calculateTotalForContext(capacity.program_id, capacity.team_id);
+      const available = getAvailableCapacity(capacity.program_id, capacity.team_id);
+      const itemValue = getForecastValue(workItemId, capacity.program_id, capacity.team_id);
+      const numValue = typeof itemValue === 'string' ? parseFloat(itemValue) || 0 : itemValue;
+      return numValue > 0 && total > available && available > 0;
+    });
   };
 
   // Rank mutation
@@ -385,7 +433,8 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                               {...provided.draggableProps}
                               className={cn(
                                 "border-b hover:bg-muted/30 transition-colors group",
-                                snapshot.isDragging && "bg-muted/50 shadow-lg"
+                                snapshot.isDragging && "bg-muted/50 shadow-lg",
+                                isRowOverCapacity(item.id as string) && "bg-destructive/10 hover:bg-destructive/20"
                               )}
                             >
                               {/* Zone 1: Drag handle + Sticky left */}
@@ -431,43 +480,46 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
                                   : '0%'}
                               </td>
                 
-                {/* Zone 3: Estimate inputs */}
-                {capacities.map((capacity, idx) => {
-                  const value = getForecastValue(item.id as string, capacity.program_id, capacity.team_id);
-                  const isAssigned = workItems.some(wi => 
-                    wi.id === item.id && 
-                    assignments.some(a => 
-                      a.work_item_id === wi.id &&
-                      ((capacity.program_id && a.program_id === capacity.program_id && !a.team_id) ||
-                       (capacity.team_id && a.team_id === capacity.team_id))
-                    )
-                  );
-                  
-                  return (
-                    <td key={capacity.id} className={cn(
-                      "p-2",
-                      idx < capacities.length - 1 && "border-r"
-                    )}>
-                      <Input
-                        type="number"
-                        min="0"
-                        step="0.5"
-                        value={value || ''}
-                        onChange={(e) => handleEstimateChange(
-                          item.id as string,
-                          capacity.program_id,
-                          capacity.team_id,
-                          e.target.value
-                        )}
-                        disabled={!isAssigned}
-                        className={cn(
-                          "w-full text-right h-9 text-sm",
-                          !isAssigned && "bg-muted/30 cursor-not-allowed"
-                        )}
-                        placeholder={isAssigned ? "0" : "-"}
-                      />
-                    </td>
-                              );
+                 {/* Zone 3: Estimate inputs */}
+                 {capacities.map((capacity, idx) => {
+                   const inputKey = `${item.id}-${capacity.program_id || 'null'}-${capacity.team_id || 'null'}`;
+                   const value = getForecastValue(item.id as string, capacity.program_id, capacity.team_id, inputKey);
+                   const isAssigned = workItems.some(wi => 
+                     wi.id === item.id && 
+                     assignments.some(a => 
+                       a.work_item_id === wi.id &&
+                       ((capacity.program_id && a.program_id === capacity.program_id && !a.team_id) ||
+                        (capacity.team_id && a.team_id === capacity.team_id))
+                     )
+                   );
+                    
+                    return (
+                      <td key={capacity.id} className={cn(
+                        "p-2",
+                        idx < capacities.length - 1 && "border-r"
+                      )}>
+                        <Input
+                          type="number"
+                         min="0"
+                         step="0.5"
+                         value={value || ''}
+                         onChange={(e) => handleInputChange(inputKey, e.target.value)}
+                         onBlur={() => handleInputBlur(
+                           item.id as string,
+                           capacity.program_id,
+                           capacity.team_id,
+                           inputKey
+                         )}
+                         disabled={!isAssigned}
+                         className={cn(
+                           "h-8 text-right text-sm",
+                           !isAssigned && "bg-muted/50 cursor-not-allowed",
+                           isOverCapacity(capacity.program_id, capacity.team_id) && "bg-destructive/20 border-destructive"
+                         )}
+                         placeholder={isAssigned ? "0" : "-"}
+                       />
+                     </td>
+                               );
                             })}
                             </tr>
                           </ForecastContextMenu>
