@@ -4,7 +4,6 @@ import {
   ChevronRight, 
   Settings,
   LayoutDashboard,
-  Diamond,
   List,
   Map,
   GitBranch,
@@ -41,7 +40,6 @@ type MenuItem =
 
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
-  { id: 'epics', label: 'Epics', icon: Diamond, path: '/backlog/epics' },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps' },
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree' },
