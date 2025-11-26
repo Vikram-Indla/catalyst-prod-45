@@ -2,7 +2,6 @@ import {
   Layers, Diamond, Box, Zap, BookOpen, AlertCircle, CheckSquare,
   Target, GitBranch, Lightbulb, AlertTriangle, Shield, Calendar, Package, Award
 } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 const workItems = [
   { key: 'themes', label: 'Themes', icon: Layers, color: 'bg-emerald-500' },
@@ -39,48 +38,46 @@ export function ItemsDropdown({ onClose }: ItemsDropdownProps) {
 
   return (
     <div 
-      className="absolute top-full right-0 mt-2 w-72 bg-card border border-border rounded-lg shadow-xl z-[100]"
+      className="absolute top-full right-0 mt-2 w-72 bg-card border border-border rounded-lg shadow-xl z-[100] max-h-[calc(100vh-5rem)] overflow-y-auto"
       role="menu"
       aria-label="Work items menu"
       onClick={(e) => e.stopPropagation()}
     >
-      <ScrollArea className="max-h-[600px]">
-        <div className="p-3">
-          <p className="text-xs font-semibold text-muted-foreground px-3 py-2 uppercase tracking-wider">WORK ITEMS</p>
-          {workItems.map((item) => (
-            <button
-              key={item.key}
-              onClick={() => handleClick(item.key)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-accent text-left transition-colors focus:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
-              role="menuitem"
-              tabIndex={0}
-            >
-              <div className={`w-8 h-8 rounded-md ${item.color} flex items-center justify-center flex-shrink-0`}>
-                <item.icon className="h-4 w-4 text-white" />
-              </div>
-              <span className="text-sm font-medium text-foreground">{item.label}</span>
-            </button>
-          ))}
+      <div className="p-3">
+        <p className="text-xs font-semibold text-muted-foreground px-3 py-2 uppercase tracking-wider">WORK ITEMS</p>
+        {workItems.map((item) => (
+          <button
+            key={item.key}
+            onClick={() => handleClick(item.key)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-accent text-left transition-colors focus:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
+            role="menuitem"
+            tabIndex={0}
+          >
+            <div className={`w-8 h-8 rounded-md ${item.color} flex items-center justify-center flex-shrink-0`}>
+              <item.icon className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-sm font-medium text-foreground">{item.label}</span>
+          </button>
+        ))}
 
-          <div className="my-3 border-t border-border" />
+        <div className="my-3 border-t border-border" />
 
-          <p className="text-xs font-semibold text-muted-foreground px-3 py-2 uppercase tracking-wider">OTHER</p>
-          {otherItems.map((item) => (
-            <button
-              key={item.key}
-              onClick={() => handleClick(item.key)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-accent text-left transition-colors focus:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
-              role="menuitem"
-              tabIndex={0}
-            >
-              <div className={`w-8 h-8 rounded-md ${item.color} flex items-center justify-center flex-shrink-0`}>
-                <item.icon className="h-4 w-4 text-white" />
-              </div>
-              <span className="text-sm font-medium text-foreground">{item.label}</span>
-            </button>
-          ))}
-        </div>
-      </ScrollArea>
+        <p className="text-xs font-semibold text-muted-foreground px-3 py-2 uppercase tracking-wider">OTHER</p>
+        {otherItems.map((item) => (
+          <button
+            key={item.key}
+            onClick={() => handleClick(item.key)}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-accent text-left transition-colors focus:bg-accent focus:outline-none focus:ring-2 focus:ring-ring"
+            role="menuitem"
+            tabIndex={0}
+          >
+            <div className={`w-8 h-8 rounded-md ${item.color} flex items-center justify-center flex-shrink-0`}>
+              <item.icon className="h-4 w-4 text-white" />
+            </div>
+            <span className="text-sm font-medium text-foreground">{item.label}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
