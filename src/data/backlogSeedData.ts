@@ -1,4 +1,6 @@
-import { BacklogSection, Program, ProgramIncrement, Label, ViewingOption } from '@/types/backlog.types';
+import { BacklogSection, Program, ProgramIncrement, Label, User, Theme, ViewingOption } from '@/types/backlog.types';
+
+export const PORTFOLIO_NAME = 'Digital Services';
 
 export const VIEWING_OPTIONS: ViewingOption[] = [
   { id: 'theme', label: 'Theme Backlog', enabled: true },
@@ -13,13 +15,30 @@ export const PROGRAMS: Program[] = [
   { id: 'prog-1', name: 'Mobile' },
   { id: 'prog-2', name: 'Web Platform' },
   { id: 'prog-3', name: 'AI Services' },
-  { id: 'prog-4', name: 'Infrastructure' }
+  { id: 'prog-4', name: 'Infrastructure' },
+  { id: 'prog-5', name: 'Analytics' },
+  { id: 'prog-6', name: 'Security' }
 ];
 
 export const PROGRAM_INCREMENTS: ProgramIncrement[] = [
   { id: 'pi-5', name: 'PI-5', startDate: '2024-07-19', endDate: '2024-10-10' },
   { id: 'pi-6', name: 'PI-6', startDate: '2024-10-11', endDate: '2025-01-02' },
   { id: 'pi-7', name: 'PI-7', startDate: '2025-01-03', endDate: '2025-04-04' }
+];
+
+export const USERS: User[] = [
+  { id: 'user-1', name: 'Sean Duffy', email: 'sean.duffy@example.com' },
+  { id: 'user-2', name: 'Jane Smith', email: 'jane.smith@example.com' },
+  { id: 'user-3', name: 'Mike Johnson', email: 'mike.johnson@example.com' },
+  { id: 'user-4', name: 'Sarah Williams', email: 'sarah.williams@example.com' },
+  { id: 'user-5', name: 'Alex Chen', email: 'alex.chen@example.com' }
+];
+
+export const THEMES: Theme[] = [
+  { id: 'theme-1', name: '1: User Experience' },
+  { id: 'theme-2', name: '2: Platform Modernization' },
+  { id: 'theme-3', name: '3: Compliance & Security' },
+  { id: 'theme-4', name: '4: Data & Analytics' }
 ];
 
 export const LABELS: Label[] = [
@@ -234,6 +253,43 @@ export const BACKLOG_SECTIONS: BacklogSection[] = [
     type: 'unassigned',
     itemCount: 207,
     isExpanded: false,
-    items: []
+    items: [
+      {
+        id: 'epic-u1',
+        numericId: 2001,
+        title: 'Legacy System Migration Phase 2',
+        status: 'not_started',
+        processStep: 'Funnel',
+        points: 320,
+        mvp: false,
+        labels: [],
+        hasChildren: false,
+        rank: 1
+      },
+      {
+        id: 'epic-u2',
+        numericId: 2002,
+        title: 'Customer Portal Redesign',
+        status: 'not_started',
+        processStep: 'Funnel',
+        points: 150,
+        mvp: false,
+        labels: [],
+        hasChildren: false,
+        rank: 2
+      },
+      {
+        id: 'epic-u3',
+        numericId: 2003,
+        title: 'API Gateway Modernization',
+        status: 'not_started',
+        processStep: 'Analyzing',
+        points: 200,
+        mvp: false,
+        labels: [],
+        hasChildren: false,
+        rank: 3
+      }
+    ]
   }
 ];
