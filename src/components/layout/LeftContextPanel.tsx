@@ -35,15 +35,15 @@ interface MenuItem {
   expandable?: boolean;
 }
 
-const menuItems: MenuItem[] = [
-  { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio-room', tiers: ['portfolio', 'program', 'team'] },
+const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): MenuItem[] => [
+  { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: portfolioId ? `/portfolio/${portfolioId}/room` : '/portfolio-room', tiers: ['portfolio', 'program', 'team'] },
   { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
   { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives', tiers: ['portfolio', 'program'] },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics', tiers: ['portfolio', 'program'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['enterprise', 'portfolio', 'program'] },
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree', tiers: ['enterprise', 'portfolio'] },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/value-stream', tiers: ['portfolio', 'program'] },
-  { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
+  { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: portfolioId ? `/portfolio/${portfolioId}/forecast` : '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
   { id: 'program-board', label: 'Program Board', icon: Boxes, path: '/program-board', tiers: ['program'] },
   { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
@@ -108,6 +108,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   };
 
   const getFilteredMenuItems = () => {
+    const menuItems = getMenuItems(portfolioId, programId, tier);
     return menuItems.filter(item => !item.tiers || item.tiers.includes(tier));
   };
 
