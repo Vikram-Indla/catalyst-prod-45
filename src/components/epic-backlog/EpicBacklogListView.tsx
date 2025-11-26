@@ -22,6 +22,7 @@ interface Epic {
   global_rank: number;
   parked_at?: string;
   strategic_themes?: { name: string };
+  programs?: { name: string };
 }
 
 interface EpicBacklogListViewProps {
@@ -30,10 +31,12 @@ interface EpicBacklogListViewProps {
   onRefetch: () => void;
   selectedProgram?: string;
   selectedPI?: string;
+  labelsDisplay?: 'program' | 'parent';
 }
 
-export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, selectedProgram, selectedPI }: EpicBacklogListViewProps) {
+export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, selectedProgram, selectedPI, labelsDisplay = 'program' }: EpicBacklogListViewProps) {
   const [newEpicName, setNewEpicName] = useState('');
+  const [newFeatureName, setNewFeatureName] = useState<Record<string, string>>({});
   const [expandedEpics, setExpandedEpics] = useState<Set<string>>(new Set());
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -70,6 +73,30 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, selectedPr
     },
     onError: () => {
       toast({ title: 'Failed to add epic', variant: 'destructive' });
+    },
+  });
+
+  // Quick add feature mutation
+  const addFeatureMutation = useMutation({
+    mutationFn: async ({ epicId, name }: { epicId: string; name: string }) => {
+      const { error } = await supabase
+        .from('features')
+        .insert({
+          name,
+          epic_id: epicId,
+          program_id: selectedProgram || '',
+          status: 'funnel',
+        });
+      if (error) throw error;
+    },
+    onSuccess: (_, variables) => {
+      setNewFeatureName(prev => ({ ...prev, [variables.epicId]: '' }));
+      queryClient.invalidateQueries({ queryKey: ['epic-children'] });
+      onRefetch();
+      toast({ title: 'Feature added successfully' });
+    },
+    onError: () => {
+      toast({ title: 'Failed to add feature', variant: 'destructive' });
     },
   });
 
@@ -187,7 +214,7 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, selectedPr
           <Droppable droppableId="epic-list">
             {(provided) => (
               <Table>
-                <TableHeader>
+                  <TableHeader>
                   <TableRow>
                     <TableHead className="w-12"></TableHead>
                     <TableHead className="w-12">Rank</TableHead>
@@ -197,6 +224,7 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, selectedPr
                     <TableHead>Theme</TableHead>
                     <TableHead className="w-20">MVP</TableHead>
                     <TableHead className="w-24">Points</TableHead>
+                    <TableHead className="w-32 text-right">{labelsDisplay === 'program' ? 'Program' : 'Parent'}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody ref={provided.innerRef} {...provided.droppableProps}>
@@ -238,16 +266,56 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, selectedPr
                             <TableCell className="text-sm">{epic.strategic_themes?.name || '-'}</TableCell>
                             <TableCell>{epic.mvp && <Badge variant="secondary">MVP</Badge>}</TableCell>
                             <TableCell className="text-sm">{epic.points_estimate || '-'}</TableCell>
+                            <TableCell className="text-sm text-right text-muted-foreground">
+                              {labelsDisplay === 'program' 
+                                ? (epic.programs as any)?.name || '-'
+                                : epic.strategic_themes?.name || '-'
+                              }
+                            </TableCell>
                           </TableRow>
-                          {expandedEpics.has(epic.id) && epicChildren?.[epic.id] && (
-                            epicChildren[epic.id].map((child: any) => (
-                              <TableRow key={child.id} className="bg-muted/30">
+                          {expandedEpics.has(epic.id) && (
+                            <>
+                              {epicChildren?.[epic.id]?.map((child: any) => (
+                                <TableRow key={child.id} className="bg-muted/30">
+                                  <TableCell colSpan={4}></TableCell>
+                                  <TableCell colSpan={5} className="pl-12 text-sm text-muted-foreground">
+                                    └─ {child.name} ({child.capability_key || child.feature_key || 'Child'})
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                              {/* Quick add child feature */}
+                              <TableRow className="bg-muted/20">
                                 <TableCell colSpan={4}></TableCell>
-                                <TableCell colSpan={4} className="pl-12 text-sm text-muted-foreground">
-                                  └─ {child.name} ({child.capability_key || child.feature_key || 'Child'})
+                                <TableCell colSpan={5} className="pl-12">
+                                  <div className="flex gap-2">
+                                    <Input
+                                      placeholder="New Feature Name"
+                                      value={newFeatureName[epic.id] || ''}
+                                      onChange={(e) => setNewFeatureName(prev => ({ ...prev, [epic.id]: e.target.value }))}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && newFeatureName[epic.id]?.trim()) {
+                                          addFeatureMutation.mutate({ epicId: epic.id, name: newFeatureName[epic.id].trim() });
+                                        }
+                                      }}
+                                      className="h-8 text-sm"
+                                    />
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      onClick={() => {
+                                        if (newFeatureName[epic.id]?.trim()) {
+                                          addFeatureMutation.mutate({ epicId: epic.id, name: newFeatureName[epic.id].trim() });
+                                        }
+                                      }}
+                                      disabled={!newFeatureName[epic.id]?.trim() || addFeatureMutation.isPending}
+                                    >
+                                      <Plus className="h-4 w-4 mr-1" />
+                                      Add
+                                    </Button>
+                                  </div>
                                 </TableCell>
                               </TableRow>
-                            ))
+                            </>
                           )}
                         </>
                       )}
