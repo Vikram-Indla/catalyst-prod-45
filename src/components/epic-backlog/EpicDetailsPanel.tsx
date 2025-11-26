@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CommentsSection } from '@/components/shared/CommentsSection';
-import { ForecastTab } from '@/components/forecast/ForecastTab';
+import { EpicForecastTab } from '@/components/epic-backlog/EpicForecastTab';
 import { X } from 'lucide-react';
 
 interface EpicDetailsPanelProps {
@@ -282,7 +282,7 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
             </TabsContent>
 
             <TabsContent value="forecast" className="m-0">
-              <ForecastTab workItemId={epicId} workItemType="epic" />
+              <EpicForecastTab epicId={epicId} />
             </TabsContent>
 
             <TabsContent value="comments" className="m-0 p-6">
