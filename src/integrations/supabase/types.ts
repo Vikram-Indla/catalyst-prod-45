@@ -385,6 +385,12 @@ export type Database = {
       }
       features: {
         Row: {
+          acceptance_criteria: string | null
+          actual_end_date: string | null
+          actual_start_date: string | null
+          blocked: boolean | null
+          blocked_reason: string | null
+          business_value: number | null
           created_at: string | null
           description: string | null
           epic_id: string
@@ -392,16 +398,29 @@ export type Database = {
           health: Database["public"]["Enums"]["health_status"] | null
           id: string
           iteration_id: string | null
+          job_size: number | null
           name: string
+          notes: string | null
           owner_id: string | null
           pi_id: string | null
+          planned_end_date: string | null
+          planned_start_date: string | null
           program_id: string
           progress_pct: number | null
+          risk_reduction: number | null
           status: Database["public"]["Enums"]["feature_status"] | null
+          team_id: string | null
+          time_criticality: number | null
           updated_at: string | null
           wsjf_score: number | null
         }
         Insert: {
+          acceptance_criteria?: string | null
+          actual_end_date?: string | null
+          actual_start_date?: string | null
+          blocked?: boolean | null
+          blocked_reason?: string | null
+          business_value?: number | null
           created_at?: string | null
           description?: string | null
           epic_id: string
@@ -409,16 +428,29 @@ export type Database = {
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
           iteration_id?: string | null
+          job_size?: number | null
           name: string
+          notes?: string | null
           owner_id?: string | null
           pi_id?: string | null
+          planned_end_date?: string | null
+          planned_start_date?: string | null
           program_id: string
           progress_pct?: number | null
+          risk_reduction?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
+          team_id?: string | null
+          time_criticality?: number | null
           updated_at?: string | null
           wsjf_score?: number | null
         }
         Update: {
+          acceptance_criteria?: string | null
+          actual_end_date?: string | null
+          actual_start_date?: string | null
+          blocked?: boolean | null
+          blocked_reason?: string | null
+          business_value?: number | null
           created_at?: string | null
           description?: string | null
           epic_id?: string
@@ -426,12 +458,19 @@ export type Database = {
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
           iteration_id?: string | null
+          job_size?: number | null
           name?: string
+          notes?: string | null
           owner_id?: string | null
           pi_id?: string | null
+          planned_end_date?: string | null
+          planned_start_date?: string | null
           program_id?: string
           progress_pct?: number | null
+          risk_reduction?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
+          team_id?: string | null
+          time_criticality?: number | null
           updated_at?: string | null
           wsjf_score?: number | null
         }
@@ -462,6 +501,13 @@ export type Database = {
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "features_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
         ]
