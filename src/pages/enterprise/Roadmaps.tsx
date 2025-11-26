@@ -6,236 +6,29 @@ import { PISelectorPanel } from '@/components/roadmaps/PISelectorPanel';
 import { SyncModal } from '@/components/roadmaps/SyncModal';
 import { useRoadmapStore } from '@/stores/roadmapStore';
 import { addDays } from 'date-fns';
+import type { 
+  RoadmapItem, 
+  ProgramIncrement, 
+  Sprint, 
+  Milestone, 
+  ItemMilestone,
+  GroupByMode, 
+  TimelineView,
+  DragType,
+  WorkItemState
+} from '@/types/roadmap.types';
+import { BAR_COLORS } from '@/types/roadmap.types';
+import { seedRoadmapItems, seedProgramIncrements, seedMilestones } from '@/data/roadmapSeedData';
 
-interface ItemMilestone {
-  id: string;
-  name: string;
-  date: string;
-  completed: boolean;
-}
-
-interface RoadmapItem {
-  id: string;
-  numericId: number;
-  title: string;
-  type: 'theme' | 'epic' | 'feature' | 'capability';
-  state: 'not_started' | 'in_progress' | 'accepted' | 'blocked';
-  status?: 'on_track' | 'at_risk' | 'off_track';
-  startDate: string;
-  dueDate: string;
-  items: number;
-  storyPoints: number;
-  progress?: number;
-  parentId?: string;
-  parentType?: string;
-  children?: RoadmapItem[];
-  milestones?: ItemMilestone[];
-  hasDependencies?: boolean;
-  dependenciesResolved?: boolean;
-}
-
-interface Sprint {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-}
-
-interface ProgramIncrement {
-  id: string;
-  name: string;
-  startDate: string;
-  endDate: string;
-  sprints: Sprint[];
-}
-
-type ViewMode = 'calendar' | 'sprint';
-type GroupByMode = 'themes' | 'epics' | 'features' | 'epic_by_theme' | 'feature_by_epic';
+type ViewMode = TimelineView;
 
 const MONTH_WIDTH = 100;
 const DAY_WIDTH = MONTH_WIDTH / 30;
 const SPRINT_WIDTH = 50;
 
-const programIncrements: ProgramIncrement[] = [
-  {
-    id: 'pi-6',
-    name: 'PI-6',
-    startDate: '2024-07-19',
-    endDate: '2024-10-10',
-    sprints: [
-      { id: 's24', name: 'S24', startDate: '2024-07-19', endDate: '2024-08-01' },
-      { id: 's25', name: 'S25', startDate: '2024-08-02', endDate: '2024-08-15' },
-      { id: 's26', name: 'S26', startDate: '2024-08-16', endDate: '2024-08-29' },
-      { id: 's27', name: 'S27', startDate: '2024-08-30', endDate: '2024-09-12' },
-      { id: 's28', name: 'S28', startDate: '2024-09-13', endDate: '2024-09-26' },
-      { id: 's29', name: 'S29', startDate: '2024-09-27', endDate: '2024-10-10' },
-    ],
-  },
-  {
-    id: 'pi-7',
-    name: 'PI-7',
-    startDate: '2024-10-11',
-    endDate: '2025-01-02',
-    sprints: [
-      { id: 's30', name: 'S30', startDate: '2024-10-11', endDate: '2024-10-24' },
-      { id: 's31', name: 'S31', startDate: '2024-10-25', endDate: '2024-11-07' },
-      { id: 's32', name: 'S32', startDate: '2024-11-08', endDate: '2024-11-21' },
-      { id: 's33', name: 'S33', startDate: '2024-11-22', endDate: '2024-12-05' },
-      { id: 's34', name: 'S34', startDate: '2024-12-06', endDate: '2024-12-19' },
-    ],
-  },
-  {
-    id: 'pi-8',
-    name: 'PI-8',
-    startDate: '2025-01-03',
-    endDate: '2025-04-04',
-    sprints: [
-      { id: 'pi71', name: 'PI71', startDate: '2025-01-03', endDate: '2025-01-16' },
-      { id: 'pi72', name: 'PI72', startDate: '2025-01-17', endDate: '2025-01-30' },
-      { id: 'pi73', name: 'PI73', startDate: '2025-01-31', endDate: '2025-02-13' },
-      { id: 'pi74', name: 'PI74', startDate: '2025-02-14', endDate: '2025-02-27' },
-      { id: 'pi75', name: 'PI75', startDate: '2025-02-28', endDate: '2025-03-13' },
-      { id: 'pi76', name: 'PI76', startDate: '2025-03-14', endDate: '2025-04-04' },
-    ],
-  },
-];
+const programIncrements = seedProgramIncrements;
 
-const seedData: RoadmapItem[] = [
-  {
-    id: 'e-271',
-    numericId: 271,
-    title: 'Platform - New Report Framework',
-    type: 'epic',
-    state: 'not_started',
-    startDate: '2024-08-15',
-    dueDate: '2025-04-01',
-    items: 0,
-    storyPoints: 0,
-  },
-  {
-    id: 'e-413',
-    numericId: 413,
-    title: 'FSRM_Time Off In Lieu (TOIL)',
-    type: 'epic',
-    state: 'not_started',
-    startDate: '2024-08-20',
-    dueDate: '2024-10-15',
-    items: 0,
-    storyPoints: 0,
-  },
-  {
-    id: 'e-672',
-    numericId: 672,
-    title: 'Virtualized sizing model',
-    type: 'epic',
-    state: 'in_progress',
-    startDate: '2024-08-01',
-    dueDate: '2025-03-01',
-    items: 34,
-    storyPoints: 380,
-    progress: 45,
-  },
-  {
-    id: 'e-1080',
-    numericId: 1080,
-    title: 'Smart Support Bot Web & Mobile',
-    type: 'epic',
-    state: 'in_progress',
-    startDate: '2024-08-10',
-    dueDate: '2024-11-15',
-    items: 4,
-    storyPoints: 55,
-    progress: 60,
-  },
-  {
-    id: 'e-1178',
-    numericId: 1178,
-    title: 'Retirement planning UX update',
-    type: 'epic',
-    state: 'not_started',
-    startDate: '2024-10-01',
-    dueDate: '2025-03-30',
-    items: 1,
-    storyPoints: 44,
-  },
-  {
-    id: 'e-1184',
-    numericId: 1184,
-    title: 'Advanced Voice Activation for Trades',
-    type: 'epic',
-    state: 'accepted',
-    status: 'on_track',
-    startDate: '2024-08-01',
-    dueDate: '2024-10-30',
-    items: 2,
-    storyPoints: 16,
-    milestones: [
-      { id: 'm1', name: 'Design Complete', date: '2024-09-01', completed: true },
-      { id: 'm2', name: 'Dev Complete', date: '2024-09-20', completed: true },
-      { id: 'm3', name: 'QA Sign-off', date: '2024-10-15', completed: false },
-      { id: 'm4', name: 'Release', date: '2024-10-28', completed: false },
-    ],
-  },
-  {
-    id: 'e-3',
-    numericId: 3,
-    title: 'UX Refactor',
-    type: 'epic',
-    state: 'accepted',
-    startDate: '2024-09-01',
-    dueDate: '2025-04-15',
-    items: 21,
-    storyPoints: 366,
-  },
-  {
-    id: 'e-1111',
-    numericId: 1111,
-    title: 'Interface: E2E transcription flow (with PPFW) and flow tracking / alarming',
-    type: 'epic',
-    state: 'not_started',
-    startDate: '2024-10-15',
-    dueDate: '2025-04-01',
-    items: 5,
-    storyPoints: 128,
-  },
-  {
-    id: 'e-1141',
-    numericId: 1141,
-    title: 'Hadoop CSI AC5',
-    type: 'epic',
-    state: 'in_progress',
-    startDate: '2024-11-01',
-    dueDate: '2025-03-15',
-    items: 4,
-    storyPoints: 96,
-  },
-  {
-    id: 'e-1168',
-    numericId: 1168,
-    title: 'AI for Improved Call Center Interactions',
-    type: 'epic',
-    state: 'in_progress',
-    status: 'on_track',
-    startDate: '2024-08-01',
-    dueDate: '2024-12-01',
-    items: 12,
-    storyPoints: 67,
-    progress: 82,
-    hasDependencies: true,
-    dependenciesResolved: false,
-  },
-  {
-    id: 'e-499',
-    numericId: 499,
-    title: 'Release Management',
-    type: 'epic',
-    state: 'accepted',
-    startDate: '2024-09-15',
-    dueDate: '2024-12-20',
-    items: 1,
-    storyPoints: 14,
-  },
-];
+const seedData = seedRoadmapItems;
 
 function getStateFill(state: string): number {
   switch (state) {
