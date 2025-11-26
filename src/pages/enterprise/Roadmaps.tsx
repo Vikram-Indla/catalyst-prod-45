@@ -551,7 +551,7 @@ export default function Roadmaps() {
                 {/* PI Headers */}
                 <div className="flex h-7 bg-muted border-b border-border sticky top-0 z-10">
                   {programIncrements.map(pi => (
-                    <div key={pi.id} className="flex items-center justify-center text-xs font-semibold bg-muted/80 border-r-2 border-border" style={{ width: pi.sprints.length * SPRINT_WIDTH * zoomLevel }}>
+                    <div key={pi.id} className="flex items-center justify-center text-xs font-semibold bg-muted/80 border-r-2 border-border" style={{ width: (pi.sprints || []).length * SPRINT_WIDTH * zoomLevel }}>
                       {pi.name}
                     </div>
                   ))}
