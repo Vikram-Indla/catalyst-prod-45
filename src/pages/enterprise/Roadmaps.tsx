@@ -916,6 +916,7 @@ export default function Roadmaps() {
           </div>
         </div>
       </div>
+      </div>
 
       {/* Tooltips */}
       {hoveredItem && (
