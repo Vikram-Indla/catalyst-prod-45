@@ -1,115 +1,152 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockObjectives, ObjectiveLevel } from '@/data/strategyMockData';
 import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+interface HeatmapCell {
+  percentage: number | null;
+  avgScore: number | null;
+}
+
+interface HeatmapRow {
+  level: string;
+  itemCount: number;
+  cells: HeatmapCell[];
+  spanAllColumns?: boolean;
+}
 
 interface OkrHeatmapProps {
   selectedSnapshot: string;
   programIncrements: string[];
-  onCellClick: (level: ObjectiveLevel, pi: string) => void;
+  onCellClick: (level: string, pi: string) => void;
+}
+
+// Mock data matching the specification
+const mockHeatmapData: HeatmapRow[] = [
+  {
+    level: 'Strategic Goals',
+    itemCount: 4,
+    spanAllColumns: true,
+    cells: [{ percentage: 66, avgScore: 0.7 }]
+  },
+  {
+    level: 'Portfolio Objectives',
+    itemCount: 9,
+    cells: [
+      { percentage: 41, avgScore: 0.4 },
+      { percentage: 21, avgScore: 0.2 },
+      { percentage: 36, avgScore: 0.4 }
+    ]
+  },
+  {
+    level: 'Program Objectives',
+    itemCount: 113,
+    cells: [
+      { percentage: 4, avgScore: 0.1 },
+      { percentage: 7, avgScore: 0.1 },
+      { percentage: null, avgScore: null }
+    ]
+  },
+  {
+    level: 'Team Objectives',
+    itemCount: 73,
+    cells: [
+      { percentage: 7, avgScore: 0.1 },
+      { percentage: 8, avgScore: 0.2 },
+      { percentage: null, avgScore: null }
+    ]
+  }
+];
+
+function getHeatmapCellColor(avgScore: number | null): string {
+  if (avgScore === null) return 'hsl(var(--okr-heatmap-gray))';
+  if (avgScore >= 0.7) return 'hsl(var(--okr-heatmap-green))';
+  if (avgScore >= 0.4) return 'hsl(var(--okr-heatmap-yellow))';
+  return 'hsl(var(--okr-heatmap-red))';
 }
 
 export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }: OkrHeatmapProps) {
   const [activeCell, setActiveCell] = useState<string | null>(null);
 
-  const levels: { key: ObjectiveLevel; label: string }[] = [
-    { key: "STRATEGIC", label: "Strategic Goals" },
-    { key: "PORTFOLIO", label: "Portfolio Objectives" },
-    { key: "PROGRAM", label: "Program Objectives" },
-    { key: "TEAM", label: "Team Objectives" },
-  ];
-
-  // Calculate metrics for each cell
-  const getCellData = (level: ObjectiveLevel, pi: string) => {
-    const objectives = mockObjectives.filter(
-      (obj) =>
-        obj.level === level &&
-        obj.snapshotId === selectedSnapshot &&
-        obj.programIncrementIds.includes(pi)
-    );
-
-    if (objectives.length === 0) return null;
-
-    const avgScore = objectives.reduce((sum, obj) => sum + obj.score, 0) / objectives.length;
-    const percentage = Math.round(avgScore * 100);
-
-    return { percentage, avgScore: avgScore.toFixed(1), count: objectives.length };
-  };
-
-  const getCellColor = (percentage: number | null) => {
-    if (percentage === null) return 'bg-muted/50 text-muted-foreground';
-    if (percentage >= 60) return 'bg-green-500 text-white';
-    if (percentage >= 35) return 'bg-orange-500 text-white';
-    return 'bg-red-500 text-white';
-  };
-
-  const getTotalCount = (level: ObjectiveLevel) => {
-    return mockObjectives.filter(
-      (obj) => obj.level === level && obj.snapshotId === selectedSnapshot
-    ).length;
-  };
-
-  const handleCellClick = (level: ObjectiveLevel, pi: string) => {
+  const handleCellClick = (level: string, pi: string) => {
     const cellKey = `${level}-${pi}`;
     setActiveCell(cellKey);
     onCellClick(level, pi);
   };
 
   return (
-    <Card>
+    <Card className="border rounded-lg">
       <CardHeader>
-        <CardTitle>OKR Heatmap</CardTitle>
+        <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr>
-                <th className="border p-2 bg-muted text-left font-semibold text-sm"></th>
-                {programIncrements.map((pi) => (
-                  <th key={pi} className="border p-2 bg-muted text-center font-semibold text-sm">
-                    {pi}
-                  </th>
-                ))}
-                <th className="border p-2 bg-muted text-center font-semibold text-sm">Level</th>
-                <th className="border p-2 bg-muted text-center font-semibold text-sm">Item Count</th>
-              </tr>
-            </thead>
-            <tbody>
-              {levels.map(({ key, label }) => (
-                <tr key={key}>
-                  <td className="border p-2 font-medium text-sm text-primary">{label}</td>
-                  {programIncrements.map((pi) => {
-                    const cellData = getCellData(key, pi);
-                    const cellKey = `${key}-${pi}`;
-                    const isActive = activeCell === cellKey;
+        {/* Heatmap Grid */}
+        <div
+          className="grid gap-2"
+          style={{
+            gridTemplateColumns: 'repeat(3, 1fr) 180px 100px',
+            alignItems: 'stretch'
+          }}
+        >
+          {/* Headers */}
+          {programIncrements.map((pi) => (
+            <div key={pi} className="text-center py-3 px-4 font-semibold text-sm">
+              {pi}
+            </div>
+          ))}
+          <div className="text-left py-3 px-4 font-semibold text-sm">Level</div>
+          <div className="text-center py-3 px-4 font-semibold text-sm">Item Count</div>
 
-                    return (
-                      <td
-                        key={pi}
-                        className={`border p-4 text-center cursor-pointer transition-all ${
-                          getCellColor(cellData?.percentage ?? null)
-                        } ${isActive ? 'ring-2 ring-primary ring-inset' : ''}`}
-                        onClick={() => handleCellClick(key, pi)}
-                      >
-                        {cellData ? (
-                          <div>
-                            <div className="text-2xl font-bold">{cellData.percentage}%</div>
-                            <div className="text-xs opacity-90">{cellData.avgScore} avg score</div>
-                          </div>
-                        ) : (
-                          <div className="text-lg font-semibold">N/A</div>
-                        )}
-                      </td>
-                    );
-                  })}
-                  <td className="border p-2 text-center text-sm font-medium">{label}</td>
-                  <td className="border p-2 text-center text-lg font-bold">
-                    {getTotalCount(key)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* Rows */}
+          {mockHeatmapData.map((row) => (
+            <>
+              {row.spanAllColumns ? (
+                <div
+                  key={`${row.level}-span`}
+                  className="rounded-md p-6 text-center text-white flex flex-col items-center justify-center min-h-[80px]"
+                  style={{
+                    gridColumn: 'span 3',
+                    backgroundColor: getHeatmapCellColor(row.cells[0].avgScore)
+                  }}
+                >
+                  <div className="text-2xl font-bold">
+                    {row.cells[0].percentage}%
+                  </div>
+                  <div className="text-sm opacity-90 mt-1">
+                    {row.cells[0].avgScore?.toFixed(1)} avg score
+                  </div>
+                </div>
+              ) : (
+                row.cells.map((cell, idx) => (
+                  <div
+                    key={`${row.level}-${idx}`}
+                    className="rounded-md p-6 text-center text-white flex flex-col items-center justify-center min-h-[80px] cursor-pointer transition-opacity hover:opacity-90"
+                    style={{
+                      backgroundColor: getHeatmapCellColor(cell.avgScore)
+                    }}
+                    onClick={() => handleCellClick(row.level, programIncrements[idx])}
+                  >
+                    {cell.percentage !== null ? (
+                      <>
+                        <div className="text-2xl font-bold">
+                          {cell.percentage}%
+                        </div>
+                        <div className="text-sm opacity-90 mt-1">
+                          {cell.avgScore?.toFixed(1)} avg score
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-lg font-semibold">N/A</div>
+                    )}
+                  </div>
+                ))
+              )}
+              <div className="flex items-center py-3 px-4 text-sm text-primary cursor-pointer hover:underline">
+                {row.level}
+              </div>
+              <div className="flex items-center justify-center py-3 px-4 text-sm font-medium">
+                {row.itemCount}
+              </div>
+            </>
+          ))}
         </div>
       </CardContent>
     </Card>
