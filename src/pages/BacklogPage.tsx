@@ -4,9 +4,11 @@ import { BacklogSection } from '@/components/backlog/BacklogSection';
 import { ContextMenu } from '@/components/backlog/ContextMenu';
 import { PrioritizeModal } from '@/components/backlog/PrioritizeModal';
 import { MoveToPositionModal } from '@/components/backlog/MoveToPositionModal';
+import { DetailPanel } from '@/components/backlog/DetailPanel/DetailPanel';
 import { ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { LabelConfig } from '@/components/backlog/LabelsDropdown';
 import { VIEWING_OPTIONS, BACKLOG_SECTIONS, PROGRAMS } from '@/data/backlogSeedData';
+import { EPIC_DETAILS } from '@/data/epicDetailData';
 import { BacklogSection as BacklogSectionType, Epic } from '@/types/backlog.types';
 import { toast } from 'sonner';
 
@@ -71,6 +73,14 @@ export default function BacklogPage() {
     draggedFromSection: string | null;
   }>({ draggedEpic: null, draggedFromSection: null });
 
+  // Detail panel state
+  const [detailPanelState, setDetailPanelState] = useState<{
+    isOpen: boolean;
+    epicId: string | null;
+    activeTab: string;
+    hasChanges: boolean;
+  }>({ isOpen: false, epicId: null, activeTab: 'details', hasChanges: false });
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -128,6 +138,13 @@ export default function BacklogPage() {
 
   const handleEpicClick = (epicId: string) => {
     setSelectedEpicId(epicId);
+    // Open detail panel
+    setDetailPanelState({
+      isOpen: true,
+      epicId,
+      activeTab: 'details',
+      hasChanges: false,
+    });
   };
 
   const handleDragStart = (e: React.DragEvent, epic: Epic, sectionId: string) => {
@@ -330,6 +347,20 @@ export default function BacklogPage() {
           }}
         />
       )}
+
+      {/* Detail Panel */}
+      <DetailPanel
+        epic={detailPanelState.epicId ? EPIC_DETAILS[detailPanelState.epicId] : null}
+        isOpen={detailPanelState.isOpen}
+        activeTab={detailPanelState.activeTab}
+        onTabChange={(tabId) => setDetailPanelState({ ...detailPanelState, activeTab: tabId })}
+        onClose={() => setDetailPanelState({ ...detailPanelState, isOpen: false })}
+        onSave={() => {
+          toast.success('Changes saved');
+          setDetailPanelState({ ...detailPanelState, hasChanges: false });
+        }}
+        hasChanges={detailPanelState.hasChanges}
+      />
     </div>
   );
 }

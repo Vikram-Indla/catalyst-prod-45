@@ -1,4 +1,4 @@
-// Backlog Module Type Definitions - Phase 1
+// Backlog Module Type Definitions - Phase 1-3
 
 export type BacklogType = 'theme' | 'epic' | 'capability' | 'feature' | 'story' | 'defect';
 
@@ -71,4 +71,49 @@ export interface BacklogPageProps {
   programs: Program[];
   onAddEpic: (title: string, programId: string) => void;
   onEpicClick: (epicId: string) => void;
+}
+
+// Phase 3: Detail Panel Types
+
+export interface EpicState {
+  id: number;
+  name: string;
+  color: string;
+}
+
+export interface Owner {
+  id: string;
+  name: string;
+  avatar?: string;
+}
+
+export interface ContainedIn {
+  id: string;
+  name: string;
+  type: string;
+}
+
+export interface EpicDetail extends Epic {
+  description: string;
+  type: 'Business' | 'Enabler' | 'Compliance';
+  containedIn?: ContainedIn;
+  primaryProgram?: Program;
+  additionalPrograms: Program[];
+  owner?: Owner;
+  state: EpicState;
+  
+  // Progress
+  storyPointsTotal: number;
+  storyPointsAccepted: number;
+  featuresTotal: number;
+  featuresAccepted: number;
+  featuresInDelivery: number;
+  featuresDelivered: number;
+  
+  // Discussions
+  discussionCount: number;
+  
+  // Dates
+  createdAt: string;
+  updatedAt: string;
 }
