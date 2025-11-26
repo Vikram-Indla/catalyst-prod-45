@@ -19,6 +19,13 @@ import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
 import Features from "./pages/Features";
+import Capabilities from "./pages/Capabilities";
+import Defects from "./pages/Defects";
+import Tasks from "./pages/Tasks";
+import Ideation from "./pages/Ideation";
+import Impediments from "./pages/Impediments";
+import ReleaseVehicles from "./pages/ReleaseVehicles";
+import SuccessCriteria from "./pages/SuccessCriteria";
 import PortfolioKanban from "./pages/PortfolioKanban";
 import PortfolioRoadmap from "./pages/PortfolioRoadmap";
 import Roadmaps from "./pages/Roadmaps";
@@ -98,6 +105,13 @@ const App = () => (
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Epics />} />
               <Route path="/features" element={<Features />} />
+              <Route path="/items/capabilities" element={<Capabilities />} />
+              <Route path="/items/defects" element={<Defects />} />
+              <Route path="/items/tasks" element={<Tasks />} />
+              <Route path="/items/ideation" element={<Ideation />} />
+              <Route path="/items/impediments" element={<Impediments />} />
+              <Route path="/items/release-vehicles" element={<ReleaseVehicles />} />
+              <Route path="/items/success-criteria" element={<SuccessCriteria />} />
               <Route path="/portfolio-kanban" element={<PortfolioKanban />} />
           <Route path="/portfolio-roadmap" element={<PortfolioRoadmap />} />
           <Route path="/roadmaps" element={<Roadmaps />} />
