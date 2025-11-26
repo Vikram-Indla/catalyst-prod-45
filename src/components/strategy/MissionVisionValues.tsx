@@ -1,0 +1,49 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { StrategySnapshot } from '@/data/strategyMockData';
+
+interface MissionVisionValuesProps {
+  snapshot: StrategySnapshot;
+}
+
+export function MissionVisionValues({ snapshot }: MissionVisionValuesProps) {
+  return (
+    <div className="grid grid-cols-3 gap-4">
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-primary">Mission</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {snapshot.mission}
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-primary">Vision</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {snapshot.vision}
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-primary">Value</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ul className="space-y-2">
+            {snapshot.values.map((value, index) => (
+              <li key={index} className="text-sm text-muted-foreground leading-relaxed">
+                • {value}
+              </li>
+            ))}
+          </ul>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
