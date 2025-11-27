@@ -232,18 +232,23 @@ function JiraAlignShellContent() {
       {/* Global Search Dialog */}
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
 
-      {/* Main Content with Context Panel - Conditional Sidebar Based on Tier */}
+      {/* Main Content with Context Panel - Conditional Sidebar Based on Tier and Route */}
         <div className="flex flex-1 overflow-hidden">
-          {tier === 'enterprise' ? (
-            <LeftContextPanel />
-          ) : (
-            <PortfolioRoomSidebar
-              portfolioId="default-portfolio"
-              expanded={sidebarExpanded}
-              onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-              selectedPI={selectedPI}
-              onPIChange={setSelectedPI}
-            />
+          {/* No sidebar for Home route */}
+          {location.pathname !== '/home' && (
+            <>
+              {tier === 'enterprise' ? (
+                <LeftContextPanel />
+              ) : (
+                <PortfolioRoomSidebar
+                  portfolioId="default-portfolio"
+                  expanded={sidebarExpanded}
+                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                  selectedPI={selectedPI}
+                  onPIChange={setSelectedPI}
+                />
+              )}
+            </>
           )}
           <main className="flex-1 overflow-auto">
             <Outlet />
