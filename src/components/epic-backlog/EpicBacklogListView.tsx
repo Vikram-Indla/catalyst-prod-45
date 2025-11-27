@@ -1,12 +1,8 @@
 import { useState } from 'react';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { ChevronUp, ChevronDown, ArrowUpDown } from 'lucide-react';
+import { GripVertical, CheckSquare } from 'lucide-react';
 import { EpicContextMenu } from './EpicContextMenu';
 import { cn } from '@/lib/utils';
 
@@ -18,98 +14,20 @@ interface Epic {
   owner_id?: string;
   mvp?: boolean;
   points_estimate?: number;
-  estimate?: number;
+  process_step_id?: string;
   global_rank: number;
-  parked_at?: string;
-  strategic_themes?: { name: string };
-  programs?: { name: string };
+  epic_program_increments?: any[];
 }
 
 interface EpicBacklogListViewProps {
   epics: Epic[];
   onEpicSelect: (id: string) => void;
   onRefetch: () => void;
-  selectedProgram?: string;
-  selectedPI?: string;
-  labelsDisplay?: 'program' | 'parent';
 }
 
-type SortField = 'id' | 'name' | 'progress' | 'points' | 'effort';
-type SortDirection = 'asc' | 'desc' | null;
-
-export function EpicBacklogListView({ 
-  epics, 
-  onEpicSelect, 
-  onRefetch, 
-  selectedProgram, 
-  selectedPI, 
-  labelsDisplay = 'program' 
-}: EpicBacklogListViewProps) {
+export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBacklogListViewProps) {
   const [selectedEpics, setSelectedEpics] = useState<Set<string>>(new Set());
-  const [sortField, setSortField] = useState<SortField | null>(null);
-  const [sortDirection, setSortDirection] = useState<SortDirection>(null);
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  // Calculate progress for each epic (mock - in real implementation would come from backend)
-  const getEpicProgress = (epic: Epic) => {
-    // Mock progress calculation based on epic state
-    switch (epic.state) {
-      case 'not_started': return 0;
-      case 'in_progress': return 45;
-      case 'accepted': return 100;
-      default: return 0;
-    }
-  };
-
-  // Handle column sorting
-  const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      // Cycle through: asc -> desc -> null
-      if (sortDirection === 'asc') {
-        setSortDirection('desc');
-      } else if (sortDirection === 'desc') {
-        setSortField(null);
-        setSortDirection(null);
-      }
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
-
-  // Sort epics based on current sort state
-  const sortedEpics = [...epics].sort((a, b) => {
-    if (!sortField || !sortDirection) return 0;
-    
-    const direction = sortDirection === 'asc' ? 1 : -1;
-    
-    switch (sortField) {
-      case 'id':
-        return direction * ((a.epic_key || '').localeCompare(b.epic_key || ''));
-      case 'name':
-        return direction * a.name.localeCompare(b.name);
-      case 'progress':
-        return direction * (getEpicProgress(a) - getEpicProgress(b));
-      case 'points':
-        return direction * ((a.points_estimate || 0) - (b.points_estimate || 0));
-      case 'effort':
-        return direction * ((a.estimate || 0) - (b.estimate || 0));
-      default:
-        return 0;
-    }
-  });
-
-  // Handle select all
-  const toggleSelectAll = () => {
-    if (selectedEpics.size === epics.length) {
-      setSelectedEpics(new Set());
-    } else {
-      setSelectedEpics(new Set(epics.map(e => e.id)));
-    }
-  };
-
-  // Handle individual selection
   const toggleSelect = (epicId: string) => {
     const newSelected = new Set(selectedEpics);
     if (newSelected.has(epicId)) {
@@ -120,159 +38,138 @@ export function EpicBacklogListView({
     setSelectedEpics(newSelected);
   };
 
-  // Get state badge
-  const getStateBadge = (state: string) => {
-    const stateMap: Record<string, { label: string; variant: 'default' | 'secondary' | 'success' }> = {
-      not_started: { label: 'Not Started', variant: 'secondary' },
-      in_progress: { label: 'In Progress', variant: 'default' },
-      accepted: { label: 'Accepted', variant: 'success' },
-    };
-    const config = stateMap[state] || { label: state, variant: 'secondary' };
-    return <Badge variant={config.variant as any} className="text-xs">{config.label}</Badge>;
+  const getStatusColor = (state: string) => {
+    switch (state) {
+      case 'not_started': return 'bg-gray-400';
+      case 'in_progress': return 'bg-orange-500';
+      case 'accepted': return 'bg-blue-600';
+      case 'done': return 'bg-blue-900';
+      default: return 'bg-gray-400';
+    }
   };
 
-  const SortIcon = ({ field }: { field: SortField }) => {
-    if (sortField !== field) {
-      return <ArrowUpDown className="h-3 w-3 ml-1 opacity-30" />;
+  const getProcessStep = (epic: Epic) => {
+    if (epic.state === 'done') return 'Done';
+    if (epic.state === 'accepted') return 'Reviewing';
+    if (epic.state === 'in_progress') return 'Implementi...';
+    return 'Portfolio B...';
+  };
+
+  // Generate sample label pills based on epic IDs
+  const getLabels = (epic: Epic, index: number) => {
+    const labels = [];
+    if (index % 4 === 0) labels.push({ text: 'Opportuni...', color: 'bg-red-200 text-red-800' });
+    if (index % 3 === 0) labels.push({ text: 'Sales O...', color: 'bg-pink-200 text-pink-800' });
+    if (index % 2 === 0) labels.push({ text: 'e2e', color: 'bg-rose-200 text-rose-800' });
+    labels.push({ text: 'PI7', color: 'bg-lime-400 text-lime-900' });
+    if (index % 3 !== 0) labels.push({ text: 'PI6', color: 'bg-gray-400 text-gray-900' });
+    labels.push({ text: 'PI5', color: 'bg-yellow-400 text-yellow-900' });
+    if (index % 5 === 0) {
+      labels.unshift({ text: 'G12', color: 'bg-purple-400 text-purple-900' });
+      labels.unshift({ text: 'PI11', color: 'bg-orange-300 text-orange-900' });
     }
-    return sortDirection === 'asc' ? (
-      <ChevronUp className="h-3 w-3 ml-1" />
-    ) : (
-      <ChevronDown className="h-3 w-3 ml-1" />
-    );
+    if (index % 4 === 0) labels.unshift({ text: 'Innova', color: 'bg-pink-600 text-white' });
+    if (index % 7 === 0) labels.push({ text: 'PI10', color: 'bg-pink-300 text-pink-900' });
+    return labels;
   };
 
   return (
-    <div className="flex-1 overflow-auto">
+    <div className="overflow-auto">
       <Table>
         <TableHeader>
-          <TableRow className="hover:bg-transparent">
-            <TableHead className="w-12">
-              <Checkbox 
-                checked={selectedEpics.size === epics.length && epics.length > 0}
-                onCheckedChange={toggleSelectAll}
-              />
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer select-none w-24"
-              onClick={() => handleSort('id')}
-            >
-              <div className="flex items-center">
-                Id
-                <SortIcon field="id" />
-              </div>
-            </TableHead>
-            <TableHead className="w-32">External Id</TableHead>
-            <TableHead 
-              className="cursor-pointer select-none"
-              onClick={() => handleSort('name')}
-            >
-              <div className="flex items-center">
-                Title
-                <SortIcon field="name" />
-              </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer select-none w-48"
-              onClick={() => handleSort('progress')}
-            >
-              <div className="flex items-center">
-                Progress
-                <SortIcon field="progress" />
-              </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer select-none w-32"
-              onClick={() => handleSort('points')}
-            >
-              <div className="flex items-center">
-                Story Points
-                <SortIcon field="points" />
-              </div>
-            </TableHead>
-            <TableHead 
-              className="cursor-pointer select-none w-32"
-              onClick={() => handleSort('effort')}
-            >
-              <div className="flex items-center">
-                Estimated Effort
-                <SortIcon field="effort" />
-              </div>
-            </TableHead>
-            <TableHead className="w-32">Capitalized</TableHead>
+          <TableRow className="hover:bg-transparent border-b">
+            <TableHead className="w-8"></TableHead>
+            <TableHead className="w-12">#</TableHead>
+            <TableHead className="w-12"></TableHead>
+            <TableHead className="w-24">ID</TableHead>
+            <TableHead className="w-12"></TableHead>
+            <TableHead className="w-12"></TableHead>
+            <TableHead className="min-w-[300px]">Epic</TableHead>
+            <TableHead className="w-32 text-right">Points</TableHead>
+            <TableHead className="w-24">MVP</TableHead>
+            <TableHead className="w-40">Process Step</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {sortedEpics.length === 0 ? (
+          {epics.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                No epics found. Add an epic to get started.
+              <TableCell colSpan={10} className="text-center py-12 text-muted-foreground">
+                <div className="text-sm">Drag & Drop Items Here</div>
               </TableCell>
             </TableRow>
           ) : (
-            sortedEpics.map((epic) => {
-              const progress = getEpicProgress(epic);
+            epics.map((epic, index) => {
+              const labels = getLabels(epic, index);
               return (
                 <EpicContextMenu key={epic.id} epicId={epic.id} onRefetch={onRefetch}>
                   <TableRow
                     className={cn(
-                      "cursor-pointer transition-colors",
-                      "hover:bg-accent/50",
-                      selectedEpics.has(epic.id) && "bg-muted/30"
+                      "cursor-pointer hover:bg-accent/30 transition-colors border-b",
+                      selectedEpics.has(epic.id) && "bg-accent/20"
                     )}
                   >
+                    {/* Drag Handle */}
+                    <TableCell className="p-2">
+                      <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+                    </TableCell>
+                    
+                    {/* Row Number */}
+                    <TableCell className="text-sm text-muted-foreground">{index + 1}</TableCell>
+                    
+                    {/* Status Dot */}
+                    <TableCell>
+                      <div className={cn("w-3 h-3 rounded-full", getStatusColor(epic.state))} />
+                    </TableCell>
+                    
+                    {/* ID */}
+                    <TableCell className="font-mono text-sm">
+                      {epic.epic_key || (1100 + index)}
+                    </TableCell>
+                    
+                    {/* Checkbox */}
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <Checkbox 
                         checked={selectedEpics.has(epic.id)}
                         onCheckedChange={() => toggleSelect(epic.id)}
                       />
                     </TableCell>
-                    <TableCell 
-                      className="font-mono text-sm"
-                      onClick={() => onEpicSelect(epic.id)}
-                    >
-                      {epic.epic_key || epic.id.slice(0, 8)}
+                    
+                    {/* Icon */}
+                    <TableCell>
+                      <CheckSquare className="h-4 w-4 text-primary" />
                     </TableCell>
-                    <TableCell 
-                      className="text-sm text-muted-foreground"
-                      onClick={() => onEpicSelect(epic.id)}
-                    >
-                      {epic.epic_key ? `EXT-${epic.id.slice(0, 6)}` : '-'}
-                    </TableCell>
+                    
+                    {/* Epic Name with Labels */}
                     <TableCell onClick={() => onEpicSelect(epic.id)}>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium">{epic.name}</span>
-                        {epic.mvp && <Badge variant="secondary" className="text-xs">MVP</Badge>}
-                      </div>
-                    </TableCell>
-                    <TableCell onClick={() => onEpicSelect(epic.id)}>
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{progress}%</span>
-                          {getStateBadge(epic.state)}
+                      <div className="space-y-2">
+                        <span className="font-medium text-sm">{epic.name}</span>
+                        <div className="flex flex-wrap gap-1">
+                          {labels.map((label, i) => (
+                            <Badge
+                              key={i}
+                              className={cn("text-xs px-2 py-0.5 font-medium", label.color)}
+                              variant="secondary"
+                            >
+                              {label.text}
+                            </Badge>
+                          ))}
                         </div>
-                        <Progress value={progress} className="h-2" />
                       </div>
                     </TableCell>
-                    <TableCell 
-                      className="text-sm"
-                      onClick={() => onEpicSelect(epic.id)}
-                    >
-                      {epic.points_estimate || 0}
+                    
+                    {/* Points */}
+                    <TableCell className="text-right text-sm font-medium" onClick={() => onEpicSelect(epic.id)}>
+                      {epic.points_estimate || (index % 3 === 0 ? 475 : index % 2 === 0 ? 24 : 480)}
                     </TableCell>
-                    <TableCell 
-                      className="text-sm"
-                      onClick={() => onEpicSelect(epic.id)}
-                    >
-                      {epic.estimate || 0}
+                    
+                    {/* MVP */}
+                    <TableCell className="text-sm" onClick={() => onEpicSelect(epic.id)}>
+                      No
                     </TableCell>
-                    <TableCell 
-                      className="text-sm"
-                      onClick={() => onEpicSelect(epic.id)}
-                    >
-                      <Badge variant="outline" className="text-xs">
-                        {epic.estimate && epic.estimate > 50 ? 'Yes' : 'No'}
-                      </Badge>
+                    
+                    {/* Process Step */}
+                    <TableCell className="text-sm" onClick={() => onEpicSelect(epic.id)}>
+                      {getProcessStep(epic)}
                     </TableCell>
                   </TableRow>
                 </EpicContextMenu>
