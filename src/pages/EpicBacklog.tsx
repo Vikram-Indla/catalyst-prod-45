@@ -40,9 +40,9 @@ export default function EpicBacklog() {
   const assignedEpics = epics || [];
 
   return (
-    <div className="flex flex-col bg-background min-h-screen">
-      {/* Top Header Bar */}
-      <div className="border-b bg-card px-6 py-3">
+    <div className="flex flex-col h-full">
+      {/* Top Action Bar */}
+      <div className="border-b bg-card px-6 py-3 flex-shrink-0">
         <div className="flex items-center justify-between">
           {/* Left: Star and Viewing dropdown */}
           <div className="flex items-center gap-3">
@@ -61,37 +61,6 @@ export default function EpicBacklog() {
                 <SelectItem value="defect">Defect Backlog</SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          {/* Center: View toggle buttons */}
-          <div className="flex items-center gap-2">
-            <Button
-              variant={view === 'list' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setView('list')}
-              className="gap-2"
-            >
-              <List className="h-4 w-4" />
-              List
-            </Button>
-            <Button
-              variant={view === 'kanban' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setView('kanban')}
-              className="gap-2"
-            >
-              <Columns3 className="h-4 w-4" />
-              Kanban
-            </Button>
-            <Button
-              variant={view === 'unassigned' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setView('unassigned')}
-              className="gap-2"
-            >
-              <Eye className="h-4 w-4" />
-              Unassigned Backlog
-            </Button>
           </div>
 
           {/* Right: Action buttons */}
@@ -132,7 +101,7 @@ export default function EpicBacklog() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 px-6 py-6">
+      <div className="flex-1 overflow-auto px-6 py-6">
         <h1 className="text-2xl font-semibold mb-8">All Programs for Digital Services</h1>
 
         {/* Epics for PI-5 Section */}
