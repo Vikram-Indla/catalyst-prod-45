@@ -10,6 +10,7 @@ import { StarredDropdown } from './dropdowns/StarredDropdown';
 import { ItemsDropdown } from './dropdowns/ItemsDropdown';
 import { CreateDropdown } from './dropdowns/CreateDropdown';
 import { NotificationsPanel } from './dropdowns/NotificationsPanel';
+import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { GlobalSearch } from './GlobalSearch';
 import { JiraAlignContextProvider, useJiraAlignContext } from '@/contexts/JiraAlignContext';
@@ -21,6 +22,8 @@ function JiraAlignShellContent() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [notificationCount, setNotificationCount] = useState(2);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [selectedPI, setSelectedPI] = useState<string | null>('pi-5');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Automatically set tier based on current route
@@ -232,9 +235,19 @@ function JiraAlignShellContent() {
       {/* Global Search Dialog */}
       <GlobalSearch open={searchOpen} onOpenChange={setSearchOpen} />
 
-      {/* Main Content with Context Panel */}
+      {/* Main Content with Context Panel - Conditional Sidebar Based on Tier */}
         <div className="flex flex-1 overflow-hidden">
-          <LeftContextPanel />
+          {tier === 'enterprise' ? (
+            <LeftContextPanel />
+          ) : (
+            <PortfolioRoomSidebar
+              portfolioId="default-portfolio"
+              expanded={sidebarExpanded}
+              onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+              selectedPI={selectedPI}
+              onPIChange={setSelectedPI}
+            />
+          )}
           <main className="flex-1 overflow-auto">
             <Outlet />
           </main>
