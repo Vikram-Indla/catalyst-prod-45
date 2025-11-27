@@ -589,6 +589,48 @@ export type Database = {
         }
         Relationships: []
       }
+      epic_process_history: {
+        Row: {
+          created_at: string | null
+          entered_at: string
+          epic_id: string
+          exited_at: string | null
+          id: string
+          process_step_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          entered_at?: string
+          epic_id: string
+          exited_at?: string | null
+          id?: string
+          process_step_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          entered_at?: string
+          epic_id?: string
+          exited_at?: string | null
+          id?: string
+          process_step_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_process_history_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_process_history_process_step_id_fkey"
+            columns: ["process_step_id"]
+            isOneToOne: false
+            referencedRelation: "process_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       epic_program_increments: {
         Row: {
           created_at: string | null
