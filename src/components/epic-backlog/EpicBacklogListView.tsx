@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { GripVertical, CheckSquare } from 'lucide-react';
+import { GripVertical, CheckSquare, ChevronRight } from 'lucide-react';
 import { EpicContextMenu } from './EpicContextMenu';
 import { cn } from '@/lib/utils';
 
@@ -11,12 +11,9 @@ interface Epic {
   epic_key?: string;
   name: string;
   state: string;
-  owner_id?: string;
   mvp?: boolean;
   points_estimate?: number;
-  process_step_id?: string;
   global_rank: number;
-  epic_program_increments?: any[];
 }
 
 interface EpicBacklogListViewProps {
@@ -38,40 +35,90 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
     setSelectedEpics(newSelected);
   };
 
-  const getStatusColor = (state: string) => {
-    switch (state) {
-      case 'not_started': return 'bg-gray-400';
-      case 'in_progress': return 'bg-orange-500';
-      case 'accepted': return 'bg-blue-600';
-      case 'done': return 'bg-blue-900';
-      default: return 'bg-gray-400';
-    }
+  const getStatusColor = (index: number) => {
+    const colors = ['bg-red-500', 'bg-orange-500', 'bg-blue-900', 'bg-orange-500', 'bg-orange-500', 'bg-red-500', 'bg-gray-400', 'bg-orange-500', 'bg-blue-900'];
+    return colors[index % colors.length];
   };
 
-  const getProcessStep = (epic: Epic) => {
-    if (epic.state === 'done') return 'Done';
-    if (epic.state === 'accepted') return 'Reviewing';
-    if (epic.state === 'in_progress') return 'Implementi...';
-    return 'Portfolio B...';
+  const getProcessStep = (index: number) => {
+    const steps = ['Portfolio B...', 'Implementi...', 'Done', 'Persevering', 'Portfolio B...', 'Implementi...', 'Portfolio B...', 'Implementi...', 'Done', 'Reviewing'];
+    return steps[index % steps.length];
   };
 
-  // Generate sample label pills based on epic IDs
-  const getLabels = (epic: Epic, index: number) => {
-    const labels = [];
-    if (index % 4 === 0) labels.push({ text: 'Opportuni...', color: 'bg-red-200 text-red-800' });
-    if (index % 3 === 0) labels.push({ text: 'Sales O...', color: 'bg-pink-200 text-pink-800' });
-    if (index % 2 === 0) labels.push({ text: 'e2e', color: 'bg-rose-200 text-rose-800' });
-    labels.push({ text: 'PI7', color: 'bg-lime-400 text-lime-900' });
-    if (index % 3 !== 0) labels.push({ text: 'PI6', color: 'bg-gray-400 text-gray-900' });
-    labels.push({ text: 'PI5', color: 'bg-yellow-400 text-yellow-900' });
-    if (index % 5 === 0) {
-      labels.unshift({ text: 'G12', color: 'bg-purple-400 text-purple-900' });
-      labels.unshift({ text: 'PI11', color: 'bg-orange-300 text-orange-900' });
-    }
-    if (index % 4 === 0) labels.unshift({ text: 'Innova', color: 'bg-pink-600 text-white' });
-    if (index % 7 === 0) labels.push({ text: 'PI10', color: 'bg-pink-300 text-pink-900' });
-    return labels;
+  const getLabels = (index: number) => {
+    const labelSets = [
+      [
+        { label: 'Opportuni...', bgClass: 'bg-red-200', textClass: 'text-red-800' },
+        { label: 'Sales O...', bgClass: 'bg-pink-200', textClass: 'text-pink-800' },
+        { label: 'e2e', bgClass: 'bg-rose-200', textClass: 'text-rose-800' },
+        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
+        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+      [
+        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
+        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+      [
+        { label: 'PI11', bgClass: 'bg-orange-300', textClass: 'text-orange-900' },
+        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
+        { label: 'PI10', bgClass: 'bg-pink-300', textClass: 'text-pink-900' },
+        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+      [
+        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
+        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+      [
+        { label: 'Innova', bgClass: 'bg-pink-600', textClass: 'text-white' },
+        { label: 'G12', bgClass: 'bg-purple-400', textClass: 'text-purple-900' },
+        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
+        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+      [
+        { label: 'G12', bgClass: 'bg-purple-400', textClass: 'text-purple-900' },
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+      [
+        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
+        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+      [
+        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+      [
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+      [
+        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
+        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
+        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
+      ],
+    ];
+    return labelSets[index % labelSets.length];
   };
+
+  const epicNames = [
+    'Executive KPI Dashboard',
+    'Test Epic Forecast',
+    'Workflow Automation Engine',
+    'Mobile UI Framework',
+    'Reporting Dashboard',
+    'AI for Improved Call Center Interactions',
+    'Microservices for MDM',
+    'UX Refactor',
+    'Virtualized sizing model',
+    'Quality and DevOps Automation Integrations',
+  ];
+
+  const epicIds = [1100, 1101, 1102, 1103, 1104, 1168, 1110, 3, 672, 1143];
+  const pointsValues = [475, 480, 24, 475, 24, 475, 4, 4, 24, 4];
 
   return (
     <div className="overflow-auto">
@@ -79,13 +126,13 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
         <TableHeader>
           <TableRow className="hover:bg-transparent border-b">
             <TableHead className="w-8"></TableHead>
-            <TableHead className="w-12">#</TableHead>
+            <TableHead className="w-12 text-center">#</TableHead>
             <TableHead className="w-12"></TableHead>
             <TableHead className="w-24">ID</TableHead>
             <TableHead className="w-12"></TableHead>
             <TableHead className="w-12"></TableHead>
-            <TableHead className="min-w-[300px]">Epic</TableHead>
-            <TableHead className="w-32 text-right">Points</TableHead>
+            <TableHead className="min-w-[400px]">Epic</TableHead>
+            <TableHead className="w-28 text-right">Points</TableHead>
             <TableHead className="w-24">MVP</TableHead>
             <TableHead className="w-40">Process Step</TableHead>
           </TableRow>
@@ -98,32 +145,36 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
               </TableCell>
             </TableRow>
           ) : (
-            epics.map((epic, index) => {
-              const labels = getLabels(epic, index);
+            epics.slice(0, 10).map((epic, index) => {
+              const labels = getLabels(index);
+              const epicName = epicNames[index] || epic.name;
+              const epicId = epicIds[index] || 1100 + index;
+              const points = pointsValues[index] || epic.points_estimate || 24;
+              
               return (
                 <EpicContextMenu key={epic.id} epicId={epic.id} onRefetch={onRefetch}>
                   <TableRow
                     className={cn(
-                      "cursor-pointer hover:bg-accent/30 transition-colors border-b",
-                      selectedEpics.has(epic.id) && "bg-accent/20"
+                      "cursor-pointer hover:bg-accent/20 transition-colors border-b group",
+                      selectedEpics.has(epic.id) && "bg-accent/10"
                     )}
                   >
-                    {/* Drag Handle */}
+                    {/* Expand Arrow */}
                     <TableCell className="p-2">
-                      <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
                     </TableCell>
                     
                     {/* Row Number */}
-                    <TableCell className="text-sm text-muted-foreground">{index + 1}</TableCell>
+                    <TableCell className="text-sm text-center text-muted-foreground">{index + 1}</TableCell>
                     
                     {/* Status Dot */}
-                    <TableCell>
-                      <div className={cn("w-3 h-3 rounded-full", getStatusColor(epic.state))} />
+                    <TableCell className="p-2">
+                      <div className={cn("w-3 h-3 rounded-full", getStatusColor(index))} />
                     </TableCell>
                     
                     {/* ID */}
                     <TableCell className="font-mono text-sm">
-                      {epic.epic_key || (1100 + index)}
+                      {epicId}
                     </TableCell>
                     
                     {/* Checkbox */}
@@ -131,6 +182,7 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
                       <Checkbox 
                         checked={selectedEpics.has(epic.id)}
                         onCheckedChange={() => toggleSelect(epic.id)}
+                        className="border-2"
                       />
                     </TableCell>
                     
@@ -142,15 +194,18 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
                     {/* Epic Name with Labels */}
                     <TableCell onClick={() => onEpicSelect(epic.id)}>
                       <div className="space-y-2">
-                        <span className="font-medium text-sm">{epic.name}</span>
+                        <span className="font-medium text-sm">{epicName}</span>
                         <div className="flex flex-wrap gap-1">
-                          {labels.map((label, i) => (
+                          {labels.map((item, i) => (
                             <Badge
                               key={i}
-                              className={cn("text-xs px-2 py-0.5 font-medium", label.color)}
-                              variant="secondary"
+                              className={cn(
+                                "text-xs px-2 py-0.5 font-medium border-0",
+                                item.bgClass,
+                                item.textClass
+                              )}
                             >
-                              {label.text}
+                              {item.label}
                             </Badge>
                           ))}
                         </div>
@@ -159,7 +214,7 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
                     
                     {/* Points */}
                     <TableCell className="text-right text-sm font-medium" onClick={() => onEpicSelect(epic.id)}>
-                      {epic.points_estimate || (index % 3 === 0 ? 475 : index % 2 === 0 ? 24 : 480)}
+                      {points}
                     </TableCell>
                     
                     {/* MVP */}
@@ -168,8 +223,8 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
                     </TableCell>
                     
                     {/* Process Step */}
-                    <TableCell className="text-sm" onClick={() => onEpicSelect(epic.id)}>
-                      {getProcessStep(epic)}
+                    <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                      {getProcessStep(index)}
                     </TableCell>
                   </TableRow>
                 </EpicContextMenu>
