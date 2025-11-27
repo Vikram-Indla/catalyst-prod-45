@@ -3,7 +3,6 @@ import {
   Layers, Diamond, Box, Zap, BookOpen, AlertCircle, CheckSquare,
   Target, GitBranch, Lightbulb, AlertTriangle, Shield, Calendar, Package, List, Clock, Truck
 } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 const workItems = [
   { label: 'Themes', icon: Layers, color: 'bg-emerald-500' },
@@ -42,7 +41,7 @@ export function CreateDropdown({ onClose }: CreateDropdownProps) {
 
   return (
     <div className="absolute top-full right-0 mt-1 w-64 bg-popover border rounded-md shadow-lg z-50">
-      <ScrollArea className="max-h-96">
+      <div className="max-h-[500px] overflow-y-auto">
         <div className="p-2">
           <p className="text-xs font-semibold text-muted-foreground px-3 py-2">WORK ITEMS</p>
           {workItems.map((item) => (
@@ -72,7 +71,7 @@ export function CreateDropdown({ onClose }: CreateDropdownProps) {
             </button>
           ))}
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }
