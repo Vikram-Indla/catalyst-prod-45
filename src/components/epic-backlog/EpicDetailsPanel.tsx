@@ -107,7 +107,8 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
     valueScoreAverage: 91.6,
     valueScoreComparison: 49,
     milestones: [
-      { id: 'ms-1', name: 'pivot/persevere', startDate: null, dueDate: null, description: '', state: 'Pending' as const, category: null }
+      { id: 'ms-1', name: 'pivot/persevere', startDate: null, dueDate: null, description: 'pivot/persevere', state: 'In Progress' as const, category: null },
+      { id: 'ms-2', name: 'Retro', startDate: null, dueDate: null, description: 'Retro', state: 'Complete' as const, category: null }
     ],
     budget: 1000000,
     acceptedSpend: 280902,
