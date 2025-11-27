@@ -1,12 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CommentsSection } from '@/components/shared/CommentsSection';
-import { EpicForecastTab } from '@/components/epic-backlog/EpicForecastTab';
-import { X } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Progress } from '@/components/ui/progress';
+import { FileText, Gem, ClipboardList, TrendingUp, ThumbsUp, Milestone, DollarSign, BarChart3, Link as LinkIcon, MessageSquare, Star, Bell, Grid3x3, FileStack, Grid2x2, CheckSquare, ClipboardCheck, Package } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
 
 interface EpicDetailsPanelProps {
   epicId: string;
@@ -20,12 +21,7 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
     queryFn: async () => {
       const { data, error } = await supabase
         .from('epics')
-        .select(`
-          *,
-          strategic_themes(name),
-          programs(name),
-          epic_program_increments(program_increments(name))
-        `)
+        .select('*')
         .eq('id', epicId)
         .single();
       if (error) throw error;
@@ -33,260 +29,280 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
     },
   });
 
-  const { data: children } = useQuery({
-    queryKey: ['epic-children-details', epicId],
-    queryFn: async () => {
-      const [features, capabilities] = await Promise.all([
-        supabase
-          .from('features')
-          .select('*')
-          .eq('epic_id', epicId)
-          .order('rank_within_epic'),
-        supabase
-          .from('capabilities')
-          .select('*')
-          .eq('epic_id', epicId)
-          .order('rank_within_epic'),
-      ]);
-      
-      return {
-        features: features.data || [],
-        capabilities: capabilities.data || [],
-      };
-    },
-  });
-
   if (!epic) return null;
-
-  const getStateColor = (state: string) => {
-    switch (state) {
-      case 'not_started': return 'secondary';
-      case 'in_progress': return 'default';
-      case 'accepted': return 'outline';
-      default: return 'secondary';
-    }
-  };
 
   return (
     <Sheet open={!!epicId} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-3xl p-0 flex flex-col z-[100]">
-        <SheetHeader className="px-6 py-3 border-b bg-card sticky top-0 z-10">
-          <div className="flex items-center justify-between">
+      <SheetContent side="right" className="w-full sm:max-w-4xl p-0 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b bg-card">
+          <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
-              <SheetTitle className="text-lg">{epic.name}</SheetTitle>
-              <span className="text-sm text-muted-foreground">
-                {epic.epic_key || `E-${epic.id.slice(0, 6)}`}
-              </span>
+              <CheckSquare className="h-5 w-5 text-primary" />
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-muted-foreground">Epic 1168</span>
+                  <LinkIcon className="h-4 w-4 text-muted-foreground" />
+                </div>
+                <h2 className="text-xl font-semibold mt-1">AI for Improved Call Center Interactions</h2>
+              </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <div className="flex items-center gap-2 mt-2">
-            <Badge variant={getStateColor(epic.state)} className="text-xs">
-              {epic.state.replace('_', ' ').toUpperCase()}
-            </Badge>
-            {epic.mvp && <Badge variant="default" className="text-xs">MVP</Badge>}
-            {epic.health && (
-              <Badge variant="outline" className="text-xs">
-                Health: {epic.health}
-              </Badge>
-            )}
-          </div>
-        </SheetHeader>
-
-        {/* Contains In (Hierarchy) - Simplified */}
-        <div className="px-6 py-3 border-b bg-muted/20">
-          <div className="flex items-center gap-4 text-sm">
-            {epic.strategic_themes && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">Theme:</span>
-                <Badge variant="secondary" className="text-xs">
-                  {epic.strategic_themes.name}
-                </Badge>
-              </div>
-            )}
-            {epic.programs && (
-              <div className="flex items-center gap-2">
-                <span className="text-muted-foreground">Program:</span>
-                <Badge variant="secondary" className="text-xs">
-                  {epic.programs.name}
-                </Badge>
-              </div>
-            )}
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm">Why?</Button>
+              <Button variant="default" size="sm">Save</Button>
+            </div>
           </div>
         </div>
 
+        {/* Tabs */}
         <Tabs defaultValue="details" className="flex-1 flex flex-col overflow-hidden">
-          <div className="border-b px-6 bg-card sticky top-[72px] z-10">
-            <TabsList className="h-10 bg-transparent">
-              <TabsTrigger value="details" className="text-xs">Details</TabsTrigger>
-              <TabsTrigger value="children" className="text-xs">Children</TabsTrigger>
-              <TabsTrigger value="dependencies" className="text-xs">Dependencies</TabsTrigger>
-              <TabsTrigger value="risks" className="text-xs">Risks</TabsTrigger>
-              <TabsTrigger value="forecast" className="text-xs">Forecast</TabsTrigger>
-              <TabsTrigger value="comments" className="text-xs">Comments</TabsTrigger>
+          <div className="border-b px-6 bg-card">
+            <TabsList className="h-12 bg-transparent justify-start gap-1">
+              <TabsTrigger value="details" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Details
+              </TabsTrigger>
+              <TabsTrigger value="design" className="gap-2">
+                <Gem className="h-4 w-4" />
+                Design
+              </TabsTrigger>
+              <TabsTrigger value="intake" className="gap-2">
+                <ClipboardList className="h-4 w-4" />
+                Intake
+              </TabsTrigger>
+              <TabsTrigger value="benefits" className="gap-2">
+                <TrendingUp className="h-4 w-4" />
+                Benefits
+              </TabsTrigger>
+              <TabsTrigger value="value" className="gap-2">
+                <ThumbsUp className="h-4 w-4" />
+                Value
+              </TabsTrigger>
+              <TabsTrigger value="milestones" className="gap-2">
+                <Milestone className="h-4 w-4" />
+                Milestones
+              </TabsTrigger>
+              <TabsTrigger value="spend" className="gap-2">
+                <DollarSign className="h-4 w-4" />
+                Spend
+              </TabsTrigger>
+              <TabsTrigger value="forecast" className="gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Forecast
+              </TabsTrigger>
+              <TabsTrigger value="links" className="gap-2">
+                <LinkIcon className="h-4 w-4" />
+                Links
+              </TabsTrigger>
             </TabsList>
           </div>
 
           <div className="flex-1 overflow-auto">
-            <TabsContent value="details" className="m-0 p-6 space-y-6">
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground uppercase">Description</label>
-                  <p className="mt-2 text-sm leading-relaxed">{epic.description || 'No description provided'}</p>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-6 pt-4 border-t">
+            <TabsContent value="details" className="m-0 p-6">
+              <div className="grid grid-cols-3 gap-6">
+                {/* Left Column - Description */}
+                <div className="col-span-2 space-y-6">
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">Owner</label>
-                    <p className="mt-1 text-sm">{epic.owner_id || 'Unassigned'}</p>
+                    <label className="text-sm font-medium text-red-500 mb-2 block">■ Description:</label>
+                    <Textarea
+                      defaultValue="Use natural language processing to perform in-call voice analysis and deliver real-time guidance to agents and new insight to managers."
+                      className="min-h-[120px] resize-none"
+                    />
                   </div>
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">Points</label>
-                    <p className="mt-1 text-sm font-medium">{epic.points_estimate || '0'}</p>
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">State</label>
-                    <Badge variant={getStateColor(epic.state)} className="mt-1 text-xs">
-                      {epic.state.replace('_', ' ')}
-                    </Badge>
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">MVP</label>
-                    <p className="mt-1 text-sm">{epic.mvp ? 'Yes' : 'No'}</p>
-                  </div>
-                </div>
 
-                <div className="pt-4 border-t">
-                  <label className="text-xs font-semibold text-muted-foreground uppercase">Program Increments</label>
-                  <div className="mt-2 flex gap-2 flex-wrap">
-                    {epic.epic_program_increments?.length > 0 ? (
-                      epic.epic_program_increments.map((epi: any, i: number) => (
-                        <Badge key={i} variant="outline" className="text-xs">
-                          {epi.program_increments.name}
-                        </Badge>
-                      ))
-                    ) : (
-                      <Badge variant="secondary" className="text-xs">Unassigned</Badge>
-                    )}
-                  </div>
-                </div>
-
-                {(epic.start_date || epic.end_date) && (
-                  <div className="pt-4 border-t">
-                    <label className="text-xs font-semibold text-muted-foreground uppercase">Timeline</label>
-                    <div className="mt-2 grid grid-cols-2 gap-4">
-                      {epic.start_date && (
-                        <div>
-                          <span className="text-xs text-muted-foreground">Start:</span>
-                          <p className="text-sm">{new Date(epic.start_date).toLocaleDateString()}</p>
-                        </div>
-                      )}
-                      {epic.end_date && (
-                        <div>
-                          <span className="text-xs text-muted-foreground">End:</span>
-                          <p className="text-sm">{new Date(epic.end_date).toLocaleDateString()}</p>
-                        </div>
-                      )}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-red-500 mb-2 block">■ Type:</label>
+                      <Select defaultValue="business">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="business">Business</SelectItem>
+                          <SelectItem value="enabler">Enabler</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">MVP:</label>
+                      <Select defaultValue="no">
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="no">No</SelectItem>
+                          <SelectItem value="yes">Yes</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-                )}
-              </div>
-            </TabsContent>
 
-            <TabsContent value="children" className="m-0 p-6 space-y-6">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold uppercase text-muted-foreground">
-                    Capabilities ({children?.capabilities.length || 0})
-                  </h3>
-                </div>
-                {children?.capabilities && children.capabilities.length > 0 ? (
-                  <div className="space-y-2">
-                    {children.capabilities.map((cap: any) => (
-                      <div key={cap.id} className="p-3 border rounded hover:bg-muted/50 transition-colors">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{cap.name}</div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {cap.capability_key || `C-${cap.id.slice(0, 6)}`}
-                            </div>
-                          </div>
-                          {cap.state && (
-                            <Badge variant="secondary" className="text-xs">
-                              {cap.state}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Contained In:</label>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline" className="gap-1">
+                        <Package className="h-3 w-3 text-green-600" />
+                        1: User Experience
+                      </Badge>
+                    </div>
                   </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">No capabilities</p>
-                )}
-              </div>
-              
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold uppercase text-muted-foreground">
-                    Features ({children?.features.length || 0})
-                  </h3>
-                </div>
-                {children?.features && children.features.length > 0 ? (
-                  <div className="space-y-2">
-                    {children.features.map((feat: any) => (
-                      <div key={feat.id} className="p-3 border rounded hover:bg-muted/50 transition-colors">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="font-medium text-sm">{feat.name}</div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              {feat.estimate_points ? `${feat.estimate_points} pts` : 'Not estimated'}
-                            </div>
-                          </div>
-                          {feat.status && (
-                            <Badge variant="secondary" className="text-xs">
-                              {feat.status}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+
+                  <div>
+                    <label className="text-sm font-medium text-red-500 mb-2 block">■ Primary Program:</label>
+                    <Select defaultValue="mobile">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="mobile">Mobile</SelectItem>
+                        <SelectItem value="web">Web</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground italic">No features</p>
-                )}
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Additional Programs</label>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">AI ×</Badge>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Owner:</label>
+                    <Select defaultValue="sean">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sean">Sean Duffy</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Right Column - State and Progress */}
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-sm font-medium text-red-500 mb-2 block">■ State:</label>
+                    <Select defaultValue="in_progress">
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="not_started">1 - Not Started</SelectItem>
+                        <SelectItem value="in_progress">2 - In Progress</SelectItem>
+                        <SelectItem value="done">3 - Done</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <span>75 of 95 Story points accepted</span>
+                      </div>
+                      <Progress value={79} className="h-2" />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <span>3 of 15 Features Accepted</span>
+                      </div>
+                      <Progress value={20} className="h-2" />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <span>0 of 15 Features in Delivery</span>
+                      </div>
+                      <Progress value={0} className="h-2" />
+                    </div>
+
+                    <div>
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <span>0 of 15 Features Delivered</span>
+                      </div>
+                      <Progress value={0} className="h-2" />
+                    </div>
+                  </div>
+
+                  <Button className="w-full gap-2" size="lg">
+                    <BarChart3 className="h-4 w-4" />
+                    Fast Edit
+                  </Button>
+
+                  <div className="space-y-2">
+                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                      <MessageSquare className="h-4 w-4" />
+                      Discussions
+                      <Badge variant="destructive" className="ml-auto">0</Badge>
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                      <Star className="h-4 w-4" />
+                      Subscribe
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                      <Grid3x3 className="h-4 w-4" />
+                      Update child process steps
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                      <Grid3x3 className="h-4 w-4" />
+                      Responsibility Matrix
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                      <FileStack className="h-4 w-4" />
+                      Trace This Epic
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                      <FileText className="h-4 w-4" />
+                      Status Report
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                      <Grid2x2 className="h-4 w-4" />
+                      Requirement Hierarchy
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
+                      <ClipboardCheck className="h-4 w-4" />
+                      Audit Log
+                    </Button>
+                    <Button variant="link" className="w-full justify-start p-0 h-auto text-primary">
+                      + Show More
+                    </Button>
+                  </div>
+                </div>
               </div>
             </TabsContent>
 
-            <TabsContent value="dependencies" className="m-0 p-6 space-y-4">
-              <div>
-                <h3 className="text-sm font-semibold uppercase text-muted-foreground mb-3">
-                  Dependencies
-                </h3>
-                <p className="text-sm text-muted-foreground italic">
-                  No dependencies configured
-                </p>
-              </div>
+            <TabsContent value="design" className="m-0 p-6">
+              <p className="text-muted-foreground">Design tab content</p>
             </TabsContent>
 
-            <TabsContent value="risks" className="m-0 p-6 space-y-4">
-              <div>
-                <h3 className="text-sm font-semibold uppercase text-muted-foreground mb-3">
-                  Risks & Impediments
-                </h3>
-                <p className="text-sm text-muted-foreground italic">
-                  No risks identified
-                </p>
-              </div>
+            <TabsContent value="intake" className="m-0 p-6">
+              <p className="text-muted-foreground">Intake tab content</p>
             </TabsContent>
 
-            <TabsContent value="forecast" className="m-0">
-              <EpicForecastTab epicId={epicId} />
+            <TabsContent value="benefits" className="m-0 p-6">
+              <p className="text-muted-foreground">Benefits tab content</p>
             </TabsContent>
 
-            <TabsContent value="comments" className="m-0 p-6">
-              <CommentsSection entityId={epicId} entityType="epic" />
+            <TabsContent value="value" className="m-0 p-6">
+              <p className="text-muted-foreground">Value tab content</p>
+            </TabsContent>
+
+            <TabsContent value="milestones" className="m-0 p-6">
+              <p className="text-muted-foreground">Milestones tab content</p>
+            </TabsContent>
+
+            <TabsContent value="spend" className="m-0 p-6">
+              <p className="text-muted-foreground">Spend tab content</p>
+            </TabsContent>
+
+            <TabsContent value="forecast" className="m-0 p-6">
+              <p className="text-muted-foreground">Forecast tab content</p>
+            </TabsContent>
+
+            <TabsContent value="links" className="m-0 p-6">
+              <p className="text-muted-foreground">Links tab content</p>
             </TabsContent>
           </div>
         </Tabs>
