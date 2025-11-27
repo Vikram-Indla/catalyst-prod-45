@@ -27,7 +27,7 @@ export default function StrategyRoomPage() {
   const [snapshotSearchQuery, setSnapshotSearchQuery] = useState('');
 
   // Fetch snapshots from database
-  const { data: snapshots = [] } = useQuery({
+  const { data: snapshots = [], isLoading: snapshotsLoading } = useQuery({
     queryKey: ['strategy-snapshots'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -39,15 +39,13 @@ export default function StrategyRoomPage() {
     },
   });
 
-  // Use the first real snapshot from DB or fallback to mock
-  const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>(() => {
-    return snapshots[0]?.id || mockStrategySnapshots[0]?.id || '';
-  });
+  // Use only real database snapshots - never use mock data
+  const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
 
-  // Update selected snapshot when snapshots load
-  const effectiveSelectedSnapshotId = selectedSnapshotId || snapshots[0]?.id || mockStrategySnapshots[0]?.id || '';
+  // Set the first snapshot when data loads
+  const effectiveSelectedSnapshotId = selectedSnapshotId || snapshots[0]?.id || '';
 
-  const selectedSnapshot = snapshots.find((s) => s.id === effectiveSelectedSnapshotId) || mockStrategySnapshots.find((s) => s.id === effectiveSelectedSnapshotId);
+  const selectedSnapshot = snapshots.find((s) => s.id === effectiveSelectedSnapshotId);
 
   const handleLevelClick = (level: string) => {
     const levelMap: Record<string, ObjectiveLevel> = {
@@ -81,12 +79,17 @@ export default function StrategyRoomPage() {
     setSelectedObjective(objective);
   };
 
-  const allSnapshots = [...snapshots, ...mockStrategySnapshots];
-  const filteredSnapshots = allSnapshots.filter((s) =>
+  const filteredSnapshots = snapshots.filter((s) =>
     s.name.toLowerCase().includes(snapshotSearchQuery.toLowerCase())
   );
 
-  if (!selectedSnapshot) return <div>Loading...</div>;
+  if (snapshotsLoading || !effectiveSelectedSnapshotId) {
+    return (
+      <div className="p-6 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6">

@@ -43,12 +43,7 @@ export function useOKRTree(snapshotId?: string) {
           confidence_score,
           progress_pct,
           owner_id,
-          parent_objective_id,
-          profiles:owner_id (
-            id,
-            full_name,
-            avatar_url
-          )
+          parent_objective_id
         `)
         .eq('snapshot_id', targetSnapshotId)
         .order('level', { ascending: true });
@@ -62,7 +57,7 @@ export function useOKRTree(snapshotId?: string) {
       objectives?.forEach((obj: any) => {
         const item: OKRTreeItem = {
           id: obj.id,
-          numericId: parseInt(obj.id.split('-')[1]) || 0,
+          numericId: parseInt(obj.id.replace(/\D/g, '').slice(0, 6)) || Math.floor(Math.random() * 100000),
           title: obj.name,
           tier: obj.level === 'strategic_goal' ? 'strategic_goal' 
                : obj.level === 'portfolio' ? 'portfolio'
@@ -72,9 +67,9 @@ export function useOKRTree(snapshotId?: string) {
           keyResultsProgress: obj.progress_pct || 0,
           owner: {
             id: obj.owner_id || 'system',
-            name: obj.profiles?.full_name || 'Unassigned',
-            avatar: obj.profiles?.avatar_url,
-            initials: getInitials(obj.profiles?.full_name || 'Unassigned'),
+            name: 'Unassigned',
+            avatar: undefined,
+            initials: 'UN',
           },
           children: [],
           isExpanded: false,
