@@ -35,13 +35,26 @@ interface MenuItem {
   expandable?: boolean;
 }
 
+// Enterprise menu items (when tier === 'enterprise')
+const getEnterpriseMenuItems = (): MenuItem[] => [
+  { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
+  { id: 'strategic-snapshots', label: 'Strategic Snapshots', icon: Target, path: '/enterprise/snapshots', tiers: ['enterprise'] },
+  { id: 'strategic-backlog', label: 'Strategic Backlog', icon: List, path: '/enterprise/backlog', tiers: ['enterprise'] },
+  { id: 'strategy-tree', label: 'Strategy Tree', icon: GitBranch, path: '/enterprise/strategy-tree', tiers: ['enterprise'] },
+  { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics', tiers: ['enterprise'] },
+  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['enterprise'] },
+  { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['enterprise'], expandable: true },
+  { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['enterprise'] },
+  { id: 'more-pages', label: 'More pages', icon: Boxes, path: '#', tiers: ['enterprise'], expandable: true },
+];
+
+// Portfolio/Program/Team menu items
 const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): MenuItem[] => [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: portfolioId ? `/portfolio/${portfolioId}/room` : '/portfolio-room', tiers: ['portfolio', 'program', 'team'] },
-  { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
   { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives', tiers: ['portfolio', 'program'] },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics', tiers: ['portfolio', 'program'] },
-  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['enterprise', 'portfolio', 'program'] },
-  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree', tiers: ['enterprise', 'portfolio'] },
+  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['portfolio', 'program'] },
+  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree', tiers: ['portfolio'] },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/value-stream', tiers: ['portfolio', 'program'] },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: portfolioId ? `/portfolio/${portfolioId}/forecast` : '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
@@ -57,6 +70,7 @@ interface LeftContextPanelProps {
 
 export function LeftContextPanel({ className }: LeftContextPanelProps) {
   const [expanded, setExpanded] = useState(true);
+  const [moreItemsExpanded, setMoreItemsExpanded] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -70,6 +84,24 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     snapshotId,
     setSnapshotId,
   } = useJiraAlignContext();
+
+  // More items sub-menu for Enterprise
+  const moreItemsSubMenu = [
+    { id: 'ideation', label: 'Ideation', path: '/ideation' },
+    { id: 'risks', label: 'Risks', path: '/risks' },
+    { id: 'impediments', label: 'Impediments', path: '/impediments' },
+    { id: 'specifications', label: 'Specifications', path: '/specifications' },
+    { id: 'sprints', label: 'Sprints', path: '/sprints' },
+    { id: 'themes', label: 'Themes', path: '/themes' },
+    { id: 'epics', label: 'Epics', path: '/epics' },
+    { id: 'features', label: 'Features', path: '/features' },
+    { id: 'stories', label: 'Stories', path: '/stories' },
+    { id: 'defects', label: 'Defects', path: '/defects' },
+    { id: 'tasks', label: 'Tasks', path: '/tasks' },
+    { id: 'objectives', label: 'Objectives', path: '/enterprise/objectives' },
+    { id: 'dependencies', label: 'Dependencies', path: '/dependencies' },
+    { id: 'release-vehicles', label: 'Release Vehicles', path: '/release-vehicles' },
+  ];
 
   // Mock data - in production these would come from API
   const portfolios = [
@@ -108,6 +140,11 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   };
 
   const getFilteredMenuItems = () => {
+    // Use Enterprise menu items when tier is 'enterprise'
+    if (tier === 'enterprise') {
+      return getEnterpriseMenuItems();
+    }
+    // Otherwise use regular menu items
     const menuItems = getMenuItems(portfolioId, programId, tier);
     return menuItems.filter(item => !item.tiers || item.tiers.includes(tier));
   };
@@ -235,25 +272,57 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
           {getFilteredMenuItems().map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
+            const isMoreItems = item.id === 'more-items';
 
             return (
-              <button
-                key={item.id}
-                onClick={() => handleNavigation(item.path)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
-                  "hover:bg-accent/50",
-                  active && "bg-accent text-primary font-medium",
-                  !expanded && "justify-center px-2"
+              <div key={item.id}>
+                <button
+                  onClick={() => {
+                    if (isMoreItems) {
+                      setMoreItemsExpanded(!moreItemsExpanded);
+                    } else {
+                      handleNavigation(item.path);
+                    }
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
+                    "hover:bg-accent/50",
+                    active && "bg-accent text-primary font-medium",
+                    !expanded && "justify-center px-2"
+                  )}
+                  title={!expanded ? item.label : undefined}
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                  {expanded && <span className="truncate text-left flex-1">{item.label}</span>}
+                  {expanded && item.expandable && (
+                    <ChevronRight 
+                      className={cn(
+                        "h-4 w-4 text-muted-foreground transition-transform",
+                        moreItemsExpanded && "rotate-90"
+                      )} 
+                    />
+                  )}
+                </button>
+
+                {/* More items submenu - only for Enterprise tier */}
+                {isMoreItems && moreItemsExpanded && expanded && tier === 'enterprise' && (
+                  <div className="bg-accent/20">
+                    {moreItemsSubMenu.map((subItem) => (
+                      <button
+                        key={subItem.id}
+                        onClick={() => handleNavigation(subItem.path)}
+                        className={cn(
+                          "w-full flex items-center gap-3 pl-12 pr-4 py-2 text-sm font-normal transition-colors",
+                          "hover:bg-accent/50",
+                          isActive(subItem.path) && "bg-accent text-primary font-medium"
+                        )}
+                      >
+                        <span className="truncate text-left">{subItem.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 )}
-                title={!expanded ? item.label : undefined}
-              >
-                <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-                {expanded && <span className="truncate text-left flex-1">{item.label}</span>}
-                {expanded && item.expandable && (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                )}
-              </button>
+              </div>
             );
           })}
         </nav>
