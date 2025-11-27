@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { GripVertical, CheckSquare, ChevronRight } from 'lucide-react';
+import { GripVertical, CheckSquare } from 'lucide-react';
 import { EpicContextMenu } from './EpicContextMenu';
 import { EpicLabelSelector } from './EpicLabelSelector';
 import { cn } from '@/lib/utils';
@@ -16,9 +16,21 @@ interface Epic {
   epic_key?: string;
   name: string;
   state: string;
+  status?: string;
+  health?: string;
   mvp?: boolean;
   points_estimate?: number;
+  estimate?: number;
   global_rank: number;
+  primary_program_id?: string;
+  portfolio_id?: string;
+  theme_id?: string;
+  owner_id?: string;
+  start_date?: string;
+  end_date?: string;
+  created_at?: string;
+  updated_at?: string;
+  process_step_id?: string;
 }
 
 interface EpicBacklogListViewProps {
@@ -26,9 +38,18 @@ interface EpicBacklogListViewProps {
   onEpicSelect: (id: string) => void;
   onRefetch: () => void;
   onManageLabels?: () => void;
+  visibleColumns?: string[];
 }
 
-export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, onManageLabels }: EpicBacklogListViewProps) {
+const DEFAULT_COLUMNS = ['id', 'name', 'state', 'labels', 'points_estimate', 'mvp', 'process_step'];
+
+export function EpicBacklogListView({ 
+  epics, 
+  onEpicSelect, 
+  onRefetch,
+  onManageLabels,
+  visibleColumns = DEFAULT_COLUMNS
+}: EpicBacklogListViewProps) {
   const [selectedEpics, setSelectedEpics] = useState<Set<string>>(new Set());
 
   // Fetch labels for all epics
@@ -102,90 +123,18 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, onManageLa
     }
   };
 
-  const getStatusColor = (index: number) => {
-    const colors = ['bg-red-500', 'bg-orange-500', 'bg-blue-900', 'bg-orange-500', 'bg-orange-500', 'bg-red-500', 'bg-gray-400', 'bg-orange-500', 'bg-blue-900'];
-    return colors[index % colors.length];
+  const getStatusColor = (state?: string) => {
+    switch (state) {
+      case 'not_started':
+        return 'bg-gray-500';
+      case 'in_progress':
+        return 'bg-blue-500';
+      case 'done':
+        return 'bg-green-500';
+      default:
+        return 'bg-orange-500';
+    }
   };
-
-  const getProcessStep = (index: number) => {
-    const steps = ['Portfolio B...', 'Implementi...', 'Done', 'Persevering', 'Portfolio B...', 'Implementi...', 'Portfolio B...', 'Implementi...', 'Done', 'Reviewing'];
-    return steps[index % steps.length];
-  };
-
-  const getLabels = (index: number) => {
-    const labelSets = [
-      [
-        { label: 'Opportuni...', bgClass: 'bg-red-200', textClass: 'text-red-800' },
-        { label: 'Sales O...', bgClass: 'bg-pink-200', textClass: 'text-pink-800' },
-        { label: 'e2e', bgClass: 'bg-rose-200', textClass: 'text-rose-800' },
-        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
-        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-      [
-        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
-        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-      [
-        { label: 'PI11', bgClass: 'bg-orange-300', textClass: 'text-orange-900' },
-        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
-        { label: 'PI10', bgClass: 'bg-pink-300', textClass: 'text-pink-900' },
-        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-      [
-        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
-        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-      [
-        { label: 'Innova', bgClass: 'bg-pink-600', textClass: 'text-white' },
-        { label: 'G12', bgClass: 'bg-purple-400', textClass: 'text-purple-900' },
-        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
-        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-      [
-        { label: 'G12', bgClass: 'bg-purple-400', textClass: 'text-purple-900' },
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-      [
-        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
-        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-      [
-        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-      [
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-      [
-        { label: 'PI7', bgClass: 'bg-lime-400', textClass: 'text-lime-900' },
-        { label: 'PI6', bgClass: 'bg-gray-400', textClass: 'text-gray-900' },
-        { label: 'PI5', bgClass: 'bg-yellow-400', textClass: 'text-yellow-900' },
-      ],
-    ];
-    return labelSets[index % labelSets.length];
-  };
-
-  const epicNames = [
-    'Executive KPI Dashboard',
-    'Test Epic Forecast',
-    'Workflow Automation Engine',
-    'Mobile UI Framework',
-    'Reporting Dashboard',
-    'AI for Improved Call Center Interactions',
-    'Microservices for MDM',
-    'UX Refactor',
-    'Virtualized sizing model',
-    'Quality and DevOps Automation Integrations',
-  ];
-
-  const epicIds = [1100, 1101, 1102, 1103, 1104, 1168, 1110, 3, 672, 1143];
-  const pointsValues = [475, 480, 24, 475, 24, 475, 4, 4, 24, 4];
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
@@ -196,13 +145,25 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, onManageLa
               <TableHead className="w-8"></TableHead>
               <TableHead className="w-12 text-center">#</TableHead>
               <TableHead className="w-12"></TableHead>
-              <TableHead className="w-24">ID</TableHead>
+              {visibleColumns.includes('id') && <TableHead className="w-24">ID</TableHead>}
+              {visibleColumns.includes('epic_key') && <TableHead className="w-32">Epic Key</TableHead>}
               <TableHead className="w-12"></TableHead>
-              <TableHead className="w-12"></TableHead>
-              <TableHead className="min-w-[400px]">Epic</TableHead>
-              <TableHead className="w-28 text-right">Points</TableHead>
-              <TableHead className="w-24">MVP</TableHead>
-              <TableHead className="w-40">Process Step</TableHead>
+              {visibleColumns.includes('state') && <TableHead className="w-32">State</TableHead>}
+              {visibleColumns.includes('status') && <TableHead className="w-24">Status</TableHead>}
+              {visibleColumns.includes('health') && <TableHead className="w-20">Health</TableHead>}
+              {visibleColumns.includes('name') && <TableHead className="min-w-[400px]">Epic</TableHead>}
+              {visibleColumns.includes('points_estimate') && <TableHead className="w-28 text-right">Points</TableHead>}
+              {visibleColumns.includes('estimate') && <TableHead className="w-24 text-right">Estimate</TableHead>}
+              {visibleColumns.includes('mvp') && <TableHead className="w-24">MVP</TableHead>}
+              {visibleColumns.includes('process_step') && <TableHead className="w-40">Process Step</TableHead>}
+              {visibleColumns.includes('primary_program') && <TableHead className="w-32">Program</TableHead>}
+              {visibleColumns.includes('portfolio') && <TableHead className="w-32">Portfolio</TableHead>}
+              {visibleColumns.includes('theme') && <TableHead className="w-32">Theme</TableHead>}
+              {visibleColumns.includes('owner') && <TableHead className="w-32">Owner</TableHead>}
+              {visibleColumns.includes('start_date') && <TableHead className="w-28">Start Date</TableHead>}
+              {visibleColumns.includes('end_date') && <TableHead className="w-28">End Date</TableHead>}
+              {visibleColumns.includes('created_at') && <TableHead className="w-28">Created</TableHead>}
+              {visibleColumns.includes('updated_at') && <TableHead className="w-28">Updated</TableHead>}
             </TableRow>
           </TableHeader>
           <Droppable droppableId="epics-list">
@@ -210,100 +171,176 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, onManageLa
               <TableBody ref={provided.innerRef} {...provided.droppableProps}>
                 {epics.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={10} className="text-center py-12 text-muted-foreground">
+                    <TableCell colSpan={20} className="text-center py-12 text-muted-foreground">
                       <div className="text-sm">Drag & Drop Items Here</div>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  epics.slice(0, 10).map((epic, index) => {
-              const labels = getLabels(index);
-              const epicName = epicNames[index] || epic.name;
-              const epicId = epicIds[index] || 1100 + index;
-              const points = pointsValues[index] || epic.points_estimate || 24;
-              
-              return (
-                <Draggable key={epic.id} draggableId={epic.id} index={index}>
-                  {(provided, snapshot) => (
-                    <EpicContextMenu epicId={epic.id} onRefetch={onRefetch}>
-                      <TableRow
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        className={cn(
-                          "cursor-pointer hover:bg-accent/20 transition-colors border-b group",
-                          selectedEpics.has(epic.id) && "bg-accent/10",
-                          snapshot.isDragging && "bg-accent/30 shadow-lg"
-                        )}
-                      >
-                        {/* Drag Handle */}
-                        <TableCell className="p-2" {...provided.dragHandleProps}>
-                          <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
-                        </TableCell>
-                    
-                    {/* Row Number */}
-                    <TableCell className="text-sm text-center text-muted-foreground">{index + 1}</TableCell>
-                    
-                    {/* Status Dot */}
-                    <TableCell className="p-2">
-                      <div className={cn("w-3 h-3 rounded-full", getStatusColor(index))} />
-                    </TableCell>
-                    
-                    {/* ID */}
-                    <TableCell className="font-mono text-sm">
-                      {epicId}
-                    </TableCell>
-                    
-                    {/* Checkbox */}
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Checkbox 
-                        checked={selectedEpics.has(epic.id)}
-                        onCheckedChange={() => toggleSelect(epic.id)}
-                        className="border-2"
-                      />
-                    </TableCell>
-                    
-                    {/* Icon */}
-                    <TableCell>
-                      <CheckSquare className="h-4 w-4 text-primary" />
-                    </TableCell>
-                    
-                    {/* Epic Name with Labels */}
-                    <TableCell>
-                      <div className="space-y-2">
-                        <span className="font-medium text-sm cursor-pointer" onClick={() => onEpicSelect(epic.id)}>
-                          {epicName}
-                        </span>
-                        <EpicLabelSelector 
-                          epicId={epic.id} 
-                          onManageLabels={onManageLabels}
-                        />
-                      </div>
-                    </TableCell>
-                    
-                    {/* Points */}
-                    <TableCell className="text-right text-sm font-medium" onClick={() => onEpicSelect(epic.id)}>
-                      {points}
-                    </TableCell>
-                    
-                    {/* MVP */}
-                    <TableCell className="text-sm" onClick={() => onEpicSelect(epic.id)}>
-                      No
-                    </TableCell>
-                    
-                        {/* Process Step */}
-                        <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                          {getProcessStep(index)}
-                        </TableCell>
-                      </TableRow>
-                    </EpicContextMenu>
-                  )}
-                </Draggable>
-              );
-            })
-          )}
-          {provided.placeholder}
-        </TableBody>
-      )}
-    </Droppable>
+                  epics.map((epic, index) => (
+                    <Draggable key={epic.id} draggableId={epic.id} index={index}>
+                      {(provided, snapshot) => (
+                        <EpicContextMenu epicId={epic.id} onRefetch={onRefetch}>
+                          <TableRow
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={cn(
+                              "cursor-pointer hover:bg-accent/20 transition-colors border-b group",
+                              selectedEpics.has(epic.id) && "bg-accent/10",
+                              snapshot.isDragging && "bg-accent/30 shadow-lg"
+                            )}
+                          >
+                            <TableCell className="p-2" {...provided.dragHandleProps}>
+                              <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
+                            </TableCell>
+                            
+                            <TableCell className="text-sm text-center text-muted-foreground">{index + 1}</TableCell>
+                            
+                            <TableCell onClick={(e) => e.stopPropagation()}>
+                              <Checkbox 
+                                checked={selectedEpics.has(epic.id)}
+                                onCheckedChange={() => toggleSelect(epic.id)}
+                                className="border-2"
+                              />
+                            </TableCell>
+
+                            {visibleColumns.includes('id') && (
+                              <TableCell className="font-mono text-sm" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.epic_key || index + 1100}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('epic_key') && (
+                              <TableCell className="font-mono text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.epic_key || '-'}
+                              </TableCell>
+                            )}
+
+                            <TableCell className="p-2">
+                              <div className={cn("w-3 h-3 rounded-full", getStatusColor(epic.state))} />
+                            </TableCell>
+
+                            {visibleColumns.includes('state') && (
+                              <TableCell className="text-sm capitalize" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.state?.replace('_', ' ') || '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('status') && (
+                              <TableCell onClick={() => onEpicSelect(epic.id)}>
+                                <Badge variant="outline" className="text-xs capitalize">
+                                  {epic.status?.replace('_', ' ') || 'proposed'}
+                                </Badge>
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('health') && epic.health && (
+                              <TableCell onClick={() => onEpicSelect(epic.id)}>
+                                <Badge 
+                                  variant={epic.health === 'green' ? 'default' : epic.health === 'yellow' ? 'secondary' : 'destructive'}
+                                  className="text-xs capitalize"
+                                >
+                                  {epic.health}
+                                </Badge>
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('name') && (
+                              <TableCell>
+                                <div className="space-y-2">
+                                  <span className="font-medium text-sm cursor-pointer" onClick={() => onEpicSelect(epic.id)}>
+                                    {epic.name}
+                                  </span>
+                                  {visibleColumns.includes('labels') && (
+                                    <EpicLabelSelector 
+                                      epicId={epic.id} 
+                                      onManageLabels={onManageLabels}
+                                    />
+                                  )}
+                                </div>
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('points_estimate') && (
+                              <TableCell className="text-right text-sm font-medium" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.points_estimate || '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('estimate') && (
+                              <TableCell className="text-right text-sm" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.estimate || '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('mvp') && (
+                              <TableCell className="text-sm" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.mvp ? 'Yes' : 'No'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('process_step') && (
+                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.process_step_id || '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('primary_program') && (
+                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.primary_program_id || '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('portfolio') && (
+                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.portfolio_id || '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('theme') && (
+                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.theme_id || '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('owner') && (
+                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.owner_id || '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('start_date') && (
+                              <TableCell className="text-xs text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.start_date ? new Date(epic.start_date).toLocaleDateString() : '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('end_date') && (
+                              <TableCell className="text-xs text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.end_date ? new Date(epic.end_date).toLocaleDateString() : '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('created_at') && (
+                              <TableCell className="text-xs text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.created_at ? new Date(epic.created_at).toLocaleDateString() : '-'}
+                              </TableCell>
+                            )}
+
+                            {visibleColumns.includes('updated_at') && (
+                              <TableCell className="text-xs text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                                {epic.updated_at ? new Date(epic.updated_at).toLocaleDateString() : '-'}
+                              </TableCell>
+                            )}
+                          </TableRow>
+                        </EpicContextMenu>
+                      )}
+                    </Draggable>
+                  ))
+                )}
+                {provided.placeholder}
+              </TableBody>
+            )}
+          </Droppable>
         </Table>
       </div>
     </DragDropContext>

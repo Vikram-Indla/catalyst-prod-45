@@ -35,6 +35,9 @@ export default function EpicBacklog() {
   const [labelsDialogOpen, setLabelsDialogOpen] = useState(false);
   const [customColumnsDialogOpen, setCustomColumnsDialogOpen] = useState(false);
   const [orphanObjectsDialogOpen, setOrphanObjectsDialogOpen] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([
+    'id', 'name', 'state', 'labels', 'points_estimate', 'mvp', 'process_step'
+  ]);
   const { toast } = useToast();
 
   // Get PI Progress
@@ -381,6 +384,7 @@ export default function EpicBacklog() {
                     onEpicSelect={setSelectedEpic}
                     onRefetch={refetch}
                     onManageLabels={() => setLabelsDialogOpen(true)}
+                    visibleColumns={visibleColumns}
                   />
                 </div>
               )}
@@ -481,6 +485,7 @@ export default function EpicBacklog() {
                 onEpicSelect={setSelectedEpic}
                 onRefetch={refetch}
                 onManageLabels={() => setLabelsDialogOpen(true)}
+                visibleColumns={visibleColumns}
               />
             </div>
           )}
@@ -506,9 +511,8 @@ export default function EpicBacklog() {
       <EpicColumnsDialog 
         open={columnsDialogOpen} 
         onOpenChange={setColumnsDialogOpen}
-        selectedColumnsMain={[]}
-        selectedColumnsSmall={[]}
-        onColumnsChange={() => {}}
+        selectedColumns={visibleColumns}
+        onColumnsChange={setVisibleColumns}
       />
       <EpicFiltersDialog 
         open={filtersDialogOpen} 
