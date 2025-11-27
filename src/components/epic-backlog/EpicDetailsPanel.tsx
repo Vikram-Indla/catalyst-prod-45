@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { FileText, Gem, ClipboardList, TrendingUp, ThumbsUp, Milestone, DollarSign, BarChart3, Link as LinkIcon, MessageSquare, Star, Bell, Grid3x3, FileStack, Grid2x2, CheckSquare, ClipboardCheck, Package } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import { DetailsTabExtended } from '@/components/backlog/DetailPanel/tabs/DetailsTabExtended';
 import { DesignTab } from '@/components/backlog/DetailPanel/tabs/DesignTab';
 import { IntakeTab } from '@/components/backlog/DetailPanel/tabs/IntakeTab';
 import { BenefitsTab } from '@/components/backlog/DetailPanel/tabs/BenefitsTab';
@@ -38,6 +39,106 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
   });
 
   if (!epic) return null;
+
+  // Mock data matching screenshots exactly - complete EpicDetail type
+  const epicDetail = {
+    id: epicId,
+    numericId: 1168,
+    title: 'AI for Improved Call Center Interactions',
+    description: 'Use natural language processing to perform in-call voice analysis and deliver real-time guidance to agents and new insight to managers.',
+    status: 'in_progress' as const,
+    processStep: 'Implementing' as const,
+    type: 'Business' as const,
+    mvp: false,
+    points: 0,
+    labels: [],
+    hasChildren: true,
+    rank: 2,
+    containedIn: { id: '1', name: 'User Experience', type: 'theme' },
+    primaryProgram: { id: 'mobile', name: 'Mobile' },
+    additionalPrograms: [{ id: 'ai', name: 'AI' }],
+    owner: { id: 'sean', name: 'Sean Duffy' },
+    state: { id: 2, name: '2 - In Progress', color: '#FF8B00' },
+    theme: { id: 'ux', name: 'User Experience' },
+    level1: [],
+    programIncrements: [
+      { id: 'pi-5', name: 'PI-5', startDate: '2024-01-01', endDate: '2024-03-31' },
+      { id: 'pi-6', name: 'PI-6', startDate: '2024-04-01', endDate: '2024-06-30' },
+      { id: 'pi-7', name: 'PI-7', startDate: '2024-07-01', endDate: '2024-09-30' }
+    ],
+    wsjfScores: [
+      { piId: 'pi-5', piName: 'PI-5', businessValue: 8, timeValue: 5, rroeValue: 3, jobSize: 3, score: 10 },
+      { piId: 'pi-6', piName: 'PI-6', businessValue: 3, timeValue: 2, rroeValue: 1, jobSize: 5, score: 2.5 },
+      { piId: 'pi-7', piName: 'PI-7', businessValue: 0, timeValue: 0, rroeValue: 0, jobSize: 1, score: 0 }
+    ],
+    initialEstimate: null,
+    piEstimates: [
+      { piId: 'pi-5', piName: 'PI-5', points: 475 },
+      { piId: 'pi-6', piName: 'PI-6', points: 1440 },
+      { piId: 'pi-7', piName: 'PI-7', points: 960 }
+    ],
+    totalEstimate: 2875,
+    features: [
+      { id: '5556', numericId: 5556, externalId: '', title: 'Feature 9', status: '', processStep: '', progressPercent: 0, storyPointsAccepted: 0, storyPointsTotal: 0, storiesAccepted: 0, storiesTotal: 0, storiesDelivered: 0, scopeEstimate: 0, scopeActual: 0 },
+      { id: '5551', numericId: 5551, externalId: '', title: 'Feature 4', status: '', processStep: '', progressPercent: 0, storyPointsAccepted: 0, storyPointsTotal: 0, storiesAccepted: 0, storiesTotal: 0, storiesDelivered: 0, scopeEstimate: 0, scopeActual: 0 },
+      { id: '5548', numericId: 5548, externalId: '', title: 'Feature 1', status: '', processStep: '', progressPercent: 0, storyPointsAccepted: 0, storyPointsTotal: 0, storiesAccepted: 0, storiesTotal: 0, storiesDelivered: 0, scopeEstimate: 0, scopeActual: 0 },
+      { id: '5426', numericId: 5426, externalId: '', title: 'Implement Live call monitoring', status: '', processStep: '', progressPercent: 100, storyPointsAccepted: 0, storyPointsTotal: 0, storiesAccepted: 0, storiesTotal: 0, storiesDelivered: 0, scopeEstimate: 0, scopeActual: 0 },
+      { id: '5425', numericId: 5425, externalId: '', title: 'Implement In-call speaking guidance', status: '', processStep: '', progressPercent: 0, storyPointsAccepted: 0, storyPointsTotal: 0, storiesAccepted: 0, storiesTotal: 0, storiesDelivered: 0, scopeEstimate: 0, scopeActual: 0 }
+    ],
+    storyPointsAccepted: 75,
+    storyPointsTotal: 95,
+    featuresAccepted: 3,
+    featuresInDelivery: 0,
+    featuresDelivered: 0,
+    featuresTotal: 15,
+    intakeFields: [
+      { id: '1', number: 1, label: 'Justification', value: '', required: false },
+      { id: '2', number: 2, label: 'Department', value: '', required: false },
+      { id: '3', number: 3, label: 'Requestor', value: '', required: false },
+      { id: '4', number: 4, label: 'Reviewer', value: '', required: false }
+    ],
+    valueFields: [
+      { id: '1', number: 1, label: 'Cost', value: 'Low', score: 100, options: ['Low', 'Medium', 'High'] },
+      { id: '2', number: 2, label: 'Profit Potential', value: 'Medium', score: 66, options: ['Low', 'Medium', 'High'] },
+      { id: '3', number: 3, label: 'Time to Market', value: 'Low', score: 100, options: ['Low', 'Medium', 'High'] },
+      { id: '4', number: 4, label: 'Development Risks', value: 'Low', score: 100, options: ['Low', 'Medium', 'High'] }
+    ],
+    valueScore: 91.5,
+    valueScoreAverage: 91.6,
+    valueScoreComparison: 49,
+    milestones: [],
+    budget: null,
+    acceptedSpend: 0,
+    forecastedSpend: 0,
+    estimatedSpend: 0,
+    remaining: 0,
+    acceptedStories: [],
+    forecastData: {
+      selectedPI: '',
+      totalPts: 0,
+      programs: []
+    },
+    discussionCount: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  const mockPrograms = [
+    { id: 'mobile', name: 'Mobile' },
+    { id: 'web', name: 'Web' },
+    { id: 'ai', name: 'AI' }
+  ];
+
+  const mockUsers = [
+    { id: 'sean', name: 'Sean Duffy' },
+    { id: 'jane', name: 'Jane Doe' }
+  ];
+
+  const mockThemes = [
+    { id: 'ux', name: 'User Experience' },
+    { id: 'platform', name: 'Platform' }
+  ];
+
 
   return (
     <Sheet open={!!epicId} onOpenChange={onClose}>
@@ -106,179 +207,14 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
           </div>
 
           <div className="flex-1 overflow-auto">
-            <TabsContent value="details" className="m-0 p-6">
-              <div className="grid grid-cols-3 gap-6">
-                {/* Left Column - Description */}
-                <div className="col-span-2 space-y-6">
-                  <div>
-                    <label className="text-sm font-medium text-red-500 mb-2 block">■ Description:</label>
-                    <Textarea
-                      defaultValue="Use natural language processing to perform in-call voice analysis and deliver real-time guidance to agents and new insight to managers."
-                      className="min-h-[120px] resize-none"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="text-sm font-medium text-red-500 mb-2 block">■ Type:</label>
-                      <Select defaultValue="business">
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="business">Business</SelectItem>
-                          <SelectItem value="enabler">Enabler</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">MVP:</label>
-                      <Select defaultValue="no">
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="no">No</SelectItem>
-                          <SelectItem value="yes">Yes</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Contained In:</label>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="gap-1">
-                        <Package className="h-3 w-3 text-green-600" />
-                        1: User Experience
-                      </Badge>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium text-red-500 mb-2 block">■ Primary Program:</label>
-                    <Select defaultValue="mobile">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="mobile">Mobile</SelectItem>
-                        <SelectItem value="web">Web</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Additional Programs</label>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary">AI ×</Badge>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Owner:</label>
-                    <Select defaultValue="sean">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="sean">Sean Duffy</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                {/* Right Column - State and Progress */}
-                <div className="space-y-6">
-                  <div>
-                    <label className="text-sm font-medium text-red-500 mb-2 block">■ State:</label>
-                    <Select defaultValue="in_progress">
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="not_started">1 - Not Started</SelectItem>
-                        <SelectItem value="in_progress">2 - In Progress</SelectItem>
-                        <SelectItem value="done">3 - Done</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span>75 of 95 Story points accepted</span>
-                      </div>
-                      <Progress value={79} className="h-2" />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span>3 of 15 Features Accepted</span>
-                      </div>
-                      <Progress value={20} className="h-2" />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span>0 of 15 Features in Delivery</span>
-                      </div>
-                      <Progress value={0} className="h-2" />
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span>0 of 15 Features Delivered</span>
-                      </div>
-                      <Progress value={0} className="h-2" />
-                    </div>
-                  </div>
-
-                  <Button className="w-full gap-2" size="lg">
-                    <BarChart3 className="h-4 w-4" />
-                    Fast Edit
-                  </Button>
-
-                  <div className="space-y-2">
-                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-                      <MessageSquare className="h-4 w-4" />
-                      Discussions
-                      <Badge variant="destructive" className="ml-auto">0</Badge>
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-                      <Star className="h-4 w-4" />
-                      Subscribe
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-                      <Grid3x3 className="h-4 w-4" />
-                      Update child process steps
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-                      <Grid3x3 className="h-4 w-4" />
-                      Responsibility Matrix
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-                      <FileStack className="h-4 w-4" />
-                      Trace This Epic
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-                      <FileText className="h-4 w-4" />
-                      Status Report
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-                      <Grid2x2 className="h-4 w-4" />
-                      Requirement Hierarchy
-                    </Button>
-                    <Button variant="ghost" className="w-full justify-start gap-2 text-muted-foreground">
-                      <ClipboardCheck className="h-4 w-4" />
-                      Audit Log
-                    </Button>
-                    <Button variant="link" className="w-full justify-start p-0 h-auto text-primary">
-                      + Show More
-                    </Button>
-                  </div>
-                </div>
-              </div>
+            <TabsContent value="details" className="m-0">
+              <DetailsTabExtended 
+                epic={epicDetail}
+                programs={mockPrograms}
+                users={mockUsers}
+                themes={mockThemes}
+                onUpdate={() => {}}
+              />
             </TabsContent>
 
             <TabsContent value="design" className="m-0">
@@ -287,7 +223,7 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
 
             <TabsContent value="intake" className="m-0">
               <IntakeTab 
-                fields={[]}
+                fields={epicDetail.intakeFields}
                 onFieldChange={() => {}}
               />
             </TabsContent>
@@ -298,15 +234,17 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
 
             <TabsContent value="value" className="m-0">
               <ValueTab
-                fields={[]}
-                valueScore={0}
+                fields={epicDetail.valueFields}
+                valueScore={epicDetail.valueScore}
+                valueScoreAverage={epicDetail.valueScoreAverage}
+                valueScoreComparison={epicDetail.valueScoreComparison}
                 onFieldChange={() => {}}
               />
             </TabsContent>
 
             <TabsContent value="milestones" className="m-0">
               <MilestonesTab
-                milestones={[]}
+                milestones={epicDetail.milestones}
                 onAddMilestone={() => {}}
                 onUpdateMilestone={() => {}}
               />
@@ -314,23 +252,19 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
 
             <TabsContent value="spend" className="m-0">
               <SpendTab
-                budget={null}
-                acceptedSpend={0}
-                forecastedSpend={0}
-                estimatedSpend={0}
-                remaining={0}
-                acceptedStories={[]}
+                budget={epicDetail.budget}
+                acceptedSpend={epicDetail.acceptedSpend}
+                forecastedSpend={epicDetail.forecastedSpend}
+                estimatedSpend={epicDetail.estimatedSpend}
+                remaining={epicDetail.remaining}
+                acceptedStories={epicDetail.acceptedStories || []}
               />
             </TabsContent>
 
             <TabsContent value="forecast" className="m-0">
               <ForecastTab
-                forecastData={{
-                  selectedPI: '',
-                  totalPts: 0,
-                  programs: []
-                }}
-                programIncrements={[]}
+                forecastData={epicDetail.forecastData}
+                programIncrements={epicDetail.programIncrements}
                 onPIChange={() => {}}
                 onEstimateChange={() => {}}
               />
