@@ -162,10 +162,8 @@ const App = () => (
               <Route path="/dev/epic-backlog-tests" element={<EpicBacklogTests />} />
               <Route path="/dev/forecast-self-test" element={<ForecastSelfTest />} />
               <Route path="/dev/sources" element={<SourcesReference />} />
+              <Route path="/backlog/epics" element={<EpicBacklogWithSidebar />} />
             </Route>
-            
-            {/* Epic Backlog - Standalone with its own sidebar */}
-            <Route path="/backlog/epics" element={<ProtectedRoute><EpicBacklogWithSidebar /></ProtectedRoute>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
