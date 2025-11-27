@@ -116,6 +116,97 @@ export interface EpicState {
   color: string;
 }
 
+export interface WSJFScore {
+  piId: string;
+  piName: string;
+  businessValue: number;
+  timeValue: number;
+  rroeValue: number;
+  jobSize: number;
+  score: number;
+}
+
+export interface PIEstimate {
+  piId: string;
+  piName: string;
+  points: number;
+}
+
+export interface Feature {
+  id: string;
+  numericId: number;
+  externalId: string | null;
+  title: string;
+  status: string;
+  processStep: string;
+  progressPercent: number;
+  storyPointsAccepted: number;
+  storyPointsTotal: number;
+  storiesAccepted: number;
+  storiesTotal: number;
+  storiesDelivered: number;
+  scopeEstimate: number;
+  scopeActual: number;
+}
+
+export interface IntakeField {
+  id: string;
+  number: number;
+  label: string;
+  value: string;
+  required: boolean;
+}
+
+export interface ValueField {
+  id: string;
+  number: number;
+  label: string;
+  options: string[];
+  value: string;
+  score: number;
+}
+
+export interface Milestone {
+  id: string;
+  name: string;
+  startDate: string | null;
+  dueDate: string | null;
+  description: string;
+  state: 'Pending' | 'In Progress' | 'Complete' | 'Blocked';
+  category: string | null;
+}
+
+export interface TeamEstimate {
+  teamId: string;
+  teamName: string;
+  pts: number | null;
+}
+
+export interface ProgramEstimate {
+  programId: string;
+  programName: string;
+  totalPts: number;
+  isExpanded: boolean;
+  teams: TeamEstimate[];
+}
+
+export interface ForecastData {
+  selectedPI: string;
+  totalPts: number;
+  programs: ProgramEstimate[];
+}
+
+export interface AcceptedStory {
+  id: string;
+  numericId: number;
+  title: string;
+  team: string | null;
+  spend: number;
+  teamSprintName?: string;
+  teamSpendPerPoint?: number;
+  storyEstimate?: number;
+}
+
 export interface EpicDetail extends Epic {
   description: string;
   type: EpicType;
@@ -129,7 +220,20 @@ export interface EpicDetail extends Epic {
   primaryProgram?: Program;
   additionalPrograms: Program[];
   owner?: User;
+  theme?: Theme;
+  level1?: string[];
   state: EpicState;
+  
+  // Program Increments
+  programIncrements: ProgramIncrement[];
+  
+  // WSJF
+  wsjfScores: WSJFScore[];
+  
+  // Estimates
+  initialEstimate: number | null;
+  piEstimates: PIEstimate[];
+  totalEstimate: number;
   
   // Progress
   storyPointsTotal: number;
@@ -138,6 +242,30 @@ export interface EpicDetail extends Epic {
   featuresAccepted: number;
   featuresInDelivery: number;
   featuresDelivered: number;
+  features: Feature[];
+  
+  // Intake
+  intakeFields: IntakeField[];
+  
+  // Value
+  valueFields: ValueField[];
+  valueScore: number;
+  valueScoreAverage?: number;
+  valueScoreComparison?: number;
+  
+  // Milestones
+  milestones: Milestone[];
+  
+  // Spend
+  budget: number | null;
+  acceptedSpend: number;
+  forecastedSpend: number;
+  estimatedSpend: number;
+  remaining: number;
+  acceptedStories?: AcceptedStory[];
+  
+  // Forecast
+  forecastData: ForecastData;
   
   // Metadata
   discussionCount: number;
