@@ -17,6 +17,7 @@ import { MilestonesTab } from '@/components/backlog/DetailPanel/tabs/MilestonesT
 import { SpendTab } from '@/components/backlog/DetailPanel/tabs/SpendTab';
 import { EpicForecastTab } from './EpicForecastTab';
 import { LinksTab } from '@/components/backlog/DetailPanel/tabs/LinksTab';
+import { QuickActionsPanel } from './QuickActionsPanel';
 
 interface EpicDetailsPanelProps {
   epicId: string;
@@ -308,6 +309,13 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
             </TabsContent>
           </div>
         </Tabs>
+
+        {/* Quick Actions Panel */}
+        <QuickActionsPanel 
+          epicId={epicId} 
+          epicName={epicDetail.title}
+          onUpdate={() => {}}
+        />
       </SheetContent>
     </Sheet>
   );
