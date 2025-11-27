@@ -121,14 +121,14 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
     estimatedSpend: 12687290,
     remaining: 719098,
     acceptedStories: [
-      { id: '16613', numericId: 16613, title: 'UI: QA - Transcript Export Tool From TRS', team: 'None', spend: 1207 },
-      { id: '21186', numericId: 21186, title: 'G12: Document V2.1 Transcript Export Tool', team: 'None', spend: 0 },
-      { id: '22388', numericId: 22388, title: 'G12: Transcript Export API- Feature level testing (Split Part 2)', team: 'None', spend: 0 },
-      { id: '22715', numericId: 22715, title: 'MMA_OPS_JAVA - Upgrade from 8.5 Sp1 (L3)', team: 'None', spend: 0 },
-      { id: '22773', numericId: 22773, title: 'RFS - 8.5.5 Forecasting & Planning Guide Update - SP23', team: 'None', spend: 0 },
-      { id: '22774', numericId: 22774, title: 'RFS - 8.5.5 Scheduling Users Guide - SP23', team: 'None', spend: 0 },
-      { id: '24004', numericId: 24004, title: 'MMA_GOAL L1 2.0sp1 Upgrade', team: 'Cloud', spend: 75300 },
-      { id: '24005', numericId: 24005, title: 'MMA_GOAL L3 2.0sp1 Upgrade', team: 'None', spend: 75300 }
+      { id: '16613', numericId: 16613, title: 'UI: QA - Transcript Export Tool From TRS', team: 'None', spend: 1207, teamSprintName: 'Washington - Washington PI 5 Sprint 1', teamSpendPerPoint: 302, storyEstimate: 4 },
+      { id: '21186', numericId: 21186, title: 'G12: Document V2.1 Transcript Export Tool', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
+      { id: '22388', numericId: 22388, title: 'G12: Transcript Export API- Feature level testing (Split Part 2)', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
+      { id: '22715', numericId: 22715, title: 'MMA_OPS_JAVA - Upgrade from 8.5 Sp1 (L3)', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
+      { id: '22773', numericId: 22773, title: 'RFS - 8.5.5 Forecasting & Planning Guide Update - SP23', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
+      { id: '22774', numericId: 22774, title: 'RFS - 8.5.5 Scheduling Users Guide - SP23', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
+      { id: '24004', numericId: 24004, title: 'MMA_GOAL L1 2.0sp1 Upgrade', team: 'Cloud', spend: 75300, teamSprintName: 'Cloud - Cloud PI 5 Sprint 2', teamSpendPerPoint: 250, storyEstimate: 301 },
+      { id: '24005', numericId: 24005, title: 'MMA_GOAL L3 2.0sp1 Upgrade', team: 'None', spend: 75300, teamSprintName: 'Cloud - Cloud PI 5 Sprint 3', teamSpendPerPoint: 250, storyEstimate: 301 }
     ],
     forecastData: {
       selectedPI: 'pi-5',
