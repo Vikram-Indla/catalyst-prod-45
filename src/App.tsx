@@ -19,6 +19,7 @@ import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
 import EpicBacklog from "./pages/EpicBacklog";
+import EpicBacklogWithSidebar from "./pages/EpicBacklogWithSidebar";
 import Features from "./pages/Features";
 import Capabilities from "./pages/Capabilities";
 import Defects from "./pages/Defects";
@@ -162,8 +163,10 @@ const App = () => (
               <Route path="/dev/epic-backlog-tests" element={<EpicBacklogTests />} />
               <Route path="/dev/forecast-self-test" element={<ForecastSelfTest />} />
               <Route path="/dev/sources" element={<SourcesReference />} />
-              <Route path="/backlog/epics" element={<EpicBacklog />} />
             </Route>
+            
+            {/* Epic Backlog - Outside JiraAlignShell to avoid duplicate sidebar */}
+            <Route path="/backlog/epics" element={<ProtectedRoute><EpicBacklogWithSidebar /></ProtectedRoute>} />
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
