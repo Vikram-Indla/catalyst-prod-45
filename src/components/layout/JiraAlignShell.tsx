@@ -10,7 +10,7 @@ import { StarredDropdown } from './dropdowns/StarredDropdown';
 import { ItemsDropdown } from './dropdowns/ItemsDropdown';
 import { CreateDropdown } from './dropdowns/CreateDropdown';
 import { NotificationsPanel } from './dropdowns/NotificationsPanel';
-import { LeftContextPanel } from './LeftContextPanel';
+import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
 import { GlobalSearch } from './GlobalSearch';
 import { JiraAlignContextProvider } from '@/contexts/JiraAlignContext';
 
@@ -20,6 +20,8 @@ export function JiraAlignShell() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [notificationCount, setNotificationCount] = useState(2);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [selectedPI, setSelectedPI] = useState<string | null>('pi-5');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = (name: string) => {
@@ -216,8 +218,13 @@ export function JiraAlignShell() {
 
       {/* Main Content with Context Panel */}
         <div className="flex flex-1 overflow-hidden">
-          {/* Hide LeftContextPanel for routes that provide their own sidebar */}
-          {location.pathname !== '/backlog/epics' && <LeftContextPanel />}
+          <PortfolioRoomSidebar
+            portfolioId="default-portfolio"
+            expanded={sidebarExpanded}
+            onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+            selectedPI={selectedPI}
+            onPIChange={setSelectedPI}
+          />
           <main className="flex-1 overflow-auto">
             <Outlet />
           </main>
