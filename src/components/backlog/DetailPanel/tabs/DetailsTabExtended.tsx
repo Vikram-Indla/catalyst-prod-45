@@ -5,10 +5,11 @@ import { TagsInput } from '../TagsInput';
 import { ProgressIndicators } from '../ProgressIndicators';
 import { QuickActions } from '../QuickActions';
 import { ContainedInLink } from '../ContainedInLink';
-import { EpicDetail, Program, User, Theme, ProgramIncrement } from '@/types/backlog.types';
+import { EpicDetail, Program, User, Theme, ProgramIncrement, Feature } from '@/types/backlog.types';
 import { EPIC_TYPES, MVP_OPTIONS } from '@/data/epicDetailData';
 import { ChevronRight, ChevronDown, Plus, X, Info } from 'lucide-react';
 import { WSJFModal } from '../modals/WSJFModal';
+import { FeatureStatusModal } from '../modals/FeatureStatusModal';
 
 interface DetailsTabExtendedProps {
   epic: EpicDetail;
@@ -22,6 +23,9 @@ export function DetailsTabExtended({ epic, programs, users, themes, onUpdate }: 
   const [isFeaturesExpanded, setIsFeaturesExpanded] = useState(true);
   const [isWSJFModalOpen, setIsWSJFModalOpen] = useState(false);
   const [selectedWSJFPI, setSelectedWSJFPI] = useState<string | null>(null);
+  const [isFeatureModalOpen, setIsFeatureModalOpen] = useState(false);
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const [featureSearch, setFeatureSearch] = useState('');
 
   const handleWSJFClick = (piId: string) => {
     setSelectedWSJFPI(piId);
@@ -34,6 +38,21 @@ export function DetailsTabExtended({ epic, programs, users, themes, onUpdate }: 
     );
     onUpdate({ wsjfScores: updatedScores });
   };
+
+  const handleFeatureClick = (feature: Feature) => {
+    setSelectedFeature(feature);
+    setIsFeatureModalOpen(true);
+  };
+
+  const filteredFeatures = epic.features.filter(feature => {
+    if (!featureSearch) return true;
+    const search = featureSearch.toLowerCase();
+    return (
+      feature.numericId.toString().includes(search) ||
+      feature.externalId?.toLowerCase().includes(search) ||
+      feature.title.toLowerCase().includes(search)
+    );
+  });
 
   return (
     <>
@@ -231,8 +250,10 @@ export function DetailsTabExtended({ epic, programs, users, themes, onUpdate }: 
 
                 {/* Search */}
                 <input
-                  placeholder="Search existing Features (type the ID, External ID or Name you are...)"
-                  className="w-full px-3 py-2 mb-4 text-sm bg-background border border-border rounded"
+                  placeholder="Search existing Features (type the ID, External ID or Name you are looking for)"
+                  value={featureSearch}
+                  onChange={(e) => setFeatureSearch(e.target.value)}
+                  className="w-full px-3 py-2 mb-4 text-sm bg-background border border-border rounded focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
 
                 {/* Features Table */}
@@ -244,11 +265,19 @@ export function DetailsTabExtended({ epic, programs, users, themes, onUpdate }: 
                     <div>Progress</div>
                     <div></div>
                   </div>
-                  {epic.features.map((feature) => (
+                  {filteredFeatures.map((feature) => (
                     <div key={feature.id} className="grid grid-cols-[70px_70px_1fr_120px_40px] gap-2 px-4 py-3 border-t border-border hover:bg-muted/50 items-center">
-                      <div className="text-sm text-foreground">{feature.numericId}</div>
+                      <div 
+                        className="text-sm text-primary cursor-pointer hover:underline"
+                        onClick={() => handleFeatureClick(feature)}
+                      >
+                        {feature.numericId}
+                      </div>
                       <div className="text-sm text-muted-foreground">{feature.externalId || ''}</div>
-                      <div className="flex items-center gap-2 text-sm text-primary cursor-pointer hover:underline">
+                      <div 
+                        className="flex items-center gap-2 text-sm text-primary cursor-pointer hover:underline"
+                        onClick={() => handleFeatureClick(feature)}
+                      >
                         <span>📋</span>
                         {feature.title}
                       </div>
@@ -287,6 +316,13 @@ export function DetailsTabExtended({ epic, programs, users, themes, onUpdate }: 
         epicTitle={epic.title}
         wsjfScores={epic.wsjfScores}
         onUpdate={handleWSJFUpdate}
+      />
+
+      {/* Feature Status Modal */}
+      <FeatureStatusModal
+        isOpen={isFeatureModalOpen}
+        onClose={() => setIsFeatureModalOpen(false)}
+        feature={selectedFeature}
       />
     </>
   );
