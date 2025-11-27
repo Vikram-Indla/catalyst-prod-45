@@ -1,10 +1,13 @@
 import { useState } from 'react';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { GripVertical, CheckSquare, ChevronRight } from 'lucide-react';
 import { EpicContextMenu } from './EpicContextMenu';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface Epic {
   id: string;
@@ -33,6 +36,40 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
       newSelected.add(epicId);
     }
     setSelectedEpics(newSelected);
+  };
+
+  const handleDragEnd = async (result: DropResult) => {
+    if (!result.destination) return;
+
+    const sourceIndex = result.source.index;
+    const destinationIndex = result.destination.index;
+
+    if (sourceIndex === destinationIndex) return;
+
+    const reorderedEpics = Array.from(epics);
+    const [movedEpic] = reorderedEpics.splice(sourceIndex, 1);
+    reorderedEpics.splice(destinationIndex, 0, movedEpic);
+
+    // Update global_rank for all affected epics
+    try {
+      const updates = reorderedEpics.map((epic, index) => ({
+        id: epic.id,
+        global_rank: index + 1,
+      }));
+
+      for (const update of updates) {
+        await supabase
+          .from('epics')
+          .update({ global_rank: update.global_rank })
+          .eq('id', update.id);
+      }
+
+      toast.success('Epic order updated');
+      onRefetch();
+    } catch (error) {
+      console.error('Error updating epic order:', error);
+      toast.error('Failed to update epic order');
+    }
   };
 
   const getStatusColor = (index: number) => {
@@ -121,48 +158,56 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
   const pointsValues = [475, 480, 24, 475, 24, 475, 4, 4, 24, 4];
 
   return (
-    <div className="overflow-auto">
-      <Table>
-        <TableHeader>
-          <TableRow className="hover:bg-transparent border-b">
-            <TableHead className="w-8"></TableHead>
-            <TableHead className="w-12 text-center">#</TableHead>
-            <TableHead className="w-12"></TableHead>
-            <TableHead className="w-24">ID</TableHead>
-            <TableHead className="w-12"></TableHead>
-            <TableHead className="w-12"></TableHead>
-            <TableHead className="min-w-[400px]">Epic</TableHead>
-            <TableHead className="w-28 text-right">Points</TableHead>
-            <TableHead className="w-24">MVP</TableHead>
-            <TableHead className="w-40">Process Step</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {epics.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={10} className="text-center py-12 text-muted-foreground">
-                <div className="text-sm">Drag & Drop Items Here</div>
-              </TableCell>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="overflow-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent border-b">
+              <TableHead className="w-8"></TableHead>
+              <TableHead className="w-12 text-center">#</TableHead>
+              <TableHead className="w-12"></TableHead>
+              <TableHead className="w-24">ID</TableHead>
+              <TableHead className="w-12"></TableHead>
+              <TableHead className="w-12"></TableHead>
+              <TableHead className="min-w-[400px]">Epic</TableHead>
+              <TableHead className="w-28 text-right">Points</TableHead>
+              <TableHead className="w-24">MVP</TableHead>
+              <TableHead className="w-40">Process Step</TableHead>
             </TableRow>
-          ) : (
-            epics.slice(0, 10).map((epic, index) => {
+          </TableHeader>
+          <Droppable droppableId="epics-list">
+            {(provided) => (
+              <TableBody ref={provided.innerRef} {...provided.droppableProps}>
+                {epics.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={10} className="text-center py-12 text-muted-foreground">
+                      <div className="text-sm">Drag & Drop Items Here</div>
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  epics.slice(0, 10).map((epic, index) => {
               const labels = getLabels(index);
               const epicName = epicNames[index] || epic.name;
               const epicId = epicIds[index] || 1100 + index;
               const points = pointsValues[index] || epic.points_estimate || 24;
               
               return (
-                <EpicContextMenu key={epic.id} epicId={epic.id} onRefetch={onRefetch}>
-                  <TableRow
-                    className={cn(
-                      "cursor-pointer hover:bg-accent/20 transition-colors border-b group",
-                      selectedEpics.has(epic.id) && "bg-accent/10"
-                    )}
-                  >
-                    {/* Expand Arrow */}
-                    <TableCell className="p-2">
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </TableCell>
+                <Draggable key={epic.id} draggableId={epic.id} index={index}>
+                  {(provided, snapshot) => (
+                    <EpicContextMenu epicId={epic.id} onRefetch={onRefetch}>
+                      <TableRow
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        className={cn(
+                          "cursor-pointer hover:bg-accent/20 transition-colors border-b group",
+                          selectedEpics.has(epic.id) && "bg-accent/10",
+                          snapshot.isDragging && "bg-accent/30 shadow-lg"
+                        )}
+                      >
+                        {/* Drag Handle */}
+                        <TableCell className="p-2" {...provided.dragHandleProps}>
+                          <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
+                        </TableCell>
                     
                     {/* Row Number */}
                     <TableCell className="text-sm text-center text-muted-foreground">{index + 1}</TableCell>
@@ -222,17 +267,23 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
                       No
                     </TableCell>
                     
-                    {/* Process Step */}
-                    <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                      {getProcessStep(index)}
-                    </TableCell>
-                  </TableRow>
-                </EpicContextMenu>
+                        {/* Process Step */}
+                        <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
+                          {getProcessStep(index)}
+                        </TableCell>
+                      </TableRow>
+                    </EpicContextMenu>
+                  )}
+                </Draggable>
               );
             })
           )}
+          {provided.placeholder}
         </TableBody>
-      </Table>
-    </div>
+      )}
+    </Droppable>
+        </Table>
+      </div>
+    </DragDropContext>
   );
 }
