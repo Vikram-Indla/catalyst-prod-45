@@ -12,11 +12,12 @@ import { CreateDropdown } from './dropdowns/CreateDropdown';
 import { NotificationsPanel } from './dropdowns/NotificationsPanel';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
 import { GlobalSearch } from './GlobalSearch';
-import { JiraAlignContextProvider } from '@/contexts/JiraAlignContext';
+import { JiraAlignContextProvider, useJiraAlignContext } from '@/contexts/JiraAlignContext';
 
-export function JiraAlignShell() {
+function JiraAlignShellContent() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { setTier } = useJiraAlignContext();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [notificationCount, setNotificationCount] = useState(2);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -62,8 +63,7 @@ export function JiraAlignShell() {
   }, [activeDropdown]);
 
   return (
-    <JiraAlignContextProvider>
-      <div className="min-h-screen flex flex-col bg-background" ref={dropdownRef}>
+    <div className="min-h-screen flex flex-col bg-background" ref={dropdownRef}>
       {/* Global Header */}
       <header className="h-14 border-b bg-card flex items-center px-2 gap-4 sticky top-0 z-50">
         {/* Left: Logo + Primary Menus */}
@@ -89,7 +89,11 @@ export function JiraAlignShell() {
             <Button 
               variant={isActive('/enterprise/strategy-room') ? 'secondary' : 'ghost'} 
               size="sm"
-              onClick={() => { navigate('/enterprise/strategy-room'); closeDropdown(); }}
+              onClick={() => { 
+                setTier('enterprise'); 
+                navigate('/enterprise/strategy-room'); 
+                closeDropdown(); 
+              }}
             >
               Enterprise
             </Button>
@@ -230,6 +234,13 @@ export function JiraAlignShell() {
           </main>
         </div>
       </div>
+  );
+}
+
+export function JiraAlignShell() {
+  return (
+    <JiraAlignContextProvider>
+      <JiraAlignShellContent />
     </JiraAlignContextProvider>
   );
 }
