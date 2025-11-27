@@ -1,4 +1,4 @@
-import { FileText, Palette, Inbox, TrendingUp, Gem, Target, DollarSign, BarChart3, Link as LinkIcon } from 'lucide-react';
+import { FileText, Palette, Inbox, TrendingUp, Gem, Target, DollarSign, BarChart3, Link as LinkIcon, Zap } from 'lucide-react';
 
 interface TabConfig {
   id: string;
@@ -15,6 +15,7 @@ const TABS: TabConfig[] = [
   { id: 'milestones', label: 'Milestones', icon: <Target className="w-4 h-4" /> },
   { id: 'spend', label: 'Spend', icon: <DollarSign className="w-4 h-4" /> },
   { id: 'forecast', label: 'Forecast', icon: <BarChart3 className="w-4 h-4" /> },
+  { id: 'wsjf', label: 'WSJF', icon: <Zap className="w-4 h-4" /> },
   { id: 'links', label: 'Links', icon: <LinkIcon className="w-4 h-4" /> },
 ];
 
