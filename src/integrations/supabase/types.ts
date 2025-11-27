@@ -529,6 +529,66 @@ export type Database = {
           },
         ]
       }
+      epic_label_assignments: {
+        Row: {
+          created_at: string | null
+          epic_id: string
+          id: string
+          label_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          epic_id: string
+          id?: string
+          label_id: string
+        }
+        Update: {
+          created_at?: string | null
+          epic_id?: string
+          id?: string
+          label_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_label_assignments_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_label_assignments_label_id_fkey"
+            columns: ["label_id"]
+            isOneToOne: false
+            referencedRelation: "epic_labels"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epic_labels: {
+        Row: {
+          color: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       epic_program_increments: {
         Row: {
           created_at: string | null

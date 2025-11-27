@@ -11,10 +11,11 @@ import { EpicBacklogKanbanProcess } from '@/components/epic-backlog/EpicBacklogK
 import { EpicDetailsPanel } from '@/components/epic-backlog/EpicDetailsPanel';
 import { EpicColumnsDialog } from '@/components/epic-backlog/EpicColumnsDialog';
 import { EpicFiltersDialog } from '@/components/epic-backlog/EpicFiltersDialog';
+import { LabelsManagementDialog } from '@/components/epic-backlog/LabelsManagementDialog';
 import { ViewSwitcher, ViewMode, KanbanMode } from '@/components/backlog/ViewSwitcher';
 import { WSJFPrioritizationDialog } from '@/components/epic-backlog/WSJFPrioritizationDialog';
 import { usePIProgress } from '@/hooks/usePIProgress';
-import { Star, Eye, TrendingUp, Download, ChevronDown, Plus, Grid3x3, Filter, Search } from 'lucide-react';
+import { Star, Eye, TrendingUp, Download, ChevronDown, Plus, Grid3x3, Filter, Search, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function EpicBacklog() {
@@ -28,6 +29,7 @@ export default function EpicBacklog() {
   const [unassignedExpanded, setUnassignedExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [wsjfModalOpen, setWsjfModalOpen] = useState(false);
+  const [labelsDialogOpen, setLabelsDialogOpen] = useState(false);
   const { toast } = useToast();
 
   // Get PI Progress
@@ -166,6 +168,15 @@ export default function EpicBacklog() {
             <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
               <Eye className="h-4 w-4" />
               Orphan Objects
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="gap-2 text-muted-foreground hover:text-foreground"
+              onClick={() => setLabelsDialogOpen(true)}
+            >
+              <Tag className="h-4 w-4" />
+              Manage Labels
             </Button>
             <Button 
               variant="ghost" 
@@ -337,6 +348,7 @@ export default function EpicBacklog() {
                     epics={assignedEpics}
                     onEpicSelect={setSelectedEpic}
                     onRefetch={refetch}
+                    onManageLabels={() => setLabelsDialogOpen(true)}
                   />
                 </div>
               )}
@@ -411,6 +423,7 @@ export default function EpicBacklog() {
                 epics={unassignedEpics}
                 onEpicSelect={setSelectedEpic}
                 onRefetch={refetch}
+                onManageLabels={() => setLabelsDialogOpen(true)}
               />
             </div>
           )}
@@ -443,6 +456,10 @@ export default function EpicBacklog() {
       <EpicFiltersDialog 
         open={filtersDialogOpen} 
         onOpenChange={setFiltersDialogOpen} 
+      />
+      <LabelsManagementDialog 
+        open={labelsDialogOpen}
+        onOpenChange={setLabelsDialogOpen}
       />
       
       {/* WSJF Prioritization Dialog */}

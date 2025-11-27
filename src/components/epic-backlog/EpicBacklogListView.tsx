@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { GripVertical, CheckSquare, ChevronRight } from 'lucide-react';
 import { EpicContextMenu } from './EpicContextMenu';
+import { EpicLabelSelector } from './EpicLabelSelector';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -23,10 +25,38 @@ interface EpicBacklogListViewProps {
   epics: Epic[];
   onEpicSelect: (id: string) => void;
   onRefetch: () => void;
+  onManageLabels?: () => void;
 }
 
-export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBacklogListViewProps) {
+export function EpicBacklogListView({ epics, onEpicSelect, onRefetch, onManageLabels }: EpicBacklogListViewProps) {
   const [selectedEpics, setSelectedEpics] = useState<Set<string>>(new Set());
+
+  // Fetch labels for all epics
+  const { data: labelsMap } = useQuery({
+    queryKey: ['epic-labels-map', epics.map(e => e.id)],
+    queryFn: async () => {
+      if (!epics.length) return {};
+      
+      const { data, error } = await supabase
+        .from('epic_label_assignments')
+        .select('epic_id, epic_labels(*)')
+        .in('epic_id', epics.map(e => e.id));
+      
+      if (error) throw error;
+      
+      const map: Record<string, any[]> = {};
+      data.forEach((assignment) => {
+        if (!map[assignment.epic_id]) {
+          map[assignment.epic_id] = [];
+        }
+        if (assignment.epic_labels) {
+          map[assignment.epic_id].push(assignment.epic_labels);
+        }
+      });
+      return map;
+    },
+    enabled: epics.length > 0,
+  });
 
   const toggleSelect = (epicId: string) => {
     const newSelected = new Set(selectedEpics);
@@ -237,23 +267,15 @@ export function EpicBacklogListView({ epics, onEpicSelect, onRefetch }: EpicBack
                     </TableCell>
                     
                     {/* Epic Name with Labels */}
-                    <TableCell onClick={() => onEpicSelect(epic.id)}>
+                    <TableCell>
                       <div className="space-y-2">
-                        <span className="font-medium text-sm">{epicName}</span>
-                        <div className="flex flex-wrap gap-1">
-                          {labels.map((item, i) => (
-                            <Badge
-                              key={i}
-                              className={cn(
-                                "text-xs px-2 py-0.5 font-medium border-0",
-                                item.bgClass,
-                                item.textClass
-                              )}
-                            >
-                              {item.label}
-                            </Badge>
-                          ))}
-                        </div>
+                        <span className="font-medium text-sm cursor-pointer" onClick={() => onEpicSelect(epic.id)}>
+                          {epicName}
+                        </span>
+                        <EpicLabelSelector 
+                          epicId={epic.id} 
+                          onManageLabels={onManageLabels}
+                        />
                       </div>
                     </TableCell>
                     
