@@ -135,87 +135,88 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Context Header */}
-        <div className={cn("p-3 border-b", !expanded && "px-2")}>
+        <div className={cn("px-4 pt-4 pb-3 border-b", !expanded && "px-2")}>
           {expanded ? (
             <>
-              {/* Portfolio/Program/Enterprise Name */}
-              {tier === 'portfolio' && currentPortfolio && (
-                <div className="mb-3">
-                  <h2 className="text-sm font-semibold">{currentPortfolio.name}</h2>
-                </div>
+              {/* Portfolio/Program Selector */}
+              {(tier === 'portfolio' || tier === 'program') && currentPortfolio && (
+                <Select value={portfolioId || undefined} onValueChange={setPortfolioId}>
+                  <SelectTrigger className="h-auto py-2 px-3 mb-3 bg-background border-border hover:bg-accent/50">
+                    <div className="flex items-center gap-3 w-full">
+                      <div className={cn("w-8 h-8 rounded flex items-center justify-center text-white text-xs font-semibold flex-shrink-0", currentPortfolio.color)}>
+                        {currentPortfolio.abbr}
+                      </div>
+                      <div className="flex-1 text-left min-w-0">
+                        <div className="text-sm font-medium text-foreground truncate">{currentPortfolio.name}</div>
+                        <div className="text-xs text-muted-foreground">Portfolio</div>
+                      </div>
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border-border z-[100]">
+                    {portfolios.map(portfolio => (
+                      <SelectItem key={portfolio.id} value={portfolio.id}>
+                        <div className="flex items-center gap-3">
+                          <div className={cn("w-8 h-8 rounded flex items-center justify-center text-white text-xs font-semibold", portfolio.color)}>
+                            {portfolio.abbr}
+                          </div>
+                          <div>
+                            <div className="text-sm font-medium">{portfolio.name}</div>
+                            <div className="text-xs text-muted-foreground">Portfolio</div>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               )}
-              {tier === 'program' && currentProgram && (
-                <div className="mb-3">
-                  <h2 className="text-sm font-semibold">{currentProgram.name}</h2>
-                </div>
-              )}
+
+              {/* Enterprise Header */}
               {tier === 'enterprise' && (
                 <div className="mb-3">
-                  <h2 className="text-sm font-semibold">Enterprise</h2>
+                  <div className="flex items-center gap-3 px-3 py-2">
+                    <div className="w-8 h-8 rounded bg-blue-500 flex items-center justify-center text-white text-xs font-semibold">
+                      EN
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">Enterprise</div>
+                      <div className="text-xs text-muted-foreground">Strategy</div>
+                    </div>
+                  </div>
                 </div>
               )}
 
-              {/* Filter dropdowns for Portfolio/Program */}
+              {/* Program Increment Filter */}
               {(tier === 'portfolio' || tier === 'program') && (
-                <div className="space-y-2 mb-2">
-                  <div>
-                    <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
-                      PROGRAM INCREMENT
-                    </label>
-                    <Select value={piIds[0] || undefined} onValueChange={(value) => setPiIds([value])}>
-                      <SelectTrigger className="h-8 text-xs w-full">
-                        <SelectValue placeholder="Select PI" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {pis.map(pi => (
-                          <SelectItem key={pi.id} value={pi.id}>
-                            {pi.code}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
-                      Team
-                    </label>
-                    <Select>
-                      <SelectTrigger className="h-8 text-xs w-full">
-                        <SelectValue placeholder="PI-5 List" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="pi-5-list">PI-5 List</SelectItem>
-                        <SelectItem value="all">All Teams</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
-                      Epic
-                    </label>
-                    <Select>
-                      <SelectTrigger className="h-8 text-xs w-full">
-                        <SelectValue placeholder="Select Epic" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Epics</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div>
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
+                    PROGRAM INCREMENT
+                  </label>
+                  <Select value={piIds[0] || undefined} onValueChange={(value) => setPiIds([value])}>
+                    <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
+                      <SelectValue placeholder="Select PI" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-background border-border z-[100]">
+                      {pis.map(pi => (
+                        <SelectItem key={pi.id} value={pi.id}>
+                          {pi.code}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
 
               {/* Snapshot selector for Enterprise */}
               {tier === 'enterprise' && (
-                <div className="mb-2">
-                  <label className="text-[10px] font-medium text-muted-foreground uppercase mb-1 block">
-                    Snapshot
+                <div>
+                  <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
+                    SNAPSHOT
                   </label>
                   <Select value={snapshotId || undefined} onValueChange={setSnapshotId}>
-                    <SelectTrigger className="h-8 text-xs">
+                    <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
                       <SelectValue placeholder="Select Snapshot" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-background border-border z-[100]">
                       {snapshots.map(snap => (
                         <SelectItem key={snap.id} value={snap.id}>
                           {snap.name}
@@ -230,38 +231,39 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 overflow-y-auto">
-          <div className="py-2">
-            {getFilteredMenuItems().map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.path);
+        <nav className="flex-1 overflow-y-auto py-1">
+          {getFilteredMenuItems().map((item) => {
+            const Icon = item.icon;
+            const active = isActive(item.path);
 
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleNavigation(item.path)}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2 text-sm transition-colors",
-                    "hover:bg-accent",
-                    active && "bg-primary/10 text-primary font-medium border-l-2 border-primary",
-                    !expanded && "justify-center px-2"
-                  )}
-                  title={!expanded ? item.label : undefined}
-                >
-                  <Icon className="h-4 w-4 flex-shrink-0" />
-                  {expanded && <span className="truncate text-left">{item.label}</span>}
-                </button>
-              );
-            })}
-          </div>
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavigation(item.path)}
+                className={cn(
+                  "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
+                  "hover:bg-accent/50",
+                  active && "bg-accent text-primary font-medium",
+                  !expanded && "justify-center px-2"
+                )}
+                title={!expanded ? item.label : undefined}
+              >
+                <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                {expanded && <span className="truncate text-left flex-1">{item.label}</span>}
+                {expanded && item.expandable && (
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                )}
+              </button>
+            );
+          })}
         </nav>
 
         {/* Footer */}
         {expanded && (
-          <div className="p-2 border-t">
-            <button className="w-full flex items-center gap-3 px-3 py-2 text-sm hover:bg-accent transition-colors">
-              <Settings className="h-4 w-4" />
-              <span>Settings</span>
+          <div className="border-t">
+            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors">
+              <Settings className="h-5 w-5 text-muted-foreground" />
+              <span className="text-left">Settings</span>
             </button>
           </div>
         )}
