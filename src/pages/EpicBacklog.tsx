@@ -6,15 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EpicBacklogListView } from '@/components/epic-backlog/EpicBacklogListView';
+import { EpicBacklogKanbanState } from '@/components/epic-backlog/EpicBacklogKanbanState';
+import { EpicBacklogKanbanProcess } from '@/components/epic-backlog/EpicBacklogKanbanProcess';
 import { EpicDetailsPanel } from '@/components/epic-backlog/EpicDetailsPanel';
 import { EpicColumnsDialog } from '@/components/epic-backlog/EpicColumnsDialog';
 import { EpicFiltersDialog } from '@/components/epic-backlog/EpicFiltersDialog';
-import { Star, List, Columns3, Eye, TrendingUp, Download, ChevronDown, Plus, Grid3x3, Filter, Search } from 'lucide-react';
+import { ViewSwitcher, ViewMode, KanbanMode } from '@/components/backlog/ViewSwitcher';
+import { Star, Eye, TrendingUp, Download, ChevronDown, Plus, Grid3x3, Filter, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function EpicBacklog() {
   const [selectedEpic, setSelectedEpic] = useState<string | null>(null);
-  const [view, setView] = useState<'list' | 'kanban' | 'unassigned'>('list');
+  const [view, setView] = useState<ViewMode>('list');
+  const [kanbanMode, setKanbanMode] = useState<KanbanMode>('state');
   const [backlogType, setBacklogType] = useState<string>('epic');
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
@@ -96,6 +100,12 @@ export default function EpicBacklog() {
                 className="pl-9 w-[200px]"
               />
             </div>
+            <ViewSwitcher 
+              currentView={view}
+              kanbanMode={kanbanMode}
+              onViewChange={setView}
+              onKanbanModeChange={setKanbanMode}
+            />
           </div>
         </div>
       </div>
@@ -143,48 +153,74 @@ export default function EpicBacklog() {
           </div>
 
           {epicsExpanded && (
-            <div className="border rounded-lg bg-card overflow-hidden">
-              {/* Quick Add Row */}
-              <div className="border-b px-4 py-3 bg-muted/30">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2 flex-1">
-                    <Input 
-                      placeholder="New Epic Name..."
-                      className="max-w-xs bg-background"
-                    />
-                    <Select>
-                      <SelectTrigger className="w-[160px] bg-background">
-                        <SelectValue placeholder="Select Program" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="p1">Program A</SelectItem>
-                        <SelectItem value="p2">Program B</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button size="sm" variant="ghost" className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Add
-                    </Button>
+            <>
+              {view === 'list' && (
+                <div className="border rounded-lg bg-card overflow-hidden">
+                  {/* Quick Add Row */}
+                  <div className="border-b px-4 py-3 bg-muted/30">
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-2 flex-1">
+                        <Input 
+                          placeholder="New Epic Name..."
+                          className="max-w-xs bg-background"
+                        />
+                        <Select>
+                          <SelectTrigger className="w-[160px] bg-background">
+                            <SelectValue placeholder="Select Program" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="p1">Program A</SelectItem>
+                            <SelectItem value="p2">Program B</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button size="sm" variant="ghost" className="gap-2">
+                          <Plus className="h-4 w-4" />
+                          Add
+                        </Button>
+                      </div>
+                      <Select>
+                        <SelectTrigger className="w-[140px] bg-background">
+                          <SelectValue placeholder="Labels" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="program">Program Labels</SelectItem>
+                          <SelectItem value="parent">Parent Labels</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  <Select>
-                    <SelectTrigger className="w-[140px] bg-background">
-                      <SelectValue placeholder="Labels" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="program">Program Labels</SelectItem>
-                      <SelectItem value="parent">Parent Labels</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
 
-              {/* Epic List */}
-              <EpicBacklogListView
-                epics={assignedEpics}
-                onEpicSelect={setSelectedEpic}
-                onRefetch={refetch}
-              />
-            </div>
+                  {/* Epic List */}
+                  <EpicBacklogListView
+                    epics={assignedEpics}
+                    onEpicSelect={setSelectedEpic}
+                    onRefetch={refetch}
+                  />
+                </div>
+              )}
+
+              {view === 'kanban' && kanbanMode === 'state' && (
+                <EpicBacklogKanbanState
+                  epics={assignedEpics}
+                  onEpicSelect={setSelectedEpic}
+                  onRefetch={refetch}
+                />
+              )}
+
+              {view === 'kanban' && kanbanMode === 'process' && (
+                <EpicBacklogKanbanProcess
+                  epics={assignedEpics}
+                  onEpicSelect={setSelectedEpic}
+                  onRefetch={refetch}
+                />
+              )}
+
+              {view === 'kanban' && kanbanMode === 'column' && (
+                <div className="text-center py-12 text-muted-foreground">
+                  Column View - Coming Soon
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
