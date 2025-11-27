@@ -10,7 +10,7 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
  * - These persist as users navigate between rooms
  */
 
-export type RoomType = 'strategy' | 'portfolio' | 'program' | 'team';
+export type RoomType = 'strategy' | 'portfolio' | 'program' | 'product' | 'team';
 
 interface NavigationContextValue {
   // Current room

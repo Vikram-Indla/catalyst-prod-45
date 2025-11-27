@@ -42,6 +42,12 @@ const rooms: Room[] = [
     defaultPath: '/program-room' 
   },
   { 
+    id: 'product', 
+    label: 'Product', 
+    icon: Briefcase, 
+    defaultPath: '/product-room' 
+  },
+  { 
     id: 'team', 
     label: 'Team', 
     icon: Users, 
@@ -58,6 +64,7 @@ export function RoomNavigation() {
   const determineCurrentRoom = (pathname: string): RoomType => {
     if (pathname.includes('strategy')) return 'strategy';
     if (pathname.includes('program')) return 'program';
+    if (pathname.includes('product')) return 'product';
     if (pathname.includes('team') || pathname.includes('backlog') || pathname.includes('sprint') || pathname.includes('work-items')) return 'team';
     return 'portfolio';
   };
