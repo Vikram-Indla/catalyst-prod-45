@@ -22,7 +22,16 @@ export function useOKRTree(snapshotId?: string) {
   return useQuery({
     queryKey: ['okr-tree', snapshotId],
     queryFn: async () => {
-      if (!snapshotId) return [];
+      // Fetch all snapshots first to get the latest one if no snapshotId provided
+      const { data: snapshots } = await supabase
+        .from('strategy_snapshots')
+        .select('id')
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      const targetSnapshotId = snapshotId || snapshots?.[0]?.id;
+      
+      if (!targetSnapshotId) return [];
 
       // Fetch all objectives for this snapshot
       const { data: objectives, error } = await supabase
@@ -41,7 +50,7 @@ export function useOKRTree(snapshotId?: string) {
             avatar_url
           )
         `)
-        .eq('snapshot_id', snapshotId)
+        .eq('snapshot_id', targetSnapshotId)
         .order('level', { ascending: true });
 
       if (error) throw error;
@@ -91,7 +100,7 @@ export function useOKRTree(snapshotId?: string) {
 
       return rootItems;
     },
-    enabled: !!snapshotId,
+    enabled: true, // Always enabled, will fetch latest snapshot if none provided
   });
 }
 
