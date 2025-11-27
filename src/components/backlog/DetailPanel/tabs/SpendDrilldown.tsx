@@ -15,7 +15,6 @@ interface SpendDrilldownProps {
 export function SpendDrilldown({ type, acceptedSpend, forecastedSpend, estimatedSpend, stories, onBack }: SpendDrilldownProps) {
   const [selectedPIFilter, setSelectedPIFilter] = useState('All');
   const [hoveredStoryId, setHoveredStoryId] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
 
   const acceptedCount = stories.filter(s => s.spend > 0).length;
   const notAcceptedCount = stories.length - acceptedCount;
@@ -29,11 +28,9 @@ export function SpendDrilldown({ type, acceptedSpend, forecastedSpend, estimated
     ? 'Forecasted Spend is calculated based on program increment forecasts for this epic.'
     : 'Estimated Spend is calculated based on feature estimates for this epic.';
 
-  const handleSpendClick = (e: React.MouseEvent, story: AcceptedStory) => {
+  const handleSpendClick = (_e: React.MouseEvent, story: AcceptedStory) => {
     if (story.spend > 0 && story.teamSprintName) {
       setHoveredStoryId(story.id);
-      const rect = (e.target as HTMLElement).getBoundingClientRect();
-      setPopupPosition({ x: rect.left, y: rect.bottom + 8 });
     }
   };
 
@@ -159,8 +156,8 @@ export function SpendDrilldown({ type, acceptedSpend, forecastedSpend, estimated
         const story = stories.find(s => s.id === hoveredStoryId);
         return story?.teamSprintName && (
           <div
-            className="fixed w-[320px] p-5 rounded-lg shadow-2xl z-[1100]"
-            style={{ left: popupPosition.x, top: popupPosition.y, backgroundColor: '#172B4D', color: 'white' }}
+            className="fixed w-[320px] p-5 rounded-lg shadow-2xl z-[1100] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+            style={{ backgroundColor: '#172B4D', color: 'white' }}
             onMouseEnter={() => setHoveredStoryId(story.id)}
             onMouseLeave={() => setHoveredStoryId(null)}
           >
