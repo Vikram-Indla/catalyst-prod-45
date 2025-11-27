@@ -15,7 +15,7 @@ import { BenefitsTab } from '@/components/backlog/DetailPanel/tabs/BenefitsTab';
 import { ValueTab } from '@/components/backlog/DetailPanel/tabs/ValueTab';
 import { MilestonesTab } from '@/components/backlog/DetailPanel/tabs/MilestonesTab';
 import { SpendTab } from '@/components/backlog/DetailPanel/tabs/SpendTab';
-import { ForecastTab } from '@/components/backlog/DetailPanel/tabs/ForecastTab';
+import { EpicForecastTab } from './EpicForecastTab';
 import { LinksTab } from '@/components/backlog/DetailPanel/tabs/LinksTab';
 
 interface EpicDetailsPanelProps {
@@ -300,12 +300,7 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
             </TabsContent>
 
             <TabsContent value="forecast" className="m-0">
-              <ForecastTab
-                forecastData={epicDetail.forecastData}
-                programIncrements={epicDetail.programIncrements}
-                onPIChange={() => {}}
-                onEstimateChange={() => {}}
-              />
+              <EpicForecastTab epicId={epicId} />
             </TabsContent>
 
             <TabsContent value="links" className="m-0">

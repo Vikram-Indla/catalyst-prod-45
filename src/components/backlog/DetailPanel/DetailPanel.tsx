@@ -8,7 +8,7 @@ import { BenefitsTab } from './tabs/BenefitsTab';
 import { ValueTab } from './tabs/ValueTab';
 import { MilestonesTab } from './tabs/MilestonesTab';
 import { SpendTab } from './tabs/SpendTab';
-import { ForecastTab } from './tabs/ForecastTab';
+import { EpicForecastTab } from '@/components/epic-backlog/EpicForecastTab';
 import { LinksTab } from './tabs/LinksTab';
 import { EpicDetail } from '@/types/backlog.types';
 
@@ -125,18 +125,7 @@ export function DetailPanel({
               acceptedStories={[]}
             />
           )}
-          {activeTab === 'forecast' && (
-            <ForecastTab 
-              forecastData={{
-                selectedPI: '',
-                totalPts: 0,
-                programs: []
-              }}
-              programIncrements={[]}
-              onPIChange={() => {}}
-              onEstimateChange={() => {}}
-            />
-          )}
+          {activeTab === 'forecast' && <EpicForecastTab epicId={epic.id} />}
           {activeTab === 'links' && <LinksTab />}
         </div>
       </div>
