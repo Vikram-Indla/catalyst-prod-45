@@ -19,7 +19,6 @@ import {
 } from '@/data/strategyMockData';
 
 export default function StrategyRoomPage() {
-  const [selectedSnapshotId, setSelectedSnapshotId] = useState('corp-2024');
   const [selectedPIs] = useState(['PI-5', 'PI-6', 'PI-7']);
   const [filterLevel, setFilterLevel] = useState<ObjectiveLevel | undefined>(undefined);
   const [filterPI, setFilterPI] = useState<string | undefined>(undefined);
@@ -34,13 +33,21 @@ export default function StrategyRoomPage() {
       const { data, error } = await supabase
         .from('strategy_snapshots')
         .select('*')
-        .order('name');
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
-  const selectedSnapshot = snapshots.find((s) => s.id === selectedSnapshotId) || mockStrategySnapshots.find((s) => s.id === selectedSnapshotId);
+  // Use the first real snapshot from DB or fallback to mock
+  const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>(() => {
+    return snapshots[0]?.id || mockStrategySnapshots[0]?.id || '';
+  });
+
+  // Update selected snapshot when snapshots load
+  const effectiveSelectedSnapshotId = selectedSnapshotId || snapshots[0]?.id || mockStrategySnapshots[0]?.id || '';
+
+  const selectedSnapshot = snapshots.find((s) => s.id === effectiveSelectedSnapshotId) || mockStrategySnapshots.find((s) => s.id === effectiveSelectedSnapshotId);
 
   const handleLevelClick = (level: string) => {
     const levelMap: Record<string, ObjectiveLevel> = {
@@ -90,7 +97,7 @@ export default function StrategyRoomPage() {
           <h1 className="text-2xl font-bold">Strategy Room</h1>
           <span className="text-sm text-muted-foreground">for Snapshot</span>
           <div className="w-64">
-            <Select value={selectedSnapshotId} onValueChange={setSelectedSnapshotId}>
+            <Select value={effectiveSelectedSnapshotId} onValueChange={setSelectedSnapshotId}>
               <SelectTrigger>
                 <SelectValue placeholder="Select one" />
               </SelectTrigger>
@@ -138,14 +145,14 @@ export default function StrategyRoomPage() {
 
       {/* OKR Heatmap */}
       <OkrHeatmap
-        selectedSnapshot={selectedSnapshotId}
+        selectedSnapshot={effectiveSelectedSnapshotId}
         programIncrements={selectedPIs}
         onCellClick={handleHeatmapCellClick}
       />
 
       {/* OKR Tree */}
       <OkrTree
-        selectedSnapshot={selectedSnapshotId}
+        selectedSnapshot={effectiveSelectedSnapshotId}
         onObjectiveClick={handleObjectiveClick}
       />
 
