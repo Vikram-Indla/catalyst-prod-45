@@ -14,6 +14,7 @@ import { EpicColumnsDialog } from '@/components/epic-backlog/EpicColumnsDialog';
 import { EpicFiltersDialog } from '@/components/epic-backlog/EpicFiltersDialog';
 import { LabelsManagementDialog } from '@/components/epic-backlog/LabelsManagementDialog';
 import { CustomColumnsDialog } from '@/components/epic-backlog/CustomColumnsDialog';
+import { OrphanObjectsDialog } from '@/components/epic-backlog/OrphanObjectsDialog';
 import { ViewSwitcher, ViewMode, KanbanMode } from '@/components/backlog/ViewSwitcher';
 import { WSJFPrioritizationDialog } from '@/components/epic-backlog/WSJFPrioritizationDialog';
 import { usePIProgress } from '@/hooks/usePIProgress';
@@ -33,6 +34,7 @@ export default function EpicBacklog() {
   const [wsjfModalOpen, setWsjfModalOpen] = useState(false);
   const [labelsDialogOpen, setLabelsDialogOpen] = useState(false);
   const [customColumnsDialogOpen, setCustomColumnsDialogOpen] = useState(false);
+  const [orphanObjectsDialogOpen, setOrphanObjectsDialogOpen] = useState(false);
   const { toast } = useToast();
 
   // Get PI Progress
@@ -190,7 +192,12 @@ export default function EpicBacklog() {
 
           {/* Right: Action buttons */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="gap-2 text-muted-foreground hover:text-foreground"
+              onClick={() => setOrphanObjectsDialogOpen(true)}
+            >
               <Eye className="h-4 w-4" />
               Orphan Objects
             </Button>
@@ -514,6 +521,10 @@ export default function EpicBacklog() {
       <CustomColumnsDialog 
         open={customColumnsDialogOpen}
         onOpenChange={setCustomColumnsDialogOpen}
+      />
+      <OrphanObjectsDialog 
+        open={orphanObjectsDialogOpen}
+        onOpenChange={setOrphanObjectsDialogOpen}
       />
       
       {/* WSJF Prioritization Dialog */}
