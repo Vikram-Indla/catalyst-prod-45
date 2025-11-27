@@ -106,17 +106,49 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
     valueScore: 91.5,
     valueScoreAverage: 91.6,
     valueScoreComparison: 49,
-    milestones: [],
-    budget: null,
-    acceptedSpend: 0,
-    forecastedSpend: 0,
-    estimatedSpend: 0,
-    remaining: 0,
-    acceptedStories: [],
+    milestones: [
+      { id: 'ms-1', name: 'pivot/persevere', startDate: null, dueDate: null, description: '', state: 'Pending' as const, category: null }
+    ],
+    budget: 1000000,
+    acceptedSpend: 280902,
+    forecastedSpend: 444156,
+    estimatedSpend: 12687290,
+    remaining: 719098,
+    acceptedStories: [
+      { id: '16613', numericId: 16613, title: 'UI: QA - Transcript Export Tool From TRS', team: 'None', spend: 1207 },
+      { id: '21186', numericId: 21186, title: 'G12: Document V2.1 Transcript Export Tool', team: 'None', spend: 0 },
+      { id: '22388', numericId: 22388, title: 'G12: Transcript Export API- Feature level testing (Split Part 2)', team: 'None', spend: 0 },
+      { id: '22715', numericId: 22715, title: 'MMA_OPS_JAVA - Upgrade from 8.5 Sp1 (L3)', team: 'None', spend: 0 },
+      { id: '22773', numericId: 22773, title: 'RFS - 8.5.5 Forecasting & Planning Guide Update - SP23', team: 'None', spend: 0 },
+      { id: '22774', numericId: 22774, title: 'RFS - 8.5.5 Scheduling Users Guide - SP23', team: 'None', spend: 0 },
+      { id: '24004', numericId: 24004, title: 'MMA_GOAL L1 2.0sp1 Upgrade', team: 'Cloud', spend: 75300 },
+      { id: '24005', numericId: 24005, title: 'MMA_GOAL L3 2.0sp1 Upgrade', team: 'None', spend: 75300 }
+    ],
     forecastData: {
-      selectedPI: '',
-      totalPts: 0,
-      programs: []
+      selectedPI: 'pi-5',
+      totalPts: 475,
+      programs: [
+        {
+          programId: 'ai',
+          programName: 'AI',
+          totalPts: 245,
+          isExpanded: true,
+          teams: [
+            { teamId: 'alpha', teamName: 'Alpha', pts: 10 },
+            { teamId: 'angry-birds', teamName: 'Angry Birds', pts: 50 },
+            { teamId: 'beta', teamName: 'Beta', pts: 75 },
+            { teamId: 'bush', teamName: 'Bush', pts: 50 },
+            { teamId: 'cloud', teamName: 'Cloud', pts: 60 }
+          ]
+        },
+        {
+          programId: 'mobile',
+          programName: 'Mobile',
+          totalPts: 230,
+          isExpanded: false,
+          teams: []
+        }
+      ]
     },
     discussionCount: 0,
     createdAt: new Date().toISOString(),
