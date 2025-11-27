@@ -48,11 +48,8 @@ export function ViewSwitcher({ currentView, kanbanMode, onViewChange, onKanbanMo
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => {
-            if (currentView !== 'kanban') {
-              onViewChange('kanban');
-            } else {
-              setIsKanbanMenuOpen(!isKanbanMenuOpen);
-            }
+            onViewChange('kanban');
+            setIsKanbanMenuOpen(!isKanbanMenuOpen);
           }}
           className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded transition-colors ${
             currentView === 'kanban'
@@ -62,11 +59,11 @@ export function ViewSwitcher({ currentView, kanbanMode, onViewChange, onKanbanMo
         >
           <LayoutGrid className="w-4 h-4" />
           Kanban
-          {currentView === 'kanban' && <ChevronDown className="w-3 h-3" />}
+          <ChevronDown className="w-3 h-3" />
         </button>
 
-        {isKanbanMenuOpen && (
-          <div className="absolute top-full left-0 mt-1 min-w-[160px] bg-background border border-border rounded-lg shadow-xl z-[100] py-1">
+        {currentView === 'kanban' && isKanbanMenuOpen && (
+          <div className="absolute top-full right-0 mt-1 min-w-[180px] bg-card border border-border rounded-lg shadow-xl z-[200] py-1">
             {KANBAN_OPTIONS.map((option) => (
               <button
                 key={option.id}
@@ -76,13 +73,12 @@ export function ViewSwitcher({ currentView, kanbanMode, onViewChange, onKanbanMo
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors ${
                   kanbanMode === option.id
-                    ? 'text-primary'
+                    ? 'bg-[#DEEBFF] text-primary font-medium'
                     : 'text-foreground hover:bg-muted'
                 }`}
               >
-                <span>{option.icon}</span>
+                <LayoutGrid className="w-4 h-4" />
                 <span>{option.label}</span>
-                {kanbanMode === option.id && <span className="ml-auto text-primary">✓</span>}
               </button>
             ))}
           </div>
