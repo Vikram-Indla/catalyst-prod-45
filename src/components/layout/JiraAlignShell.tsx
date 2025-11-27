@@ -10,20 +10,32 @@ import { StarredDropdown } from './dropdowns/StarredDropdown';
 import { ItemsDropdown } from './dropdowns/ItemsDropdown';
 import { CreateDropdown } from './dropdowns/CreateDropdown';
 import { NotificationsPanel } from './dropdowns/NotificationsPanel';
-import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
+import { LeftContextPanel } from './LeftContextPanel';
 import { GlobalSearch } from './GlobalSearch';
 import { JiraAlignContextProvider, useJiraAlignContext } from '@/contexts/JiraAlignContext';
 
 function JiraAlignShellContent() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { setTier } = useJiraAlignContext();
+  const { tier, setTier } = useJiraAlignContext();
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [notificationCount, setNotificationCount] = useState(2);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [selectedPI, setSelectedPI] = useState<string | null>('pi-5');
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Automatically set tier based on current route
+  useEffect(() => {
+    const path = location.pathname;
+    if (path.startsWith('/enterprise')) {
+      if (tier !== 'enterprise') setTier('enterprise');
+    } else if (path.startsWith('/portfolio')) {
+      if (tier !== 'portfolio') setTier('portfolio');
+    } else if (path.startsWith('/program')) {
+      if (tier !== 'program') setTier('program');
+    } else if (path.startsWith('/team')) {
+      if (tier !== 'team') setTier('team');
+    }
+  }, [location.pathname, tier, setTier]);
 
   const toggleDropdown = (name: string) => {
     setActiveDropdown(activeDropdown === name ? null : name);
@@ -222,13 +234,7 @@ function JiraAlignShellContent() {
 
       {/* Main Content with Context Panel */}
         <div className="flex flex-1 overflow-hidden">
-          <PortfolioRoomSidebar
-            portfolioId="default-portfolio"
-            expanded={sidebarExpanded}
-            onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-            selectedPI={selectedPI}
-            onPIChange={setSelectedPI}
-          />
+          <LeftContextPanel />
           <main className="flex-1 overflow-auto">
             <Outlet />
           </main>
