@@ -246,15 +246,33 @@ export default function EpicBacklog() {
     epic.epic_program_increments && epic.epic_program_increments.length > 0
   ) || [];
 
+  const [backlogType, setBacklogType] = useState<string>('epic');
+
   return (
     <div className="flex flex-col bg-background h-full">
       {/* Main Content - Epic List */}
       <div className="flex-1 flex flex-col border rounded-lg bg-card overflow-hidden">
         <div className="border-b px-4 py-3 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">
-              Epics for {selectedPI ? programIncrements?.find(pi => pi.id === selectedPI)?.name : 'All PIs'}
-            </h2>
+            <div className="flex items-center gap-3">
+              <Select value={backlogType} onValueChange={setBacklogType}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="theme">Theme Backlog</SelectItem>
+                  <SelectItem value="epic">Epic Backlog</SelectItem>
+                  <SelectItem value="capability">Capability Backlog</SelectItem>
+                  <SelectItem value="feature">Feature Backlog</SelectItem>
+                  <SelectItem value="story">Story Backlog</SelectItem>
+                  <SelectItem value="defect">Defect Backlog</SelectItem>
+                  <SelectItem value="unassigned">Unassigned Backlog</SelectItem>
+                </SelectContent>
+              </Select>
+              <h2 className="text-lg font-semibold">
+                {selectedPI ? programIncrements?.find(pi => pi.id === selectedPI)?.name : 'All PIs'}
+              </h2>
+            </div>
             <div className="flex items-center gap-2">
               <Tabs value={view} onValueChange={(v) => setView(v as any)}>
                 <TabsList>

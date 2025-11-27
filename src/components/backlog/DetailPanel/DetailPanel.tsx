@@ -2,6 +2,14 @@ import { useEffect } from 'react';
 import { PanelHeader } from './PanelHeader';
 import { PanelTabs } from './PanelTabs';
 import { DetailsTab } from './DetailsTab';
+import { DesignTab } from './tabs/DesignTab';
+import { IntakeTab } from './tabs/IntakeTab';
+import { BenefitsTab } from './tabs/BenefitsTab';
+import { ValueTab } from './tabs/ValueTab';
+import { MilestonesTab } from './tabs/MilestonesTab';
+import { SpendTab } from './tabs/SpendTab';
+import { ForecastTab } from './tabs/ForecastTab';
+import { LinksTab } from './tabs/LinksTab';
 import { EpicDetail } from '@/types/backlog.types';
 
 interface DetailPanelProps {
@@ -64,30 +72,72 @@ export function DetailPanel({
 
         <div className="flex-1 overflow-y-auto">
           {activeTab === 'details' && <DetailsTab epic={epic} />}
-          {activeTab === 'design' && (
-            <div className="p-6 text-muted-foreground">Design tab content coming soon...</div>
-          )}
+          {activeTab === 'design' && <DesignTab />}
           {activeTab === 'intake' && (
-            <div className="p-6 text-muted-foreground">Intake tab content coming soon...</div>
+            <IntakeTab 
+              fields={[
+                { id: '1', number: 1, label: 'Business Need', value: '', required: false },
+                { id: '2', number: 2, label: 'Expected Outcome', value: '', required: false },
+                { id: '3', number: 3, label: 'Success Criteria', value: '', required: false },
+              ]}
+              onFieldChange={() => {}}
+            />
           )}
-          {activeTab === 'benefits' && (
-            <div className="p-6 text-muted-foreground">Benefits tab content coming soon...</div>
-          )}
+          {activeTab === 'benefits' && <BenefitsTab />}
           {activeTab === 'value' && (
-            <div className="p-6 text-muted-foreground">Value tab content coming soon...</div>
+            <ValueTab 
+              fields={[
+                { 
+                  id: '1', 
+                  number: 1, 
+                  label: 'Time Criticality', 
+                  value: 'Medium', 
+                  options: ['Low', 'Medium', 'High'], 
+                  score: 50 
+                },
+                { 
+                  id: '2', 
+                  number: 2, 
+                  label: 'Business Value', 
+                  value: 'High', 
+                  options: ['Low', 'Medium', 'High'], 
+                  score: 75 
+                },
+              ]} 
+              valueScore={65}
+              onFieldChange={() => {}}
+            />
           )}
           {activeTab === 'milestones' && (
-            <div className="p-6 text-muted-foreground">Milestones tab content coming soon...</div>
+            <MilestonesTab 
+              milestones={[]}
+              onAddMilestone={() => {}}
+              onUpdateMilestone={() => {}}
+            />
           )}
           {activeTab === 'spend' && (
-            <div className="p-6 text-muted-foreground">Spend tab content coming soon...</div>
+            <SpendTab 
+              budget={100000}
+              acceptedSpend={25000}
+              forecastedSpend={80000}
+              estimatedSpend={90000}
+              remaining={75000}
+              acceptedStories={[]}
+            />
           )}
           {activeTab === 'forecast' && (
-            <div className="p-6 text-muted-foreground">Forecast tab content coming soon...</div>
+            <ForecastTab 
+              forecastData={{
+                selectedPI: '',
+                totalPts: 0,
+                programs: []
+              }}
+              programIncrements={[]}
+              onPIChange={() => {}}
+              onEstimateChange={() => {}}
+            />
           )}
-          {activeTab === 'links' && (
-            <div className="p-6 text-muted-foreground">Links tab content coming soon...</div>
-          )}
+          {activeTab === 'links' && <LinksTab />}
         </div>
       </div>
     </>
