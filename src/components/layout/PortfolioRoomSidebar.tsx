@@ -32,8 +32,6 @@ interface PortfolioRoomSidebarProps {
   onToggle: () => void;
   selectedPI: string | null;
   onPIChange: (pi: string | null) => void;
-  showTeamFilter?: boolean;
-  showEpicFilter?: boolean;
 }
 
 type MenuItem = 
@@ -61,9 +59,7 @@ export function PortfolioRoomSidebar({
   expanded, 
   onToggle,
   selectedPI,
-  onPIChange,
-  showTeamFilter = false,
-  showEpicFilter = false
+  onPIChange
 }: PortfolioRoomSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -108,28 +104,46 @@ export function PortfolioRoomSidebar({
       <div className="h-full flex flex-col overflow-hidden">
         {/* Portfolio Context Header */}
         <div className={cn("p-4 border-b", !expanded && "px-2")}>
-          {expanded ? (
+          {expanded && (
             <>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-                  DS
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-semibold text-foreground truncate">Digital Services</div>
-                  <div className="text-xs text-muted-foreground">Portfolio</div>
-                </div>
-              </div>
+              {/* Portfolio Dropdown */}
+              <Select value="digital-services">
+                <SelectTrigger className="h-10 mb-4 bg-background border-border">
+                  <div className="flex items-center gap-2 w-full">
+                    <div className="w-6 h-6 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                      DS
+                    </div>
+                    <div className="flex-1 text-left min-w-0">
+                      <div className="text-sm font-semibold text-foreground truncate">Digital Services</div>
+                      <div className="text-xs text-muted-foreground">Portfolio</div>
+                    </div>
+                  </div>
+                </SelectTrigger>
+                <SelectContent className="bg-background border-border z-[100]">
+                  <SelectItem value="digital-services">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold">
+                        DS
+                      </div>
+                      <div>
+                        <div className="text-sm font-semibold">Digital Services</div>
+                        <div className="text-xs text-muted-foreground">Portfolio</div>
+                      </div>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
 
-              {/* Program Increment Filter - Only this one */}
+              {/* Program Increment Filter */}
               <div>
                 <label className="text-[10px] font-semibold text-muted-foreground uppercase mb-1.5 block tracking-wide">
                   PROGRAM INCREMENT
                 </label>
                 <Select value={selectedPI || undefined} onValueChange={onPIChange}>
-                  <SelectTrigger className="h-9 text-sm w-full bg-background">
+                  <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
                     <SelectValue placeholder="Select PI" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-background border-border z-[100]">
                     <SelectItem value="pi-5">PI-5</SelectItem>
                     <SelectItem value="pi-6">PI-6</SelectItem>
                     <SelectItem value="pi-7">PI-7</SelectItem>
@@ -137,7 +151,7 @@ export function PortfolioRoomSidebar({
                 </Select>
               </div>
             </>
-          ) : null}
+          )}
         </div>
 
         {/* Navigation Menu */}
