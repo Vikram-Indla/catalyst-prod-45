@@ -39,10 +39,8 @@ interface MenuItem {
 const getEnterpriseMenuItems = (): MenuItem[] => [
   { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
   { id: 'strategic-snapshots', label: 'Strategic Snapshots', icon: Target, path: '/enterprise/snapshots', tiers: ['enterprise'] },
-  { id: 'strategic-backlog', label: 'Strategic Backlog', icon: List, path: '/enterprise/backlog', tiers: ['enterprise'] },
-  { id: 'strategy-tree', label: 'Strategy Tree', icon: GitBranch, path: '/enterprise/strategy-tree', tiers: ['enterprise'] },
-  { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics', tiers: ['enterprise'] },
-  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['enterprise'] },
+  { id: 'backlog', label: 'Backlog', icon: List, path: '/enterprise/backlog', tiers: ['enterprise'] },
+  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps', tiers: ['enterprise'] },
   { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['enterprise'], expandable: true },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['enterprise'] },
   { id: 'more-pages', label: 'More pages', icon: Boxes, path: '#', tiers: ['enterprise'], expandable: true },
@@ -87,20 +85,21 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
   // More items sub-menu for Enterprise
   const moreItemsSubMenu = [
-    { id: 'ideation', label: 'Ideation', path: '/ideation' },
-    { id: 'risks', label: 'Risks', path: '/risks' },
-    { id: 'impediments', label: 'Impediments', path: '/impediments' },
-    { id: 'specifications', label: 'Specifications', path: '/specifications' },
-    { id: 'sprints', label: 'Sprints', path: '/sprints' },
-    { id: 'themes', label: 'Themes', path: '/themes' },
-    { id: 'epics', label: 'Epics', path: '/epics' },
-    { id: 'features', label: 'Features', path: '/features' },
-    { id: 'stories', label: 'Stories', path: '/stories' },
-    { id: 'defects', label: 'Defects', path: '/defects' },
-    { id: 'tasks', label: 'Tasks', path: '/tasks' },
+    { id: 'ideation', label: 'Ideation', path: '/enterprise/ideation' },
+    { id: 'risks', label: 'Risks', path: '/enterprise/risks' },
+    { id: 'impediments', label: 'Impediments', path: '/enterprise/impediments' },
+    { id: 'epics', label: 'Epics', path: '/enterprise/epics' },
+    { id: 'capabilities', label: 'Capabilities', path: '/enterprise/capabilities' },
+    { id: 'features', label: 'Features', path: '/enterprise/features' },
+    { id: 'stories', label: 'Stories', path: '/enterprise/stories' },
+    { id: 'defects', label: 'Defects', path: '/enterprise/defects' },
+    { id: 'tasks', label: 'Tasks', path: '/enterprise/tasks' },
     { id: 'objectives', label: 'Objectives', path: '/enterprise/objectives' },
-    { id: 'dependencies', label: 'Dependencies', path: '/dependencies' },
-    { id: 'release-vehicles', label: 'Release Vehicles', path: '/release-vehicles' },
+    { id: 'dependencies', label: 'Dependencies', path: '/enterprise/dependencies' },
+    { id: 'sprints', label: 'Sprints', path: '/enterprise/sprints' },
+    { id: 'program-increments', label: 'Program Increments', path: '/enterprise/program-increments' },
+    { id: 'release-vehicles', label: 'Release Vehicles', path: '/enterprise/release-vehicles' },
+    { id: 'success-criteria', label: 'Success Criteria', path: '/enterprise/success-criteria' },
   ];
 
   // Mock data - in production these would come from API
