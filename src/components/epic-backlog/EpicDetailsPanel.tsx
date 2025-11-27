@@ -8,6 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Progress } from '@/components/ui/progress';
 import { FileText, Gem, ClipboardList, TrendingUp, ThumbsUp, Milestone, DollarSign, BarChart3, Link as LinkIcon, MessageSquare, Star, Bell, Grid3x3, FileStack, Grid2x2, CheckSquare, ClipboardCheck, Package } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
+import { DesignTab } from '@/components/backlog/DetailPanel/tabs/DesignTab';
+import { IntakeTab } from '@/components/backlog/DetailPanel/tabs/IntakeTab';
+import { BenefitsTab } from '@/components/backlog/DetailPanel/tabs/BenefitsTab';
+import { ValueTab } from '@/components/backlog/DetailPanel/tabs/ValueTab';
+import { MilestonesTab } from '@/components/backlog/DetailPanel/tabs/MilestonesTab';
+import { SpendTab } from '@/components/backlog/DetailPanel/tabs/SpendTab';
+import { ForecastTab } from '@/components/backlog/DetailPanel/tabs/ForecastTab';
+import { LinksTab } from '@/components/backlog/DetailPanel/tabs/LinksTab';
 
 interface EpicDetailsPanelProps {
   epicId: string;
@@ -273,36 +281,63 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
               </div>
             </TabsContent>
 
-            <TabsContent value="design" className="m-0 p-6">
-              <p className="text-muted-foreground">Design tab content</p>
+            <TabsContent value="design" className="m-0">
+              <DesignTab />
             </TabsContent>
 
-            <TabsContent value="intake" className="m-0 p-6">
-              <p className="text-muted-foreground">Intake tab content</p>
+            <TabsContent value="intake" className="m-0">
+              <IntakeTab 
+                fields={[]}
+                onFieldChange={() => {}}
+              />
             </TabsContent>
 
-            <TabsContent value="benefits" className="m-0 p-6">
-              <p className="text-muted-foreground">Benefits tab content</p>
+            <TabsContent value="benefits" className="m-0">
+              <BenefitsTab />
             </TabsContent>
 
-            <TabsContent value="value" className="m-0 p-6">
-              <p className="text-muted-foreground">Value tab content</p>
+            <TabsContent value="value" className="m-0">
+              <ValueTab
+                fields={[]}
+                valueScore={0}
+                onFieldChange={() => {}}
+              />
             </TabsContent>
 
-            <TabsContent value="milestones" className="m-0 p-6">
-              <p className="text-muted-foreground">Milestones tab content</p>
+            <TabsContent value="milestones" className="m-0">
+              <MilestonesTab
+                milestones={[]}
+                onAddMilestone={() => {}}
+                onUpdateMilestone={() => {}}
+              />
             </TabsContent>
 
-            <TabsContent value="spend" className="m-0 p-6">
-              <p className="text-muted-foreground">Spend tab content</p>
+            <TabsContent value="spend" className="m-0">
+              <SpendTab
+                budget={null}
+                acceptedSpend={0}
+                forecastedSpend={0}
+                estimatedSpend={0}
+                remaining={0}
+                acceptedStories={[]}
+              />
             </TabsContent>
 
-            <TabsContent value="forecast" className="m-0 p-6">
-              <p className="text-muted-foreground">Forecast tab content</p>
+            <TabsContent value="forecast" className="m-0">
+              <ForecastTab
+                forecastData={{
+                  selectedPI: '',
+                  totalPts: 0,
+                  programs: []
+                }}
+                programIncrements={[]}
+                onPIChange={() => {}}
+                onEstimateChange={() => {}}
+              />
             </TabsContent>
 
-            <TabsContent value="links" className="m-0 p-6">
-              <p className="text-muted-foreground">Links tab content</p>
+            <TabsContent value="links" className="m-0">
+              <LinksTab />
             </TabsContent>
           </div>
         </Tabs>
