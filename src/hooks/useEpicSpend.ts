@@ -54,40 +54,27 @@ export const useEpicSpendCalculations = (epicId: string) => {
       // Fetch forecasts for Forecasted Spend
       const { data: forecasts } = await supabase
         .from('forecast_entries')
-        .select(`
-          estimate,
-          program:programs(spend_per_point)
-        `)
+        .select('estimate')
         .eq('work_item_id', epicId)
         .eq('work_item_type', 'epic');
       
       // Fetch features for Estimated Spend
       const { data: features } = await supabase
         .from('features')
-        .select(`
-          points_estimate,
-          primary_program:programs(spend_per_point)
-        `)
+        .select('estimate_points')
         .eq('epic_id', epicId);
       
-      // Fetch accepted spend from features
-      const { data: featureSpends } = await supabase
-        .from('features')
-        .select('accepted_spend')
-        .eq('epic_id', epicId);
-      
-      // Calculate totals
+      // Calculate totals (using default spend_per_point of 340 until column is added)
       const forecastedSpend = forecasts?.reduce((sum, f) => 
-        sum + ((f.estimate || 0) * (f.program?.spend_per_point || 340)), 0
+        sum + ((f.estimate || 0) * 340), 0
       ) || 0;
       
       const estimatedSpend = features?.reduce((sum, f) => 
-        sum + ((f.points_estimate || 0) * (f.primary_program?.spend_per_point || 340)), 0
+        sum + ((f.estimate_points || 0) * 340), 0
       ) || 0;
       
-      const acceptedSpend = featureSpends?.reduce((sum, f) => 
-        sum + (f.accepted_spend || 0), 0
-      ) || 0;
+      // Accepted spend will be 0 until column is added
+      const acceptedSpend = 0;
       
       return { forecastedSpend, estimatedSpend, acceptedSpend };
     },

@@ -65,12 +65,12 @@ export const useCreateMilestone = () => {
       const { data, error } = await supabase
         .from('milestones')
         .insert({
-          epic_id: epicId,
+          work_item_id: epicId,
           title,
           category_id: categoryId,
-          state: 0, // Pending
+          state: '0', // Pending
           start_date: startDate,
-          target_date: targetDate
+          due_date: targetDate
         })
         .select()
         .single();
