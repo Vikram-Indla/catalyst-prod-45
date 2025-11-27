@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { PanelHeader } from './PanelHeader';
 import { PanelTabs } from './PanelTabs';
 import { DetailsTab } from './DetailsTab';
@@ -10,7 +10,10 @@ import { MilestonesTab } from './tabs/MilestonesTab';
 import { SpendTab } from './tabs/SpendTab';
 import { EpicForecastTab } from '@/components/epic-backlog/EpicForecastTab';
 import { LinksTab } from './tabs/LinksTab';
-import { EpicDetail } from '@/types/backlog.types';
+import { WSJFModal } from './modals/WSJFModal';
+import { EpicDetail, WSJFScore } from '@/types/backlog.types';
+import { Button } from '@/components/ui/button';
+import { useUpdateWSJF } from '@/hooks/useWSJF';
 
 interface DetailPanelProps {
   epic: EpicDetail | null;
@@ -31,6 +34,34 @@ export function DetailPanel({
   onSave,
   hasChanges,
 }: DetailPanelProps) {
+  const [showWSJFModal, setShowWSJFModal] = useState(false);
+  const updateWSJF = useUpdateWSJF();
+
+  // Mock WSJF scores for current PI
+  const wsjfScores: WSJFScore[] = epic ? [{
+    piId: 'pi-5',
+    piName: 'PI-5',
+    businessValue: 0,
+    timeValue: 0,
+    rroeValue: 0,
+    jobSize: 0,
+    score: 0,
+  }] : [];
+
+  const handleWSJFUpdate = (piId: string, updates: Partial<WSJFScore>) => {
+    if (!epic) return;
+    
+    const field = Object.keys(updates)[0];
+    const value = Object.values(updates)[0] as number;
+    
+    updateWSJF.mutate({
+      epicId: epic.id,
+      piId,
+      field,
+      value,
+    });
+  };
+
   // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -127,8 +158,28 @@ export function DetailPanel({
           )}
           {activeTab === 'forecast' && <EpicForecastTab epicId={epic.id} />}
           {activeTab === 'links' && <LinksTab />}
+          {activeTab === 'wsjf' && (
+            <div className="p-6">
+              <Button 
+                onClick={() => setShowWSJFModal(true)}
+                variant="outline"
+                className="w-full"
+              >
+                Configure WSJF Scores
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+
+      <WSJFModal
+        isOpen={showWSJFModal}
+        onClose={() => setShowWSJFModal(false)}
+        epicId={epic.id}
+        epicTitle={epic.title}
+        wsjfScores={wsjfScores}
+        onUpdate={handleWSJFUpdate}
+      />
     </>
   );
 }
