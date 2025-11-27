@@ -8,10 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { EpicBacklogListView } from '@/components/epic-backlog/EpicBacklogListView';
 import { EpicBacklogKanbanState } from '@/components/epic-backlog/EpicBacklogKanbanState';
 import { EpicBacklogKanbanProcess } from '@/components/epic-backlog/EpicBacklogKanbanProcess';
+import { EpicBacklogKanbanCustom } from '@/components/epic-backlog/EpicBacklogKanbanCustom';
 import { EpicDetailsPanel } from '@/components/epic-backlog/EpicDetailsPanel';
 import { EpicColumnsDialog } from '@/components/epic-backlog/EpicColumnsDialog';
 import { EpicFiltersDialog } from '@/components/epic-backlog/EpicFiltersDialog';
 import { LabelsManagementDialog } from '@/components/epic-backlog/LabelsManagementDialog';
+import { CustomColumnsDialog } from '@/components/epic-backlog/CustomColumnsDialog';
 import { ViewSwitcher, ViewMode, KanbanMode } from '@/components/backlog/ViewSwitcher';
 import { WSJFPrioritizationDialog } from '@/components/epic-backlog/WSJFPrioritizationDialog';
 import { usePIProgress } from '@/hooks/usePIProgress';
@@ -30,10 +32,33 @@ export default function EpicBacklog() {
   const [searchQuery, setSearchQuery] = useState('');
   const [wsjfModalOpen, setWsjfModalOpen] = useState(false);
   const [labelsDialogOpen, setLabelsDialogOpen] = useState(false);
+  const [customColumnsDialogOpen, setCustomColumnsDialogOpen] = useState(false);
   const { toast } = useToast();
 
   // Get PI Progress
   const { data: piProgress } = usePIProgress('pi-5');
+
+  // Fetch custom columns for Column View
+  const { data: customColumns } = useQuery({
+    queryKey: ['process-steps'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('process_steps')
+        .select('*')
+        .order('sort_order');
+      if (error) throw error;
+      
+      // Add unassigned column
+      return [
+        { id: 'unassigned', name: 'Unassigned', exit_criteria: 'gray' },
+        ...(data || []).map(step => ({
+          id: step.id,
+          name: step.name,
+          color: step.exit_criteria
+        }))
+      ];
+    },
+  });
 
   // Fetch epics with PI filtering
   const { data: epics, refetch } = useQuery({
@@ -370,9 +395,34 @@ export default function EpicBacklog() {
               )}
 
               {view === 'kanban' && kanbanMode === 'column' && (
-                <div className="text-center py-12 text-muted-foreground">
-                  Column View - Coming Soon
-                </div>
+                <>
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold">Custom Columns View</h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCustomColumnsDialogOpen(true)}
+                    >
+                      Manage Columns
+                    </Button>
+                  </div>
+                  {customColumns && customColumns.length > 0 ? (
+                    <EpicBacklogKanbanCustom
+                      epics={assignedEpics}
+                      columns={customColumns}
+                      onEpicSelect={setSelectedEpic}
+                      onRefetch={refetch}
+                      onManageLabels={() => setLabelsDialogOpen(true)}
+                    />
+                  ) : (
+                    <div className="text-center py-12 border rounded-lg">
+                      <p className="text-muted-foreground mb-4">No custom columns created yet</p>
+                      <Button onClick={() => setCustomColumnsDialogOpen(true)}>
+                        Create Custom Columns
+                      </Button>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}
@@ -460,6 +510,10 @@ export default function EpicBacklog() {
       <LabelsManagementDialog 
         open={labelsDialogOpen}
         onOpenChange={setLabelsDialogOpen}
+      />
+      <CustomColumnsDialog 
+        open={customColumnsDialogOpen}
+        onOpenChange={setCustomColumnsDialogOpen}
       />
       
       {/* WSJF Prioritization Dialog */}
