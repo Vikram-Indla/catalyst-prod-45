@@ -29,7 +29,7 @@ const WSJF_DESCRIPTIONS = {
 };
 
 export function WSJFModal({ isOpen, onClose, epicId, epicTitle, wsjfScores, onUpdate }: WSJFModalProps) {
-  const [activeTab, setActiveTab] = useState('time');
+  const [activeTab, setActiveTab] = useState('business');
 
   if (!isOpen) return null;
 
@@ -57,18 +57,21 @@ export function WSJFModal({ isOpen, onClose, epicId, epicTitle, wsjfScores, onUp
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-border px-6 bg-muted">
+        <div className="flex border-b border-border bg-muted/50">
           {WSJF_TABS.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 text-sm border-b-2 transition-all ${
+              className={`px-6 py-3 text-sm font-medium transition-all relative ${
                 activeTab === tab.id
-                  ? 'text-primary border-primary font-medium'
-                  : 'text-muted-foreground border-transparent hover:text-foreground'
+                  ? 'text-foreground bg-background'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               }`}
             >
               {tab.label}
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
+              )}
             </button>
           ))}
         </div>
@@ -79,17 +82,19 @@ export function WSJFModal({ isOpen, onClose, epicId, epicTitle, wsjfScores, onUp
             <div className="p-6">
               {/* Epic Row with Dropdown */}
               {wsjfScores.map((score) => (
-                <div key={score.piId} className="flex items-center justify-between py-4 border-b border-border">
-                  <div className="flex items-center gap-2">
-                    <div className="w-5 h-5 bg-primary/10 rounded flex items-center justify-center text-xs">⊞</div>
-                    <span className="text-sm text-foreground">{epicId}</span>
+                <div key={score.piId} className="flex items-center justify-between py-3 border-b border-border mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-6 h-6 bg-muted rounded flex items-center justify-center">
+                      <div className="w-4 h-4 border-2 border-muted-foreground" />
+                    </div>
+                    <span className="text-sm font-medium text-foreground">{epicId}</span>
                     <span className="text-sm text-foreground">{epicTitle}</span>
                     <span className="text-xs text-muted-foreground">*</span>
                   </div>
                   <select
                     value={score[getFieldKey(activeTab)] || ''}
                     onChange={(e) => onUpdate(score.piId, { [getFieldKey(activeTab)]: parseInt(e.target.value) || 0 })}
-                    className="px-3 py-2 text-sm bg-background border border-border rounded focus:outline-none focus:border-primary"
+                    className="px-4 py-2 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary min-w-[120px]"
                   >
                     {WSJF_VALUES.map((val) => (
                       <option key={val} value={val}>{val || 'Select'}</option>
@@ -98,22 +103,22 @@ export function WSJFModal({ isOpen, onClose, epicId, epicTitle, wsjfScores, onUp
                 </div>
               ))}
 
-              {/* Descriptions */}
-              <div className="mt-6 space-y-6">
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground mb-2">Business Value</h4>
+              {/* Descriptions Table */}
+              <div className="space-y-3">
+                <div className="grid grid-cols-[150px_1fr] gap-4 py-3">
+                  <h4 className="text-sm font-bold text-foreground">Business Value</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">{WSJF_DESCRIPTIONS.business}</p>
                 </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground mb-2">Time Value</h4>
+                <div className="grid grid-cols-[150px_1fr] gap-4 py-3">
+                  <h4 className="text-sm font-bold text-foreground">Time Value</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">{WSJF_DESCRIPTIONS.time}</p>
                 </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground mb-2">RR/OE Value</h4>
+                <div className="grid grid-cols-[150px_1fr] gap-4 py-3">
+                  <h4 className="text-sm font-bold text-foreground">RR/OE Value</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">{WSJF_DESCRIPTIONS.rroe}</p>
                 </div>
-                <div>
-                  <h4 className="text-sm font-semibold text-foreground mb-2">Job Size</h4>
+                <div className="grid grid-cols-[150px_1fr] gap-4 py-3">
+                  <h4 className="text-sm font-bold text-foreground">Job Size</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed">{WSJF_DESCRIPTIONS.jobsize}</p>
                 </div>
               </div>
@@ -122,21 +127,52 @@ export function WSJFModal({ isOpen, onClose, epicId, epicTitle, wsjfScores, onUp
 
           {activeTab === 'calculations' && (
             <div className="p-6">
-              <h3 className="text-base font-semibold text-foreground mb-4">WSJF Calculations</h3>
-              {wsjfScores.map((score) => (
-                <div key={score.piId} className="p-4 mb-4 border border-border rounded-lg">
-                  <div className="text-sm font-semibold text-foreground mb-2">{score.piName}</div>
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    <div>Business Value: {score.businessValue}</div>
-                    <div>Time Value: {score.timeValue}</div>
-                    <div>RR/OE Value: {score.rroeValue}</div>
-                    <div>Job Size: {score.jobSize}</div>
-                    <div className="pt-2 mt-2 border-t border-border font-semibold text-foreground">
-                      WSJF Score: {score.score}
+              {wsjfScores.map((score) => {
+                const bv = score.businessValue || 0;
+                const tv = score.timeValue || 0;
+                const rr = score.rroeValue || 0;
+                const js = score.jobSize || 1;
+                const calculatedScore = js > 0 ? ((bv + tv + rr) / js) : 0;
+                
+                return (
+                  <div key={score.piId} className="mb-6">
+                    {/* Epic Row */}
+                    <div className="flex items-center justify-between py-3 border-b border-border mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-muted rounded flex items-center justify-center">
+                          <div className="w-4 h-4 border-2 border-muted-foreground" />
+                        </div>
+                        <span className="text-sm font-medium text-foreground">{epicId}</span>
+                        <span className="text-sm text-foreground">{epicTitle}</span>
+                        <span className="text-xs text-muted-foreground">*</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        (BV is {bv} + TV is {tv} + RR/OE is {rr}) / Job Size is {js}){calculatedScore.toFixed(0)} WSJF
+                      </div>
+                    </div>
+
+                    {/* Descriptions Table */}
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-[150px_1fr] gap-4 py-3">
+                        <h4 className="text-sm font-bold text-foreground">Business Value</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{WSJF_DESCRIPTIONS.business}</p>
+                      </div>
+                      <div className="grid grid-cols-[150px_1fr] gap-4 py-3">
+                        <h4 className="text-sm font-bold text-foreground">Time Value</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{WSJF_DESCRIPTIONS.time}</p>
+                      </div>
+                      <div className="grid grid-cols-[150px_1fr] gap-4 py-3">
+                        <h4 className="text-sm font-bold text-foreground">RR/OE Value</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{WSJF_DESCRIPTIONS.rroe}</p>
+                      </div>
+                      <div className="grid grid-cols-[150px_1fr] gap-4 py-3">
+                        <h4 className="text-sm font-bold text-foreground">Job Size</h4>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{WSJF_DESCRIPTIONS.jobsize}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
