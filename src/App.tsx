@@ -18,7 +18,7 @@ import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
-import EpicBacklogWithSidebar from "./pages/EpicBacklogWithSidebar";
+import EpicBacklog from "./pages/EpicBacklog";
 import Features from "./pages/Features";
 import Capabilities from "./pages/Capabilities";
 import Defects from "./pages/Defects";
@@ -162,7 +162,7 @@ const App = () => (
               <Route path="/dev/epic-backlog-tests" element={<EpicBacklogTests />} />
               <Route path="/dev/forecast-self-test" element={<ForecastSelfTest />} />
               <Route path="/dev/sources" element={<SourcesReference />} />
-              <Route path="/backlog/epics" element={<EpicBacklogWithSidebar />} />
+              <Route path="/backlog/epics" element={<EpicBacklog />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
