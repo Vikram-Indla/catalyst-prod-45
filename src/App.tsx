@@ -70,6 +70,23 @@ import { AdminGuard } from "./components/admin/AdminGuard";
 import OKRHeatmap from "./pages/enterprise/OKRHeatmap";
 import OKRTree from "./pages/enterprise/OKRTree";
 import RoadmapsPage from "./pages/enterprise/Roadmaps";
+import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
+import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
+import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
+import EnterpriseCapabilities from "./pages/enterprise/EnterpriseCapabilities";
+import EnterpriseFeatures from "./pages/enterprise/EnterpriseFeatures";
+import EnterpriseStories from "./pages/enterprise/EnterpriseStories";
+import EnterpriseDefects from "./pages/enterprise/EnterpriseDefects";
+import EnterpriseTasks from "./pages/enterprise/EnterpriseTasks";
+import EnterpriseObjectives from "./pages/enterprise/EnterpriseObjectives";
+import EnterpriseDependencies from "./pages/enterprise/EnterpriseDependencies";
+import EnterpriseSprints from "./pages/enterprise/EnterpriseSprints";
+import EnterpriseProgramIncrements from "./pages/enterprise/EnterpriseProgramIncrements";
+import EnterpriseReleaseVehicles from "./pages/enterprise/EnterpriseReleaseVehicles";
+import EnterpriseSuccessCriteria from "./pages/enterprise/EnterpriseSuccessCriteria";
+import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
+import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
+import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import SelfTest from "./pages/dev/SelfTest";
 import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
@@ -105,9 +122,28 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoom />} />
               <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
+              <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
+              <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
               <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
               <Route path="/enterprise/okr-tree" element={<OKRTree />} />
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
+              
+              {/* Enterprise More Items */}
+              <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
+              <Route path="/enterprise/risks" element={<EnterpriseRisks />} />
+              <Route path="/enterprise/impediments" element={<EnterpriseImpediments />} />
+              <Route path="/enterprise/epics" element={<EnterpriseEpics />} />
+              <Route path="/enterprise/capabilities" element={<EnterpriseCapabilities />} />
+              <Route path="/enterprise/features" element={<EnterpriseFeatures />} />
+              <Route path="/enterprise/stories" element={<EnterpriseStories />} />
+              <Route path="/enterprise/defects" element={<EnterpriseDefects />} />
+              <Route path="/enterprise/tasks" element={<EnterpriseTasks />} />
+              <Route path="/enterprise/objectives" element={<EnterpriseObjectives />} />
+              <Route path="/enterprise/dependencies" element={<EnterpriseDependencies />} />
+              <Route path="/enterprise/sprints" element={<EnterpriseSprints />} />
+              <Route path="/enterprise/program-increments" element={<EnterpriseProgramIncrements />} />
+              <Route path="/enterprise/release-vehicles" element={<EnterpriseReleaseVehicles />} />
+              <Route path="/enterprise/success-criteria" element={<EnterpriseSuccessCriteria />} />
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Navigate to="/backlog/epics" replace />} />
