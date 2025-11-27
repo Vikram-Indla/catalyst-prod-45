@@ -51,8 +51,8 @@ export function CreateDropdown({ onClose }: CreateDropdownProps) {
               onClick={() => handleClick(item.label)}
               className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-accent text-left"
             >
-              <div className={`w-6 h-6 rounded ${item.color} flex items-center justify-center`}>
-                <item.icon className="h-3.5 w-3.5 text-white" />
+              <div className={`w-7 h-7 rounded-md ${item.color} flex items-center justify-center shrink-0`}>
+                <item.icon className="h-4 w-4 text-white" />
               </div>
               <span className="text-sm">{item.label}</span>
             </button>
@@ -65,8 +65,8 @@ export function CreateDropdown({ onClose }: CreateDropdownProps) {
               onClick={() => handleClick(item.label)}
               className="w-full flex items-center gap-3 px-3 py-2 rounded hover:bg-accent text-left"
             >
-              <div className={`w-6 h-6 rounded ${item.color} flex items-center justify-center`}>
-                <item.icon className="h-3.5 w-3.5 text-white" />
+              <div className={`w-7 h-7 rounded-md ${item.color} flex items-center justify-center shrink-0`}>
+                <item.icon className="h-4 w-4 text-white" />
               </div>
               <span className="text-sm">{item.label}</span>
             </button>
