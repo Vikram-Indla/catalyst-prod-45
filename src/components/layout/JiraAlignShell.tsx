@@ -216,7 +216,8 @@ export function JiraAlignShell() {
 
       {/* Main Content with Context Panel */}
         <div className="flex flex-1 overflow-hidden">
-          <LeftContextPanel />
+          {/* Hide LeftContextPanel for routes that provide their own sidebar */}
+          {location.pathname !== '/backlog/epics' && <LeftContextPanel />}
           <main className="flex-1 overflow-auto">
             <Outlet />
           </main>

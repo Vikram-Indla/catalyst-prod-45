@@ -9,7 +9,7 @@ export default function EpicBacklogWithSidebar() {
   const portfolioId = 'default-portfolio';
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-full overflow-hidden bg-background">
       <PortfolioRoomSidebar
         portfolioId={portfolioId}
         expanded={sidebarExpanded}
