@@ -126,9 +126,6 @@ function JiraAlignShellContent() {
               )}
             </div>
             <Button variant="ghost" size="sm">
-              Solution <ChevronDown className="ml-1 h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="sm">
               Program <ChevronDown className="ml-1 h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm">
