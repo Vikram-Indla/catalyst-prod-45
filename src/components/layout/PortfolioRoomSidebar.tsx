@@ -103,30 +103,30 @@ export function PortfolioRoomSidebar({
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Portfolio Context Header */}
-        <div className={cn("p-4 border-b", !expanded && "px-2")}>
+        <div className={cn("px-4 pt-4 pb-3 border-b", !expanded && "px-2")}>
           {expanded && (
             <>
               {/* Portfolio Dropdown */}
               <Select value="digital-services">
-                <SelectTrigger className="h-10 mb-4 bg-background border-border">
-                  <div className="flex items-center gap-2 w-full">
-                    <div className="w-6 h-6 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                <SelectTrigger className="h-auto py-2 px-3 mb-3 bg-background border-border hover:bg-accent/50">
+                  <div className="flex items-center gap-3 w-full">
+                    <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
                       DS
                     </div>
                     <div className="flex-1 text-left min-w-0">
-                      <div className="text-sm font-semibold text-foreground truncate">Digital Services</div>
+                      <div className="text-sm font-medium text-foreground truncate">Digital Services</div>
                       <div className="text-xs text-muted-foreground">Portfolio</div>
                     </div>
                   </div>
                 </SelectTrigger>
                 <SelectContent className="bg-background border-border z-[100]">
                   <SelectItem value="digital-services">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold">
                         DS
                       </div>
                       <div>
-                        <div className="text-sm font-semibold">Digital Services</div>
+                        <div className="text-sm font-medium">Digital Services</div>
                         <div className="text-xs text-muted-foreground">Portfolio</div>
                       </div>
                     </div>
@@ -136,7 +136,7 @@ export function PortfolioRoomSidebar({
 
               {/* Program Increment Filter */}
               <div>
-                <label className="text-[10px] font-semibold text-muted-foreground uppercase mb-1.5 block tracking-wide">
+                <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
                   PROGRAM INCREMENT
                 </label>
                 <Select value={selectedPI || undefined} onValueChange={onPIChange}>

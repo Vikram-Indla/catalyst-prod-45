@@ -47,9 +47,9 @@ export default function EpicBacklog() {
     <div className="flex flex-col h-full">
       {/* Top Action Bar */}
       <div className="border-b bg-card px-6 py-3 flex-shrink-0">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           {/* Left: Star and Viewing dropdown */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             <Star className="h-5 w-5 text-muted-foreground" />
             <span className="text-sm text-muted-foreground">Viewing:</span>
             <Select value={backlogType} onValueChange={setBacklogType}>
@@ -67,8 +67,8 @@ export default function EpicBacklog() {
             </Select>
           </div>
 
-          {/* Right: Action buttons */}
-          <div className="flex items-center gap-3">
+          {/* Right: Action buttons and View Switcher */}
+          <div className="flex items-center gap-3 flex-shrink-0">
             <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
               <Eye className="h-4 w-4" />
               Orphan Objects
@@ -91,7 +91,7 @@ export default function EpicBacklog() {
               <Filter className="h-4 w-4" />
               Apply Filters
             </Button>
-            <div className="relative">
+            <div className="relative flex-shrink-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search"
