@@ -487,6 +487,48 @@ export type Database = {
           },
         ]
       }
+      epic_intake_responses: {
+        Row: {
+          created_at: string | null
+          epic_id: string | null
+          field_id: string | null
+          id: string
+          updated_at: string | null
+          value: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          epic_id?: string | null
+          field_id?: string | null
+          id?: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          epic_id?: string | null
+          field_id?: string | null
+          id?: string
+          updated_at?: string | null
+          value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_intake_responses_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_intake_responses_field_id_fkey"
+            columns: ["field_id"]
+            isOneToOne: false
+            referencedRelation: "intake_fields"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       epic_program_increments: {
         Row: {
           created_at: string | null
@@ -519,6 +561,233 @@ export type Database = {
           },
           {
             foreignKeyName: "epic_program_increments_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epic_roi_scores: {
+        Row: {
+          cost_score: number | null
+          created_at: string | null
+          development_risks_score: number | null
+          epic_id: string | null
+          id: string
+          profit_potential_score: number | null
+          time_to_market_score: number | null
+          updated_at: string | null
+          value_score: number | null
+        }
+        Insert: {
+          cost_score?: number | null
+          created_at?: string | null
+          development_risks_score?: number | null
+          epic_id?: string | null
+          id?: string
+          profit_potential_score?: number | null
+          time_to_market_score?: number | null
+          updated_at?: string | null
+          value_score?: number | null
+        }
+        Update: {
+          cost_score?: number | null
+          created_at?: string | null
+          development_risks_score?: number | null
+          epic_id?: string | null
+          id?: string
+          profit_potential_score?: number | null
+          time_to_market_score?: number | null
+          updated_at?: string | null
+          value_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_roi_scores_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: true
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epic_scorecard_responses: {
+        Row: {
+          created_at: string | null
+          epic_id: string | null
+          id: string
+          question_id: string | null
+          score: number | null
+          selected_answer_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          epic_id?: string | null
+          id?: string
+          question_id?: string | null
+          score?: number | null
+          selected_answer_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          epic_id?: string | null
+          id?: string
+          question_id?: string | null
+          score?: number | null
+          selected_answer_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_scorecard_responses_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_scorecard_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "scorecard_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_scorecard_responses_selected_answer_id_fkey"
+            columns: ["selected_answer_id"]
+            isOneToOne: false
+            referencedRelation: "scorecard_answers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epic_spend: {
+        Row: {
+          accepted_spend: number | null
+          budget: number | null
+          business_impact: string | null
+          created_at: string | null
+          discount_rate: number | null
+          efficiency_dividend: number | null
+          epic_id: string | null
+          estimated_spend: number | null
+          failure_impact: string | null
+          failure_probability: string | null
+          forecasted_spend: number | null
+          id: string
+          initial_investment: number | null
+          it_risk: string | null
+          return_on_investment: number | null
+          revenue_assurance: number | null
+          risk_appetite: string | null
+          updated_at: string | null
+          work_code: string | null
+        }
+        Insert: {
+          accepted_spend?: number | null
+          budget?: number | null
+          business_impact?: string | null
+          created_at?: string | null
+          discount_rate?: number | null
+          efficiency_dividend?: number | null
+          epic_id?: string | null
+          estimated_spend?: number | null
+          failure_impact?: string | null
+          failure_probability?: string | null
+          forecasted_spend?: number | null
+          id?: string
+          initial_investment?: number | null
+          it_risk?: string | null
+          return_on_investment?: number | null
+          revenue_assurance?: number | null
+          risk_appetite?: string | null
+          updated_at?: string | null
+          work_code?: string | null
+        }
+        Update: {
+          accepted_spend?: number | null
+          budget?: number | null
+          business_impact?: string | null
+          created_at?: string | null
+          discount_rate?: number | null
+          efficiency_dividend?: number | null
+          epic_id?: string | null
+          estimated_spend?: number | null
+          failure_impact?: string | null
+          failure_probability?: string | null
+          forecasted_spend?: number | null
+          id?: string
+          initial_investment?: number | null
+          it_risk?: string | null
+          return_on_investment?: number | null
+          revenue_assurance?: number | null
+          risk_appetite?: string | null
+          updated_at?: string | null
+          work_code?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_spend_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: true
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epic_wsjf: {
+        Row: {
+          business_value: number | null
+          created_at: string | null
+          epic_id: string | null
+          global_rank: number | null
+          id: string
+          job_size: number | null
+          pi_id: string | null
+          rroe_value: number | null
+          time_value: number | null
+          updated_at: string | null
+          wsjf_score: number | null
+        }
+        Insert: {
+          business_value?: number | null
+          created_at?: string | null
+          epic_id?: string | null
+          global_rank?: number | null
+          id?: string
+          job_size?: number | null
+          pi_id?: string | null
+          rroe_value?: number | null
+          time_value?: number | null
+          updated_at?: string | null
+          wsjf_score?: number | null
+        }
+        Update: {
+          business_value?: number | null
+          created_at?: string | null
+          epic_id?: string | null
+          global_rank?: number | null
+          id?: string
+          job_size?: number | null
+          pi_id?: string | null
+          rroe_value?: number | null
+          time_value?: number | null
+          updated_at?: string | null
+          wsjf_score?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_wsjf_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_wsjf_pi_id_fkey"
             columns: ["pi_id"]
             isOneToOne: false
             referencedRelation: "program_increments"
@@ -1044,6 +1313,76 @@ export type Database = {
           },
         ]
       }
+      intake_fields: {
+        Row: {
+          created_at: string | null
+          field_name: string
+          field_type: string | null
+          id: string
+          intake_set_id: string | null
+          max_length: number | null
+          options: string[] | null
+          position: number
+        }
+        Insert: {
+          created_at?: string | null
+          field_name: string
+          field_type?: string | null
+          id?: string
+          intake_set_id?: string | null
+          max_length?: number | null
+          options?: string[] | null
+          position: number
+        }
+        Update: {
+          created_at?: string | null
+          field_name?: string
+          field_type?: string | null
+          id?: string
+          intake_set_id?: string | null
+          max_length?: number | null
+          options?: string[] | null
+          position?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_fields_intake_set_id_fkey"
+            columns: ["intake_set_id"]
+            isOneToOne: false
+            referencedRelation: "intake_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      intake_sets: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          portfolio_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          portfolio_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          portfolio_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_sets_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       integration_connectors: {
         Row: {
           auth_config_json: Json | null
@@ -1274,12 +1613,44 @@ export type Database = {
           },
         ]
       }
+      milestone_categories: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          portfolio_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          portfolio_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          portfolio_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestone_categories_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       milestones: {
         Row: {
           category: string | null
+          category_id: string | null
+          completed_date: string | null
           created_at: string | null
           description: string | null
           due_date: string
+          epic_id: string | null
           id: string
           milestone_type: string | null
           start_date: string | null
@@ -1290,9 +1661,12 @@ export type Database = {
         }
         Insert: {
           category?: string | null
+          category_id?: string | null
+          completed_date?: string | null
           created_at?: string | null
           description?: string | null
           due_date: string
+          epic_id?: string | null
           id?: string
           milestone_type?: string | null
           start_date?: string | null
@@ -1303,9 +1677,12 @@ export type Database = {
         }
         Update: {
           category?: string | null
+          category_id?: string | null
+          completed_date?: string | null
           created_at?: string | null
           description?: string | null
           due_date?: string
+          epic_id?: string | null
           id?: string
           milestone_type?: string | null
           start_date?: string | null
@@ -1315,6 +1692,20 @@ export type Database = {
           work_item_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "milestones_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "milestone_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "milestones_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "milestones_work_item_id_fkey"
             columns: ["work_item_id"]
@@ -2513,6 +2904,108 @@ export type Database = {
             columns: ["work_item_id"]
             isOneToOne: false
             referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scorecard_answers: {
+        Row: {
+          answer_text: string
+          created_at: string | null
+          id: string
+          percentage: number
+          position: number
+          question_id: string | null
+        }
+        Insert: {
+          answer_text: string
+          created_at?: string | null
+          id?: string
+          percentage: number
+          position: number
+          question_id?: string | null
+        }
+        Update: {
+          answer_text?: string
+          created_at?: string | null
+          id?: string
+          percentage?: number
+          position?: number
+          question_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scorecard_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "scorecard_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scorecard_questions: {
+        Row: {
+          created_at: string | null
+          id: string
+          max_points: number
+          position: number
+          question: string
+          scorecard_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          max_points?: number
+          position: number
+          question: string
+          scorecard_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          max_points?: number
+          position?: number
+          question?: string
+          scorecard_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scorecard_questions_scorecard_id_fkey"
+            columns: ["scorecard_id"]
+            isOneToOne: false
+            referencedRelation: "scorecards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scorecards: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          portfolio_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          portfolio_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          portfolio_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scorecards_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
             referencedColumns: ["id"]
           },
         ]
