@@ -42,10 +42,9 @@ type MenuItem =
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
   { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives' },
-  { id: 'okr-hub', label: 'OKR Hub', icon: Target, path: '/portfolio/okr-hub' },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps' },
-  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree' },
+  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/portfolio/okr-hub' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/portfolio/:portfolioId/forecast' },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity' },

@@ -39,7 +39,7 @@ interface MenuItem {
 const getEnterpriseMenuItems = (): MenuItem[] => [
   { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
   { id: 'strategic-snapshots', label: 'Strategic Snapshots', icon: Target, path: '/enterprise/snapshots', tiers: ['enterprise'] },
-  { id: 'okr-hub', label: 'OKR Hub', icon: Target, path: '/enterprise/okr-hub', tiers: ['enterprise'] },
+  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-hub', tiers: ['enterprise'] },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/enterprise/backlog', tiers: ['enterprise'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps', tiers: ['enterprise'] },
   { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['enterprise'], expandable: true },
@@ -51,10 +51,9 @@ const getEnterpriseMenuItems = (): MenuItem[] => [
 const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): MenuItem[] => [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: portfolioId ? `/portfolio/${portfolioId}/room` : '/portfolio-room', tiers: ['portfolio', 'program', 'team'] },
   { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives', tiers: ['portfolio', 'program'] },
-  { id: 'okr-hub', label: 'OKR Hub', icon: Target, path: tier === 'portfolio' ? '/portfolio/okr-hub' : tier === 'program' ? '/program/okr-hub' : '/team/okr-hub', tiers: ['portfolio', 'program', 'team'] },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics', tiers: ['portfolio', 'program'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['portfolio', 'program'] },
-  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree', tiers: ['portfolio'] },
+  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: tier === 'portfolio' ? '/portfolio/okr-hub' : tier === 'program' ? '/program/okr-hub' : '/team/okr-hub', tiers: ['portfolio', 'program', 'team'] },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/value-stream', tiers: ['portfolio', 'program'] },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: portfolioId ? `/portfolio/${portfolioId}/forecast` : '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
