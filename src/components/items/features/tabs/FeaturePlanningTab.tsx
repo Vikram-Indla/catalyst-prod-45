@@ -1,6 +1,8 @@
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import type { Feature } from '@/types/feature.types';
 
 interface FeaturePlanningTabProps {
@@ -8,6 +10,39 @@ interface FeaturePlanningTabProps {
 }
 
 export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
+  const { data: programIncrements } = useQuery({
+    queryKey: ['program-increments'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('program_increments')
+        .select('id, name')
+        .order('start_date', { ascending: false });
+      return data || [];
+    },
+  });
+
+  const { data: teams } = useQuery({
+    queryKey: ['teams'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('teams')
+        .select('id, name')
+        .order('name');
+      return data || [];
+    },
+  });
+
+  const { data: iterations } = useQuery({
+    queryKey: ['iterations'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('iterations')
+        .select('id, name')
+        .order('start_date', { ascending: false });
+      return data || [];
+    },
+  });
+
   return (
     <div className="space-y-6">
       {/* Program Increment */}
@@ -18,9 +53,11 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
             <SelectValue placeholder="Select PI..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="pi-1">PI 2025.1</SelectItem>
-            <SelectItem value="pi-2">PI 2025.2</SelectItem>
-            <SelectItem value="pi-3">PI 2025.3</SelectItem>
+            {programIncrements?.map((pi) => (
+              <SelectItem key={pi.id} value={pi.id}>
+                {pi.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -33,9 +70,11 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
             <SelectValue placeholder="Select team..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="team-a">Team A</SelectItem>
-            <SelectItem value="team-b">Team B</SelectItem>
-            <SelectItem value="team-c">Team C</SelectItem>
+            {teams?.map((team) => (
+              <SelectItem key={team.id} value={team.id}>
+                {team.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -48,9 +87,11 @@ export function FeaturePlanningTab({ feature }: FeaturePlanningTabProps) {
             <SelectValue placeholder="Select sprint..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="sprint-1">Sprint 1</SelectItem>
-            <SelectItem value="sprint-2">Sprint 2</SelectItem>
-            <SelectItem value="sprint-3">Sprint 3</SelectItem>
+            {iterations?.map((iteration) => (
+              <SelectItem key={iteration.id} value={iteration.id}>
+                {iteration.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

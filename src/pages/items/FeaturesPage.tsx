@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import * as React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,9 +19,21 @@ export default function FeaturesPage() {
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
   const [wsjfDialogOpen, setWSJFDialogOpen] = useState(false);
   const [massMoveDialogOpen, setMassMoveDialogOpen] = useState(false);
+  
+  // Get featureId from URL params
+  const featureIdFromUrl = searchParams.get('featureId');
+  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(featureIdFromUrl);
+
+  // Update selectedFeatureId when URL changes
+  React.useEffect(() => {
+    if (featureIdFromUrl) {
+      setSelectedFeatureId(featureIdFromUrl);
+    } else {
+      setSelectedFeatureId(null);
+    }
+  }, [featureIdFromUrl]);
 
   const { data: features, isLoading } = useQuery({
     queryKey: ['features', searchQuery],
@@ -113,7 +126,7 @@ export default function FeaturesPage() {
       {/* Toolbar */}
       <FeatureToolbar
         selectedFeatureIds={selectedRows}
-        onCreateFeature={() => setSelectedFeatureId('new')}
+        onCreateFeature={() => navigate('/features?featureId=new')}
         onImport={() => toast.info('Import features coming soon')}
         onExport={handleExport}
         onAuditReport={() => toast.info('Audit report coming soon')}
@@ -136,7 +149,9 @@ export default function FeaturesPage() {
             features={features}
             selectedIds={selectedRows}
             onSelectionChange={setSelectedRows}
-            onRowClick={setSelectedFeatureId}
+            onRowClick={(id) => {
+              navigate(`/features?featureId=${id}`);
+            }}
             onSortChange={(column, direction) => {
               toast.info(`Sorting by ${column} ${direction}`);
             }}
@@ -153,7 +168,10 @@ export default function FeaturesPage() {
         <FeatureDetailsPanel
           feature={selectedFeatureId === 'new' ? undefined : selectedFeature}
           open={!!selectedFeatureId}
-          onClose={() => setSelectedFeatureId(null)}
+          onClose={() => {
+            setSelectedFeatureId(null);
+            navigate('/features');
+          }}
         />
       )}
 
