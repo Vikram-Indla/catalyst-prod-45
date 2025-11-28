@@ -18,12 +18,11 @@ export function HomeContent() {
   const { data: programIncrements } = useQuery({
     queryKey: ['pis-for-nav'],
     queryFn: async () => {
-      // Get the PI with ID 88888888-8888-8888-8888-888888888888 (PI-2025-Q3)
-      // This PI has both iterations and features properly seeded for testing
+      // Get PI-5 which has features properly distributed across teams and sprints
       const { data } = await supabase
         .from('program_increments')
         .select('id, name')
-        .eq('id', '88888888-8888-8888-8888-888888888888')
+        .eq('id', '3e5ae5ed-8aa9-4211-9add-2031b0f6541b')
         .limit(1);
       return data;
     },
