@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useOKRHeatmap } from '@/hooks/useOKRHeatmap';
 
@@ -99,7 +99,7 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
 
           {/* Rows */}
           {mockHeatmapData.map((row) => (
-            <>
+            <Fragment key={row.level}>
               {row.spanAllColumns ? (
                 <div
                   key={`${row.level}-span`}
@@ -147,7 +147,7 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
               <div className="flex items-center justify-center py-3 px-4 text-sm font-medium">
                 {row.itemCount}
               </div>
-            </>
+            </Fragment>
           ))}
         </div>
       </CardContent>
