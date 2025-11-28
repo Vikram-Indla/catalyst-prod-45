@@ -22,9 +22,9 @@ export function getFeatureStatusColor(feature: any): string {
   // Jira Align Program Board color specifications (solid background colors)
   // Source: help.jiraalign.com-Program board.pdf + reference screenshots
   
-  // Green: Done/Accepted (all child stories complete)
+  // Bright Emerald Green: Done/Accepted (all child stories complete)
   if (feature.status === 'done' || feature.status === 'accepted') {
-    return 'bg-emerald-500 text-white';
+    return 'bg-emerald-400 text-white';
   }
   
   // Red: Blocked (child stories blocked, dependencies blocked, past due)
@@ -57,8 +57,8 @@ export function getFeatureStatusColor(feature: any): string {
     return 'bg-amber-800 text-white';
   }
   
-  // Gray: Not Started / Default (backlog state)
-  return 'bg-gray-400 text-white';
+  // Light Gray: Not Started / Default (backlog state)
+  return 'bg-slate-300 text-slate-800';
 }
 
 /**

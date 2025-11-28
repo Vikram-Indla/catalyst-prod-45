@@ -208,7 +208,7 @@ export default function ProgramBoard() {
   // Render feature cards with proper Jira Align styling
   const renderFeatureCard = (feature: any, sprintId: string) => {
     const statusColor = getFeatureStatusColor(feature);
-    const showCheckmark = feature.status === 'done';
+    const showCheckmark = feature.status === 'done' || feature.status === 'accepted';
     const displayId = feature.display_id || feature.id;
     
     // Small view mode - compact tiles with IDs only
@@ -216,7 +216,7 @@ export default function ProgramBoard() {
       return (
         <div
           key={`${feature.id}-${sprintId}`}
-          className={`inline-flex items-center justify-center w-12 h-6 text-[10px] font-semibold rounded-sm ${statusColor} cursor-pointer hover:ring-1 ring-foreground/20 transition-all shadow-sm`}
+          className={`inline-flex items-center justify-center w-12 h-5 text-[10px] font-bold rounded ${statusColor} cursor-pointer hover:ring-1 ring-foreground/20 transition-all shadow-sm`}
           onClick={() => {
             setSelectedItem(feature);
             setQuickViewType('feature');
@@ -234,7 +234,7 @@ export default function ProgramBoard() {
       return (
         <div
           key={`${feature.id}-${sprintId}`}
-          className={`inline-block w-3 h-3 rounded-sm ${statusColor} cursor-pointer hover:opacity-80`}
+          className={`inline-block w-3 h-3 rounded ${statusColor} cursor-pointer hover:opacity-80`}
           onClick={() => {
             setSelectedItem(feature);
             setQuickViewType('feature');
@@ -249,25 +249,25 @@ export default function ProgramBoard() {
     return (
       <div
         key={`${feature.id}-${sprintId}`}
-        className={`relative ${statusColor} rounded shadow-sm border border-foreground/10 cursor-pointer hover:shadow-md transition-all group`}
+        className={`relative ${statusColor} rounded shadow-sm border border-foreground/10 cursor-pointer hover:shadow-md transition-all group min-h-[48px]`}
         onClick={() => {
           setSelectedItem(feature);
           setQuickViewType('feature');
           setQuickViewOpen(true);
         }}
       >
-        <div className="px-2.5 py-2">
-          <div className="flex items-start justify-between gap-2">
+        <div className="px-2 py-1.5">
+          <div className="flex items-start justify-between gap-1.5">
             <div className="flex-1 min-w-0">
-              <div className="font-bold text-base leading-tight mb-1">
+              <div className="font-bold text-sm leading-tight mb-0.5">
                 {displayId}
               </div>
-              <div className="text-[11px] leading-snug line-clamp-3 opacity-90">
+              <div className="text-[10px] leading-tight line-clamp-2 opacity-90 font-medium">
                 {feature.name}
               </div>
             </div>
             {showCheckmark && (
-              <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{color: 'rgba(0,0,0,0.6)'}} />
+              <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 opacity-60" />
             )}
           </div>
         </div>
@@ -445,21 +445,20 @@ export default function ProgramBoard() {
                 Objectives
               </div>
               <div className="w-44 py-2 px-3 border-r border-border bg-muted/10"></div>
-              {sprints?.map((sprint) => (
+              {sprints?.map((sprint, idx) => (
                 <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border bg-muted/5">
-                  <div className="flex gap-1 flex-wrap justify-center">
-                    {/* Placeholder objectives - replace with real data */}
-                    {sprint.code === sprint.name && Math.random() > 0.5 && (
-                      <>
-                        <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center text-xs font-semibold text-white cursor-pointer hover:ring-2 ring-emerald-600 transition-all shadow-sm">
-                          {Math.floor(1000 + Math.random() * 9000)}
-                        </div>
-                        {Math.random() > 0.6 && (
-                          <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center text-xs font-semibold text-white cursor-pointer hover:ring-2 ring-emerald-600 transition-all shadow-sm">
-                            {Math.floor(1000 + Math.random() * 9000)}
-                          </div>
-                        )}
-                      </>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {idx === 0 && (
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-medium cursor-pointer hover:bg-blue-200 transition-colors">
+                        <div className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-bold">1</div>
+                        Launch MVP
+                      </div>
+                    )}
+                    {idx === 2 && (
+                      <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-medium cursor-pointer hover:bg-green-200 transition-colors">
+                        <div className="w-4 h-4 rounded-full bg-green-500 text-white flex items-center justify-center text-[9px] font-bold">2</div>
+                        Beta Release
+                      </div>
                     )}
                   </div>
                 </div>
