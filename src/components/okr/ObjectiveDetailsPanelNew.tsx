@@ -13,7 +13,7 @@ import { ObjectiveDetailsTab } from "./ObjectiveDetailsTab";
 import { DiscussionsTab } from "./DiscussionsTab";
 import { AuditLogTab } from "./AuditLogTab";
 import { useObjective, useUpdateObjective, useDeleteObjective } from "@/hooks/useObjectives";
-import { Star, Share2, Copy, Trash2, X } from "lucide-react";
+import { Star, Share2, Copy, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -162,11 +162,8 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete
                   </DropdownMenuItem>
-                </DropdownMenuContent>
+              </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant="ghost" size="icon" onClick={onClose}>
-                <X className="h-4 w-4" />
-              </Button>
             </div>
           </div>
 

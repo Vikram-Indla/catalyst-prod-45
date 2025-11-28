@@ -26,8 +26,7 @@ import {
   XCircle,
   Copy,
   Kanban,
-  LayoutGrid,
-  X
+  LayoutGrid
 } from 'lucide-react';
 import { EpicDetailsTab } from './tabs/EpicDetailsTab';
 import { EpicDesignTab } from './tabs/EpicDesignTab';
@@ -196,9 +195,6 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
           </div>
         </SheetHeader>
 
