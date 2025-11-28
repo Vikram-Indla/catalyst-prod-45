@@ -72,7 +72,15 @@ export default function ProgramBoard() {
   const { data: teams } = useQuery({
     queryKey: ['teams', programId],
     queryFn: async () => {
-      if (!programId) return [];
+      // If no program or invalid program ID, get all teams
+      if (!programId || !programId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        const { data: teams, error } = await supabase
+          .from('teams')
+          .select('*');
+        
+        if (error) throw error;
+        return teams.sort((a, b) => a.name.localeCompare(b.name));
+      }
       
       const { data: rankings } = await supabase
         .from('program_team_rankings')
@@ -98,7 +106,6 @@ export default function ProgramBoard() {
       
       return teams.sort((a, b) => a.name.localeCompare(b.name));
     },
-    enabled: !!programId,
   });
   
   const { data: sprints } = useQuery({
@@ -125,16 +132,26 @@ export default function ProgramBoard() {
   const { data: featuresData } = useQuery({
     queryKey: ['program-board-features', programId, piId],
     queryFn: async () => {
-      if (!programId || !piId) return [];
-      const { data, error } = await supabase
+      if (!piId) return [];
+      
+      // If programId is provided and valid, filter by it
+      let query = supabase
         .from('features')
         .select('*')
-        .eq('program_id', programId)
         .eq('pi_id', piId);
+      
+      // Only filter by program if we have a valid UUID
+      if (programId && programId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        query = query.eq('program_id', programId);
+      }
+      
+      const { data, error } = await query;
       if (error) throw error;
+      
+      console.log('Loaded features:', data?.length, 'for PI:', piId, 'program:', programId);
       return data;
     },
-    enabled: !!programId && !!piId,
+    enabled: !!piId,
   });
   
   // Render feature cards
