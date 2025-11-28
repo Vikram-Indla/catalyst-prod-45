@@ -21,7 +21,7 @@ import {
 import { Search, Download, Settings2, Eye, EyeOff } from 'lucide-react';
 import { useObjectives, type ObjectiveFilters } from '@/hooks/useObjectives';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { ObjectiveDetailsPanel } from '@/components/okr/ObjectiveDetailsPanel';
+import { ObjectiveDetailsPanelNew } from '@/components/okr/ObjectiveDetailsPanelNew';
 
 export default function OKRHub() {
   const [filters, setFilters] = useState<ObjectiveFilters>({});
@@ -302,11 +302,13 @@ export default function OKRHub() {
       </Card>
 
       {/* Objective Details Panel */}
-      <Sheet open={!!selectedObjectiveId} onOpenChange={() => setSelectedObjectiveId(null)}>
-        <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
-          {selectedObjectiveId && <ObjectiveDetailsPanel objectiveId={selectedObjectiveId} />}
-        </SheetContent>
-      </Sheet>
+      {selectedObjectiveId && (
+        <ObjectiveDetailsPanelNew
+          objectiveId={selectedObjectiveId}
+          open={!!selectedObjectiveId}
+          onClose={() => setSelectedObjectiveId(null)}
+        />
+      )}
     </div>
   );
 }
