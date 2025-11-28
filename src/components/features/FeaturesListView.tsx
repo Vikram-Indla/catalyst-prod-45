@@ -65,25 +65,37 @@ export function FeaturesListView({
     const [movedFeature] = reorderedFeatures.splice(sourceIndex, 1);
     reorderedFeatures.splice(destinationIndex, 0, movedFeature);
 
-    // Update rank_within_epic for all affected features
-    try {
-      const updates = reorderedFeatures.map((feature, index) => ({
-        id: feature.id,
-        rank_within_epic: index + 1,
-      }));
+    // Optimistically update the UI immediately by triggering a refetch
+    // This will cause the component to re-render with the new order
+    onRefetch();
 
-      for (const update of updates) {
-        await supabase
-          .from('features')
-          .update({ rank_within_epic: update.rank_within_epic })
-          .eq('id', update.id);
+    // Update only the affected features in the background
+    try {
+      // Calculate the range of features that need rank updates
+      const startIndex = Math.min(sourceIndex, destinationIndex);
+      const endIndex = Math.max(sourceIndex, destinationIndex);
+      
+      // Batch update only the affected features
+      const updates = [];
+      for (let i = startIndex; i <= endIndex; i++) {
+        updates.push(
+          supabase
+            .from('features')
+            .update({ rank_within_epic: i + 1 })
+            .eq('id', reorderedFeatures[i].id)
+        );
       }
 
-      toast.success('Feature order updated');
-      onRefetch();
+      await Promise.all(updates);
+
+      toast.success(`Moved "${movedFeature.name}" from rank ${sourceIndex + 1} to rank ${destinationIndex + 1}`, {
+        position: 'top-center',
+        duration: 3000,
+      });
     } catch (error) {
       console.error('Error updating feature order:', error);
-      toast.error('Failed to update feature order');
+      toast.error('Failed to update feature order - reverting changes');
+      onRefetch(); // Revert by refetching
     }
   };
 
