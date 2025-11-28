@@ -34,8 +34,8 @@ function JiraAlignShellContent() {
       if (tier !== 'enterprise') setTier('enterprise');
     } else if (path.startsWith('/portfolio')) {
       if (tier !== 'portfolio') setTier('portfolio');
-    } else if (path.startsWith('/program') || path === '/dependencies') {
-      // Dependencies is a Program-level feature
+    } else if (path.startsWith('/program') || path === '/dependencies' || path.startsWith('/programs/program-board')) {
+      // Dependencies and Program Board are Program-level features
       if (tier !== 'program') setTier('program');
     } else if (path.startsWith('/team')) {
       if (tier !== 'team') setTier('team');

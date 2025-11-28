@@ -363,33 +363,33 @@ export default function ProgramBoard() {
                         })}
                         onMouseLeave={() => handleItemHover(null)}
                       >
-                        {viewMode === 'normal' && (
-                          <Card className={`p-3 ${getFeatureStatusColor(feature)}`}>
-                            <div className="flex items-start justify-between gap-2">
-                              <span className="text-sm font-medium line-clamp-2">{feature.name}</span>
-                              <div className="flex-shrink-0">
-                                {getItemSymbol('feature', feature)}
+                          {viewMode === 'normal' && (
+                            <Card className={`p-3 border-l-4 ${getFeatureStatusColor(feature)}`}>
+                              <div className="flex items-start justify-between gap-2">
+                                <span className="text-sm font-medium line-clamp-2">{feature.name}</span>
+                                <div className="flex-shrink-0">
+                                  <Square className="h-5 w-5" />
+                                </div>
                               </div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                #{feature.id?.slice(0, 8)}
+                              </div>
+                            </Card>
+                          )}
+                          
+                          {viewMode === 'small' && (
+                            <div className={`flex items-center gap-2 p-2 rounded border-l-4 ${getFeatureStatusColor(feature)}`}>
+                              <Square className="h-4 w-4" />
+                              <span className="text-xs">#{feature.id?.slice(0, 8)}</span>
                             </div>
-                            <div className="text-xs text-muted-foreground mt-1">
-                              #{feature.id?.slice(0, 8)}
+                          )}
+                          
+                          {viewMode === 'heatmap' && (
+                            <div className={`flex items-center gap-1 p-1 rounded text-xs border-l-2 ${getFeatureStatusColor(feature)}`}>
+                              <Square className="h-3 w-3" />
+                              <span>#{feature.id?.slice(0, 6)}</span>
                             </div>
-                          </Card>
-                        )}
-                        
-                        {viewMode === 'small' && (
-                          <div className={`flex items-center gap-2 p-2 rounded ${getFeatureStatusColor(feature)}`}>
-                            {getItemSymbol('feature', feature)}
-                            <span className="text-xs">#{feature.id?.slice(0, 8)}</span>
-                          </div>
-                        )}
-                        
-                        {viewMode === 'heatmap' && (
-                          <div className={`flex items-center gap-1 p-1 rounded text-xs ${getFeatureStatusColor(feature)}`}>
-                            <div className="w-4 h-4">{getItemSymbol('feature', feature)}</div>
-                            <span>#{feature.id?.slice(0, 6)}</span>
-                          </div>
-                        )}
+                          )}
                       </div>
                     ))}
                   </div>
@@ -427,11 +427,11 @@ export default function ProgramBoard() {
                           onMouseLeave={() => handleItemHover(null)}
                         >
                           {viewMode === 'normal' && (
-                            <Card className={`p-3 ${getFeatureStatusColor(feature)}`}>
+                            <Card className={`p-3 border-l-4 ${getFeatureStatusColor(feature)}`}>
                               <div className="flex items-start justify-between gap-2">
                                 <span className="text-sm font-medium line-clamp-2">{feature.name}</span>
                                 <div className="flex-shrink-0">
-                                  {getItemSymbol('feature', feature)}
+                                  <Square className="h-5 w-5" />
                                 </div>
                               </div>
                               <div className="text-xs text-muted-foreground mt-1">
@@ -441,15 +441,15 @@ export default function ProgramBoard() {
                           )}
                           
                           {viewMode === 'small' && (
-                            <div className={`flex items-center gap-2 p-2 rounded ${getFeatureStatusColor(feature)}`}>
-                              {getItemSymbol('feature', feature)}
+                            <div className={`flex items-center gap-2 p-2 rounded border-l-4 ${getFeatureStatusColor(feature)}`}>
+                              <Square className="h-4 w-4" />
                               <span className="text-xs">#{feature.id?.slice(0, 8)}</span>
                             </div>
                           )}
                           
                           {viewMode === 'heatmap' && (
-                            <div className={`flex items-center gap-1 p-1 rounded text-xs ${getFeatureStatusColor(feature)}`}>
-                              <div className="w-4 h-4">{getItemSymbol('feature', feature)}</div>
+                            <div className={`flex items-center gap-1 p-1 rounded text-xs border-l-2 ${getFeatureStatusColor(feature)}`}>
+                              <Square className="h-3 w-3" />
                               <span>#{feature.id?.slice(0, 6)}</span>
                             </div>
                           )}
