@@ -15,6 +15,10 @@ import { EpicsFilterBar, EpicFilters } from '@/components/epics/EpicsFilterBar';
 import { EpicsAdditionalOptionsMenu } from '@/components/epics/EpicsAdditionalOptionsMenu';
 import { EpicDetailsTabFull } from '@/components/epics/tabs/EpicDetailsTabFull';
 import { EpicDoughnutChart } from '@/components/epics/EpicDoughnutChart';
+import { EpicForecastTab } from '@/components/epics/tabs/EpicForecastTab';
+import { EpicIntakeTab } from '@/components/epics/tabs/EpicIntakeTab';
+import { EpicBenefitsTab } from '@/components/epics/tabs/EpicBenefitsTab';
+import { EpicValueTab } from '@/components/epics/tabs/EpicValueTab';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ImportDialog } from '@/components/shared/ImportDialog';
@@ -278,41 +282,39 @@ export default function Epics() {
               </TabsContent>
 
               <TabsContent value="forecast" className="space-y-4 p-4">
-                <h3 className="text-lg font-semibold">Forecast</h3>
-                <p className="text-sm text-muted-foreground">PI planning and capacity estimates</p>
+                <EpicForecastTab epicId={selectedData.id} />
               </TabsContent>
 
               <TabsContent value="more" className="space-y-4">
-                <Tabs defaultValue="design" className="w-full">
-                  <TabsList className="grid grid-cols-4 w-full">
-                    <TabsTrigger value="design">Design</TabsTrigger>
+                <Tabs defaultValue="intake" className="w-full">
+                  <TabsList className="grid grid-cols-5 w-full">
                     <TabsTrigger value="intake">Intake</TabsTrigger>
                     <TabsTrigger value="benefits">Benefits</TabsTrigger>
                     <TabsTrigger value="value">Value</TabsTrigger>
+                    <TabsTrigger value="attachments">Attachments</TabsTrigger>
+                    <TabsTrigger value="comments">Comments</TabsTrigger>
                   </TabsList>
-                  <TabsContent value="design" className="p-4">
-                    <p className="text-sm text-muted-foreground">Design artifacts and mockups</p>
-                  </TabsContent>
+                  
                   <TabsContent value="intake" className="p-4">
-                    <p className="text-sm text-muted-foreground">Intake form responses</p>
+                    <EpicIntakeTab epicId={selectedData.id} />
                   </TabsContent>
+                  
                   <TabsContent value="benefits" className="p-4">
-                    <p className="text-sm text-muted-foreground">Business benefits analysis</p>
+                    <EpicBenefitsTab epicId={selectedData.id} />
                   </TabsContent>
+                  
                   <TabsContent value="value" className="p-4">
-                    <p className="text-sm text-muted-foreground">Value metrics and ROI</p>
+                    <EpicValueTab epicId={selectedData.id} />
+                  </TabsContent>
+                  
+                  <TabsContent value="attachments" className="p-4">
+                    <AttachmentsSection entityId={selectedItem} entityType="epic" />
+                  </TabsContent>
+                  
+                  <TabsContent value="comments" className="p-4">
+                    <CommentsSection entityId={selectedItem} entityType="epic" />
                   </TabsContent>
                 </Tabs>
-
-                <div className="space-y-4 p-4 border-t">
-                  <h4 className="font-semibold">Attachments</h4>
-                  <AttachmentsSection entityId={selectedItem} entityType="epic" />
-                </div>
-
-                <div className="space-y-4 p-4 border-t">
-                  <h4 className="font-semibold">Comments</h4>
-                  <CommentsSection entityId={selectedItem} entityType="epic" />
-                </div>
               </TabsContent>
             </Tabs>
           </SheetContent>
