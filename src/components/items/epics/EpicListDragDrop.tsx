@@ -17,6 +17,7 @@ interface Epic {
   strategic_themes?: { name: string };
   programs?: { name: string };
   owner_id?: string;
+  owner_name?: string;
   start_date?: string;
   end_date?: string;
   global_rank?: number;
@@ -121,7 +122,7 @@ export function EpicListDragDrop({
                       <HealthBadge health={epic.health as any} />
                     </TableCell>
                     <TableCell className="text-sm" onClick={() => onRowClick(epic.id)}>
-                      {epic.owner_id || '-'}
+                      {epic.owner_name || '-'}
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground" onClick={() => onRowClick(epic.id)}>
                       {epic.start_date && epic.end_date

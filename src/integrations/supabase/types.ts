@@ -1217,6 +1217,7 @@ export type Database = {
           mvp: boolean | null
           name: string
           owner_id: string | null
+          owner_name: string | null
           parked_at: string | null
           points_estimate: number | null
           portfolio_ask_date: string | null
@@ -1265,6 +1266,7 @@ export type Database = {
           mvp?: boolean | null
           name: string
           owner_id?: string | null
+          owner_name?: string | null
           parked_at?: string | null
           points_estimate?: number | null
           portfolio_ask_date?: string | null
@@ -1313,6 +1315,7 @@ export type Database = {
           mvp?: boolean | null
           name?: string
           owner_id?: string | null
+          owner_name?: string | null
           parked_at?: string | null
           points_estimate?: number | null
           portfolio_ask_date?: string | null

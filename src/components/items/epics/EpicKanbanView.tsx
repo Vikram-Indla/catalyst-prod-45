@@ -16,6 +16,7 @@ interface Epic {
   health?: string;
   strategic_themes?: { name: string };
   owner_id?: string;
+  owner_name?: string;
   estimate?: number;
 }
 
@@ -138,6 +139,11 @@ export function EpicKanbanView({ epics, onEpicClick, onContextMenu }: EpicKanban
                               </Badge>
                             )}
                           </div>
+                          {epic.owner_name && (
+                            <div className="mt-2 text-xs text-muted-foreground">
+                              Owner: {epic.owner_name}
+                            </div>
+                          )}
                         </Card>
                       )}
                     </Draggable>
