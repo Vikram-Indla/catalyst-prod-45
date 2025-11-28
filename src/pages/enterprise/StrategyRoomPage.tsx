@@ -154,7 +154,7 @@ export default function StrategyRoomPage() {
       </div>
 
       {/* Snapshot Progress */}
-      <SnapshotProgress />
+      <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
 
       {/* OKR Heatmap */}
       <OkrHeatmap
