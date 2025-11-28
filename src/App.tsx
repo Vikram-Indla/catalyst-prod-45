@@ -19,6 +19,9 @@ import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
 import EpicsPage from "./pages/items/EpicsPage";
+import EpicsRecycleBinPage from "./pages/items/EpicsRecycleBinPage";
+import EpicsCanceledPage from "./pages/items/EpicsCanceledPage";
+import EpicStatusReport from "./pages/items/reports/EpicStatusReport";
 import EpicBacklog from "./pages/EpicBacklog";
 import EpicBacklogWithSidebar from "./pages/EpicBacklogWithSidebar";
 import Features from "./pages/Features";
@@ -151,6 +154,9 @@ const App = () => (
               <Route path="/epics" element={<Navigate to="/backlog/epics" replace />} />
               <Route path="/features" element={<Features />} />
               <Route path="/items/epics" element={<EpicsPage />} />
+              <Route path="/items/epics/recycle-bin" element={<EpicsRecycleBinPage />} />
+              <Route path="/items/epics/canceled" element={<EpicsCanceledPage />} />
+              <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
               <Route path="/items/capabilities" element={<Capabilities />} />
               <Route path="/items/defects" element={<Defects />} />
               <Route path="/items/tasks" element={<Tasks />} />
