@@ -3,8 +3,10 @@ import { useParams } from 'react-router-dom';
 import { PortfolioRoomHeader } from '@/components/layout/PortfolioRoomHeader';
 import { ThemeProgressCard } from '@/components/portfolio/ThemeProgressCard';
 import { ProgramIncrementRoadmapCard } from '@/components/portfolio/ProgramIncrementRoadmapCard';
-import { ProgramIncrementLoadCard } from '@/components/portfolio/ProgramIncrementLoadCard';
+import { PIProgressCard } from '@/components/portfolio/PIProgressCard';
 import { PortfolioEpicGrid } from '@/components/portfolio/PortfolioEpicGrid';
+import { ProgramIncrementSelectorPanel } from '@/components/portfolio/ProgramIncrementSelectorPanel';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Mock data
 const mockThemes = [
@@ -16,11 +18,11 @@ const mockThemes = [
   { id: '6', name: 'Data Analytics', state: 'Planning', percentComplete: 15 },
 ];
 
-const mockLoadRows = [
-  { id: '1', capability: 'Web', percentLoad: 85 },
-  { id: '2', capability: 'Blockchain', percentLoad: 62 },
-  { id: '3', capability: 'AI', percentLoad: 78 },
-  { id: '4', capability: 'Mobile', percentLoad: 91 },
+const mockCapabilities = [
+  { name: 'Web', percentage: 77 },
+  { name: 'Blockchain', percentage: 68 },
+  { name: 'AI', percentage: 87 },
+  { name: 'Mobile', percentage: 87 },
 ];
 
 const mockEpics = [
@@ -37,45 +39,70 @@ const mockEpics = [
 export default function PortfolioRoomPage() {
   const { portfolioId } = useParams<{ portfolioId: string }>();
   const [selectedSnapshot, setSelectedSnapshot] = useState<string | null>(null);
+  const [selectedPIs, setSelectedPIs] = useState<string[]>(['pi-5']);
   const [selectedView, setSelectedView] = useState<'financials' | 'resources' | 'execution'>('execution');
 
   return (
-    <div className="flex flex-col overflow-hidden min-w-0 flex-1">
-      {/* Header Bar */}
-      <PortfolioRoomHeader
-        portfolioId={portfolioId || ''}
-        selectedSnapshot={selectedSnapshot}
-        onSnapshotChange={setSelectedSnapshot}
+    <div className="flex h-screen overflow-hidden">
+      {/* Left Sidebar - PI Selector Panel */}
+      <ProgramIncrementSelectorPanel
+        selectedPIs={selectedPIs}
+        onPIsChange={setSelectedPIs}
       />
 
-      {/* Central Content */}
-      <main className="flex-1 overflow-auto p-4 lg:p-6">
-          <div className="max-w-[1440px] mx-auto space-y-4">
-            {/* Analytics Row - 3 column grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-              {/* Theme Program Increment Progress */}
-              <div className="lg:col-span-5">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header Bar */}
+        <PortfolioRoomHeader
+          portfolioId={portfolioId || ''}
+          selectedSnapshot={selectedSnapshot}
+          onSnapshotChange={setSelectedSnapshot}
+        />
+
+        {/* View Tabs */}
+        <div className="border-b px-4 py-2">
+          <Tabs value={selectedView} onValueChange={(v) => setSelectedView(v as any)}>
+            <TabsList className="h-9">
+              <TabsTrigger value="financials" className="text-sm">
+                Financials
+              </TabsTrigger>
+              <TabsTrigger value="resources" className="text-sm">
+                Resources
+              </TabsTrigger>
+              <TabsTrigger value="execution" className="text-sm">
+                Execution
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {/* Content */}
+        <main className="flex-1 overflow-auto p-4">
+          <div className="space-y-4">
+            {/* Three Column Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Left: Theme Program Increment Progress */}
+              <div>
                 <ThemeProgressCard themes={mockThemes} />
               </div>
 
-              {/* Program Increment Roadmap */}
-              <div className="lg:col-span-4">
+              {/* Center: Program Increment Roadmap */}
+              <div>
                 <ProgramIncrementRoadmapCard
                   piName="PI-5"
-                  progressPercent={81}
-                  startDate="2024-12-01"
-                  endDate="2025-02-28"
+                  progressPercent={83}
+                  startDate="2024-04-01"
+                  endDate="2024-06-30"
                 />
               </div>
 
-              {/* Program Increment Load */}
-              <div className="lg:col-span-3">
-                <ProgramIncrementLoadCard
+              {/* Right: PI Progress with Capabilities */}
+              <div>
+                <PIProgressCard
                   piName="PI-5"
-                  overallProgress={83}
-                  loadRows={mockLoadRows}
-                  selectedView={selectedView}
-                  onViewChange={setSelectedView}
+                  status="In Progress"
+                  progressPercent={83}
+                  capabilities={mockCapabilities}
                 />
               </div>
             </div>
@@ -88,5 +115,6 @@ export default function PortfolioRoomPage() {
           </div>
         </main>
       </div>
+    </div>
   );
 }
