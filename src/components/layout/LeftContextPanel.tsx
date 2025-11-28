@@ -57,7 +57,7 @@ const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): 
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/value-stream', tiers: ['portfolio', 'program'] },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: portfolioId ? `/portfolio/${portfolioId}/forecast` : '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
-  { id: 'program-board', label: 'Program Board', icon: Boxes, path: '/program-board', tiers: ['program'] },
+  { id: 'program-board', label: 'Program Board', icon: Boxes, path: '/programs/program-board', tiers: ['program'] },
   { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['portfolio', 'program'] },
   { id: 'more-pages', label: 'More pages', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
