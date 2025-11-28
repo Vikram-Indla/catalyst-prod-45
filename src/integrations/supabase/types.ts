@@ -528,6 +528,42 @@ export type Database = {
           },
         ]
       }
+      epic_custom_columns: {
+        Row: {
+          color: string
+          column_id: string
+          created_at: string | null
+          id: string
+          label: string
+          position: number
+          updated_at: string | null
+          user_id: string
+          wip_limit: number | null
+        }
+        Insert: {
+          color?: string
+          column_id: string
+          created_at?: string | null
+          id?: string
+          label: string
+          position: number
+          updated_at?: string | null
+          user_id: string
+          wip_limit?: number | null
+        }
+        Update: {
+          color?: string
+          column_id?: string
+          created_at?: string | null
+          id?: string
+          label?: string
+          position?: number
+          updated_at?: string | null
+          user_id?: string
+          wip_limit?: number | null
+        }
+        Relationships: []
+      }
       epic_design_items: {
         Row: {
           created_at: string
@@ -754,26 +790,32 @@ export type Database = {
       epic_process_history: {
         Row: {
           created_at: string | null
+          cycle_time_hours: number | null
           entered_at: string
           epic_id: string
           exited_at: string | null
           id: string
+          lead_time_hours: number | null
           process_step_id: string | null
         }
         Insert: {
           created_at?: string | null
+          cycle_time_hours?: number | null
           entered_at?: string
           epic_id: string
           exited_at?: string | null
           id?: string
+          lead_time_hours?: number | null
           process_step_id?: string | null
         }
         Update: {
           created_at?: string | null
+          cycle_time_hours?: number | null
           entered_at?: string
           epic_id?: string
           exited_at?: string | null
           id?: string
+          lead_time_hours?: number | null
           process_step_id?: string | null
         }
         Relationships: [
@@ -831,6 +873,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      epic_report_templates: {
+        Row: {
+          columns_json: Json | null
+          created_at: string | null
+          filters_json: Json | null
+          id: string
+          is_scheduled: boolean | null
+          name: string
+          report_type: string
+          schedule_cron: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          columns_json?: Json | null
+          created_at?: string | null
+          filters_json?: Json | null
+          id?: string
+          is_scheduled?: boolean | null
+          name: string
+          report_type: string
+          schedule_cron?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          columns_json?: Json | null
+          created_at?: string | null
+          filters_json?: Json | null
+          id?: string
+          is_scheduled?: boolean | null
+          name?: string
+          report_type?: string
+          schedule_cron?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       epic_roi_scores: {
         Row: {
@@ -1124,12 +1205,15 @@ export type Database = {
           epic_key: string | null
           epic_type: string | null
           estimate: number | null
+          estimate_confidence: number | null
+          estimate_method: string | null
           estimation_system: string | null
           global_rank: number | null
           health: Database["public"]["Enums"]["health_status"] | null
           id: string
           initiation_date: string | null
           investment_type: string | null
+          last_estimate_calculation: string | null
           mvp: boolean | null
           name: string
           owner_id: string | null
@@ -1169,12 +1253,15 @@ export type Database = {
           epic_key?: string | null
           epic_type?: string | null
           estimate?: number | null
+          estimate_confidence?: number | null
+          estimate_method?: string | null
           estimation_system?: string | null
           global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
           initiation_date?: string | null
           investment_type?: string | null
+          last_estimate_calculation?: string | null
           mvp?: boolean | null
           name: string
           owner_id?: string | null
@@ -1214,12 +1301,15 @@ export type Database = {
           epic_key?: string | null
           epic_type?: string | null
           estimate?: number | null
+          estimate_confidence?: number | null
+          estimate_method?: string | null
           estimation_system?: string | null
           global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
           initiation_date?: string | null
           investment_type?: string | null
+          last_estimate_calculation?: string | null
           mvp?: boolean | null
           name?: string
           owner_id?: string | null
@@ -2852,6 +2942,8 @@ export type Database = {
           process_flow_id: string
           sort_order: number
           updated_at: string | null
+          wip_limit: number | null
+          wip_limit_enabled: boolean | null
         }
         Insert: {
           created_at?: string | null
@@ -2861,6 +2953,8 @@ export type Database = {
           process_flow_id: string
           sort_order: number
           updated_at?: string | null
+          wip_limit?: number | null
+          wip_limit_enabled?: boolean | null
         }
         Update: {
           created_at?: string | null
@@ -2870,6 +2964,8 @@ export type Database = {
           process_flow_id?: string
           sort_order?: number
           updated_at?: string | null
+          wip_limit?: number | null
+          wip_limit_enabled?: boolean | null
         }
         Relationships: [
           {
