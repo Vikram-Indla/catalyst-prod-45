@@ -10,12 +10,13 @@ import { JiraAlignContextProvider, useJiraAlignContext } from '@/contexts/JiraAl
 
 function JiraAlignShellContent() {
   const location = useLocation();
-  const params = useParams<{ programId?: string }>();
+  const params = useParams<{ programId?: string; portfolioId?: string }>();
   const { tier, setTier } = useJiraAlignContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   
-  // Extract programId from URL params
+  // Extract IDs from URL params
   const currentProgramId = params.programId || null;
+  const currentPortfolioId = params.portfolioId || null;
   
   const { data: programIncrements } = useQuery({
     queryKey: ['pis-for-shell'],
@@ -71,15 +72,15 @@ function JiraAlignShellContent() {
                 <ProgramRoomSidebar
                   programId={currentProgramId}
                 />
-              ) : (
+              ) : tier === 'portfolio' && currentPortfolioId ? (
                 <PortfolioRoomSidebar
-                  portfolioId="default-portfolio"
+                  portfolioId={currentPortfolioId}
                   expanded={sidebarExpanded}
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
                   selectedPI={selectedPI || undefined}
                   onPIChange={(pi) => setSelectedPI(pi)}
                 />
-              )}
+              ) : null}
             </>
           )}
           <main className="flex-1 overflow-auto">

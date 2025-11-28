@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { PortfolioRoomSidebar } from '@/components/layout/PortfolioRoomSidebar';
 import { PortfolioRoomHeader } from '@/components/layout/PortfolioRoomHeader';
 import { ThemeProgressCard } from '@/components/portfolio/ThemeProgressCard';
 import { ProgramIncrementRoadmapCard } from '@/components/portfolio/ProgramIncrementRoadmapCard';
@@ -37,33 +36,20 @@ const mockEpics = [
 
 export default function PortfolioRoomPage() {
   const { portfolioId } = useParams<{ portfolioId: string }>();
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [selectedPI, setSelectedPI] = useState<string | null>(null);
   const [selectedSnapshot, setSelectedSnapshot] = useState<string | null>(null);
   const [selectedView, setSelectedView] = useState<'financials' | 'resources' | 'execution'>('execution');
 
   return (
-    <div className="flex h-screen bg-background overflow-hidden">
-      {/* Left Sidebar Navigation */}
-      <PortfolioRoomSidebar
+    <div className="flex flex-col overflow-hidden min-w-0 flex-1">
+      {/* Header Bar */}
+      <PortfolioRoomHeader
         portfolioId={portfolioId || ''}
-        expanded={sidebarExpanded}
-        onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-        selectedPI={selectedPI}
-        onPIChange={setSelectedPI}
+        selectedSnapshot={selectedSnapshot}
+        onSnapshotChange={setSelectedSnapshot}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        {/* Header Bar */}
-        <PortfolioRoomHeader
-          portfolioId={portfolioId || ''}
-          selectedSnapshot={selectedSnapshot}
-          onSnapshotChange={setSelectedSnapshot}
-        />
-
-        {/* Central Content */}
-        <main className="flex-1 overflow-auto p-4 lg:p-6">
+      {/* Central Content */}
+      <main className="flex-1 overflow-auto p-4 lg:p-6">
           <div className="max-w-[1440px] mx-auto space-y-4">
             {/* Analytics Row - 3 column grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
@@ -102,6 +88,5 @@ export default function PortfolioRoomPage() {
           </div>
         </main>
       </div>
-    </div>
   );
 }
