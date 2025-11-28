@@ -40,7 +40,7 @@ export function ProgramSelectorDropdown({ onClose }: ProgramSelectorDropdownProp
   );
 
   const handleSelect = (programId: string) => {
-    navigate(`/programs/${programId}/program-board`);
+    navigate(`/programs/${programId}/room`);
     onClose();
   };
 

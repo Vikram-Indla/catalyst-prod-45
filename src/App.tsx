@@ -44,8 +44,14 @@ import Dependencies from "./pages/Dependencies";
 import PortfolioInsights from "./pages/PortfolioInsights";
 import ProgramRoom from "./pages/ProgramRoom";
 import ProgramBoardNew from "./pages/ProgramBoardNew";
+import ProgramBoardWithSidebar from "./pages/ProgramBoardWithSidebar";
 import ProgramBoardOld from "./pages/ProgramBoard";
 import ProgramBoardHistory from "./pages/ProgramBoardHistory";
+import ForecastWithSidebar from "./pages/program/ForecastWithSidebar";
+import CapacityWithSidebar from "./pages/program/CapacityWithSidebar";
+import BacklogWithSidebar from "./pages/program/BacklogWithSidebar";
+import RoadmapsWithSidebar from "./pages/program/RoadmapsWithSidebar";
+import FeaturesWithSidebar from "./pages/program/FeaturesWithSidebar";
 import ProgramIncrements from "./pages/ProgramIncrements";
 import PIObjectives from "./pages/PIObjectives";
 import ROAMBoard from "./pages/ROAMBoard";
@@ -187,11 +193,21 @@ const App = () => (
           <Route path="/roadmaps" element={<Roadmaps />} />
               <Route path="/dependencies" element={<Dependencies />} />
               <Route path="/portfolio-insights" element={<PortfolioInsights />} />
-              <Route path="/program-room" element={<ProgramRoom />} />
+              <Route path="/programs/:programId/room" element={<ProgramRoom />} />
+              <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
+              <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
+              <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
+              <Route path="/programs/:programId/objective-tree" element={<ProgramOKRHub />} />
+              <Route path="/programs/:programId/work-tree" element={<PlaceholderPage />} />
+              <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
+              <Route path="/programs/:programId/forecast" element={<ForecastWithSidebar />} />
+              <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
+              <Route path="/programs/:programId/settings" element={<PlaceholderPage />} />
+              <Route path="/program-room" element={<Navigate to="/home" replace />} />
               <Route path="/pis" element={<ProgramIncrements />} />
-              <Route path="/program-board" element={<Navigate to="/programs/program-board" replace />} />
-              <Route path="/program-board-old" element={<ProgramBoardOld />} />
-              <Route path="/programs/program-board" element={<ProgramBoardNew />} />
+              <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
+              <Route path="/program-board" element={<Navigate to="/home" replace />} />
+              <Route path="/programs/program-board" element={<Navigate to="/home" replace />} />
               <Route path="/programs/program-board/history" element={<ProgramBoardHistory />} />
               <Route path="/pi-objectives" element={<PIObjectives />} />
               <Route path="/roam" element={<ROAMBoard />} />
