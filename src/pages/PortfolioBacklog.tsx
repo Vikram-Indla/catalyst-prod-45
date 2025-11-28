@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
+import { Star, Grid3x3, Filter, Search } from 'lucide-react';
 import { BacklogViewSelector, BacklogView } from '@/components/portfolio/BacklogViewSelector';
 import { ThemeBacklog } from '@/components/backlog/ThemeBacklog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 // Citation: (Doc: Navigate to the backlog - PDF provided)
 // Citation: (Doc: Backlog for themes - PDF provided)
-// Citation: (Screenshot: c2770448-efec-46c5-a69d-09164f3860c1.png)
+// Citation: (Screenshot: image-189.png, image-190.png, image-191.png, image-192.png)
 
 export default function PortfolioBacklog() {
   const { portfolioId } = useParams<{ portfolioId: string }>();
@@ -16,20 +19,36 @@ export default function PortfolioBacklog() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
+      {/* Header - Citation: (Screenshot: image-190.png) */}
+      <div className="border-b bg-card px-4 py-2.5">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold">Backlog</h1>
+          <div className="flex items-center gap-3">
+            <Star className="h-4 w-4 text-muted-foreground" />
+            <BacklogViewSelector 
+              value={viewingOption} 
+              onChange={setViewingOption}
+            />
+          </div>
           
-          <BacklogViewSelector 
-            value={viewingOption} 
-            onChange={setViewingOption}
-          />
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+              <Grid3x3 className="h-4 w-4" />
+              <span className="text-sm">Columns Shown</span>
+            </Button>
+            <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+              <Filter className="h-4 w-4" />
+              <span className="text-sm">Apply Filters</span>
+            </Button>
+            <Input
+              placeholder="Search"
+              className="w-48 h-8 text-sm"
+            />
+          </div>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-auto">
         {viewingOption === 'theme' && (
           <ThemeBacklog portfolioId={portfolioId || ''} piId={piId || undefined} />
         )}

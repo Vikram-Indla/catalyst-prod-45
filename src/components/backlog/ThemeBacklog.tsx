@@ -1,20 +1,30 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { ChevronRight, ChevronDown, Circle, Download, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Filter, Columns3, Download, Upload, Plus } from 'lucide-react';
 
 // Citation: (Doc: Backlog for themes - PDF provided)
-// Citation: (Screenshot: c2770448-efec-46c5-a69d-09164f3860c1.png)
+// Citation: (Screenshot: image-190.png, image-191.png, image-192.png)
 
 interface ThemeBacklogProps {
   portfolioId: string;
   piId?: string;
 }
 
+interface Theme {
+  id: string;
+  name: string;
+  description?: string | null;
+  created_at: string;
+}
+
 export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
-  const [filterOpen, setFilterOpen] = useState(false);
-  const [columnsOpen, setColumnsOpen] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    'pi-5': false,
+    'unassigned': false,
+  });
+  const [expandedThemes, setExpandedThemes] = useState<Record<string, boolean>>({});
 
   // Fetch themes
   const { data: themes, isLoading } = useQuery({
@@ -25,100 +35,234 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
         .select('*')
         .order('created_at', { ascending: false });
 
-      // TODO: Add portfolio filtering when portfolio_id field is added to themes table
-      
       const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
   });
 
+  const toggleSection = (sectionId: string) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId],
+    }));
+  };
+
+  const toggleTheme = (themeId: string) => {
+    setExpandedThemes(prev => ({
+      ...prev,
+      [themeId]: !prev[themeId],
+    }));
+  };
+
+  // Mock data for display structure
+  const piThemes = themes?.slice(0, 9) || [];
+  const unassignedThemes = themes?.slice(9, 10) || [];
+
   return (
     <div className="h-full flex flex-col">
-      {/* Toolbar */}
-      <div className="border-b bg-card px-6 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => setFilterOpen(!filterOpen)}
-            >
-              <Filter className="h-4 w-4" />
-              Filters
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => setColumnsOpen(!columnsOpen)}
-            >
-              <Columns3 className="h-4 w-4" />
-              Columns Shown
-            </Button>
+      {/* View Mode Buttons - Citation: (Screenshot: image-190.png) */}
+      <div className="flex justify-end gap-2 px-6 py-3 border-b">
+        <Button variant="outline" size="sm" className="gap-1.5">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          <span className="text-sm">List</span>
+        </Button>
+        <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          <span className="text-sm">Kanban</span>
+        </Button>
+        <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="2" />
+          </svg>
+          <span className="text-sm">Unassigned Backlog</span>
+        </Button>
+      </div>
+
+      {/* Content - Citation: (Screenshot: image-191.png) */}
+      <div className="flex-1 overflow-auto">
+        <div className="p-6">
+          <h2 className="text-xl font-semibold mb-6">All Programs for Digital Services</h2>
+
+          {/* PI-5 Section */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <button
+                onClick={() => toggleSection('pi-5')}
+                className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
+              >
+                {expandedSections['pi-5'] ? (
+                  <ChevronDown className="h-4 w-4 text-primary" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-primary" />
+                )}
+                <span className="text-primary">Themes for PI-5</span>
+              </button>
+              <div className="flex items-center gap-4">
+                <span className="text-sm">
+                  Total Items: <span className="text-primary font-medium">{piThemes.length}</span>
+                </span>
+                <Button variant="ghost" size="sm" className="gap-1.5 h-7">
+                  <Download className="h-3.5 w-3.5" />
+                  <span className="text-xs">Export</span>
+                </Button>
+              </div>
+            </div>
+
+            {!expandedSections['pi-5'] && (
+              <div className="border border-dashed rounded-md py-12 bg-muted/20">
+                <p className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  Drag & Drop Items Here
+                </p>
+              </div>
+            )}
+
+            {expandedSections['pi-5'] && (
+              <div className="space-y-px bg-border rounded-md overflow-hidden">
+                {piThemes.map((theme, index) => (
+                  <div key={theme.id} className="bg-background">
+                    {/* Theme Row - Citation: (Screenshot: image-191.png) */}
+                    <div className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent/50 transition-colors">
+                      <button
+                        onClick={() => toggleTheme(theme.id)}
+                        className="hover:text-primary transition-colors"
+                      >
+                        {expandedThemes[theme.id] ? (
+                          <ChevronDown className="h-4 w-4" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4" />
+                        )}
+                      </button>
+                      <span className="text-sm text-muted-foreground w-8">{index + 1}</span>
+                      <Circle className="h-3 w-3 fill-orange-500 text-orange-500" />
+                      <span className="text-sm text-muted-foreground w-12">{Math.floor(Math.random() * 200)}</span>
+                      <div className="flex items-center gap-2 flex-1">
+                        <Square className="h-4 w-4 text-green-600 fill-green-100" />
+                        <span className="text-sm font-medium">{theme.name}</span>
+                      </div>
+                      <div className="flex gap-1">
+                        {['PI7', 'PI6', 'PI5', 'PI4', 'PI3', 'PI2', 'PI1'].slice(0, Math.floor(Math.random() * 5) + 2).map((pi, i) => (
+                          <span
+                            key={i}
+                            className={cn(
+                              "px-2 py-0.5 rounded text-xs font-medium",
+                              pi === 'PI7' && "bg-green-500 text-white",
+                              pi === 'PI6' && "bg-gray-500 text-white",
+                              pi === 'PI5' && "bg-orange-400 text-white",
+                              pi === 'PI4' && "bg-orange-600 text-white",
+                              pi === 'PI3' && "bg-green-600 text-white",
+                              pi === 'PI2' && "bg-pink-500 text-white",
+                              pi === 'PI1' && "bg-blue-700 text-white"
+                            )}
+                          >
+                            {pi}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Expanded Theme - Show Epics - Citation: (Screenshot: image-192.png) */}
+                    {expandedThemes[theme.id] && (
+                      <div className="pl-12 pr-4 py-3 bg-muted/30 border-t">
+                        <div className="flex gap-2 mb-3">
+                          <input
+                            type="text"
+                            placeholder="New Epic Name..."
+                            className="flex-1 px-3 py-1.5 text-sm border rounded-md bg-background"
+                          />
+                          <select className="px-3 py-1.5 text-sm border rounded-md bg-background">
+                            <option>Select Program</option>
+                          </select>
+                          <Button size="sm" variant="outline" className="gap-1">
+                            <span className="text-lg leading-none">+</span>
+                            <span>Add</span>
+                          </Button>
+                        </div>
+                        <div className="space-y-1">
+                          {/* Mock epic rows */}
+                          <div className="flex items-center gap-3 px-4 py-2 bg-background rounded">
+                            <span className="text-sm text-muted-foreground w-8">1</span>
+                            <Circle className="h-3 w-3 fill-blue-500 text-blue-500" />
+                            <span className="text-sm text-muted-foreground w-12">1111</span>
+                            <div className="flex items-center gap-2 flex-1">
+                              <Square className="h-4 w-4 text-blue-600 fill-blue-100" />
+                              <span className="text-sm">Interface: E2E transcription flow</span>
+                            </div>
+                            <div className="flex gap-1">
+                              <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-500 text-white">PI7</span>
+                              <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-500 text-white">PI6</span>
+                              <span className="px-2 py-0.5 rounded text-xs font-medium bg-orange-400 text-white">PI5</span>
+                            </div>
+                            <span className="text-sm font-medium text-muted-foreground">4.25</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="gap-2">
-              <Upload className="h-4 w-4" />
-              Import
-            </Button>
-            <Button variant="outline" size="sm" className="gap-2">
-              <Download className="h-4 w-4" />
-              Export
-            </Button>
-            <Button size="sm" className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Theme
-            </Button>
+          {/* Unassigned Backlog Section */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <button
+                onClick={() => toggleSection('unassigned')}
+                className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
+              >
+                {expandedSections['unassigned'] ? (
+                  <ChevronDown className="h-4 w-4 text-primary" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-primary" />
+                )}
+                <span className="text-primary">Unassigned Backlog</span>
+              </button>
+              <div className="flex items-center gap-4">
+                <span className="text-sm">
+                  Total Items: <span className="text-primary font-medium">{unassignedThemes.length}</span>
+                </span>
+                <Button variant="ghost" size="sm" className="gap-1.5 h-7">
+                  <Download className="h-3.5 w-3.5" />
+                  <span className="text-xs">Export</span>
+                </Button>
+              </div>
+            </div>
+
+            {!expandedSections['unassigned'] && (
+              <div className="border border-dashed rounded-md py-12 bg-muted/20">
+                <p className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                  </svg>
+                  Drag & Drop Items Here
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Theme List */}
-      <div className="flex-1 overflow-auto p-6">
-        {isLoading ? (
-          <div className="text-sm text-muted-foreground">Loading themes...</div>
-        ) : themes && themes.length > 0 ? (
-          <div className="space-y-2">
-            {themes.map((theme) => (
-              <div
-                key={theme.id}
-                className="border rounded-lg p-4 hover:bg-accent/50 cursor-pointer transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-medium">{theme.name}</h3>
-                    {theme.description && (
-                      <p className="text-sm text-muted-foreground mt-1">
-                        {theme.description}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    ID: {theme.id.slice(0, 8)}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-muted/30 border border-dashed rounded-lg p-12 text-center">
-            <h3 className="text-lg font-semibold mb-2">No themes found</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              {piId 
-                ? `No themes assigned to the selected Program Increment` 
-                : `Get started by creating your first strategic theme`}
-            </p>
-            <Button className="gap-2">
-              <Plus className="h-4 w-4" />
-              Add Theme
-            </Button>
-          </div>
-        )}
-      </div>
     </div>
   );
+}
+
+function cn(...inputs: any[]) {
+  return inputs.filter(Boolean).join(' ');
 }

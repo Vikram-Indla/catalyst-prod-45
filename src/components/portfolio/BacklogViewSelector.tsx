@@ -1,17 +1,9 @@
-import { Check } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { useState, useRef, useEffect } from 'react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Citation: (Doc: Navigate to the backlog - PDF provided)
-// Citation: (Screenshot: d42cde74-f227-43a1-b657-abc89ed9c8da.png)
-// Citation: (Screenshot: 833d61be-08c3-4a00-a6c7-8bccf264cb1c.png)
+// Citation: (Screenshot: image-189.png)
 
 export type BacklogView = 'theme' | 'epic' | 'capability' | 'feature';
 
@@ -21,43 +13,74 @@ interface BacklogViewSelectorProps {
   className?: string;
 }
 
+const viewLabels: Record<BacklogView, string> = {
+  theme: 'Theme Backlog',
+  epic: 'Epic Backlog',
+  capability: 'Capability Backlog',
+  feature: 'Feature Backlog',
+};
+
+const viewOptions: { value: BacklogView; label: string; disabled?: boolean }[] = [
+  { value: 'theme', label: 'Theme Backlog' },
+  { value: 'epic', label: 'Epic Backlog' },
+  { value: 'capability', label: 'Capability Backlog' },
+  { value: 'feature', label: 'Feature Backlog' },
+];
+
 export function BacklogViewSelector({ value, onChange, className }: BacklogViewSelectorProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   return (
-    <div className={cn("flex items-center gap-2", className)}>
-      <label className="text-sm font-medium text-muted-foreground">Viewing:</label>
-      <Select value={value} onValueChange={(val) => onChange(val as BacklogView)}>
-        <SelectTrigger className="w-[200px] h-9 bg-background">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent className="bg-background">
-          <SelectGroup>
-            <SelectItem value="theme" className="cursor-pointer">
-              <div className="flex items-center gap-2">
-                {value === 'theme' && <Check className="h-4 w-4" />}
-                <span>Theme Backlog</span>
-              </div>
-            </SelectItem>
-            <SelectItem value="epic" className="cursor-pointer">
-              <div className="flex items-center gap-2">
-                {value === 'epic' && <Check className="h-4 w-4" />}
-                <span>Epic Backlog</span>
-              </div>
-            </SelectItem>
-            <SelectItem value="capability" className="cursor-pointer">
-              <div className="flex items-center gap-2">
-                {value === 'capability' && <Check className="h-4 w-4" />}
-                <span>Capability Backlog</span>
-              </div>
-            </SelectItem>
-            <SelectItem value="feature" className="cursor-pointer">
-              <div className="flex items-center gap-2">
-                {value === 'feature' && <Check className="h-4 w-4" />}
-                <span>Feature Backlog</span>
-              </div>
-            </SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+    <div className={cn("relative", className)} ref={dropdownRef}>
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground">Viewing:</span>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <span>{viewLabels[value]}</span>
+          <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isOpen && "rotate-180")} />
+        </button>
+      </div>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 w-56 bg-popover border border-border rounded-md shadow-lg z-50 py-1">
+          <div className="px-3 py-2 text-xs font-medium text-muted-foreground">
+            Select one
+          </div>
+          <div className="border-t border-border my-1" />
+          {viewOptions.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => {
+                onChange(option.value);
+                setIsOpen(false);
+              }}
+              disabled={option.disabled}
+              className={cn(
+                "w-full text-left px-4 py-2 text-sm transition-colors",
+                value === option.value
+                  ? "bg-accent text-accent-foreground font-medium"
+                  : "hover:bg-accent/50 text-foreground",
+                option.disabled && "opacity-50 cursor-not-allowed"
+              )}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
