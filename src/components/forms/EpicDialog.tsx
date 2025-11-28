@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -102,11 +102,14 @@ export function EpicDialog({ open, onOpenChange, epic }: EpicDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-3xl max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="shrink-0">
           <DialogTitle>{epic ? 'Edit Epic' : 'Create Epic'}</DialogTitle>
+          <DialogDescription>
+            {epic ? 'Update epic information and details' : 'Create a new epic with strategic alignment'}
+          </DialogDescription>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form id="epic-form" onSubmit={handleSubmit} className="flex-1 overflow-y-auto space-y-4 px-1">
           <div>
             <Label htmlFor="name">Name *</Label>
             <Input
@@ -217,15 +220,15 @@ export function EpicDialog({ open, onOpenChange, epic }: EpicDialogProps) {
               />
             </div>
           </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={mutation.isPending}>
-              {mutation.isPending ? 'Saving...' : 'Save'}
-            </Button>
-          </DialogFooter>
         </form>
+        <DialogFooter className="shrink-0 border-t pt-4 mt-4">
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button type="submit" form="epic-form" disabled={mutation.isPending}>
+            {mutation.isPending ? 'Saving...' : 'Save'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

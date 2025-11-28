@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -49,15 +49,15 @@ export function WSJFPrioritizationDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[80vh]">
-        <DialogHeader>
+      <DialogContent className="max-w-5xl max-h-[85vh] flex flex-col overflow-hidden">
+        <DialogHeader className="shrink-0">
           <DialogTitle>WSJF Prioritization</DialogTitle>
-          <p className="text-sm text-muted-foreground">
+          <DialogDescription>
             Weighted Shortest Job First prioritization for epics
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-y-auto px-1">
           <Table>
             <TableHeader>
               <TableRow>
@@ -128,11 +128,11 @@ export function WSJFPrioritizationDialog({
           </Table>
         </div>
 
-        <div className="text-sm text-muted-foreground px-1">
+        <div className="text-sm text-muted-foreground px-1 py-2 border-t">
           <strong>Formula:</strong> WSJF = (Business Value + Time Criticality + Risk Reduction) / Job Size
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="shrink-0">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Close
           </Button>
