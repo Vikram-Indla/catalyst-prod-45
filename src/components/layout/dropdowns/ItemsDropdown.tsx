@@ -2,6 +2,7 @@ import {
   Layers, Diamond, Box, Zap, BookOpen, AlertCircle, CheckSquare,
   Target, GitBranch, Lightbulb, AlertTriangle, Shield, Calendar, Package, Award
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const workItems = [
   { key: 'themes', label: 'Themes', icon: Layers, color: 'bg-emerald-500' },
@@ -31,9 +32,33 @@ interface ItemsDropdownProps {
 }
 
 export function ItemsDropdown({ onClose }: ItemsDropdownProps) {
+  const navigate = useNavigate();
+  
   const handleClick = (itemKey: string) => {
-    console.log('Item clicked:', itemKey);
-    // TODO: Implement item action logic
+    const routeMap: Record<string, string> = {
+      'themes': '/themes',
+      'epics': '/items/epics',
+      'epic-backlog': '/backlog/epics',
+      'capabilities': '/items/capabilities',
+      'features': '/features',
+      'stories': '/work-items/stories',
+      'defects': '/items/defects',
+      'tasks': '/items/tasks',
+      'objectives': '/pi-objectives',
+      'dependencies': '/dependencies',
+      'ideation': '/items/ideation',
+      'risks': '/roam',
+      'impediments': '/items/impediments',
+      'sprints': '/sprints',
+      'program-increments': '/pis',
+      'release-vehicles': '/items/release-vehicles',
+      'success-criteria': '/items/success-criteria',
+    };
+    
+    const route = routeMap[itemKey];
+    if (route) {
+      navigate(route);
+    }
     onClose();
   };
 

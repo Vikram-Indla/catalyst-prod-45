@@ -17,6 +17,8 @@ import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Badge } from '@/components/ui/badge';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { EpicDialog } from '@/components/forms/EpicDialog';
+import { WSJFPrioritizationDialog } from '@/components/items/epics/dialogs/WSJFPrioritizationDialog';
+import { MassMoveDialog } from '@/components/items/epics/dialogs/MassMoveDialog';
 import { 
   Plus, 
   Search, 
@@ -39,6 +41,8 @@ export default function EpicsPage() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [wsjfDialogOpen, setWSJFDialogOpen] = useState(false);
+  const [massMoveDialogOpen, setMassMoveDialogOpen] = useState(false);
   const [columnsToShow, setColumnsToShow] = useState([
     'name', 'theme', 'program', 'state', 'health', 'dates', 'owner'
   ]);
@@ -92,7 +96,7 @@ export default function EpicsPage() {
         toast.info('Bottom-Up Estimate calculation started');
         break;
       case 'prioritization':
-        toast.info('Opening WSJF Prioritization');
+        setWSJFDialogOpen(true);
         break;
       case 'import':
         toast.info('Opening Import Epics dialog');
@@ -101,7 +105,11 @@ export default function EpicsPage() {
         toast.success('Exporting epics to CSV');
         break;
       case 'mass-move':
-        toast.info('Opening Mass Move dialog');
+        if (selectedRows.length === 0) {
+          toast.error('Please select epics to move');
+        } else {
+          setMassMoveDialogOpen(true);
+        }
         break;
       case 'work-tree':
         window.open('/reports/work-tree', '_blank');
@@ -116,6 +124,11 @@ export default function EpicsPage() {
         window.location.href = '/items/epics/canceled';
         break;
     }
+  };
+
+  const handleMassMoveConfirm = (programId: string, piId: string) => {
+    toast.success(`Moving ${selectedRows.length} epics to selected program and PI`);
+    setSelectedRows([]);
   };
 
   const toggleSelectAll = () => {
@@ -315,6 +328,21 @@ export default function EpicsPage() {
       <EpicDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
+      />
+
+      {/* WSJF Prioritization Dialog */}
+      <WSJFPrioritizationDialog
+        open={wsjfDialogOpen}
+        onOpenChange={setWSJFDialogOpen}
+        epics={epics || []}
+      />
+
+      {/* Mass Move Dialog */}
+      <MassMoveDialog
+        open={massMoveDialogOpen}
+        onOpenChange={setMassMoveDialogOpen}
+        selectedEpics={selectedRows}
+        onConfirm={handleMassMoveConfirm}
       />
     </div>
   );
