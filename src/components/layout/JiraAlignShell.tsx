@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraAlignHeader } from '@/components/ja/JiraAlignHeader';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
-import { ProgramRoomSidebar } from './ProgramRoomSidebar';
+import { ProgramRoomSidebar } from '@/components/program/ProgramRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { JiraAlignContextProvider, useJiraAlignContext } from '@/contexts/JiraAlignContext';
 
@@ -76,10 +76,6 @@ function JiraAlignShellContent() {
               ) : tier === 'program' ? (
                 <ProgramRoomSidebar
                   programId={defaultProgramId || 'default-program'}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                  selectedPI={selectedPI}
-                  onPIChange={setSelectedPI}
                 />
               ) : (
                 <PortfolioRoomSidebar
