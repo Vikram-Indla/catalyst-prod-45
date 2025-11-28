@@ -33,7 +33,7 @@ export function useOKRTree(snapshotId?: string) {
       
       if (!targetSnapshotId) return [];
 
-      // Fetch all objectives for this snapshot
+      // Fetch all objectives for this snapshot with profiles
       const { data: objectives, error } = await supabase
         .from('objectives')
         .select(`
@@ -43,7 +43,11 @@ export function useOKRTree(snapshotId?: string) {
           confidence_score,
           progress_pct,
           owner_id,
-          parent_objective_id
+          parent_objective_id,
+          profiles:owner_id (
+            full_name,
+            email
+          )
         `)
         .eq('snapshot_id', targetSnapshotId)
         .order('level', { ascending: true });
@@ -55,6 +59,7 @@ export function useOKRTree(snapshotId?: string) {
       const rootItems: OKRTreeItem[] = [];
 
       objectives?.forEach((obj: any) => {
+        const ownerName = obj.profiles?.full_name || obj.profiles?.email || 'Unassigned';
         const item: OKRTreeItem = {
           id: obj.id,
           numericId: parseInt(obj.id.replace(/\D/g, '').slice(0, 6)) || Math.floor(Math.random() * 100000),
@@ -64,12 +69,12 @@ export function useOKRTree(snapshotId?: string) {
                : obj.level === 'program' ? 'program' 
                : 'team',
           score: obj.confidence_score,
-          keyResultsProgress: obj.progress_pct || 0,
+          keyResultsProgress: (obj.progress_pct || 0) * 100,
           owner: {
             id: obj.owner_id || 'system',
-            name: 'Unassigned',
+            name: ownerName,
             avatar: undefined,
-            initials: 'UN',
+            initials: getInitials(ownerName),
           },
           children: [],
           isExpanded: false,

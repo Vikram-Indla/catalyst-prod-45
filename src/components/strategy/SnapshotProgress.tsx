@@ -1,9 +1,52 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { mockSnapshotProgress } from '@/data/strategyMockData';
 import { Info } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
-export function SnapshotProgress() {
+interface SnapshotProgressProps {
+  snapshotId?: string;
+}
+
+export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
+  const { data: progressData = [] } = useQuery({
+    queryKey: ['snapshot-progress', snapshotId],
+    queryFn: async () => {
+      if (!snapshotId) return [];
+
+      // Fetch objectives grouped by level
+      const { data: objectives, error } = await supabase
+        .from('objectives')
+        .select('level, status')
+        .eq('snapshot_id', snapshotId);
+
+      if (error) throw error;
+
+      // Group by level and calculate completion
+      const levels = ['strategic_goal', 'portfolio', 'program', 'team'];
+      const levelLabels: Record<string, string> = {
+        strategic_goal: 'Strategic Goals',
+        portfolio: 'Portfolio Objectives',
+        program: 'Program Objectives',
+        team: 'Team Objectives',
+      };
+
+      return levels.map((level) => {
+        const levelObjs = objectives?.filter((o: any) => o.level === level) || [];
+        const total = levelObjs.length;
+        const completed = levelObjs.filter((o: any) => o.status === 'completed').length;
+        const acceptedPercent = total > 0 ? completed / total : 0;
+
+        return {
+          label: levelLabels[level],
+          total,
+          completed,
+          acceptedPercent,
+        };
+      });
+    },
+    enabled: !!snapshotId,
+  });
   const getDonutColor = (percent: number) => {
     if (percent >= 0.7) return 'stroke-green-500';
     if (percent >= 0.4) return 'stroke-orange-500';
@@ -19,9 +62,15 @@ export function SnapshotProgress() {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Donut Charts Row */}
-        <div className="grid grid-cols-3 gap-4">
-          {mockSnapshotProgress.slice(0, 3).map((item, index) => {
+        {progressData.length === 0 ? (
+          <div className="text-center py-6 text-sm text-muted-foreground">
+            No progress data available
+          </div>
+        ) : (
+          <>
+            {/* Donut Charts Row */}
+            <div className="grid grid-cols-3 gap-4">
+              {progressData.slice(0, 3).map((item, index) => {
             const percent = Math.round(item.acceptedPercent * 100);
             const circumference = 2 * Math.PI * 40;
             const dashoffset = circumference - (item.acceptedPercent * circumference);
@@ -61,9 +110,9 @@ export function SnapshotProgress() {
           })}
         </div>
 
-        {/* Progress Bars */}
-        <div className="space-y-3">
-          {mockSnapshotProgress.map((item, index) => (
+            {/* Progress Bars */}
+            <div className="space-y-3">
+              {progressData.map((item, index) => (
             <div key={index} className="space-y-1">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">{item.label}</span>
@@ -73,8 +122,10 @@ export function SnapshotProgress() {
               </div>
               <Progress value={item.acceptedPercent * 100} className="h-2" />
             </div>
-          ))}
-        </div>
+              ))}
+            </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );
