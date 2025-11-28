@@ -27,6 +27,8 @@ import { FeatureCardTooltip } from '@/components/program-board/FeatureCardToolti
 import { FeatureSymbolMarkers } from '@/components/program-board/FeatureSymbolMarkers';
 import { DependencyQuickView } from '@/components/program-board/DependencyQuickView';
 import { ObjectiveQuickView } from '@/components/program-board/ObjectiveQuickView';
+import { FeatureHistoryDialog } from '@/components/program-board/FeatureHistoryDialog';
+import { DependencyConnector } from '@/components/program-board/DependencyConnector';
 import { getFeatureStatusColor } from '@/lib/programBoardUtils';
 
 type ViewMode = 'normal' | 'small' | 'heatmap';
@@ -46,6 +48,7 @@ export default function ProgramBoard() {
   const [orphansOpen, setOrphansOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   const [extraConfigsOpen, setExtraConfigsOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   
   // Quick View states
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -259,6 +262,7 @@ export default function ProgramBoard() {
       return (
         <div
           key={`${feature.id}-${sprintId}`}
+          data-feature-id={feature.id}
           className={`inline-flex items-center justify-center w-12 h-5 text-[10px] font-bold rounded ${statusColor} cursor-pointer hover:ring-1 ring-foreground/20 transition-all shadow-sm`}
           onClick={() => {
             setSelectedItem(feature);
@@ -285,6 +289,7 @@ export default function ProgramBoard() {
       return (
         <div
           key={`${feature.id}-${sprintId}`}
+          data-feature-id={feature.id}
           className={`inline-block w-4 h-4 rounded ${getHeatIntensity(feature)} cursor-pointer hover:opacity-80 transition-opacity m-0.5`}
           onClick={() => {
             setSelectedItem(feature);
@@ -301,6 +306,7 @@ export default function ProgramBoard() {
       <Popover key={`${feature.id}-${sprintId}`}>
         <PopoverTrigger asChild>
           <div
+            data-feature-id={feature.id}
             className={`relative ${statusColor} rounded shadow-sm border border-foreground/10 cursor-pointer hover:shadow-md transition-all group min-h-[48px]`}
             onClick={() => {
               setSelectedItem(feature);
@@ -345,7 +351,7 @@ export default function ProgramBoard() {
   };
   
   const handleHistoryClick = () => {
-    window.location.href = '/programs/program-board/history';
+    setHistoryOpen(true);
   };
   
   const handleCaptureBoard = () => {
@@ -656,12 +662,27 @@ export default function ProgramBoard() {
       <TeamRankDialog open={teamRankOpen} onOpenChange={setTeamRankOpen} programId={programId} />
       <OrphansDialog open={orphansOpen} onOpenChange={setOrphansOpen} programId={programId} piId={piId} />
       <LegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
+      <FeatureHistoryDialog open={historyOpen} onOpenChange={setHistoryOpen} programId={programId} piId={piId} />
       <ExtraConfigsDialog
         open={extraConfigsOpen} 
         onOpenChange={setExtraConfigsOpen}
         showUnassigned={showUnassigned}
         onShowUnassignedChange={setShowUnassigned}
       />
+      
+      {/* Dependency Connectors */}
+      {dependencies && dependencies.length > 0 && (
+        <div className="absolute inset-0 pointer-events-none">
+          {dependencies.map((dep) => (
+            <DependencyConnector
+              key={dep.id}
+              fromFeatureId={dep.from_feature_id}
+              toFeatureId={dep.to_feature_id}
+              status={dep.risk_level === 'high' ? 'blocked' : 'open'}
+            />
+          ))}
+        </div>
+      )}
       
       {/* Quick View Panels */}
       <Sheet open={quickViewOpen} onOpenChange={setQuickViewOpen}>
