@@ -16,7 +16,7 @@ const recentRooms = [
     subtitle: "Portfolio Planning",
     pi: "PI-24 Q1",
     icon: "📊",
-    path: "/backlog/epics",
+    path: "/items/epics",
   },
   {
     id: "3",
@@ -51,7 +51,7 @@ const starredRooms = [
     subtitle: "Portfolio Planning",
     pi: "PI-24 Q1",
     icon: "📊",
-    path: "/backlog/epics",
+    path: "/items/epics",
   },
 ];
 

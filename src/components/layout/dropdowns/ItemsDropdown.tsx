@@ -38,7 +38,7 @@ export function ItemsDropdown({ onClose }: ItemsDropdownProps) {
     const routeMap: Record<string, string> = {
       'themes': '/themes',
       'epics': '/items/epics',
-      'epic-backlog': '/backlog/epics',
+      'epic-backlog': '/items/epics',
       'capabilities': '/items/capabilities',
       'features': '/features',
       'stories': '/work-items/stories',
