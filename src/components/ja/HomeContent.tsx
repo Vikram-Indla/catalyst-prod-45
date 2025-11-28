@@ -21,7 +21,7 @@ export function HomeContent() {
       const { data } = await supabase
         .from('program_increments')
         .select('id, name')
-        .order('start_date', { ascending: false })
+        .order('start_date', { ascending: true })
         .limit(1);
       return data;
     },
