@@ -11,6 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Target, TrendingUp, AlertTriangle, CheckCircle2, Layers, Rocket } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -89,13 +90,24 @@ export default function PortfolioRoom() {
           </PermissionGuard>
         </div>
         
-        <div className="flex items-center gap-4">
-          <ScopeSelector value={selectedPortfolio} onChange={setSelectedPortfolio} />
-          <PISelector 
-            portfolioId={selectedPortfolio} 
-            value={selectedPIs} 
-            onChange={setSelectedPIs}
-          />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <ScopeSelector value={selectedPortfolio} onChange={setSelectedPortfolio} />
+            <PISelector 
+              portfolioId={selectedPortfolio} 
+              value={selectedPIs} 
+              onChange={setSelectedPIs}
+            />
+          </div>
+          
+          {/* View Tabs */}
+          <Tabs defaultValue="execution" className="w-auto">
+            <TabsList>
+              <TabsTrigger value="financials">Financials</TabsTrigger>
+              <TabsTrigger value="resources">Resources</TabsTrigger>
+              <TabsTrigger value="execution">Execution</TabsTrigger>
+            </TabsList>
+          </Tabs>
         </div>
       </div>
 
