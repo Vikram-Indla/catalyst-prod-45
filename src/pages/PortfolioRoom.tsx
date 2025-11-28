@@ -111,190 +111,146 @@ export default function PortfolioRoom() {
         </div>
       </div>
 
-      {/* 3-Panel Layout */}
-      <div className="flex-1 grid grid-cols-12 gap-6 p-6 overflow-hidden min-h-0">
-        {/* LEFT PANEL - Strategy */}
-        <div className="col-span-3 h-full overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="space-y-4 pr-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Layers className="h-4 w-4" />
-                    Theme Progress
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {themes?.slice(0, 5).map(theme => (
-                    <div key={theme.id} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium truncate">{theme.name}</span>
-                        <Badge variant={theme.status === 'active' ? 'default' : 'secondary'}>
-                          {theme.status}
-                        </Badge>
-                      </div>
-                      <Progress value={Math.random() * 100} className="h-2" />
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4" />
-                    Initiative Health
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {initiatives?.slice(0, 6).map(initiative => (
-                    <div key={initiative.id} className="flex items-center justify-between p-2 rounded hover:bg-muted/50 cursor-pointer">
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{initiative.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {initiative.strategic_themes?.name}
-                        </p>
-                      </div>
-                      <Badge variant={initiative.status === 'active' ? 'default' : 'secondary'}>
-                        {initiative.status}
+      {/* 3-Panel Layout - Per Jira Align spec: Left (Theme), Center (Epic/Timeline), Right (PI/Program) */}
+      <div className="flex-1 overflow-auto">
+        <div className="grid grid-cols-12 gap-4 p-6">
+          {/* LEFT PANEL - Theme Program Increment Progress */}
+          <div className="col-span-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">Theme Program Increment Progress</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 pt-0">
+                {themes?.slice(0, 5).map(theme => (
+                  <div key={theme.id} className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium truncate">{theme.name}</span>
+                      <Badge 
+                        variant={theme.status === 'active' ? 'default' : 'secondary'}
+                        className="text-xs"
+                      >
+                        {theme.status}
                       </Badge>
                     </div>
+                    <div className="flex items-center gap-2">
+                      <Progress value={Math.random() * 100} className="h-1.5 flex-1" />
+                      <span className="text-xs text-muted-foreground min-w-[3ch]">
+                        {Math.floor(Math.random() * 100)}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* CENTER PANEL - Program Increment Roadmap */}
+          <div className="col-span-5">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">Program Increment Roadmap</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <PIRoadmapTimeline 
+                  portfolioId={selectedPortfolio} 
+                  selectedPIs={selectedPIs}
+                />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* RIGHT PANEL - PI Program Increment Progress */}
+          <div className="col-span-3">
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">PI-5</span>
+                  <Badge className="bg-[#00BCD4] text-white text-xs">In Progress</Badge>
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">83% Complete</div>
+              </CardHeader>
+              <CardContent className="space-y-3 pt-0">
+                <div>
+                  <div className="text-xs font-medium mb-2">Program Increment Progress</div>
+                  <Progress value={83} className="h-2 mb-1" />
+                </div>
+                
+                {/* Theme percentages - Citation: screenshot image-210.png */}
+                <div className="space-y-2 pt-2">
+                  {[
+                    { name: 'Web', progress: 77 },
+                    { name: 'Blockchain', progress: 68 },
+                    { name: 'AI', progress: 87 },
+                    { name: 'Mobile', progress: 87 },
+                  ].map((item) => (
+                    <div key={item.name} className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">{item.name}</span>
+                      <span className="font-medium">{item.progress}%</span>
+                    </div>
                   ))}
-                </CardContent>
-              </Card>
-            </div>
-          </ScrollArea>
-        </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* CENTER PANEL - Plan */}
-        <div className="col-span-6 h-full overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="space-y-4 px-2">
-              <PIRoadmapTimeline 
-                portfolioId={selectedPortfolio} 
-                selectedPIs={selectedPIs}
-              />
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Rocket className="h-4 w-4" />
-                    Epic Backlog
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {epics?.map(epic => (
-                      <div key={epic.id} className="flex items-center gap-3 p-3 rounded border hover:bg-muted/50 cursor-pointer">
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{epic.name}</p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {epic.strategic_themes?.name}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">{epic.status}</Badge>
-                          <HealthBadge health={epic.health} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </ScrollArea>
-        </div>
-
-        {/* RIGHT PANEL - Execution KPIs */}
-        <div className="col-span-3 h-full overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="space-y-4 pr-4">
-              <KPIWidgetCard
-                title="PI Objectives"
-                value={`${activeThemes}/${totalThemes}`}
-                subtitle="Active themes"
-                icon={CheckCircle2}
-                trend="up"
-                trendValue="+12% vs last PI"
-              />
-
-              <KPIWidgetCard
-                title="Dependencies Risk"
-                value="8"
-                subtitle="High risk dependencies"
-                icon={AlertTriangle}
-                trend="down"
-                trendValue="2 resolved this week"
-              />
-
-              <KPIWidgetCard
-                title="ROAM Risks"
-                value="15"
-                subtitle="Active risks"
-                icon={Target}
-              >
-                <div className="mt-3 space-y-1">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Resolved</span>
-                    <span className="font-medium">5</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Owned</span>
-                    <span className="font-medium">6</span>
-                  </div>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-muted-foreground">Mitigated</span>
-                    <span className="font-medium">4</span>
+          {/* BOTTOM - Epic Grid */}
+          <div className="col-span-12 mt-2">
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold">Epic Backlog</CardTitle>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="search"
+                      placeholder="Search by It"
+                      className="px-3 py-1 text-xs border rounded-md w-40"
+                    />
+                    <select className="px-2 py-1 text-xs border rounded-md">
+                      <option>All work items</option>
+                    </select>
+                    <Button variant="link" size="sm" className="text-xs text-primary">
+                      Don't see the epic you are looking for?
+                    </Button>
                   </div>
                 </div>
-              </KPIWidgetCard>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Capacity Variance</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Planned</span>
-                      <span className="font-medium">450 pts</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Forecast</span>
-                      <span className="font-medium">420 pts</span>
-                    </div>
-                    <Separator />
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium">Variance</span>
-                      <span className="text-destructive font-medium">-30 pts</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Initiative Health</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-success">● Green</span>
-                      <span className="font-medium">{healthyInitiatives}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-warning">● Yellow</span>
-                      <span className="font-medium">2</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-destructive">● Red</span>
-                      <span className="font-medium">1</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </ScrollArea>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="border rounded-md">
+                  <table className="w-full text-xs">
+                    <thead className="bg-muted/30 border-b">
+                      <tr>
+                        <th className="text-left py-2 px-3 font-medium">Id</th>
+                        <th className="text-left py-2 px-3 font-medium">Ext Id</th>
+                        <th className="text-left py-2 px-3 font-medium">Title</th>
+                        <th className="text-left py-2 px-3 font-medium">Progress</th>
+                        <th className="text-left py-2 px-3 font-medium">Story Points</th>
+                        <th className="text-left py-2 px-3 font-medium">Estimated Program Increment Effort</th>
+                        <th className="text-left py-2 px-3 font-medium">Capitalized</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {epics?.map((epic, index) => (
+                        <tr key={epic.id} className="border-b hover:bg-muted/30">
+                          <td className="py-2 px-3">{4356 - index * 10}</td>
+                          <td className="py-2 px-3">-</td>
+                          <td className="py-2 px-3">{epic.name}</td>
+                          <td className="py-2 px-3">
+                            <div className="flex items-center gap-2">
+                              <Progress value={Math.random() * 100} className="h-1.5 w-24" />
+                              <span className="text-muted-foreground">{Math.floor(Math.random() * 100)}%</span>
+                            </div>
+                          </td>
+                          <td className="py-2 px-3">{Math.floor(Math.random() * 20)}</td>
+                          <td className="py-2 px-3">{Math.floor(Math.random() * 1000)} Pts</td>
+                          <td className="py-2 px-3">-</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
 
