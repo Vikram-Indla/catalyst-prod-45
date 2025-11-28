@@ -6,16 +6,16 @@ import {
   ChevronRight, 
   Settings,
   LayoutDashboard,
-  List,
+  Diamond,
+  Layers3,
   Map,
-  GitBranch,
+  Target,
   Network,
-  TrendingUp,
+  Grid3x3,
   Users as UsersIcon,
-  MoreHorizontal,
+  Menu,
   FileText,
-  FolderTree,
-  Target
+  FolderTree
 } from 'lucide-react';
 import {
   Select,
@@ -37,23 +37,23 @@ interface PortfolioRoomSidebarProps {
 }
 
 type MenuItem = 
-  | { id: string; label: string; icon: any; path: string; expandable?: never }
-  | { id: string; label: string; icon: any; expandable: true; path?: never }
+  | { id: string; label: string; icon: any; path: string; expandable?: never; badge?: string }
+  | { id: string; label: string; icon: any; expandable: true; path?: never; badge?: never }
   | { type: 'divider' };
 
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
-  { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives' },
-  { id: 'backlog', label: 'Backlog', icon: List, path: '/items/epics' },
+  { id: 'epics', label: 'Epics', icon: Diamond, path: '/backlog/epics' },
+  { id: 'backlog', label: 'Backlog', icon: Layers3, path: '/items/epics' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps' },
-  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/portfolio/okr-hub' },
+  { id: 'objective-tree', label: 'Objective tree', icon: Target, path: '/portfolio/okr-hub' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
-  { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/portfolio/:portfolioId/forecast' },
-  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity' },
-  { id: 'more-items', label: 'More items', icon: MoreHorizontal, expandable: true },
-  { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
-  { id: 'more-pages', label: 'More pages', icon: FolderTree, expandable: true },
-  { id: 'programs', label: 'Programs', icon: UsersIcon, expandable: true },
+  { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/portfolio/:portfolioId/forecast' },
+  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', badge: 'NEW' },
+  { id: 'more-items', label: 'More items', icon: Menu, expandable: true },
+  { id: 'reports', label: 'Reports', icon: Menu, expandable: true },
+  { id: 'more-pages', label: 'More pages', icon: Menu, expandable: true },
+  { id: 'programs', label: 'Programs', icon: Network, expandable: true },
 ];
 
 export function PortfolioRoomSidebar({ 
@@ -180,9 +180,18 @@ export function PortfolioRoomSidebar({
                 title={!expanded ? item.label : undefined}
               >
                 <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-                {expanded && <span className="truncate text-left flex-1">{item.label}</span>}
-                {expanded && 'expandable' in item && item.expandable && (
-                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                {expanded && (
+                  <>
+                    <span className="truncate text-left flex-1">{item.label}</span>
+                    {'badge' in item && item.badge && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-500 text-white rounded uppercase">
+                        {item.badge}
+                      </span>
+                    )}
+                    {'expandable' in item && item.expandable && (
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </>
                 )}
               </button>
             );
