@@ -55,7 +55,7 @@ const menuItems: MenuItem[] = [
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps' },
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/value-stream' },
-  { id: 'program-board', label: 'Program board', icon: LayoutGrid, path: '/program-board' },
+  { id: 'program-board', label: 'Program board', icon: LayoutGrid, path: '/programs/program-board' },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: '/forecast' },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', badge: 'NEW' },
   { id: 'more-items', label: 'More items', icon: MoreHorizontal, expandable: true },
@@ -89,7 +89,12 @@ export function ProgramRoomSidebar({
   const location = useLocation();
 
   const handleNavigation = (path: string) => {
-    navigate(path + (selectedPI ? `?pi=${selectedPI}` : ''));
+    // For program board, pass program and pi as query params
+    if (path.includes('program-board') && programId && selectedPI) {
+      navigate(`${path}?program=${programId}&pi=${selectedPI}`);
+    } else {
+      navigate(path + (selectedPI ? `?pi=${selectedPI}` : ''));
+    }
   };
 
   const isActive = (path?: string) => {

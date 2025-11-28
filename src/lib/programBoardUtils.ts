@@ -11,69 +11,46 @@
  * 
  * Rules (in priority order):
  * - Black: Orphan (no child stories)
- * - Green: Done (marked Done + all stories accepted)
- * - Green with checkmark: Accepted (marked Accepted + all stories accepted)
- * - Red tab: Accepted with planning issues
- * - Gray: Not started (assigned but not begun)
- * - Blue: In Progress
- * - Yellow: Risks apply (Open ROAM risks)
- * - Orange: Planning issues (unassigned story or sprint)
+ * - Green: Done 
  * - Red: Blocked
+ * - Orange: Planning issues
+ * - Yellow: Risks apply
+ * - Blue: Implementing
+ * - Gray: Not started
  */
 export function getFeatureStatusColor(feature: any): string {
   // Black: Orphan status (no child stories)
-  if (!feature.has_children_stories) {
-    return 'bg-gray-900 text-white border-gray-900';
+  if (feature.is_orphan_on_board) {
+    return 'border-l-gray-900 bg-gray-900/10';
   }
   
   // Green: Done
-  if (feature.status === 'done' && feature.all_stories_accepted) {
-    return 'bg-green-600 text-white border-green-600';
-  }
-  
-  // Green with checkmark: Accepted
-  if (feature.status === 'accepted' && feature.all_stories_accepted) {
-    // Check for planning issues
-    if (feature.has_planning_issues) {
-      return 'bg-green-600 text-white border-green-600 relative after:absolute after:top-0 after:right-0 after:w-3 after:h-3 after:bg-red-600 after:rounded-bl';
-    }
-    return 'bg-green-600 text-white border-green-600';
+  if (feature.status === 'done') {
+    return 'border-l-green-600 bg-green-600/10';
   }
   
   // Red: Blocked
-  if (
-    feature.blocked ||
-    feature.status === 'blocked' ||
-    feature.has_blocked_story ||
-    feature.has_red_dependency ||
-    feature.sprint_dates_past
-  ) {
-    return 'bg-red-600 text-white border-red-600';
+  if (feature.blocked || feature.status === 'blocked') {
+    return 'border-l-red-600 bg-red-600/10';
   }
   
-  // Orange: Planning issues
-  if (
-    feature.has_unassigned_story ||
-    feature.has_story_not_in_sprint
-  ) {
-    return 'bg-orange-500 text-white border-orange-500';
+  // Orange: Planning issues (funnel/analyzing states indicate planning phase)
+  if (feature.status === 'funnel' || feature.status === 'analyzing') {
+    return 'border-l-orange-500 bg-orange-500/10';
   }
   
   // Yellow: Risks apply
-  if (feature.has_open_risks) {
-    return 'bg-yellow-500 text-black border-yellow-500';
+  if (feature.health === 'yellow' || feature.health === 'red') {
+    return 'border-l-yellow-500 bg-yellow-500/10';
   }
   
-  // Blue: In Progress
-  if (
-    feature.status === 'in_progress' ||
-    feature.has_story_in_progress
-  ) {
-    return 'bg-blue-600 text-white border-blue-600';
+  // Blue: Implementing
+  if (feature.status === 'implementing') {
+    return 'border-l-blue-600 bg-blue-600/10';
   }
   
-  // Gray: Not started
-  return 'bg-gray-400 text-white border-gray-400';
+  // Gray: Not started (backlog state)
+  return 'border-l-gray-400 bg-gray-400/10';
 }
 
 /**
