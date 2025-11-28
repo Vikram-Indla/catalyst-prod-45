@@ -50,7 +50,7 @@ type MenuItem =
   | { id: string; label: string; icon: any; expandable: true; path?: never; badge?: never };
 
 const menuItems: MenuItem[] = [
-  { id: 'features', label: 'Features', icon: Zap, path: '/program/features' },
+  { id: 'features', label: 'Features', icon: Zap, path: '/features' },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/items/epics' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps' },
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-tree' },
