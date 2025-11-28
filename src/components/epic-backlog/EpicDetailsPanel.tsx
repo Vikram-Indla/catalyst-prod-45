@@ -204,41 +204,41 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
 
         {/* Tabs */}
         <Tabs defaultValue="details" className="flex-1 flex flex-col overflow-hidden">
-          <div className="border-b px-6 bg-card">
-            <TabsList className="h-12 bg-transparent justify-start gap-1">
-              <TabsTrigger value="details" className="gap-2">
+          <div className="border-b px-6 bg-card overflow-x-auto flex-shrink-0">
+            <TabsList className="h-12 bg-transparent justify-start gap-1 inline-flex w-auto min-w-full">
+              <TabsTrigger value="details" className="gap-2 whitespace-nowrap flex-shrink-0">
                 <FileText className="h-4 w-4" />
                 Details
               </TabsTrigger>
-              <TabsTrigger value="design" className="gap-2">
+              <TabsTrigger value="design" className="gap-2 whitespace-nowrap flex-shrink-0">
                 <Gem className="h-4 w-4" />
                 Design
               </TabsTrigger>
-              <TabsTrigger value="intake" className="gap-2">
+              <TabsTrigger value="intake" className="gap-2 whitespace-nowrap flex-shrink-0">
                 <ClipboardList className="h-4 w-4" />
                 Intake
               </TabsTrigger>
-              <TabsTrigger value="benefits" className="gap-2">
+              <TabsTrigger value="benefits" className="gap-2 whitespace-nowrap flex-shrink-0">
                 <TrendingUp className="h-4 w-4" />
                 Benefits
               </TabsTrigger>
-              <TabsTrigger value="value" className="gap-2">
+              <TabsTrigger value="value" className="gap-2 whitespace-nowrap flex-shrink-0">
                 <ThumbsUp className="h-4 w-4" />
                 Value
               </TabsTrigger>
-              <TabsTrigger value="milestones" className="gap-2">
+              <TabsTrigger value="milestones" className="gap-2 whitespace-nowrap flex-shrink-0">
                 <Milestone className="h-4 w-4" />
                 Milestones
               </TabsTrigger>
-              <TabsTrigger value="spend" className="gap-2">
+              <TabsTrigger value="spend" className="gap-2 whitespace-nowrap flex-shrink-0">
                 <DollarSign className="h-4 w-4" />
                 Spend
               </TabsTrigger>
-              <TabsTrigger value="forecast" className="gap-2">
+              <TabsTrigger value="forecast" className="gap-2 whitespace-nowrap flex-shrink-0">
                 <BarChart3 className="h-4 w-4" />
                 Forecast
               </TabsTrigger>
-              <TabsTrigger value="links" className="gap-2">
+              <TabsTrigger value="links" className="gap-2 whitespace-nowrap flex-shrink-0">
                 <LinkIcon className="h-4 w-4" />
                 Links
               </TabsTrigger>

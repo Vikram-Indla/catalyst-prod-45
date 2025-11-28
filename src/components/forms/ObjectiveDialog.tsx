@@ -261,10 +261,12 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
-        <SheetHeader>
+      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden">
+        <SheetHeader className="px-6 py-4 border-b flex-shrink-0">
           <SheetTitle>{isEdit ? 'Edit Objective' : 'Create New Objective'}</SheetTitle>
         </SheetHeader>
+
+        <div className="flex-1 overflow-y-auto px-6 py-4">
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
@@ -620,6 +622,7 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
             </div>
           </form>
         </Form>
+        </div>
       </SheetContent>
     </Sheet>
   );
