@@ -81,7 +81,7 @@ export default function EpicsPage() {
   }, [searchParams, setSearchParams]);
 
   const { data: epics, isLoading } = useQuery({
-    queryKey: ['epics', portfolioId, searchQuery],
+    queryKey: ['epics', portfolioId, searchQuery, viewMode],
     queryFn: async () => {
       let query = supabase
         .from('epics')
@@ -90,7 +90,14 @@ export default function EpicsPage() {
           strategic_themes(name),
           programs(name)
         `)
-        .order('name');
+        .is('deleted_at', null);
+
+      // Order by rank in list view, by name in kanban views
+      if (viewMode === 'list') {
+        query = query.order('global_rank', { ascending: true, nullsFirst: false });
+      } else {
+        query = query.order('name');
+      }
 
       if (portfolioId) {
         query = query.eq('portfolio_id', portfolioId);

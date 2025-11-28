@@ -36,13 +36,15 @@ const STATE_COLUMNS = [
 
 export function EpicKanbanView({ epics, onEpicClick, onContextMenu }: EpicKanbanViewProps) {
   const queryClient = useQueryClient();
-  const [columns, setColumns] = useState(() => {
+  
+  // Sync columns with epics prop changes
+  const columns = (() => {
     const cols: Record<string, Epic[]> = {};
     STATE_COLUMNS.forEach(col => {
       cols[col.id] = epics.filter(e => e.state === col.id || (!e.state && col.id === 'funnel'));
     });
     return cols;
-  });
+  })();
 
   const updateEpicStateMutation = useMutation({
     mutationFn: async ({ epicId, state }: { epicId: string; state: any }) => {
@@ -71,20 +73,6 @@ export function EpicKanbanView({ epics, onEpicClick, onContextMenu }: EpicKanban
 
     const newState = destination.droppableId;
     updateEpicStateMutation.mutate({ epicId: draggableId, state: newState });
-
-    // Optimistic update
-    setColumns(prev => {
-      const newCols = { ...prev };
-      const sourceItems = [...newCols[source.droppableId]];
-      const destItems = [...newCols[destination.droppableId]];
-      const [movedItem] = sourceItems.splice(source.index, 1);
-      movedItem.state = newState;
-      destItems.splice(destination.index, 0, movedItem);
-      
-      newCols[source.droppableId] = sourceItems;
-      newCols[destination.droppableId] = destItems;
-      return newCols;
-    });
   };
 
   return (
