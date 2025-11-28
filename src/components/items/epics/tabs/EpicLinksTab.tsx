@@ -1,71 +1,187 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, ExternalLink, Trash2 } from 'lucide-react';
+import { Plus, Trash2, ExternalLink } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface EpicLinksTabProps {
   epic: any;
 }
 
 export function EpicLinksTab({ epic }: EpicLinksTabProps) {
+  const queryClient = useQueryClient();
+  const [newLink, setNewLink] = useState({
+    title: '',
+    url: '',
+    link_type: 'documentation'
+  });
+
+  const { data: links } = useQuery({
+    queryKey: ['epic-links', epic.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epic_links')
+        .select('*')
+        .eq('epic_id', epic.id)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (link: any) => {
+      const { error } = await supabase
+        .from('epic_links')
+        .insert({ ...link, epic_id: epic.id });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-links'] });
+      toast.success('Link added');
+      setNewLink({ title: '', url: '', link_type: 'documentation' });
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('epic_links')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-links'] });
+      toast.success('Link deleted');
+    }
+  });
+
+  const handleAddLink = () => {
+    if (!newLink.title || !newLink.url) {
+      toast.error('Title and URL are required');
+      return;
+    }
+    createMutation.mutate(newLink);
+  };
+
+  const getLinkTypeBadge = (type: string) => {
+    const types: Record<string, { label: string; color: string }> = {
+      documentation: { label: 'Documentation', color: 'bg-blue-500' },
+      design: { label: 'Design', color: 'bg-purple-500' },
+      ticket: { label: 'Ticket', color: 'bg-green-500' },
+      reference: { label: 'Reference', color: 'bg-orange-500' },
+      other: { label: 'Other', color: 'bg-gray-500' }
+    };
+    const t = types[type] || types.other;
+    return (
+      <span className={`inline-block px-2 py-1 text-xs font-medium text-white rounded ${t.color}`}>
+        {t.label}
+      </span>
+    );
+  };
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          External links for design, approvals, compliance, and documentation
-        </div>
-        <Button size="sm">
-          <Plus className="h-4 w-4 mr-2" />
-          Add Link
-        </Button>
+      <div className="text-sm text-muted-foreground mb-4">
+        Manage external links and references related to this epic
       </div>
 
-      <div className="border rounded-lg p-4 space-y-4">
-        <div className="grid grid-cols-3 gap-4">
+      <Card className="p-4 border-dashed">
+        <h4 className="font-medium mb-4">Add New Link</h4>
+        <div className="space-y-4">
+          <div>
+            <Label>Title*</Label>
+            <Input
+              value={newLink.title}
+              onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
+              placeholder="e.g., Product Requirements Doc"
+            />
+          </div>
+
+          <div>
+            <Label>URL*</Label>
+            <Input
+              value={newLink.url}
+              onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
+              placeholder="https://..."
+            />
+          </div>
+
           <div>
             <Label>Link Type</Label>
-            <Select>
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder="Select type" />
+            <Select value={newLink.link_type} onValueChange={(v) => setNewLink({ ...newLink, link_type: v })}>
+              <SelectTrigger>
+                <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="design">Design</SelectItem>
-                <SelectItem value="approval">Approval</SelectItem>
-                <SelectItem value="compliance">Compliance</SelectItem>
                 <SelectItem value="documentation">Documentation</SelectItem>
+                <SelectItem value="design">Design</SelectItem>
+                <SelectItem value="ticket">Ticket</SelectItem>
+                <SelectItem value="reference">Reference</SelectItem>
                 <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div className="col-span-2">
-            <Label>URL</Label>
-            <Input
-              type="url"
-              placeholder="https://"
-              className="mt-2"
-            />
+
+          <Button onClick={handleAddLink} disabled={createMutation.isPending}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Link
+          </Button>
+        </div>
+      </Card>
+
+      <div className="space-y-3">
+        <h4 className="font-medium">Links</h4>
+        {links && links.length > 0 ? (
+          links.map((link: any) => (
+            <Card key={link.id} className="p-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    {getLinkTypeBadge(link.link_type)}
+                    <h4 className="font-medium">{link.title}</h4>
+                  </div>
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline flex items-center gap-1"
+                  >
+                    {link.url}
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Added {new Date(link.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    if (confirm('Delete this link?')) {
+                      deleteMutation.mutate(link.id);
+                    }
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </Card>
+          ))
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            No links yet. Add links above.
           </div>
-        </div>
-
-        <div>
-          <Label>Description</Label>
-          <Input
-            type="text"
-            placeholder="Brief description of this link"
-            className="mt-2"
-          />
-        </div>
-      </div>
-
-      <div className="border rounded-lg divide-y">
-        <div className="p-4 text-center text-sm text-muted-foreground">
-          No external links added yet
-        </div>
-      </div>
-
-      <div className="text-xs text-muted-foreground">
-        Add external links to reference designs, approvals, compliance docs, and other resources
+        )}
       </div>
     </div>
   );

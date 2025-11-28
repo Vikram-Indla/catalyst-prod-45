@@ -1,106 +1,302 @@
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Progress } from '@/components/ui/progress';
+import { toast } from 'sonner';
+import { DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
 
 interface EpicSpendTabProps {
   epic: any;
 }
 
 export function EpicSpendTab({ epic }: EpicSpendTabProps) {
-  const budget = epic.budget || 0;
-  const acceptedSpend = epic.accepted_spend || 0;
-  const forecastedSpend = epic.forecasted_spend || 0;
-  const estimatedSpend = epic.estimated_spend || 0;
+  const queryClient = useQueryClient();
+  const [formData, setFormData] = useState({
+    budget: 0,
+    forecasted_spend: 0,
+    estimated_spend: 0,
+    accepted_spend: 0,
+    work_code: '',
+    initial_investment: 0,
+    return_on_investment: 0,
+    discount_rate: 0,
+    efficiency_dividend: 0,
+    revenue_assurance: 0,
+    business_impact: 'medium',
+    it_risk: 'medium',
+    failure_probability: 'low',
+    failure_impact: 'medium',
+    risk_appetite: 'moderate'
+  });
 
-  const spendPercentage = budget > 0 ? (acceptedSpend / budget) * 100 : 0;
+  const { data: spendData } = useQuery({
+    queryKey: ['epic-spend', epic.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epic_spend')
+        .select('*')
+        .eq('epic_id', epic.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      
+      if (data) {
+        setFormData({
+          budget: data.budget || 0,
+          forecasted_spend: data.forecasted_spend || 0,
+          estimated_spend: data.estimated_spend || 0,
+          accepted_spend: data.accepted_spend || 0,
+          work_code: data.work_code || '',
+          initial_investment: data.initial_investment || 0,
+          return_on_investment: data.return_on_investment || 0,
+          discount_rate: data.discount_rate || 0,
+          efficiency_dividend: data.efficiency_dividend || 0,
+          revenue_assurance: data.revenue_assurance || 0,
+          business_impact: data.business_impact || 'medium',
+          it_risk: data.it_risk || 'medium',
+          failure_probability: data.failure_probability || 'low',
+          failure_impact: data.failure_impact || 'medium',
+          risk_appetite: data.risk_appetite || 'moderate'
+        });
+      }
+      
+      return data;
+    }
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('epic_spend')
+        .upsert({
+          epic_id: epic.id,
+          ...formData
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-spend'] });
+      toast.success('Spend data saved');
+    }
+  });
+
+  const handleSave = () => {
+    saveMutation.mutate();
+  };
+
+  const totalSpend = formData.forecasted_spend + formData.estimated_spend + formData.accepted_spend;
+  const budgetVariance = formData.budget - totalSpend;
+  const budgetUtilization = formData.budget > 0 ? (totalSpend / formData.budget) * 100 : 0;
 
   return (
     <div className="space-y-6">
       <div className="text-sm text-muted-foreground mb-4">
-        Financial tracking and budget management
+        Track financial spend and investment metrics for this epic
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
-        <div>
-          <Label>Budget</Label>
-          <Input
-            type="number"
-            defaultValue={budget}
-            placeholder="Enter budget"
-            className="mt-2"
-          />
-        </div>
+      <div className="grid grid-cols-3 gap-4">
+        <Card className="p-4 bg-blue-50 dark:bg-blue-950">
+          <div className="flex items-center gap-2 mb-2">
+            <DollarSign className="h-4 w-4 text-blue-600" />
+            <span className="text-sm font-medium">Total Spend</span>
+          </div>
+          <div className="text-2xl font-bold">${totalSpend.toLocaleString()}</div>
+        </Card>
 
-        <div>
-          <Label>Work Code</Label>
-          <Input
-            type="text"
-            defaultValue={epic.work_code}
-            placeholder="Enter work code"
-            className="mt-2"
-          />
-        </div>
+        <Card className="p-4 bg-green-50 dark:bg-green-950">
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="h-4 w-4 text-green-600" />
+            <span className="text-sm font-medium">Budget</span>
+          </div>
+          <div className="text-2xl font-bold">${formData.budget.toLocaleString()}</div>
+        </Card>
+
+        <Card className={`p-4 ${budgetVariance < 0 ? 'bg-red-50 dark:bg-red-950' : 'bg-green-50 dark:bg-green-950'}`}>
+          <div className="flex items-center gap-2 mb-2">
+            <AlertCircle className={`h-4 w-4 ${budgetVariance < 0 ? 'text-red-600' : 'text-green-600'}`} />
+            <span className="text-sm font-medium">Variance</span>
+          </div>
+          <div className="text-2xl font-bold">${Math.abs(budgetVariance).toLocaleString()}</div>
+          <div className="text-xs text-muted-foreground mt-1">
+            {budgetUtilization.toFixed(1)}% utilized
+          </div>
+        </Card>
       </div>
 
-      <div className="border rounded-lg p-6 space-y-4">
-        <div className="flex justify-between items-center">
-          <span className="text-sm font-medium">Accepted Spend</span>
-          <span className="text-lg font-bold">${acceptedSpend.toLocaleString()}</span>
-        </div>
+      <div className="space-y-4">
+        <h4 className="font-medium">Budget & Spend</h4>
         
-        <Progress value={spendPercentage} className="h-2" />
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Budget ($)</Label>
+            <Input
+              type="number"
+              value={formData.budget}
+              onChange={(e) => setFormData({ ...formData, budget: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label>Work Code</Label>
+            <Input
+              value={formData.work_code}
+              onChange={(e) => setFormData({ ...formData, work_code: e.target.value })}
+              placeholder="e.g., WBS-12345"
+            />
+          </div>
+          <div>
+            <Label>Forecasted Spend ($)</Label>
+            <Input
+              type="number"
+              value={formData.forecasted_spend}
+              onChange={(e) => setFormData({ ...formData, forecasted_spend: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label>Estimated Spend ($)</Label>
+            <Input
+              type="number"
+              value={formData.estimated_spend}
+              onChange={(e) => setFormData({ ...formData, estimated_spend: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label>Accepted Spend ($)</Label>
+            <Input
+              type="number"
+              value={formData.accepted_spend}
+              onChange={(e) => setFormData({ ...formData, accepted_spend: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="border-t pt-6 space-y-4">
+        <h4 className="font-medium">Investment & ROI</h4>
         
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>{spendPercentage.toFixed(1)}% of budget</span>
-          <span>Budget: ${budget.toLocaleString()}</span>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Initial Investment ($)</Label>
+            <Input
+              type="number"
+              value={formData.initial_investment}
+              onChange={(e) => setFormData({ ...formData, initial_investment: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label>ROI (%)</Label>
+            <Input
+              type="number"
+              value={formData.return_on_investment}
+              onChange={(e) => setFormData({ ...formData, return_on_investment: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label>Discount Rate (%)</Label>
+            <Input
+              type="number"
+              value={formData.discount_rate}
+              onChange={(e) => setFormData({ ...formData, discount_rate: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label>Efficiency Dividend ($)</Label>
+            <Input
+              type="number"
+              value={formData.efficiency_dividend}
+              onChange={(e) => setFormData({ ...formData, efficiency_dividend: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+          <div>
+            <Label>Revenue Assurance ($)</Label>
+            <Input
+              type="number"
+              value={formData.revenue_assurance}
+              onChange={(e) => setFormData({ ...formData, revenue_assurance: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="border rounded-lg p-4">
-          <div className="text-sm text-muted-foreground mb-1">Forecasted Spend</div>
-          <div className="text-2xl font-bold">${forecastedSpend.toLocaleString()}</div>
-        </div>
-        <div className="border rounded-lg p-4">
-          <div className="text-sm text-muted-foreground mb-1">Estimated Spend</div>
-          <div className="text-2xl font-bold">${estimatedSpend.toLocaleString()}</div>
+      <div className="border-t pt-6 space-y-4">
+        <h4 className="font-medium">Risk Assessment</h4>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label>Business Impact</Label>
+            <Select value={formData.business_impact} onValueChange={(v) => setFormData({ ...formData, business_impact: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>IT Risk</Label>
+            <Select value={formData.it_risk} onValueChange={(v) => setFormData({ ...formData, it_risk: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Failure Probability</Label>
+            <Select value={formData.failure_probability} onValueChange={(v) => setFormData({ ...formData, failure_probability: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Failure Impact</Label>
+            <Select value={formData.failure_impact} onValueChange={(v) => setFormData({ ...formData, failure_impact: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Risk Appetite</Label>
+            <Select value={formData.risk_appetite} onValueChange={(v) => setFormData({ ...formData, risk_appetite: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="moderate">Moderate</SelectItem>
+                <SelectItem value="high">High</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
-      <div>
-        <Label>Business Impact</Label>
-        <Select>
-          <SelectTrigger className="mt-2">
-            <SelectValue placeholder="Select impact level" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="critical">Critical</SelectItem>
-            <SelectItem value="high">High</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="low">Low</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label>Initial Investment</Label>
-          <Input
-            type="number"
-            defaultValue={epic.initial_investment}
-            className="mt-2"
-          />
-        </div>
-        <div>
-          <Label>Return on Investment</Label>
-          <Input
-            type="number"
-            defaultValue={epic.return_on_investment}
-            className="mt-2"
-          />
-        </div>
-      </div>
+      <Button onClick={handleSave} disabled={saveMutation.isPending}>
+        Save Spend Data
+      </Button>
     </div>
   );
 }
