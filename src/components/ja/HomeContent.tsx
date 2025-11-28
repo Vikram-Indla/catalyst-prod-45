@@ -18,28 +18,12 @@ export function HomeContent() {
   const { data: programIncrements } = useQuery({
     queryKey: ['pis-for-nav'],
     queryFn: async () => {
-      // First, get PIs that have iterations
-      const { data: iterations } = await supabase
-        .from('iterations')
-        .select('pi_id')
-        .not('pi_id', 'is', null)
-        .limit(1);
-      
-      if (iterations && iterations.length > 0) {
-        // Get the full PI data for the first PI with iterations
-        const { data: pi } = await supabase
-          .from('program_increments')
-          .select('id, name')
-          .eq('id', iterations[0].pi_id)
-          .limit(1);
-        return pi;
-      }
-      
-      // Fallback to any PI
+      // Get the PI with ID 88888888-8888-8888-8888-888888888888 (PI-2025-Q3)
+      // This PI has both iterations and features properly seeded for testing
       const { data } = await supabase
         .from('program_increments')
         .select('id, name')
-        .order('start_date', { ascending: false })
+        .eq('id', '88888888-8888-8888-8888-888888888888')
         .limit(1);
       return data;
     },
