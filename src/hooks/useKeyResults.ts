@@ -159,9 +159,9 @@ export const useCreateCheckIn = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: ({ data, objectiveId }) => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['key-result-checkins', data.key_result_id] });
-      queryClient.invalidateQueries({ queryKey: ['key-results', objectiveId] });
+      queryClient.invalidateQueries({ queryKey: ['key-results'] });
       toast.success('Check-in recorded successfully');
     },
     onError: (error) => {
