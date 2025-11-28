@@ -36,19 +36,23 @@ interface Epic {
 interface EpicBacklogListViewProps {
   epics: Epic[];
   onEpicSelect: (id: string) => void;
+  onEpicClick?: (id: string) => void;
   onRefetch: () => void;
   onManageLabels?: () => void;
   visibleColumns?: string[];
+  onSelectEpics?: (ids: string[]) => void;
 }
 
 const DEFAULT_COLUMNS = ['id', 'name', 'state', 'labels', 'points_estimate', 'mvp', 'process_step'];
 
 export function EpicBacklogListView({ 
   epics, 
-  onEpicSelect, 
+  onEpicSelect,
+  onEpicClick,
   onRefetch,
   onManageLabels,
-  visibleColumns = DEFAULT_COLUMNS
+  visibleColumns = DEFAULT_COLUMNS,
+  onSelectEpics
 }: EpicBacklogListViewProps) {
   const [selectedEpics, setSelectedEpics] = useState<Set<string>>(new Set());
 
@@ -87,6 +91,7 @@ export function EpicBacklogListView({
       newSelected.add(epicId);
     }
     setSelectedEpics(newSelected);
+    onSelectEpics?.(Array.from(newSelected));
   };
 
   const handleDragEnd = async (result: DropResult) => {

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,11 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Button } from '@/components/ui/button';
-import { Download, Printer } from 'lucide-react';
+import { Download, Printer, FileText } from 'lucide-react';
 import { format } from 'date-fns';
+import { ReportTemplatesDialog } from '@/components/items/epics/dialogs/ReportTemplatesDialog';
 
 export default function EpicStatusReport() {
   const { epicId } = useParams<{ epicId: string }>();
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const { data: epic, isLoading } = useQuery({
     queryKey: ['epic-status-report', epicId],

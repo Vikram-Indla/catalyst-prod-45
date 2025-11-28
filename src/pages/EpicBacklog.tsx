@@ -17,6 +17,7 @@ import { CustomColumnsDialog } from '@/components/epic-backlog/CustomColumnsDial
 import { OrphanObjectsDialog } from '@/components/epic-backlog/OrphanObjectsDialog';
 import { ViewSwitcher, ViewMode, KanbanMode } from '@/components/backlog/ViewSwitcher';
 import { WSJFPrioritizationDialog } from '@/components/epic-backlog/WSJFPrioritizationDialog';
+import { EnhancedBottomUpDialog } from '@/components/items/epics/dialogs/EnhancedBottomUpDialog';
 import { usePIProgress } from '@/hooks/usePIProgress';
 import { Star, Eye, TrendingUp, Download, ChevronDown, Plus, Grid3x3, Filter, Search, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -35,6 +36,8 @@ export default function EpicBacklog() {
   const [labelsDialogOpen, setLabelsDialogOpen] = useState(false);
   const [customColumnsDialogOpen, setCustomColumnsDialogOpen] = useState(false);
   const [orphanObjectsDialogOpen, setOrphanObjectsDialogOpen] = useState(false);
+  const [bottomUpEstimateOpen, setBottomUpEstimateOpen] = useState(false);
+  const [selectedEpicIds, setSelectedEpicIds] = useState<string[]>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
     'id', 'name', 'state', 'labels', 'points_estimate', 'mvp', 'process_step'
   ]);
@@ -279,6 +282,16 @@ export default function EpicBacklog() {
             </div>
             <div className="flex items-center gap-6">
               <span className="text-sm text-muted-foreground">Total Items: {assignedEpics.length}</span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="gap-2 text-muted-foreground hover:text-foreground"
+                onClick={() => setBottomUpEstimateOpen(true)}
+                disabled={selectedEpicIds.length === 0}
+              >
+                <TrendingUp className="h-4 w-4" />
+                Bottom-Up Estimate
+              </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
