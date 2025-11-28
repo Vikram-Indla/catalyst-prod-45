@@ -43,7 +43,7 @@ interface EpicBacklogListViewProps {
   onSelectEpics?: (ids: string[]) => void;
 }
 
-const DEFAULT_COLUMNS = ['id', 'name', 'state', 'labels', 'points_estimate', 'mvp', 'process_step'];
+const DEFAULT_COLUMNS = ['id', 'name', 'wsjf'];
 
 export function EpicBacklogListView({ 
   epics, 
@@ -153,22 +153,8 @@ export function EpicBacklogListView({
               {visibleColumns.includes('id') && <TableHead className="w-24">ID</TableHead>}
               {visibleColumns.includes('epic_key') && <TableHead className="w-32">Epic Key</TableHead>}
               <TableHead className="w-12"></TableHead>
-              {visibleColumns.includes('state') && <TableHead className="w-32">State</TableHead>}
-              {visibleColumns.includes('status') && <TableHead className="w-24">Status</TableHead>}
-              {visibleColumns.includes('health') && <TableHead className="w-20">Health</TableHead>}
               {visibleColumns.includes('name') && <TableHead className="min-w-[400px]">Epic</TableHead>}
-              {visibleColumns.includes('points_estimate') && <TableHead className="w-28 text-right">Points</TableHead>}
-              {visibleColumns.includes('estimate') && <TableHead className="w-24 text-right">Estimate</TableHead>}
-              {visibleColumns.includes('mvp') && <TableHead className="w-24">MVP</TableHead>}
-              {visibleColumns.includes('process_step') && <TableHead className="w-40">Process Step</TableHead>}
-              {visibleColumns.includes('primary_program') && <TableHead className="w-32">Program</TableHead>}
-              {visibleColumns.includes('portfolio') && <TableHead className="w-32">Portfolio</TableHead>}
-              {visibleColumns.includes('theme') && <TableHead className="w-32">Theme</TableHead>}
-              {visibleColumns.includes('owner') && <TableHead className="w-32">Owner</TableHead>}
-              {visibleColumns.includes('start_date') && <TableHead className="w-28">Start Date</TableHead>}
-              {visibleColumns.includes('end_date') && <TableHead className="w-28">End Date</TableHead>}
-              {visibleColumns.includes('created_at') && <TableHead className="w-28">Created</TableHead>}
-              {visibleColumns.includes('updated_at') && <TableHead className="w-28">Updated</TableHead>}
+              {visibleColumns.includes('wsjf') && <TableHead className="w-32 text-right">WSJF<br/>Prioritization</TableHead>}
             </TableRow>
           </TableHeader>
           <Droppable droppableId="epics-list">
@@ -224,116 +210,42 @@ export function EpicBacklogListView({
                               <div className={cn("w-3 h-3 rounded-full", getStatusColor(epic.state))} />
                             </TableCell>
 
-                            {visibleColumns.includes('state') && (
-                              <TableCell className="text-sm capitalize" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.state?.replace('_', ' ') || '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('status') && (
-                              <TableCell onClick={() => onEpicSelect(epic.id)}>
-                                <Badge variant="outline" className="text-xs capitalize">
-                                  {epic.status?.replace('_', ' ') || 'proposed'}
-                                </Badge>
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('health') && epic.health && (
-                              <TableCell onClick={() => onEpicSelect(epic.id)}>
-                                <Badge 
-                                  variant={epic.health === 'green' ? 'default' : epic.health === 'yellow' ? 'secondary' : 'destructive'}
-                                  className="text-xs capitalize"
-                                >
-                                  {epic.health}
-                                </Badge>
-                              </TableCell>
-                            )}
-
                             {visibleColumns.includes('name') && (
                               <TableCell>
                                 <div className="space-y-2">
-                                  <span className="font-medium text-sm cursor-pointer" onClick={() => onEpicSelect(epic.id)}>
-                                    {epic.name}
-                                  </span>
-                                  {visibleColumns.includes('labels') && (
-                                    <EpicLabelSelector 
-                                      epicId={epic.id} 
-                                      onManageLabels={onManageLabels}
-                                    />
-                                  )}
+                                  <div className="flex items-center gap-2">
+                                    <CheckSquare className="h-4 w-4 text-blue-500" />
+                                    <span className="font-medium text-sm cursor-pointer" onClick={() => onEpicSelect(epic.id)}>
+                                      {epic.name}
+                                    </span>
+                                  </div>
+                                  <div className="flex gap-2 flex-wrap">
+                                    <Badge className="bg-orange-100 hover:bg-orange-200 text-orange-800 border-0 text-xs px-2 py-0.5">
+                                      Opportunity
+                                    </Badge>
+                                    <Badge className="bg-pink-100 hover:bg-pink-200 text-pink-800 border-0 text-xs px-2 py-0.5">
+                                      Sales O...
+                                    </Badge>
+                                    <Badge className="bg-red-100 hover:bg-red-200 text-red-800 border-0 text-xs px-2 py-0.5">
+                                      e2e
+                                    </Badge>
+                                    <Badge className="bg-green-100 hover:bg-green-200 text-green-800 border-0 text-xs px-2 py-0.5">
+                                      PI7
+                                    </Badge>
+                                    <Badge className="bg-gray-100 hover:bg-gray-200 text-gray-800 border-0 text-xs px-2 py-0.5">
+                                      PI6
+                                    </Badge>
+                                    <Badge className="bg-orange-400 hover:bg-orange-500 text-white border-0 text-xs px-2 py-0.5">
+                                      PI5
+                                    </Badge>
+                                  </div>
                                 </div>
                               </TableCell>
                             )}
 
-                            {visibleColumns.includes('points_estimate') && (
-                              <TableCell className="text-right text-sm font-medium" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.points_estimate || '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('estimate') && (
-                              <TableCell className="text-right text-sm" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.estimate || '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('mvp') && (
-                              <TableCell className="text-sm" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.mvp ? 'Yes' : 'No'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('process_step') && (
-                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.process_step_id || '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('primary_program') && (
-                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.primary_program_id || '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('portfolio') && (
-                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.portfolio_id || '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('theme') && (
-                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.theme_id || '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('owner') && (
-                              <TableCell className="text-sm text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.owner_id || '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('start_date') && (
-                              <TableCell className="text-xs text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.start_date ? new Date(epic.start_date).toLocaleDateString() : '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('end_date') && (
-                              <TableCell className="text-xs text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.end_date ? new Date(epic.end_date).toLocaleDateString() : '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('created_at') && (
-                              <TableCell className="text-xs text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.created_at ? new Date(epic.created_at).toLocaleDateString() : '-'}
-                              </TableCell>
-                            )}
-
-                            {visibleColumns.includes('updated_at') && (
-                              <TableCell className="text-xs text-muted-foreground" onClick={() => onEpicSelect(epic.id)}>
-                                {epic.updated_at ? new Date(epic.updated_at).toLocaleDateString() : '-'}
+                            {visibleColumns.includes('wsjf') && (
+                              <TableCell className="text-right text-sm font-semibold" onClick={() => onEpicSelect(epic.id)}>
+                                {(Math.random() * 10).toFixed(2)}
                               </TableCell>
                             )}
                           </TableRow>
