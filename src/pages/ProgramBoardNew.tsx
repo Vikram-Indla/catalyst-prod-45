@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSearchParams } from 'react-router-dom';
+import html2canvas from 'html2canvas';
 
 import { TeamRankDialog } from '@/components/program-board/TeamRankDialog';
 import { OrphansDialog } from '@/components/program-board/OrphansDialog';
@@ -359,8 +360,39 @@ export default function ProgramBoard() {
     setHistoryOpen(true);
   };
   
-  const handleCaptureBoard = () => {
-    toast.info('Export functionality coming soon');
+  const handleCaptureBoard = async () => {
+    const boardElement = document.getElementById('program-board-grid');
+    if (!boardElement) {
+      toast.error('Board not found');
+      return;
+    }
+
+    try {
+      toast.info('Capturing board...');
+      const canvas = await html2canvas(boardElement, {
+        backgroundColor: '#ffffff',
+        scale: 2,
+        logging: false,
+        scrollY: -window.scrollY,
+        scrollX: -window.scrollX,
+      });
+      
+      // Convert to blob and download
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.download = `program-board-${selectedProgram?.name || 'board'}-${new Date().toISOString().split('T')[0]}.png`;
+          link.href = url;
+          link.click();
+          URL.revokeObjectURL(url);
+          toast.success('Board captured successfully!');
+        }
+      });
+    } catch (error) {
+      console.error('Failed to capture board:', error);
+      toast.error('Failed to capture board');
+    }
   };
   
   const handleFullscreen = () => {
@@ -524,7 +556,6 @@ export default function ProgramBoard() {
                 </div>
               ))}
             </div>
-          </div>
           
           {/* Objectives row */}
           <div className="border-b border-border bg-background">
@@ -668,6 +699,7 @@ export default function ProgramBoard() {
               </div>
             </div>
           )}
+          </div>
         </div>
       </div>
       
