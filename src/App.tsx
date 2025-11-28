@@ -102,6 +102,8 @@ import SelfTest from "./pages/dev/SelfTest";
 import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
 import SourcesReference from "./pages/dev/SourcesReference";
+import JaHome from "./pages/ja/JaHome";
+import CreateStub from "./pages/ja/CreateStub";
 
 const queryClient = new QueryClient();
 
@@ -117,6 +119,10 @@ const App = () => (
               <Routes>
               <Route path="/" element={<Navigate to="/home" replace />} />
               <Route path="/auth" element={<Auth />} />
+              
+              {/* Jira Align Navigation Module - Isolated Routes */}
+              <Route path="/ja/home" element={<ProtectedRoute><JaHome /></ProtectedRoute>} />
+              <Route path="/ja/create/:type" element={<ProtectedRoute><CreateStub /></ProtectedRoute>} />
               
               {/* All Routes - Jira Align Style */}
               <Route element={<ProtectedRoute><JiraAlignShell /></ProtectedRoute>}>
