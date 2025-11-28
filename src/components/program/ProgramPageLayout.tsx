@@ -1,5 +1,4 @@
 import { useParams } from 'react-router-dom';
-import { ProgramRoomSidebar } from './ProgramRoomSidebar';
 
 interface ProgramPageLayoutProps {
   children: React.ReactNode;
@@ -16,12 +15,6 @@ export function ProgramPageLayout({ children }: ProgramPageLayoutProps) {
     );
   }
 
-  return (
-    <div className="flex h-screen">
-      <ProgramRoomSidebar programId={programId} />
-      <div className="flex-1 overflow-auto">
-        {children}
-      </div>
-    </div>
-  );
+  // Sidebar is rendered by JiraAlignShell, so just render children
+  return <>{children}</>;
 }
