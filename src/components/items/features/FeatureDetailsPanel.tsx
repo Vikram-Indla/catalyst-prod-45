@@ -124,16 +124,16 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
         </SheetHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid grid-cols-9 w-full">
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="planning">Planning</TabsTrigger>
-            <TabsTrigger value="financials">Financials</TabsTrigger>
-            <TabsTrigger value="trace">Trace</TabsTrigger>
-            <TabsTrigger value="attachments">Attachments</TabsTrigger>
-            <TabsTrigger value="discussions">Discussions</TabsTrigger>
-            <TabsTrigger value="links">Links</TabsTrigger>
-            <TabsTrigger value="audit">Audit</TabsTrigger>
-            <TabsTrigger value="options">Options</TabsTrigger>
+          <TabsList className="inline-flex flex-wrap h-auto w-full gap-1">
+            <TabsTrigger value="details" className="flex-shrink-0">Details</TabsTrigger>
+            <TabsTrigger value="planning" className="flex-shrink-0">Planning</TabsTrigger>
+            <TabsTrigger value="financials" className="flex-shrink-0">Financials</TabsTrigger>
+            <TabsTrigger value="trace" className="flex-shrink-0">Trace</TabsTrigger>
+            <TabsTrigger value="attachments" className="flex-shrink-0">Attachments</TabsTrigger>
+            <TabsTrigger value="discussions" className="flex-shrink-0">Discussions</TabsTrigger>
+            <TabsTrigger value="links" className="flex-shrink-0">Links</TabsTrigger>
+            <TabsTrigger value="audit" className="flex-shrink-0">Audit</TabsTrigger>
+            <TabsTrigger value="options" className="flex-shrink-0">Options</TabsTrigger>
           </TabsList>
 
           <TabsContent value="details" className="mt-4">
