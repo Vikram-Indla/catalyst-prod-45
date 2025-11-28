@@ -34,7 +34,8 @@ function JiraAlignShellContent() {
       if (tier !== 'enterprise') setTier('enterprise');
     } else if (path.startsWith('/portfolio')) {
       if (tier !== 'portfolio') setTier('portfolio');
-    } else if (path.startsWith('/program')) {
+    } else if (path.startsWith('/program') || path === '/dependencies') {
+      // Dependencies is a Program-level feature
       if (tier !== 'program') setTier('program');
     } else if (path.startsWith('/team')) {
       if (tier !== 'team') setTier('team');
@@ -126,7 +127,15 @@ function JiraAlignShellContent() {
                 <PortfolioDropdown onClose={closeDropdown} />
               )}
             </div>
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => { 
+                setTier('program'); 
+                navigate('/dependencies'); 
+                closeDropdown(); 
+              }}
+            >
               Program <ChevronDown className="ml-1 h-4 w-4" />
             </Button>
             <Button variant="ghost" size="sm">
