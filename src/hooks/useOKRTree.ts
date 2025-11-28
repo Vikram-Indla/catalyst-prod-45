@@ -99,6 +99,10 @@ export function useOKRTree(snapshotId?: string) {
         }
       });
 
+      console.log('OKR Tree Debug - Total objectives:', objectives?.length);
+      console.log('OKR Tree Debug - Root items:', rootItems.length);
+      console.log('OKR Tree Debug - Root items data:', rootItems);
+
       return rootItems;
     },
     enabled: true, // Always enabled, will fetch latest snapshot if none provided
