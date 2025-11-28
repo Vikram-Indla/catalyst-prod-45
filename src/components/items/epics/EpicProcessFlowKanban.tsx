@@ -18,6 +18,7 @@ interface Epic {
   health?: string;
   strategic_themes?: { name: string };
   owner_id?: string;
+  owner_name?: string;
   estimate?: number;
 }
 
