@@ -10,10 +10,28 @@ import { AlignedWorkTab } from "./AlignedWorkTab";
 import { ChildObjectivesTab } from "./ChildObjectivesTab";
 import { LinkedItemsTab } from "./LinkedItemsTab";
 import { ObjectiveDetailsTab } from "./ObjectiveDetailsTab";
-import { useObjective, useUpdateObjective } from "@/hooks/useObjectives";
-import { Star, Share2, MoreVertical, X } from "lucide-react";
+import { DiscussionsTab } from "./DiscussionsTab";
+import { AuditLogTab } from "./AuditLogTab";
+import { useObjective, useUpdateObjective, useDeleteObjective } from "@/hooks/useObjectives";
+import { Star, Share2, Copy, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ObjectiveDetailsPanelNewProps {
   objectiveId: string;
@@ -24,8 +42,10 @@ interface ObjectiveDetailsPanelNewProps {
 export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: ObjectiveDetailsPanelNewProps) {
   const { data: objective, isLoading } = useObjective(objectiveId);
   const updateMutation = useUpdateObjective();
+  const deleteMutation = useDeleteObjective();
   const [summary, setSummary] = useState("");
   const [description, setDescription] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const handleFieldUpdate = (field: string, value: any) => {
     if (objective) {
@@ -58,6 +78,28 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
       updateMutation.mutate({ id: objective.id, description });
       setDescription("");
     }
+  };
+
+  const handleShare = () => {
+    const url = `${window.location.origin}/enterprise/okr-hub?objectiveId=${objectiveId}`;
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied to clipboard");
+  };
+
+  const handleDuplicate = () => {
+    toast.info("Duplicate feature coming soon");
+  };
+
+  const handleDelete = () => {
+    deleteMutation.mutate(objectiveId, {
+      onSuccess: () => {
+        toast.success("Objective deleted");
+        onClose();
+      },
+      onError: () => {
+        toast.error("Failed to delete objective");
+      },
+    });
   };
 
   if (isLoading || !objective) {
@@ -99,15 +141,29 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
               </Badge>
             </SheetTitle>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon">
-                <Star className="h-4 w-4" />
-              </Button>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" onClick={handleShare}>
                 <Share2 className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleDuplicate}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Duplicate
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setShowDeleteDialog(true)}
+                    className="text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               <Button variant="ghost" size="icon" onClick={onClose}>
                 <X className="h-4 w-4" />
               </Button>
@@ -150,12 +206,14 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
           />
 
           <Tabs defaultValue="key-results" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="key-results">Key Results</TabsTrigger>
               <TabsTrigger value="aligned-work">Work</TabsTrigger>
               <TabsTrigger value="children">Children</TabsTrigger>
               <TabsTrigger value="links">Links</TabsTrigger>
               <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="discussions">Discussions</TabsTrigger>
+              <TabsTrigger value="audit">Audit Log</TabsTrigger>
             </TabsList>
 
             <TabsContent value="key-results" className="space-y-4">
@@ -177,8 +235,33 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
             <TabsContent value="details">
               <ObjectiveDetailsTab objective={objective} />
             </TabsContent>
+
+            <TabsContent value="discussions">
+              <DiscussionsTab objectiveId={objectiveId} />
+            </TabsContent>
+
+            <TabsContent value="audit">
+              <AuditLogTab objectiveId={objectiveId} />
+            </TabsContent>
           </Tabs>
         </div>
+
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete Objective</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this objective? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </SheetContent>
     </Sheet>
   );
