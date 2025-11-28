@@ -5,7 +5,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { MissionVisionValues } from '@/components/strategy/MissionVisionValues';
 import { ExecutionAgainstOutcomesWidget } from '@/components/strategy/ExecutionAgainstOutcomesWidget';
-import { OkrHeatmapWidget } from '@/components/strategy/OkrHeatmapWidget';
 import { StrategyPyramid } from '@/components/strategy/StrategyPyramid';
 import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
 import { OkrHeatmap } from '@/components/strategy/OkrHeatmap';
@@ -144,14 +143,8 @@ export default function StrategyRoomPage() {
         />
       </div>
 
-      {/* Strategy Pyramid + OKR Heatmap Widget */}
-      <div className="grid grid-cols-[1fr_400px] gap-6">
-        <StrategyPyramid onLayerClick={handlePyramidLayerClick} />
-        <OkrHeatmapWidget 
-          snapshotId={effectiveSelectedSnapshotId} 
-          piIds={selectedPIs} 
-        />
-      </div>
+      {/* Strategy Pyramid */}
+      <StrategyPyramid onLayerClick={handlePyramidLayerClick} />
 
       {/* Snapshot Progress */}
       <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
