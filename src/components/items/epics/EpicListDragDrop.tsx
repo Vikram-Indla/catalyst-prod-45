@@ -7,6 +7,7 @@ import { GripVertical } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { EpicContextMenu } from './EpicContextMenu';
 
 interface Epic {
   id: string;
@@ -31,15 +32,25 @@ interface EpicListDragDropProps {
   onRowSelect: (epicId: string) => void;
   getStateBadge: (state: string) => JSX.Element;
   columnsToShow: string[];
+  onContextMenuAction: {
+    duplicate: (epic: Epic) => void;
+    moveToTop: (epic: Epic) => void;
+    moveToBottom: (epic: Epic) => void;
+    moveToPosition: (epic: Epic) => void;
+    moveToPI: (epic: Epic) => void;
+    recycleBin: (epic: Epic) => void;
+    parkingLot: (epic: Epic) => void;
+  };
 }
 
-export function EpicListDragDrop({
-  epics,
-  selectedRows,
-  onRowClick,
-  onRowSelect,
+export function EpicListDragDrop({ 
+  epics, 
+  selectedRows, 
+  onRowClick, 
+  onRowSelect, 
   getStateBadge,
-  columnsToShow
+  columnsToShow,
+  onContextMenuAction
 }: EpicListDragDropProps) {
   const queryClient = useQueryClient();
 
@@ -106,13 +117,23 @@ export function EpicListDragDrop({
             {epics.map((epic, index) => (
               <Draggable key={epic.id} draggableId={epic.id} index={index}>
                 {(provided, snapshot) => (
-                  <TableRow
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    className={`cursor-pointer hover:bg-muted/50 ${
-                      snapshot.isDragging ? 'bg-muted shadow-lg' : ''
-                    }`}
+                  <EpicContextMenu
+                    epic={epic}
+                    onDuplicate={onContextMenuAction.duplicate}
+                    onMoveToTop={onContextMenuAction.moveToTop}
+                    onMoveToBottom={onContextMenuAction.moveToBottom}
+                    onMoveToPosition={onContextMenuAction.moveToPosition}
+                    onMoveToPI={onContextMenuAction.moveToPI}
+                    onRecycleBin={onContextMenuAction.recycleBin}
+                    onParkingLot={onContextMenuAction.parkingLot}
                   >
+                    <TableRow
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      className={`cursor-pointer hover:bg-muted/50 ${
+                        snapshot.isDragging ? 'bg-muted shadow-lg' : ''
+                      }`}
+                    >
                     <TableCell onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center gap-2">
                         <div {...provided.dragHandleProps}>
@@ -177,6 +198,7 @@ export function EpicListDragDrop({
                       </TableCell>
                     )}
                   </TableRow>
+                  </EpicContextMenu>
                 )}
               </Draggable>
             ))}
