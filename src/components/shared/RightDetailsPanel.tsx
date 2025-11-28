@@ -1,8 +1,6 @@
 import { ReactNode } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 interface Tab {
   id: string;
@@ -20,21 +18,16 @@ interface RightDetailsPanelProps {
 export function RightDetailsPanel({ open, onClose, title, tabs }: RightDetailsPanelProps) {
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col">
-        <SheetHeader className="px-6 py-4 border-b">
-          <div className="flex items-center justify-between">
-            <SheetTitle>{title}</SheetTitle>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden">
+        <SheetHeader className="px-6 py-4 border-b flex-shrink-0">
+          <SheetTitle>{title}</SheetTitle>
         </SheetHeader>
 
-        <Tabs defaultValue={tabs[0]?.id} className="flex-1 flex flex-col">
-          <div className="border-b px-6">
-            <TabsList className="h-12">
+        <Tabs defaultValue={tabs[0]?.id} className="flex-1 flex flex-col overflow-hidden">
+          <div className="border-b px-6 overflow-x-auto flex-shrink-0">
+            <TabsList className="h-12 inline-flex w-auto">
               {tabs.map(tab => (
-                <TabsTrigger key={tab.id} value={tab.id}>
+                <TabsTrigger key={tab.id} value={tab.id} className="whitespace-nowrap">
                   {tab.label}
                 </TabsTrigger>
               ))}

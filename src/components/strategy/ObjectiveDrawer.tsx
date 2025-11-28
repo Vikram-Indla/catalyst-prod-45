@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { X, Star, Share2, MoreVertical, MessageCircle, Plus, BarChart, CheckCircle, Maximize2, Pencil, ChevronRight, ChevronDown } from 'lucide-react';
+import { Star, Share2, MoreVertical, MessageCircle, Plus, BarChart, CheckCircle, Maximize2, Pencil, ChevronRight, ChevronDown } from 'lucide-react';
 import { CheckInModal } from './CheckInModal';
 import { useObjectiveDetail, useUpdateObjective, useCreateCheckIn, useDeleteCheckIn } from '@/hooks/useObjectiveDetail';
 
@@ -40,7 +40,7 @@ export function ObjectiveDrawer({ objectiveId, open, onClose }: ObjectiveDrawerP
   return (
     <>
       <Sheet open={open} onOpenChange={onClose}>
-        <SheetContent side="right" className="w-full sm:max-w-[720px] p-0 flex flex-col">
+        <SheetContent side="right" className="w-full sm:max-w-[720px] p-0 flex flex-col overflow-hidden">
           <div className="flex items-center justify-between py-4 px-6 border-b flex-shrink-0">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 rounded-full border-2" style={{ borderColor: scoreColor }} />
