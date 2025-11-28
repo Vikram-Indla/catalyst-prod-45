@@ -3,9 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ChevronRight, ChevronDown, Circle, Download, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ThemeDetailsDrawer } from './ThemeDetailsDrawer';
 
 // Citation: (Doc: Backlog for themes - PDF provided)
-// Citation: (Screenshot: image-190.png, image-191.png, image-192.png)
+// Citation: (Screenshot: image-190.png, image-191.png, image-192.png, image-194.png)
 
 interface ThemeBacklogProps {
   portfolioId: string;
@@ -25,6 +26,8 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
     'unassigned': false,
   });
   const [expandedThemes, setExpandedThemes] = useState<Record<string, boolean>>({});
+  const [selectedTheme, setSelectedTheme] = useState<Theme | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   // Fetch themes
   const { data: themes, isLoading } = useQuery({
@@ -53,6 +56,11 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
       ...prev,
       [themeId]: !prev[themeId],
     }));
+  };
+
+  const handleThemeClick = (theme: Theme) => {
+    setSelectedTheme(theme);
+    setIsDrawerOpen(true);
   };
 
   // Mock data for display structure
@@ -151,9 +159,14 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                       <span className="text-sm text-muted-foreground w-8">{index + 1}</span>
                       <Circle className="h-3 w-3 fill-orange-500 text-orange-500" />
                       <span className="text-sm text-muted-foreground w-12">{Math.floor(Math.random() * 200)}</span>
-                      <div className="flex items-center gap-2 flex-1">
+                      <div
+                        className="flex items-center gap-2 flex-1 cursor-pointer"
+                        onClick={() => handleThemeClick(theme)}
+                      >
                         <Square className="h-4 w-4 text-green-600 fill-green-100" />
-                        <span className="text-sm font-medium">{theme.name}</span>
+                        <span className="text-sm font-medium hover:text-primary hover:underline">
+                          {theme.name}
+                        </span>
                       </div>
                       <div className="flex gap-1">
                         {['PI7', 'PI6', 'PI5', 'PI4', 'PI3', 'PI2', 'PI1'].slice(0, Math.floor(Math.random() * 5) + 2).map((pi, i) => (
@@ -259,6 +272,16 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
           </div>
         </div>
       </div>
+
+      {/* Theme Details Drawer */}
+      <ThemeDetailsDrawer
+        theme={selectedTheme}
+        isOpen={isDrawerOpen}
+        onClose={() => {
+          setIsDrawerOpen(false);
+          setSelectedTheme(null);
+        }}
+      />
     </div>
   );
 }
