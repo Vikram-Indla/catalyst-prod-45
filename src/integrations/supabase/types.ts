@@ -1145,6 +1145,7 @@ export type Database = {
           capability_id: string | null
           created_at: string | null
           description: string | null
+          display_id: string | null
           epic_id: string
           estimate_points: number | null
           health: Database["public"]["Enums"]["health_status"] | null
@@ -1180,6 +1181,7 @@ export type Database = {
           capability_id?: string | null
           created_at?: string | null
           description?: string | null
+          display_id?: string | null
           epic_id: string
           estimate_points?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
@@ -1215,6 +1217,7 @@ export type Database = {
           capability_id?: string | null
           created_at?: string | null
           description?: string | null
+          display_id?: string | null
           epic_id?: string
           estimate_points?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
