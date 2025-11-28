@@ -3,6 +3,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { Star, Grid3x3, Filter, Search } from 'lucide-react';
 import { BacklogViewSelector, BacklogView } from '@/components/portfolio/BacklogViewSelector';
 import { ThemeBacklog } from '@/components/backlog/ThemeBacklog';
+import EpicBacklog from './EpicBacklog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -54,13 +55,7 @@ export default function PortfolioBacklog() {
         )}
         
         {viewingOption === 'epic' && (
-          <div className="p-6">
-            <div className="bg-muted/30 border border-dashed rounded-lg p-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                Epic Backlog view will be implemented in Phase 2
-              </p>
-            </div>
-          </div>
+          <EpicBacklog />
         )}
         
         {viewingOption === 'capability' && (
