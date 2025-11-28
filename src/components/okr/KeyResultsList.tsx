@@ -2,9 +2,14 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, ChevronDown, ChevronRight, TrendingUp } from 'lucide-react';
-import { useKeyResults, useCreateKeyResult, useUpdateKeyResult, useCreateCheckIn, type KeyResult } from '@/hooks/useKeyResults';
+import { Plus, ChevronDown, ChevronRight, TrendingUp, Edit, Trash2 } from 'lucide-react';
+import { useKeyResults, useCreateKeyResult, useUpdateKeyResult, useDeleteKeyResult, useCreateCheckIn, type KeyResult } from '@/hooks/useKeyResults';
 import { CheckInModal } from './CheckInModal';
+import { KeyResultDialog } from './KeyResultDialog';
+import { toast } from 'sonner';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 import {
   Select,
   SelectContent,
@@ -26,9 +31,12 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
   const [newKrType, setNewKrType] = useState<'currency' | 'count' | 'percentage' | 'decimal_score' | 'nps'>('percentage');
   const [expandedKrs, setExpandedKrs] = useState<Set<string>>(new Set());
   const [checkInKr, setCheckInKr] = useState<KeyResult | null>(null);
+  const [krDialogOpen, setKrDialogOpen] = useState(false);
+  const [selectedKeyResult, setSelectedKeyResult] = useState<KeyResult | null>(null);
 
   const createKeyResult = useCreateKeyResult();
   const updateKeyResult = useUpdateKeyResult();
+  const deleteKeyResult = useDeleteKeyResult();
   const createCheckIn = useCreateCheckIn();
 
   const handleAddKeyResult = () => {
@@ -63,11 +71,35 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
     return 'text-red-600';
   };
 
+  const handleEdit = (kr: KeyResult, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedKeyResult(kr);
+    setKrDialogOpen(true);
+  };
+
+  const handleDelete = (krId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (confirm('Are you sure you want to delete this key result?')) {
+      deleteKeyResult.mutate(
+        { id: krId, objectiveId },
+        {
+          onSuccess: () => toast.success('Key result deleted'),
+          onError: () => toast.error('Failed to delete key result'),
+        }
+      );
+    }
+  };
+
+  const handleCreate = () => {
+    setSelectedKeyResult(null);
+    setKrDialogOpen(true);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium">Key Results ({keyResults.length})</h3>
-        <Button variant="outline" size="sm" onClick={() => setIsAdding(true)}>
+        <Button variant="outline" size="sm" onClick={handleCreate}>
           <Plus className="h-4 w-4 mr-2" />
           Add Key Result
         </Button>
@@ -172,10 +204,25 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
                       <TrendingUp className="h-4 w-4 mr-1" />
                       Check-in
                     </Button>
-                    <Button variant="outline" size="sm">
-                      View Reports
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={(e) => handleEdit(kr, e)}
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={(e) => handleDelete(kr.id, e)}
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Delete
                     </Button>
                   </div>
+
+                  <CheckInsHistory keyResultId={kr.id} />
                 </div>
               )}
             </div>
@@ -198,6 +245,62 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
           keyResult={checkInKr}
         />
       )}
+
+      <KeyResultDialog
+        open={krDialogOpen}
+        onClose={() => {
+          setKrDialogOpen(false);
+          setSelectedKeyResult(null);
+        }}
+        objectiveId={objectiveId}
+        keyResult={selectedKeyResult}
+      />
+    </div>
+  );
+}
+
+function CheckInsHistory({ keyResultId }: { keyResultId: string }) {
+  const { data: checkIns = [] } = useQuery({
+    queryKey: ['key-result-checkins', keyResultId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('key_result_checkins')
+        .select('*')
+        .eq('key_result_id', keyResultId)
+        .order('checked_in_at', { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  if (checkIns.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="mt-4 pt-4 border-t">
+      <h4 className="text-xs font-medium mb-2 text-muted-foreground">Recent Check-ins</h4>
+      <div className="space-y-2">
+        {checkIns.map((checkIn: any) => (
+          <div
+            key={checkIn.id}
+            className="text-sm p-2 bg-muted/50 rounded flex items-center justify-between"
+          >
+            <div>
+              <div className="font-medium">Value: {checkIn.value}</div>
+              {checkIn.note_richtext && (
+                <div className="text-muted-foreground text-xs mt-1">
+                  {checkIn.note_richtext}
+                </div>
+              )}
+            </div>
+            <div className="text-xs text-muted-foreground">
+              {format(new Date(checkIn.checked_in_at), 'MMM d, yyyy')}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
