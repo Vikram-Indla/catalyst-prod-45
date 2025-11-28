@@ -1,62 +1,96 @@
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Star, Calendar, TrendingUp } from "lucide-react";
-
-const recentRooms = [
-  {
-    id: "1",
-    title: "Enterprise Strategy",
-    subtitle: "Strategic Planning",
-    pi: "PI-24 Q1",
-    icon: "🎯",
-    path: "/enterprise/strategy-room",
-  },
-  {
-    id: "2",
-    title: "Epic Backlog",
-    subtitle: "Portfolio Planning",
-    pi: "PI-24 Q1",
-    icon: "📊",
-    path: "/items/epics",
-  },
-  {
-    id: "3",
-    title: "Program Board",
-    subtitle: "PI Planning",
-    pi: "PI-24 Q1",
-    icon: "📋",
-    path: "/programs/program-board",
-  },
-  {
-    id: "4",
-    title: "Team Velocity",
-    subtitle: "Sprint Planning",
-    pi: "Sprint 5",
-    icon: "⚡",
-    path: "/team-room",
-  },
-  {
-    id: "5",
-    title: "OKR Hub",
-    subtitle: "Objectives & Key Results",
-    pi: "Q1 2024",
-    icon: "🎪",
-    path: "/enterprise/okr-hub",
-  },
-];
-
-const starredRooms = [
-  {
-    id: "star-1",
-    title: "Epic Backlog",
-    subtitle: "Portfolio Planning",
-    pi: "PI-24 Q1",
-    icon: "📊",
-    path: "/items/epics",
-  },
-];
 
 export function HomeContent() {
   const navigate = useNavigate();
+
+  // Fetch default program and PI for proper navigation
+  const { data: programs } = useQuery({
+    queryKey: ['programs-for-nav'],
+    queryFn: async () => {
+      const { data } = await supabase.from('programs').select('id, name').order('name').limit(1);
+      return data;
+    },
+  });
+
+  const { data: programIncrements } = useQuery({
+    queryKey: ['pis-for-nav'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('program_increments')
+        .select('id, name')
+        .order('start_date', { ascending: false })
+        .limit(1);
+      return data;
+    },
+  });
+
+  const handleProgramBoardClick = () => {
+    const defaultProgram = programs?.[0]?.id;
+    const defaultPI = programIncrements?.[0]?.id;
+    
+    if (defaultProgram && defaultPI) {
+      navigate(`/programs/program-board?program=${defaultProgram}&pi=${defaultPI}`);
+    } else {
+      navigate('/programs/program-board');
+    }
+  };
+
+  const recentRooms = [
+    {
+      id: "1",
+      title: "Enterprise Strategy",
+      subtitle: "Strategic Planning",
+      pi: "PI-24 Q1",
+      icon: "🎯",
+      path: "/enterprise/strategy-room",
+    },
+    {
+      id: "2",
+      title: "Epic Backlog",
+      subtitle: "Portfolio Planning",
+      pi: "PI-24 Q1",
+      icon: "📊",
+      path: "/items/epics",
+    },
+    {
+      id: "3",
+      title: "Program Board",
+      subtitle: "PI Planning",
+      pi: "PI-24 Q1",
+      icon: "📋",
+      onClick: handleProgramBoardClick,
+    },
+    {
+      id: "4",
+      title: "Team Velocity",
+      subtitle: "Sprint Planning",
+      pi: "Sprint 5",
+      icon: "⚡",
+      path: "/team-room",
+    },
+    {
+      id: "5",
+      title: "OKR Hub",
+      subtitle: "Objectives & Key Results",
+      pi: "Q1 2024",
+      icon: "🎪",
+      path: "/enterprise/okr-hub",
+    },
+  ];
+
+  const starredRooms = [
+    {
+      id: "star-1",
+      title: "Epic Backlog",
+      subtitle: "Portfolio Planning",
+      pi: "PI-24 Q1",
+      icon: "📊",
+      path: "/items/epics",
+    },
+  ];
 
   return (
     <div className="container mx-auto px-6 py-8 max-w-7xl">
@@ -70,7 +104,7 @@ export function HomeContent() {
           {recentRooms.map((room) => (
             <div
               key={room.id}
-              onClick={() => navigate(room.path)}
+              onClick={() => room.onClick ? room.onClick() : navigate(room.path)}
               className="group bg-card rounded-lg border shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden"
             >
               <div className="p-4">
