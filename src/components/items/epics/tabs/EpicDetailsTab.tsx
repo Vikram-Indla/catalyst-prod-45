@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
@@ -8,13 +9,16 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { HealthBadge } from '@/components/shared/HealthBadge';
-import { Link as LinkIcon, Lock, Unlock, Plus } from 'lucide-react';
+import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink } from 'lucide-react';
+import { FeatureStatusModal } from '../modals/FeatureStatusModal';
 
 interface EpicDetailsTabProps {
   epic: any;
 }
 
 export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
+  const [featureStatusOpen, setFeatureStatusOpen] = useState(false);
+  
   const { data: themes } = useQuery({
     queryKey: ['themes'],
     queryFn: async () => {
@@ -380,13 +384,23 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           </div>
         </div>
 
-        <div>
+        <div className="space-y-2">
           <Button variant="outline" className="w-full">
             <Plus className="h-4 w-4 mr-2" />
             Add Capability or Feature
           </Button>
+          <Button variant="outline" className="w-full" onClick={() => setFeatureStatusOpen(true)}>
+            <ExternalLink className="h-4 w-4 mr-2" />
+            View Feature Status Details
+          </Button>
         </div>
       </div>
+
+      <FeatureStatusModal
+        epicId={epic.id}
+        open={featureStatusOpen}
+        onOpenChange={setFeatureStatusOpen}
+      />
     </div>
   );
 }

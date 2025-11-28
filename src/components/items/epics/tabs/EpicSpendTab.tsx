@@ -7,7 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { DollarSign, TrendingUp, AlertCircle } from 'lucide-react';
+import { DollarSign, TrendingUp, AlertCircle, Calculator } from 'lucide-react';
+import { SpendDrilldownModal } from '../modals/SpendDrilldownModal';
 
 interface EpicSpendTabProps {
   epic: any;
@@ -15,6 +16,8 @@ interface EpicSpendTabProps {
 
 export function EpicSpendTab({ epic }: EpicSpendTabProps) {
   const queryClient = useQueryClient();
+  const [drilldownOpen, setDrilldownOpen] = useState(false);
+  const [drilldownType, setDrilldownType] = useState<'accepted' | 'forecasted' | 'estimated'>('accepted');
   const [formData, setFormData] = useState({
     budget: 0,
     forecasted_spend: 0,
@@ -100,33 +103,52 @@ export function EpicSpendTab({ epic }: EpicSpendTabProps) {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <Card className="p-4 bg-blue-50 dark:bg-blue-950">
+        <Card className="p-4 bg-blue-50 dark:bg-blue-950 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('accepted'); setDrilldownOpen(true); }}>
           <div className="flex items-center gap-2 mb-2">
             <DollarSign className="h-4 w-4 text-blue-600" />
-            <span className="text-sm font-medium">Total Spend</span>
+            <span className="text-sm font-medium">Accepted Spend</span>
           </div>
-          <div className="text-2xl font-bold">${totalSpend.toLocaleString()}</div>
+          <div className="text-2xl font-bold">${formData.accepted_spend.toLocaleString()}</div>
+          <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs">View breakdown</Button>
         </Card>
 
-        <Card className="p-4 bg-green-50 dark:bg-green-950">
+        <Card className="p-4 bg-purple-50 dark:bg-purple-950 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('forecasted'); setDrilldownOpen(true); }}>
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-green-600" />
-            <span className="text-sm font-medium">Budget</span>
+            <TrendingUp className="h-4 w-4 text-purple-600" />
+            <span className="text-sm font-medium">Forecasted Spend</span>
           </div>
-          <div className="text-2xl font-bold">${formData.budget.toLocaleString()}</div>
+          <div className="text-2xl font-bold">${formData.forecasted_spend.toLocaleString()}</div>
+          <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs">View breakdown</Button>
         </Card>
 
-        <Card className={`p-4 ${budgetVariance < 0 ? 'bg-red-50 dark:bg-red-950' : 'bg-green-50 dark:bg-green-950'}`}>
+        <Card className="p-4 bg-green-50 dark:bg-green-950 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('estimated'); setDrilldownOpen(true); }}>
           <div className="flex items-center gap-2 mb-2">
-            <AlertCircle className={`h-4 w-4 ${budgetVariance < 0 ? 'text-red-600' : 'text-green-600'}`} />
-            <span className="text-sm font-medium">Variance</span>
+            <Calculator className="h-4 w-4 text-green-600" />
+            <span className="text-sm font-medium">Estimated Spend</span>
           </div>
-          <div className="text-2xl font-bold">${Math.abs(budgetVariance).toLocaleString()}</div>
-          <div className="text-xs text-muted-foreground mt-1">
-            {budgetUtilization.toFixed(1)}% utilized
-          </div>
+          <div className="text-2xl font-bold">${formData.estimated_spend.toLocaleString()}</div>
+          <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs">View breakdown</Button>
         </Card>
       </div>
+
+      <Card className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertCircle className={`h-5 w-5 ${budgetVariance < 0 ? 'text-red-600' : 'text-green-600'}`} />
+            <div>
+              <div className="text-sm font-medium">Budget Status</div>
+              <div className="text-xs text-muted-foreground">{budgetUtilization.toFixed(1)}% utilized</div>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-sm text-muted-foreground">Budget</div>
+            <div className="text-2xl font-bold">${formData.budget.toLocaleString()}</div>
+            <div className={`text-sm font-medium ${budgetVariance < 0 ? 'text-red-600' : 'text-green-600'}`}>
+              {budgetVariance < 0 ? 'Over' : 'Under'} by ${Math.abs(budgetVariance).toLocaleString()}
+            </div>
+          </div>
+        </div>
+      </Card>
 
       <div className="space-y-4">
         <h4 className="font-medium">Budget & Spend</h4>
@@ -297,6 +319,13 @@ export function EpicSpendTab({ epic }: EpicSpendTabProps) {
       <Button onClick={handleSave} disabled={saveMutation.isPending}>
         Save Spend Data
       </Button>
+
+      <SpendDrilldownModal
+        epicId={epic.id}
+        spendType={drilldownType}
+        open={drilldownOpen}
+        onOpenChange={setDrilldownOpen}
+      />
     </div>
   );
 }

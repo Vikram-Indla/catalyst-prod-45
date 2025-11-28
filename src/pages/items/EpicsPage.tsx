@@ -24,8 +24,8 @@ import { EpicKanbanView } from '@/components/items/epics/EpicKanbanView';
 import { EpicProcessFlowKanban } from '@/components/items/epics/EpicProcessFlowKanban';
 import { EpicKanbanCustom } from '@/components/items/epics/EpicKanbanCustom';
 import { EpicListDragDrop } from '@/components/items/epics/EpicListDragDrop';
-import { EpicContextMenu } from '@/components/items/epics/EpicContextMenu';
 import { MoveToPositionDialog } from '@/components/items/epics/dialogs/MoveToPositionDialog';
+import { QuickAddEpicRow } from '@/components/items/epics/QuickAddEpicRow';
 import { DuplicateEpicDialog } from '@/components/items/epics/dialogs/DuplicateEpicDialog';
 import { PullRankDialog } from '@/components/items/epics/dialogs/PullRankDialog';
 import { ImportEpicsDialog } from '@/components/items/epics/dialogs/ImportEpicsDialog';
@@ -646,14 +646,18 @@ export default function EpicsPage() {
                   </TableRow>
                 </TableBody>
               ) : epics && epics.length > 0 ? (
-                <EpicListDragDrop
-                  epics={epics}
-                  selectedRows={selectedRows}
-                  onRowClick={setSelectedEpicId}
-                  onRowSelect={toggleRowSelection}
-                  getStateBadge={getStateBadge}
-                  columnsToShow={columnsToShow}
-                />
+                <>
+                  <EpicListDragDrop
+                    epics={epics}
+                    selectedRows={selectedRows}
+                    onRowClick={setSelectedEpicId}
+                    onRowSelect={toggleRowSelection}
+                    getStateBadge={getStateBadge}
+                    columnsToShow={columnsToShow}
+                    onContextMenuAction={handleContextMenuAction}
+                  />
+                  <QuickAddEpicRow columnsCount={columnsToShow.length + 1} />
+                </>
               ) : (
                 <TableBody>
                   <TableRow>
