@@ -1,8 +1,6 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
 
 interface Epic {
   id: string;
@@ -32,15 +30,10 @@ export function UnassignedBacklogSlideout({ open, onClose, epics, onEpicSelect }
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-xl p-0 flex flex-col">
-        <SheetHeader className="px-6 py-4 border-b">
-          <div className="flex items-center justify-between">
-            <SheetTitle>Unassigned Backlog ({epics.length})</SheetTitle>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <p className="text-sm text-muted-foreground">Epics not assigned to any Program Increment</p>
+      <SheetContent side="right" className="w-full sm:max-w-xl p-0 flex flex-col overflow-hidden">
+        <SheetHeader className="px-6 py-4 border-b flex-shrink-0">
+          <SheetTitle>Unassigned Backlog ({epics.length})</SheetTitle>
+          <p className="text-sm text-muted-foreground mt-2">Epics not assigned to any Program Increment</p>
         </SheetHeader>
 
         <div className="flex-1 overflow-auto">
