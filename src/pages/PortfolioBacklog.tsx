@@ -1,11 +1,17 @@
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Star, Grid3x3, Filter, Search } from 'lucide-react';
+import { Star, Grid3x3, Filter, Search, ListIcon, LayoutGrid, Eye } from 'lucide-react';
 import { BacklogViewSelector, BacklogView } from '@/components/portfolio/BacklogViewSelector';
 import { ThemeBacklog } from '@/components/backlog/ThemeBacklog';
-import EpicBacklog from './EpicBacklog';
+import { EpicBacklogView } from '@/components/backlog/EpicBacklogView';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 // Citation: (Doc: Navigate to the backlog - PDF provided)
 // Citation: (Doc: Backlog for themes - PDF provided)
@@ -17,6 +23,7 @@ export default function PortfolioBacklog() {
   const piId = searchParams.get('pi');
   
   const [viewingOption, setViewingOption] = useState<BacklogView>('theme');
+  const [viewMode, setViewMode] = useState<'list' | 'kanban' | 'unassigned'>('list');
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -44,6 +51,54 @@ export default function PortfolioBacklog() {
               placeholder="Search"
               className="w-48 h-8 text-sm"
             />
+            
+            {viewingOption === 'epic' && (
+              <div className="flex items-center gap-1 border-l pl-3 ml-2">
+                <Button
+                  variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                  className="gap-1.5"
+                >
+                  <ListIcon className="h-4 w-4" />
+                  <span className="text-sm">List</span>
+                </Button>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant={viewMode === 'kanban' ? 'secondary' : 'ghost'}
+                      size="sm"
+                      className="gap-1.5"
+                    >
+                      <LayoutGrid className="h-4 w-4" />
+                      <span className="text-sm">Kanban</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="z-50 bg-popover">
+                    <DropdownMenuItem onClick={() => setViewMode('kanban')}>
+                      State View
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setViewMode('kanban')}>
+                      Process Flow View
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setViewMode('kanban')}>
+                      Column View
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <Button
+                  variant={viewMode === 'unassigned' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('unassigned')}
+                  className="gap-1.5"
+                >
+                  <Eye className="h-4 w-4" />
+                  <span className="text-sm">Unassigned Backlog</span>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -55,7 +110,7 @@ export default function PortfolioBacklog() {
         )}
         
         {viewingOption === 'epic' && (
-          <EpicBacklog />
+          <EpicBacklogView portfolioId={portfolioId} piId={piId || undefined} />
         )}
         
         {viewingOption === 'capability' && (
