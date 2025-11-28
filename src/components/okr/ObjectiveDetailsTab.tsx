@@ -64,7 +64,7 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
             <div className="space-y-2">
               <Label htmlFor="tier">Tier</Label>
               <Select
-                value={objective.tier}
+                value={objective.tier || undefined}
                 onValueChange={(value) => handleFieldUpdate("tier", value)}
               >
                 <SelectTrigger id="tier">
@@ -83,7 +83,7 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
               <Select
-                value={objective.status}
+                value={objective.status || undefined}
                 onValueChange={(value) => handleFieldUpdate("status", value)}
               >
                 <SelectTrigger id="status">
