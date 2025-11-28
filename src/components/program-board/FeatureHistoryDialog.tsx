@@ -3,27 +3,59 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus } from 'lucide-react';
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 
 interface FeatureHistoryDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  programId: string;
+  piId: string;
 }
 
-export function FeatureHistoryDialog({ open, onOpenChange }: FeatureHistoryDialogProps) {
-  const [showFilters, setShowFilters] = useState(true);
-  const [results, setResults] = useState<any[]>([]);
+export function FeatureHistoryDialog({ open, onOpenChange, programId, piId }: FeatureHistoryDialogProps) {
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [searchText, setSearchText] = useState('');
 
-  const handleRunReport = () => {
-    // Mock results data
-    setResults([
-      { id: '136', title: 'G12: Hadoop Backup & Restore (Platform Le...', updatedBy: 'Steve Elliott', start: 'Sprint 25', end: 'Sprint 25', date: '8/3/2017 11:22:56 AM' },
-      { id: '136', title: 'G12: Hadoop Backup & Restore (Platform Le...', updatedBy: 'Steve Elliott', start: 'Sprint 25', end: 'Sprint 25', date: '8/3/2017 11:27:16 AM' },
-      { id: '1247', title: 'G12: Hadoop -Scorecard integration via new Ada...', updatedBy: 'Steve Elliott', start: 'HIP5', end: 'HIP5', date: '8/13/2017 10:30:38 AM' },
-      { id: '1336', title: 'G12: BACKLOG Cont Training - Support 2 Modes of...', updatedBy: 'Steve Elliott', start: '', end: '', date: '7/23/2017 5:57:26 AM' },
-    ]);
-  };
+  const { data: historyRecords, refetch } = useQuery({
+    queryKey: ['feature-scheduling-history', programId, piId, startDate, endDate],
+    queryFn: async () => {
+      let query = supabase
+        .from('feature_scheduling_history')
+        .select(`
+          *,
+          feature:features(id, display_id, name),
+          start_sprint:iterations!feature_scheduling_history_start_sprint_id_fkey(id, name),
+          end_sprint:iterations!feature_scheduling_history_end_sprint_id_fkey(id, name),
+          user:profiles(full_name, email)
+        `)
+        .order('changed_at', { ascending: false });
+
+      if (startDate) {
+        query = query.gte('changed_at', startDate);
+      }
+      if (endDate) {
+        query = query.lte('changed_at', endDate);
+      }
+
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: open && !!programId && !!piId,
+  });
+
+  const filteredRecords = historyRecords?.filter(record => {
+    if (!searchText) return true;
+    const searchLower = searchText.toLowerCase();
+    return (
+      record.feature?.name?.toLowerCase().includes(searchLower) ||
+      record.feature?.display_id?.toLowerCase().includes(searchLower)
+    );
+  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -33,92 +65,97 @@ export function FeatureHistoryDialog({ open, onOpenChange }: FeatureHistoryDialo
         </DialogHeader>
         
         <div className="space-y-4">
-          {showFilters && (
-            <div className="grid grid-cols-2 gap-4 p-4 border rounded-lg">
-              <div className="space-y-2">
-                <Label>Program:</Label>
-                <div className="flex gap-2">
-                  <Select defaultValue="all">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select All" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Select All</SelectItem>
-                      <SelectItem value="online">Online Experience</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button size="icon" variant="default" className="flex-shrink-0">
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Dates:</Label>
-                <div className="flex gap-2">
-                  <Input type="date" />
-                  <span className="self-center text-sm text-muted-foreground">to</span>
-                  <Input type="date" />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Program Increments:</Label>
-                <Input placeholder="Enter PI..." />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Epic:</Label>
-                <Select defaultValue="all">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select All" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Select All</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2 col-span-2">
-                <Label>Text/Tags:</Label>
-                <Input placeholder="Search by text or tags..." />
-              </div>
-              
-              <div className="col-span-2 flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setResults([])}>Reset</Button>
-                <Button onClick={handleRunReport}>Run Report</Button>
+          <div className="grid grid-cols-2 gap-4 p-4 border rounded-lg bg-muted/20">
+            <div className="space-y-2">
+              <Label>Date Range:</Label>
+              <div className="flex gap-2 items-center">
+                <Input 
+                  type="date" 
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="text-sm"
+                />
+                <span className="text-sm text-muted-foreground">to</span>
+                <Input 
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="text-sm"
+                />
               </div>
             </div>
-          )}
+            
+            <div className="space-y-2">
+              <Label>Search Features:</Label>
+              <Input 
+                placeholder="Search by ID or name..." 
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                className="text-sm"
+              />
+            </div>
+            
+            <div className="col-span-2 flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setStartDate('');
+                  setEndDate('');
+                  setSearchText('');
+                }}
+                size="sm"
+              >
+                Reset
+              </Button>
+              <Button onClick={() => refetch()} size="sm">Refresh</Button>
+            </div>
+          </div>
           
-          {results.length > 0 && (
-            <div className="border rounded-lg overflow-hidden">
+          <div className="border rounded-lg overflow-hidden">
+            {filteredRecords && filteredRecords.length > 0 ? (
               <table className="w-full">
                 <thead className="bg-muted">
                   <tr>
-                    <th className="text-left p-3 text-sm font-medium">ID</th>
-                    <th className="text-left p-3 text-sm font-medium">Title</th>
-                    <th className="text-left p-3 text-sm font-medium">Updated By</th>
-                    <th className="text-left p-3 text-sm font-medium">Start</th>
-                    <th className="text-left p-3 text-sm font-medium">End</th>
-                    <th className="text-left p-3 text-sm font-medium">Date</th>
+                    <th className="text-left p-3 text-sm font-medium">Feature ID</th>
+                    <th className="text-left p-3 text-sm font-medium">Feature Name</th>
+                    <th className="text-left p-3 text-sm font-medium">Changed By</th>
+                    <th className="text-left p-3 text-sm font-medium">Start Sprint</th>
+                    <th className="text-left p-3 text-sm font-medium">End Sprint</th>
+                    <th className="text-left p-3 text-sm font-medium">Changed At</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {results.map((result, idx) => (
-                    <tr key={idx} className="border-t hover:bg-muted/50">
-                      <td className="p-3 text-sm text-primary font-medium">{result.id}</td>
-                      <td className="p-3 text-sm text-primary">{result.title}</td>
-                      <td className="p-3 text-sm">{result.updatedBy}</td>
-                      <td className="p-3 text-sm text-primary">{result.start}</td>
-                      <td className="p-3 text-sm text-primary">{result.end}</td>
-                      <td className="p-3 text-sm">{result.date}</td>
+                  {filteredRecords.map((record) => (
+                    <tr key={record.id} className="border-t hover:bg-muted/50">
+                      <td className="p-3 text-sm text-primary font-medium">
+                        {record.feature?.display_id || record.feature_id?.slice(0, 8)}
+                      </td>
+                      <td className="p-3 text-sm text-primary max-w-xs truncate">
+                        {record.feature?.name || 'Unknown'}
+                      </td>
+                      <td className="p-3 text-sm">
+                        {record.user?.full_name || record.user?.email || 'System'}
+                      </td>
+                      <td className="p-3 text-sm text-primary">
+                        {record.start_sprint?.name || '-'}
+                      </td>
+                      <td className="p-3 text-sm text-primary">
+                        {record.end_sprint?.name || '-'}
+                      </td>
+                      <td className="p-3 text-sm text-muted-foreground">
+                        {record.changed_at ? format(new Date(record.changed_at), 'MMM d, yyyy h:mm a') : '-'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          )}
+            ) : (
+              <div className="p-12 text-center text-muted-foreground">
+                <p className="text-sm">No history records found</p>
+                <p className="text-xs mt-1">Adjust filters and click Refresh to search</p>
+              </div>
+            )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
