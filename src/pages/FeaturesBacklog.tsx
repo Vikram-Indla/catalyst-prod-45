@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { FeaturesBacklogHeader } from '@/components/features/FeaturesBacklogHeader';
 import { FeaturesListView } from '@/components/features/FeaturesListView';
@@ -12,6 +13,7 @@ import { exportToCSV } from '@/lib/exportUtils';
 import { toast } from 'sonner';
 
 export default function FeaturesBacklog() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -22,6 +24,16 @@ export default function FeaturesBacklog() {
     'id', 'name', 'epic', 'program', 'pi', 'iteration', 'status', 'health', 'progress'
   ]);
   const [filters, setFilters] = useState<any>({});
+
+  // Check for create query parameter
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setCreateDialogOpen(true);
+      // Remove the create parameter after opening the dialog
+      searchParams.delete('create');
+      setSearchParams(searchParams);
+    }
+  }, [searchParams, setSearchParams]);
 
   // Fetch features
   const { data: features, refetch } = useQuery({
