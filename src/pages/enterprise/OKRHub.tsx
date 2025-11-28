@@ -191,12 +191,12 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
           />
         </div>
 
-        <Select value={levelFilter} onValueChange={setLevelFilter}>
+        <Select value={levelFilter || "all"} onValueChange={(val) => setLevelFilter(val === "all" ? "" : val)}>
           <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="All Levels" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Levels</SelectItem>
+            <SelectItem value="all">All Levels</SelectItem>
             <SelectItem value="strategic_goal">Strategic Goal</SelectItem>
             <SelectItem value="portfolio">Portfolio</SelectItem>
             <SelectItem value="program">Program</SelectItem>
@@ -204,12 +204,12 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
           </SelectContent>
         </Select>
 
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select value={statusFilter || "all"} onValueChange={(val) => setStatusFilter(val === "all" ? "" : val)}>
           <SelectTrigger className="w-[140px]">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Status</SelectItem>
+            <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="on_track">On Track</SelectItem>
             <SelectItem value="at_risk">At Risk</SelectItem>
             <SelectItem value="off_track">Off Track</SelectItem>
