@@ -10,8 +10,7 @@ import {
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
 import { 
-  MoreVertical, 
-  X
+  MoreVertical
 } from 'lucide-react';
 import { FeatureDetailsTab } from './tabs/FeatureDetailsTab';
 import { FeaturePlanningTab } from './tabs/FeaturePlanningTab';
@@ -64,116 +63,137 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent className="sm:max-w-2xl w-full overflow-y-auto">
-        <SheetHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <div className="flex-1">
-            <SheetTitle className="text-xl">
-              {feature ? `Feature: ${feature.name}` : 'New Feature'}
-            </SheetTitle>
-            {feature?.display_id && (
-              <div className="text-sm text-muted-foreground font-mono mt-1">
-                {feature.display_id}
-              </div>
-            )}
+      <SheetContent className="sm:max-w-3xl w-full p-0 flex flex-col">
+        <div className="px-6 py-4 border-b flex-shrink-0">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-xl font-semibold truncate">
+                {feature ? `Feature: ${feature.name}` : 'New Feature'}
+              </h2>
+              {feature?.display_id && (
+                <div className="text-sm text-muted-foreground font-mono mt-1">
+                  {feature.display_id}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Button variant="outline" size="sm">
+                Save
+              </Button>
+              <Button size="sm" onClick={onClose}>
+                Save & Close
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="z-[100]">
+                  <DropdownMenuItem onClick={() => handleAdditionalOption('copy')}>
+                    Copy Feature
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleAdditionalOption('split')}>
+                    Split Feature
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleAdditionalOption('trace')}>
+                    Trace Feature
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => handleAdditionalOption('drop')}>
+                    Drop to Backlog
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleAdditionalOption('cancel')}
+                    className="text-yellow-600"
+                  >
+                    Cancel Item
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleAdditionalOption('delete')}
+                    className="text-destructive"
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              Save
-            </Button>
-            <Button size="sm" onClick={onClose}>
-              Save & Close
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreVertical className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => handleAdditionalOption('copy')}>
-                  Copy Feature
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('split')}>
-                  Split Feature
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('trace')}>
-                  Trace Feature
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleAdditionalOption('drop')}>
-                  Drop to Backlog
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => handleAdditionalOption('cancel')}
-                  className="text-yellow-600"
-                >
-                  Cancel Item
-                </DropdownMenuItem>
-                <DropdownMenuItem 
-                  onClick={() => handleAdditionalOption('delete')}
-                  className="text-destructive"
-                >
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-4 h-4" />
-            </Button>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+          <div className="px-6 border-b overflow-x-auto flex-shrink-0">
+            <TabsList className="inline-flex h-12 bg-transparent w-auto min-w-full justify-start">
+              <TabsTrigger value="details" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Details
+              </TabsTrigger>
+              <TabsTrigger value="planning" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Planning
+              </TabsTrigger>
+              <TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Financials
+              </TabsTrigger>
+              <TabsTrigger value="trace" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Trace
+              </TabsTrigger>
+              <TabsTrigger value="attachments" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Attachments
+              </TabsTrigger>
+              <TabsTrigger value="discussions" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Discussions
+              </TabsTrigger>
+              <TabsTrigger value="links" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Links
+              </TabsTrigger>
+              <TabsTrigger value="audit" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Audit
+              </TabsTrigger>
+              <TabsTrigger value="options" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Options
+              </TabsTrigger>
+            </TabsList>
           </div>
-        </SheetHeader>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="inline-flex flex-wrap h-auto w-full gap-1">
-            <TabsTrigger value="details" className="flex-shrink-0">Details</TabsTrigger>
-            <TabsTrigger value="planning" className="flex-shrink-0">Planning</TabsTrigger>
-            <TabsTrigger value="financials" className="flex-shrink-0">Financials</TabsTrigger>
-            <TabsTrigger value="trace" className="flex-shrink-0">Trace</TabsTrigger>
-            <TabsTrigger value="attachments" className="flex-shrink-0">Attachments</TabsTrigger>
-            <TabsTrigger value="discussions" className="flex-shrink-0">Discussions</TabsTrigger>
-            <TabsTrigger value="links" className="flex-shrink-0">Links</TabsTrigger>
-            <TabsTrigger value="audit" className="flex-shrink-0">Audit</TabsTrigger>
-            <TabsTrigger value="options" className="flex-shrink-0">Options</TabsTrigger>
-          </TabsList>
+          <div className="flex-1 overflow-y-auto">
+            <TabsContent value="details" className="mt-0 p-6">
+              <FeatureDetailsTab feature={feature} />
+            </TabsContent>
 
-          <TabsContent value="details" className="mt-4">
-            <FeatureDetailsTab feature={feature} />
-          </TabsContent>
+            <TabsContent value="planning" className="mt-0 p-6">
+              <FeaturePlanningTab feature={feature} />
+            </TabsContent>
 
-          <TabsContent value="planning" className="mt-4">
-            <FeaturePlanningTab feature={feature} />
-          </TabsContent>
+            <TabsContent value="financials" className="mt-0 p-6">
+              <FeatureFinancialsTab feature={feature} />
+            </TabsContent>
 
-          <TabsContent value="financials" className="mt-4">
-            <FeatureFinancialsTab feature={feature} />
-          </TabsContent>
+            <TabsContent value="trace" className="mt-0 p-6">
+              <FeatureTraceTab feature={feature} />
+            </TabsContent>
 
-          <TabsContent value="trace" className="mt-4">
-            <FeatureTraceTab feature={feature} />
-          </TabsContent>
+            <TabsContent value="attachments" className="mt-0 p-6">
+              <FeatureAttachmentsTab featureId={feature?.id} />
+            </TabsContent>
 
-          <TabsContent value="attachments" className="mt-4">
-            <FeatureAttachmentsTab featureId={feature?.id} />
-          </TabsContent>
+            <TabsContent value="discussions" className="mt-0 p-6">
+              <FeatureDiscussionsTab featureId={feature?.id} />
+            </TabsContent>
 
-          <TabsContent value="discussions" className="mt-4">
-            <FeatureDiscussionsTab featureId={feature?.id} />
-          </TabsContent>
+            <TabsContent value="links" className="mt-0 p-6">
+              <FeatureLinksTab feature={feature} />
+            </TabsContent>
 
-          <TabsContent value="links" className="mt-4">
-            <FeatureLinksTab feature={feature} />
-          </TabsContent>
+            <TabsContent value="audit" className="mt-0 p-6">
+              <FeatureAuditTab featureId={feature?.id} />
+            </TabsContent>
 
-          <TabsContent value="audit" className="mt-4">
-            <FeatureAuditTab featureId={feature?.id} />
-          </TabsContent>
-
-          <TabsContent value="options" className="mt-4">
-            <FeatureAdditionalOptionsTab 
-              feature={feature}
-              onAction={handleAdditionalOption}
-            />
-          </TabsContent>
+            <TabsContent value="options" className="mt-0 p-6">
+              <FeatureAdditionalOptionsTab 
+                feature={feature}
+                onAction={handleAdditionalOption}
+              />
+            </TabsContent>
+          </div>
         </Tabs>
       </SheetContent>
     </Sheet>
