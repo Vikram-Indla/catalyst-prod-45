@@ -18,6 +18,8 @@ import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 import Themes from "./pages/Themes";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
+import EpicsRecycleBin from "./pages/EpicsRecycleBin";
+import EpicsCanceled from "./pages/EpicsCanceled";
 import EpicBacklog from "./pages/EpicBacklog";
 import EpicBacklogWithSidebar from "./pages/EpicBacklogWithSidebar";
 import Features from "./pages/Features";
@@ -148,6 +150,8 @@ const App = () => (
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Navigate to="/backlog/epics" replace />} />
+              <Route path="/epics/recycle-bin" element={<EpicsRecycleBin />} />
+              <Route path="/epics/canceled" element={<EpicsCanceled />} />
               <Route path="/features" element={<Features />} />
               <Route path="/items/capabilities" element={<Capabilities />} />
               <Route path="/items/defects" element={<Defects />} />

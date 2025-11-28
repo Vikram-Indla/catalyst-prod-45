@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,6 +39,8 @@ export function EpicsToolbar({
   onColumnsShown,
   selectedCount = 0,
 }: EpicsToolbarProps) {
+  const navigate = useNavigate();
+  
   return (
     <div className="flex items-center justify-between gap-4 px-6 py-3 border-b bg-card">
       <div className="flex items-center gap-2">
@@ -87,11 +90,11 @@ export function EpicsToolbar({
               Print Cards
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onRecycleBin}>
+            <DropdownMenuItem onClick={() => navigate("/epics/recycle-bin")}>
               <Trash2 className="h-4 w-4 mr-2" />
               Recycle Bin
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={onCanceledItems}>
+            <DropdownMenuItem onClick={() => navigate("/epics/canceled")}>
               <Archive className="h-4 w-4 mr-2" />
               Canceled Items
             </DropdownMenuItem>
