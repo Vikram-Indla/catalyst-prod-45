@@ -77,6 +77,9 @@ import { AdminGuard } from "./components/admin/AdminGuard";
 import OKRHeatmap from "./pages/enterprise/OKRHeatmap";
 import OKRTree from "./pages/enterprise/OKRTree";
 import OKRHub from "./pages/enterprise/OKRHub";
+import { OKRHub as PortfolioOKRHub } from "./pages/portfolio/OKRHub";
+import { OKRHub as ProgramOKRHub } from "./pages/program/OKRHub";
+import { OKRHub as TeamOKRHub } from "./pages/team/OKRHub";
 import RoadmapsPage from "./pages/enterprise/Roadmaps";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
@@ -135,9 +138,9 @@ const App = () => (
               <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
               <Route path="/enterprise/okr-tree" element={<OKRTree />} />
               <Route path="/enterprise/okr-hub" element={<OKRHub />} />
-              <Route path="/portfolio/:portfolioId/okr-hub" element={<OKRHub />} />
-              <Route path="/program/:programId/okr-hub" element={<OKRHub />} />
-              <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
+              <Route path="/portfolio/:portfolioId/okr-hub" element={<PortfolioOKRHub />} />
+              <Route path="/program/:programId/okr-hub" element={<ProgramOKRHub />} />
+              <Route path="/team/:teamId/okr-hub" element={<TeamOKRHub />} />
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               
               {/* Enterprise More Items */}

@@ -37,7 +37,12 @@ const defaultColumns: Column[] = [
   { key: 'work_count', label: '# of Aligned Work Items', enabled: false },
 ];
 
-export default function OKRHub() {
+interface OKRHubProps {
+  scopeType?: 'enterprise' | 'portfolio' | 'program' | 'team';
+  scopeId?: string;
+}
+
+export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) {
   const [searchQuery, setSearchQuery] = useState('');
   const [levelFilter, setLevelFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -409,3 +414,5 @@ export default function OKRHub() {
     </div>
   );
 }
+
+export default OKRHub;
