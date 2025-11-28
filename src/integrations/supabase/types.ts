@@ -899,31 +899,20 @@ export type Database = {
       }
       epics: {
         Row: {
-          ability_to_execute: string | null
-          capitalized: boolean | null
           created_at: string | null
-          customers: string[] | null
-          date_lock_history: Json | null
-          date_locked: boolean | null
           deleted_at: string | null
           description: string | null
-          effort_swag: number | null
           end_date: string | null
           epic_key: string | null
-          epic_type: string | null
           estimate: number | null
-          estimation_system: string | null
           global_rank: number | null
           health: Database["public"]["Enums"]["health_status"] | null
           id: string
-          initiation_date: string | null
-          investment_type: string | null
           mvp: boolean | null
           name: string
           owner_id: string | null
           parked_at: string | null
           points_estimate: number | null
-          portfolio_ask_date: string | null
           portfolio_id: string | null
           portfolio_rank: number | null
           primary_program_id: string | null
@@ -931,44 +920,28 @@ export type Database = {
           process_step_entered_at: string | null
           process_step_id: string | null
           program_rank: number | null
-          quadrant: string | null
-          report_color: string | null
           start_date: string | null
           state: Database["public"]["Enums"]["epic_state"] | null
           status: Database["public"]["Enums"]["epic_status"] | null
-          strategic_driver: string | null
-          strategic_value_score: number | null
           tags: string[] | null
-          target_completion_date: string | null
           theme_id: string | null
           updated_at: string | null
         }
         Insert: {
-          ability_to_execute?: string | null
-          capitalized?: boolean | null
           created_at?: string | null
-          customers?: string[] | null
-          date_lock_history?: Json | null
-          date_locked?: boolean | null
           deleted_at?: string | null
           description?: string | null
-          effort_swag?: number | null
           end_date?: string | null
           epic_key?: string | null
-          epic_type?: string | null
           estimate?: number | null
-          estimation_system?: string | null
           global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
-          initiation_date?: string | null
-          investment_type?: string | null
           mvp?: boolean | null
           name: string
           owner_id?: string | null
           parked_at?: string | null
           points_estimate?: number | null
-          portfolio_ask_date?: string | null
           portfolio_id?: string | null
           portfolio_rank?: number | null
           primary_program_id?: string | null
@@ -976,44 +949,28 @@ export type Database = {
           process_step_entered_at?: string | null
           process_step_id?: string | null
           program_rank?: number | null
-          quadrant?: string | null
-          report_color?: string | null
           start_date?: string | null
           state?: Database["public"]["Enums"]["epic_state"] | null
           status?: Database["public"]["Enums"]["epic_status"] | null
-          strategic_driver?: string | null
-          strategic_value_score?: number | null
           tags?: string[] | null
-          target_completion_date?: string | null
           theme_id?: string | null
           updated_at?: string | null
         }
         Update: {
-          ability_to_execute?: string | null
-          capitalized?: boolean | null
           created_at?: string | null
-          customers?: string[] | null
-          date_lock_history?: Json | null
-          date_locked?: boolean | null
           deleted_at?: string | null
           description?: string | null
-          effort_swag?: number | null
           end_date?: string | null
           epic_key?: string | null
-          epic_type?: string | null
           estimate?: number | null
-          estimation_system?: string | null
           global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
-          initiation_date?: string | null
-          investment_type?: string | null
           mvp?: boolean | null
           name?: string
           owner_id?: string | null
           parked_at?: string | null
           points_estimate?: number | null
-          portfolio_ask_date?: string | null
           portfolio_id?: string | null
           portfolio_rank?: number | null
           primary_program_id?: string | null
@@ -1021,15 +978,10 @@ export type Database = {
           process_step_entered_at?: string | null
           process_step_id?: string | null
           program_rank?: number | null
-          quadrant?: string | null
-          report_color?: string | null
           start_date?: string | null
           state?: Database["public"]["Enums"]["epic_state"] | null
           status?: Database["public"]["Enums"]["epic_status"] | null
-          strategic_driver?: string | null
-          strategic_value_score?: number | null
           tags?: string[] | null
-          target_completion_date?: string | null
           theme_id?: string | null
           updated_at?: string | null
         }
