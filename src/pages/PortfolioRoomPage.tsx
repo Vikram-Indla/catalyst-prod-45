@@ -5,7 +5,6 @@ import { ThemeProgressCard } from '@/components/portfolio/ThemeProgressCard';
 import { ProgramIncrementRoadmapCard } from '@/components/portfolio/ProgramIncrementRoadmapCard';
 import { PIProgressCard } from '@/components/portfolio/PIProgressCard';
 import { PortfolioEpicGrid } from '@/components/portfolio/PortfolioEpicGrid';
-import { ProgramIncrementSelectorPanel } from '@/components/portfolio/ProgramIncrementSelectorPanel';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Mock data
@@ -39,82 +38,72 @@ const mockEpics = [
 export default function PortfolioRoomPage() {
   const { portfolioId } = useParams<{ portfolioId: string }>();
   const [selectedSnapshot, setSelectedSnapshot] = useState<string | null>(null);
-  const [selectedPIs, setSelectedPIs] = useState<string[]>(['pi-5']);
   const [selectedView, setSelectedView] = useState<'financials' | 'resources' | 'execution'>('execution');
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Left Sidebar - PI Selector Panel */}
-      <ProgramIncrementSelectorPanel
-        selectedPIs={selectedPIs}
-        onPIsChange={setSelectedPIs}
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Header Bar */}
+      <PortfolioRoomHeader
+        portfolioId={portfolioId || ''}
+        selectedSnapshot={selectedSnapshot}
+        onSnapshotChange={setSelectedSnapshot}
       />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header Bar */}
-        <PortfolioRoomHeader
-          portfolioId={portfolioId || ''}
-          selectedSnapshot={selectedSnapshot}
-          onSnapshotChange={setSelectedSnapshot}
-        />
+      {/* View Tabs */}
+      <div className="border-b px-4 py-2">
+        <Tabs value={selectedView} onValueChange={(v) => setSelectedView(v as any)}>
+          <TabsList className="h-9">
+            <TabsTrigger value="financials" className="text-sm">
+              Financials
+            </TabsTrigger>
+            <TabsTrigger value="resources" className="text-sm">
+              Resources
+            </TabsTrigger>
+            <TabsTrigger value="execution" className="text-sm">
+              Execution
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
-        {/* View Tabs */}
-        <div className="border-b px-4 py-2">
-          <Tabs value={selectedView} onValueChange={(v) => setSelectedView(v as any)}>
-            <TabsList className="h-9">
-              <TabsTrigger value="financials" className="text-sm">
-                Financials
-              </TabsTrigger>
-              <TabsTrigger value="resources" className="text-sm">
-                Resources
-              </TabsTrigger>
-              <TabsTrigger value="execution" className="text-sm">
-                Execution
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div>
-
-        {/* Content */}
-        <main className="flex-1 overflow-auto p-4">
-          <div className="space-y-4">
-            {/* Three Column Layout */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* Left: Theme Program Increment Progress */}
-              <div>
-                <ThemeProgressCard themes={mockThemes} />
-              </div>
-
-              {/* Center: Program Increment Roadmap */}
-              <div>
-                <ProgramIncrementRoadmapCard
-                  piName="PI-5"
-                  progressPercent={83}
-                  startDate="2024-04-01"
-                  endDate="2024-06-30"
-                />
-              </div>
-
-              {/* Right: PI Progress with Capabilities */}
-              <div>
-                <PIProgressCard
-                  piName="PI-5"
-                  status="In Progress"
-                  progressPercent={83}
-                  capabilities={mockCapabilities}
-                />
-              </div>
+      {/* Content */}
+      <main className="flex-1 overflow-auto p-4">
+        <div className="space-y-4">
+          {/* Three Column Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Left: Theme Program Increment Progress */}
+            <div>
+              <ThemeProgressCard themes={mockThemes} />
             </div>
 
-            {/* Bottom Epic Table */}
-            <PortfolioEpicGrid
-              epics={mockEpics}
-              onEpicClick={(epicId) => console.log('Epic clicked:', epicId)}
-            />
+            {/* Center: Program Increment Roadmap */}
+            <div>
+              <ProgramIncrementRoadmapCard
+                piName="PI-5"
+                progressPercent={83}
+                startDate="2024-04-01"
+                endDate="2024-06-30"
+              />
+            </div>
+
+            {/* Right: PI Progress with Capabilities */}
+            <div>
+              <PIProgressCard
+                piName="PI-5"
+                status="In Progress"
+                progressPercent={83}
+                capabilities={mockCapabilities}
+              />
+            </div>
           </div>
-        </main>
-      </div>
+
+          {/* Bottom Epic Table */}
+          <PortfolioEpicGrid
+            epics={mockEpics}
+            onEpicClick={(epicId) => console.log('Epic clicked:', epicId)}
+          />
+        </div>
+      </main>
     </div>
   );
 }
