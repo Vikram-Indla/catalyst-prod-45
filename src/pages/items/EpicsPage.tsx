@@ -157,6 +157,8 @@ export default function EpicsPage() {
         .eq('id', epicId)
         .single();
 
+      if (!epic) throw new Error('Epic not found');
+
       const { data, error } = await supabase
         .from('epics')
         .insert({
@@ -178,17 +180,44 @@ export default function EpicsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
       toast.success('Epic duplicated successfully');
+      setDuplicateDialogOpen(false);
+    },
+    onError: () => {
+      toast.error('Failed to duplicate epic');
     }
   });
 
   const moveToPositionMutation = useMutation({
     mutationFn: async ({ epicId, position }: { epicId: string; position: number }) => {
-      const { error } = await supabase
+      // Fetch all epics in order
+      const { data: allEpics } = await supabase
         .from('epics')
-        .update({ global_rank: position })
-        .eq('id', epicId);
+        .select('id, global_rank')
+        .is('deleted_at', null)
+        .order('global_rank', { ascending: true, nullsFirst: false });
+
+      if (!allEpics) throw new Error('Failed to fetch epics');
+
+      // Find the target epic and remove it from the list
+      const targetIndex = allEpics.findIndex(e => e.id === epicId);
+      if (targetIndex === -1) throw new Error('Epic not found');
       
-      if (error) throw error;
+      const [movedEpic] = allEpics.splice(targetIndex, 1);
+      
+      // Insert at the new position (position is 1-indexed)
+      allEpics.splice(position - 1, 0, movedEpic);
+
+      // Update all ranks sequentially
+      const updates = allEpics.map((epic, index) =>
+        supabase
+          .from('epics')
+          .update({ global_rank: index + 1 })
+          .eq('id', epic.id)
+      );
+
+      const results = await Promise.all(updates);
+      const errors = results.filter(r => r.error);
+      if (errors.length > 0) throw new Error('Failed to update ranks');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
@@ -302,10 +331,19 @@ export default function EpicsPage() {
       setDuplicateDialogOpen(true);
     },
     moveToTop: async (epic: any) => {
-      await moveToPositionMutation.mutateAsync({ epicId: epic.id, position: 1 });
+      try {
+        await moveToPositionMutation.mutateAsync({ epicId: epic.id, position: 1 });
+      } catch (error) {
+        toast.error('Failed to move epic to top');
+      }
     },
     moveToBottom: async (epic: any) => {
-      await moveToPositionMutation.mutateAsync({ epicId: epic.id, position: epics?.length || 1 });
+      try {
+        const maxPosition = epics?.length || 1;
+        await moveToPositionMutation.mutateAsync({ epicId: epic.id, position: maxPosition });
+      } catch (error) {
+        toast.error('Failed to move epic to bottom');
+      }
     },
     moveToPosition: (epic: any) => {
       setContextEpic(epic);
@@ -315,10 +353,18 @@ export default function EpicsPage() {
       toast.info('Move to PI dialog coming soon');
     },
     recycleBin: async (epic: any) => {
-      await recycleBinMutation.mutateAsync(epic.id);
+      try {
+        await recycleBinMutation.mutateAsync(epic.id);
+      } catch (error) {
+        toast.error('Failed to move epic to recycle bin');
+      }
     },
     parkingLot: async (epic: any) => {
-      await parkingLotMutation.mutateAsync(epic.id);
+      try {
+        await parkingLotMutation.mutateAsync(epic.id);
+      } catch (error) {
+        toast.error('Failed to update parking lot status');
+      }
     }
   };
 
