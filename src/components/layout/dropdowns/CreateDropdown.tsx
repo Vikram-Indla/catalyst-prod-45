@@ -28,14 +28,45 @@ const otherItems = [
 
 interface CreateDropdownProps {
   onClose: () => void;
+  onCreateEpic?: () => void;
 }
 
-export function CreateDropdown({ onClose }: CreateDropdownProps) {
+export function CreateDropdown({ onClose, onCreateEpic }: CreateDropdownProps) {
   const navigate = useNavigate();
 
   const handleClick = (label: string) => {
-    // Placeholder - would open create dialog
     console.log('Create:', label);
+    
+    // Handle Epic creation specially if handler provided
+    if (label === 'Epics' && onCreateEpic) {
+      onCreateEpic();
+      onClose();
+      return;
+    }
+    
+    // Navigate to the respective page for other items
+    const routeMap: Record<string, string> = {
+      'Themes': '/items/themes',
+      'Epics': '/items/epics?create=true',
+      'Capabilities': '/items/capabilities',
+      'Features': '/items/features',
+      'Stories': '/items/stories',
+      'Defects': '/items/defects',
+      'Tasks': '/items/tasks',
+      'Objectives': '/items/objectives',
+      'Dependencies': '/items/dependencies',
+      'Ideation': '/items/ideation',
+      'Risks': '/items/risks',
+      'Impediments': '/items/impediments',
+      'Specifications': '/items/specifications',
+      'Sprints': '/items/sprints',
+      'Program Increments': '/items/program-increments',
+      'Release Vehicles': '/items/release-vehicles',
+    };
+    
+    if (routeMap[label]) {
+      navigate(routeMap[label]);
+    }
     onClose();
   };
 

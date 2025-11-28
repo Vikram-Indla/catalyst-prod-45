@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { RoomNavigation } from './RoomNavigation';
 import { PersistentFilters } from './PersistentFilters';
 import { RoomSidebar } from './RoomSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { CreateDropdown } from './dropdowns/CreateDropdown';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +28,22 @@ import { Outlet } from 'react-router-dom';
 export function AppShell() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [createDropdownOpen, setCreateDropdownOpen] = useState(false);
+  const createDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (createDropdownRef.current && !createDropdownRef.current.contains(event.target as Node)) {
+        setCreateDropdownOpen(false);
+      }
+    }
+
+    if (createDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [createDropdownOpen]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -60,9 +78,19 @@ export function AppShell() {
                 <GlobalSearch />
               </div>
 
-              <Button variant="default" size="sm" className="hidden sm:flex">
-                Create
-              </Button>
+              <div className="relative" ref={createDropdownRef}>
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="hidden sm:flex"
+                  onClick={() => setCreateDropdownOpen(!createDropdownOpen)}
+                >
+                  Create
+                </Button>
+                {createDropdownOpen && (
+                  <CreateDropdown onClose={() => setCreateDropdownOpen(false)} />
+                )}
+              </div>
 
               <NotificationBell />
 
