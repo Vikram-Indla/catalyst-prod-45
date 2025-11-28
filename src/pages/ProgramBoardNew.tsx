@@ -349,40 +349,7 @@ export default function ProgramBoard() {
   };
   
   const handleCaptureBoard = () => {
-    const boardElement = document.querySelector('.board-grid-container');
-    if (!boardElement) {
-      toast.error('Board element not found');
-      return;
-    }
-
-    // Use html2canvas to capture the board
-    import('html2canvas').then((html2canvas) => {
-      html2canvas.default(boardElement as HTMLElement, {
-        backgroundColor: '#ffffff',
-        scale: 2,
-        logging: false,
-      }).then((canvas) => {
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `program-board-${selectedProgram?.name || 'export'}-${selectedPI?.name || 'pi'}-${new Date().toISOString().split('T')[0]}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            toast.success('Board exported successfully');
-          }
-        });
-      }).catch((error) => {
-        console.error('Capture error:', error);
-        toast.error('Failed to capture board');
-      });
-    }).catch((error) => {
-      console.error('html2canvas load error:', error);
-      toast.error('Export feature not available');
-    });
+    toast.info('Export functionality coming soon');
   };
   
   const handleFullscreen = () => {
