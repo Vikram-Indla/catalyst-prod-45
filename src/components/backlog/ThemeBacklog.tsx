@@ -322,15 +322,17 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
             </div>
 
             {!expandedSections['pi-5'] && (
-              <div className="border border-dashed rounded-md py-12 mt-2 bg-muted/5">
-                <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Drag & Drop Items Here
-                </p>
+              <div className="flex justify-center mt-2">
+                <div className="border border-dashed rounded-md py-4 px-8 bg-muted/5">
+                  <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Drag & Drop Items Here
+                  </p>
+                </div>
               </div>
             )}
 
@@ -463,7 +465,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
           </div>
 
           {/* Unassigned Backlog Section - Thinner swim lanes per image-212.png */}
-          <div className="mb-3">
+          <div className="mb-3 border rounded-lg p-3">
             <div className="flex items-center justify-between py-2 border-b">
               <button
                 onClick={() => toggleSection('unassigned')}
@@ -493,15 +495,17 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
             </div>
 
             {!expandedSections['unassigned'] && (
-              <div className="border border-dashed rounded-md py-6 mt-2 bg-muted/5 max-w-4xl">
-                <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="7 10 12 15 17 10" />
-                    <line x1="12" y1="15" x2="12" y2="3" />
-                  </svg>
-                  Drag & Drop Items Here
-                </p>
+              <div className="flex justify-center mt-2">
+                <div className="border border-dashed rounded-md py-4 px-8 bg-muted/5">
+                  <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="7 10 12 15 17 10" />
+                      <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Drag & Drop Items Here
+                  </p>
+                </div>
               </div>
             )}
           </div>
