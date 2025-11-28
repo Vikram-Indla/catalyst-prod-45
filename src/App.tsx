@@ -167,7 +167,6 @@ const App = () => (
               <Route path="/epics" element={<Navigate to="/items/epics" replace />} />
               <Route path="/backlog/epics" element={<Navigate to="/items/epics" replace />} />
             <Route path="/features" element={<FeaturesPage />} />
-            <Route path="/features/:featureId" element={<FeaturesPage />} />
             <Route path="/features/prioritization" element={<FeaturePrioritizationView />} />
               <Route path="/items/epics" element={<EpicsPage />} />
               <Route path="/items/epics/recycle-bin" element={<EpicsRecycleBinPage />} />

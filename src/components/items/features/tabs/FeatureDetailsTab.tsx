@@ -67,6 +67,21 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
         </Select>
       </div>
 
+      {/* Health */}
+      <div className="space-y-2">
+        <Label>Health</Label>
+        <Select defaultValue={feature?.health || 'green'}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select health" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="green">Green - On Track</SelectItem>
+            <SelectItem value="yellow">Yellow - At Risk</SelectItem>
+            <SelectItem value="red">Red - Off Track</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       {/* Blocked */}
       <div className="flex items-center space-x-2">
         <Checkbox
