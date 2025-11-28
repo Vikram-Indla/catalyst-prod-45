@@ -40,7 +40,7 @@ export default function ProgramBoard() {
   
   const [viewMode, setViewMode] = useState<ViewMode>('normal');
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showUnassigned, setShowUnassigned] = useState(false);
+  const [showUnassigned, setShowUnassigned] = useState(true);
   
   const [teamRankOpen, setTeamRankOpen] = useState(false);
   const [orphansOpen, setOrphansOpen] = useState(false);
@@ -272,12 +272,20 @@ export default function ProgramBoard() {
       );
     }
 
-    // Heatmap view - tiny squares
+    // Heatmap view - tiny squares with density-based coloring
     if (viewMode === 'heatmap') {
+      // Calculate intensity based on status
+      const getHeatIntensity = (feature: any) => {
+        if (feature.status === 'done' || feature.status === 'accepted') return 'bg-emerald-600';
+        if (feature.status === 'in progress') return 'bg-blue-500';
+        if (feature.blocked) return 'bg-red-500';
+        return 'bg-gray-400';
+      };
+      
       return (
         <div
           key={`${feature.id}-${sprintId}`}
-          className={`inline-block w-3 h-3 rounded ${statusColor} cursor-pointer hover:opacity-80`}
+          className={`inline-block w-4 h-4 rounded ${getHeatIntensity(feature)} cursor-pointer hover:opacity-80 transition-opacity m-0.5`}
           onClick={() => {
             setSelectedItem(feature);
             setQuickViewType('feature');
@@ -450,6 +458,7 @@ export default function ProgramBoard() {
             </Button>
             
             <Button variant="outline" size="sm" className="h-9" onClick={() => setExtraConfigsOpen(true)}>
+              <Settings className="h-4 w-4 mr-1" />
               Extra Configs
             </Button>
             
@@ -480,20 +489,22 @@ export default function ProgramBoard() {
       </div>
       
       {/* Board Grid */}
-      <div className="border border-border rounded bg-card shadow-sm overflow-auto">
-        <div className="min-w-max">
-          {/* Sprint Headers */}
-          <div className="flex sticky top-0 bg-background z-10 border-b border-border">
-            <div className="w-56 border-r border-border"></div>
-            <div className="w-44 py-2 px-3 border-r border-border text-center bg-muted/20">
-              <div className="text-xs font-medium text-foreground">Unplanned Iteration</div>
-            </div>
-            {sprints?.map((sprint) => (
-              <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border text-center bg-background">
-                <div className="font-semibold text-sm text-foreground">{sprint.code}</div>
-                <div className="text-xs text-muted-foreground mt-0.5">{sprint.sprint_dates}</div>
+      <div className="border border-border rounded bg-card shadow-sm overflow-hidden">
+        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-200px)]">
+          <div className="min-w-max">
+            {/* Sprint Headers */}
+            <div className="flex sticky top-0 bg-background z-10 border-b border-border shadow-sm">
+              <div className="w-56 border-r border-border"></div>
+              <div className="w-44 py-2 px-3 border-r border-border text-center bg-muted/20">
+                <div className="text-xs font-medium text-foreground">Unplanned Iteration</div>
               </div>
-            ))}
+              {sprints?.map((sprint) => (
+                <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border text-center bg-background">
+                  <div className="font-semibold text-sm text-foreground">{sprint.code}</div>
+                  <div className="text-xs text-muted-foreground mt-0.5">{sprint.sprint_dates}</div>
+                </div>
+              ))}
+            </div>
           </div>
           
           {/* Objectives row */}
@@ -612,6 +623,32 @@ export default function ProgramBoard() {
               </div>
             </div>
           ))}
+          
+          {/* Unassigned Features row - conditionally shown */}
+          {showUnassigned && (
+            <div className="border-b border-border bg-muted/10 hover:bg-muted/20 transition-colors">
+              <div className="flex">
+                <div className="w-56 py-2.5 px-3 border-r border-border font-medium text-sm text-muted-foreground flex items-center gap-2.5">
+                  <Users className="h-4 w-4" />
+                  <span className="text-xs">Unassigned</span>
+                </div>
+                <div className="w-44 py-2.5 px-2 border-r border-border">
+                  <div className={viewMode === 'small' ? 'flex flex-wrap gap-1' : 'space-y-1.5'}>
+                    {featuresData?.filter((f) => !f.team_id && !f.team_target_completion_sprint_id)
+                      .map((feature) => renderFeatureCard(feature, 'unplanned'))}
+                  </div>
+                </div>
+                {sprints?.map((sprint) => (
+                  <div key={sprint.id} className="flex-1 min-w-[140px] py-2.5 px-2 border-r border-border">
+                    <div className={viewMode === 'small' ? 'flex flex-wrap gap-1' : 'space-y-1.5'}>
+                      {featuresData?.filter((f) => !f.team_id && f.team_target_completion_sprint_id === sprint.id)
+                        .map((feature) => renderFeatureCard(feature, sprint.id))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
       
