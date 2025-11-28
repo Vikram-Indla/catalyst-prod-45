@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -48,12 +48,12 @@ export function MassMoveDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Mass Move Epics</DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            Move {selectedEpics.length} selected epic(s) to a different program and PI
-          </p>
+          <DialogDescription>
+            Move {selectedEpics.length} selected epic{selectedEpics.length !== 1 ? 's' : ''} to a different program and PI
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
