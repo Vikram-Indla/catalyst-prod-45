@@ -28,6 +28,8 @@ import {
 import { Plus, MoreVertical, Download, Upload, TrendingUp, DollarSign, Trash2, ArrowUpDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
+import { ImportThemesDialog } from '@/components/backlog/ImportThemesDialog';
+import { PullRankThemesDialog } from '@/components/backlog/PullRankThemesDialog';
 
 export default function ThemesGrid() {
   const [selectedTheme, setSelectedTheme] = useState<string | null>(null);
@@ -299,44 +301,36 @@ export default function ThemesGrid() {
         </DialogContent>
       </Dialog>
 
-      {/* Import Dialog */}
-      <Dialog open={importDialogOpen} onOpenChange={setImportDialogOpen}>
-        <DialogContent className="z-50">
-          <DialogHeader>
-            <DialogTitle>Import Themes</DialogTitle>
-            <DialogDescription>
-              Upload a CSV file to import multiple themes at once.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-4">
-            <Input type="file" accept=".csv" />
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setImportDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={() => {
-              toast.success('Import functionality coming soon');
-              setImportDialogOpen(false);
-            }}>
-              Import
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Import Themes Dialog - Jira Align spec compliant */}
+      <ImportThemesDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+      />
 
-      {/* Investment Analysis Dialog */}
+      {/* Investment Analysis Report - Not a dialog, navigate to report page */}
       <Dialog open={investmentAnalysisOpen} onOpenChange={setInvestmentAnalysisOpen}>
-        <DialogContent className="max-w-4xl z-50">
+        <DialogContent className="max-w-2xl z-50">
           <DialogHeader>
-            <DialogTitle>Investment Analysis</DialogTitle>
+            <DialogTitle>Investment by Feature Report</DialogTitle>
             <DialogDescription>
-              Analyze investment allocation across themes.
+              Shows breakdown of features by Investment Category and Business Driver
             </DialogDescription>
           </DialogHeader>
-          <div className="py-8">
-            <p className="text-center text-muted-foreground">
-              Investment analysis report will be displayed here.
+          <div className="py-4 space-y-4">
+            <div className="p-4 border rounded-lg bg-muted/50">
+              <p className="text-sm font-medium mb-2">Report Location</p>
+              <p className="text-sm text-muted-foreground">
+                Navigate to: <span className="font-mono">Reports → Investment by Feature</span>
+              </p>
+            </div>
+            <div className="p-3 border rounded-lg bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900">
+              <p className="text-xs text-amber-900 dark:text-amber-100">
+                <strong>Note:</strong> This is a read-only report page, not a dialog. 
+                It shows feature counts by category and business driver per PI.
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Source: <a href="https://help.jiraalign.com/hc/en-us/articles/115005862447" target="_blank" rel="noopener" className="underline">Jira Align Help Center</a>
             </p>
           </div>
           <DialogFooter>
@@ -345,18 +339,33 @@ export default function ThemesGrid() {
         </DialogContent>
       </Dialog>
 
-      {/* Investment vs Spend Dialog */}
+      {/* Investment vs Spend Report - Not a dialog, navigate to report page */}
       <Dialog open={investmentVsSpendOpen} onOpenChange={setInvestmentVsSpendOpen}>
-        <DialogContent className="max-w-4xl z-50">
+        <DialogContent className="max-w-2xl z-50">
           <DialogHeader>
-            <DialogTitle>Investment vs. Spend</DialogTitle>
+            <DialogTitle>Investment vs. Spend Report</DialogTitle>
             <DialogDescription>
-              Compare planned investment against actual spend.
+              View PI funding allocations and accepted spend per theme
             </DialogDescription>
           </DialogHeader>
-          <div className="py-8">
-            <p className="text-center text-muted-foreground">
-              Investment vs. spend report will be displayed here.
+          <div className="py-4 space-y-4">
+            <div className="p-4 border rounded-lg bg-muted/50">
+              <p className="text-sm font-medium mb-2">Report Location</p>
+              <p className="text-sm text-muted-foreground">
+                Navigate to: <span className="font-mono">Reports → Investment vs. Spend</span>
+              </p>
+            </div>
+            <div className="p-4 border rounded-lg space-y-2">
+              <p className="text-sm font-medium">Report Features:</p>
+              <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+                <li>3 pie charts: PI Funding, Estimated Spend, Accepted Spend</li>
+                <li>Set Theme Guardrails button</li>
+                <li>Table with Allocation and Investment & Spend columns</li>
+                <li>Work columns: Epics, Stories, Total PI Estimate, Points Planned</li>
+              </ul>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Source: <a href="https://help.jiraalign.com/hc/en-us/articles/115004314088" target="_blank" rel="noopener" className="underline">Jira Align Help Center</a>
             </p>
           </div>
           <DialogFooter>
@@ -365,33 +374,15 @@ export default function ThemesGrid() {
         </DialogContent>
       </Dialog>
 
-      {/* Prioritize Dialog */}
-      <Dialog open={prioritizeOpen} onOpenChange={setPrioritizeOpen}>
-        <DialogContent className="max-w-2xl z-50">
-          <DialogHeader>
-            <DialogTitle>Prioritize Themes</DialogTitle>
-            <DialogDescription>
-              Drag to reorder themes by priority.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-8">
-            <p className="text-center text-muted-foreground">
-              Drag and drop prioritization will be displayed here.
-            </p>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setPrioritizeOpen(false)}>
-              Cancel
-            </Button>
-            <Button onClick={() => {
-              toast.success('Theme priorities updated');
-              setPrioritizeOpen(false);
-            }}>
-              Save Priority
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* Pull Rank Dialog - Jira Align spec compliant */}
+      <PullRankThemesDialog
+        open={prioritizeOpen}
+        onOpenChange={setPrioritizeOpen}
+        onApply={(rankingOption) => {
+          toast.success(`Applied ranking: ${rankingOption}`);
+          queryClient.invalidateQueries({ queryKey: ['themes'] });
+        }}
+      />
 
       {/* Theme Details Drawer */}
       {selectedTheme && themes && (
