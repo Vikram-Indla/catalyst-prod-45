@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Plus, ChevronDown, ChevronRight } from 'lucide-react';
-import { useCreateKeyResult, useUpdateKeyResult, type KeyResult } from '@/hooks/useKeyResults';
+import { useKeyResults, useCreateKeyResult, useUpdateKeyResult, type KeyResult } from '@/hooks/useKeyResults';
 import {
   Select,
   SelectContent,
@@ -14,10 +14,12 @@ import {
 
 interface KeyResultsListProps {
   objectiveId: string;
-  keyResults: KeyResult[];
+  keyResults?: KeyResult[];
 }
 
-export function KeyResultsList({ objectiveId, keyResults }: KeyResultsListProps) {
+export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyResultsListProps) {
+  const { data: fetchedKeyResults = [] } = useKeyResults(objectiveId);
+  const keyResults = propKeyResults || fetchedKeyResults;
   const [isAdding, setIsAdding] = useState(false);
   const [newKrName, setNewKrName] = useState('');
   const [newKrType, setNewKrType] = useState<'currency' | 'count' | 'percentage' | 'decimal_score' | 'nps'>('percentage');
