@@ -153,35 +153,35 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
         <div className="p-6">
           <h2 className="text-xl font-semibold mb-6">All Programs for Digital Services</h2>
 
-          {/* PI-5 Section */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-3">
+          {/* PI-5 Section - Thinner swim lanes per image-212.png */}
+          <div className="mb-3">
+            <div className="flex items-center justify-between py-2 border-b">
               <button
                 onClick={() => toggleSection('pi-5')}
                 className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
               >
                 {expandedSections['pi-5'] ? (
-                  <Minus className="h-4 w-4 text-primary" />
+                  <Minus className="h-3.5 w-3.5 text-primary" />
                 ) : (
-                  <Plus className="h-4 w-4 text-primary" />
+                  <Plus className="h-3.5 w-3.5 text-primary" />
                 )}
                 <span className="text-primary">Themes for PI-5</span>
               </button>
               <div className="flex items-center gap-4">
-                <span className="text-sm">
-                  Total Items: <span className="text-primary font-medium">{piThemes.length}</span>
+                <span className="text-xs text-muted-foreground">
+                  Total Items: <span className="text-foreground font-medium">{piThemes.length}</span>
                 </span>
-                <Button variant="ghost" size="sm" className="gap-1.5 h-7">
-                  <Download className="h-3.5 w-3.5" />
+                <Button variant="ghost" size="sm" className="gap-1 h-6 px-2">
+                  <Download className="h-3 w-3" />
                   <span className="text-xs">Export</span>
                 </Button>
               </div>
             </div>
 
             {!expandedSections['pi-5'] && (
-              <div className="border border-dashed rounded-md py-20 bg-muted/10">
-                <p className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <div className="border border-dashed rounded-md py-12 mt-2 bg-muted/5">
+                <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="7 10 12 15 17 10" />
                     <line x1="12" y1="15" x2="12" y2="3" />
@@ -224,8 +224,8 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                                 onMoveToUnassigned={() => console.log('Move to unassigned')}
                                 onDelete={() => console.log('Delete')}
                               >
-                                {/* Theme Row - Citation: (Screenshot: image-191.png) */}
-                                <div className="flex items-center gap-3 px-4 py-2.5 hover:bg-accent/50 transition-colors">
+                              {/* Theme Row - Compact per image-212.png */}
+                                <div className="flex items-center gap-3 px-4 py-1.5 hover:bg-accent/50 transition-colors">
                                   <button
                                     onClick={() => toggleTheme(theme.id)}
                                     className="hover:text-primary transition-colors"
@@ -319,35 +319,35 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
             )}
           </div>
 
-          {/* Unassigned Backlog Section */}
-          <div className="mb-4">
-            <div className="flex items-center justify-between mb-3">
+          {/* Unassigned Backlog Section - Thinner swim lanes per image-212.png */}
+          <div className="mb-3">
+            <div className="flex items-center justify-between py-2 border-b">
               <button
                 onClick={() => toggleSection('unassigned')}
                 className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
               >
                 {expandedSections['unassigned'] ? (
-                  <Minus className="h-4 w-4 text-primary" />
+                  <Minus className="h-3.5 w-3.5 text-primary" />
                 ) : (
-                  <Plus className="h-4 w-4 text-primary" />
+                  <Plus className="h-3.5 w-3.5 text-primary" />
                 )}
                 <span className="text-primary">Unassigned Backlog</span>
               </button>
               <div className="flex items-center gap-4">
-                <span className="text-sm">
-                  Total Items: <span className="text-primary font-medium">{unassignedThemes.length}</span>
+                <span className="text-xs text-muted-foreground">
+                  Total Items: <span className="text-foreground font-medium">{unassignedThemes.length}</span>
                 </span>
-                <Button variant="ghost" size="sm" className="gap-1.5 h-7">
-                  <Download className="h-3.5 w-3.5" />
+                <Button variant="ghost" size="sm" className="gap-1 h-6 px-2">
+                  <Download className="h-3 w-3" />
                   <span className="text-xs">Export</span>
                 </Button>
               </div>
             </div>
 
             {!expandedSections['unassigned'] && (
-              <div className="border border-dashed rounded-md py-20 bg-muted/10">
-                <p className="text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <div className="border border-dashed rounded-md py-12 mt-2 bg-muted/5">
+                <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="7 10 12 15 17 10" />
                     <line x1="12" y1="15" x2="12" y2="3" />
