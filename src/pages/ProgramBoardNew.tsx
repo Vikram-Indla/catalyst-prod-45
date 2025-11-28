@@ -263,7 +263,7 @@ export default function ProgramBoard() {
         <div
           key={`${feature.id}-${sprintId}`}
           data-feature-id={feature.id}
-          className={`inline-flex items-center justify-center w-12 h-5 text-[10px] font-bold rounded ${statusColor} cursor-pointer hover:ring-1 ring-foreground/20 transition-all shadow-sm`}
+          className={`inline-flex items-center justify-center w-10 h-4 sm:w-12 sm:h-5 text-[9px] sm:text-[10px] font-bold rounded ${statusColor} cursor-pointer hover:ring-1 ring-foreground/20 transition-all shadow-sm`}
           onClick={() => {
             setSelectedItem(feature);
             setQuickViewType('feature');
@@ -290,7 +290,7 @@ export default function ProgramBoard() {
         <div
           key={`${feature.id}-${sprintId}`}
           data-feature-id={feature.id}
-          className={`inline-block w-4 h-4 rounded ${getHeatIntensity(feature)} cursor-pointer hover:opacity-80 transition-opacity m-0.5`}
+          className={`inline-block w-3 h-3 sm:w-4 sm:h-4 rounded ${getHeatIntensity(feature)} cursor-pointer hover:opacity-80 transition-opacity m-0.5`}
           onClick={() => {
             setSelectedItem(feature);
             setQuickViewType('feature');
@@ -307,7 +307,7 @@ export default function ProgramBoard() {
         <PopoverTrigger asChild>
           <div
             data-feature-id={feature.id}
-            className={`relative ${statusColor} rounded shadow-sm border border-foreground/10 cursor-pointer hover:shadow-md transition-all group min-h-[48px]`}
+            className={`relative ${statusColor} rounded shadow-sm border border-foreground/10 cursor-pointer hover:shadow-md transition-all group min-h-[40px] sm:min-h-[48px]`}
             onClick={() => {
               setSelectedItem(feature);
               setQuickViewType('feature');
@@ -316,28 +316,33 @@ export default function ProgramBoard() {
           >
             {/* Left status strip */}
             <div className={`
-              absolute left-0 top-0 bottom-0 w-1 rounded-l
+              absolute left-0 top-0 bottom-0 w-0.5 sm:w-1 rounded-l
               ${feature.blocked ? 'bg-destructive' : ''}
               ${feature.status === 'done' ? 'bg-emerald-500' : ''}
               ${feature.status === 'in progress' ? 'bg-blue-500' : ''}
               ${!feature.status || feature.status === 'not started' ? 'bg-muted' : ''}
             `} />
             
-            <div className="px-2 py-1.5 pl-3">
-              <div className="flex items-start justify-between gap-1.5">
+            <div className="px-1.5 py-1 sm:px-2 sm:py-1.5 pl-2 sm:pl-3">
+              <div className="flex items-start justify-between gap-1 sm:gap-1.5">
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="font-bold text-sm leading-tight mb-0.5">
+                  <div className="flex items-center justify-between gap-1.5 sm:gap-2">
+                    <div className="font-bold text-[11px] sm:text-sm leading-tight mb-0.5">
                       {displayId}
                     </div>
-                    <FeatureSymbolMarkers feature={feature} size={12} />
+                    <div className="sm:hidden">
+                      <FeatureSymbolMarkers feature={feature} size={10} />
+                    </div>
+                    <div className="hidden sm:block">
+                      <FeatureSymbolMarkers feature={feature} size={12} />
+                    </div>
                   </div>
-                  <div className="text-[10px] leading-tight line-clamp-2 opacity-90 font-medium">
+                  <div className="text-[9px] sm:text-[10px] leading-tight line-clamp-2 opacity-90 font-medium">
                     {feature.name}
                   </div>
                 </div>
                 {showCheckmark && (
-                  <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 opacity-60" />
+                  <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0 mt-0.5 opacity-60" />
                 )}
               </div>
             </div>
@@ -371,13 +376,13 @@ export default function ProgramBoard() {
   // Prerequisite check
   if (!programId || !piId) {
     return (
-      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-8">
-        <Card className="p-12 max-w-md text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
-            <Grid3x3 className="h-8 w-8 text-muted-foreground" />
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4 sm:p-8">
+        <Card className="p-6 sm:p-12 max-w-md w-full text-center space-y-4">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
+            <Grid3x3 className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-semibold">Program Board</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-xl sm:text-2xl font-semibold">Program Board</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Select a Program and Program Increment to view the board
           </p>
           <div className="space-y-3 pt-4">
@@ -412,14 +417,14 @@ export default function ProgramBoard() {
   const selectedPI = programIncrements?.find(pi => pi.id === piId);
   
   return (
-    <div className={`min-h-screen bg-background ${isFullscreen ? 'p-0' : 'p-6'}`}>
+    <div className={`min-h-screen bg-background ${isFullscreen ? 'p-0' : 'p-2 sm:p-4 lg:p-6'}`}>
       {/* Header */}
-      <div className="mb-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Grid3x3 className="h-5 w-5 text-muted-foreground" />
-            <h1 className="text-xl font-semibold">Program Board</h1>
-            <div className="relative">
+      <div className="mb-2 sm:mb-4 space-y-2 sm:space-y-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
+            <Grid3x3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+            <h1 className="text-lg sm:text-xl font-semibold">Program Board</h1>
+            <div className="relative hidden md:block">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 placeholder="Help search..." 
@@ -428,9 +433,9 @@ export default function ProgramBoard() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap w-full sm:w-auto overflow-x-auto pb-1">
             <Select value={viewMode} onValueChange={(v: ViewMode) => setViewMode(v)}>
-              <SelectTrigger className="w-[140px] h-9">
+              <SelectTrigger className="w-[110px] sm:w-[140px] h-8 sm:h-9 text-xs sm:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -444,8 +449,8 @@ export default function ProgramBoard() {
               if (action === 'orphans') setOrphansOpen(true);
               if (action === 'history') handleHistoryClick();
             }}>
-              <SelectTrigger className="w-[140px] h-9">
-                <SelectValue placeholder="More Actions" />
+              <SelectTrigger className="w-[100px] sm:w-[140px] h-8 sm:h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="Actions" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="orphans">Orphans</SelectItem>
@@ -453,61 +458,69 @@ export default function ProgramBoard() {
               </SelectContent>
             </Select>
             
-            <Button variant="outline" size="sm" className="h-9" onClick={() => setTeamRankOpen(true)}>
-              <Grip className="h-4 w-4 mr-1" />
+            <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm hidden sm:flex" onClick={() => setTeamRankOpen(true)}>
+              <Grip className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
               Team Rank
             </Button>
             
-            <Button variant="outline" size="sm" className="h-9" onClick={handleCaptureBoard}>
+            <Button variant="outline" size="icon" className="h-8 w-8 sm:hidden" onClick={() => setTeamRankOpen(true)} title="Team Rank">
+              <Grip className="h-4 w-4" />
+            </Button>
+            
+            <Button variant="outline" size="sm" className="h-8 sm:h-9 hidden lg:flex" onClick={handleCaptureBoard}>
               <Camera className="h-4 w-4 mr-1" />
               Capture
             </Button>
             
-            <Button variant="outline" size="sm" className="h-9" onClick={() => setExtraConfigsOpen(true)}>
+            <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm hidden md:flex" onClick={() => setExtraConfigsOpen(true)}>
               <Settings className="h-4 w-4 mr-1" />
-              Extra Configs
+              Config
             </Button>
             
-            <div className="h-6 w-px bg-border mx-1" />
-            
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setLegendOpen(true)} title="Legend">
-              <Info className="h-4 w-4" />
+            <Button variant="outline" size="icon" className="h-8 w-8 md:hidden" onClick={() => setExtraConfigsOpen(true)} title="Config">
+              <Settings className="h-4 w-4" />
             </Button>
             
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFullscreen} title="Full screen">
-              <Maximize className="h-4 w-4" />
+            <div className="h-6 w-px bg-border mx-0.5 sm:mx-1 hidden sm:block" />
+            
+            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" onClick={() => setLegendOpen(true)} title="Legend">
+              <Info className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
+            
+            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9 hidden sm:flex" onClick={handleFullscreen} title="Full screen">
+              <Maximize className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           </div>
         </div>
         
         {selectedProgram && (
-          <div className="flex items-center gap-2 pl-8">
-            <button className="text-sm text-muted-foreground hover:text-foreground">▼</button>
-            <span className="text-sm font-medium">Program: {selectedProgram.name}</span>
+          <div className="flex items-center gap-2 pl-2 sm:pl-8">
+            <button className="text-xs sm:text-sm text-muted-foreground hover:text-foreground">▼</button>
+            <span className="text-xs sm:text-sm font-medium truncate">Program: {selectedProgram.name}</span>
           </div>
         )}
         
         {selectedPI && (
-          <p className="text-xs text-muted-foreground pl-8">
-            {`${new Date(selectedPI.start_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} To ${new Date(selectedPI.end_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`}
+          <p className="text-[10px] sm:text-xs text-muted-foreground pl-2 sm:pl-8 truncate">
+            {`${new Date(selectedPI.start_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} To ${new Date(selectedPI.end_date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}`}
           </p>
         )}
       </div>
       
       {/* Board Grid */}
       <div className="border border-border rounded bg-card shadow-sm overflow-hidden board-grid-container">
-        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-200px)]">
-          <div className="min-w-max relative" id="program-board-grid">
+        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-160px)] sm:max-h-[calc(100vh-200px)]">
+          <div className="min-w-[800px] sm:min-w-max relative" id="program-board-grid">
             {/* Sprint Headers */}
             <div className="flex sticky top-0 bg-background z-10 border-b border-border shadow-sm">
-              <div className="w-56 border-r border-border"></div>
-              <div className="w-44 py-2 px-3 border-r border-border text-center bg-muted/20">
-                <div className="text-xs font-medium text-foreground">Unplanned Iteration</div>
+              <div className="w-32 sm:w-56 flex-shrink-0 border-r border-border"></div>
+              <div className="w-28 sm:w-44 flex-shrink-0 py-2 px-2 sm:px-3 border-r border-border text-center bg-muted/20">
+                <div className="text-[10px] sm:text-xs font-medium text-foreground">Unplanned</div>
               </div>
               {sprints?.map((sprint) => (
-                <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border text-center bg-background">
-                  <div className="font-semibold text-sm text-foreground">{sprint.code}</div>
-                  <div className="text-xs text-muted-foreground mt-0.5">{sprint.sprint_dates}</div>
+                <div key={sprint.id} className="flex-1 min-w-[100px] sm:min-w-[140px] py-2 px-2 sm:px-3 border-r border-border text-center bg-background">
+                  <div className="font-semibold text-xs sm:text-sm text-foreground">{sprint.code}</div>
+                  <div className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 hidden sm:block">{sprint.sprint_dates}</div>
                 </div>
               ))}
             </div>
@@ -516,29 +529,29 @@ export default function ProgramBoard() {
           {/* Objectives row */}
           <div className="border-b border-border bg-background">
             <div className="flex">
-              <div className="w-56 py-2 px-3 border-r border-border bg-muted/20 font-medium text-xs text-foreground">
+              <div className="w-32 sm:w-56 flex-shrink-0 py-2 px-2 sm:px-3 border-r border-border bg-muted/20 font-medium text-[10px] sm:text-xs text-foreground">
                 Objectives
               </div>
-              <div className="w-44 py-2 px-3 border-r border-border bg-muted/10"></div>
+              <div className="w-28 sm:w-44 flex-shrink-0 py-2 px-2 sm:px-3 border-r border-border bg-muted/10"></div>
               {sprints?.map((sprint) => {
                 const sprintObjectives = piObjectives?.filter(obj => obj.anchor_sprint_id === sprint.id) || [];
                 return (
-                  <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border bg-muted/5">
-                    <div className="flex gap-1.5 flex-wrap">
+                  <div key={sprint.id} className="flex-1 min-w-[100px] sm:min-w-[140px] py-2 px-2 sm:px-3 border-r border-border bg-muted/5">
+                    <div className="flex gap-1 sm:gap-1.5 flex-wrap">
                       {sprintObjectives.map((objective, idx) => (
                         <div 
                           key={objective.id}
-                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-medium cursor-pointer hover:bg-blue-200 transition-colors"
+                          className="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[9px] sm:text-[10px] font-medium cursor-pointer hover:bg-blue-200 transition-colors"
                           onClick={() => {
                             setSelectedItem(objective);
                             setQuickViewType('objective');
                             setQuickViewOpen(true);
                           }}
                         >
-                          <div className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-bold">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[8px] sm:text-[9px] font-bold">
                             {idx + 1}
                           </div>
-                          <span className="line-clamp-1">{objective.name}</span>
+                          <span className="line-clamp-1 hidden sm:inline">{objective.name}</span>
                         </div>
                       ))}
                     </div>
@@ -551,22 +564,22 @@ export default function ProgramBoard() {
           {/* Dependencies row */}
           <div className="border-b border-border bg-yellow-50/50">
             <div className="flex">
-              <div className="w-56 py-2 px-3 border-r border-border bg-yellow-100/50 font-medium text-xs text-foreground">
+              <div className="w-32 sm:w-56 flex-shrink-0 py-2 px-2 sm:px-3 border-r border-border bg-yellow-100/50 font-medium text-[10px] sm:text-xs text-foreground">
                 Dependencies
               </div>
-              <div className="w-44 py-2 px-3 border-r border-border bg-yellow-50/30"></div>
+              <div className="w-28 sm:w-44 flex-shrink-0 py-2 px-2 sm:px-3 border-r border-border bg-yellow-50/30"></div>
               {sprints?.map((sprint) => {
                 const sprintDependencies = dependencies?.filter(dep => {
                   const fromFeature = featuresData?.find(f => f.id === dep.from_feature_id);
                   return fromFeature?.team_target_completion_sprint_id === sprint.id;
                 }) || [];
                 return (
-                  <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border bg-yellow-50/20">
+                  <div key={sprint.id} className="flex-1 min-w-[100px] sm:min-w-[140px] py-2 px-2 sm:px-3 border-r border-border bg-yellow-50/20">
                     <div className="flex gap-1 flex-wrap">
                       {sprintDependencies.map((dep) => (
                         <div 
                           key={dep.id}
-                          className={`w-6 h-6 rounded flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ${
+                          className={`w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ${
                             dep.risk_level === 'high' ? 'bg-red-500' :
                             dep.risk_level === 'med' ? 'bg-orange-500' :
                             'bg-yellow-500'
@@ -578,7 +591,7 @@ export default function ProgramBoard() {
                           }}
                           title="Dependency"
                         >
-                          <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-b-[8px] border-l-transparent border-r-transparent border-b-white" />
+                          <div className="w-0 h-0 border-l-[5px] border-r-[5px] border-b-[6px] sm:border-l-[6px] sm:border-r-[6px] sm:border-b-[8px] border-l-transparent border-r-transparent border-b-white" />
                         </div>
                       ))}
                     </div>
@@ -589,14 +602,14 @@ export default function ProgramBoard() {
           </div>
           
           {/* Team Header */}
-          <div className="text-xs font-medium py-1.5 px-3 border-b border-border bg-muted/20 text-foreground">Teams</div>
+          <div className="text-[10px] sm:text-xs font-medium py-1.5 px-2 sm:px-3 border-b border-border bg-muted/20 text-foreground">Teams</div>
           
           {/* Team rows */}
           {teams?.map((team) => (
             <div key={team.id} className="border-b border-border hover:bg-muted/5 transition-colors">
               <div className="flex">
-                <div className="w-56 py-2.5 px-3 border-r border-border font-medium text-sm text-primary flex items-center gap-2.5">
-                  <div className="w-12 h-12 rounded overflow-hidden bg-muted flex-shrink-0 shadow-sm border border-border/50">
+                <div className="w-32 sm:w-56 flex-shrink-0 py-2 sm:py-2.5 px-2 sm:px-3 border-r border-border font-medium text-xs sm:text-sm text-primary flex items-center gap-1.5 sm:gap-2.5">
+                  <div className="w-8 h-8 sm:w-12 sm:h-12 rounded overflow-hidden bg-muted flex-shrink-0 shadow-sm border border-border/50">
                     {team.name.includes('Cheetah') && (
                       <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-yellow-700" style={{backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(0,0,0,.12) 8px, rgba(0,0,0,.12) 16px)'}} />
                     )}
@@ -610,17 +623,17 @@ export default function ProgramBoard() {
                       <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-cyan-700" />
                     )}
                   </div>
-                  <span className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer font-medium">{team.name}</span>
+                  <span className="text-[10px] sm:text-xs text-blue-600 hover:text-blue-700 cursor-pointer font-medium truncate">{team.name}</span>
                 </div>
-                <div className="w-44 py-2.5 px-2 border-r border-border bg-muted/5">
-                  <div className={viewMode === 'small' ? 'flex flex-wrap gap-1' : 'space-y-1.5'}>
+                <div className="w-28 sm:w-44 flex-shrink-0 py-2 sm:py-2.5 px-1.5 sm:px-2 border-r border-border bg-muted/5">
+                  <div className={viewMode === 'small' ? 'flex flex-wrap gap-0.5 sm:gap-1' : 'space-y-1 sm:space-y-1.5'}>
                     {featuresData?.filter((f) => f.team_id === team.id && !f.team_target_completion_sprint_id)
                       .map((feature) => renderFeatureCard(feature, 'unplanned'))}
                   </div>
                 </div>
                 {sprints?.map((sprint) => (
-                  <div key={sprint.id} className="flex-1 min-w-[140px] py-2.5 px-2 border-r border-border bg-background">
-                    <div className={viewMode === 'small' ? 'flex flex-wrap gap-1' : 'space-y-1.5'}>
+                  <div key={sprint.id} className="flex-1 min-w-[100px] sm:min-w-[140px] py-2 sm:py-2.5 px-1.5 sm:px-2 border-r border-border bg-background">
+                    <div className={viewMode === 'small' ? 'flex flex-wrap gap-0.5 sm:gap-1' : 'space-y-1 sm:space-y-1.5'}>
                       {featuresData?.filter((f) => f.team_id === team.id && f.team_target_completion_sprint_id === sprint.id)
                         .map((feature) => renderFeatureCard(feature, sprint.id))}
                     </div>
@@ -634,19 +647,19 @@ export default function ProgramBoard() {
           {showUnassigned && (
             <div className="border-b border-border bg-muted/10 hover:bg-muted/20 transition-colors">
               <div className="flex">
-                <div className="w-56 py-2.5 px-3 border-r border-border font-medium text-sm text-muted-foreground flex items-center gap-2.5">
-                  <Users className="h-4 w-4" />
-                  <span className="text-xs">Unassigned</span>
+                <div className="w-32 sm:w-56 flex-shrink-0 py-2 sm:py-2.5 px-2 sm:px-3 border-r border-border font-medium text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5 sm:gap-2.5">
+                  <Users className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="text-[10px] sm:text-xs">Unassigned</span>
                 </div>
-                <div className="w-44 py-2.5 px-2 border-r border-border">
-                  <div className={viewMode === 'small' ? 'flex flex-wrap gap-1' : 'space-y-1.5'}>
+                <div className="w-28 sm:w-44 flex-shrink-0 py-2 sm:py-2.5 px-1.5 sm:px-2 border-r border-border">
+                  <div className={viewMode === 'small' ? 'flex flex-wrap gap-0.5 sm:gap-1' : 'space-y-1 sm:space-y-1.5'}>
                     {featuresData?.filter((f) => !f.team_id && !f.team_target_completion_sprint_id)
                       .map((feature) => renderFeatureCard(feature, 'unplanned'))}
                   </div>
                 </div>
                 {sprints?.map((sprint) => (
-                  <div key={sprint.id} className="flex-1 min-w-[140px] py-2.5 px-2 border-r border-border">
-                    <div className={viewMode === 'small' ? 'flex flex-wrap gap-1' : 'space-y-1.5'}>
+                  <div key={sprint.id} className="flex-1 min-w-[100px] sm:min-w-[140px] py-2 sm:py-2.5 px-1.5 sm:px-2 border-r border-border">
+                    <div className={viewMode === 'small' ? 'flex flex-wrap gap-0.5 sm:gap-1' : 'space-y-1 sm:space-y-1.5'}>
                       {featuresData?.filter((f) => !f.team_id && f.team_target_completion_sprint_id === sprint.id)
                         .map((feature) => renderFeatureCard(feature, sprint.id))}
                     </div>
@@ -686,7 +699,7 @@ export default function ProgramBoard() {
       
       {/* Quick View Panels */}
       <Sheet open={quickViewOpen} onOpenChange={setQuickViewOpen}>
-        <SheetContent className="w-[600px] sm:max-w-[600px]">
+        <SheetContent className="w-full sm:w-[600px] sm:max-w-[600px] overflow-y-auto">
           {quickViewType === 'feature' && selectedItem && (
             <FeatureQuickView feature={selectedItem} onClose={() => setQuickViewOpen(false)} />
           )}
