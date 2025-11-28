@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { HealthBadge } from '@/components/shared/HealthBadge';
+import { FeatureContextMenu } from './FeatureContextMenu';
 
 interface Feature {
   id: string;
@@ -151,15 +152,16 @@ export function FeaturesListView({
                   features.map((feature, index) => (
                     <Draggable key={feature.id} draggableId={feature.id} index={index}>
                       {(provided, snapshot) => (
-                        <TableRow
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          className={cn(
-                            "cursor-pointer hover:bg-accent/20 transition-colors border-b group",
-                            selectedFeatures.has(feature.id) && "bg-accent/10",
-                            snapshot.isDragging && "bg-accent/30 shadow-lg"
-                          )}
-                        >
+                        <FeatureContextMenu featureId={feature.id} onRefetch={onRefetch}>
+                          <TableRow
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            className={cn(
+                              "cursor-pointer hover:bg-accent/20 transition-colors border-b group",
+                              selectedFeatures.has(feature.id) && "bg-accent/10",
+                              snapshot.isDragging && "bg-accent/30 shadow-lg"
+                            )}
+                          >
                           <TableCell className="p-2" {...provided.dragHandleProps}>
                             <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab active:cursor-grabbing" />
                           </TableCell>
@@ -247,6 +249,7 @@ export function FeaturesListView({
                             </TableCell>
                           )}
                         </TableRow>
+                        </FeatureContextMenu>
                       )}
                     </Draggable>
                   ))
