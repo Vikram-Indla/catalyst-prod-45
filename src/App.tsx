@@ -17,6 +17,7 @@ import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 import StrategyRoom from "./pages/StrategyRoom";
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 import Themes from "./pages/Themes";
+import ThemesGrid from "./pages/ThemesGrid";
 import Initiatives from "./pages/Initiatives";
 import Epics from "./pages/Epics";
 import EpicsPage from "./pages/items/EpicsPage";
@@ -171,6 +172,8 @@ const App = () => (
               <Route path="/enterprise/release-vehicles" element={<EnterpriseReleaseVehicles />} />
               <Route path="/enterprise/success-criteria" element={<EnterpriseSuccessCriteria />} />
               <Route path="/themes" element={<Themes />} />
+              <Route path="/themes/grid" element={<ThemesGrid />} />
+              <Route path="/portfolio/:portfolioId/themes" element={<ThemesGrid />} />
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Navigate to="/items/epics" replace />} />
               <Route path="/backlog/epics" element={<Navigate to="/items/epics" replace />} />
