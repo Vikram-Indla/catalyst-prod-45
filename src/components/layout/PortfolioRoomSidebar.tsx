@@ -43,17 +43,16 @@ type MenuItem =
 
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
-  { id: 'epics', label: 'Epics', icon: Diamond, path: '/backlog/epics' },
-  { id: 'backlog', label: 'Backlog', icon: Layers3, path: '/items/epics' },
-  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps' },
-  { id: 'objective-tree', label: 'Objective tree', icon: Target, path: '/portfolio/okr-hub' },
+  { id: 'epics', label: 'Epics', icon: Diamond, path: '/portfolio/:portfolioId/epics' },
+  { id: 'backlog', label: 'Backlog', icon: Layers3, path: '/portfolio/:portfolioId/backlog' },
+  { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/portfolio/:portfolioId/roadmaps' },
+  { id: 'objective-tree', label: 'Objective tree', icon: Target, path: '/portfolio/:portfolioId/objective-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
   { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/portfolio/:portfolioId/forecast' },
-  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', badge: 'NEW' },
+  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/portfolio/:portfolioId/capacity', badge: 'NEW' },
   { id: 'more-items', label: 'More items', icon: Menu, expandable: true },
   { id: 'reports', label: 'Reports', icon: Menu, expandable: true },
   { id: 'more-pages', label: 'More pages', icon: Menu, expandable: true },
-  { id: 'programs', label: 'Programs', icon: Network, expandable: true },
 ];
 
 export function PortfolioRoomSidebar({ 
