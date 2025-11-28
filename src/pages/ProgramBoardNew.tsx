@@ -28,8 +28,8 @@ type QuickViewType = 'feature' | 'dependency' | 'objective' | null;
 export default function ProgramBoard() {
   const [searchParams, setSearchParams] = useSearchParams();
   
-  const programId = searchParams.get('program');
-  const piId = searchParams.get('pi');
+  const programParam = searchParams.get('program');
+  const piParam = searchParams.get('pi');
   
   const [viewMode, setViewMode] = useState<ViewMode>('normal');
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -69,43 +69,52 @@ export default function ProgramBoard() {
     },
   });
   
+  // Resolve actual UUIDs from params (could be slugs or UUIDs)
+  const programId = programParam?.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+    ? programParam
+    : programs?.find(p => p.name.toLowerCase().replace(/\s+/g, '-') === programParam)?.id || programs?.[0]?.id;
+  
+  const piId = piParam?.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
+    ? piParam
+    : programIncrements?.find(pi => pi.name.toLowerCase() === piParam || pi.name === piParam)?.id || programIncrements?.[0]?.id;
+  
   const { data: teams } = useQuery({
     queryKey: ['teams', programId],
     queryFn: async () => {
-      // If no program or invalid program ID, get all teams
+      // Get all teams first
+      const { data: allTeams, error: teamsError } = await supabase
+        .from('teams')
+        .select('*');
+      
+      if (teamsError) throw teamsError;
+      
+      // If no program ID or not a UUID, return all teams sorted by name
       if (!programId || !programId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-        const { data: teams, error } = await supabase
-          .from('teams')
-          .select('*');
-        
-        if (error) throw error;
-        return teams.sort((a, b) => a.name.localeCompare(b.name));
+        return allTeams.sort((a, b) => a.name.localeCompare(b.name));
       }
       
+      // Get rankings for this program
       const { data: rankings } = await supabase
         .from('program_team_rankings')
         .select('team_id, rank_order')
         .eq('program_id', programId)
         .order('rank_order');
       
-      const { data: teams, error } = await supabase
-        .from('teams')
-        .select('*')
-        .eq('program_id', programId);
-      
-      if (error) throw error;
+      // Filter teams by program
+      const programTeams = allTeams.filter(t => t.program_id === programId);
       
       if (rankings && rankings.length > 0) {
         const rankMap = new Map(rankings.map(r => [r.team_id, r.rank_order]));
-        return teams.sort((a, b) => {
+        return programTeams.sort((a, b) => {
           const rankA = rankMap.get(a.id) ?? 999;
           const rankB = rankMap.get(b.id) ?? 999;
           return rankA - rankB;
         });
       }
       
-      return teams.sort((a, b) => a.name.localeCompare(b.name));
+      return programTeams.sort((a, b) => a.name.localeCompare(b.name));
     },
+    enabled: true,
   });
   
   const { data: sprints } = useQuery({
