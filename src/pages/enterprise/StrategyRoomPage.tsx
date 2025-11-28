@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { MissionVisionValues } from '@/components/strategy/MissionVisionValues';
-import { ExecutionAgainstOutcomes } from '@/components/strategy/ExecutionAgainstOutcomes';
+import { ExecutionAgainstOutcomesWidget } from '@/components/strategy/ExecutionAgainstOutcomesWidget';
+import { OkrHeatmapWidget } from '@/components/strategy/OkrHeatmapWidget';
 import { StrategyPyramid } from '@/components/strategy/StrategyPyramid';
 import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
 import { OkrHeatmap } from '@/components/strategy/OkrHeatmap';
@@ -134,17 +135,26 @@ export default function StrategyRoomPage() {
         </div>
       </div>
 
-      {/* Mission/Vision/Values + Execution Against Outcomes */}
+      {/* Mission/Vision/Values + Execution Widget */}
       <div className="grid grid-cols-[1fr_350px] gap-6">
         <MissionVisionValues snapshot={selectedSnapshot} />
-        <ExecutionAgainstOutcomes onLevelClick={handleLevelClick} />
+        <ExecutionAgainstOutcomesWidget 
+          snapshotId={effectiveSelectedSnapshotId} 
+          piIds={selectedPIs} 
+        />
       </div>
 
-      {/* Strategy Pyramid + Snapshot Progress */}
+      {/* Strategy Pyramid + OKR Heatmap Widget */}
       <div className="grid grid-cols-[1fr_400px] gap-6">
         <StrategyPyramid onLayerClick={handlePyramidLayerClick} />
-        <SnapshotProgress />
+        <OkrHeatmapWidget 
+          snapshotId={effectiveSelectedSnapshotId} 
+          piIds={selectedPIs} 
+        />
       </div>
+
+      {/* Snapshot Progress */}
+      <SnapshotProgress />
 
       {/* OKR Heatmap */}
       <OkrHeatmap

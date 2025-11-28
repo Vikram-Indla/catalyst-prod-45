@@ -1,14 +1,28 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Search } from 'lucide-react';
+import { useState } from 'react';
+import { useOKRHeatmap } from '@/hooks/useOKRHeatmap';
+import { useSearchParams } from 'react-router-dom';
+import { Skeleton } from '@/components/ui/skeleton';
+import { HeatmapCell } from '@/components/okr/HeatmapCell';
 
 export default function OKRHeatmap() {
+  const [searchParams] = useSearchParams();
+  const snapshotId = searchParams.get('snapshotId') || undefined;
+  const piIds = searchParams.get('piIds')?.split(',').filter(Boolean) || [];
+  const [statusFilter, setStatusFilter] = useState('all-status');
+  const [ownerFilter, setOwnerFilter] = useState('all-owners');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: heatmapData, isLoading } = useOKRHeatmap(snapshotId, piIds);
   return (
     <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
       {/* Toolbar */}
       <div className="flex items-center gap-3 mb-6" style={{ height: 'var(--toolbar-h)' }}>
-        <Select defaultValue="all-status">
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]" style={{ height: 'var(--grid-row)' }}>
             <SelectValue />
           </SelectTrigger>
@@ -20,7 +34,7 @@ export default function OKRHeatmap() {
           </SelectContent>
         </Select>
         
-        <Select defaultValue="all-owners">
+        <Select value={ownerFilter} onValueChange={setOwnerFilter}>
           <SelectTrigger className="w-[180px]" style={{ height: 'var(--grid-row)' }}>
             <SelectValue />
           </SelectTrigger>
@@ -36,26 +50,77 @@ export default function OKRHeatmap() {
           <Input
             placeholder="Search objectives..."
             className="pl-9"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             style={{ height: 'var(--grid-row)' }}
           />
         </div>
       </div>
 
-      {/* TODO (needs confirmation): Heatmap grid layout and data fetching */}
+      {/* Heatmap Grid */}
       <Card>
         <CardHeader>
-          <CardTitle>OKR Heatmap</CardTitle>
+          <CardTitle>OKR Heatmap by Program Increment</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-2" style={{
-            gridTemplateColumns: 'repeat(auto-fill, 160px)',
-            gap: 'var(--s2)'
-          }}>
-            <div className="border rounded p-3" style={{ height: '72px' }}>
-              <div className="text-sm font-medium">Sample Objective</div>
-              <div className="text-xs text-muted-foreground mt-2">85% complete</div>
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
             </div>
-          </div>
+          ) : !heatmapData || heatmapData.rows.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              No OKR data available. Select a snapshot and program increments to view the heatmap.
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {/* Header Row */}
+              <div className="grid gap-2" style={{ 
+                gridTemplateColumns: `200px repeat(${heatmapData.programIncrements.length}, 1fr)` 
+              }}>
+                <div className="font-medium text-sm">Level</div>
+                {heatmapData.programIncrements.map((piId) => (
+                  <div key={piId} className="font-medium text-sm text-center">
+                    {piId}
+                  </div>
+                ))}
+              </div>
+
+              {/* Data Rows */}
+              {heatmapData.rows.map((row) => (
+                <div key={row.level}>
+                  <div className="grid gap-2" style={{ 
+                    gridTemplateColumns: row.spanAllColumns 
+                      ? '200px 1fr' 
+                      : `200px repeat(${heatmapData.programIncrements.length}, 1fr)` 
+                  }}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium">{row.level}</span>
+                      <Badge variant="outline" className="text-xs">
+                        {row.itemCount}
+                      </Badge>
+                    </div>
+                    
+                    {row.spanAllColumns ? (
+                      <HeatmapCell 
+                        percentage={row.cells[0]?.percentage} 
+                        avgScore={row.cells[0]?.avgScore}
+                      />
+                    ) : (
+                      row.cells.map((cell, idx) => (
+                        <HeatmapCell 
+                          key={idx} 
+                          percentage={cell.percentage} 
+                          avgScore={cell.avgScore}
+                        />
+                      ))
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
