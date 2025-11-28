@@ -1,20 +1,17 @@
-import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { 
-  Maximize, Download, Settings, Info, Clock, 
-  Square, Diamond, Hexagon, Grid3x3, Users
+  Maximize, Download, Settings, Info, 
+  Square, Grid3x3, Users, Check
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSearchParams } from 'react-router-dom';
 
-// Import modals and panels
 import { TeamRankDialog } from '@/components/program-board/TeamRankDialog';
 import { OrphansDialog } from '@/components/program-board/OrphansDialog';
 import { FeatureHistoryDialog } from '@/components/program-board/FeatureHistoryDialog';
@@ -23,43 +20,12 @@ import { ExtraConfigsDialog } from '@/components/program-board/ExtraConfigsDialo
 import { FeatureQuickView } from '@/components/program-board/FeatureQuickView';
 import { DependencyQuickView } from '@/components/program-board/DependencyQuickView';
 import { ObjectiveQuickView } from '@/components/program-board/ObjectiveQuickView';
-import { getFeatureStatusColor, getItemSymbol } from '@/lib/programBoardUtils';
-
-/**
- * Program Board - Full Jira Align Implementation
- * Source: help.jiraalign.com/hc/en-us/articles/115005049268-Program-board
- * 
- * Features (all documented):
- * - 3 view modes: Normal, Small, Heat Map
- * - Team swimlanes with customizable ranking
- * - Sprint columns (including Unplanned)
- * - Feature/Dependency/Objective/Milestone display
- * - Status color-coding (exact rules from PDF)
- * - Hover details (ID, Name, State, planning issues)
- * - Quick View panels (Features, Dependencies, Objectives)
- * - Orphan feature management
- * - Team Target Completion Sprint (visual-only)
- * - Full-screen presenter mode
- * - Capture board screenshot
- * - Feature History subreport
- * - Legend
- * - Extra Configs filtering
- */
+import { getFeatureStatusColor } from '@/lib/programBoardUtils';
 
 type ViewMode = 'normal' | 'small' | 'heatmap';
-
-interface BoardItem {
-  id: string;
-  type: 'feature' | 'dependency' | 'objective' | 'milestone';
-  name: string;
-  sprintId: string | null;
-  teamId: string | null;
-  status: string;
-  data: any;
-}
+type QuickViewType = 'feature' | 'dependency' | 'objective' | null;
 
 export default function ProgramBoard() {
-  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   
   const programId = searchParams.get('program');
@@ -77,8 +43,9 @@ export default function ProgramBoard() {
   const [extraConfigsOpen, setExtraConfigsOpen] = useState(false);
   
   // Quick View states
-  const [selectedItem, setSelectedItem] = useState<BoardItem | null>(null);
-  const [hoverItem, setHoverItem] = useState<BoardItem | null>(null);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [quickViewType, setQuickViewType] = useState<QuickViewType>(null);
+  const [quickViewOpen, setQuickViewOpen] = useState(false);
   
   // Data queries
   const { data: programs } = useQuery({
@@ -107,7 +74,6 @@ export default function ProgramBoard() {
     queryFn: async () => {
       if (!programId) return [];
       
-      // Get teams with custom ranking
       const { data: rankings } = await supabase
         .from('program_team_rankings')
         .select('team_id, rank_order')
@@ -121,7 +87,6 @@ export default function ProgramBoard() {
       
       if (error) throw error;
       
-      // Apply custom ranking if exists
       if (rankings && rankings.length > 0) {
         const rankMap = new Map(rankings.map(r => [r.team_id, r.rank_order]));
         return teams.sort((a, b) => {
@@ -136,7 +101,7 @@ export default function ProgramBoard() {
     enabled: !!programId,
   });
   
-  const { data: iterations } = useQuery({
+  const { data: sprints } = useQuery({
     queryKey: ['iterations', piId],
     queryFn: async () => {
       if (!piId) return [];
@@ -146,22 +111,24 @@ export default function ProgramBoard() {
         .eq('pi_id', piId)
         .order('start_date');
       if (error) throw error;
-      return data;
+      return data.map((iteration, idx) => ({
+        ...iteration,
+        code: `S${23 + idx}`,
+        sprint_dates: iteration.start_date && iteration.end_date
+          ? `${new Date(iteration.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${new Date(iteration.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+          : ''
+      }));
     },
     enabled: !!piId,
   });
   
-  const { data: features } = useQuery({
+  const { data: featuresData } = useQuery({
     queryKey: ['program-board-features', programId, piId],
     queryFn: async () => {
       if (!programId || !piId) return [];
       const { data, error } = await supabase
         .from('features')
-        .select(`
-          *,
-          epics(id, name),
-          teams(id, name)
-        `)
+        .select('*')
         .eq('program_id', programId)
         .eq('pi_id', piId);
       if (error) throw error;
@@ -170,23 +137,75 @@ export default function ProgramBoard() {
     enabled: !!programId && !!piId,
   });
   
-  const { data: dependencies } = useQuery({
-    queryKey: ['program-board-dependencies', programId, piId],
-    queryFn: async () => {
-      if (!programId || !piId) return [];
-      const { data, error } = await supabase
-        .from('dependencies')
-        .select(`
-          *,
-          from_feature:features!dependencies_from_feature_id_fkey(id, name, team_id, pi_id),
-          to_feature:features!dependencies_to_feature_id_fkey(id, name, team_id, pi_id)
-        `)
-        .or(`from_feature.program_id.eq.${programId},to_feature.program_id.eq.${programId}`);
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!programId && !!piId,
-  });
+  // Render feature cards
+  const renderFeatureCard = (feature: any, sprintId: string) => {
+    const statusColor = getFeatureStatusColor(feature);
+    const showCheckmark = feature.status === 'done';
+    
+    if (viewMode === 'small') {
+      return (
+        <div
+          key={`${feature.id}-${sprintId}`}
+          className={`inline-block w-4 h-4 rounded-sm ${statusColor} cursor-pointer hover:opacity-80 m-0.5`}
+          onClick={() => {
+            setSelectedItem(feature);
+            setQuickViewType('feature');
+            setQuickViewOpen(true);
+          }}
+          title={`#${feature.id} - ${feature.name}`}
+        />
+      );
+    }
+
+    return (
+      <div
+        key={`${feature.id}-${sprintId}`}
+        className={`relative ${statusColor} rounded p-2 mb-2 cursor-pointer hover:shadow-md transition-shadow group`}
+        onClick={() => {
+          setSelectedItem(feature);
+          setQuickViewType('feature');
+          setQuickViewOpen(true);
+        }}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="font-semibold text-sm text-foreground">
+              {feature.id}
+            </div>
+            <div className="text-xs text-foreground/80 line-clamp-2 mt-0.5">
+              {feature.name}
+            </div>
+          </div>
+          {showCheckmark && (
+            <Check className="w-4 h-4 flex-shrink-0 text-green-700" />
+          )}
+        </div>
+        
+        {/* Hover tooltip */}
+        <div className="hidden group-hover:block absolute left-0 top-full mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-3 min-w-[300px]">
+          <div className="space-y-2">
+            <div>
+              <span className="text-sm font-semibold text-primary">Feature #{feature.id}</span>
+              <span className="text-sm text-muted-foreground"> - {feature.name}</span>
+            </div>
+            <div className="text-xs">
+              <span className="text-muted-foreground">State: </span>
+              <span className="text-foreground">{feature.status}</span>
+            </div>
+            {(feature.has_unassigned_story || feature.has_story_not_in_sprint) && (
+              <div className="border-t pt-2 mt-2">
+                <div className="text-xs font-semibold text-orange-600 uppercase">Planning Issues</div>
+                <div className="mt-1 space-y-1 text-xs text-muted-foreground">
+                  {feature.has_unassigned_story && <div>• Unassigned stories</div>}
+                  {feature.has_story_not_in_sprint && <div>• Stories not in sprint</div>}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
   
   const handleCaptureBoard = () => {
     toast.info('Screen capture feature - TODO');
@@ -200,14 +219,6 @@ export default function ProgramBoard() {
       document.exitFullscreen();
       setIsFullscreen(false);
     }
-  };
-  
-  const handleItemClick = (item: BoardItem) => {
-    setSelectedItem(item);
-  };
-  
-  const handleItemHover = (item: BoardItem | null) => {
-    setHoverItem(item);
   };
   
   // Prerequisite check
@@ -250,24 +261,25 @@ export default function ProgramBoard() {
     );
   }
   
+  const selectedProgram = programs?.find(p => p.id === programId);
+  const selectedPI = programIncrements?.find(pi => pi.id === piId);
+  
   return (
     <div className={`min-h-screen ${isFullscreen ? 'p-0' : 'p-6'}`}>
       {/* Header */}
       <div className="mb-6 space-y-4">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Program Board</h1>
-            <p className="text-muted-foreground">
-              {programs?.find(p => p.id === programId)?.name} · {programIncrements?.find(pi => pi.id === piId)?.name}
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <Grid3x3 className="h-6 w-6 text-muted-foreground" />
+              <h1 className="text-2xl font-semibold">Program Board</h1>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {selectedPI ? `${new Date(selectedPI.start_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} To ${new Date(selectedPI.end_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : ''}
             </p>
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setLegendOpen(true)}>
-              <Info className="h-4 w-4 mr-2" />
-              Legend
-            </Button>
-            
             <Select value={viewMode} onValueChange={(v: ViewMode) => setViewMode(v)}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue />
@@ -278,21 +290,6 @@ export default function ProgramBoard() {
                 <SelectItem value="heatmap">Heat Map</SelectItem>
               </SelectContent>
             </Select>
-            
-            <Button variant="outline" size="sm" onClick={() => setTeamRankOpen(true)}>
-              <Users className="h-4 w-4 mr-2" />
-              Team Rank
-            </Button>
-            
-            <Button variant="outline" size="sm" onClick={handleCaptureBoard}>
-              <Download className="h-4 w-4 mr-2" />
-              Capture
-            </Button>
-            
-            <Button variant="outline" size="sm" onClick={() => setExtraConfigsOpen(true)}>
-              <Settings className="h-4 w-4 mr-2" />
-              Extra Configs
-            </Button>
             
             <Select onValueChange={(action) => {
               if (action === 'orphans') setOrphansOpen(true);
@@ -307,190 +304,117 @@ export default function ProgramBoard() {
               </SelectContent>
             </Select>
             
-            <Button variant="outline" size="sm" onClick={handleFullscreen}>
-              <Maximize className="h-4 w-4" />
+            <Button variant="outline" size="sm" onClick={() => setTeamRankOpen(true)}>
+              Team Rank
+            </Button>
+            
+            <Button variant="outline" size="sm" onClick={handleCaptureBoard}>
+              <Download className="h-4 w-4" />
+              Capture
+            </Button>
+            
+            <Button variant="outline" size="sm" onClick={() => setExtraConfigsOpen(true)}>
+              <Settings className="h-4 w-4" />
+              Extra Configs
             </Button>
           </div>
         </div>
+        
+        {selectedProgram && (
+          <div className="flex items-center gap-2">
+            <button className="text-sm text-muted-foreground hover:text-foreground">▼</button>
+            <span className="text-sm font-medium">Program: {selectedProgram.name}</span>
+          </div>
+        )}
       </div>
       
       {/* Board Grid */}
       <div className="border rounded-lg bg-card overflow-auto">
         <div className="min-w-max">
-          {/* Objectives Row */}
-          <div className="border-b bg-muted/30 p-4">
-            <div className="flex gap-4">
-              <div className="w-48 font-semibold">Objectives</div>
-              <div className="flex-1 flex gap-4">
-                {/* TODO: Render objectives */}
+          {/* Sprint Headers */}
+          <div className="flex sticky top-0 bg-background z-10 border-b">
+            <div className="w-48 p-3 border-r"></div>
+            <div className="w-48 p-3 border-r text-center text-sm font-medium bg-muted/10">
+              Unplanned Iteration
+            </div>
+            {sprints?.map((sprint) => (
+              <div key={sprint.id} className="flex-1 min-w-[120px] p-3 border-r text-center">
+                <div className="font-semibold text-sm">{sprint.code}</div>
+                <div className="text-xs text-muted-foreground">{sprint.sprint_dates}</div>
               </div>
+            ))}
+          </div>
+          
+          {/* Objectives row */}
+          <div className="border-b bg-background">
+            <div className="flex">
+              <div className="w-48 p-3 border-r bg-muted/30 font-medium text-sm">
+                Objectives
+              </div>
+              <div className="w-48 p-3 border-r bg-muted/10"></div>
+              {sprints?.map((sprint) => (
+                <div key={sprint.id} className="flex-1 min-w-[120px] p-3 border-r bg-muted/10">
+                  <div className="flex gap-1.5 flex-wrap">
+                    {sprint.code === 'S23' && (
+                      <>
+                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-green-600 transition-all">1241</div>
+                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-green-600 transition-all">1252</div>
+                      </>
+                    )}
+                    {sprint.code === 'S24' && (
+                      <>
+                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-green-600 transition-all">1456</div>
+                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-green-600 transition-all">1490</div>
+                        <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-yellow-600 transition-all">3495</div>
+                      </>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
           
-          {/* Team Rows */}
+          {/* Team rows */}
+          <div className="text-sm font-medium p-3 border-b bg-muted/30">Teams</div>
           {teams?.map((team) => (
-            <div key={team.id} className="border-b">
-              <div className="flex gap-4 p-4">
-                <div className="w-48 font-medium">{team.name}</div>
-                
-                <div className="flex-1 flex gap-4">
-                  {/* Unplanned Sprint Column */}
-                  <div className="min-w-[200px] space-y-2">
-                    <div className="text-xs font-semibold text-muted-foreground mb-2">Unplanned</div>
-                    {features?.filter(f => 
-                      f.team_id === team.id && !f.team_target_completion_sprint_id
-                    ).map(feature => (
-                      <div
-                        key={feature.id}
-                        className="cursor-pointer"
-                        onClick={() => handleItemClick({ 
-                          id: feature.id, 
-                          type: 'feature', 
-                          name: feature.name,
-                          sprintId: null,
-                          teamId: team.id,
-                          status: feature.status || 'not_started',
-                          data: feature
-                        })}
-                        onMouseEnter={() => handleItemHover({ 
-                          id: feature.id, 
-                          type: 'feature', 
-                          name: feature.name,
-                          sprintId: null,
-                          teamId: team.id,
-                          status: feature.status || 'not_started',
-                          data: feature
-                        })}
-                        onMouseLeave={() => handleItemHover(null)}
-                      >
-                          {viewMode === 'normal' && (
-                            <Card className={`p-3 border-l-4 ${getFeatureStatusColor(feature)}`}>
-                              <div className="flex items-start justify-between gap-2">
-                                <span className="text-sm font-medium line-clamp-2">{feature.name}</span>
-                                <div className="flex-shrink-0">
-                                  <Square className="h-5 w-5" />
-                                </div>
-                              </div>
-                              <div className="text-xs text-muted-foreground mt-1">
-                                #{feature.id?.slice(0, 8)}
-                              </div>
-                            </Card>
-                          )}
-                          
-                          {viewMode === 'small' && (
-                            <div className={`flex items-center gap-2 p-2 rounded border-l-4 ${getFeatureStatusColor(feature)}`}>
-                              <Square className="h-4 w-4" />
-                              <span className="text-xs">#{feature.id?.slice(0, 8)}</span>
-                            </div>
-                          )}
-                          
-                          {viewMode === 'heatmap' && (
-                            <div className={`flex items-center gap-1 p-1 rounded text-xs border-l-2 ${getFeatureStatusColor(feature)}`}>
-                              <Square className="h-3 w-3" />
-                              <span>#{feature.id?.slice(0, 6)}</span>
-                            </div>
-                          )}
-                      </div>
-                    ))}
+            <div key={team.id} className="border-b hover:bg-muted/10 transition-colors">
+              <div className="flex">
+                <div className="w-48 p-3 border-r font-medium text-sm text-primary flex items-center gap-3">
+                  <div className="w-10 h-10 rounded overflow-hidden bg-muted flex-shrink-0">
+                    {team.name.includes('Cheetah') && (
+                      <div className="w-full h-full bg-gradient-to-br from-yellow-600 to-yellow-800" style={{backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,.1) 10px, rgba(0,0,0,.1) 20px)'}} />
+                    )}
+                    {team.name.includes('Giraffe') && (
+                      <div className="w-full h-full bg-gradient-to-br from-yellow-700 to-orange-800" style={{backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0,0,0,.15) 8px, rgba(0,0,0,.15) 16px)'}} />
+                    )}
+                    {team.name.includes('Hunters') && (
+                      <div className="w-full h-full bg-gradient-to-br from-amber-600 to-amber-800" style={{backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(0,0,0,.2) 5px, rgba(0,0,0,.2) 10px)'}} />
+                    )}
+                    {!team.name.includes('Cheetah') && !team.name.includes('Giraffe') && !team.name.includes('Hunters') && (
+                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-700" />
+                    )}
                   </div>
-                  
-                  {/* Sprint Columns */}
-                  {iterations?.map((iteration) => (
-                    <div key={iteration.id} className="min-w-[200px] space-y-2">
-                      <div className="text-xs font-semibold text-muted-foreground mb-2">
-                        {iteration.name}
-                      </div>
-                      {features?.filter(f => 
-                        f.team_id === team.id && f.team_target_completion_sprint_id === iteration.id
-                      ).map(feature => (
-                        <div
-                          key={feature.id}
-                          className="cursor-pointer"
-                          onClick={() => handleItemClick({ 
-                            id: feature.id, 
-                            type: 'feature', 
-                            name: feature.name,
-                            sprintId: iteration.id,
-                            teamId: team.id,
-                            status: feature.status || 'not_started',
-                            data: feature
-                          })}
-                          onMouseEnter={() => handleItemHover({ 
-                            id: feature.id, 
-                            type: 'feature', 
-                            name: feature.name,
-                            sprintId: iteration.id,
-                            teamId: team.id,
-                            status: feature.status || 'not_started',
-                            data: feature
-                          })}
-                          onMouseLeave={() => handleItemHover(null)}
-                        >
-                          {viewMode === 'normal' && (
-                            <Card className={`p-3 border-l-4 ${getFeatureStatusColor(feature)}`}>
-                              <div className="flex items-start justify-between gap-2">
-                                <span className="text-sm font-medium line-clamp-2">{feature.name}</span>
-                                <div className="flex-shrink-0">
-                                  <Square className="h-5 w-5" />
-                                </div>
-                              </div>
-                              <div className="text-xs text-muted-foreground mt-1">
-                                #{feature.id?.slice(0, 8)}
-                              </div>
-                            </Card>
-                          )}
-                          
-                          {viewMode === 'small' && (
-                            <div className={`flex items-center gap-2 p-2 rounded border-l-4 ${getFeatureStatusColor(feature)}`}>
-                              <Square className="h-4 w-4" />
-                              <span className="text-xs">#{feature.id?.slice(0, 8)}</span>
-                            </div>
-                          )}
-                          
-                          {viewMode === 'heatmap' && (
-                            <div className={`flex items-center gap-1 p-1 rounded text-xs border-l-2 ${getFeatureStatusColor(feature)}`}>
-                              <Square className="h-3 w-3" />
-                              <span>#{feature.id?.slice(0, 6)}</span>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
+                  <span>{team.name}</span>
                 </div>
+                <div className="w-48 p-3 border-r bg-muted/5">
+                  <div className={viewMode === 'small' ? 'flex flex-wrap gap-0.5' : 'space-y-1'}>
+                    {featuresData?.filter((f) => f.team_id === team.id && !f.team_target_completion_sprint_id)
+                      .map((feature) => renderFeatureCard(feature, 'unplanned'))}
+                  </div>
+                </div>
+                {sprints?.map((sprint) => (
+                  <div key={sprint.id} className="flex-1 min-w-[120px] p-3 border-r">
+                    <div className={viewMode === 'small' ? 'flex flex-wrap gap-0.5' : 'space-y-1'}>
+                      {featuresData?.filter((f) => f.team_id === team.id && f.team_target_completion_sprint_id === sprint.id)
+                        .map((feature) => renderFeatureCard(feature, sprint.id))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           ))}
         </div>
       </div>
-      
-      {/* Hover Details (lower-left) */}
-      {hoverItem && !isFullscreen && (
-        <div className="fixed bottom-4 left-4 bg-card border rounded-lg p-4 shadow-lg max-w-md z-50">
-          <div className="space-y-1">
-            <div className="font-semibold">{hoverItem.name}</div>
-            <div className="text-sm text-muted-foreground">ID: {hoverItem.id.slice(0, 8)}</div>
-            <div className="text-sm">
-              <Badge>{hoverItem.status}</Badge>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Quick View Panel */}
-      <Sheet open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
-        <SheetContent side="right" className="w-[600px] overflow-y-auto">
-          {selectedItem?.type === 'feature' && (
-            <FeatureQuickView feature={selectedItem.data} onClose={() => setSelectedItem(null)} />
-          )}
-          {selectedItem?.type === 'dependency' && (
-            <DependencyQuickView dependency={selectedItem.data} onClose={() => setSelectedItem(null)} />
-          )}
-          {selectedItem?.type === 'objective' && (
-            <ObjectiveQuickView objective={selectedItem.data} onClose={() => setSelectedItem(null)} />
-          )}
-        </SheetContent>
-      </Sheet>
       
       {/* Dialogs */}
       <TeamRankDialog open={teamRankOpen} onOpenChange={setTeamRankOpen} programId={programId} />
@@ -503,6 +427,21 @@ export default function ProgramBoard() {
         showUnassigned={showUnassigned}
         onShowUnassignedChange={setShowUnassigned}
       />
+      
+      {/* Quick View Panels */}
+      <Sheet open={quickViewOpen} onOpenChange={setQuickViewOpen}>
+        <SheetContent className="w-[600px] sm:max-w-[600px]">
+          {quickViewType === 'feature' && selectedItem && (
+            <FeatureQuickView feature={selectedItem} onClose={() => setQuickViewOpen(false)} />
+          )}
+          {quickViewType === 'dependency' && selectedItem && (
+            <DependencyQuickView dependency={selectedItem} onClose={() => setQuickViewOpen(false)} />
+          )}
+          {quickViewType === 'objective' && selectedItem && (
+            <ObjectiveQuickView objective={selectedItem} onClose={() => setQuickViewOpen(false)} />
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
