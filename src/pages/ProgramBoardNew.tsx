@@ -210,6 +210,44 @@ export default function ProgramBoard() {
     enabled: !!piId && !!programId,
   });
   
+  const { data: piObjectives } = useQuery({
+    queryKey: ['pi-objectives', piId],
+    queryFn: async () => {
+      if (!piId) return [];
+      // Query objectives - using simplified approach
+      const { data, error } = await supabase
+        .from('objectives')
+        .select('id, name, anchor_sprint_id')
+        .contains('program_increment_ids', [piId]);
+      if (error) {
+        console.error('Objectives query error:', error);
+        return [];
+      }
+      return data || [];
+    },
+    enabled: !!piId,
+  });
+  
+  const { data: dependencies } = useQuery({
+    queryKey: ['dependencies', programId, piId],
+    queryFn: async () => {
+      if (!piId || !programId || !featuresData) return [];
+      const featureIds = featuresData.map(f => f.id);
+      if (featureIds.length === 0) return [];
+      
+      const { data, error } = await supabase
+        .from('dependencies')
+        .select('id, from_feature_id, to_feature_id, status, risk_level')
+        .in('from_feature_id', featureIds);
+      if (error) {
+        console.error('Dependencies query error:', error);
+        return [];
+      }
+      return data || [];
+    },
+    enabled: !!piId && !!programId && !!featuresData && featuresData.length > 0,
+  });
+  
   // Render feature cards with proper Jira Align styling
   const renderFeatureCard = (feature: any, sprintId: string) => {
     const statusColor = getFeatureStatusColor(feature);
@@ -465,24 +503,71 @@ export default function ProgramBoard() {
                 Objectives
               </div>
               <div className="w-44 py-2 px-3 border-r border-border bg-muted/10"></div>
-              {sprints?.map((sprint, idx) => (
-                <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border bg-muted/5">
-                  <div className="flex gap-1.5 flex-wrap">
-                    {idx === 0 && (
-                      <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-medium cursor-pointer hover:bg-blue-200 transition-colors">
-                        <div className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-bold">1</div>
-                        Launch MVP
-                      </div>
-                    )}
-                    {idx === 2 && (
-                      <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px] font-medium cursor-pointer hover:bg-green-200 transition-colors">
-                        <div className="w-4 h-4 rounded-full bg-green-500 text-white flex items-center justify-center text-[9px] font-bold">2</div>
-                        Beta Release
-                      </div>
-                    )}
+              {sprints?.map((sprint) => {
+                const sprintObjectives = piObjectives?.filter(obj => obj.anchor_sprint_id === sprint.id) || [];
+                return (
+                  <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border bg-muted/5">
+                    <div className="flex gap-1.5 flex-wrap">
+                      {sprintObjectives.map((objective, idx) => (
+                        <div 
+                          key={objective.id}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-medium cursor-pointer hover:bg-blue-200 transition-colors"
+                          onClick={() => {
+                            setSelectedItem(objective);
+                            setQuickViewType('objective');
+                            setQuickViewOpen(true);
+                          }}
+                        >
+                          <div className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-bold">
+                            {idx + 1}
+                          </div>
+                          <span className="line-clamp-1">{objective.name}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Dependencies row */}
+          <div className="border-b border-border bg-yellow-50/50">
+            <div className="flex">
+              <div className="w-56 py-2 px-3 border-r border-border bg-yellow-100/50 font-medium text-xs text-foreground">
+                Dependencies
+              </div>
+              <div className="w-44 py-2 px-3 border-r border-border bg-yellow-50/30"></div>
+              {sprints?.map((sprint) => {
+                const sprintDependencies = dependencies?.filter(dep => {
+                  const fromFeature = featuresData?.find(f => f.id === dep.from_feature_id);
+                  return fromFeature?.team_target_completion_sprint_id === sprint.id;
+                }) || [];
+                return (
+                  <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border bg-yellow-50/20">
+                    <div className="flex gap-1 flex-wrap">
+                      {sprintDependencies.map((dep) => (
+                        <div 
+                          key={dep.id}
+                          className={`w-6 h-6 rounded flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ${
+                            dep.risk_level === 'high' ? 'bg-red-500' :
+                            dep.risk_level === 'med' ? 'bg-orange-500' :
+                            'bg-yellow-500'
+                          }`}
+                          onClick={() => {
+                            setSelectedItem(dep);
+                            setQuickViewType('dependency');
+                            setQuickViewOpen(true);
+                          }}
+                          title="Dependency"
+                        >
+                          <div className="w-0 h-0 border-l-[6px] border-r-[6px] border-b-[8px] border-l-transparent border-r-transparent border-b-white" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
           
