@@ -39,7 +39,7 @@ export default function EpicBacklog() {
   const [bottomUpEstimateOpen, setBottomUpEstimateOpen] = useState(false);
   const [selectedEpicIds, setSelectedEpicIds] = useState<string[]>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
-    'id', 'name', 'state', 'labels', 'points_estimate', 'mvp', 'process_step'
+    'id', 'name', 'wsjf'
   ]);
   const { toast } = useToast();
 
