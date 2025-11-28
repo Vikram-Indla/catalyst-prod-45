@@ -12,6 +12,7 @@ import Auth from "./pages/Auth";
 import Home from "./pages/jira-align/Home";
 import PortfolioRoomPageOld from "./pages/jira-align/PortfolioRoomPage";
 import PortfolioRoomPage from "./pages/PortfolioRoomPage";
+import PortfolioBacklog from "./pages/PortfolioBacklog";
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 import StrategyRoom from "./pages/StrategyRoom";
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
@@ -134,7 +135,7 @@ const App = () => (
               <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
               <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
               <Route path="/portfolio/:portfolioId/epics" element={<EpicsPage />} />
-              <Route path="/portfolio/:portfolioId/backlog" element={<EpicsPage />} />
+              <Route path="/portfolio/:portfolioId/backlog" element={<PortfolioBacklog />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<PlaceholderPage />} />
