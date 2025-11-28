@@ -33,33 +33,34 @@ export function useOKRTree(snapshotId?: string) {
       
       if (!targetSnapshotId) return [];
 
-      // Fetch all objectives for this snapshot with profiles
+      // Fetch all objectives for this snapshot
       const { data: objectives, error } = await supabase
         .from('objectives')
-        .select(`
-          id,
-          name,
-          level,
-          confidence_score,
-          progress_pct,
-          owner_id,
-          parent_objective_id,
-          profiles:owner_id (
-            full_name,
-            email
-          )
-        `)
+        .select('id, name, level, confidence_score, progress_pct, owner_id, parent_objective_id')
         .eq('snapshot_id', targetSnapshotId)
         .order('level', { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching objectives:', error);
+        throw error;
+      }
+
+      // Fetch profiles separately to avoid RLS issues
+      const ownerIds = [...new Set(objectives?.map(obj => obj.owner_id).filter(Boolean) || [])];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .in('id', ownerIds);
+
+      const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
 
       // Build tree structure
       const itemsMap = new Map<string, OKRTreeItem>();
       const rootItems: OKRTreeItem[] = [];
 
       objectives?.forEach((obj: any) => {
-        const ownerName = obj.profiles?.full_name || obj.profiles?.email || 'Unassigned';
+        const profile = profilesMap.get(obj.owner_id);
+        const ownerName = profile?.full_name || profile?.email || 'Unassigned';
         const item: OKRTreeItem = {
           id: obj.id,
           numericId: parseInt(obj.id.replace(/\D/g, '').slice(0, 6)) || Math.floor(Math.random() * 100000),
