@@ -25,10 +25,28 @@ function JiraAlignShellContent() {
   const { data: programIncrements } = useQuery({
     queryKey: ['pis-for-shell'],
     queryFn: async () => {
+      // First, get PIs that have iterations
+      const { data: iterations } = await supabase
+        .from('iterations')
+        .select('pi_id')
+        .not('pi_id', 'is', null)
+        .limit(1);
+      
+      if (iterations && iterations.length > 0) {
+        // Get the full PI data for the first PI with iterations
+        const { data: pi } = await supabase
+          .from('program_increments')
+          .select('id, name')
+          .eq('id', iterations[0].pi_id)
+          .limit(1);
+        return pi;
+      }
+      
+      // Fallback to any PI
       const { data } = await supabase
         .from('program_increments')
         .select('id, name')
-        .order('start_date', { ascending: true })
+        .order('start_date', { ascending: false })
         .limit(1);
       return data;
     },
