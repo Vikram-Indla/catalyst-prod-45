@@ -1,19 +1,21 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Printer, Download, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, Printer, Download, ChevronDown, ChevronRight, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { useState } from "react";
+import { ReportTemplatesDialog } from "@/components/items/epics/dialogs/ReportTemplatesDialog";
 
 export default function EpicRequirementHierarchy() {
   const { epicId } = useParams();
   const navigate = useNavigate();
   const [expandedFeatures, setExpandedFeatures] = useState<Set<string>>(new Set());
   const [expandedStories, setExpandedStories] = useState<Set<string>>(new Set());
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const { data: epic, isLoading: epicLoading } = useQuery({
     queryKey: ["epic", epicId],
@@ -141,6 +143,10 @@ export default function EpicRequirementHierarchy() {
           Back
         </Button>
         <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setShowTemplates(true)}>
+            <FileText className="h-4 w-4 mr-2" />
+            Templates
+          </Button>
           <Button variant="outline" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" />
             Print
@@ -151,6 +157,12 @@ export default function EpicRequirementHierarchy() {
           </Button>
         </div>
       </div>
+
+      <ReportTemplatesDialog
+        open={showTemplates}
+        onOpenChange={setShowTemplates}
+        reportType="hierarchy"
+      />
 
       <Card className="p-8">
         <h1 className="text-3xl font-bold mb-2">Epic Requirement Hierarchy</h1>

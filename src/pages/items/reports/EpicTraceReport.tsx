@@ -1,14 +1,17 @@
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Printer, Download, ChevronRight } from "lucide-react";
+import { ArrowLeft, Printer, Download, ChevronRight, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ReportTemplatesDialog } from "@/components/items/epics/dialogs/ReportTemplatesDialog";
 
 export default function EpicTraceReport() {
   const { epicId } = useParams();
   const navigate = useNavigate();
+  const [showTemplates, setShowTemplates] = useState(false);
 
   const { data: epic, isLoading: epicLoading } = useQuery({
     queryKey: ["epic", epicId],
