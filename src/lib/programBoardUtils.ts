@@ -19,38 +19,46 @@
  * - Gray: Not started
  */
 export function getFeatureStatusColor(feature: any): string {
-  // Black: Orphan status (no child stories)
-  if (feature.is_orphan_on_board) {
-    return 'border-l-gray-900 bg-gray-900/10';
+  // Jira Align Program Board color specifications (solid background colors)
+  // Source: help.jiraalign.com-Program board.pdf + reference screenshots
+  
+  // Green: Done/Accepted (all child stories complete)
+  if (feature.status === 'done' || feature.status === 'accepted') {
+    return 'bg-emerald-500 text-white';
   }
   
-  // Green: Done
-  if (feature.status === 'done') {
-    return 'border-l-green-600 bg-green-600/10';
+  // Red: Blocked (child stories blocked, dependencies blocked, past due)
+  if (feature.blocked || feature.status === 'blocked' || feature.has_blocked_story || feature.sprint_dates_past) {
+    return 'bg-red-500 text-white';
   }
   
-  // Red: Blocked
-  if (feature.blocked || feature.status === 'blocked') {
-    return 'border-l-red-600 bg-red-600/10';
+  // Orange: Scheduling Issues/Planning Issues (unassigned stories, stories not in sprint)
+  if (feature.status === 'funnel' || feature.status === 'analyzing' || feature.has_unassigned_story || feature.has_story_not_in_sprint) {
+    return 'bg-orange-500 text-white';
   }
   
-  // Orange: Planning issues (funnel/analyzing states indicate planning phase)
-  if (feature.status === 'funnel' || feature.status === 'analyzing') {
-    return 'border-l-orange-500 bg-orange-500/10';
+  // Yellow: Risks Apply (open risks from ROAM model, health issues)
+  if (feature.health === 'yellow' || feature.health === 'red' || feature.has_open_risks) {
+    return 'bg-yellow-500 text-white';
   }
   
-  // Yellow: Risks apply
-  if (feature.health === 'yellow' || feature.health === 'red') {
-    return 'border-l-yellow-500 bg-yellow-500/10';
+  // Blue: In Progress/Implementing (child stories in progress, no blocking issues)
+  if (feature.status === 'implementing' || feature.status === 'in-progress' || feature.status === 'in_progress') {
+    return 'bg-blue-500 text-white';
   }
   
-  // Blue: Implementing
-  if (feature.status === 'implementing') {
-    return 'border-l-blue-600 bg-blue-600/10';
+  // Black: Orphan (feature has no child stories)
+  if (feature.is_orphan_on_board || !feature.story_count) {
+    return 'bg-gray-900 text-white';
   }
   
-  // Gray: Not started (backlog state)
-  return 'border-l-gray-400 bg-gray-400/10';
+  // Brown: Cancelled
+  if (feature.status === 'cancelled') {
+    return 'bg-amber-800 text-white';
+  }
+  
+  // Gray: Not Started / Default (backlog state)
+  return 'bg-gray-400 text-white';
 }
 
 /**
