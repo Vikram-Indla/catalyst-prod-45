@@ -35,6 +35,7 @@ import Dependencies from "./pages/Dependencies";
 import PortfolioInsights from "./pages/PortfolioInsights";
 import ProgramRoom from "./pages/ProgramRoom";
 import ProgramBoard from "./pages/ProgramBoardNew";
+import ProgramBoardHistory from "./pages/ProgramBoardHistory";
 import ProgramIncrements from "./pages/ProgramIncrements";
 import PIObjectives from "./pages/PIObjectives";
 import ROAMBoard from "./pages/ROAMBoard";
@@ -164,6 +165,7 @@ const App = () => (
               <Route path="/pis" element={<ProgramIncrements />} />
               <Route path="/program-board" element={<ProgramBoard />} />
               <Route path="/programs/program-board" element={<ProgramBoard />} />
+              <Route path="/programs/program-board/history" element={<ProgramBoardHistory />} />
               <Route path="/pi-objectives" element={<PIObjectives />} />
               <Route path="/roam" element={<ROAMBoard />} />
               <Route path="/capacity" element={<CapacityPlanning />} />
