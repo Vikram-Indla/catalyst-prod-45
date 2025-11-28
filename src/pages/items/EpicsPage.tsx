@@ -25,6 +25,8 @@ import { EpicListDragDrop } from '@/components/items/epics/EpicListDragDrop';
 import { EpicContextMenu } from '@/components/items/epics/EpicContextMenu';
 import { MoveToPositionDialog } from '@/components/items/epics/dialogs/MoveToPositionDialog';
 import { DuplicateEpicDialog } from '@/components/items/epics/dialogs/DuplicateEpicDialog';
+import { PullRankDialog } from '@/components/items/epics/dialogs/PullRankDialog';
+import { ImportEpicsDialog } from '@/components/items/epics/dialogs/ImportEpicsDialog';
 import { 
   Plus, 
   Search, 
@@ -53,6 +55,8 @@ export default function EpicsPage() {
   const [massMoveDialogOpen, setMassMoveDialogOpen] = useState(false);
   const [moveToPositionOpen, setMoveToPositionOpen] = useState(false);
   const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
+  const [pullRankOpen, setPullRankOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [contextEpic, setContextEpic] = useState<any>(null);
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   const [columnsToShow, setColumnsToShow] = useState([
@@ -207,7 +211,7 @@ export default function EpicsPage() {
         setWSJFDialogOpen(true);
         break;
       case 'import':
-        toast.info('Opening Import Epics dialog');
+        setImportDialogOpen(true);
         break;
       case 'export':
         if (epics && epics.length > 0) {
@@ -537,6 +541,22 @@ export default function EpicsPage() {
           }}
         />
       )}
+
+      {/* Pull Rank Dialog */}
+      <PullRankDialog
+        open={pullRankOpen}
+        onOpenChange={setPullRankOpen}
+        onConfirm={(sourceEpicId) => {
+          toast.info('Pull rank feature coming soon');
+          // Will implement rank copying logic
+        }}
+      />
+
+      {/* Import Epics Dialog */}
+      <ImportEpicsDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+      />
     </div>
   );
 }
