@@ -1,246 +1,324 @@
-import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Download, ChevronRight, ChevronDown } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useParams, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { ArrowLeft, Printer, Download, ChevronDown, ChevronRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from "react";
 
 export default function EpicRequirementHierarchy() {
   const { epicId } = useParams();
   const navigate = useNavigate();
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [expandedFeatures, setExpandedFeatures] = useState<Set<string>>(new Set());
+  const [expandedStories, setExpandedStories] = useState<Set<string>>(new Set());
 
-  const { data: epic } = useQuery({
-    queryKey: ['epic-hierarchy', epicId],
+  const { data: epic, isLoading: epicLoading } = useQuery({
+    queryKey: ["epic", epicId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('epics')
-        .select(`
-          *,
-          strategic_themes(name),
-          capabilities:capabilities(
-            id,
-            name,
-            capability_key,
-            features:features(
-              id,
-              name,
-              display_id,
-              stories:stories(
-                id,
-                name,
-                estimate_points,
-                subtasks:subtasks(
-                  id,
-                  name,
-                  status
-                )
-              )
-            )
-          ),
-          features:features(
-            id,
-            name,
-            display_id,
-            capability_id,
-            stories:stories(
-              id,
-              name,
-              estimate_points,
-              subtasks:subtasks(
-                id,
-                name,
-                status
-              )
-            )
-          )
-        `)
-        .eq('id', epicId)
+        .from("epics")
+        .select("*")
+        .eq("id", epicId)
         .single();
       if (error) throw error;
       return data;
-    }
+    },
   });
 
-  const toggleExpand = (id: string) => {
-    setExpandedItems(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
+  const { data: features, isLoading: featuresLoading } = useQuery({
+    queryKey: ["features", epicId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("features")
+        .select("*")
+        .eq("epic_id", epicId)
+        .order("rank_within_epic");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: stories, isLoading: storiesLoading } = useQuery({
+    queryKey: ["stories", features?.map(f => f.id)],
+    queryFn: async () => {
+      if (!features?.length) return [];
+      const { data, error } = await supabase
+        .from("stories")
+        .select("*")
+        .in("feature_id", features.map(f => f.id))
+        .order("created_at");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!features?.length,
+  });
+
+  const { data: subtasks, isLoading: subtasksLoading } = useQuery({
+    queryKey: ["subtasks", stories?.map(s => s.id)],
+    queryFn: async () => {
+      if (!stories?.length) return [];
+      const { data, error } = await supabase
+        .from("subtasks")
+        .select("*")
+        .in("story_id", stories.map(s => s.id))
+        .order("created_at");
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!stories?.length,
+  });
+
+  const toggleFeature = (featureId: string) => {
+    const newExpanded = new Set(expandedFeatures);
+    if (newExpanded.has(featureId)) {
+      newExpanded.delete(featureId);
+    } else {
+      newExpanded.add(featureId);
+    }
+    setExpandedFeatures(newExpanded);
   };
 
-  if (!epic) return <div className="p-8">Loading...</div>;
+  const toggleStory = (storyId: string) => {
+    const newExpanded = new Set(expandedStories);
+    if (newExpanded.has(storyId)) {
+      newExpanded.delete(storyId);
+    } else {
+      newExpanded.add(storyId);
+    }
+    setExpandedStories(newExpanded);
+  };
 
-  const directFeatures = epic.features?.filter((f: any) => !f.capability_id) || [];
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const handleExport = () => {
+    const content = `Epic Requirement Hierarchy\n\nEpic: ${epic?.epic_key} - ${epic?.name}\nDescription: ${epic?.description || 'N/A'}\n\n${
+      features?.map(f => {
+        const featureStories = stories?.filter(s => s.feature_id === f.id) || [];
+        const totalPoints = featureStories.reduce((sum, s) => sum + (s.estimate_points || 0), 0);
+        return `Feature: ${f.display_id} - ${f.name}\nEstimate: ${f.estimate_points || 0} points\nAcceptance Criteria: ${f.acceptance_criteria || 'N/A'}\n\n${
+          featureStories.map(s => {
+            const storySubtasks = subtasks?.filter(st => st.story_id === s.id) || [];
+            return `  Story: ${s.id.slice(0, 8)} - ${s.name}\n  Points: ${s.estimate_points || 0}\n  Acceptance: ${s.acceptance_criteria || 'N/A'}\n${
+              storySubtasks.map(st => `    Subtask: ${st.id.slice(0, 8)} - ${st.name}\n    Status: ${st.status || 'N/A'}`).join('\n')
+            }`;
+          }).join('\n\n')
+        }`;
+      }).join('\n\n---\n\n')
+    }`;
+    
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `epic-requirements-${epic?.epic_key}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  if (epicLoading || featuresLoading || storiesLoading || subtasksLoading) {
+    return (
+      <div className="container mx-auto p-6 max-w-6xl">
+        <Skeleton className="h-10 w-64 mb-6" />
+        <Skeleton className="h-96" />
+      </div>
+    );
+  }
+
+  const totalStoryPoints = stories?.reduce((sum, s) => sum + (s.estimate_points || 0), 0) || 0;
 
   return (
-    <div className="min-h-screen bg-background p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold">Requirement Hierarchy</h1>
-              <p className="text-muted-foreground">{epic.name}</p>
-            </div>
-          </div>
-          <Button>
+    <div className="container mx-auto p-6 max-w-6xl">
+      <div className="flex items-center justify-between mb-6 print:hidden">
+        <Button variant="ghost" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Back
+        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={handlePrint}>
+            <Printer className="h-4 w-4 mr-2" />
+            Print
+          </Button>
+          <Button variant="outline" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
         </div>
+      </div>
 
-        <Card className="p-6">
-          <div className="space-y-2">
-            {/* Epic Level */}
-            <div className="font-bold text-lg flex items-center gap-2">
-              <span className="text-primary">Epic:</span>
-              {epic.epic_key || epic.id.slice(0, 8)} - {epic.name}
+      <Card className="p-8">
+        <h1 className="text-3xl font-bold mb-2">Epic Requirement Hierarchy</h1>
+        <p className="text-muted-foreground mb-8">Full requirement tree for {epic?.epic_key}</p>
+
+        {/* Epic Details */}
+        <div className="mb-8 pb-6 border-b">
+          <div className="flex items-start gap-4">
+            <Badge variant="secondary" className="text-lg px-3 py-1">{epic?.epic_key}</Badge>
+            <div className="flex-1">
+              <h2 className="text-2xl font-bold mb-2">{epic?.name}</h2>
+              {epic?.description && (
+                <p className="text-muted-foreground mb-3">{epic.description}</p>
+              )}
+              <div className="flex gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground">State:</span>{" "}
+                  <Badge variant="outline">{epic?.state || 'N/A'}</Badge>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Health:</span>{" "}
+                  <Badge variant="outline">{epic?.health || 'N/A'}</Badge>
+                </div>
+                <div>
+                  <span className="text-muted-foreground">Total Story Points:</span>{" "}
+                  <span className="font-semibold">{totalStoryPoints}</span>
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
 
-            {/* Capabilities */}
-            {epic.capabilities && epic.capabilities.length > 0 && (
-              <div className="ml-8 space-y-2 mt-4">
-                {epic.capabilities.map((capability: any) => (
-                  <div key={capability.id} className="border-l-4 border-blue-500 pl-4">
-                    <button
-                      onClick={() => toggleExpand(`cap-${capability.id}`)}
-                      className="flex items-center gap-2 font-semibold hover:underline"
-                    >
-                      {expandedItems.has(`cap-${capability.id}`) ? (
-                        <ChevronDown className="h-4 w-4" />
+        {/* Features Tree */}
+        <div className="space-y-4">
+          {features?.map((feature) => {
+            const featureStories = stories?.filter(s => s.feature_id === feature.id) || [];
+            const isExpanded = expandedFeatures.has(feature.id);
+            
+            return (
+              <Collapsible key={feature.id} open={isExpanded} onOpenChange={() => toggleFeature(feature.id)}>
+                <div className="border rounded-lg p-4 hover:bg-accent/50 transition-colors">
+                  <CollapsibleTrigger className="w-full">
+                    <div className="flex items-start gap-3">
+                      {isExpanded ? (
+                        <ChevronDown className="h-5 w-5 mt-1 text-muted-foreground flex-shrink-0" />
                       ) : (
-                        <ChevronRight className="h-4 w-4" />
+                        <ChevronRight className="h-5 w-5 mt-1 text-muted-foreground flex-shrink-0" />
                       )}
-                      <span className="text-blue-600">Capability:</span>
-                      {capability.capability_key || capability.id.slice(0, 8)} - {capability.name}
-                    </button>
-
-                    {/* Features under Capability */}
-                    {expandedItems.has(`cap-${capability.id}`) && capability.features && (
-                      <div className="ml-8 mt-2 space-y-2">
-                        {capability.features.map((feature: any) => (
-                          <div key={feature.id} className="border-l-4 border-green-500 pl-4">
-                            <button
-                              onClick={() => toggleExpand(`feat-${feature.id}`)}
-                              className="flex items-center gap-2 font-medium hover:underline"
-                            >
-                              {expandedItems.has(`feat-${feature.id}`) ? (
-                                <ChevronDown className="h-4 w-4" />
-                              ) : (
-                                <ChevronRight className="h-4 w-4" />
-                              )}
-                              <span className="text-green-600">Feature:</span>
-                              {feature.display_id || feature.id.slice(0, 8)} - {feature.name}
-                            </button>
-
-                            {/* Stories */}
-                            {expandedItems.has(`feat-${feature.id}`) && feature.stories && (
-                              <div className="ml-8 mt-2 space-y-1">
-                                {feature.stories.map((story: any) => (
-                                  <div key={story.id} className="text-sm">
-                                    <button
-                                      onClick={() => toggleExpand(`story-${story.id}`)}
-                                      className="flex items-center gap-2 hover:underline"
-                                    >
-                                      {expandedItems.has(`story-${story.id}`) ? (
-                                        <ChevronDown className="h-3 w-3" />
-                                      ) : (
-                                        <ChevronRight className="h-3 w-3" />
+                      <div className="flex-1 text-left">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Badge className="bg-blue-600">{feature.display_id}</Badge>
+                          <h3 className="text-lg font-semibold">{feature.name}</h3>
+                        </div>
+                        <div className="flex gap-4 text-sm text-muted-foreground">
+                          <span>{feature.estimate_points || 0} points</span>
+                          <span>{featureStories.length} stories</span>
+                          <Badge variant="outline" className="text-xs">{feature.status}</Badge>
+                        </div>
+                        {feature.acceptance_criteria && (
+                          <p className="text-sm mt-2 text-muted-foreground line-clamp-2">
+                            {feature.acceptance_criteria}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent>
+                    <div className="ml-8 mt-4 space-y-3">
+                      {featureStories.map((story) => {
+                        const storySubtasks = subtasks?.filter(st => st.story_id === story.id) || [];
+                        const isStoryExpanded = expandedStories.has(story.id);
+                        
+                        return (
+                          <Collapsible key={story.id} open={isStoryExpanded} onOpenChange={() => toggleStory(story.id)}>
+                            <div className="border-l-2 border-green-500 pl-4 py-2">
+                              <CollapsibleTrigger className="w-full">
+                                <div className="flex items-start gap-3">
+                                  {storySubtasks.length > 0 && (
+                                    isStoryExpanded ? (
+                                      <ChevronDown className="h-4 w-4 mt-1 text-muted-foreground flex-shrink-0" />
+                                    ) : (
+                                      <ChevronRight className="h-4 w-4 mt-1 text-muted-foreground flex-shrink-0" />
+                                    )
+                                  )}
+                                  <div className="flex-1 text-left">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <Badge variant="secondary" className="bg-green-600/10 text-green-700">
+                                        {story.id.slice(0, 8)}
+                                      </Badge>
+                                      <span className="font-medium">{story.name}</span>
+                                    </div>
+                                    <div className="flex gap-3 text-xs text-muted-foreground">
+                                      <span>{story.estimate_points || 0} points</span>
+                                      <Badge variant="outline" className="text-xs">{story.status}</Badge>
+                                      {storySubtasks.length > 0 && (
+                                        <span>{storySubtasks.length} subtasks</span>
                                       )}
-                                      <span className="text-orange-600">Story:</span>
-                                      {story.name} ({story.estimate_points || 0} pts)
-                                    </button>
-
-                                    {/* Subtasks */}
-                                    {expandedItems.has(`story-${story.id}`) && story.subtasks && (
-                                      <div className="ml-8 mt-1 space-y-1">
-                                        {story.subtasks.map((subtask: any) => (
-                                          <div key={subtask.id} className="text-xs text-muted-foreground">
-                                            • {subtask.name} ({subtask.status})
-                                          </div>
-                                        ))}
-                                      </div>
+                                    </div>
+                                    {story.acceptance_criteria && (
+                                      <p className="text-xs mt-2 text-muted-foreground">
+                                        AC: {story.acceptance_criteria}
+                                      </p>
                                     )}
                                   </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Direct Features (no capability) */}
-            {directFeatures.length > 0 && (
-              <div className="ml-8 space-y-2 mt-4">
-                {directFeatures.map((feature: any) => (
-                  <div key={feature.id} className="border-l-4 border-green-500 pl-4">
-                    <button
-                      onClick={() => toggleExpand(`feat-${feature.id}`)}
-                      className="flex items-center gap-2 font-medium hover:underline"
-                    >
-                      {expandedItems.has(`feat-${feature.id}`) ? (
-                        <ChevronDown className="h-4 w-4" />
-                      ) : (
-                        <ChevronRight className="h-4 w-4" />
-                      )}
-                      <span className="text-green-600">Feature:</span>
-                      {feature.display_id || feature.id.slice(0, 8)} - {feature.name}
-                    </button>
-
-                    {/* Stories */}
-                    {expandedItems.has(`feat-${feature.id}`) && feature.stories && (
-                      <div className="ml-8 mt-2 space-y-1">
-                        {feature.stories.map((story: any) => (
-                          <div key={story.id} className="text-sm">
-                            <button
-                              onClick={() => toggleExpand(`story-${story.id}`)}
-                              className="flex items-center gap-2 hover:underline"
-                            >
-                              {expandedItems.has(`story-${story.id}`) ? (
-                                <ChevronDown className="h-3 w-3" />
-                              ) : (
-                                <ChevronRight className="h-3 w-3" />
-                              )}
-                              <span className="text-orange-600">Story:</span>
-                              {story.name} ({story.estimate_points || 0} pts)
-                            </button>
-
-                            {/* Subtasks */}
-                            {expandedItems.has(`story-${story.id}`) && story.subtasks && (
-                              <div className="ml-8 mt-1 space-y-1">
-                                {story.subtasks.map((subtask: any) => (
-                                  <div key={subtask.id} className="text-xs text-muted-foreground">
-                                    • {subtask.name} ({subtask.status})
+                                </div>
+                              </CollapsibleTrigger>
+                              
+                              {storySubtasks.length > 0 && (
+                                <CollapsibleContent>
+                                  <div className="ml-6 mt-2 space-y-2">
+                                    {storySubtasks.map((subtask) => (
+                                      <div key={subtask.id} className="flex items-center gap-2 border-l-2 border-orange-500 pl-3 py-1">
+                                        <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-700">
+                                          {subtask.id.slice(0, 8)}
+                                        </Badge>
+                                        <span className="text-sm">{subtask.name}</span>
+                                        <Badge variant="outline" className="text-xs ml-auto">
+                                          {subtask.status}
+                                        </Badge>
+                                      </div>
+                                    ))}
                                   </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                                </CollapsibleContent>
+                              )}
+                            </div>
+                          </Collapsible>
+                        );
+                      })}
+                    </div>
+                  </CollapsibleContent>
+                </div>
+              </Collapsible>
+            );
+          })}
+        </div>
+
+        {/* Statistics */}
+        <div className="mt-8 pt-6 border-t">
+          <h3 className="font-semibold mb-4">Hierarchy Statistics</h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className="p-4 text-center">
+              <div className="text-3xl font-bold text-blue-600">{features?.length || 0}</div>
+              <div className="text-sm text-muted-foreground mt-1">Features</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {features?.reduce((sum, f) => sum + (f.estimate_points || 0), 0) || 0} points
               </div>
-            )}
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-3xl font-bold text-green-600">{stories?.length || 0}</div>
+              <div className="text-sm text-muted-foreground mt-1">Stories</div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {totalStoryPoints} points
+              </div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-3xl font-bold text-orange-600">{subtasks?.length || 0}</div>
+              <div className="text-sm text-muted-foreground mt-1">Subtasks</div>
+            </Card>
+            <Card className="p-4 text-center">
+              <div className="text-3xl font-bold text-purple-600">
+                {(features?.length || 0) + (stories?.length || 0) + (subtasks?.length || 0)}
+              </div>
+              <div className="text-sm text-muted-foreground mt-1">Total Items</div>
+            </Card>
           </div>
-        </Card>
-      </div>
+        </div>
+      </Card>
     </div>
   );
 }
