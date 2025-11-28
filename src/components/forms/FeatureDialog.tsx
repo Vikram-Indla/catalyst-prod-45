@@ -109,6 +109,7 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['features'] });
+      queryClient.invalidateQueries({ queryKey: ['features-backlog'] });
       toast.success(feature ? 'Feature updated' : 'Feature created');
       onOpenChange(false);
     },

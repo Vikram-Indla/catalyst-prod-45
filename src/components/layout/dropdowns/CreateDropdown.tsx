@@ -49,7 +49,7 @@ export function CreateDropdown({ onClose, onCreateEpic }: CreateDropdownProps) {
       'Themes': '/items/themes',
       'Epics': '/items/epics?create=true',
       'Capabilities': '/items/capabilities',
-      'Features': '/items/features',
+      'Features': '/features?create=true',
       'Stories': '/items/stories',
       'Defects': '/items/defects',
       'Tasks': '/items/tasks',
