@@ -7,6 +7,8 @@ import { CreateDropdown } from "./CreateDropdown";
 import { SearchOverlay } from "./SearchOverlay";
 import { NotificationsPanel } from "./NotificationsPanel";
 import { PersonasPopover } from "./PersonasPopover";
+import { PortfolioSelectorDropdown } from "./PortfolioSelectorDropdown";
+import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +21,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export function JiraAlignHeader() {
   const navigate = useNavigate();
@@ -52,7 +59,45 @@ export function JiraAlignHeader() {
           <nav className="flex items-center gap-1 flex-1">
             {navItems.map((item) => (
               <div key={item.label}>
-                {item.hasDropdown ? (
+                {item.label === "Portfolio" ? (
+                  <Popover
+                    open={activeDropdown === item.label}
+                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                      >
+                        {item.label}
+                        <ChevronDown className="ml-1 h-3 w-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-auto" align="start">
+                      <PortfolioSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                    </PopoverContent>
+                  </Popover>
+                ) : item.label === "Program" ? (
+                  <Popover
+                    open={activeDropdown === item.label}
+                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                      >
+                        {item.label}
+                        <ChevronDown className="ml-1 h-3 w-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-auto" align="start">
+                      <ProgramSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                    </PopoverContent>
+                  </Popover>
+                ) : item.hasDropdown ? (
                   <DropdownMenu
                     open={activeDropdown === item.label}
                     onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
