@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -48,6 +48,18 @@ export default function EpicsPage() {
   ]);
 
   const portfolioId = searchParams.get('portfolioId');
+  const queryClient = useQueryClient();
+
+  // Check for create parameter in URL
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setCreateDialogOpen(true);
+      // Remove the parameter from URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('create');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const { data: epics, isLoading } = useQuery({
     queryKey: ['epics', portfolioId, searchQuery],
@@ -327,7 +339,13 @@ export default function EpicsPage() {
       {/* Create Epic Dialog */}
       <EpicDialog
         open={createDialogOpen}
-        onOpenChange={setCreateDialogOpen}
+        onOpenChange={(open) => {
+          setCreateDialogOpen(open);
+          if (!open) {
+            // Refetch epics when dialog closes after creation
+            queryClient.invalidateQueries({ queryKey: ['epics'] });
+          }
+        }}
       />
 
       {/* WSJF Prioritization Dialog */}
