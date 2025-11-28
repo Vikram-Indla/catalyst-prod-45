@@ -180,7 +180,7 @@ export default function ProgramBoard() {
       
       const { data, error } = await supabase
         .from('features')
-        .select('*')
+        .select('id, display_id, name, status, blocked, health, team_id, team_target_completion_sprint_id, is_orphan_on_board, epic_id, pi_id, program_id')
         .eq('pi_id', piId)
         .eq('program_id', programId);
       
@@ -209,6 +209,7 @@ export default function ProgramBoard() {
   const renderFeatureCard = (feature: any, sprintId: string) => {
     const statusColor = getFeatureStatusColor(feature);
     const showCheckmark = feature.status === 'done';
+    const displayId = feature.display_id || feature.id;
     
     // Small view mode - compact tiles with IDs only
     if (viewMode === 'small') {
@@ -221,9 +222,9 @@ export default function ProgramBoard() {
             setQuickViewType('feature');
             setQuickViewOpen(true);
           }}
-          title={`#${feature.id} - ${feature.name}`}
+          title={`#${displayId} - ${feature.name}`}
         >
-          {feature.id}
+          {displayId}
         </div>
       );
     }
@@ -239,7 +240,7 @@ export default function ProgramBoard() {
             setQuickViewType('feature');
             setQuickViewOpen(true);
           }}
-          title={`#${feature.id} - ${feature.name}`}
+          title={`#${displayId} - ${feature.name}`}
         />
       );
     }
@@ -259,7 +260,7 @@ export default function ProgramBoard() {
           <div className="flex items-start justify-between gap-2">
             <div className="flex-1 min-w-0">
               <div className="font-bold text-base leading-tight mb-1">
-                {feature.id}
+                {displayId}
               </div>
               <div className="text-[11px] leading-snug line-clamp-3 opacity-90">
                 {feature.name}
@@ -275,20 +276,17 @@ export default function ProgramBoard() {
         <div className="hidden group-hover:block absolute left-0 top-full mt-1 z-50 bg-popover border border-border rounded shadow-lg p-3 min-w-[320px] max-w-md">
           <div className="space-y-2 text-xs">
             <div>
-              <span className="font-bold">Feature #{feature.id}</span>
+              <span className="font-bold">Feature #{displayId}</span>
               <span className="text-muted-foreground"> - {feature.name}</span>
             </div>
             <div>
               <span className="text-muted-foreground">State: </span>
               <span className="font-medium">{feature.status}</span>
             </div>
-            {(feature.has_unassigned_story || feature.has_story_not_in_sprint) && (
+            {feature.blocked && (
               <div className="border-t pt-2 mt-2">
-                <div className="text-xs font-bold text-orange-600 uppercase mb-1">Planning Issues</div>
-                <div className="space-y-0.5 text-xs">
-                  {feature.has_unassigned_story && <div>• Unassigned stories</div>}
-                  {feature.has_story_not_in_sprint && <div>• Stories not in sprint</div>}
-                </div>
+                <div className="text-xs font-bold text-red-600 uppercase mb-1">Blocked</div>
+                <div className="text-xs text-muted-foreground">This feature is currently blocked</div>
               </div>
             )}
           </div>
