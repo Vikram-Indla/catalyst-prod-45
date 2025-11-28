@@ -14,7 +14,6 @@ import { useSearchParams } from 'react-router-dom';
 
 import { TeamRankDialog } from '@/components/program-board/TeamRankDialog';
 import { OrphansDialog } from '@/components/program-board/OrphansDialog';
-import { FeatureHistoryDialog } from '@/components/program-board/FeatureHistoryDialog';
 import { LegendDialog } from '@/components/program-board/LegendDialog';
 import { ExtraConfigsDialog } from '@/components/program-board/ExtraConfigsDialog';
 import { FeatureQuickView } from '@/components/program-board/FeatureQuickView';
@@ -35,10 +34,8 @@ export default function ProgramBoard() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showUnassigned, setShowUnassigned] = useState(false);
   
-  // Modal states
   const [teamRankOpen, setTeamRankOpen] = useState(false);
   const [orphansOpen, setOrphansOpen] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   const [extraConfigsOpen, setExtraConfigsOpen] = useState(false);
   
@@ -295,6 +292,10 @@ export default function ProgramBoard() {
     );
   };
   
+  const handleHistoryClick = () => {
+    window.location.href = '/programs/program-board/history';
+  };
+  
   const handleCaptureBoard = () => {
     toast.info('Screen capture feature - TODO');
   };
@@ -372,7 +373,7 @@ export default function ProgramBoard() {
           
           <div className="flex items-center gap-2">
             <Select value={viewMode} onValueChange={(v: ViewMode) => setViewMode(v)}>
-              <SelectTrigger className="w-[130px] h-9">
+              <SelectTrigger className="w-[140px] h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -384,9 +385,9 @@ export default function ProgramBoard() {
             
             <Select onValueChange={(action) => {
               if (action === 'orphans') setOrphansOpen(true);
-              if (action === 'history') setHistoryOpen(true);
+              if (action === 'history') handleHistoryClick();
             }}>
-              <SelectTrigger className="w-[130px] h-9">
+              <SelectTrigger className="w-[140px] h-9">
                 <SelectValue placeholder="More Actions" />
               </SelectTrigger>
               <SelectContent>
@@ -405,6 +406,10 @@ export default function ProgramBoard() {
             
             <Button variant="outline" size="sm" className="h-9" onClick={() => setExtraConfigsOpen(true)}>
               Extra Configs
+            </Button>
+            
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setLegendOpen(true)}>
+              <Info className="h-4 w-4" />
             </Button>
             
             <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFullscreen}>
@@ -513,9 +518,8 @@ export default function ProgramBoard() {
       {/* Dialogs */}
       <TeamRankDialog open={teamRankOpen} onOpenChange={setTeamRankOpen} programId={programId} />
       <OrphansDialog open={orphansOpen} onOpenChange={setOrphansOpen} programId={programId} piId={piId} />
-      <FeatureHistoryDialog open={historyOpen} onOpenChange={setHistoryOpen} />
       <LegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
-      <ExtraConfigsDialog 
+      <ExtraConfigsDialog
         open={extraConfigsOpen} 
         onOpenChange={setExtraConfigsOpen}
         showUnassigned={showUnassigned}
