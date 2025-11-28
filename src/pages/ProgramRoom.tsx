@@ -1,247 +1,279 @@
-import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ScopeSelector } from '@/components/shared/ScopeSelector';
-import { PISelector } from '@/components/shared/PISelector';
-import { KPIWidgetCard } from '@/components/shared/KPIWidgetCard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { ProgramRoomSidebar } from '@/components/program/ProgramRoomSidebar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Target, TrendingUp, Link2, AlertTriangle, BarChart3, Clock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { AlertTriangle, TrendingUp, BarChart3 } from 'lucide-react';
 
 export default function ProgramRoom() {
-  const [selectedPortfolio, setSelectedPortfolio] = useState<string>('');
-  const [selectedPIs, setSelectedPIs] = useState<string[]>([]);
+  const { programId } = useParams<{ programId: string }>();
 
-  // Fetch programs
-  const { data: programs } = useQuery({
-    queryKey: ['programs', selectedPortfolio],
+  const { data: program, isLoading } = useQuery({
+    queryKey: ['program', programId],
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from('programs')
-        .select('*')
-        .order('name');
+        .select(`
+          id,
+          name,
+          portfolio_id,
+          portfolios (
+            name
+          )
+        `)
+        .eq('id', programId)
+        .single();
       
-      if (selectedPortfolio) {
-        query = query.eq('portfolio_id', selectedPortfolio);
-      }
-
-      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
-    enabled: !!selectedPortfolio,
+    enabled: !!programId,
   });
 
-  // Fetch features for selected PIs
+  // Fetch recent features for this program
   const { data: features } = useQuery({
-    queryKey: ['features-program', selectedPIs],
+    queryKey: ['program-features', programId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('features')
-        .select('*, epics(name)')
-        .in('pi_id', selectedPIs)
-        .order('name');
+        .select(`
+          id,
+          name,
+          status,
+          health,
+          progress_pct,
+          estimate_points,
+          epics (
+            name
+          )
+        `)
+        .eq('program_id', programId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
       if (error) throw error;
-      return data;
+      return data || [];
     },
-    enabled: selectedPIs.length > 0,
+    enabled: !!programId,
   });
 
-  // Fetch risks
-  const { data: risks } = useQuery({
-    queryKey: ['risks', selectedPIs],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('risks')
-        .select('*')
-        .in('pi_id', selectedPIs)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-    enabled: selectedPIs.length > 0,
-  });
-
-  // Calculate KPIs
-  const totalFeatures = features?.length || 0;
-  const doneFeatures = features?.filter(f => f.status === 'done').length || 0;
-  const implementingFeatures = features?.filter(f => f.status === 'implementing').length || 0;
-  const backlogFeatures = features?.filter(f => f.status === 'backlog').length || 0;
-
-  const roamResolved = risks?.filter(r => r.roam_status === 'resolved').length || 0;
-  const roamOwned = risks?.filter(r => r.roam_status === 'owned').length || 0;
-  const roamAccepted = risks?.filter(r => r.roam_status === 'accepted').length || 0;
-  const roamMitigated = risks?.filter(r => r.roam_status === 'mitigated').length || 0;
+  if (!programId) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-muted-foreground">No program selected</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="border-b bg-card px-6 py-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Program Room</h1>
-            <p className="text-sm text-muted-foreground">ART/Program decision cockpit</p>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <Clock className="h-4 w-4 text-muted-foreground" />
-            <span className="text-muted-foreground">12 days left in PI</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <ScopeSelector value={selectedPortfolio} onChange={setSelectedPortfolio} />
-          <PISelector 
-            portfolioId={selectedPortfolio} 
-            value={selectedPIs} 
-            onChange={setSelectedPIs}
-          />
-        </div>
-      </div>
-
-      {/* Content */}
-      <ScrollArea className="flex-1 p-6">
-        <div className="space-y-6">
-          {/* KPI Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <KPIWidgetCard
-              title="PI Objectives"
-              value="85%"
-              subtitle="Completion rate"
-              icon={Target}
-              trend="up"
-              trendValue="+5% this week"
-            />
-
-            <KPIWidgetCard
-              title="Feature Rollup"
-              value={`${doneFeatures}/${totalFeatures}`}
-              subtitle="Features complete"
-              icon={TrendingUp}
-            />
-
-            <KPIWidgetCard
-              title="Dependencies"
-              value="12"
-              subtitle="Active dependencies"
-              icon={Link2}
-              trend="down"
-              trendValue="3 resolved"
-            />
-
-            <KPIWidgetCard
-              title="Capacity"
-              value="420/450"
-              subtitle="Points planned"
-              icon={BarChart3}
-            />
-          </div>
-
-          {/* Feature Rollup by Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Features by Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-success" />
-                    <span className="font-medium">Done</span>
+    <div className="flex h-screen">
+      <ProgramRoomSidebar programId={programId} />
+      
+      <main className="flex-1 overflow-auto">
+        <div className="p-6">
+          {isLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-4 w-96" />
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-8">
+                <Skeleton className="h-40" />
+                <Skeleton className="h-40" />
+                <Skeleton className="h-40" />
+              </div>
+            </div>
+          ) : program ? (
+            <>
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h1 className="text-3xl font-bold mb-2">Program Room</h1>
+                    <p className="text-muted-foreground">
+                      For {program.name}
+                      {program.portfolios && ` · ${program.portfolios.name}`}
+                    </p>
                   </div>
-                  <Badge variant="outline">{doneFeatures}</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
-                    <span className="font-medium">Implementing</span>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm">View Configuration</Button>
+                    <Button variant="outline" size="sm">Key Metrics</Button>
+                    <Button variant="outline" size="sm">Run a Meeting</Button>
+                    <Button variant="outline" size="sm">Close Program Increment</Button>
                   </div>
-                  <Badge variant="outline">{implementingFeatures}</Badge>
-                </div>
-                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 rounded-full bg-secondary" />
-                    <span className="font-medium">Backlog</span>
-                  </div>
-                  <Badge variant="outline">{backlogFeatures}</Badge>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* ROAM Snapshot */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <AlertTriangle className="h-4 w-4" />
-                  ROAM Risk Snapshot
-                </CardTitle>
-                <Button variant="ghost" size="sm">View Board</Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-4 gap-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-success">{roamResolved}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Resolved</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{roamOwned}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Owned</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-warning">{roamAccepted}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Accepted</p>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-secondary">{roamMitigated}</div>
-                  <p className="text-xs text-muted-foreground mt-1">Mitigated</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Button variant="outline" className="h-20 flex flex-col gap-2">
-              <TrendingUp className="h-5 w-5" />
-              <span>Program Board</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex flex-col gap-2">
-              <AlertTriangle className="h-5 w-5" />
-              <span>ROAM Board</span>
-            </Button>
-            <Button variant="outline" className="h-20 flex flex-col gap-2">
-              <BarChart3 className="h-5 w-5" />
-              <span>Capacity Planning</span>
-            </Button>
-          </div>
-
-          {/* Recent Features */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm">Recent Features</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {features?.slice(0, 5).map(feature => (
-                  <div key={feature.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 cursor-pointer">
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm truncate">{feature.name}</p>
-                      <p className="text-xs text-muted-foreground truncate">{feature.epics?.name}</p>
+              <div className="space-y-6">
+                {/* Planning Checklist Card */}
+                <Card>
+                  <CardHeader>
+                    <div className="flex items-center gap-4">
+                      <div className="text-3xl font-bold text-primary">40%</div>
+                      <div>
+                        <CardTitle>Program Increment Planning Checklist</CardTitle>
+                        <CardDescription>
+                          An optional quick-start guide for Program Increment planning
+                        </CardDescription>
+                      </div>
                     </div>
-                    <Badge variant={feature.status === 'done' ? 'outline' : 'default'}>
-                      {feature.status}
-                    </Badge>
-                  </div>
-                ))}
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid gap-4 md:grid-cols-5">
+                      <div className="p-4 border rounded-lg text-center hover:bg-accent/50 cursor-pointer">
+                        <div className="text-sm font-medium mb-1">Plan Feature Backlog</div>
+                        <div className="text-xs text-muted-foreground">Manage and Prioritize</div>
+                      </div>
+                      <div className="p-4 border rounded-lg text-center hover:bg-accent/50 cursor-pointer">
+                        <div className="text-sm font-medium mb-1">Plan / Monitor the PI</div>
+                        <div className="text-xs text-muted-foreground">Identify Risks</div>
+                      </div>
+                      <div className="p-4 border rounded-lg text-center hover:bg-accent/50 cursor-pointer">
+                        <div className="text-sm font-medium mb-1">Track Progress</div>
+                        <div className="text-xs text-muted-foreground">See all Work</div>
+                      </div>
+                      <div className="p-4 border rounded-lg text-center hover:bg-accent/50 cursor-pointer">
+                        <div className="text-sm font-medium mb-1">Optimize - WIP</div>
+                        <div className="text-xs text-muted-foreground">Optimize Teams</div>
+                      </div>
+                      <div className="p-4 border rounded-lg text-center hover:bg-accent/50 cursor-pointer">
+                        <div className="text-sm font-medium mb-1">Optimize - Dependencies</div>
+                        <div className="text-xs text-muted-foreground">Understand Dependencies</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Iterations Card */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      Iterations
+                      <AlertTriangle className="h-4 w-4 text-warning" />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {[23, 24, 25, 26, 27].map((num) => (
+                        <div key={num} className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50">
+                          <div>
+                            <div className="font-medium">Sprint {num}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {Math.floor(Math.random() * 20 + 50)} out of {Math.floor(Math.random() * 20 + 60)} stories accepted
+                            </div>
+                          </div>
+                          <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                            <div className="h-full bg-success" style={{ width: `${Math.floor(Math.random() * 30 + 60)}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <Button variant="link" className="mt-4">View Program Board</Button>
+                  </CardContent>
+                </Card>
+
+                {/* Runway Card */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      Runway
+                      <AlertTriangle className="h-4 w-4 text-warning" />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>Epics</span>
+                            <span className="font-medium">Goal: 8M</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">Actual: 1.7M</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>Capabilities</span>
+                            <span className="font-medium">Goal: 6M</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">Actual: 0M</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>Features</span>
+                            <span className="font-medium">Goal: 4M</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">Actual: 41.9M</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>Stories</span>
+                            <span className="font-medium">Goal: 6.5M</span>
+                          </div>
+                          <div className="text-xs text-muted-foreground">Actual: 29.4S</div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Recent Features */}
+                {features && features.length > 0 && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Recent Features</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        {features.map((feature) => (
+                          <div
+                            key={feature.id}
+                            className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50 cursor-pointer"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-sm truncate">{feature.name}</p>
+                              {feature.epics && (
+                                <p className="text-xs text-muted-foreground truncate">
+                                  {feature.epics.name}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge
+                                variant={
+                                  feature.status === 'done'
+                                    ? 'default'
+                                    : feature.status === 'implementing'
+                                    ? 'secondary'
+                                    : 'outline'
+                                }
+                              >
+                                {feature.status}
+                              </Badge>
+                              <div className="w-16 text-right text-sm text-muted-foreground">
+                                {feature.progress_pct}%
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
-            </CardContent>
-          </Card>
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-64">
+              <p className="text-muted-foreground">Program not found</p>
+            </div>
+          )}
         </div>
-      </ScrollArea>
+      </main>
     </div>
   );
 }
