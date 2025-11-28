@@ -22,6 +22,8 @@ import { Search, Download, Settings2, Eye, EyeOff } from 'lucide-react';
 import { useObjectives, type ObjectiveFilters } from '@/hooks/useObjectives';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { ObjectiveDetailsPanelNew } from '@/components/okr/ObjectiveDetailsPanelNew';
+import { OKRColumnsDialog } from '@/components/okr/OKRColumnsDialog';
+import { exportOKRsToCSV, type OKRExportRow } from '@/lib/okrExportUtils';
 
 export default function OKRHub() {
   const [filters, setFilters] = useState<ObjectiveFilters>({});
@@ -41,8 +43,17 @@ export default function OKRHub() {
     blockedOnly: false,
   });
   const [showMyObjectives, setShowMyObjectives] = useState(false);
+  const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
+  const [columns, setColumns] = useState([
+    { key: 'id', label: 'ID & Summary', enabled: true },
+    { key: 'status', label: 'Status', enabled: true },
+    { key: 'score', label: 'Score', enabled: true },
+    { key: 'kr_progress', label: 'KR Progress', enabled: true },
+    { key: 'work_progress', label: 'Work Progress', enabled: true },
+    { key: 'tier', label: 'Tier', enabled: true },
+    { key: 'pi', label: 'Program Increment', enabled: true },
+  ]);
 
-  // Apply quick filters to main filters
   const activeFilters: ObjectiveFilters = {
     ...filters,
     search,
@@ -83,9 +94,23 @@ export default function OKRHub() {
   };
 
   const handleExport = () => {
-    // TODO(JK): Implement CSV export per Jira Align spec
-    console.log('Export objectives to CSV');
+    const exportData: OKRExportRow[] = objectives.map((obj) => ({
+      id: obj.id,
+      summary: obj.summary,
+      status: obj.status,
+      score: obj.score,
+      kr_progress: `${Math.round(obj.key_result_progress * 100)}%`,
+      work_progress: `${Math.round(obj.work_progress * 100)}%`,
+      tier: obj.tier,
+      program_increment: obj.program_increment_ids.join(', '),
+      owner: '',
+      start_date: obj.start_date || '',
+      due_date: obj.due_date || '',
+    }));
+    exportOKRsToCSV(exportData);
   };
+
+  const enabledColumns = columns.filter((col) => col.enabled);
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -136,7 +161,11 @@ export default function OKRHub() {
               {showMyObjectives ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
             </Button>
 
-            <Button variant="outline" size="icon">
+            <Button 
+              variant="outline" 
+              size="icon"
+              onClick={() => setColumnsDialogOpen(true)}
+            >
               <Settings2 className="h-4 w-4" />
             </Button>
 
@@ -206,25 +235,21 @@ export default function OKRHub() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>ID & Summary</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Score</TableHead>
-                <TableHead>KR Progress</TableHead>
-                <TableHead>Work Progress</TableHead>
-                <TableHead>Tier</TableHead>
-                <TableHead>Program Increment</TableHead>
+                {enabledColumns.map((col) => (
+                  <TableHead key={col.key}>{col.label}</TableHead>
+                ))}
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={enabledColumns.length} className="text-center py-8 text-muted-foreground">
                     Loading objectives...
                   </TableCell>
                 </TableRow>
               ) : objectives.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={enabledColumns.length} className="text-center py-8 text-muted-foreground">
                     No objectives found. Create your first objective to get started.
                   </TableCell>
                 </TableRow>
@@ -235,64 +260,91 @@ export default function OKRHub() {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => setSelectedObjectiveId(objective.id)}
                   >
-                    <TableCell>
-                      <div>
-                        <div className="font-medium">{objective.summary}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {objective.id.slice(0, 8)}
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className={getStatusColor(objective.status)}>
-                        {objective.status.replace('_', ' ').toUpperCase()}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <span className={getScoreColor(objective.score)}>
-                        {objective.score !== null && objective.score !== undefined
-                          ? objective.score.toFixed(2)
-                          : 'N/A'}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary"
-                            style={{ width: `${objective.key_result_progress * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          {Math.round(objective.key_result_progress * 100)}%
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-primary"
-                            style={{ width: `${objective.work_progress * 100}%` }}
-                          />
-                        </div>
-                        <span className="text-sm text-muted-foreground">
-                          {Math.round(objective.work_progress * 100)}%
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="secondary">{objective.tier}</Badge>
-                    </TableCell>
-                    <TableCell>
-                      {objective.program_increment_ids.length > 0 ? (
-                        <span className="text-sm">
-                          {objective.program_increment_ids.length} PI(s)
-                        </span>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">—</span>
-                      )}
-                    </TableCell>
+                    {enabledColumns.map((col) => {
+                      switch (col.key) {
+                        case 'id':
+                          return (
+                            <TableCell key={col.key}>
+                              <div>
+                                <div className="font-medium">{objective.summary}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  {objective.id.slice(0, 8)}
+                                </div>
+                              </div>
+                            </TableCell>
+                          );
+                        case 'status':
+                          return (
+                            <TableCell key={col.key}>
+                              <Badge variant="outline" className={getStatusColor(objective.status)}>
+                                {objective.status.replace('_', ' ').toUpperCase()}
+                              </Badge>
+                            </TableCell>
+                          );
+                        case 'score':
+                          return (
+                            <TableCell key={col.key}>
+                              <span className={getScoreColor(objective.score)}>
+                                {objective.score !== null && objective.score !== undefined
+                                  ? objective.score.toFixed(2)
+                                  : 'N/A'}
+                              </span>
+                            </TableCell>
+                          );
+                        case 'kr_progress':
+                          return (
+                            <TableCell key={col.key}>
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-primary"
+                                    style={{ width: `${objective.key_result_progress * 100}%` }}
+                                  />
+                                </div>
+                                <span className="text-sm text-muted-foreground">
+                                  {Math.round(objective.key_result_progress * 100)}%
+                                </span>
+                              </div>
+                            </TableCell>
+                          );
+                        case 'work_progress':
+                          return (
+                            <TableCell key={col.key}>
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-primary"
+                                    style={{ width: `${objective.work_progress * 100}%` }}
+                                  />
+                                </div>
+                                <span className="text-sm text-muted-foreground">
+                                  {Math.round(objective.work_progress * 100)}%
+                                </span>
+                              </div>
+                            </TableCell>
+                          );
+                        case 'tier':
+                          return (
+                            <TableCell key={col.key}>
+                              <Badge variant="secondary">{objective.tier}</Badge>
+                            </TableCell>
+                          );
+                        case 'pi':
+                          return (
+                            <TableCell key={col.key}>
+                              {objective.program_increment_ids.length > 0 ? (
+                                <span className="text-sm">
+                                  {objective.program_increment_ids.length} PI(s)
+                                </span>
+                              ) : (
+                                <span className="text-sm text-muted-foreground">—</span>
+                              )}
+                            </TableCell>
+                          );
+                        default:
+                          return null;
+                      }
+                    })}
                   </TableRow>
                 ))
               )}
@@ -309,6 +361,14 @@ export default function OKRHub() {
           onClose={() => setSelectedObjectiveId(null)}
         />
       )}
+
+      {/* Columns Configuration Dialog */}
+      <OKRColumnsDialog
+        open={columnsDialogOpen}
+        onClose={() => setColumnsDialogOpen(false)}
+        columns={columns}
+        onSave={setColumns}
+      />
     </div>
   );
 }
