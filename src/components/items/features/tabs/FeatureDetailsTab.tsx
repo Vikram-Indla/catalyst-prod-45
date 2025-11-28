@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { FeatureProgressVisualization, type FeatureProgress } from '../FeatureProgressVisualization';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureDetailsTabProps {
@@ -10,8 +11,23 @@ interface FeatureDetailsTabProps {
 }
 
 export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
+  // Mock progress data - in real implementation, this would come from child stories
+  const mockProgress: FeatureProgress = {
+    totalStories: 12,
+    accepted: 8,
+    inProgress: 3,
+    notStarted: 1,
+  };
+
   return (
     <div className="space-y-6">
+      {/* Progress Visualization */}
+      {feature && (
+        <FeatureProgressVisualization 
+          progress={mockProgress} 
+          featureState={feature.status}
+        />
+      )}
       {/* Title */}
       <div className="space-y-2">
         <Label htmlFor="title">Title *</Label>
