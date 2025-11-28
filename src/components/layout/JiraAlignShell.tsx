@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Outlet } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { JiraAlignHeader } from '@/components/ja/JiraAlignHeader';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
 import { ProgramRoomSidebar } from './ProgramRoomSidebar';
@@ -10,7 +12,38 @@ function JiraAlignShellContent() {
   const location = useLocation();
   const { tier, setTier } = useJiraAlignContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
-  const [selectedPI, setSelectedPI] = useState<string | null>('pi-5');
+  
+  // Load actual programs and PIs from database
+  const { data: programs } = useQuery({
+    queryKey: ['programs-for-shell'],
+    queryFn: async () => {
+      const { data } = await supabase.from('programs').select('id, name').order('name').limit(1);
+      return data;
+    },
+  });
+
+  const { data: programIncrements } = useQuery({
+    queryKey: ['pis-for-shell'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('program_increments')
+        .select('id, name')
+        .order('start_date', { ascending: false })
+        .limit(1);
+      return data;
+    },
+  });
+  
+  const defaultProgramId = programs?.[0]?.id || null;
+  const defaultPIId = programIncrements?.[0]?.id || null;
+  const [selectedPI, setSelectedPI] = useState<string | null>(defaultPIId);
+  
+  // Update selectedPI when data loads
+  useEffect(() => {
+    if (defaultPIId && !selectedPI) {
+      setSelectedPI(defaultPIId);
+    }
+  }, [defaultPIId, selectedPI]);
 
   // Automatically set tier based on current route
   useEffect(() => {
@@ -41,7 +74,7 @@ function JiraAlignShellContent() {
                 <LeftContextPanel />
               ) : tier === 'program' ? (
                 <ProgramRoomSidebar
-                  programId="default-program"
+                  programId={defaultProgramId || 'default-program'}
                   expanded={sidebarExpanded}
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
                   selectedPI={selectedPI}
@@ -52,8 +85,8 @@ function JiraAlignShellContent() {
                   portfolioId="default-portfolio"
                   expanded={sidebarExpanded}
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                  selectedPI={selectedPI}
-                  onPIChange={setSelectedPI}
+                  selectedPI={selectedPI || undefined}
+                  onPIChange={(pi) => setSelectedPI(pi)}
                 />
               )}
             </>
