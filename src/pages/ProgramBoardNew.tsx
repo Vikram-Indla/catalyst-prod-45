@@ -205,16 +205,35 @@ export default function ProgramBoard() {
     enabled: !!piId && !!programId,
   });
   
-  // Render feature cards
+  // Render feature cards with proper Jira Align styling
   const renderFeatureCard = (feature: any, sprintId: string) => {
     const statusColor = getFeatureStatusColor(feature);
     const showCheckmark = feature.status === 'done';
     
+    // Small view mode - compact tiles with IDs only
     if (viewMode === 'small') {
       return (
         <div
           key={`${feature.id}-${sprintId}`}
-          className={`inline-block w-4 h-4 rounded-sm ${statusColor} cursor-pointer hover:opacity-80 m-0.5`}
+          className={`inline-flex items-center justify-center w-12 h-6 text-[10px] font-semibold rounded-sm ${statusColor} cursor-pointer hover:ring-1 ring-foreground/20 transition-all shadow-sm`}
+          onClick={() => {
+            setSelectedItem(feature);
+            setQuickViewType('feature');
+            setQuickViewOpen(true);
+          }}
+          title={`#${feature.id} - ${feature.name}`}
+        >
+          {feature.id}
+        </div>
+      );
+    }
+
+    // Heatmap view - tiny squares
+    if (viewMode === 'heatmap') {
+      return (
+        <div
+          key={`${feature.id}-${sprintId}`}
+          className={`inline-block w-3 h-3 rounded-sm ${statusColor} cursor-pointer hover:opacity-80`}
           onClick={() => {
             setSelectedItem(feature);
             setQuickViewType('feature');
@@ -225,45 +244,48 @@ export default function ProgramBoard() {
       );
     }
 
+    // Normal view - full cards with details
     return (
       <div
         key={`${feature.id}-${sprintId}`}
-        className={`relative ${statusColor} rounded p-2 mb-2 cursor-pointer hover:shadow-md transition-shadow group`}
+        className={`relative ${statusColor} rounded shadow-sm border border-foreground/10 cursor-pointer hover:shadow-md transition-all group`}
         onClick={() => {
           setSelectedItem(feature);
           setQuickViewType('feature');
           setQuickViewOpen(true);
         }}
       >
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <div className="font-semibold text-sm text-foreground">
-              {feature.id}
+        <div className="px-2.5 py-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <div className="font-bold text-base leading-tight mb-1">
+                {feature.id}
+              </div>
+              <div className="text-[11px] leading-snug line-clamp-3 opacity-90">
+                {feature.name}
+              </div>
             </div>
-            <div className="text-xs text-foreground/80 line-clamp-2 mt-0.5">
-              {feature.name}
-            </div>
+            {showCheckmark && (
+              <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{color: 'rgba(0,0,0,0.6)'}} />
+            )}
           </div>
-          {showCheckmark && (
-            <Check className="w-4 h-4 flex-shrink-0 text-green-700" />
-          )}
         </div>
         
         {/* Hover tooltip */}
-        <div className="hidden group-hover:block absolute left-0 top-full mt-1 z-50 bg-popover border border-border rounded-lg shadow-lg p-3 min-w-[300px]">
-          <div className="space-y-2">
+        <div className="hidden group-hover:block absolute left-0 top-full mt-1 z-50 bg-popover border border-border rounded shadow-lg p-3 min-w-[320px] max-w-md">
+          <div className="space-y-2 text-xs">
             <div>
-              <span className="text-sm font-semibold text-primary">Feature #{feature.id}</span>
-              <span className="text-sm text-muted-foreground"> - {feature.name}</span>
+              <span className="font-bold">Feature #{feature.id}</span>
+              <span className="text-muted-foreground"> - {feature.name}</span>
             </div>
-            <div className="text-xs">
+            <div>
               <span className="text-muted-foreground">State: </span>
-              <span className="text-foreground">{feature.status}</span>
+              <span className="font-medium">{feature.status}</span>
             </div>
             {(feature.has_unassigned_story || feature.has_story_not_in_sprint) && (
               <div className="border-t pt-2 mt-2">
-                <div className="text-xs font-semibold text-orange-600 uppercase">Planning Issues</div>
-                <div className="mt-1 space-y-1 text-xs text-muted-foreground">
+                <div className="text-xs font-bold text-orange-600 uppercase mb-1">Planning Issues</div>
+                <div className="space-y-0.5 text-xs">
                   {feature.has_unassigned_story && <div>• Unassigned stories</div>}
                   {feature.has_story_not_in_sprint && <div>• Stories not in sprint</div>}
                 </div>
@@ -333,23 +355,26 @@ export default function ProgramBoard() {
   const selectedPI = programIncrements?.find(pi => pi.id === piId);
   
   return (
-    <div className={`min-h-screen ${isFullscreen ? 'p-0' : 'p-6'}`}>
+    <div className={`min-h-screen bg-background ${isFullscreen ? 'p-0' : 'p-6'}`}>
       {/* Header */}
-      <div className="mb-6 space-y-4">
+      <div className="mb-4 space-y-3">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <Grid3x3 className="h-6 w-6 text-muted-foreground" />
-              <h1 className="text-2xl font-semibold">Program Board</h1>
+            <div className="flex items-center gap-3">
+              <Grid3x3 className="h-5 w-5 text-muted-foreground" />
+              <h1 className="text-xl font-semibold">Program Board</h1>
+              <span className="text-sm text-muted-foreground">
+                Are we on-track based on our Program Increment com...
+              </span>
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-xs text-muted-foreground pl-8">
               {selectedPI ? `${new Date(selectedPI.start_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} To ${new Date(selectedPI.end_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : ''}
             </p>
           </div>
           
           <div className="flex items-center gap-2">
             <Select value={viewMode} onValueChange={(v: ViewMode) => setViewMode(v)}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[130px] h-9">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -363,7 +388,7 @@ export default function ProgramBoard() {
               if (action === 'orphans') setOrphansOpen(true);
               if (action === 'history') setHistoryOpen(true);
             }}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[130px] h-9">
                 <SelectValue placeholder="More Actions" />
               </SelectTrigger>
               <SelectContent>
@@ -372,24 +397,26 @@ export default function ProgramBoard() {
               </SelectContent>
             </Select>
             
-            <Button variant="outline" size="sm" onClick={() => setTeamRankOpen(true)}>
+            <Button variant="outline" size="sm" className="h-9" onClick={() => setTeamRankOpen(true)}>
               Team Rank
             </Button>
             
-            <Button variant="outline" size="sm" onClick={handleCaptureBoard}>
-              <Download className="h-4 w-4" />
+            <Button variant="outline" size="sm" className="h-9" onClick={handleCaptureBoard}>
               Capture
             </Button>
             
-            <Button variant="outline" size="sm" onClick={() => setExtraConfigsOpen(true)}>
-              <Settings className="h-4 w-4" />
+            <Button variant="outline" size="sm" className="h-9" onClick={() => setExtraConfigsOpen(true)}>
               Extra Configs
+            </Button>
+            
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFullscreen}>
+              <Maximize className="h-4 w-4" />
             </Button>
           </div>
         </div>
         
         {selectedProgram && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 pl-8">
             <button className="text-sm text-muted-foreground hover:text-foreground">▼</button>
             <span className="text-sm font-medium">Program: {selectedProgram.name}</span>
           </div>
@@ -397,43 +424,43 @@ export default function ProgramBoard() {
       </div>
       
       {/* Board Grid */}
-      <div className="border rounded-lg bg-card overflow-auto">
+      <div className="border border-border rounded bg-card shadow-sm overflow-auto">
         <div className="min-w-max">
           {/* Sprint Headers */}
-          <div className="flex sticky top-0 bg-background z-10 border-b">
-            <div className="w-48 p-3 border-r"></div>
-            <div className="w-48 p-3 border-r text-center text-sm font-medium bg-muted/10">
-              Unplanned Iteration
+          <div className="flex sticky top-0 bg-background z-10 border-b border-border">
+            <div className="w-56 border-r border-border"></div>
+            <div className="w-44 py-2 px-3 border-r border-border text-center bg-muted/20">
+              <div className="text-xs font-medium text-foreground">Unplanned Iteration</div>
             </div>
             {sprints?.map((sprint) => (
-              <div key={sprint.id} className="flex-1 min-w-[120px] p-3 border-r text-center">
-                <div className="font-semibold text-sm">{sprint.code}</div>
-                <div className="text-xs text-muted-foreground">{sprint.sprint_dates}</div>
+              <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border text-center bg-background">
+                <div className="font-semibold text-sm text-foreground">{sprint.code}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">{sprint.sprint_dates}</div>
               </div>
             ))}
           </div>
           
           {/* Objectives row */}
-          <div className="border-b bg-background">
+          <div className="border-b border-border bg-background">
             <div className="flex">
-              <div className="w-48 p-3 border-r bg-muted/30 font-medium text-sm">
+              <div className="w-56 py-2 px-3 border-r border-border bg-muted/20 font-medium text-xs text-foreground">
                 Objectives
               </div>
-              <div className="w-48 p-3 border-r bg-muted/10"></div>
+              <div className="w-44 py-2 px-3 border-r border-border bg-muted/10"></div>
               {sprints?.map((sprint) => (
-                <div key={sprint.id} className="flex-1 min-w-[120px] p-3 border-r bg-muted/10">
-                  <div className="flex gap-1.5 flex-wrap">
-                    {sprint.code === 'S23' && (
+                <div key={sprint.id} className="flex-1 min-w-[140px] py-2 px-3 border-r border-border bg-muted/5">
+                  <div className="flex gap-1 flex-wrap justify-center">
+                    {/* Placeholder objectives - replace with real data */}
+                    {sprint.code === sprint.name && Math.random() > 0.5 && (
                       <>
-                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-green-600 transition-all">1241</div>
-                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-green-600 transition-all">1252</div>
-                      </>
-                    )}
-                    {sprint.code === 'S24' && (
-                      <>
-                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-green-600 transition-all">1456</div>
-                        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-green-600 transition-all">1490</div>
-                        <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center text-xs font-bold text-white cursor-pointer hover:ring-2 ring-yellow-600 transition-all">3495</div>
+                        <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center text-xs font-semibold text-white cursor-pointer hover:ring-2 ring-emerald-600 transition-all shadow-sm">
+                          {Math.floor(1000 + Math.random() * 9000)}
+                        </div>
+                        {Math.random() > 0.6 && (
+                          <div className="w-9 h-9 rounded-full bg-emerald-500 flex items-center justify-center text-xs font-semibold text-white cursor-pointer hover:ring-2 ring-emerald-600 transition-all shadow-sm">
+                            {Math.floor(1000 + Math.random() * 9000)}
+                          </div>
+                        )}
                       </>
                     )}
                   </div>
@@ -442,37 +469,39 @@ export default function ProgramBoard() {
             </div>
           </div>
           
+          {/* Team Header */}
+          <div className="text-xs font-medium py-1.5 px-3 border-b border-border bg-muted/20 text-foreground">Teams</div>
+          
           {/* Team rows */}
-          <div className="text-sm font-medium p-3 border-b bg-muted/30">Teams</div>
           {teams?.map((team) => (
-            <div key={team.id} className="border-b hover:bg-muted/10 transition-colors">
+            <div key={team.id} className="border-b border-border hover:bg-muted/5 transition-colors">
               <div className="flex">
-                <div className="w-48 p-3 border-r font-medium text-sm text-primary flex items-center gap-3">
-                  <div className="w-10 h-10 rounded overflow-hidden bg-muted flex-shrink-0">
+                <div className="w-56 py-2.5 px-3 border-r border-border font-medium text-sm text-primary flex items-center gap-2.5">
+                  <div className="w-12 h-12 rounded overflow-hidden bg-muted flex-shrink-0 shadow-sm border border-border/50">
                     {team.name.includes('Cheetah') && (
-                      <div className="w-full h-full bg-gradient-to-br from-yellow-600 to-yellow-800" style={{backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,.1) 10px, rgba(0,0,0,.1) 20px)'}} />
+                      <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-yellow-700" style={{backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 8px, rgba(0,0,0,.12) 8px, rgba(0,0,0,.12) 16px)'}} />
                     )}
                     {team.name.includes('Giraffe') && (
-                      <div className="w-full h-full bg-gradient-to-br from-yellow-700 to-orange-800" style={{backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(0,0,0,.15) 8px, rgba(0,0,0,.15) 16px)'}} />
+                      <div className="w-full h-full bg-gradient-to-br from-yellow-600 to-orange-700" style={{backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 6px, rgba(0,0,0,.15) 6px, rgba(0,0,0,.15) 12px)'}} />
                     )}
                     {team.name.includes('Hunters') && (
-                      <div className="w-full h-full bg-gradient-to-br from-amber-600 to-amber-800" style={{backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 5px, rgba(0,0,0,.2) 5px, rgba(0,0,0,.2) 10px)'}} />
+                      <div className="w-full h-full bg-gradient-to-br from-amber-700 to-amber-900" style={{backgroundImage: 'repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(0,0,0,.2) 4px, rgba(0,0,0,.2) 8px)'}} />
                     )}
                     {!team.name.includes('Cheetah') && !team.name.includes('Giraffe') && !team.name.includes('Hunters') && (
-                      <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-700" />
+                      <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-cyan-700" />
                     )}
                   </div>
-                  <span>{team.name}</span>
+                  <span className="text-xs text-blue-600 hover:text-blue-700 cursor-pointer font-medium">{team.name}</span>
                 </div>
-                <div className="w-48 p-3 border-r bg-muted/5">
-                  <div className={viewMode === 'small' ? 'flex flex-wrap gap-0.5' : 'space-y-1'}>
+                <div className="w-44 py-2.5 px-2 border-r border-border bg-muted/5">
+                  <div className={viewMode === 'small' ? 'flex flex-wrap gap-1' : 'space-y-1.5'}>
                     {featuresData?.filter((f) => f.team_id === team.id && !f.team_target_completion_sprint_id)
                       .map((feature) => renderFeatureCard(feature, 'unplanned'))}
                   </div>
                 </div>
                 {sprints?.map((sprint) => (
-                  <div key={sprint.id} className="flex-1 min-w-[120px] p-3 border-r">
-                    <div className={viewMode === 'small' ? 'flex flex-wrap gap-0.5' : 'space-y-1'}>
+                  <div key={sprint.id} className="flex-1 min-w-[140px] py-2.5 px-2 border-r border-border bg-background">
+                    <div className={viewMode === 'small' ? 'flex flex-wrap gap-1' : 'space-y-1.5'}>
                       {featuresData?.filter((f) => f.team_id === team.id && f.team_target_completion_sprint_id === sprint.id)
                         .map((feature) => renderFeatureCard(feature, sprint.id))}
                     </div>
