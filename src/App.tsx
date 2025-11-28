@@ -204,6 +204,9 @@ const App = () => (
               <Route path="/admin/permissions" element={<AdminGuard><Permissions /></AdminGuard>} />
               <Route path="/admin/integrations" element={<AdminGuard><Integrations /></AdminGuard>} />
               <Route path="/admin/activity-log" element={<AdminGuard><ActivityLog /></AdminGuard>} />
+              <Route path="/items/epics/:epicId/trace" element={<EpicTraceReport />} />
+              <Route path="/items/epics/:epicId/requirement-hierarchy" element={<EpicRequirementHierarchy />} />
+              <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
               <Route path="/reports-discovery" element={<AdminGuard><ReportsDiscovery /></AdminGuard>} />
               <Route path="/pi-wizard" element={<AdminGuard><PIWizard /></AdminGuard>} />
               <Route path="/jira-integration" element={<AdminGuard><JiraIntegration /></AdminGuard>} />
