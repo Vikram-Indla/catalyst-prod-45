@@ -1,4 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -64,6 +66,22 @@ export function PortfolioRoomSidebar({
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Fetch portfolio details
+  const { data: portfolio } = useQuery({
+    queryKey: ['portfolio', portfolioId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('portfolios')
+        .select('id, name')
+        .eq('id', portfolioId)
+        .maybeSingle();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!portfolioId,
+  });
+
   const handleNavigation = (path: string) => {
     // Don't resolve portfolioId for global routes
     const resolvedPath = path.includes(':portfolioId') 
@@ -106,33 +124,20 @@ export function PortfolioRoomSidebar({
         <div className={cn("px-4 pt-4 pb-3 border-b", !expanded && "px-2")}>
           {expanded && (
             <>
-              {/* Portfolio Dropdown */}
-              <Select value="digital-services">
-                <SelectTrigger className="h-auto py-2 px-3 mb-3 bg-background border-border hover:bg-accent/50">
-                  <div className="flex items-center gap-3 w-full">
-                    <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-                      DS
-                    </div>
-                    <div className="flex-1 text-left min-w-0">
-                      <div className="text-sm font-medium text-foreground truncate">Digital Services</div>
-                      <div className="text-xs text-muted-foreground">Portfolio</div>
-                    </div>
+              {/* Portfolio Display (read-only, controlled by header) */}
+              <div className="py-2 px-3 mb-3 bg-accent/30 border border-border/50 rounded-lg">
+                <div className="flex items-center gap-3 w-full">
+                  <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                    {portfolio?.name?.substring(0, 2).toUpperCase() || 'PF'}
                   </div>
-                </SelectTrigger>
-                <SelectContent className="bg-background border-border z-[100]">
-                  <SelectItem value="digital-services">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold">
-                        DS
-                      </div>
-                      <div>
-                        <div className="text-sm font-medium">Digital Services</div>
-                        <div className="text-xs text-muted-foreground">Portfolio</div>
-                      </div>
+                  <div className="flex-1 text-left min-w-0">
+                    <div className="text-sm font-medium text-foreground truncate">
+                      {portfolio?.name || 'Portfolio'}
                     </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+                    <div className="text-xs text-muted-foreground">Portfolio</div>
+                  </div>
+                </div>
+              </div>
 
               {/* Program Increment Filter */}
               <div>
