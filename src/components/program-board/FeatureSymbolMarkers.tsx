@@ -1,76 +1,133 @@
-import { AlertTriangle, Flag, Star, Split } from "lucide-react";
+import { AlertTriangle, Flag, Star, AlertCircle, Link2, Diamond, Hexagon } from "lucide-react";
 
 // Use database feature type structure
 interface ProgramBoardFeature {
   id: string;
   blocked?: boolean | null;
+  is_orphan_on_board?: boolean | null;
+  orphan_board_teams?: string[] | null;
 }
 
 interface FeatureSymbolMarkersProps {
   feature: ProgramBoardFeature;
   size?: number;
+  hasMilestone?: boolean;
+  hasObjective?: boolean;
+  hasOutsideDependency?: boolean;
+  hasWorkItemLink?: boolean;
+  hasPlanningError?: boolean;
 }
 
-export function FeatureSymbolMarkers({ feature, size = 14 }: FeatureSymbolMarkersProps) {
+export function FeatureSymbolMarkers({ 
+  feature, 
+  size = 14,
+  hasMilestone,
+  hasObjective,
+  hasOutsideDependency,
+  hasWorkItemLink,
+  hasPlanningError,
+}: FeatureSymbolMarkersProps) {
   const markers = [];
+  
+  // Planning Error Warning (highest priority)
+  if (hasPlanningError) {
+    markers.push(
+      <div key="planning-error" title="Planning Error: Invalid dates or configuration">
+        <AlertCircle 
+          size={size} 
+          className="text-red-600" 
+          fill="currentColor"
+        />
+      </div>
+    );
+  }
 
-  // Dependency marker (triangle warning)
+  // Blocked/Dependency marker
   if (feature.blocked) {
     markers.push(
-      <AlertTriangle 
-        key="dependency" 
-        size={size} 
-        className="text-orange-500" 
-        fill="currentColor"
-      />
+      <div key="blocked" title="Feature is blocked">
+        <AlertTriangle 
+          size={size} 
+          className="text-orange-500" 
+          fill="currentColor"
+        />
+      </div>
     );
   }
-
-  // Objective marker (flag)
-  // Check if feature is linked to objectives (mock check for now)
-  const hasObjective = Math.random() > 0.7;
-  if (hasObjective) {
+  
+  // Outside Dependency Arrow
+  if (hasOutsideDependency) {
     markers.push(
-      <Flag 
-        key="objective" 
-        size={size} 
-        className="text-blue-500" 
-        fill="currentColor"
-      />
+      <div key="outside-dep" title="Outside Dependency">
+        <svg 
+          width={size}
+          height={size}
+          viewBox="0 0 24 24" 
+          className="text-orange-600"
+          fill="currentColor"
+        >
+          <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+        </svg>
+      </div>
     );
   }
 
-  // Milestone marker (star)
-  // Check if feature has milestone (mock check for now)
-  const hasMilestone = Math.random() > 0.8;
+  // Milestone Diamond
   if (hasMilestone) {
     markers.push(
-      <Star 
-        key="milestone" 
-        size={size} 
-        className="text-yellow-500" 
-        fill="currentColor"
-      />
+      <div key="milestone" title="Has Milestone">
+        <Diamond 
+          size={size} 
+          className="text-yellow-600" 
+          fill="currentColor"
+        />
+      </div>
     );
   }
 
-  // Split feature marker
-  // Check if feature is split across teams (mock check for now)
-  const isSplit = Math.random() > 0.9;
-  if (isSplit) {
+  // Objective Hexagon
+  if (hasObjective) {
     markers.push(
-      <Split 
-        key="split" 
-        size={size} 
-        className="text-purple-500"
-      />
+      <div key="objective" title="Linked to PI Objective">
+        <Hexagon 
+          size={size} 
+          className="text-blue-600" 
+          fill="currentColor"
+        />
+      </div>
+    );
+  }
+  
+  // Work Item Link
+  if (hasWorkItemLink) {
+    markers.push(
+      <div key="work-link" title="Has Work Item Links">
+        <Link2 
+          size={size} 
+          className="text-purple-500"
+        />
+      </div>
+    );
+  }
+
+  // Split Feature Indicator (orphan on board)
+  if (feature.is_orphan_on_board && feature.orphan_board_teams && feature.orphan_board_teams.length > 1) {
+    markers.push(
+      <div 
+        key="split"
+        className="flex items-center gap-0.5"
+        title={`Split across ${feature.orphan_board_teams.length} teams`}
+      >
+        <div className="h-3 w-1 bg-indigo-500 rounded-full" />
+        <div className="h-3 w-1 bg-cyan-500 rounded-full" />
+      </div>
     );
   }
 
   if (markers.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-1 flex-wrap">
       {markers}
     </div>
   );
