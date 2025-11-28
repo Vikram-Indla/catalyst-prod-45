@@ -51,7 +51,7 @@ const getEnterpriseMenuItems = (): MenuItem[] => [
 const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): MenuItem[] => [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: portfolioId ? `/portfolio/${portfolioId}/room` : '/portfolio-room', tiers: ['portfolio', 'program', 'team'] },
   { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives', tiers: ['portfolio', 'program'] },
-  { id: 'backlog', label: 'Backlog', icon: List, path: '/backlog/epics', tiers: ['portfolio', 'program'] },
+  { id: 'backlog', label: 'Backlog', icon: List, path: '/items/epics', tiers: ['portfolio', 'program'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['portfolio', 'program'] },
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: tier === 'portfolio' ? '/portfolio/okr-hub' : tier === 'program' ? '/program/okr-hub' : '/team/okr-hub', tiers: ['portfolio', 'program', 'team'] },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/value-stream', tiers: ['portfolio', 'program'] },

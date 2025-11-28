@@ -123,8 +123,8 @@ const App = () => (
               <Route path="/home" element={<Home />} />
               <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
               <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
-              <Route path="/portfolio/:portfolioId/epics" element={<Navigate to="/backlog/epics" replace />} />
-              <Route path="/portfolio/:portfolioId/backlog" element={<Navigate to="/backlog/epics" replace />} />
+              <Route path="/portfolio/:portfolioId/epics" element={<Navigate to="/items/epics" replace />} />
+              <Route path="/portfolio/:portfolioId/backlog" element={<Navigate to="/items/epics" replace />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<PlaceholderPage />} />
@@ -161,9 +161,10 @@ const App = () => (
               <Route path="/enterprise/success-criteria" element={<EnterpriseSuccessCriteria />} />
               <Route path="/themes" element={<Themes />} />
               <Route path="/initiatives" element={<Initiatives />} />
-              <Route path="/epics" element={<Navigate to="/backlog/epics" replace />} />
+              <Route path="/epics" element={<Navigate to="/items/epics" replace />} />
+              <Route path="/backlog/epics" element={<Navigate to="/items/epics" replace />} />
               <Route path="/features" element={<Features />} />
-              <Route path="/items/epics" element={<EpicsPage />} />
+              <Route path="/items/epics" element={<EpicBacklogWithSidebar />} />
               <Route path="/items/epics/recycle-bin" element={<EpicsRecycleBinPage />} />
               <Route path="/items/epics/canceled" element={<EpicsCanceledPage />} />
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
@@ -225,7 +226,6 @@ const App = () => (
               <Route path="/dev/epic-backlog-tests" element={<EpicBacklogTests />} />
               <Route path="/dev/forecast-self-test" element={<ForecastSelfTest />} />
               <Route path="/dev/sources" element={<SourcesReference />} />
-              <Route path="/backlog/epics" element={<EpicBacklogWithSidebar />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
