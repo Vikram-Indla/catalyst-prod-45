@@ -46,14 +46,19 @@ export function EpicListDragDrop({
         global_rank: index + 1
       }));
 
-      for (const update of updates) {
-        const { error } = await supabase
+      // Update all ranks in parallel for much faster performance
+      const updatePromises = updates.map(update =>
+        supabase
           .from('epics')
           .update({ global_rank: update.global_rank })
-          .eq('id', update.id);
-        
-        if (error) throw error;
-      }
+          .eq('id', update.id)
+      );
+
+      const results = await Promise.all(updatePromises);
+      
+      // Check if any updates failed
+      const errors = results.filter(r => r.error);
+      if (errors.length > 0) throw new Error('Some updates failed');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
