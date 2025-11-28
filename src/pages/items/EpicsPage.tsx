@@ -21,6 +21,8 @@ import { EpicDialog } from '@/components/forms/EpicDialog';
 import { WSJFPrioritizationDialog } from '@/components/items/epics/dialogs/WSJFPrioritizationDialog';
 import { MassMoveDialog } from '@/components/items/epics/dialogs/MassMoveDialog';
 import { EpicKanbanView } from '@/components/items/epics/EpicKanbanView';
+import { EpicProcessFlowKanban } from '@/components/items/epics/EpicProcessFlowKanban';
+import { EpicKanbanCustom } from '@/components/items/epics/EpicKanbanCustom';
 import { EpicListDragDrop } from '@/components/items/epics/EpicListDragDrop';
 import { EpicContextMenu } from '@/components/items/epics/EpicContextMenu';
 import { MoveToPositionDialog } from '@/components/items/epics/dialogs/MoveToPositionDialog';
@@ -58,7 +60,8 @@ export default function EpicsPage() {
   const [pullRankOpen, setPullRankOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [contextEpic, setContextEpic] = useState<any>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'kanban' | 'process-flow' | 'custom'>('list');
+  const [kanbanSubView, setKanbanSubView] = useState<'state' | 'process' | 'custom'>('state');
   const [columnsToShow, setColumnsToShow] = useState([
     'name', 'theme', 'program', 'state', 'health', 'dates', 'owner'
   ]);
@@ -205,7 +208,7 @@ export default function EpicsPage() {
   const handleMoreAction = (action: string) => {
     switch (action) {
       case 'bottom-up-estimate':
-        toast.info('Bottom-Up Estimate calculation started');
+        calculateBottomUpEstimate();
         break;
       case 'prioritization':
         setWSJFDialogOpen(true);
@@ -254,7 +257,7 @@ export default function EpicsPage() {
         window.open('/reports/work-tree', '_blank');
         break;
       case 'print-cards':
-        toast.info('Printing epic cards');
+        printEpicCards();
         break;
       case 'recycle-bin':
         window.location.href = '/items/epics/recycle-bin';
@@ -310,6 +313,106 @@ export default function EpicsPage() {
     );
   };
 
+  const calculateBottomUpEstimate = async () => {
+    if (selectedRows.length === 0) {
+      toast.error('Please select epics to calculate estimates');
+      return;
+    }
+
+    try {
+      // For each selected epic, calculate bottom-up estimate from features
+      for (const epicId of selectedRows) {
+        const { data: features } = await supabase
+          .from('features')
+          .select('estimate_points')
+          .eq('epic_id', epicId);
+
+        const totalEstimate = features?.reduce((sum, f) => sum + (f.estimate_points || 0), 0) || 0;
+
+        await supabase
+          .from('epics')
+          .update({ estimate: totalEstimate })
+          .eq('id', epicId);
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      toast.success(`Bottom-up estimates calculated for ${selectedRows.length} epic(s)`);
+      setSelectedRows([]);
+    } catch (error) {
+      toast.error('Failed to calculate bottom-up estimates');
+    }
+  };
+
+  const printEpicCards = () => {
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    const selectedEpics = epics?.filter(e => selectedRows.length === 0 || selectedRows.includes(e.id)) || [];
+    
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Epic Cards</title>
+          <style>
+            @media print {
+              @page { margin: 1cm; size: A4; }
+              body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+              .card { 
+                page-break-inside: avoid; 
+                border: 2px solid #333; 
+                padding: 20px; 
+                margin-bottom: 20px;
+                border-radius: 8px;
+              }
+              .card-header { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+              .card-key { color: #666; font-size: 14px; }
+              .card-body { margin-top: 15px; }
+              .card-footer { margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd; }
+              .badge { 
+                display: inline-block; 
+                padding: 4px 8px; 
+                background: #e5e7eb; 
+                border-radius: 4px;
+                margin-right: 8px;
+                font-size: 12px;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <h1 style="text-align: center; margin-bottom: 30px;">Epic Cards</h1>
+          ${selectedEpics.map(epic => `
+            <div class="card">
+              <div class="card-header">
+                ${epic.name}
+              </div>
+              <div class="card-key">${epic.epic_key || epic.id.slice(0, 8)}</div>
+              <div class="card-body">
+                ${epic.description ? `<p>${epic.description}</p>` : ''}
+              </div>
+              <div class="card-footer">
+                ${epic.state ? `<span class="badge">State: ${epic.state.replace(/_/g, ' ')}</span>` : ''}
+                ${epic.health ? `<span class="badge">Health: ${epic.health}</span>` : ''}
+                ${epic.estimate ? `<span class="badge">Estimate: ${epic.estimate} pts</span>` : ''}
+                ${epic.strategic_themes?.name ? `<span class="badge">Theme: ${epic.strategic_themes.name}</span>` : ''}
+              </div>
+            </div>
+          `).join('')}
+          <script>
+            window.onload = function() { 
+              window.print(); 
+              window.onafterprint = function() { window.close(); };
+            };
+          </script>
+        </body>
+      </html>
+    `;
+
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
@@ -322,18 +425,29 @@ export default function EpicsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)}>
-              <TabsList>
-                <TabsTrigger value="list">
-                  <LayoutList className="h-4 w-4 mr-2" />
-                  List
-                </TabsTrigger>
-                <TabsTrigger value="kanban">
-                  <LayoutGrid className="h-4 w-4 mr-2" />
-                  Kanban
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <div className="flex items-center gap-2">
+              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)}>
+                <TabsList>
+                  <TabsTrigger value="list">
+                    <LayoutList className="h-4 w-4 mr-2" />
+                    List
+                  </TabsTrigger>
+                  <TabsTrigger value="kanban">
+                    <LayoutGrid className="h-4 w-4 mr-2" />
+                    Kanban
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              {viewMode === 'kanban' && (
+                <Tabs value={kanbanSubView} onValueChange={(v) => setKanbanSubView(v as any)}>
+                  <TabsList>
+                    <TabsTrigger value="state">State</TabsTrigger>
+                    <TabsTrigger value="process">Process Flow</TabsTrigger>
+                    <TabsTrigger value="custom">Custom</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+              )}
+            </div>
             <Button onClick={() => setCreateDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Epic
@@ -423,14 +537,39 @@ export default function EpicsPage() {
       {/* Table/Kanban View */}
       <div className="flex-1 overflow-auto px-6 py-4">
         {viewMode === 'kanban' ? (
-          <EpicKanbanView
-            epics={epics || []}
-            onEpicClick={setSelectedEpicId}
-            onContextMenu={(epic, e) => {
-              e.preventDefault();
-              setContextEpic(epic);
-            }}
-          />
+          <>
+            {kanbanSubView === 'state' && (
+              <EpicKanbanView
+                epics={epics || []}
+                onEpicClick={setSelectedEpicId}
+                onContextMenu={(epic, e) => {
+                  e.preventDefault();
+                  setContextEpic(epic);
+                }}
+              />
+            )}
+            {kanbanSubView === 'process' && (
+              <EpicProcessFlowKanban
+                epics={epics || []}
+                onEpicClick={setSelectedEpicId}
+                onContextMenu={(epic, e) => {
+                  e.preventDefault();
+                  setContextEpic(epic);
+                }}
+              />
+            )}
+            {kanbanSubView === 'custom' && (
+              <EpicKanbanCustom
+                epics={epics || []}
+                onEpicClick={setSelectedEpicId}
+                onContextMenu={(epic, e) => {
+                  e.preventDefault();
+                  setContextEpic(epic);
+                }}
+                onConfigureColumns={() => toast.info('Column configuration coming soon')}
+              />
+            )}
+          </>
         ) : (
           <div className="border rounded-lg">
             <Table>
