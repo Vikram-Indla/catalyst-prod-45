@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation, Outlet } from 'react-router-dom';
+import { useLocation, useParams, Outlet } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { JiraAlignHeader } from '@/components/ja/JiraAlignHeader';
@@ -10,18 +10,13 @@ import { JiraAlignContextProvider, useJiraAlignContext } from '@/contexts/JiraAl
 
 function JiraAlignShellContent() {
   const location = useLocation();
+  const params = useParams<{ programId?: string }>();
   const { tier, setTier } = useJiraAlignContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   
-  // Load actual programs and PIs from database
-  const { data: programs } = useQuery({
-    queryKey: ['programs-for-shell'],
-    queryFn: async () => {
-      const { data } = await supabase.from('programs').select('id, name').order('name').limit(1);
-      return data;
-    },
-  });
-
+  // Extract programId from URL params
+  const currentProgramId = params.programId || null;
+  
   const { data: programIncrements } = useQuery({
     queryKey: ['pis-for-shell'],
     queryFn: async () => {
@@ -35,7 +30,6 @@ function JiraAlignShellContent() {
     },
   });
   
-  const defaultProgramId = programs?.[0]?.id || null;
   const defaultPIId = programIncrements?.[0]?.id || null;
   const [selectedPI, setSelectedPI] = useState<string | null>(defaultPIId);
   
@@ -73,9 +67,9 @@ function JiraAlignShellContent() {
             <>
               {tier === 'enterprise' ? (
                 <LeftContextPanel />
-              ) : tier === 'program' ? (
+              ) : tier === 'program' && currentProgramId ? (
                 <ProgramRoomSidebar
-                  programId={defaultProgramId || 'default-program'}
+                  programId={currentProgramId}
                 />
               ) : (
                 <PortfolioRoomSidebar
