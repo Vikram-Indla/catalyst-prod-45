@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
@@ -70,13 +70,37 @@ export default function ProgramBoard() {
   });
   
   // Resolve actual UUIDs from params (could be slugs or UUIDs)
-  const programId = programParam?.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
-    ? programParam
-    : programs?.find(p => p.name.toLowerCase().replace(/\s+/g, '-') === programParam?.toLowerCase())?.id || programs?.[0]?.id;
+  const programId = useMemo(() => {
+    if (!programParam) return programs?.[0]?.id;
+    
+    // Check if it's already a UUID
+    if (programParam.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+      return programParam;
+    }
+    
+    // Try to match by slug (case-insensitive)
+    const matchedProgram = programs?.find(p => 
+      p.name.toLowerCase().replace(/\s+/g, '-') === programParam.toLowerCase()
+    );
+    
+    return matchedProgram?.id || programs?.[0]?.id;
+  }, [programParam, programs]);
   
-  const piId = piParam?.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
-    ? piParam
-    : programIncrements?.find(pi => pi.name.toLowerCase() === piParam?.toLowerCase())?.id || programIncrements?.[0]?.id;
+  const piId = useMemo(() => {
+    if (!piParam) return programIncrements?.[0]?.id;
+    
+    // Check if it's already a UUID
+    if (piParam.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+      return piParam;
+    }
+    
+    // Try to match by name (case-insensitive)
+    const matchedPI = programIncrements?.find(pi => 
+      pi.name.toLowerCase() === piParam.toLowerCase()
+    );
+    
+    return matchedPI?.id || programIncrements?.[0]?.id;
+  }, [piParam, programIncrements]);
 
   console.log('Program Board Debug:', {
     programParam,
@@ -90,40 +114,38 @@ export default function ProgramBoard() {
   const { data: teams } = useQuery({
     queryKey: ['teams', programId],
     queryFn: async () => {
-      // Get all teams first
+      if (!programId || !programId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        return [];
+      }
+
       const { data: allTeams, error: teamsError } = await supabase
         .from('teams')
-        .select('*');
+        .select('*')
+        .eq('program_id', programId);
       
       if (teamsError) throw teamsError;
       
-      // If no program ID or not a UUID, return all teams sorted by name
-      if (!programId || !programId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-        return allTeams.sort((a, b) => a.name.localeCompare(b.name));
-      }
-      
-      // Get rankings for this program
       const { data: rankings } = await supabase
         .from('program_team_rankings')
         .select('team_id, rank_order')
         .eq('program_id', programId)
         .order('rank_order');
       
-      // Filter teams by program
-      const programTeams = allTeams.filter(t => t.program_id === programId);
-      
       if (rankings && rankings.length > 0) {
         const rankMap = new Map(rankings.map(r => [r.team_id, r.rank_order]));
-        return programTeams.sort((a, b) => {
+        const sortedTeams = allTeams.sort((a, b) => {
           const rankA = rankMap.get(a.id) ?? 999;
           const rankB = rankMap.get(b.id) ?? 999;
           return rankA - rankB;
         });
+        console.log('Teams loaded:', sortedTeams.length, sortedTeams.map(t => ({ id: t.id, name: t.name, rank: rankMap.get(t.id) ?? 999 })));
+        return sortedTeams;
       }
       
-      return programTeams.sort((a, b) => a.name.localeCompare(b.name));
+      console.log('Teams loaded (no rankings):', allTeams.length, allTeams.map(t => ({ id: t.id, name: t.name })));
+      return allTeams.sort((a, b) => a.name.localeCompare(b.name));
     },
-    enabled: true,
+    enabled: !!programId,
   });
   
   const { data: sprints } = useQuery({
@@ -136,13 +158,17 @@ export default function ProgramBoard() {
         .eq('pi_id', piId)
         .order('start_date');
       if (error) throw error;
-      return data.map((iteration, idx) => ({
+      
+      const sprints = data.map((iteration) => ({
         ...iteration,
-        code: `S${23 + idx}`,
+        code: iteration.name, // Use actual sprint name instead of generating S23, S24...
         sprint_dates: iteration.start_date && iteration.end_date
           ? `${new Date(iteration.start_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${new Date(iteration.end_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
           : ''
       }));
+      
+      console.log('Sprints loaded:', sprints.length, sprints.map(s => ({ id: s.id, code: s.code, name: s.name })));
+      return sprints;
     },
     enabled: !!piId,
   });
@@ -150,26 +176,33 @@ export default function ProgramBoard() {
   const { data: featuresData } = useQuery({
     queryKey: ['program-board-features', programId, piId],
     queryFn: async () => {
-      if (!piId) return [];
+      if (!piId || !programId) return [];
       
-      // If programId is provided and valid, filter by it
-      let query = supabase
+      const { data, error } = await supabase
         .from('features')
         .select('*')
-        .eq('pi_id', piId);
+        .eq('pi_id', piId)
+        .eq('program_id', programId);
       
-      // Only filter by program if we have a valid UUID
-      if (programId && programId.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
-        query = query.eq('program_id', programId);
-      }
-      
-      const { data, error } = await query;
       if (error) throw error;
       
-      console.log('Loaded features:', data?.length, 'for PI:', piId, 'program:', programId);
+      // Group by team for debugging
+      const byTeam = data.reduce((acc: any, f: any) => {
+        const teamId = f.team_id || 'unassigned';
+        if (!acc[teamId]) acc[teamId] = [];
+        acc[teamId].push(f);
+        return acc;
+      }, {});
+      
+      console.log('Features loaded:', data?.length, 'grouped by team:', 
+        Object.entries(byTeam).map(([teamId, features]: [string, any]) => 
+          `${teamId}: ${features.length} features`
+        ).join(', ')
+      );
+      
       return data;
     },
-    enabled: !!piId,
+    enabled: !!piId && !!programId,
   });
   
   // Render feature cards
