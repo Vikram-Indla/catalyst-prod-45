@@ -57,12 +57,12 @@ function JiraAlignShellContent() {
   }, [location.pathname, tier, setTier]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-background">
       {/* Global Header - New Jira Align Style */}
       <JiraAlignHeader />
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on Tier and Route */}
-        <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
           {/* No sidebar for Home route */}
           {location.pathname !== '/home' && (
             <>
@@ -83,11 +83,11 @@ function JiraAlignShellContent() {
               ) : null}
             </>
           )}
-          <main className="flex-1 overflow-auto">
-            <Outlet />
-          </main>
-        </div>
+        <main className="flex-1 overflow-auto">
+          <Outlet />
+        </main>
       </div>
+    </div>
   );
 }
 
