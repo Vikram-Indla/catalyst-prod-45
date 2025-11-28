@@ -11,6 +11,7 @@ import { ItemsDropdown } from './dropdowns/ItemsDropdown';
 import { CreateDropdown } from './dropdowns/CreateDropdown';
 import { NotificationsPanel } from './dropdowns/NotificationsPanel';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
+import { ProgramRoomSidebar } from './ProgramRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { GlobalSearch } from './GlobalSearch';
 import { JiraAlignContextProvider, useJiraAlignContext } from '@/contexts/JiraAlignContext';
@@ -239,6 +240,14 @@ function JiraAlignShellContent() {
             <>
               {tier === 'enterprise' ? (
                 <LeftContextPanel />
+              ) : tier === 'program' ? (
+                <ProgramRoomSidebar
+                  programId="default-program"
+                  expanded={sidebarExpanded}
+                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                  selectedPI={selectedPI}
+                  onPIChange={setSelectedPI}
+                />
               ) : (
                 <PortfolioRoomSidebar
                   portfolioId="default-portfolio"
