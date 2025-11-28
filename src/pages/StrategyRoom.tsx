@@ -294,7 +294,7 @@ export default function StrategyRoom() {
         open={objectiveDialogOpen}
         onClose={() => { setObjectiveDialogOpen(false); setEditingObjectiveId(undefined); }}
         objectiveId={editingObjectiveId}
-        scopeType={activeTab as 'company' | 'portfolio' | 'program'}
+        scopeType={activeTab === 'company' ? 'enterprise' : activeTab as 'portfolio' | 'program'}
       />
 
       <KeyResultDialog

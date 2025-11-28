@@ -1,27 +1,33 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
 import { toast } from 'sonner';
 
 const formSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  objective_level_id: z.string().min(1, 'Objective level is required'),
+  summary: z.string().min(1, 'Objective summary is required'),
+  description: z.string().optional(),
+  tier: z.enum(['portfolio', 'program', 'team', 'solution']),
+  portfolio_id: z.string().optional(),
+  program_id: z.string().optional(),
+  team_id: z.string().optional(),
+  parent_objective_id: z.string().optional(),
+  owner_id: z.string().optional(),
+  status: z.enum(['on_track', 'at_risk', 'off_track', 'pending', 'completed', 'paused']),
   start_date: z.string().optional(),
-  end_date: z.string().optional(),
-  confidence: z.enum(['high', 'med', 'low']),
-  progress_pct: z.number().min(0).max(100).optional(),
-  theme_ids: z.array(z.string()).optional(),
-  initiative_ids: z.array(z.string()).optional(),
+  due_date: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  program_increment_ids: z.array(z.string()).optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -30,73 +36,138 @@ interface ObjectiveDialogProps {
   open: boolean;
   onClose: () => void;
   objectiveId?: string;
-  scopeType?: 'company' | 'portfolio' | 'program';
+  scopeType?: 'portfolio' | 'program' | 'team' | 'enterprise';
+  scopeId?: string;
 }
 
-export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: ObjectiveDialogProps) {
+export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portfolio', scopeId }: ObjectiveDialogProps) {
   const queryClient = useQueryClient();
   const isEdit = !!objectiveId;
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      objective_level_id: '',
+      summary: '',
+      description: '',
+      tier: 'portfolio',
+      portfolio_id: scopeType === 'portfolio' ? scopeId : '',
+      program_id: scopeType === 'program' ? scopeId : '',
+      team_id: scopeType === 'team' ? scopeId : '',
+      parent_objective_id: '',
+      owner_id: '',
+      status: 'pending',
       start_date: '',
-      end_date: '',
-      confidence: 'med',
-      progress_pct: 0,
-      theme_ids: [],
-      initiative_ids: [],
+      due_date: '',
+      tags: [],
+      program_increment_ids: [],
     },
   });
 
-  const { data: objectiveLevels } = useQuery({
-    queryKey: ['objective-levels', scopeType],
+  const selectedTier = form.watch('tier');
+  const [currentTag, setCurrentTag] = useState('');
+
+  // Fetch portfolios
+  const { data: portfolios } = useQuery({
+    queryKey: ['portfolios'],
     queryFn: async () => {
-      let query = supabase.from('objective_levels').select('*');
-      if (scopeType) {
-        query = query.eq('scope_type', scopeType);
+      const { data, error } = await supabase
+        .from('portfolios')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch programs
+  const { data: programs } = useQuery({
+    queryKey: ['programs', form.watch('portfolio_id')],
+    queryFn: async () => {
+      let query = supabase.from('programs').select('id, name, portfolio_id').order('name');
+      const portfolioId = form.watch('portfolio_id');
+      if (portfolioId) {
+        query = query.eq('portfolio_id', portfolioId);
       }
-      const { data, error } = await query.order('name');
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
   });
 
-  const { data: themes } = useQuery({
-    queryKey: ['strategic-themes'],
+  // Fetch teams
+  const { data: teams } = useQuery({
+    queryKey: ['teams', form.watch('program_id')],
+    queryFn: async () => {
+      let query = supabase.from('teams').select('id, name, program_id').order('name');
+      const programId = form.watch('program_id');
+      if (programId) {
+        query = query.eq('program_id', programId);
+      }
+      const { data, error } = await query;
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch program increments
+  const { data: programIncrements } = useQuery({
+    queryKey: ['program-increments'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('strategic_themes')
+        .from('program_increments')
         .select('id, name')
-        .eq('status', 'active')
-        .order('name');
+        .order('start_date', { ascending: false });
       if (error) throw error;
       return data;
     },
   });
 
-  const { data: initiatives } = useQuery({
-    queryKey: ['initiatives'],
+  // Fetch users for owner selection
+  const { data: users } = useQuery({
+    queryKey: ['users-list'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('initiatives')
-        .select('id, name')
-        .in('status', ['proposed', 'active'])
-        .order('name');
+        .from('profiles')
+        .select('id, full_name, email')
+        .order('full_name');
       if (error) throw error;
       return data;
     },
   });
 
+  // Fetch parent objectives (filtered by tier hierarchy)
+  const { data: parentObjectives } = useQuery({
+    queryKey: ['parent-objectives', selectedTier],
+    queryFn: async () => {
+      const tierHierarchy: Record<string, string[]> = {
+        team: ['program', 'portfolio', 'solution'],
+        program: ['portfolio', 'solution'],
+        solution: ['portfolio'],
+        portfolio: [],
+      };
+      
+      const allowedTiers = tierHierarchy[selectedTier] || [];
+      if (allowedTiers.length === 0) return [];
+
+      const { data, error } = await supabase
+        .from('objectives')
+        .select('id, summary, tier')
+        .in('tier', allowedTiers)
+        .order('summary');
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Fetch existing objective for edit mode
   const { data: existingObjective } = useQuery({
     queryKey: ['objective', objectiveId],
     queryFn: async () => {
+      if (!objectiveId) return null;
       const { data, error } = await supabase
         .from('objectives')
         .select('*')
-        .eq('id', objectiveId!)
+        .eq('id', objectiveId)
         .single();
       if (error) throw error;
       return data;
@@ -104,60 +175,47 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
     enabled: isEdit,
   });
 
-  const { data: existingThemeLinks } = useQuery({
-    queryKey: ['objective-theme-links', objectiveId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('objective_theme_links')
-        .select('theme_id')
-        .eq('objective_id', objectiveId!);
-      if (error) throw error;
-      return data.map(link => link.theme_id);
-    },
-    enabled: isEdit,
-  });
-
-  const { data: existingInitiativeLinks } = useQuery({
-    queryKey: ['objective-initiative-links', objectiveId],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('objective_initiative_links')
-        .select('initiative_id')
-        .eq('objective_id', objectiveId!);
-      if (error) throw error;
-      return data.map(link => link.initiative_id);
-    },
-    enabled: isEdit,
-  });
-
   useEffect(() => {
     if (existingObjective) {
       form.reset({
-        name: existingObjective.name,
-        objective_level_id: existingObjective.objective_level_id,
+        summary: existingObjective.summary || '',
+        description: existingObjective.description || '',
+        tier: (existingObjective.tier as 'portfolio' | 'program' | 'team' | 'solution') || 'portfolio',
+        portfolio_id: existingObjective.portfolio_id || '',
+        program_id: existingObjective.program_id || '',
+        team_id: existingObjective.team_id || '',
+        parent_objective_id: existingObjective.parent_objective_id || '',
+        owner_id: existingObjective.owner_id || '',
+        status: (existingObjective.status as 'on_track' | 'at_risk' | 'off_track' | 'pending' | 'completed' | 'paused') || 'pending',
         start_date: existingObjective.start_date || '',
-        end_date: existingObjective.end_date || '',
-        confidence: existingObjective.confidence || 'med',
-        progress_pct: existingObjective.progress_pct || 0,
-        theme_ids: existingThemeLinks || [],
-        initiative_ids: existingInitiativeLinks || [],
+        due_date: existingObjective.due_date || '',
+        tags: existingObjective.tags || [],
+        program_increment_ids: (Array.isArray(existingObjective.program_increment_ids)
+          ? existingObjective.program_increment_ids.filter((id): id is string => typeof id === 'string')
+          : []),
       });
     }
-  }, [existingObjective, existingThemeLinks, existingInitiativeLinks, form]);
+  }, [existingObjective, form]);
 
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
-      const payload = {
-        name: data.name,
-        objective_level_id: data.objective_level_id,
+      const payload: any = {
+        summary: data.summary,
+        description: data.description || null,
+        tier: data.tier,
+        portfolio_id: data.portfolio_id || null,
+        program_id: data.program_id || null,
+        team_id: data.team_id || null,
+        parent_objective_id: data.parent_objective_id || null,
+        owner_id: data.owner_id || null,
+        status: data.status,
         start_date: data.start_date || null,
-        end_date: data.end_date || null,
-        confidence: data.confidence,
-        progress_pct: data.progress_pct || 0,
+        due_date: data.due_date || null,
+        tags: data.tags || [],
+        program_increment_ids: data.program_increment_ids || [],
+        level: data.tier, // Map tier to level field
       };
 
-      let objId = objectiveId;
-      
       if (isEdit) {
         const { error } = await supabase
           .from('objectives')
@@ -165,44 +223,19 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
           .eq('id', objectiveId);
         if (error) throw error;
       } else {
-        const { data: newObj, error } = await supabase
+        const { error } = await supabase
           .from('objectives')
-          .insert(payload)
-          .select()
-          .single();
-        if (error) throw error;
-        objId = newObj.id;
-      }
-
-      // Update theme links
-      await supabase.from('objective_theme_links').delete().eq('objective_id', objId);
-      if (data.theme_ids && data.theme_ids.length > 0) {
-        const themeLinks = data.theme_ids.map(themeId => ({
-          objective_id: objId,
-          theme_id: themeId,
-        }));
-        const { error } = await supabase.from('objective_theme_links').insert(themeLinks);
-        if (error) throw error;
-      }
-
-      // Update initiative links
-      await supabase.from('objective_initiative_links').delete().eq('objective_id', objId);
-      if (data.initiative_ids && data.initiative_ids.length > 0) {
-        const initiativeLinks = data.initiative_ids.map(initiativeId => ({
-          objective_id: objId,
-          initiative_id: initiativeId,
-        }));
-        const { error } = await supabase.from('objective_initiative_links').insert(initiativeLinks);
+          .insert(payload);
         if (error) throw error;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['objectives'] });
-      toast.success(isEdit ? 'Objective updated' : 'Objective created');
+      toast.success(isEdit ? 'Objective updated successfully' : 'Objective created successfully');
       onClose();
       form.reset();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(`Failed to ${isEdit ? 'update' : 'create'} objective: ${error.message}`);
     },
   });
@@ -211,44 +244,183 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
     mutation.mutate(data);
   };
 
+  const addTag = () => {
+    if (currentTag.trim()) {
+      const currentTags = form.getValues('tags') || [];
+      if (!currentTags.includes(currentTag.trim())) {
+        form.setValue('tags', [...currentTags, currentTag.trim()]);
+        setCurrentTag('');
+      }
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    const currentTags = form.getValues('tags') || [];
+    form.setValue('tags', currentTags.filter(tag => tag !== tagToRemove));
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>{isEdit ? 'Edit' : 'Create'} Objective</DialogTitle>
-        </DialogHeader>
+    <Sheet open={open} onOpenChange={onClose}>
+      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>{isEdit ? 'Edit Objective' : 'Create New Objective'}</SheetTitle>
+        </SheetHeader>
+
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
+            {/* Objective Summary */}
             <FormField
               control={form.control}
-              name="name"
+              name="summary"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Objective Summary *</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="e.g., Increase market share" />
+                    <Input {...field} placeholder="e.g., Increase customer satisfaction to 95%" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Description */}
             <FormField
               control={form.control}
-              name="objective_level_id"
+              name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Objective Level</FormLabel>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} rows={3} placeholder="Short description of the objective" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Tier Selection */}
+            <FormField
+              control={form.control}
+              name="tier"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tier *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select level" />
+                        <SelectValue placeholder="Select tier" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {objectiveLevels?.map((level) => (
-                        <SelectItem key={level.id} value={level.id}>
-                          {level.name}
+                      <SelectItem value="portfolio">Portfolio</SelectItem>
+                      <SelectItem value="program">Program</SelectItem>
+                      <SelectItem value="team">Team</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Portfolio Selection */}
+            {(selectedTier === 'portfolio' || selectedTier === 'program' || selectedTier === 'team') && (
+              <FormField
+                control={form.control}
+                name="portfolio_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Portfolio {selectedTier === 'portfolio' && '*'}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || 'none'}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select portfolio" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {portfolios?.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* Program Selection */}
+            {(selectedTier === 'program' || selectedTier === 'team') && (
+              <FormField
+                control={form.control}
+                name="program_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Program {selectedTier === 'program' && '*'}</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || 'none'}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select program" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {programs?.map((p) => (
+                          <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* Team Selection */}
+            {selectedTier === 'team' && (
+              <FormField
+                control={form.control}
+                name="team_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Team *</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value || 'none'}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select team" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {teams?.map((t) => (
+                          <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {/* Parent Objective */}
+            <FormField
+              control={form.control}
+              name="parent_objective_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Parent Objective</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value || 'none'}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select parent objective" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {parentObjectives?.map((obj) => (
+                        <SelectItem key={obj.id} value={obj.id}>
+                          {obj.summary} ({obj.tier})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -258,6 +430,61 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
               )}
             />
 
+            {/* Owner */}
+            <FormField
+              control={form.control}
+              name="owner_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Owner</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value || 'none'}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select owner" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">Unassigned</SelectItem>
+                      {users?.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.full_name || user.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Status */}
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Status *</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="on_track">On Track</SelectItem>
+                      <SelectItem value="at_risk">At Risk</SelectItem>
+                      <SelectItem value="off_track">Off Track</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="paused">Paused</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Date Range */}
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -275,10 +502,10 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
 
               <FormField
                 control={form.control}
-                name="end_date"
+                name="due_date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>End Date</FormLabel>
+                    <FormLabel>Due Date</FormLabel>
                     <FormControl>
                       <Input type="date" {...field} />
                     </FormControl>
@@ -288,118 +515,112 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType }: Objec
               />
             </div>
 
+            {/* Program Increments */}
             <FormField
               control={form.control}
-              name="confidence"
+              name="program_increment_ids"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confidence</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <FormLabel>Program Increment(s)</FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      const currentValues = field.value || [];
+                      if (!currentValues.includes(value) && value !== 'none') {
+                        field.onChange([...currentValues, value]);
+                      }
+                    }}
+                    value="none"
+                  >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue />
+                        <SelectValue placeholder="Add program increment" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="med">Medium</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="none">Select PI...</SelectItem>
+                      {programIncrements?.map((pi) => (
+                        <SelectItem key={pi.id} value={pi.id}>
+                          {pi.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {(field.value || []).map((piId) => {
+                      const pi = programIncrements?.find(p => p.id === piId);
+                      return pi ? (
+                        <Badge key={piId} variant="secondary" className="flex items-center gap-1">
+                          {pi.name}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              field.onChange((field.value || []).filter(id => id !== piId));
+                            }}
+                            className="ml-1"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </Badge>
+                      ) : null;
+                    })}
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
+            {/* Tags */}
             <FormField
               control={form.control}
-              name="progress_pct"
+              name="tags"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Progress %</FormLabel>
-                  <FormControl>
+                  <FormLabel>Tags</FormLabel>
+                  <div className="flex gap-2">
                     <Input
-                      type="number"
-                      min="0"
-                      max="100"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
+                      value={currentTag}
+                      onChange={(e) => setCurrentTag(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          addTag();
+                        }
+                      }}
+                      placeholder="Type and press Enter"
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="theme_ids"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Linked Themes</FormLabel>
-                  <ScrollArea className="h-32 border rounded-md p-3">
-                    {themes?.map((theme) => (
-                      <div key={theme.id} className="flex items-center space-x-2 py-1">
-                        <Checkbox
-                          checked={field.value?.includes(theme.id)}
-                          onCheckedChange={(checked) => {
-                            const current = field.value || [];
-                            field.onChange(
-                              checked
-                                ? [...current, theme.id]
-                                : current.filter((id) => id !== theme.id)
-                            );
-                          }}
-                        />
-                        <label className="text-sm">{theme.name}</label>
-                      </div>
+                    <Button type="button" onClick={addTag} variant="outline">Add</Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {(field.value || []).map((tag) => (
+                      <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                        {tag}
+                        <button
+                          type="button"
+                          onClick={() => removeTag(tag)}
+                          className="ml-1"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
                     ))}
-                  </ScrollArea>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="initiative_ids"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Linked Initiatives</FormLabel>
-                  <ScrollArea className="h-32 border rounded-md p-3">
-                    {initiatives?.map((initiative) => (
-                      <div key={initiative.id} className="flex items-center space-x-2 py-1">
-                        <Checkbox
-                          checked={field.value?.includes(initiative.id)}
-                          onCheckedChange={(checked) => {
-                            const current = field.value || [];
-                            field.onChange(
-                              checked
-                                ? [...current, initiative.id]
-                                : current.filter((id) => id !== initiative.id)
-                            );
-                          }}
-                        />
-                        <label className="text-sm">{initiative.name}</label>
-                      </div>
-                    ))}
-                  </ScrollArea>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end gap-3 pt-4">
+            {/* Actions */}
+            <div className="flex justify-end gap-3 pt-4 border-t">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
               <Button type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
+                {mutation.isPending ? 'Saving...' : isEdit ? 'Update Objective' : 'Create Objective'}
               </Button>
             </div>
           </form>
         </Form>
-      </DialogContent>
-    </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }
