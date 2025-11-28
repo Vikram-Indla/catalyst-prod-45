@@ -40,7 +40,8 @@ import Roadmaps from "./pages/Roadmaps";
 import Dependencies from "./pages/Dependencies";
 import PortfolioInsights from "./pages/PortfolioInsights";
 import ProgramRoom from "./pages/ProgramRoom";
-import ProgramBoard from "./pages/ProgramBoardNew";
+import ProgramBoardNew from "./pages/ProgramBoardNew";
+import ProgramBoardOld from "./pages/ProgramBoard";
 import ProgramBoardHistory from "./pages/ProgramBoardHistory";
 import ProgramIncrements from "./pages/ProgramIncrements";
 import PIObjectives from "./pages/PIObjectives";
@@ -184,8 +185,9 @@ const App = () => (
               <Route path="/portfolio-insights" element={<PortfolioInsights />} />
               <Route path="/program-room" element={<ProgramRoom />} />
               <Route path="/pis" element={<ProgramIncrements />} />
-              <Route path="/program-board" element={<ProgramBoard />} />
-              <Route path="/programs/program-board" element={<ProgramBoard />} />
+              <Route path="/program-board" element={<Navigate to="/programs/program-board" replace />} />
+              <Route path="/program-board-old" element={<ProgramBoardOld />} />
+              <Route path="/programs/program-board" element={<ProgramBoardNew />} />
               <Route path="/programs/program-board/history" element={<ProgramBoardHistory />} />
               <Route path="/pi-objectives" element={<PIObjectives />} />
               <Route path="/roam" element={<ROAMBoard />} />

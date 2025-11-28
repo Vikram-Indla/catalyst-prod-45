@@ -24,7 +24,7 @@ const recentRooms = [
     subtitle: "PI Planning",
     pi: "PI-24 Q1",
     icon: "📋",
-    path: "/program-board",
+    path: "/programs/program-board",
   },
   {
     id: "4",
