@@ -4,6 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { FeaturesBacklogHeader } from '@/components/features/FeaturesBacklogHeader';
 import { FeaturesListView } from '@/components/features/FeaturesListView';
 import { FeaturesKanbanView } from '@/components/features/FeaturesKanbanView';
+import { FeaturesColumnsDialog } from '@/components/features/FeaturesColumnsDialog';
+import { FeaturesFiltersDialog } from '@/components/features/FeaturesFiltersDialog';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { FeatureDialog } from '@/components/forms/FeatureDialog';
 import { exportToCSV } from '@/lib/exportUtils';
@@ -16,13 +18,14 @@ export default function FeaturesBacklog() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
-  const [visibleColumns] = useState<string[]>([
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([
     'id', 'name', 'epic', 'program', 'pi', 'iteration', 'status', 'health', 'progress'
   ]);
+  const [filters, setFilters] = useState<any>({});
 
   // Fetch features
   const { data: features, refetch } = useQuery({
-    queryKey: ['features-backlog', searchQuery],
+    queryKey: ['features-backlog', searchQuery, filters],
     queryFn: async () => {
       let query = supabase
         .from('features')
@@ -31,6 +34,25 @@ export default function FeaturesBacklog() {
 
       if (searchQuery) {
         query = query.ilike('name', `%${searchQuery}%`);
+      }
+
+      if (filters.status) {
+        query = query.eq('status', filters.status);
+      }
+      if (filters.health) {
+        query = query.eq('health', filters.health);
+      }
+      if (filters.epicId) {
+        query = query.eq('epic_id', filters.epicId);
+      }
+      if (filters.programId) {
+        query = query.eq('program_id', filters.programId);
+      }
+      if (filters.piId) {
+        query = query.eq('pi_id', filters.piId);
+      }
+      if (filters.iterationId) {
+        query = query.eq('iteration_id', filters.iterationId);
       }
 
       const { data, error } = await query;
@@ -95,6 +117,20 @@ export default function FeaturesBacklog() {
       <FeatureDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
+      />
+
+      <FeaturesColumnsDialog
+        open={columnsDialogOpen}
+        onOpenChange={setColumnsDialogOpen}
+        visibleColumns={visibleColumns}
+        onColumnsChange={setVisibleColumns}
+      />
+
+      <FeaturesFiltersDialog
+        open={filtersDialogOpen}
+        onOpenChange={setFiltersDialogOpen}
+        filters={filters}
+        onFiltersChange={setFilters}
       />
     </div>
   );
