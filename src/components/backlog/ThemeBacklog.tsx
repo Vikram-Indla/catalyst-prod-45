@@ -8,7 +8,10 @@ import { ThemeContextMenu } from './ThemeContextMenu';
 import { ThemeColumnsDialog } from './ThemeColumnsDialog';
 import { ThemeFiltersDialog, ThemeFilters } from './ThemeFiltersDialog';
 import { UnassignedThemeSlideout } from './UnassignedThemeSlideout';
+import { ThemeKanbanView } from './ThemeKanbanView';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 // Citation: (Doc: Backlog for themes - PDF provided)
 // Citation: (Screenshot: image-190.png, image-191.png, image-192.png, image-194.png, image-196.png)
@@ -22,10 +25,12 @@ interface Theme {
   id: string;
   name: string;
   description?: string | null;
+  status?: 'proposed' | 'active' | 'done' | 'cancelled';
   created_at: string;
 }
 
 export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
+  const [activeView, setActiveView] = useState<'list' | 'kanban'>('list');
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     'pi-5': false,
     'unassigned': false,
@@ -86,9 +91,137 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
     setIsDragDisabled(hasFilters);
   };
 
+  const handleExport = (sectionName: string, items: Theme[]) => {
+    const headers = ['Rank', 'ID', 'Name', 'Status'];
+    const rows = items.map((theme, idx) => [
+      idx + 1,
+      theme.id.slice(0, 8),
+      theme.name,
+      theme.status || 'proposed'
+    ]);
+
+    const csv = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${sectionName.replace(/\s+/g, '-')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    toast.success(`Exported ${sectionName} to CSV`);
+  };
+
   // Mock data for display structure
   const piThemes = themes?.slice(0, 9) || [];
   const unassignedThemes = themes?.slice(9, 10) || [];
+
+  // Show Kanban view if selected
+  if (activeView === 'kanban') {
+    return (
+      <div className="h-full flex flex-col">
+        {/* View Mode Buttons */}
+        <div className="flex justify-between items-center gap-2 px-6 py-3 border-b">
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => setIsColumnsDialogOpen(true)}
+            >
+              <Grid3x3 className="h-4 w-4" />
+              <span className="text-sm">Columns</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => setIsFiltersDialogOpen(true)}
+            >
+              <Filter className="h-4 w-4" />
+              <span className="text-sm">Filters</span>
+            </Button>
+          </div>
+          
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-1.5"
+              onClick={() => setActiveView('list')}
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              <span className="text-sm">List</span>
+            </Button>
+            <Button variant="default" size="sm" className="gap-1.5">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="7" height="7" />
+                <rect x="14" y="3" width="7" height="7" />
+                <rect x="14" y="14" width="7" height="7" />
+                <rect x="3" y="14" width="7" height="7" />
+              </svg>
+              <span className="text-sm">Kanban</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-muted-foreground"
+              onClick={() => setIsUnassignedSlideoutOpen(true)}
+            >
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="2" />
+              </svg>
+              <span className="text-sm">Unassigned Backlog</span>
+            </Button>
+          </div>
+        </div>
+
+        <ThemeKanbanView
+          portfolioId={portfolioId}
+          piId={piId}
+          onThemeClick={handleThemeClick}
+        />
+
+        <ThemeDetailsDrawer
+          theme={selectedTheme}
+          isOpen={isDrawerOpen}
+          onClose={() => {
+            setIsDrawerOpen(false);
+            setSelectedTheme(null);
+          }}
+        />
+
+        <ThemeColumnsDialog
+          open={isColumnsDialogOpen}
+          onOpenChange={setIsColumnsDialogOpen}
+          selectedColumns={selectedColumns}
+          onSave={setSelectedColumns}
+        />
+
+        <ThemeFiltersDialog
+          open={isFiltersDialogOpen}
+          onOpenChange={setIsFiltersDialogOpen}
+          currentFilters={filters}
+          onApply={handleFiltersApply}
+        />
+
+        <UnassignedThemeSlideout
+          open={isUnassignedSlideoutOpen}
+          onClose={() => setIsUnassignedSlideoutOpen(false)}
+          portfolioId={portfolioId}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col">
@@ -116,7 +249,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
         </div>
         
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" className="gap-1.5">
+          <Button variant="default" size="sm" className="gap-1.5">
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="7" height="7" />
               <rect x="14" y="3" width="7" height="7" />
@@ -125,7 +258,12 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
             </svg>
             <span className="text-sm">List</span>
           </Button>
-          <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-1.5 text-muted-foreground"
+            onClick={() => setActiveView('kanban')}
+          >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="3" width="7" height="7" />
               <rect x="14" y="3" width="7" height="7" />
@@ -171,7 +309,12 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                 <span className="text-xs text-muted-foreground">
                   Total Items: <span className="text-foreground font-medium">{piThemes.length}</span>
                 </span>
-                <Button variant="ghost" size="sm" className="gap-1 h-6 px-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="gap-1 h-6 px-2"
+                  onClick={() => handleExport('Themes for PI-5', piThemes)}
+                >
                   <Download className="h-3 w-3" />
                   <span className="text-xs">Export</span>
                 </Button>
@@ -337,7 +480,12 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                 <span className="text-xs text-muted-foreground">
                   Total Items: <span className="text-foreground font-medium">{unassignedThemes.length}</span>
                 </span>
-                <Button variant="ghost" size="sm" className="gap-1 h-6 px-2">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="gap-1 h-6 px-2"
+                  onClick={() => handleExport('Unassigned Backlog', unassignedThemes)}
+                >
                   <Download className="h-3 w-3" />
                   <span className="text-xs">Export</span>
                 </Button>
@@ -345,7 +493,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
             </div>
 
             {!expandedSections['unassigned'] && (
-              <div className="border border-dashed rounded-md py-12 mt-2 bg-muted/5">
+              <div className="border border-dashed rounded-md py-6 mt-2 bg-muted/5 max-w-4xl">
                 <p className="text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
                   <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -392,8 +540,4 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
       />
     </div>
   );
-}
-
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ');
 }
