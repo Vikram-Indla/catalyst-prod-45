@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { ChevronRight, ChevronDown, Circle, Download, Square } from 'lucide-react';
+import { ChevronRight, ChevronDown, Circle, Download, Square, Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeDetailsDrawer } from './ThemeDetailsDrawer';
 
 // Citation: (Doc: Backlog for themes - PDF provided)
-// Citation: (Screenshot: image-190.png, image-191.png, image-192.png, image-194.png)
+// Citation: (Screenshot: image-190.png, image-191.png, image-192.png, image-194.png, image-196.png)
 
 interface ThemeBacklogProps {
   portfolioId: string;
@@ -110,9 +110,9 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                 className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
               >
                 {expandedSections['pi-5'] ? (
-                  <ChevronDown className="h-4 w-4 text-primary" />
+                  <Minus className="h-4 w-4 text-primary" />
                 ) : (
-                  <ChevronRight className="h-4 w-4 text-primary" />
+                  <Plus className="h-4 w-4 text-primary" />
                 )}
                 <span className="text-primary">Themes for PI-5</span>
               </button>
@@ -240,9 +240,9 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                 className="flex items-center gap-2 text-sm font-medium hover:text-primary transition-colors"
               >
                 {expandedSections['unassigned'] ? (
-                  <ChevronDown className="h-4 w-4 text-primary" />
+                  <Minus className="h-4 w-4 text-primary" />
                 ) : (
-                  <ChevronRight className="h-4 w-4 text-primary" />
+                  <Plus className="h-4 w-4 text-primary" />
                 )}
                 <span className="text-primary">Unassigned Backlog</span>
               </button>
