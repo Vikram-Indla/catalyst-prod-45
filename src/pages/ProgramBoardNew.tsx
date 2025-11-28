@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSearchParams } from 'react-router-dom';
+import { toPng } from 'html-to-image';
 
 import { TeamRankDialog } from '@/components/program-board/TeamRankDialog';
 import { OrphansDialog } from '@/components/program-board/OrphansDialog';
@@ -359,8 +360,32 @@ export default function ProgramBoard() {
     setHistoryOpen(true);
   };
   
-  const handleCaptureBoard = () => {
-    toast.info('Capture functionality temporarily disabled');
+  const handleCaptureBoard = async () => {
+    const boardElement = document.getElementById('program-board-grid');
+    if (!boardElement) {
+      toast.error('Board not found');
+      return;
+    }
+
+    try {
+      toast.info('Capturing board...');
+      
+      const dataUrl = await toPng(boardElement, {
+        cacheBust: true,
+        backgroundColor: '#ffffff',
+        pixelRatio: 2,
+      });
+      
+      const link = document.createElement('a');
+      link.download = `program-board-${selectedProgram?.name || 'board'}-${new Date().toISOString().split('T')[0]}.png`;
+      link.href = dataUrl;
+      link.click();
+      
+      toast.success('Board captured successfully!');
+    } catch (error) {
+      console.error('Failed to capture board:', error);
+      toast.error('Failed to capture board');
+    }
   };
   
   const handleFullscreen = () => {
