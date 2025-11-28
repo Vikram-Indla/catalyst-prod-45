@@ -193,6 +193,10 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
               <MessageSquare className="h-4 w-4 mr-2" />
               Give feedback
             </Button>
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Objective
+            </Button>
           </div>
         </div>
 
