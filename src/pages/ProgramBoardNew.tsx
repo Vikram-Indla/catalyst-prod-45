@@ -3,11 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { 
   Maximize, Download, Settings, Info, 
-  Square, Grid3x3, Users, Check
+  Square, Grid3x3, Users, Check, Search, Camera, Grip
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useSearchParams } from 'react-router-dom';
@@ -17,6 +23,8 @@ import { OrphansDialog } from '@/components/program-board/OrphansDialog';
 import { LegendDialog } from '@/components/program-board/LegendDialog';
 import { ExtraConfigsDialog } from '@/components/program-board/ExtraConfigsDialog';
 import { FeatureQuickView } from '@/components/program-board/FeatureQuickView';
+import { FeatureCardTooltip } from '@/components/program-board/FeatureCardTooltip';
+import { FeatureSymbolMarkers } from '@/components/program-board/FeatureSymbolMarkers';
 import { DependencyQuickView } from '@/components/program-board/DependencyQuickView';
 import { ObjectiveQuickView } from '@/components/program-board/ObjectiveQuickView';
 import { getFeatureStatusColor } from '@/lib/programBoardUtils';
@@ -244,51 +252,49 @@ export default function ProgramBoard() {
 
     // Normal view - full cards with details
     return (
-      <div
-        key={`${feature.id}-${sprintId}`}
-        className={`relative ${statusColor} rounded shadow-sm border border-foreground/10 cursor-pointer hover:shadow-md transition-all group min-h-[48px]`}
-        onClick={() => {
-          setSelectedItem(feature);
-          setQuickViewType('feature');
-          setQuickViewOpen(true);
-        }}
-      >
-        <div className="px-2 py-1.5">
-          <div className="flex items-start justify-between gap-1.5">
-            <div className="flex-1 min-w-0">
-              <div className="font-bold text-sm leading-tight mb-0.5">
-                {displayId}
-              </div>
-              <div className="text-[10px] leading-tight line-clamp-2 opacity-90 font-medium">
-                {feature.name}
+      <Popover key={`${feature.id}-${sprintId}`}>
+        <PopoverTrigger asChild>
+          <div
+            className={`relative ${statusColor} rounded shadow-sm border border-foreground/10 cursor-pointer hover:shadow-md transition-all group min-h-[48px]`}
+            onClick={() => {
+              setSelectedItem(feature);
+              setQuickViewType('feature');
+              setQuickViewOpen(true);
+            }}
+          >
+            {/* Left status strip */}
+            <div className={`
+              absolute left-0 top-0 bottom-0 w-1 rounded-l
+              ${feature.blocked ? 'bg-destructive' : ''}
+              ${feature.status === 'done' ? 'bg-emerald-500' : ''}
+              ${feature.status === 'in progress' ? 'bg-blue-500' : ''}
+              ${!feature.status || feature.status === 'not started' ? 'bg-muted' : ''}
+            `} />
+            
+            <div className="px-2 py-1.5 pl-3">
+              <div className="flex items-start justify-between gap-1.5">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="font-bold text-sm leading-tight mb-0.5">
+                      {displayId}
+                    </div>
+                    <FeatureSymbolMarkers feature={feature} size={12} />
+                  </div>
+                  <div className="text-[10px] leading-tight line-clamp-2 opacity-90 font-medium">
+                    {feature.name}
+                  </div>
+                </div>
+                {showCheckmark && (
+                  <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 opacity-60" />
+                )}
               </div>
             </div>
-            {showCheckmark && (
-              <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 opacity-60" />
-            )}
           </div>
-        </div>
-        
-        {/* Hover tooltip */}
-        <div className="hidden group-hover:block absolute left-0 top-full mt-1 z-50 bg-popover border border-border rounded shadow-lg p-3 min-w-[320px] max-w-md">
-          <div className="space-y-2 text-xs">
-            <div>
-              <span className="font-bold">Feature #{displayId}</span>
-              <span className="text-muted-foreground"> - {feature.name}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground">State: </span>
-              <span className="font-medium">{feature.status}</span>
-            </div>
-            {feature.blocked && (
-              <div className="border-t pt-2 mt-2">
-                <div className="text-xs font-bold text-red-600 uppercase mb-1">Blocked</div>
-                <div className="text-xs text-muted-foreground">This feature is currently blocked</div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+        </PopoverTrigger>
+        <PopoverContent side="top" align="start" className="p-0 border-border">
+          <FeatureCardTooltip feature={feature} />
+        </PopoverContent>
+      </Popover>
     );
   };
   
@@ -358,17 +364,16 @@ export default function ProgramBoard() {
       {/* Header */}
       <div className="mb-4 space-y-3">
         <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <Grid3x3 className="h-5 w-5 text-muted-foreground" />
-              <h1 className="text-xl font-semibold">Program Board</h1>
-              <span className="text-sm text-muted-foreground">
-                Are we on-track based on our Program Increment com...
-              </span>
+          <div className="flex items-center gap-4">
+            <Grid3x3 className="h-5 w-5 text-muted-foreground" />
+            <h1 className="text-xl font-semibold">Program Board</h1>
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Help search..." 
+                className="pl-8 h-8 w-[200px] text-sm"
+              />
             </div>
-            <p className="text-xs text-muted-foreground pl-8">
-              {selectedPI ? `${new Date(selectedPI.start_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} To ${new Date(selectedPI.end_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : ''}
-            </p>
           </div>
           
           <div className="flex items-center gap-2">
@@ -397,10 +402,12 @@ export default function ProgramBoard() {
             </Select>
             
             <Button variant="outline" size="sm" className="h-9" onClick={() => setTeamRankOpen(true)}>
+              <Grip className="h-4 w-4 mr-1" />
               Team Rank
             </Button>
             
             <Button variant="outline" size="sm" className="h-9" onClick={handleCaptureBoard}>
+              <Camera className="h-4 w-4 mr-1" />
               Capture
             </Button>
             
@@ -408,11 +415,13 @@ export default function ProgramBoard() {
               Extra Configs
             </Button>
             
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setLegendOpen(true)}>
+            <div className="h-6 w-px bg-border mx-1" />
+            
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setLegendOpen(true)} title="Legend">
               <Info className="h-4 w-4" />
             </Button>
             
-            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFullscreen}>
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={handleFullscreen} title="Full screen">
               <Maximize className="h-4 w-4" />
             </Button>
           </div>
@@ -423,6 +432,12 @@ export default function ProgramBoard() {
             <button className="text-sm text-muted-foreground hover:text-foreground">▼</button>
             <span className="text-sm font-medium">Program: {selectedProgram.name}</span>
           </div>
+        )}
+        
+        {selectedPI && (
+          <p className="text-xs text-muted-foreground pl-8">
+            {`${new Date(selectedPI.start_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })} To ${new Date(selectedPI.end_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`}
+          </p>
         )}
       </div>
       
