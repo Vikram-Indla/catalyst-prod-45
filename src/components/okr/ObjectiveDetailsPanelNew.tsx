@@ -9,6 +9,7 @@ import { ObjectiveProgressSection } from "./ObjectiveProgressSection";
 import { AlignedWorkTab } from "./AlignedWorkTab";
 import { ChildObjectivesTab } from "./ChildObjectivesTab";
 import { LinkedItemsTab } from "./LinkedItemsTab";
+import { ObjectiveDetailsTab } from "./ObjectiveDetailsTab";
 import { useObjective, useUpdateObjective } from "@/hooks/useObjectives";
 import { Star, Share2, MoreVertical, X } from "lucide-react";
 import { useState } from "react";
@@ -151,7 +152,7 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
           <Tabs defaultValue="key-results" className="w-full">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="key-results">Key Results</TabsTrigger>
-              <TabsTrigger value="aligned-work">Aligned Work</TabsTrigger>
+              <TabsTrigger value="aligned-work">Work</TabsTrigger>
               <TabsTrigger value="children">Children</TabsTrigger>
               <TabsTrigger value="links">Links</TabsTrigger>
               <TabsTrigger value="details">Details</TabsTrigger>
@@ -174,30 +175,7 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
             </TabsContent>
 
             <TabsContent value="details">
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <div className="text-sm text-muted-foreground">Tier</div>
-                    <div className="font-medium">{objective.tier}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Health</div>
-                    <Badge variant="outline">{objective.health || "N/A"}</Badge>
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Start Date</div>
-                    <div className="font-medium">{objective.start_date || "—"}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Due Date</div>
-                    <div className="font-medium">{objective.due_date || "—"}</div>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="discussions">
-              <p className="text-sm text-muted-foreground">Discussion threads</p>
+              <ObjectiveDetailsTab objective={objective} />
             </TabsContent>
           </Tabs>
         </div>
