@@ -40,7 +40,8 @@ export function CreateDropdown() {
 
   const handleItemClick = (type: string) => {
     setOpen(false);
-    navigate(`/ja/create/${type}`);
+    // TODO: Navigate to actual create dialogs when implemented
+    console.log(`Create ${type} - TODO: Implement create dialog`);
   };
 
   return (

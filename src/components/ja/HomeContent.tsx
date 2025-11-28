@@ -12,11 +12,11 @@ const recentRooms = [
   },
   {
     id: "2",
-    title: "Portfolio Alpha",
-    subtitle: "Digital Transformation",
+    title: "Epic Backlog",
+    subtitle: "Portfolio Planning",
     pi: "PI-24 Q1",
     icon: "📊",
-    path: "/portfolio-room",
+    path: "/backlog/epics",
   },
   {
     id: "3",
@@ -47,11 +47,11 @@ const recentRooms = [
 const starredRooms = [
   {
     id: "star-1",
-    title: "Portfolio Alpha",
-    subtitle: "Digital Transformation",
+    title: "Epic Backlog",
+    subtitle: "Portfolio Planning",
     pi: "PI-24 Q1",
     icon: "📊",
-    path: "/portfolio-room",
+    path: "/backlog/epics",
   },
 ];
 

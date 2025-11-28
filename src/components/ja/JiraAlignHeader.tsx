@@ -26,7 +26,7 @@ export function JiraAlignHeader() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
   const navItems = [
-    { label: "Home", path: "/ja/home" },
+    { label: "Home", path: "/home" },
     { label: "Enterprise", path: "/enterprise/strategy-room" },
     { label: "Portfolio", hasDropdown: true },
     { label: "Program", hasDropdown: true },
