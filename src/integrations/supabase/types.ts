@@ -2088,12 +2088,20 @@ export type Database = {
           created_at: string | null
           current_value: number | null
           due_date: string | null
+          end_date: string | null
           goal_value: number
           id: string
+          last_checkin_at: string | null
           metric_type: string
           objective_id: string | null
+          owner_id: string | null
           owner_user_id: string | null
+          score: number | null
+          score_config: Json | null
+          start_date: string | null
+          status: string | null
           summary: string
+          target_value: number | null
           updated_at: string | null
         }
         Insert: {
@@ -2101,12 +2109,20 @@ export type Database = {
           created_at?: string | null
           current_value?: number | null
           due_date?: string | null
+          end_date?: string | null
           goal_value: number
           id?: string
+          last_checkin_at?: string | null
           metric_type: string
           objective_id?: string | null
+          owner_id?: string | null
           owner_user_id?: string | null
+          score?: number | null
+          score_config?: Json | null
+          start_date?: string | null
+          status?: string | null
           summary: string
+          target_value?: number | null
           updated_at?: string | null
         }
         Update: {
@@ -2114,12 +2130,20 @@ export type Database = {
           created_at?: string | null
           current_value?: number | null
           due_date?: string | null
+          end_date?: string | null
           goal_value?: number
           id?: string
+          last_checkin_at?: string | null
           metric_type?: string
           objective_id?: string | null
+          owner_id?: string | null
           owner_user_id?: string | null
+          score?: number | null
+          score_config?: Json | null
+          start_date?: string | null
+          status?: string | null
           summary?: string
+          target_value?: number | null
           updated_at?: string | null
         }
         Relationships: [
@@ -2277,6 +2301,45 @@ export type Database = {
         }
         Relationships: []
       }
+      objective_capability_links: {
+        Row: {
+          capability_id: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          objective_id: string
+        }
+        Insert: {
+          capability_id: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          objective_id: string
+        }
+        Update: {
+          capability_id?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          objective_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_capability_links_capability_id_fkey"
+            columns: ["capability_id"]
+            isOneToOne: false
+            referencedRelation: "capabilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objective_capability_links_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       objective_dependencies: {
         Row: {
           created_at: string | null
@@ -2338,6 +2401,45 @@ export type Database = {
           },
           {
             foreignKeyName: "objective_epic_links_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      objective_feature_links: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          feature_id: string
+          id: string
+          objective_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          feature_id: string
+          id?: string
+          objective_id: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          feature_id?: string
+          id?: string
+          objective_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_feature_links_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objective_feature_links_objective_id_fkey"
             columns: ["objective_id"]
             isOneToOne: false
             referencedRelation: "objectives"
@@ -2439,6 +2541,44 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      objective_linked_items: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          id: string
+          link_type: string | null
+          objective_id: string
+          title: string
+          url: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          link_type?: string | null
+          objective_id: string
+          title: string
+          url: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          link_type?: string | null
+          objective_id?: string
+          title?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_linked_items_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       objective_risks: {
         Row: {
@@ -2548,70 +2688,143 @@ export type Database = {
         Row: {
           anchor_sprint_id: string | null
           blocked: boolean | null
+          category: string | null
           confidence: Database["public"]["Enums"]["confidence_level"] | null
+          confidence_note: string | null
           confidence_score: number | null
+          confidence_updated_at: string | null
+          contributors: string[] | null
           created_at: string | null
+          created_by: string | null
+          description: string | null
+          due_date: string | null
           end_date: string | null
           goal_id: string | null
+          health: string | null
           id: string
+          key_result_progress: number | null
           level: string | null
           name: string
           objective_level_id: string
+          objective_type: string | null
           owner_id: string | null
           parent_goal_id: string | null
+          parent_key_result_id: string | null
           parent_objective_id: string | null
+          portfolio_id: string | null
+          program_id: string | null
           program_increment_ids: Json | null
           progress_pct: number | null
+          score: number | null
           snapshot_id: string | null
           start_date: string | null
           status: string | null
+          summary: string | null
+          tags: string[] | null
+          target_anchor_sprint_id: string | null
+          team_id: string | null
+          theme_id: string | null
+          tier: string | null
           updated_at: string | null
+          updated_by: string | null
+          work_progress: number | null
         }
         Insert: {
           anchor_sprint_id?: string | null
           blocked?: boolean | null
+          category?: string | null
           confidence?: Database["public"]["Enums"]["confidence_level"] | null
+          confidence_note?: string | null
           confidence_score?: number | null
+          confidence_updated_at?: string | null
+          contributors?: string[] | null
           created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
           end_date?: string | null
           goal_id?: string | null
+          health?: string | null
           id?: string
+          key_result_progress?: number | null
           level?: string | null
           name: string
           objective_level_id: string
+          objective_type?: string | null
           owner_id?: string | null
           parent_goal_id?: string | null
+          parent_key_result_id?: string | null
           parent_objective_id?: string | null
+          portfolio_id?: string | null
+          program_id?: string | null
           program_increment_ids?: Json | null
           progress_pct?: number | null
+          score?: number | null
           snapshot_id?: string | null
           start_date?: string | null
           status?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          target_anchor_sprint_id?: string | null
+          team_id?: string | null
+          theme_id?: string | null
+          tier?: string | null
           updated_at?: string | null
+          updated_by?: string | null
+          work_progress?: number | null
         }
         Update: {
           anchor_sprint_id?: string | null
           blocked?: boolean | null
+          category?: string | null
           confidence?: Database["public"]["Enums"]["confidence_level"] | null
+          confidence_note?: string | null
           confidence_score?: number | null
+          confidence_updated_at?: string | null
+          contributors?: string[] | null
           created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
           end_date?: string | null
           goal_id?: string | null
+          health?: string | null
           id?: string
+          key_result_progress?: number | null
           level?: string | null
           name?: string
           objective_level_id?: string
+          objective_type?: string | null
           owner_id?: string | null
           parent_goal_id?: string | null
+          parent_key_result_id?: string | null
           parent_objective_id?: string | null
+          portfolio_id?: string | null
+          program_id?: string | null
           program_increment_ids?: Json | null
           progress_pct?: number | null
+          score?: number | null
           snapshot_id?: string | null
           start_date?: string | null
           status?: string | null
+          summary?: string | null
+          tags?: string[] | null
+          target_anchor_sprint_id?: string | null
+          team_id?: string | null
+          theme_id?: string | null
+          tier?: string | null
           updated_at?: string | null
+          updated_by?: string | null
+          work_progress?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_objectives_parent_key_result"
+            columns: ["parent_key_result_id"]
+            isOneToOne: false
+            referencedRelation: "key_results_v2"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "objectives_anchor_sprint_id_fkey"
             columns: ["anchor_sprint_id"]
@@ -2648,10 +2861,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "objectives_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objectives_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "objectives_snapshot_id_fkey"
             columns: ["snapshot_id"]
             isOneToOne: false
             referencedRelation: "strategy_snapshots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objectives_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objectives_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_themes"
             referencedColumns: ["id"]
           },
         ]
