@@ -40,8 +40,31 @@ export function CreateDropdown() {
 
   const handleItemClick = (type: string) => {
     setOpen(false);
-    // TODO: Navigate to actual create dialogs when implemented
-    console.log(`Create ${type} - TODO: Implement create dialog`);
+    
+    // Route to the appropriate page with create parameter
+    const routeMap: Record<string, string> = {
+      'theme': '/themes?create=true',
+      'epic': '/items/epics?create=true',
+      'capability': '/items/capabilities?create=true',
+      'feature': '/features?create=true',
+      'story': '/stories?create=true',
+      'defect': '/items/defects?create=true',
+      'task': '/items/tasks?create=true',
+      'objective': '/enterprise/objectives?create=true',
+      'dependency': '/dependencies?create=true',
+      'ideation': '/items/ideation?create=true',
+      'risk': '/enterprise/risks?create=true',
+      'impediment': '/items/impediments?create=true',
+      'specification': '/items/success-criteria?create=true',
+      'sprint': '/sprints?create=true',
+      'pi': '/pis?create=true',
+      'release-vehicle': '/items/release-vehicles?create=true',
+    };
+
+    const route = routeMap[type];
+    if (route) {
+      navigate(route);
+    }
   };
 
   return (
