@@ -4,6 +4,8 @@ import { Star, Grid3x3, Filter, Search, ListIcon, LayoutGrid, Eye } from 'lucide
 import { BacklogViewSelector, BacklogView } from '@/components/portfolio/BacklogViewSelector';
 import { ThemeBacklog } from '@/components/backlog/ThemeBacklog';
 import { EpicBacklogView } from '@/components/backlog/EpicBacklogView';
+import { ThemeColumnsDialog } from '@/components/backlog/ThemeColumnsDialog';
+import { ThemeFiltersDialog, ThemeFilters } from '@/components/backlog/ThemeFiltersDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -24,6 +26,10 @@ export default function PortfolioBacklog() {
   
   const [viewingOption, setViewingOption] = useState<BacklogView>('theme');
   const [viewMode, setViewMode] = useState<'list' | 'kanban' | 'unassigned'>('list');
+  const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
+  const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false);
+  const [selectedColumns, setSelectedColumns] = useState<string[]>(['rank', 'id', 'name', 'state', 'pis']);
+  const [filters, setFilters] = useState<ThemeFilters>({});
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -39,11 +45,21 @@ export default function PortfolioBacklog() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-muted-foreground hover:text-foreground"
+              onClick={() => setIsColumnsDialogOpen(true)}
+            >
               <Grid3x3 className="h-4 w-4" />
               <span className="text-sm">Columns Shown</span>
             </Button>
-            <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-muted-foreground hover:text-foreground"
+              onClick={() => setIsFiltersDialogOpen(true)}
+            >
               <Filter className="h-4 w-4" />
               <span className="text-sm">Apply Filters</span>
             </Button>
@@ -133,6 +149,21 @@ export default function PortfolioBacklog() {
           </div>
         )}
       </div>
+
+      {/* Dialogs */}
+      <ThemeColumnsDialog
+        open={isColumnsDialogOpen}
+        onOpenChange={setIsColumnsDialogOpen}
+        selectedColumns={selectedColumns}
+        onSave={setSelectedColumns}
+      />
+      
+      <ThemeFiltersDialog
+        open={isFiltersDialogOpen}
+        onOpenChange={setIsFiltersDialogOpen}
+        currentFilters={filters}
+        onApply={setFilters}
+      />
     </div>
   );
 }

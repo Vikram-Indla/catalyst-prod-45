@@ -115,6 +115,13 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     <LinkIcon className="h-4 w-4 mr-2" />
                     Links
                   </TabsTrigger>
+                  <TabsTrigger
+                    value="milestones"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Milestones
+                  </TabsTrigger>
                 </TabsList>
               </div>
 
@@ -343,6 +350,40 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   <div className="text-center py-12 text-muted-foreground">
                     <LinkIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
                     <p>No links added yet</p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="milestones" className="mt-0 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-medium">Theme Milestones</h3>
+                    <Button size="sm" variant="outline" className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Add Milestone
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {/* Mock milestones */}
+                    <div className="border rounded-lg p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">Q1 Release</span>
+                        <span className="text-xs text-muted-foreground">Mar 31, 2025</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Complete initial feature set</p>
+                    </div>
+                    
+                    <div className="border rounded-lg p-4 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">Beta Launch</span>
+                        <span className="text-xs text-muted-foreground">May 15, 2025</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">Limited beta rollout to select customers</p>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center py-8 text-muted-foreground border-2 border-dashed rounded-lg">
+                    <Calendar className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Add milestones to track key dates</p>
                   </div>
                 </TabsContent>
               </div>
