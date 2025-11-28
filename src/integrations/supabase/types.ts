@@ -1082,6 +1082,58 @@ export type Database = {
           },
         ]
       }
+      feature_scheduling_history: {
+        Row: {
+          changed_at: string
+          created_at: string | null
+          end_sprint_id: string | null
+          feature_id: string
+          id: string
+          start_sprint_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          changed_at?: string
+          created_at?: string | null
+          end_sprint_id?: string | null
+          feature_id: string
+          id?: string
+          start_sprint_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          changed_at?: string
+          created_at?: string | null
+          end_sprint_id?: string | null
+          feature_id?: string
+          id?: string
+          start_sprint_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "feature_scheduling_history_end_sprint_id_fkey"
+            columns: ["end_sprint_id"]
+            isOneToOne: false
+            referencedRelation: "iterations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_scheduling_history_feature_id_fkey"
+            columns: ["feature_id"]
+            isOneToOne: false
+            referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "feature_scheduling_history_start_sprint_id_fkey"
+            columns: ["start_sprint_id"]
+            isOneToOne: false
+            referencedRelation: "iterations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       features: {
         Row: {
           acceptance_criteria: string | null
@@ -1097,10 +1149,12 @@ export type Database = {
           estimate_points: number | null
           health: Database["public"]["Enums"]["health_status"] | null
           id: string
+          is_orphan_on_board: boolean | null
           iteration_id: string | null
           job_size: number | null
           name: string
           notes: string | null
+          orphan_board_teams: string[] | null
           owner_id: string | null
           pi_id: string | null
           planned_end_date: string | null
@@ -1111,6 +1165,7 @@ export type Database = {
           risk_reduction: number | null
           status: Database["public"]["Enums"]["feature_status"] | null
           team_id: string | null
+          team_target_completion_sprint_id: string | null
           time_criticality: number | null
           updated_at: string | null
           wsjf_score: number | null
@@ -1129,10 +1184,12 @@ export type Database = {
           estimate_points?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
+          is_orphan_on_board?: boolean | null
           iteration_id?: string | null
           job_size?: number | null
           name: string
           notes?: string | null
+          orphan_board_teams?: string[] | null
           owner_id?: string | null
           pi_id?: string | null
           planned_end_date?: string | null
@@ -1143,6 +1200,7 @@ export type Database = {
           risk_reduction?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
           team_id?: string | null
+          team_target_completion_sprint_id?: string | null
           time_criticality?: number | null
           updated_at?: string | null
           wsjf_score?: number | null
@@ -1161,10 +1219,12 @@ export type Database = {
           estimate_points?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
+          is_orphan_on_board?: boolean | null
           iteration_id?: string | null
           job_size?: number | null
           name?: string
           notes?: string | null
+          orphan_board_teams?: string[] | null
           owner_id?: string | null
           pi_id?: string | null
           planned_end_date?: string | null
@@ -1175,6 +1235,7 @@ export type Database = {
           risk_reduction?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
           team_id?: string | null
+          team_target_completion_sprint_id?: string | null
           time_criticality?: number | null
           updated_at?: string | null
           wsjf_score?: number | null
@@ -1220,6 +1281,13 @@ export type Database = {
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "features_team_target_completion_sprint_id_fkey"
+            columns: ["team_target_completion_sprint_id"]
+            isOneToOne: false
+            referencedRelation: "iterations"
             referencedColumns: ["id"]
           },
         ]
@@ -2653,6 +2721,48 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      program_team_rankings: {
+        Row: {
+          created_at: string | null
+          id: string
+          program_id: string
+          rank_order: number
+          team_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          program_id: string
+          rank_order: number
+          team_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          program_id?: string
+          rank_order?: number
+          team_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_team_rankings_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "program_team_rankings_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
         ]

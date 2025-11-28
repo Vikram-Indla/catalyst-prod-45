@@ -46,7 +46,7 @@ export default function Features() {
     queryFn: async () => {
       let query = supabase
         .from('features')
-        .select('*, epics(name), programs(name), program_increments(name), iterations(name)')
+        .select('*, epics(name), programs(name), program_increments(name), iterations!iteration_id(name)')
         .order('name');
 
       if (searchQuery) {
