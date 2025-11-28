@@ -487,6 +487,88 @@ export type Database = {
           },
         ]
       }
+      epic_benefits: {
+        Row: {
+          created_at: string
+          description: string | null
+          epic_id: string
+          id: string
+          metric: string | null
+          target_value: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          epic_id: string
+          id?: string
+          metric?: string | null
+          target_value?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          epic_id?: string
+          id?: string
+          metric?: string | null
+          target_value?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_benefits_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epic_design_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          epic_id: string
+          id: string
+          title: string
+          type: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          epic_id: string
+          id?: string
+          title: string
+          type: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          epic_id?: string
+          id?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_design_items_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       epic_intake_responses: {
         Row: {
           created_at: string | null
@@ -588,6 +670,86 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      epic_links: {
+        Row: {
+          created_at: string
+          epic_id: string
+          id: string
+          link_type: string
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          epic_id: string
+          id?: string
+          link_type?: string
+          title: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          epic_id?: string
+          id?: string
+          link_type?: string
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_links_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epic_pi_forecasts: {
+        Row: {
+          created_at: string
+          epic_id: string
+          estimate: number
+          id: string
+          pi_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          epic_id: string
+          estimate?: number
+          id?: string
+          pi_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          epic_id?: string
+          estimate?: number
+          id?: string
+          pi_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_pi_forecasts_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_pi_forecasts_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       epic_process_history: {
         Row: {
@@ -833,6 +995,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "epic_spend_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: true
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      epic_value_metrics: {
+        Row: {
+          business_value: number
+          cost_savings: number | null
+          created_at: string
+          customer_satisfaction_impact: number | null
+          epic_id: string
+          estimated_revenue: number | null
+          id: string
+          market_share_impact: number | null
+          risk_reduction: number
+          time_criticality: number
+          updated_at: string
+        }
+        Insert: {
+          business_value?: number
+          cost_savings?: number | null
+          created_at?: string
+          customer_satisfaction_impact?: number | null
+          epic_id: string
+          estimated_revenue?: number | null
+          id?: string
+          market_share_impact?: number | null
+          risk_reduction?: number
+          time_criticality?: number
+          updated_at?: string
+        }
+        Update: {
+          business_value?: number
+          cost_savings?: number | null
+          created_at?: string
+          customer_satisfaction_impact?: number | null
+          epic_id?: string
+          estimated_revenue?: number | null
+          id?: string
+          market_share_impact?: number | null
+          risk_reduction?: number
+          time_criticality?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_value_metrics_epic_id_fkey"
             columns: ["epic_id"]
             isOneToOne: true
             referencedRelation: "epics"
