@@ -31,9 +31,11 @@ export function HomeContent() {
     const defaultProgram = programs?.[0]?.id;
     const defaultPI = programIncrements?.[0]?.id;
     
+    // Only navigate if we have both values
     if (defaultProgram && defaultPI) {
       navigate(`/programs/program-board?program=${defaultProgram}&pi=${defaultPI}`);
     } else {
+      // If data isn't loaded yet, just go to the route and let it load defaults
       navigate('/programs/program-board');
     }
   };
