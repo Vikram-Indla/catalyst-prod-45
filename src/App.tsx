@@ -76,7 +76,7 @@ import NotFound from "./pages/NotFound";
 import { AdminGuard } from "./components/admin/AdminGuard";
 import OKRHeatmap from "./pages/enterprise/OKRHeatmap";
 import OKRTree from "./pages/enterprise/OKRTree";
-import OKRHub from "./pages/OKRHub";
+import OKRHub from "./pages/enterprise/OKRHub";
 import RoadmapsPage from "./pages/enterprise/Roadmaps";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
