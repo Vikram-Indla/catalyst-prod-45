@@ -72,11 +72,20 @@ export default function ProgramBoard() {
   // Resolve actual UUIDs from params (could be slugs or UUIDs)
   const programId = programParam?.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
     ? programParam
-    : programs?.find(p => p.name.toLowerCase().replace(/\s+/g, '-') === programParam)?.id || programs?.[0]?.id;
+    : programs?.find(p => p.name.toLowerCase().replace(/\s+/g, '-') === programParam?.toLowerCase())?.id || programs?.[0]?.id;
   
   const piId = piParam?.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
     ? piParam
-    : programIncrements?.find(pi => pi.name.toLowerCase() === piParam || pi.name === piParam)?.id || programIncrements?.[0]?.id;
+    : programIncrements?.find(pi => pi.name.toLowerCase() === piParam?.toLowerCase())?.id || programIncrements?.[0]?.id;
+
+  console.log('Program Board Debug:', {
+    programParam,
+    piParam,
+    resolvedProgramId: programId,
+    resolvedPiId: piId,
+    availablePrograms: programs?.map(p => ({ id: p.id, name: p.name })),
+    availablePIs: programIncrements?.map(pi => ({ id: pi.id, name: pi.name }))
+  });
   
   const { data: teams } = useQuery({
     queryKey: ['teams', programId],
