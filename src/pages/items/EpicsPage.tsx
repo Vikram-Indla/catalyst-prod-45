@@ -63,8 +63,29 @@ export default function EpicsPage() {
   const [viewMode, setViewMode] = useState<'list' | 'kanban' | 'process-flow' | 'custom'>('list');
   const [kanbanSubView, setKanbanSubView] = useState<'state' | 'process' | 'custom'>('state');
   const [columnsToShow, setColumnsToShow] = useState([
-    'name', 'theme', 'program', 'state', 'health', 'dates', 'owner'
+    'rank', 'name', 'theme', 'program', 'state', 'health', 'dates', 'owner'
   ]);
+
+  const availableColumns = [
+    { id: 'rank', label: 'Rank' },
+    { id: 'name', label: 'Name' },
+    { id: 'epic_key', label: 'Epic Key' },
+    { id: 'theme', label: 'Theme' },
+    { id: 'program', label: 'Program' },
+    { id: 'state', label: 'State' },
+    { id: 'health', label: 'Health' },
+    { id: 'owner', label: 'Owner' },
+    { id: 'dates', label: 'Dates' },
+    { id: 'estimate', label: 'Estimate' },
+  ];
+
+  const toggleColumn = (columnId: string) => {
+    setColumnsToShow(prev => 
+      prev.includes(columnId) 
+        ? prev.filter(id => id !== columnId)
+        : [...prev, columnId]
+    );
+  };
 
   const portfolioId = searchParams.get('portfolioId');
   const queryClient = useQueryClient();
@@ -514,9 +535,25 @@ export default function EpicsPage() {
                   <Columns className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <div className="p-2 text-sm font-semibold">Columns Shown</div>
-                {/* Column visibility toggles would go here */}
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="p-2 text-sm font-semibold border-b">Columns Shown</div>
+                <div className="p-2 space-y-2 max-h-96 overflow-y-auto">
+                  {availableColumns.map(column => (
+                    <div key={column.id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={column.id}
+                        checked={columnsToShow.includes(column.id)}
+                        onCheckedChange={() => toggleColumn(column.id)}
+                      />
+                      <label
+                        htmlFor={column.id}
+                        className="text-sm cursor-pointer flex-1"
+                      >
+                        {column.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -588,19 +625,22 @@ export default function EpicsPage() {
                       onCheckedChange={toggleSelectAll}
                     />
                   </TableHead>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Theme</TableHead>
-                  <TableHead>Program</TableHead>
-                  <TableHead>State</TableHead>
-                  <TableHead>Health</TableHead>
-                  <TableHead>Owner</TableHead>
-                  <TableHead>Dates</TableHead>
+                  {columnsToShow.includes('rank') && <TableHead className="w-20">Rank</TableHead>}
+                  {columnsToShow.includes('name') && <TableHead>Name</TableHead>}
+                  {columnsToShow.includes('epic_key') && <TableHead>Epic Key</TableHead>}
+                  {columnsToShow.includes('theme') && <TableHead>Theme</TableHead>}
+                  {columnsToShow.includes('program') && <TableHead>Program</TableHead>}
+                  {columnsToShow.includes('state') && <TableHead>State</TableHead>}
+                  {columnsToShow.includes('health') && <TableHead>Health</TableHead>}
+                  {columnsToShow.includes('owner') && <TableHead>Owner</TableHead>}
+                  {columnsToShow.includes('dates') && <TableHead>Dates</TableHead>}
+                  {columnsToShow.includes('estimate') && <TableHead>Estimate</TableHead>}
                 </TableRow>
               </TableHeader>
               {isLoading ? (
                 <TableBody>
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
                       Loading epics...
                     </TableCell>
                   </TableRow>
@@ -612,11 +652,12 @@ export default function EpicsPage() {
                   onRowClick={setSelectedEpicId}
                   onRowSelect={toggleRowSelection}
                   getStateBadge={getStateBadge}
+                  columnsToShow={columnsToShow}
                 />
               ) : (
                 <TableBody>
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
                       No epics found
                     </TableCell>
                   </TableRow>

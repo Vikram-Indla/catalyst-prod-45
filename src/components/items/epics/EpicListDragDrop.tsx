@@ -21,6 +21,7 @@ interface Epic {
   start_date?: string;
   end_date?: string;
   global_rank?: number;
+  estimate?: number;
 }
 
 interface EpicListDragDropProps {
@@ -29,6 +30,7 @@ interface EpicListDragDropProps {
   onRowClick: (epicId: string) => void;
   onRowSelect: (epicId: string) => void;
   getStateBadge: (state: string) => JSX.Element;
+  columnsToShow: string[];
 }
 
 export function EpicListDragDrop({
@@ -36,12 +38,18 @@ export function EpicListDragDrop({
   selectedRows,
   onRowClick,
   onRowSelect,
-  getStateBadge
+  getStateBadge,
+  columnsToShow
 }: EpicListDragDropProps) {
   const queryClient = useQueryClient();
 
   const updateRanksMutation = useMutation({
-    mutationFn: async (reorderedEpics: Epic[]) => {
+    mutationFn: async ({ reorderedEpics, movedEpic, fromRank, toRank }: { 
+      reorderedEpics: Epic[]; 
+      movedEpic: Epic;
+      fromRank: number;
+      toRank: number;
+    }) => {
       const updates = reorderedEpics.map((epic, index) => ({
         id: epic.id,
         global_rank: index + 1
@@ -60,10 +68,12 @@ export function EpicListDragDrop({
       // Check if any updates failed
       const errors = results.filter(r => r.error);
       if (errors.length > 0) throw new Error('Some updates failed');
+
+      return { movedEpic, fromRank, toRank };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Epic ranking updated');
+      toast.success(`Moved "${data.movedEpic.name}" from rank ${data.fromRank} to rank ${data.toRank}`);
     },
     onError: () => {
       toast.error('Failed to update ranking');
@@ -73,11 +83,19 @@ export function EpicListDragDrop({
   const handleDragEnd = (result: any) => {
     if (!result.destination) return;
 
+    const fromRank = result.source.index + 1;
+    const toRank = result.destination.index + 1;
+
     const items = Array.from(epics);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
 
-    updateRanksMutation.mutate(items);
+    updateRanksMutation.mutate({ 
+      reorderedEpics: items, 
+      movedEpic: reorderedItem, 
+      fromRank, 
+      toRank 
+    });
   };
 
   return (
@@ -106,29 +124,58 @@ export function EpicListDragDrop({
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="font-medium" onClick={() => onRowClick(epic.id)}>
-                      {epic.name}
-                    </TableCell>
-                    <TableCell className="text-sm" onClick={() => onRowClick(epic.id)}>
-                      {epic.strategic_themes?.name || '-'}
-                    </TableCell>
-                    <TableCell className="text-sm" onClick={() => onRowClick(epic.id)}>
-                      {epic.programs?.name || '-'}
-                    </TableCell>
-                    <TableCell onClick={() => onRowClick(epic.id)}>
-                      {getStateBadge(epic.state)}
-                    </TableCell>
-                    <TableCell onClick={() => onRowClick(epic.id)}>
-                      <HealthBadge health={epic.health as any} />
-                    </TableCell>
-                    <TableCell className="text-sm" onClick={() => onRowClick(epic.id)}>
-                      {epic.owner_name || '-'}
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground" onClick={() => onRowClick(epic.id)}>
-                      {epic.start_date && epic.end_date
-                        ? `${new Date(epic.start_date).toLocaleDateString()} - ${new Date(epic.end_date).toLocaleDateString()}`
-                        : '-'}
-                    </TableCell>
+                    {columnsToShow.includes('rank') && (
+                      <TableCell className="text-sm font-mono text-muted-foreground" onClick={() => onRowClick(epic.id)}>
+                        {epic.global_rank || index + 1}
+                      </TableCell>
+                    )}
+                    {columnsToShow.includes('name') && (
+                      <TableCell className="font-medium" onClick={() => onRowClick(epic.id)}>
+                        {epic.name}
+                      </TableCell>
+                    )}
+                    {columnsToShow.includes('epic_key') && (
+                      <TableCell className="text-sm text-muted-foreground" onClick={() => onRowClick(epic.id)}>
+                        {epic.epic_key || '-'}
+                      </TableCell>
+                    )}
+                    {columnsToShow.includes('theme') && (
+                      <TableCell className="text-sm" onClick={() => onRowClick(epic.id)}>
+                        {epic.strategic_themes?.name || '-'}
+                      </TableCell>
+                    )}
+                    {columnsToShow.includes('program') && (
+                      <TableCell className="text-sm" onClick={() => onRowClick(epic.id)}>
+                        {epic.programs?.name || '-'}
+                      </TableCell>
+                    )}
+                    {columnsToShow.includes('state') && (
+                      <TableCell onClick={() => onRowClick(epic.id)}>
+                        {getStateBadge(epic.state)}
+                      </TableCell>
+                    )}
+                    {columnsToShow.includes('health') && (
+                      <TableCell onClick={() => onRowClick(epic.id)}>
+                        <HealthBadge health={epic.health as any} />
+                      </TableCell>
+                    )}
+                    {columnsToShow.includes('owner') && (
+                      <TableCell className="text-sm" onClick={() => onRowClick(epic.id)}>
+                        {epic.owner_name || '-'}
+                      </TableCell>
+                    )}
+                    {columnsToShow.includes('dates') && (
+                      <TableCell className="text-sm text-muted-foreground" onClick={() => onRowClick(epic.id)}>
+                        {epic.start_date && epic.end_date
+                          ? `${new Date(epic.start_date).toLocaleDateString()} - ${new Date(epic.end_date).toLocaleDateString()}`
+                          : '-'}
+                      </TableCell>
+                    )}
+                    {columnsToShow.includes('estimate') && (
+                      <TableCell className="text-sm" onClick={() => onRowClick(epic.id)}>
+                        {epic.estimate ? `${epic.estimate} pts` : '-'}
+                      </TableCell>
+                    )}
                   </TableRow>
                 )}
               </Draggable>
