@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, ChevronDown, ChevronRight } from 'lucide-react';
-import { useKeyResults, useCreateKeyResult, useUpdateKeyResult, type KeyResult } from '@/hooks/useKeyResults';
+import { Plus, ChevronDown, ChevronRight, TrendingUp } from 'lucide-react';
+import { useKeyResults, useCreateKeyResult, useUpdateKeyResult, useCreateCheckIn, type KeyResult } from '@/hooks/useKeyResults';
+import { CheckInModal } from './CheckInModal';
 import {
   Select,
   SelectContent,
@@ -24,9 +25,11 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
   const [newKrName, setNewKrName] = useState('');
   const [newKrType, setNewKrType] = useState<'currency' | 'count' | 'percentage' | 'decimal_score' | 'nps'>('percentage');
   const [expandedKrs, setExpandedKrs] = useState<Set<string>>(new Set());
+  const [checkInKr, setCheckInKr] = useState<KeyResult | null>(null);
 
   const createKeyResult = useCreateKeyResult();
   const updateKeyResult = useUpdateKeyResult();
+  const createCheckIn = useCreateCheckIn();
 
   const handleAddKeyResult = () => {
     if (!newKrName.trim()) return;
@@ -158,7 +161,15 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
                   </div>
 
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCheckInKr(kr);
+                      }}
+                    >
+                      <TrendingUp className="h-4 w-4 mr-1" />
                       Check-in
                     </Button>
                     <Button variant="outline" size="sm">
@@ -171,6 +182,22 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
           ))
         )}
       </div>
+
+      {checkInKr && (
+        <CheckInModal
+          open={!!checkInKr}
+          onClose={() => setCheckInKr(null)}
+          onSubmit={(data) => {
+            createCheckIn.mutate({
+              key_result_id: checkInKr.id,
+              value: data.value,
+              checked_in_at: data.date.toISOString(),
+              note_richtext: data.note,
+            });
+          }}
+          keyResult={checkInKr}
+        />
+      )}
     </div>
   );
 }

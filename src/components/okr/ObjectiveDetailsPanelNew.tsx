@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { KeyResultsList } from "./KeyResultsList";
 import { ObjectiveProgressSection } from "./ObjectiveProgressSection";
 import { AlignedWorkTab } from "./AlignedWorkTab";
+import { ChildObjectivesTab } from "./ChildObjectivesTab";
+import { LinkedItemsTab } from "./LinkedItemsTab";
 import { useObjective, useUpdateObjective } from "@/hooks/useObjectives";
 import { Star, Share2, MoreVertical, X } from "lucide-react";
 import { useState } from "react";
@@ -147,11 +149,12 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
           />
 
           <Tabs defaultValue="key-results" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="key-results">Key Results</TabsTrigger>
               <TabsTrigger value="aligned-work">Aligned Work</TabsTrigger>
+              <TabsTrigger value="children">Children</TabsTrigger>
+              <TabsTrigger value="links">Links</TabsTrigger>
               <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="discussions">Discussions</TabsTrigger>
             </TabsList>
 
             <TabsContent value="key-results" className="space-y-4">
@@ -160,6 +163,14 @@ export function ObjectiveDetailsPanelNew({ objectiveId, open, onClose }: Objecti
 
             <TabsContent value="aligned-work">
               <AlignedWorkTab objectiveId={objectiveId} />
+            </TabsContent>
+
+            <TabsContent value="children">
+              <ChildObjectivesTab objectiveId={objectiveId} />
+            </TabsContent>
+
+            <TabsContent value="links">
+              <LinkedItemsTab objectiveId={objectiveId} />
             </TabsContent>
 
             <TabsContent value="details">

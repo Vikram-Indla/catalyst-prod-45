@@ -76,6 +76,7 @@ import NotFound from "./pages/NotFound";
 import { AdminGuard } from "./components/admin/AdminGuard";
 import OKRHeatmap from "./pages/enterprise/OKRHeatmap";
 import OKRTree from "./pages/enterprise/OKRTree";
+import OKRHub from "./pages/OKRHub";
 import RoadmapsPage from "./pages/enterprise/Roadmaps";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
@@ -133,6 +134,10 @@ const App = () => (
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
               <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
               <Route path="/enterprise/okr-tree" element={<OKRTree />} />
+              <Route path="/enterprise/okr-hub" element={<OKRHub />} />
+              <Route path="/portfolio/:portfolioId/okr-hub" element={<OKRHub />} />
+              <Route path="/program/:programId/okr-hub" element={<OKRHub />} />
+              <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               
               {/* Enterprise More Items */}
