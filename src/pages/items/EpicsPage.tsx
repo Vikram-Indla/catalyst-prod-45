@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -15,10 +15,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 import { EpicDialog } from '@/components/forms/EpicDialog';
 import { WSJFPrioritizationDialog } from '@/components/items/epics/dialogs/WSJFPrioritizationDialog';
 import { MassMoveDialog } from '@/components/items/epics/dialogs/MassMoveDialog';
+import { EpicKanbanView } from '@/components/items/epics/EpicKanbanView';
+import { EpicListDragDrop } from '@/components/items/epics/EpicListDragDrop';
+import { EpicContextMenu } from '@/components/items/epics/EpicContextMenu';
+import { MoveToPositionDialog } from '@/components/items/epics/dialogs/MoveToPositionDialog';
+import { DuplicateEpicDialog } from '@/components/items/epics/dialogs/DuplicateEpicDialog';
 import { 
   Plus, 
   Search, 
@@ -31,7 +37,9 @@ import {
   ListTree,
   Printer,
   Trash2,
-  XCircle
+  XCircle,
+  LayoutList,
+  LayoutGrid
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -43,6 +51,10 @@ export default function EpicsPage() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [wsjfDialogOpen, setWSJFDialogOpen] = useState(false);
   const [massMoveDialogOpen, setMassMoveDialogOpen] = useState(false);
+  const [moveToPositionOpen, setMoveToPositionOpen] = useState(false);
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
+  const [contextEpic, setContextEpic] = useState<any>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
   const [columnsToShow, setColumnsToShow] = useState([
     'name', 'theme', 'program', 'state', 'health', 'dates', 'owner'
   ]);
@@ -102,6 +114,90 @@ export default function EpicsPage() {
     return <Badge variant={variants[state] || 'secondary'}>{state.replace(/_/g, ' ')}</Badge>;
   };
 
+  const duplicateEpicMutation = useMutation({
+    mutationFn: async ({ epicId, newName, options }: any) => {
+      const { data: epic } = await supabase
+        .from('epics')
+        .select('*')
+        .eq('id', epicId)
+        .single();
+
+      const { data, error } = await supabase
+        .from('epics')
+        .insert({
+          ...epic,
+          id: undefined,
+          name: newName,
+          epic_key: `${epic.epic_key}-COPY`,
+          start_date: options.includeDates ? epic.start_date : null,
+          end_date: options.includeDates ? epic.end_date : null,
+          created_at: undefined,
+          updated_at: undefined
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      toast.success('Epic duplicated successfully');
+    }
+  });
+
+  const moveToPositionMutation = useMutation({
+    mutationFn: async ({ epicId, position }: { epicId: string; position: number }) => {
+      const { error } = await supabase
+        .from('epics')
+        .update({ global_rank: position })
+        .eq('id', epicId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      toast.success('Epic position updated');
+    }
+  });
+
+  const parkingLotMutation = useMutation({
+    mutationFn: async (epicId: string) => {
+      const { data: epic } = await supabase
+        .from('epics')
+        .select('parked_at')
+        .eq('id', epicId)
+        .single();
+
+      const { error } = await supabase
+        .from('epics')
+        .update({ parked_at: epic?.parked_at ? null : new Date().toISOString() })
+        .eq('id', epicId);
+      
+      if (error) throw error;
+      return !epic?.parked_at;
+    },
+    onSuccess: (isParked) => {
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      toast.success(isParked ? 'Epic moved to parking lot' : 'Epic removed from parking lot');
+    }
+  });
+
+  const recycleBinMutation = useMutation({
+    mutationFn: async (epicId: string) => {
+      const { error } = await supabase
+        .from('epics')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', epicId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      toast.success('Epic moved to recycle bin');
+    }
+  });
+
   const handleMoreAction = (action: string) => {
     switch (action) {
       case 'bottom-up-estimate':
@@ -114,7 +210,34 @@ export default function EpicsPage() {
         toast.info('Opening Import Epics dialog');
         break;
       case 'export':
-        toast.success('Exporting epics to CSV');
+        if (epics && epics.length > 0) {
+          // Export epics data
+          const columns = ['epic_key', 'name', 'state', 'health', 'strategic_themes.name', 'programs.name'];
+          const exportData = epics.map(e => ({
+            'Epic Key': e.epic_key || '',
+            'Name': e.name,
+            'State': e.state || '',
+            'Health': e.health || '',
+            'Theme': e.strategic_themes?.name || '',
+            'Program': e.programs?.name || ''
+          }));
+          
+          const csv = [
+            Object.keys(exportData[0]).join(','),
+            ...exportData.map(row => Object.values(row).map(v => `"${v}"`).join(','))
+          ].join('\n');
+          
+          const blob = new Blob([csv], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'epics-export.csv';
+          link.click();
+          
+          toast.success('Epics exported to CSV');
+        } else {
+          toast.error('No epics to export');
+        }
         break;
       case 'mass-move':
         if (selectedRows.length === 0) {
@@ -135,6 +258,32 @@ export default function EpicsPage() {
       case 'canceled-items':
         window.location.href = '/items/epics/canceled';
         break;
+    }
+  };
+
+  const handleContextMenuAction = {
+    duplicate: (epic: any) => {
+      setContextEpic(epic);
+      setDuplicateDialogOpen(true);
+    },
+    moveToTop: async (epic: any) => {
+      await moveToPositionMutation.mutateAsync({ epicId: epic.id, position: 1 });
+    },
+    moveToBottom: async (epic: any) => {
+      await moveToPositionMutation.mutateAsync({ epicId: epic.id, position: epics?.length || 1 });
+    },
+    moveToPosition: (epic: any) => {
+      setContextEpic(epic);
+      setMoveToPositionOpen(true);
+    },
+    moveToPI: (epic: any) => {
+      toast.info('Move to PI dialog coming soon');
+    },
+    recycleBin: async (epic: any) => {
+      await recycleBinMutation.mutateAsync(epic.id);
+    },
+    parkingLot: async (epic: any) => {
+      await parkingLotMutation.mutateAsync(epic.id);
     }
   };
 
@@ -169,6 +318,18 @@ export default function EpicsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)}>
+              <TabsList>
+                <TabsTrigger value="list">
+                  <LayoutList className="h-4 w-4 mr-2" />
+                  List
+                </TabsTrigger>
+                <TabsTrigger value="kanban">
+                  <LayoutGrid className="h-4 w-4 mr-2" />
+                  Kanban
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
             <Button onClick={() => setCreateDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               Add Epic
@@ -255,76 +416,65 @@ export default function EpicsPage() {
         </div>
       </div>
 
-      {/* Table */}
+      {/* Table/Kanban View */}
       <div className="flex-1 overflow-auto px-6 py-4">
-        <div className="border rounded-lg">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
-                  <Checkbox
-                    checked={selectedRows.length === epics?.length && epics.length > 0}
-                    onCheckedChange={toggleSelectAll}
-                  />
-                </TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Theme</TableHead>
-                <TableHead>Program</TableHead>
-                <TableHead>State</TableHead>
-                <TableHead>Health</TableHead>
-                <TableHead>Owner</TableHead>
-                <TableHead>Dates</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
+        {viewMode === 'kanban' ? (
+          <EpicKanbanView
+            epics={epics || []}
+            onEpicClick={setSelectedEpicId}
+            onContextMenu={(epic, e) => {
+              e.preventDefault();
+              setContextEpic(epic);
+            }}
+          />
+        ) : (
+          <div className="border rounded-lg">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                    Loading epics...
-                  </TableCell>
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={selectedRows.length === epics?.length && epics.length > 0}
+                      onCheckedChange={toggleSelectAll}
+                    />
+                  </TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Theme</TableHead>
+                  <TableHead>Program</TableHead>
+                  <TableHead>State</TableHead>
+                  <TableHead>Health</TableHead>
+                  <TableHead>Owner</TableHead>
+                  <TableHead>Dates</TableHead>
                 </TableRow>
-              ) : epics && epics.length > 0 ? (
-                epics.map((epic) => (
-                  <TableRow
-                    key={epic.id}
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => setSelectedEpicId(epic.id)}
-                  >
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={selectedRows.includes(epic.id)}
-                        onCheckedChange={() => toggleRowSelection(epic.id)}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{epic.name}</TableCell>
-                    <TableCell className="text-sm">
-                      {epic.strategic_themes?.name || '-'}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {epic.programs?.name || '-'}
-                    </TableCell>
-                    <TableCell>{getStateBadge(epic.state)}</TableCell>
-                    <TableCell>
-                      <HealthBadge health={epic.health} />
-                    </TableCell>
-                    <TableCell className="text-sm">{epic.owner_id || '-'}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {epic.start_date && epic.end_date
-                        ? `${new Date(epic.start_date).toLocaleDateString()} - ${new Date(epic.end_date).toLocaleDateString()}`
-                        : '-'}
+              </TableHeader>
+              {isLoading ? (
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      Loading epics...
                     </TableCell>
                   </TableRow>
-                ))
+                </TableBody>
+              ) : epics && epics.length > 0 ? (
+                <EpicListDragDrop
+                  epics={epics}
+                  selectedRows={selectedRows}
+                  onRowClick={setSelectedEpicId}
+                  onRowSelect={toggleRowSelection}
+                  getStateBadge={getStateBadge}
+                />
               ) : (
-                <TableRow>
-                  <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                    No epics found
-                  </TableCell>
-                </TableRow>
+                <TableBody>
+                  <TableRow>
+                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                      No epics found
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
               )}
-            </TableBody>
-          </Table>
-        </div>
+            </Table>
+          </div>
+        )}
       </div>
 
       {/* Epic Details Panel */}
@@ -362,6 +512,31 @@ export default function EpicsPage() {
         selectedEpics={selectedRows}
         onConfirm={handleMassMoveConfirm}
       />
+
+      {/* Move to Position Dialog */}
+      {contextEpic && (
+        <MoveToPositionDialog
+          open={moveToPositionOpen}
+          onOpenChange={setMoveToPositionOpen}
+          epicName={contextEpic.name}
+          maxPosition={epics?.length || 1}
+          onConfirm={(position) => {
+            moveToPositionMutation.mutate({ epicId: contextEpic.id, position });
+          }}
+        />
+      )}
+
+      {/* Duplicate Epic Dialog */}
+      {contextEpic && (
+        <DuplicateEpicDialog
+          open={duplicateDialogOpen}
+          onOpenChange={setDuplicateDialogOpen}
+          epicName={contextEpic.name}
+          onConfirm={(newName, options) => {
+            duplicateEpicMutation.mutate({ epicId: contextEpic.id, newName, options });
+          }}
+        />
+      )}
     </div>
   );
 }
