@@ -28,6 +28,7 @@ import EpicBacklog from "./pages/EpicBacklog";
 import EpicBacklogWithSidebar from "./pages/EpicBacklogWithSidebar";
 import Features from "./pages/Features";
 import FeaturesPage from "./pages/items/FeaturesPage";
+import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
 import Capabilities from "./pages/Capabilities";
 import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
@@ -165,8 +166,9 @@ const App = () => (
               <Route path="/initiatives" element={<Initiatives />} />
               <Route path="/epics" element={<Navigate to="/items/epics" replace />} />
               <Route path="/backlog/epics" element={<Navigate to="/items/epics" replace />} />
-              <Route path="/features" element={<FeaturesPage />} />
-              <Route path="/features/:featureId" element={<FeaturesPage />} />
+            <Route path="/features" element={<FeaturesPage />} />
+            <Route path="/features/:featureId" element={<FeaturesPage />} />
+            <Route path="/features/prioritization" element={<FeaturePrioritizationView />} />
               <Route path="/items/epics" element={<EpicsPage />} />
               <Route path="/items/epics/recycle-bin" element={<EpicsRecycleBinPage />} />
               <Route path="/items/epics/canceled" element={<EpicsCanceledPage />} />
