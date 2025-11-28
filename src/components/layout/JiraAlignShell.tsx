@@ -46,7 +46,7 @@ function JiraAlignShellContent() {
     const path = location.pathname;
     if (path.startsWith('/enterprise')) {
       if (tier !== 'enterprise') setTier('enterprise');
-    } else if (path.startsWith('/portfolio')) {
+    } else if (path.startsWith('/portfolio') || path.startsWith('/items/')) {
       if (tier !== 'portfolio') setTier('portfolio');
     } else if (path.startsWith('/program') || path === '/dependencies' || path.startsWith('/programs/program-board')) {
       // Dependencies and Program Board are Program-level features
@@ -72,9 +72,9 @@ function JiraAlignShellContent() {
                 <ProgramRoomSidebar
                   programId={currentProgramId}
                 />
-              ) : tier === 'portfolio' && currentPortfolioId ? (
+              ) : tier === 'portfolio' ? (
                 <PortfolioRoomSidebar
-                  portfolioId={currentPortfolioId}
+                  portfolioId={currentPortfolioId || 'default'}
                   expanded={sidebarExpanded}
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
                   selectedPI={selectedPI || undefined}
