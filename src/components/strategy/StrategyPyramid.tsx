@@ -148,8 +148,11 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
 
   const handleMouseEnter = (layerName: string, e: React.MouseEvent<SVGElement>) => {
     const svgRect = e.currentTarget.ownerSVGElement?.getBoundingClientRect();
-    if (svgRect) {
-      setTooltipPos({ x: e.clientX - svgRect.left, y: e.clientY - svgRect.top });
+    const layerRect = e.currentTarget.getBoundingClientRect();
+    if (svgRect && layerRect) {
+      // Position tooltip to the right of the pyramid
+      const layerCenterY = layerRect.top + layerRect.height / 2 - svgRect.top;
+      setTooltipPos({ x: 920, y: layerCenterY });
     }
     setHoveredLayer(layerName);
   };
@@ -576,10 +579,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
             {hoveredLayer && (
               <g className="pointer-events-none">
                 <rect
-                  x={tooltipPos.x - 110}
-                  y={tooltipPos.y - 70}
-                  width="200"
-                  height="50"
+                  x={tooltipPos.x}
+                  y={tooltipPos.y - 35}
+                  width="220"
+                  height="60"
                   fill="hsl(var(--popover))"
                   stroke="hsl(var(--border))"
                   strokeWidth="1"
@@ -587,8 +590,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                   className="drop-shadow-md"
                 />
                 <text
-                  x={tooltipPos.x - 100}
-                  y={tooltipPos.y - 52}
+                  x={tooltipPos.x + 10}
+                  y={tooltipPos.y - 15}
                   fill="hsl(var(--popover-foreground))"
                   fontSize="13"
                   fontWeight="600"
@@ -596,8 +599,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                   {hoveredLayer}
                 </text>
                 <text
-                  x={tooltipPos.x - 100}
-                  y={tooltipPos.y - 35}
+                  x={tooltipPos.x + 10}
+                  y={tooltipPos.y + 5}
                   fill="hsl(var(--muted-foreground))"
                   fontSize="11"
                 >
