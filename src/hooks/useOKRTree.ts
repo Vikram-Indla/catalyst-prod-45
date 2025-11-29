@@ -49,7 +49,7 @@ export function useOKRTree(snapshotId?: string) {
       const ownerIds = [...new Set(objectives?.map(obj => obj.owner_id).filter(Boolean) || [])];
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, full_name, email')
+        .select('id, full_name, email, avatar_url')
         .in('id', ownerIds);
 
       const profilesMap = new Map(profiles?.map(p => [p.id, p]) || []);
@@ -74,7 +74,7 @@ export function useOKRTree(snapshotId?: string) {
           owner: {
             id: obj.owner_id || 'system',
             name: ownerName,
-            avatar: undefined,
+            avatar: profile?.avatar_url || undefined,
             initials: getInitials(ownerName),
           },
           children: [],
