@@ -161,7 +161,7 @@ export default function StrategyRoomPage() {
       </div>
 
       {/* Strategy Pyramid */}
-      <StrategyPyramid onLayerClick={handlePyramidLayerClick} />
+      <StrategyPyramid onLayerClick={handlePyramidLayerClick} snapshotId={effectiveSelectedSnapshotId} />
 
       {/* Snapshot Progress and Misaligned Items */}
       <div className="grid grid-cols-[1fr_400px] gap-6">
