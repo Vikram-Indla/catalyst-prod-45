@@ -125,15 +125,24 @@ export function DependencyMatrix({ piId }: DependencyMatrixProps) {
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 bg-background border-b border-r border-border p-3 text-left font-medium">
-                  From / To
+                <th className="sticky left-0 z-10 bg-background border-b border-r border-border p-2 text-left font-medium w-32">
+                  {/* Empty corner cell */}
                 </th>
                 {programs.map((toProg) => (
                   <th
                     key={toProg.id}
-                    className="border-b border-border p-3 text-left font-medium min-w-[120px]"
+                    className="border-b border-border p-2 text-left font-medium relative"
+                    style={{ width: '60px', height: '140px' }}
                   >
-                    <div className="truncate">{toProg.name}</div>
+                    <div 
+                      className="absolute bottom-2 left-1/2 origin-bottom-left whitespace-nowrap text-sm font-medium text-foreground"
+                      style={{ 
+                        transform: 'rotate(-90deg) translateX(-100%)',
+                        transformOrigin: 'left bottom'
+                      }}
+                    >
+                      {toProg.name}
+                    </div>
                   </th>
                 ))}
               </tr>
@@ -141,32 +150,42 @@ export function DependencyMatrix({ piId }: DependencyMatrixProps) {
             <tbody>
               {programs.map((fromProg) => (
                 <tr key={fromProg.id}>
-                  <td className="sticky left-0 z-10 bg-background border-r border-b border-border p-3 font-medium">
-                    <div className="truncate">{fromProg.name}</div>
+                  <td className="sticky left-0 z-10 bg-background border-r border-b border-border p-2 font-medium text-sm w-32">
+                    <div className="truncate text-primary hover:text-primary/80 cursor-pointer">
+                      {fromProg.name}
+                    </div>
                   </td>
                   {programs.map((toProg) => {
                     const count = getDependencyCount(fromProg.id, toProg.id);
                     const cellKey = `${fromProg.id}-${toProg.id}`;
                     const isHovered = hoveredCell === cellKey;
+                    const isSameProgram = fromProg.id === toProg.id;
 
                     return (
                       <TooltipProvider key={toProg.id}>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <td
-                              className={`border-b border-border p-3 text-center transition-colors ${getCellColor(count)} ${isHovered ? 'ring-2 ring-primary' : ''} ${count > 0 ? 'cursor-pointer' : 'cursor-default'}`}
-                              onMouseEnter={() => setHoveredCell(cellKey)}
+                              className={`border-b border-border p-1 text-center transition-all ${
+                                isSameProgram 
+                                  ? 'bg-muted/50 cursor-not-allowed' 
+                                  : count === 0 
+                                    ? 'bg-background hover:bg-muted/30 cursor-default' 
+                                    : 'cursor-pointer hover:scale-105'
+                              } ${isHovered && count > 0 ? 'ring-2 ring-primary ring-offset-1' : ''}`}
+                              onMouseEnter={() => !isSameProgram && setHoveredCell(cellKey)}
                               onMouseLeave={() => setHoveredCell(null)}
-                              onClick={() => handleCellClick(fromProg, toProg)}
+                              onClick={() => !isSameProgram && handleCellClick(fromProg, toProg)}
+                              style={{ width: '60px', height: '48px' }}
                             >
-                              {count > 0 && (
-                                <Badge variant="secondary" className="font-mono">
+                              {!isSameProgram && count > 0 && (
+                                <div className="inline-flex items-center justify-center bg-[#1e3a5f] text-white font-semibold text-sm rounded px-3 py-1.5 min-w-[32px] hover:bg-[#2a4a7f] transition-colors">
                                   {count}
-                                </Badge>
+                                </div>
                               )}
                             </td>
                           </TooltipTrigger>
-                          {count > 0 && (
+                          {count > 0 && !isSameProgram && (
                             <TooltipContent>
                               <p className="font-semibold">{count} dependencies</p>
                               <p className="text-xs text-muted-foreground">
