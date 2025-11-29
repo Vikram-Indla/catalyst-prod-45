@@ -14,16 +14,16 @@ const workItems = [
 ];
 
 const otherItems = [
-  { label: 'Objectives', icon: Target, color: 'bg-slate-600' },
-  { label: 'Dependencies', icon: GitBranch, color: 'bg-slate-600' },
-  { label: 'Teams', icon: Users, color: 'bg-slate-600' },
-  { label: 'Ideation', icon: Lightbulb, color: 'bg-slate-600' },
-  { label: 'Risks', icon: AlertTriangle, color: 'bg-slate-600' },
-  { label: 'Impediments', icon: Shield, color: 'bg-slate-600' },
-  { label: 'Specifications', icon: List, color: 'bg-slate-600' },
-  { label: 'Sprints', icon: Clock, color: 'bg-slate-600' },
-  { label: 'Program Increments', icon: Calendar, color: 'bg-slate-600' },
-  { label: 'Release Vehicles', icon: Truck, color: 'bg-slate-600' }
+  { label: 'Objectives', icon: Target, color: 'bg-secondary' },
+  { label: 'Dependencies', icon: GitBranch, color: 'bg-secondary' },
+  { label: 'Teams', icon: Users, color: 'bg-secondary' },
+  { label: 'Ideation', icon: Lightbulb, color: 'bg-secondary' },
+  { label: 'Risks', icon: AlertTriangle, color: 'bg-secondary' },
+  { label: 'Impediments', icon: Shield, color: 'bg-secondary' },
+  { label: 'Specifications', icon: List, color: 'bg-secondary' },
+  { label: 'Sprints', icon: Clock, color: 'bg-secondary' },
+  { label: 'Program Increments', icon: Calendar, color: 'bg-secondary' },
+  { label: 'Release Vehicles', icon: Truck, color: 'bg-secondary' }
 ];
 
 interface CreateDropdownProps {

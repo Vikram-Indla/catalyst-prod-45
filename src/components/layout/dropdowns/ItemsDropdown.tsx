@@ -15,16 +15,16 @@ const workItems = [
 ];
 
 const otherItems = [
-  { key: 'objectives', label: 'Objectives', icon: Target, color: 'bg-slate-600' },
-  { key: 'dependencies', label: 'Dependencies', icon: GitBranch, color: 'bg-slate-600' },
+  { key: 'objectives', label: 'Objectives', icon: Target, color: 'bg-secondary' },
+  { key: 'dependencies', label: 'Dependencies', icon: GitBranch, color: 'bg-secondary' },
   { key: 'teams', label: 'Teams', icon: Users, color: 'bg-workitem-feature' },
-  { key: 'ideation', label: 'Ideation', icon: Lightbulb, color: 'bg-slate-600' },
-  { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'bg-slate-600' },
-  { key: 'impediments', label: 'Impediments', icon: Shield, color: 'bg-slate-600' },
-  { key: 'sprints', label: 'Sprints', icon: Calendar, color: 'bg-slate-600' },
-  { key: 'program-increments', label: 'Program Increments', icon: Package, color: 'bg-slate-600' },
-  { key: 'release-vehicles', label: 'Release Vehicles (Fix Versions)', icon: Package, color: 'bg-slate-600' },
-  { key: 'success-criteria', label: 'Success Criteria', icon: Award, color: 'bg-slate-600' }
+  { key: 'ideation', label: 'Ideation', icon: Lightbulb, color: 'bg-secondary' },
+  { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'bg-secondary' },
+  { key: 'impediments', label: 'Impediments', icon: Shield, color: 'bg-secondary' },
+  { key: 'sprints', label: 'Sprints', icon: Calendar, color: 'bg-secondary' },
+  { key: 'program-increments', label: 'Program Increments', icon: Package, color: 'bg-secondary' },
+  { key: 'release-vehicles', label: 'Release Vehicles (Fix Versions)', icon: Package, color: 'bg-secondary' },
+  { key: 'success-criteria', label: 'Success Criteria', icon: Award, color: 'bg-secondary' }
 ];
 
 interface ItemsDropdownProps {
