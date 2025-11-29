@@ -9,6 +9,7 @@ import { NotificationsPanel } from "./NotificationsPanel";
 import { PersonasPopover } from "./PersonasPopover";
 import { PortfolioSelectorDropdown } from "./PortfolioSelectorDropdown";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
+import { TeamSelectorDropdown } from "./TeamSelectorDropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,7 +38,7 @@ export function JiraAlignHeader() {
     { label: "Enterprise", path: "/enterprise/strategy-room" },
     { label: "Portfolio", hasDropdown: true },
     { label: "Program", hasDropdown: true },
-    { label: "Team", path: "/teams" },
+    { label: "Team", hasDropdown: true, path: "/teams" },
     { label: "Product", hasDropdown: true },
     { label: "Custom Rooms", hasDropdown: true },
     { label: "Starred", hasDropdown: true },
@@ -95,6 +96,25 @@ export function JiraAlignHeader() {
                     </PopoverTrigger>
                     <PopoverContent className="p-0 w-auto" align="start">
                       <ProgramSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                    </PopoverContent>
+                  </Popover>
+                ) : item.label === "Team" && item.path ? (
+                  <Popover
+                    open={activeDropdown === item.label}
+                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                      >
+                        {item.label}
+                        <ChevronDown className="ml-1 h-3 w-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-auto" align="start">
+                      <TeamSelectorDropdown onClose={() => setActiveDropdown(null)} />
                     </PopoverContent>
                   </Popover>
                 ) : item.hasDropdown ? (
