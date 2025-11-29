@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { FileText, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
+import { FileText, AlertCircle, CheckCircle2, XCircle, ChevronRight, Circle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface WheelNode {
   id: string;
@@ -102,50 +103,107 @@ export function DependencyWheelDetailsPanel({
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'DONE': return 'text-green-600';
+      case 'COMMITTED': return 'text-blue-600';
+      case 'NOT_COMMITTED': return 'text-red-600';
+      case 'BLOCKED': return 'text-orange-600';
+      default: return 'text-muted-foreground';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'DONE': return <Circle className="h-3 w-3 fill-green-500 text-green-500" />;
+      case 'COMMITTED': return <Circle className="h-3 w-3 fill-blue-500 text-blue-500" />;
+      case 'NOT_COMMITTED': return <Circle className="h-3 w-3 fill-red-500 text-red-500" />;
+      case 'BLOCKED': return <Circle className="h-3 w-3 fill-orange-500 text-orange-500" />;
+      default: return <Circle className="h-3 w-3 fill-gray-400 text-gray-400" />;
+    }
+  };
+
   const renderDependencyList = (linkSet: WheelLink[], title: string, metrics: any) => (
     <Card className="mb-4">
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        <div className="flex gap-2 mt-2">
-          <Badge variant="outline" className="text-xs">
-            NOT COMMITTED: {metrics.notCommitted}
-          </Badge>
-          <Badge variant="outline" className="text-xs">
-            COMMITTED: {metrics.committedPct}%
-          </Badge>
-          <Badge variant="outline" className="text-xs">
-            DONE: {metrics.donePct}%
-          </Badge>
+        <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+          {title}
+        </CardTitle>
+        <div className="grid grid-cols-3 gap-2 mt-3">
+          <div className="text-center p-2 border rounded-sm">
+            <div className="text-xs text-red-600 font-medium mb-1">NOT COMMITTED</div>
+            <div className="text-2xl font-bold text-red-600">{metrics.notCommitted}</div>
+          </div>
+          <div className="text-center p-2 border rounded-sm">
+            <div className="text-xs text-gray-600 font-medium mb-1">COMMITTED</div>
+            <div className="text-2xl font-bold text-gray-900">{metrics.committedPct}%</div>
+          </div>
+          <div className="text-center p-2 border rounded-sm">
+            <div className="text-xs text-green-600 font-medium mb-1">DONE</div>
+            <div className="text-2xl font-bold text-green-600">{metrics.donePct}%</div>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        <ScrollArea className="h-[200px]">
-          <div className="space-y-2">
+      <CardContent className="pt-0 px-3">
+        <ScrollArea className="h-[280px] pr-3">
+          <div className="space-y-1">
             {linkSet.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No dependencies</p>
+              <p className="text-sm text-muted-foreground py-4 text-center">No dependencies</p>
             ) : (
               linkSet.map((link) => (
                 <div
                   key={link.id}
                   onClick={() => onDependencyClick(link.dependencyId)}
-                  className="p-2 border rounded hover:bg-accent cursor-pointer transition-colors"
+                  className="cursor-pointer hover:bg-accent/50 rounded transition-colors"
                 >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {link.fromFeature?.name || 'Feature'}
-                      </p>
-                      <p className="text-xs text-muted-foreground truncate">
-                        → {link.toFeature?.name || 'Feature'}
-                      </p>
-                      <div className="flex gap-1 mt-1 flex-wrap">
-                        <Badge variant="outline" className="text-xs">
-                          {link.workItemType}
-                        </Badge>
-                        {getStatusBadge(link.status)}
-                      </div>
+                  {/* Epic/Feature level with icon */}
+                  <div className="flex items-center gap-2 py-2 px-2">
+                    {getStatusIcon(link.status)}
+                    <span className="text-sm font-medium flex-1 truncate">
+                      {link.fromFeature?.display_id || 'F-'} {link.fromFeature?.name || 'Feature'}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                        TRA
+                      </Badge>
+                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                        S23
+                      </Badge>
+                      <ChevronRight className="h-3 w-3 text-muted-foreground" />
+                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                        BAL
+                      </Badge>
+                      <Badge variant="outline" className="text-xs px-1.5 py-0">
+                        S23
+                      </Badge>
                     </div>
                   </div>
+                  
+                  {/* Nested work items (if available) */}
+                  {link.dependency?.description && (
+                    <div className="pl-8 pr-2 pb-2">
+                      <div className="flex items-start gap-2 py-1">
+                        <Circle className="h-2.5 w-2.5 fill-purple-500 text-purple-500 mt-1 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-muted-foreground truncate">
+                            {link.toFeature?.display_id || 'F-'}: {link.toFeature?.name || 'Related Feature'}
+                          </p>
+                        </div>
+                      </div>
+                      {/* Additional nested story level */}
+                      <div className="flex items-start gap-2 py-1 pl-4">
+                        <Circle className="h-2 w-2 fill-teal-500 text-teal-500 mt-1 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs text-muted-foreground truncate">
+                            Story: {link.dependency.description?.substring(0, 50) || 'Related story item'}
+                          </p>
+                          <p className="text-xs text-muted-foreground/60">
+                            Sprint: {link.dependency?.needed_by_sprint?.name || 'Baltimore CDR_S13'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))
             )}
