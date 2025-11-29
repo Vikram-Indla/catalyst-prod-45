@@ -348,7 +348,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     <span className="text-sm text-foreground">Dependencies</span>
                   </div>
                   <span className="text-sm font-medium text-foreground">
-                    0/{metrics.dependenciesCount}
+                    {dependencies.filter(d => d.status === 'done' || d.status === 'delivered').length}/{metrics.dependenciesCount}
                   </span>
                 </div>
               </div>
@@ -357,43 +357,108 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
             {/* Dependencies Section */}
             <div>
               <h3 className="text-xs font-semibold text-muted-foreground mb-3">Dependencies:</h3>
-              <Card className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl">🎯</div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground mb-1">No Dependencies</p>
-                    <p className="text-xs text-muted-foreground">
-                      There are no Dependencies for the team in this sprint!
-                    </p>
+              {dependencies.length === 0 ? (
+                <Card className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl">🎯</div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-foreground mb-1">No Dependencies</p>
+                      <p className="text-xs text-muted-foreground">
+                        There are no Dependencies for the team in this sprint!
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-4">
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-xs h-auto p-0"
+                      onClick={() => navigate('/dependencies')}
+                    >
+                      View All
+                    </Button>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-xs h-auto p-0"
+                      onClick={() => navigate('/dependencies?view=matrix')}
+                    >
+                      Dependency Map
+                    </Button>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-xs h-auto p-0"
+                      onClick={() => setCreateDependencyOpen(true)}
+                    >
+                      Add New
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                <div className="space-y-2">
+                  {dependencies.slice(0, 3).map((dep) => (
+                    <Card key={dep.id} className="p-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Badge 
+                              variant={
+                                dep.status === 'done' || dep.status === 'delivered' ? 'default' :
+                                dep.status === 'in_progress' ? 'secondary' :
+                                dep.status === 'committed' ? 'outline' :
+                                'destructive'
+                              }
+                              className="text-xs"
+                            >
+                              {dep.status?.replace('_', ' ').toUpperCase()}
+                            </Badge>
+                            <Badge 
+                              variant={
+                                dep.risk_level === 'high' ? 'destructive' :
+                                dep.risk_level === 'med' ? 'secondary' :
+                                'outline'
+                              }
+                              className="text-xs"
+                            >
+                              {dep.risk_level?.toUpperCase()} RISK
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {dep.description || `${dep.type} dependency`}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                  <div className="flex gap-2 mt-3">
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-xs h-auto p-0"
+                      onClick={() => navigate('/dependencies')}
+                    >
+                      View All ({dependencies.length})
+                    </Button>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-xs h-auto p-0"
+                      onClick={() => navigate('/dependencies?view=matrix')}
+                    >
+                      Dependency Map
+                    </Button>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-xs h-auto p-0"
+                      onClick={() => setCreateDependencyOpen(true)}
+                    >
+                      Add New
+                    </Button>
                   </div>
                 </div>
-                <div className="flex gap-2 mt-4">
-                  <Button 
-                    variant="link" 
-                    size="sm" 
-                    className="text-xs h-auto p-0"
-                    onClick={() => navigate('/dependencies')}
-                  >
-                    View All
-                  </Button>
-                  <Button 
-                    variant="link" 
-                    size="sm" 
-                    className="text-xs h-auto p-0"
-                    onClick={() => navigate('/dependencies?view=matrix')}
-                  >
-                    Dependency Map
-                  </Button>
-                  <Button 
-                    variant="link" 
-                    size="sm" 
-                    className="text-xs h-auto p-0"
-                    onClick={() => setCreateDependencyOpen(true)}
-                  >
-                    Add New
-                  </Button>
-                </div>
-              </Card>
+              )}
               
               <CreateDependencyDialog
                 open={createDependencyOpen}
