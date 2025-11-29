@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Dialog,
   DialogContent,
@@ -18,7 +17,6 @@ interface DependencyMatrixProps {
 }
 
 export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixProps) {
-  const [hoveredCell, setHoveredCell] = useState<string | null>(null);
   const [selectedCell, setSelectedCell] = useState<{ fromId: string; toId: string; fromName: string; toName: string } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -86,13 +84,6 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
     }
   };
 
-  const getCellColor = (count: number) => {
-    if (count === 0) return 'bg-muted/30';
-    if (count <= 2) return 'bg-green-500/20 hover:bg-green-500/30';
-    if (count <= 5) return 'bg-yellow-500/20 hover:bg-yellow-500/30';
-    return 'bg-red-500/20 hover:bg-red-500/30';
-  };
-
   if (!programs || programs.length === 0) {
     return (
       <Card className="p-8 text-center">
@@ -103,43 +94,26 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Dependency Matrix</h3>
-        <div className="flex items-center gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500/20 border border-border" />
-            <span className="text-muted-foreground">Low (1-2)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-500/20 border border-border" />
-            <span className="text-muted-foreground">Medium (3-5)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500/20 border border-border" />
-            <span className="text-muted-foreground">High (6+)</span>
-          </div>
-        </div>
-      </div>
-
-      <Card className="overflow-auto">
+      <Card className="overflow-auto bg-background">
         <div className="min-w-max">
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 bg-background border-b border-r border-border p-2 text-left font-medium w-32">
+                <th className="sticky left-0 z-10 bg-background border-b border-r border-border/40 w-32 h-32">
                   {/* Empty corner cell */}
                 </th>
                 {programs.map((toProg) => (
                   <th
                     key={toProg.id}
-                    className="border-b border-border p-2 text-left font-medium relative"
-                    style={{ width: '60px', height: '140px' }}
+                    className="border-b border-r border-border/40 relative bg-background"
+                    style={{ width: '50px', height: '130px', minWidth: '50px' }}
                   >
                     <div 
-                      className="absolute bottom-2 left-1/2 origin-bottom-left whitespace-nowrap text-sm font-medium text-foreground"
+                      className="absolute bottom-2 left-1/2 whitespace-nowrap text-xs text-foreground/80"
                       style={{ 
-                        transform: 'rotate(90deg) translateY(-100%)',
-                        transformOrigin: 'left bottom'
+                        transform: 'rotate(-90deg) translateX(-50%)',
+                        transformOrigin: 'center center',
+                        marginLeft: '-50%'
                       }}
                     >
                       {toProg.name}
@@ -151,52 +125,34 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
             <tbody>
               {programs.map((fromProg) => (
                 <tr key={fromProg.id}>
-                  <td className="sticky left-0 z-10 bg-background border-r border-b border-border p-2 font-medium text-sm w-32">
-                    <div className="truncate text-primary hover:text-primary/80 cursor-pointer">
+                  <td className="sticky left-0 z-10 bg-background border-r border-b border-border/40 px-3 py-2 w-32 h-12">
+                    <div className="text-sm text-foreground/80 truncate">
                       {fromProg.name}
                     </div>
                   </td>
                   {programs.map((toProg) => {
                     const count = getDependencyCount(fromProg.id, toProg.id);
-                    const cellKey = `${fromProg.id}-${toProg.id}`;
-                    const isHovered = hoveredCell === cellKey;
                     const isSameProgram = fromProg.id === toProg.id;
 
                     return (
-                      <TooltipProvider key={toProg.id}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <td
-                              className={`border-b border-border p-1 text-center transition-all ${
-                                isSameProgram 
-                                  ? 'bg-muted/50 cursor-not-allowed' 
-                                  : count === 0 
-                                    ? 'bg-background hover:bg-muted/30 cursor-default' 
-                                    : 'cursor-pointer hover:scale-105'
-                              } ${isHovered && count > 0 ? 'ring-2 ring-primary ring-offset-1' : ''}`}
-                              onMouseEnter={() => !isSameProgram && setHoveredCell(cellKey)}
-                              onMouseLeave={() => setHoveredCell(null)}
-                              onClick={() => !isSameProgram && handleCellClick(fromProg, toProg)}
-                              style={{ width: '60px', height: '48px' }}
-                            >
-                              {!isSameProgram && count > 0 && (
-                                <div className="inline-flex items-center justify-center bg-[#1e3a5f] text-white font-semibold text-sm rounded px-3 py-1.5 min-w-[32px] hover:bg-[#2a4a7f] transition-colors">
-                                  {count}
-                                </div>
-                              )}
-                            </td>
-                          </TooltipTrigger>
-                          {count > 0 && !isSameProgram && (
-                            <TooltipContent>
-                              <p className="font-semibold">{count} dependencies</p>
-                              <p className="text-xs text-muted-foreground">
-                                From {fromProg.name} to {toProg.name}
-                              </p>
-                              <p className="text-xs text-muted-foreground mt-1">Click to view details</p>
-                            </TooltipContent>
-                          )}
-                        </Tooltip>
-                      </TooltipProvider>
+                      <td
+                        key={toProg.id}
+                        className={`border-r border-b border-border/40 text-center align-middle ${
+                          isSameProgram 
+                            ? 'bg-muted/30' 
+                            : count === 0 
+                              ? 'bg-muted/10' 
+                              : 'cursor-pointer hover:opacity-80'
+                        }`}
+                        onClick={() => !isSameProgram && count > 0 && handleCellClick(fromProg, toProg)}
+                        style={{ width: '50px', height: '48px', minWidth: '50px' }}
+                      >
+                        {!isSameProgram && count > 0 && (
+                          <div className="inline-flex items-center justify-center bg-[#1e3a5f] text-white font-semibold text-xs rounded px-2 py-1 min-w-[28px]">
+                            {count}
+                          </div>
+                        )}
+                      </td>
                     );
                   })}
                 </tr>
