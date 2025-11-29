@@ -25,13 +25,13 @@ interface FeaturesKanbanViewProps {
 }
 
 const KANBAN_COLUMNS = [
-  { id: 'funnel', label: 'Funnel', color: 'bg-gray-500' },
-  { id: 'analyzing', label: 'Analyzing', color: 'bg-yellow-500' },
-  { id: 'backlog', label: 'Backlog', color: 'bg-blue-500' },
-  { id: 'implementing', label: 'Implementing', color: 'bg-purple-500' },
-  { id: 'validating', label: 'Validating', color: 'bg-orange-500' },
-  { id: 'deploying', label: 'Deploying', color: 'bg-indigo-500' },
-  { id: 'done', label: 'Done', color: 'bg-green-500' },
+  { id: 'funnel', label: 'Funnel', color: 'bg-muted' },
+  { id: 'analyzing', label: 'Analyzing', color: 'bg-warning' },
+  { id: 'backlog', label: 'Backlog', color: 'bg-primary' },
+  { id: 'implementing', label: 'Implementing', color: 'bg-workitem-theme' },
+  { id: 'validating', label: 'Validating', color: 'bg-warning-600' },
+  { id: 'deploying', label: 'Deploying', color: 'bg-info' },
+  { id: 'done', label: 'Done', color: 'bg-success' },
 ];
 
 export function FeaturesKanbanView({ features, onFeatureSelect, onRefetch }: FeaturesKanbanViewProps) {

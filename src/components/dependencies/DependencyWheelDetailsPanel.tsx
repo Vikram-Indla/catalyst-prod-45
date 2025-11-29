@@ -79,7 +79,7 @@ export function DependencyWheelDetailsPanel({
         );
       case 'COMMITTED':
         return (
-          <Badge className="text-xs bg-blue-500">
+          <Badge className="text-xs bg-brand-gold text-white">
             <CheckCircle2 className="h-3 w-3 mr-1" />
             Committed
           </Badge>
@@ -105,20 +105,20 @@ export function DependencyWheelDetailsPanel({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'DONE': return 'text-green-600';
-      case 'COMMITTED': return 'text-blue-600';
-      case 'NOT_COMMITTED': return 'text-red-600';
-      case 'BLOCKED': return 'text-orange-600';
+      case 'DONE': return 'text-success';
+      case 'COMMITTED': return 'text-brand-gold';
+      case 'NOT_COMMITTED': return 'text-destructive';
+      case 'BLOCKED': return 'text-warning';
       default: return 'text-muted-foreground';
     }
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'DONE': return <Circle className="h-3 w-3 fill-green-500 text-green-500" />;
-      case 'COMMITTED': return <Circle className="h-3 w-3 fill-blue-500 text-blue-500" />;
-      case 'NOT_COMMITTED': return <Circle className="h-3 w-3 fill-red-500 text-red-500" />;
-      case 'BLOCKED': return <Circle className="h-3 w-3 fill-orange-500 text-orange-500" />;
+      case 'DONE': return <Circle className="h-3 w-3 fill-success text-success" />;
+      case 'COMMITTED': return <Circle className="h-3 w-3 fill-brand-gold text-brand-gold" />;
+      case 'NOT_COMMITTED': return <Circle className="h-3 w-3 fill-destructive text-destructive" />;
+      case 'BLOCKED': return <Circle className="h-3 w-3 fill-warning text-warning" />;
       default: return <Circle className="h-3 w-3 fill-gray-400 text-gray-400" />;
     }
   };

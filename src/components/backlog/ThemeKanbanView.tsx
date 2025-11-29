@@ -16,8 +16,8 @@ interface ThemeKanbanViewProps {
 
 const STATES = [
   { key: 'proposed', label: 'Proposed', color: 'bg-muted' },
-  { key: 'active', label: 'Active', color: 'bg-blue-50' },
-  { key: 'done', label: 'Done', color: 'bg-green-50' },
+  { key: 'active', label: 'Active', color: 'bg-primary/5' },
+  { key: 'done', label: 'Done', color: 'bg-success/10' },
 ];
 
 export function ThemeKanbanView({ portfolioId, piId, onThemeClick }: ThemeKanbanViewProps) {

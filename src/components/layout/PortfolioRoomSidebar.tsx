@@ -181,7 +181,7 @@ export function PortfolioRoomSidebar({
                   <>
                     <span className="truncate text-left flex-1">{item.label}</span>
                     {'badge' in item && item.badge && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-500 text-white rounded uppercase">
+                      <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-brand-gold text-white rounded uppercase">
                         {item.badge}
                       </span>
                     )}

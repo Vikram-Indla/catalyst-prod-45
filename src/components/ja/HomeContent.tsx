@@ -7,14 +7,14 @@ import { useStarredItems } from "@/hooks/useStarredItems";
 type RoomType = "program" | "portfolio" | "team" | "strategy" | "feature" | "roadmap" | "objective" | "product";
 
 const roomIcons: Record<RoomType, React.ReactNode> = {
-  program: <Briefcase className="h-8 w-8 text-cyan-500" />,
-  portfolio: <Layers className="h-8 w-8 text-blue-500" />,
-  team: <Users className="h-8 w-8 text-cyan-500" />,
-  strategy: <FileText className="h-8 w-8 text-blue-500" />,
-  feature: <GitBranch className="h-8 w-8 text-purple-500" />,
-  roadmap: <Map className="h-8 w-8 text-cyan-500" />,
-  objective: <Target className="h-8 w-8 text-gray-500" />,
-  product: <Briefcase className="h-8 w-8 text-blue-500" />,
+  program: <Briefcase className="h-8 w-8 text-workitem-feature" />,
+  portfolio: <Layers className="h-8 w-8 text-brand-gold" />,
+  team: <Users className="h-8 w-8 text-workitem-story" />,
+  strategy: <FileText className="h-8 w-8 text-brand-gold" />,
+  feature: <GitBranch className="h-8 w-8 text-workitem-theme" />,
+  roadmap: <Map className="h-8 w-8 text-info" />,
+  objective: <Target className="h-8 w-8 text-muted-foreground" />,
+  product: <Briefcase className="h-8 w-8 text-brand-gold" />,
 };
 
 export function HomeContent() {
@@ -87,7 +87,7 @@ export function HomeContent() {
                 </button>
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-5">
-                    <div className="flex items-center justify-center w-14 h-14 bg-cyan-50 dark:bg-cyan-950/20 rounded">
+                    <div className="flex items-center justify-center w-14 h-14 bg-primary/5 dark:bg-primary/10 rounded">
                       {roomIcons[room.room_type as RoomType]}
                     </div>
                   </div>
@@ -142,7 +142,7 @@ export function HomeContent() {
                 </button>
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-5">
-                    <div className="flex items-center justify-center w-14 h-14 bg-cyan-50 dark:bg-cyan-950/20 rounded">
+                    <div className="flex items-center justify-center w-14 h-14 bg-primary/5 dark:bg-primary/10 rounded">
                       {roomIcons[item.room_type as RoomType]}
                     </div>
                   </div>

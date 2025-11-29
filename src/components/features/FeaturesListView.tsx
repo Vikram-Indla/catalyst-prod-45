@@ -115,14 +115,14 @@ export function FeaturesListView({
   const getStatusColor = (status?: string) => {
     switch (status) {
       case 'done':
-        return 'bg-green-500';
+        return 'bg-success';
       case 'implementing':
       case 'deploying':
-        return 'bg-blue-500';
+        return 'bg-brand-gold';
       case 'validating':
-        return 'bg-yellow-500';
+        return 'bg-warning';
       case 'backlog':
-        return 'bg-gray-500';
+        return 'bg-muted';
       default:
         return 'bg-orange-500';
     }

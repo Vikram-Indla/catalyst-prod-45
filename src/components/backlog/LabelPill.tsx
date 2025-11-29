@@ -13,23 +13,23 @@ export function LabelPill({ label, abbreviated = false }: LabelPillProps) {
   const getColorStyles = () => {
     switch (label.color) {
       case 'orange':
-        return 'bg-[#FF8B00] text-white';
+        return 'bg-warning text-white';
       case 'teal':
-        return 'bg-[#00B8D9] text-white';
+        return 'bg-info text-white';
       case 'purple':
-        return 'bg-[#6554C0] text-white';
+        return 'bg-workitem-theme text-white';
       case 'blue':
-        return 'bg-[#0052CC] text-white';
+        return 'bg-primary text-white';
       case 'red':
-        return 'bg-[#DE350B] text-white';
+        return 'bg-destructive text-white';
       case 'gray':
-        return 'bg-[#6B778C] text-white';
+        return 'bg-muted-foreground text-white';
       case 'green':
-        return 'bg-[#36B37E] text-white';
+        return 'bg-success text-white';
       case 'pink':
-        return 'bg-[#E774BB] text-white';
+        return 'bg-workitem-epic text-white';
       default:
-        return 'bg-[#6B778C] text-white';
+        return 'bg-muted-foreground text-white';
     }
   };
 

@@ -13,14 +13,14 @@ interface StarredDropdownProps {
 type RoomType = "program" | "portfolio" | "team" | "strategy" | "feature" | "roadmap" | "objective" | "product";
 
 const roomIcons: Record<RoomType, React.ReactNode> = {
-  program: <Briefcase className="h-5 w-5 text-cyan-500" />,
-  portfolio: <Layers className="h-5 w-5 text-blue-500" />,
-  team: <Users className="h-5 w-5 text-cyan-500" />,
-  strategy: <FileText className="h-5 w-5 text-blue-500" />,
-  feature: <GitBranch className="h-5 w-5 text-purple-500" />,
-  roadmap: <Map className="h-5 w-5 text-cyan-500" />,
-  objective: <Target className="h-5 w-5 text-gray-500" />,
-  product: <Briefcase className="h-5 w-5 text-blue-500" />,
+  program: <Briefcase className="h-5 w-5 text-workitem-feature" />,
+  portfolio: <Layers className="h-5 w-5 text-brand-gold" />,
+  team: <Users className="h-5 w-5 text-workitem-story" />,
+  strategy: <FileText className="h-5 w-5 text-brand-gold" />,
+  feature: <GitBranch className="h-5 w-5 text-workitem-theme" />,
+  roadmap: <Map className="h-5 w-5 text-info" />,
+  objective: <Target className="h-5 w-5 text-muted-foreground" />,
+  product: <Briefcase className="h-5 w-5 text-brand-gold" />,
 };
 
 export function StarredDropdown({ onClose }: StarredDropdownProps) {
@@ -71,7 +71,7 @@ export function StarredDropdown({ onClose }: StarredDropdownProps) {
                 onClick={() => handleSelect(item.room_path)}
                 className="flex items-start gap-3 p-3 rounded-md hover:bg-accent cursor-pointer transition-colors"
               >
-                <div className="flex items-center justify-center w-10 h-10 bg-cyan-50 dark:bg-cyan-950/20 rounded flex-shrink-0">
+                <div className="flex items-center justify-center w-10 h-10 bg-primary/5 dark:bg-primary/10 rounded flex-shrink-0">
                   {roomIcons[item.room_type as RoomType]}
                 </div>
                 <div className="flex-1 min-w-0">

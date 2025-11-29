@@ -5,13 +5,13 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 const workItems = [
-  { key: 'themes', label: 'Themes', icon: Layers, color: 'bg-emerald-500' },
-  { key: 'epics', label: 'Epics', icon: Diamond, color: 'bg-blue-500' },
-  { key: 'epic-backlog', label: 'Backlog → Epics', icon: Diamond, color: 'bg-purple-600' },
-  { key: 'features', label: 'Features', icon: Zap, color: 'bg-purple-500' },
-  { key: 'stories', label: 'Stories', icon: BookOpen, color: 'bg-teal-500' },
-  { key: 'defects', label: 'Defects', icon: AlertCircle, color: 'bg-red-500' },
-  { key: 'tasks', label: 'Tasks', icon: CheckSquare, color: 'bg-blue-500' }
+  { key: 'themes', label: 'Themes', icon: Layers, color: 'bg-workitem-theme' },
+  { key: 'epics', label: 'Epics', icon: Diamond, color: 'bg-workitem-epic' },
+  { key: 'epic-backlog', label: 'Backlog → Epics', icon: Diamond, color: 'bg-workitem-theme' },
+  { key: 'features', label: 'Features', icon: Zap, color: 'bg-workitem-feature' },
+  { key: 'stories', label: 'Stories', icon: BookOpen, color: 'bg-success' },
+  { key: 'defects', label: 'Defects', icon: AlertCircle, color: 'bg-destructive' },
+  { key: 'tasks', label: 'Tasks', icon: CheckSquare, color: 'bg-info' }
 ];
 
 const otherItems = [
