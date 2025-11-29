@@ -35,24 +35,37 @@ export function CreateDependencyDialog({
 }: CreateDependencyDialogProps) {
   const queryClient = useQueryClient();
   const [description, setDescription] = useState('');
+  const [fromWorkItemType, setFromWorkItemType] = useState<'feature' | 'story'>('feature');
+  const [toWorkItemType, setToWorkItemType] = useState<'feature' | 'story'>('feature');
   const [fromFeatureId, setFromFeatureId] = useState('');
   const [toFeatureId, setToFeatureId] = useState('');
   const [riskLevel, setRiskLevel] = useState<'low' | 'med' | 'high'>('low');
   const [neededByDate, setNeededByDate] = useState('');
   const [dependsOnTeamId, setDependsOnTeamId] = useState('');
 
-  // Fetch features for the requesting team
-  const { data: requestingFeatures } = useQuery({
-    queryKey: ['team-features', teamId],
+  // Fetch work items for the requesting team (features or stories)
+  const { data: requestingWorkItems } = useQuery({
+    queryKey: ['team-work-items', teamId, fromWorkItemType],
     queryFn: async () => {
       if (!teamId) return [];
-      const { data, error } = await supabase
-        .from('features')
-        .select('id, name')
-        .eq('team_id', teamId)
-        .order('name');
-      if (error) throw error;
-      return data;
+      
+      if (fromWorkItemType === 'feature') {
+        const { data, error } = await supabase
+          .from('features')
+          .select('id, name, display_id')
+          .eq('team_id', teamId)
+          .order('name');
+        if (error) throw error;
+        return data.map(item => ({ ...item, display: `${item.display_id || item.id.slice(0, 8)} - ${item.name}` }));
+      } else {
+        const { data, error } = await supabase
+          .from('stories')
+          .select('id, name')
+          .eq('team_id', teamId)
+          .order('name');
+        if (error) throw error;
+        return data.map(item => ({ ...item, display: `Story - ${item.name}` }));
+      }
     },
     enabled: !!teamId && open,
   });
@@ -71,18 +84,29 @@ export function CreateDependencyDialog({
     enabled: open,
   });
 
-  // Fetch features for the dependent team
-  const { data: dependentFeatures } = useQuery({
-    queryKey: ['team-features', dependsOnTeamId],
+  // Fetch work items for the dependent team (features or stories)
+  const { data: dependentWorkItems } = useQuery({
+    queryKey: ['team-work-items', dependsOnTeamId, toWorkItemType],
     queryFn: async () => {
       if (!dependsOnTeamId) return [];
-      const { data, error } = await supabase
-        .from('features')
-        .select('id, name')
-        .eq('team_id', dependsOnTeamId)
-        .order('name');
-      if (error) throw error;
-      return data;
+      
+      if (toWorkItemType === 'feature') {
+        const { data, error } = await supabase
+          .from('features')
+          .select('id, name, display_id')
+          .eq('team_id', dependsOnTeamId)
+          .order('name');
+        if (error) throw error;
+        return data.map(item => ({ ...item, display: `${item.display_id || item.id.slice(0, 8)} - ${item.name}` }));
+      } else {
+        const { data, error } = await supabase
+          .from('stories')
+          .select('id, name')
+          .eq('team_id', dependsOnTeamId)
+          .order('name');
+        if (error) throw error;
+        return data.map(item => ({ ...item, display: `Story - ${item.name}` }));
+      }
     },
     enabled: !!dependsOnTeamId && open,
   });
@@ -130,6 +154,8 @@ export function CreateDependencyDialog({
 
   const handleClose = () => {
     setDescription('');
+    setFromWorkItemType('feature');
+    setToWorkItemType('feature');
     setFromFeatureId('');
     setToFeatureId('');
     setRiskLevel('low');
@@ -149,20 +175,35 @@ export function CreateDependencyDialog({
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="from-feature">Requesting Feature *</Label>
-              <Select value={fromFeatureId} onValueChange={setFromFeatureId} required>
-                <SelectTrigger id="from-feature">
-                  <SelectValue placeholder="Select requesting feature" />
-                </SelectTrigger>
-                <SelectContent>
-                  {requestingFeatures?.map((feature) => (
-                    <SelectItem key={feature.id} value={feature.id}>
-                      {feature.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="from-type">Requesting Type *</Label>
+                <Select value={fromWorkItemType} onValueChange={(v: any) => setFromWorkItemType(v)}>
+                  <SelectTrigger id="from-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="feature">Feature</SelectItem>
+                    <SelectItem value="story">Story</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="from-work-item">Requesting Work Item *</Label>
+                <Select value={fromFeatureId} onValueChange={setFromFeatureId} required>
+                  <SelectTrigger id="from-work-item">
+                    <SelectValue placeholder={`Select ${fromWorkItemType}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {requestingWorkItems?.map((item) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.display}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="grid gap-2">
@@ -181,25 +222,40 @@ export function CreateDependencyDialog({
               </Select>
             </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="to-feature">Dependent Feature *</Label>
-              <Select
-                value={toFeatureId}
-                onValueChange={setToFeatureId}
-                disabled={!dependsOnTeamId}
-                required
-              >
-                <SelectTrigger id="to-feature">
-                  <SelectValue placeholder="Select dependent feature" />
-                </SelectTrigger>
-                <SelectContent>
-                  {dependentFeatures?.map((feature) => (
-                    <SelectItem key={feature.id} value={feature.id}>
-                      {feature.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="to-type">Dependent Type *</Label>
+                <Select value={toWorkItemType} onValueChange={(v: any) => setToWorkItemType(v)}>
+                  <SelectTrigger id="to-type">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="feature">Feature</SelectItem>
+                    <SelectItem value="story">Story</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="to-work-item">Dependent Work Item *</Label>
+                <Select
+                  value={toFeatureId}
+                  onValueChange={setToFeatureId}
+                  disabled={!dependsOnTeamId}
+                  required
+                >
+                  <SelectTrigger id="to-work-item">
+                    <SelectValue placeholder={`Select ${toWorkItemType}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {dependentWorkItems?.map((item) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {item.display}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div className="grid gap-2">
