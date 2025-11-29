@@ -4424,21 +4424,30 @@ export type Database = {
       }
       team_members: {
         Row: {
+          allocation_percentage: number | null
           created_at: string | null
           id: string
+          role: string | null
           team_id: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
+          allocation_percentage?: number | null
           created_at?: string | null
           id?: string
+          role?: string | null
           team_id: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
+          allocation_percentage?: number | null
           created_at?: string | null
           id?: string
+          role?: string | null
           team_id?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
