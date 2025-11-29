@@ -11,6 +11,8 @@ import { BacklogColumnsDialog } from './BacklogColumnsDialog';
 import { PrioritizationDialog } from './PrioritizationDialog';
 import { useQuery } from '@tanstack/react-query';
 import { fetchBacklogItems, fetchUnassignedItems } from '../api/backlogApi';
+import { exportBacklogToCsv } from '../utils/exportCsv';
+import { toast } from 'sonner';
 
 export function BacklogWorkspace() {
   const backlogState = useBacklogState();
@@ -59,6 +61,18 @@ export function BacklogWorkspace() {
     );
   };
 
+  const handleExport = () => {
+    const items = backlogData?.items || [];
+    if (items.length === 0) {
+      toast.error('No items to export');
+      return;
+    }
+    
+    const filename = `backlog-${backlogState.type}-${new Date().toISOString().split('T')[0]}.csv`;
+    exportBacklogToCsv(items, filename);
+    toast.success(`Exported ${items.length} items to CSV`);
+  };
+
   const isListView = ['list', 'sprint'].includes(backlogState.view);
 
   return (
@@ -73,6 +87,7 @@ export function BacklogWorkspace() {
         onOpenPrioritization={() => setIsPrioritizationOpen(true)}
         onToggleUnassigned={() => setIsUnassignedOpen(!isUnassignedOpen)}
         isUnassignedOpen={isUnassignedOpen}
+        onExport={handleExport}
       />
 
       <div className="flex flex-1 overflow-hidden">
