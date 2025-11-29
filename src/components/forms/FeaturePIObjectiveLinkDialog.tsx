@@ -149,12 +149,12 @@ export default function FeaturePIObjectiveLinkDialog({
                       Planned BV: {objective.planned_bv}
                     </span>
                     {objective.stretch && (
-                      <span className="text-xs bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded">
+                      <span className="text-xs bg-warning/10 text-warning px-2 py-0.5 rounded">
                         Stretch
                       </span>
                     )}
                     {objective.committed && (
-                      <span className="text-xs bg-green-500/10 text-green-500 px-2 py-0.5 rounded">
+                      <span className="text-xs bg-success/10 text-success px-2 py-0.5 rounded">
                         Committed
                       </span>
                     )}
