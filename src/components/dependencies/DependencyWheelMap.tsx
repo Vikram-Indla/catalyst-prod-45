@@ -339,13 +339,16 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
           >
             {/* Radial segments */}
             {segments.map((segment) => {
-              // Calculate label position INSIDE the segment
-              const labelRadius = (outerRadius + innerRadius) / 2; // Middle of the segment
+              // Calculate label position INSIDE the segment (middle of the radial span)
+              const labelRadius = (outerRadius + innerRadius) / 2;
               const labelX = centerX + labelRadius * Math.cos(segment.midAngle);
               const labelY = centerY + labelRadius * Math.sin(segment.midAngle);
               
-              // Calculate text rotation to align with segment
-              let textAngle = (segment.midAngle * 180 / Math.PI) + 90;
+              // Text should be RADIAL - following the segment direction from center outward
+              // Convert midAngle to degrees for rotation
+              let textAngle = (segment.midAngle * 180 / Math.PI);
+              
+              // For bottom half of circle, flip text 180° so it reads upward instead of upside-down
               if (textAngle > 90 && textAngle < 270) {
                 textAngle += 180;
               }
@@ -363,20 +366,20 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
                     onMouseLeave={() => setHoveredNodeId(null)}
                     onClick={() => handleNodeClick(segment.id)}
                   />
-                  {/* Program label INSIDE segment */}
+                  {/* Program label - RADIAL direction (following segment from center outward) */}
                   <text
                     x={labelX}
                     y={labelY}
                     textAnchor="middle"
                     dominantBaseline="middle"
                     transform={`rotate(${textAngle} ${labelX} ${labelY})`}
-                    className="font-medium pointer-events-none select-none"
+                    className="font-semibold pointer-events-none select-none"
                     style={{ 
-                      fontSize: segment.isSelected ? '13px' : '12px',
+                      fontSize: segment.isSelected ? '14px' : '13px',
                       fill: 'white',
-                      fontWeight: segment.isSelected ? 700 : 600,
-                      letterSpacing: '0.02em',
-                      textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                      fontWeight: 700,
+                      letterSpacing: '0.03em',
+                      textShadow: '0 1px 3px rgba(0,0,0,0.4)',
                     }}
                   >
                     {segment.name}
