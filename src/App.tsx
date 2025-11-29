@@ -16,6 +16,7 @@ import PortfolioBacklog from "./pages/PortfolioBacklog";
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 import StrategyRoom from "./pages/StrategyRoom";
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
+import { StrategyRoomNew } from "./pages/enterprise/StrategyRoomNew";
 import Themes from "./pages/Themes";
 import ThemesGrid from "./pages/ThemesGrid";
 import Initiatives from "./pages/Initiatives";
@@ -144,7 +145,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoom />} />
-              <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
+              <Route path="/enterprise/strategy-room" element={<StrategyRoomNew />} />
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
               <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
