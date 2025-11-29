@@ -37,7 +37,7 @@ export function JiraAlignHeader() {
     { label: "Enterprise", path: "/enterprise/strategy-room" },
     { label: "Portfolio", hasDropdown: true },
     { label: "Program", hasDropdown: true },
-    { label: "Team", hasDropdown: true },
+    { label: "Team", path: "/teams" },
     { label: "Product", hasDropdown: true },
     { label: "Custom Rooms", hasDropdown: true },
     { label: "Starred", hasDropdown: true },
