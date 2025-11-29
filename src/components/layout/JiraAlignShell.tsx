@@ -8,6 +8,7 @@ import { ProgramRoomSidebar } from '@/components/program/ProgramRoomSidebar';
 import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { JiraAlignContextProvider, useJiraAlignContext } from '@/contexts/JiraAlignContext';
+import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 
 function JiraAlignShellContent() {
   const location = useLocation();
@@ -92,6 +93,9 @@ function JiraAlignShellContent() {
             </>
           )}
         <main className="flex-1 overflow-auto">
+          <div className="p-4">
+            <AnnouncementBanner />
+          </div>
           <Outlet />
         </main>
       </div>
