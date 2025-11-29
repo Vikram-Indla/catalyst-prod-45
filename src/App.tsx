@@ -60,6 +60,8 @@ import ROAMBoard from "./pages/ROAMBoard";
 import CapacityPlanning from "./pages/CapacityPlanning";
 import Forecast from "./pages/Forecast";
 import TeamRoom from "./pages/TeamRoom";
+import TeamRoomDetail from "./pages/TeamRoomDetail";
+import TeamsDirectory from "./pages/TeamsDirectory";
 import SprintBoard from "./pages/SprintBoard";
 import Backlog from "./pages/Backlog";
 import BacklogPage from "./pages/BacklogPage";
@@ -218,6 +220,8 @@ const App = () => (
               <Route path="/capacity" element={<CapacityPlanning />} />
               <Route path="/release-train-calendar" element={<div className="p-8"><h1 className="text-2xl font-bold">Release Calendar</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
+              <Route path="/teams" element={<TeamsDirectory />} />
+              <Route path="/teams/:teamId/room" element={<TeamRoomDetail />} />
               <Route path="/team-room" element={<TeamRoom />} />
               <Route path="/backlog" element={<Backlog />} />
               <Route path="/backlog-phase2" element={<BacklogPage />} />
