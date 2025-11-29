@@ -10,6 +10,7 @@ import { BacklogFiltersDialog } from './BacklogFiltersDialog';
 import { BacklogColumnsDialog } from './BacklogColumnsDialog';
 import { PrioritizationDialog } from './PrioritizationDialog';
 import { BacklogImportDialog } from './BacklogImportDialog';
+import { BulkMoveDialog } from './BulkMoveDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchBacklogItems, fetchUnassignedItems } from '../api/backlogApi';
 import { exportBacklogToCsv } from '../utils/exportCsv';
@@ -27,6 +28,7 @@ export function BacklogWorkspace() {
   const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
   const [isPrioritizationOpen, setIsPrioritizationOpen] = useState(false);
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
+  const [isBulkMoveOpen, setIsBulkMoveOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   // Sync view changes to user preferences
@@ -141,6 +143,7 @@ export function BacklogWorkspace() {
         onExport={handleExport}
         onImport={() => setIsImportDialogOpen(true)}
         onBulkDelete={handleBulkDelete}
+        onBulkMove={() => setIsBulkMoveOpen(true)}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -212,6 +215,14 @@ export function BacklogWorkspace() {
         open={isImportDialogOpen}
         onOpenChange={setIsImportDialogOpen}
         itemType={backlogState.type}
+      />
+
+      <BulkMoveDialog
+        open={isBulkMoveOpen}
+        onOpenChange={setIsBulkMoveOpen}
+        selectedItems={selectedItems}
+        itemType={backlogState.type}
+        onComplete={() => setSelectedItems([])}
       />
     </div>
   );
