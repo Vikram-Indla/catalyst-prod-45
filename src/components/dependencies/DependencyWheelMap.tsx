@@ -367,7 +367,11 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
               // Convert midAngle to degrees for rotation
               let textAngle = (segment.midAngle * 180 / Math.PI);
               
-              // For bottom half of circle, flip text 180° so it reads upward instead of upside-down
+              // Normalize angle to 0-360 range
+              textAngle = ((textAngle % 360) + 360) % 360;
+              
+              // For left half of circle (90° to 270°), flip text 180° to keep it readable
+              // AND maintain center-to-outward reading direction
               if (textAngle > 90 && textAngle < 270) {
                 textAngle += 180;
               }
