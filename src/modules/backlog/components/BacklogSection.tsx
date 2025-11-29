@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { Droppable, Draggable } from '@hello-pangea/dnd';
 import { BacklogPISection, BacklogItem } from '../types';
 import { Button } from '@/components/ui/button';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { QuickAddRow } from './QuickAddRow';
@@ -65,14 +66,24 @@ export function BacklogSection({
                 No items in this section
               </div>
             ) : (
-              section.items.map((item) => (
-                <BacklogItemRow
-                  key={item.id}
-                  item={item}
-                  isSelected={selectedItems.includes(item.id)}
-                  onItemClick={onItemClick}
-                  onItemSelect={onItemSelect}
-                />
+              section.items.map((item, index) => (
+                <Draggable key={item.id} draggableId={item.id} index={index}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                    >
+                      <BacklogItemRow
+                        item={item}
+                        isSelected={selectedItems.includes(item.id)}
+                        onItemClick={onItemClick}
+                        onItemSelect={onItemSelect}
+                        dragHandleProps={provided.dragHandleProps}
+                        isDragging={snapshot.isDragging}
+                      />
+                    </div>
+                  )}
+                </Draggable>
               ))
             )}
           </div>
@@ -87,6 +98,8 @@ interface BacklogItemRowProps {
   isSelected: boolean;
   onItemClick: (itemId: string) => void;
   onItemSelect: (itemId: string, selected: boolean) => void;
+  dragHandleProps?: any;
+  isDragging?: boolean;
 }
 
 function BacklogItemRow({
@@ -94,6 +107,8 @@ function BacklogItemRow({
   isSelected,
   onItemClick,
   onItemSelect,
+  dragHandleProps,
+  isDragging,
 }: BacklogItemRowProps) {
   const healthColor = {
     green: 'bg-green-500',
@@ -115,10 +130,15 @@ function BacklogItemRow({
       <div
         className={cn(
           'flex items-center gap-3 px-4 py-3 hover:bg-muted/50 cursor-pointer transition-colors',
-          isSelected && 'bg-muted'
+          isSelected && 'bg-muted',
+          isDragging && 'opacity-50'
         )}
         onClick={() => onItemClick(item.id)}
       >
+      <div {...dragHandleProps} className="cursor-grab active:cursor-grabbing">
+        <GripVertical className="h-4 w-4 text-muted-foreground" />
+      </div>
+
       <Checkbox
         checked={isSelected}
         onCheckedChange={(checked) => onItemSelect(item.id, checked as boolean)}
