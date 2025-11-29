@@ -100,6 +100,9 @@ import EnterpriseRoadmaps from "./pages/enterprise/EnterpriseRoadmaps";
 import EnterpriseOKRHub from "./pages/enterprise/EnterpriseOKRHub";
 import EnterpriseThemes from "./pages/enterprise/EnterpriseThemes";
 import EnterpriseInitiatives from "./pages/enterprise/EnterpriseInitiatives";
+import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
+import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
+import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
 import EnterpriseCapabilities from "./pages/enterprise/EnterpriseCapabilities";
 import EnterpriseFeatures from "./pages/enterprise/EnterpriseFeatures";
@@ -112,9 +115,6 @@ import EnterpriseSprints from "./pages/enterprise/EnterpriseSprints";
 import EnterpriseProgramIncrements from "./pages/enterprise/EnterpriseProgramIncrements";
 import EnterpriseReleaseVehicles from "./pages/enterprise/EnterpriseReleaseVehicles";
 import EnterpriseSuccessCriteria from "./pages/enterprise/EnterpriseSuccessCriteria";
-import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
-import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
-import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import SelfTest from "./pages/dev/SelfTest";
 import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
@@ -153,7 +153,7 @@ const App = () => (
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
               <Route path="/enterprise/themes" element={<EnterpriseThemes />} />
-              <Route path="/enterprise/initiatives" element={<EnterpriseInitiatives />} />
+            <Route path="/enterprise/initiatives" element={<EnterpriseInitiatives />} />
               <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
               <Route path="/enterprise/okr-tree" element={<OKRTree />} />
               <Route path="/enterprise/okr-hub" element={<EnterpriseOKRHub />} />
