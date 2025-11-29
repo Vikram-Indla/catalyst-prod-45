@@ -99,7 +99,7 @@ export function BacklogWorkspace() {
   // Bulk delete mutation
   const bulkDeleteMutation = useMutation({
     mutationFn: async (itemIds: string[]) => {
-      const tableName = backlogState.type === 'epic' ? 'epics' : backlogState.type === 'feature' ? 'features' : 'capabilities';
+      const tableName = backlogState.type === 'epic' ? 'epics' : 'features';
       
       const { error } = await supabase
         .from(tableName)

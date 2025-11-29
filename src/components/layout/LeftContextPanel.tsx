@@ -103,7 +103,6 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     { id: 'risks', label: 'Risks', path: '/enterprise/risks' },
     { id: 'impediments', label: 'Impediments', path: '/enterprise/impediments' },
     { id: 'epics', label: 'Epics', path: '/enterprise/epics' },
-    { id: 'capabilities', label: 'Capabilities', path: '/enterprise/capabilities' },
     { id: 'features', label: 'Features', path: '/enterprise/features' },
     { id: 'stories', label: 'Stories', path: '/enterprise/stories' },
     { id: 'defects', label: 'Defects', path: '/enterprise/defects' },

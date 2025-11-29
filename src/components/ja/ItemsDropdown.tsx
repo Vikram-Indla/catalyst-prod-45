@@ -15,7 +15,6 @@ import { Circle, Square, Hexagon, Box, FileText, Bug, CheckSquare, Target, GitBr
 const workItems = [
   { label: "Themes", icon: Circle, color: "text-purple-500", path: "/themes" },
   { label: "Epics", icon: Square, color: "text-blue-500", path: "/items/epics" },
-  { label: "Capabilities", icon: Hexagon, color: "text-cyan-500", path: "/items/capabilities" },
   { label: "Features", icon: Box, color: "text-indigo-500", path: "/features" },
   { label: "Stories", icon: FileText, color: "text-green-500", path: "/work-items/stories" },
   { label: "Defects", icon: Bug, color: "text-red-500", path: "/items/defects" },

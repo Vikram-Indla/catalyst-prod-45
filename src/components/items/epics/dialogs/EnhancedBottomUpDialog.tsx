@@ -27,7 +27,6 @@ export function EnhancedBottomUpDialog({
   epicIds,
 }: EnhancedBottomUpDialogProps) {
   const queryClient = useQueryClient();
-  const [includeCapabilities, setIncludeCapabilities] = useState(true);
   const [includeFeatures, setIncludeFeatures] = useState(true);
   const [confidenceLevel, setConfidenceLevel] = useState([80]);
 
@@ -43,34 +42,10 @@ export function EnhancedBottomUpDialog({
           const { data: features } = await supabase
             .from("features")
             .select("estimate_points")
-            .eq("epic_id", epicId)
-            .is("capability_id", null);
+            .eq("epic_id", epicId);
 
           totalEstimate +=
             features?.reduce((sum, f) => sum + (f.estimate_points || 0), 0) || 0;
-        }
-
-        // Calculate from capabilities and their features
-        if (includeCapabilities) {
-          const { data: capabilities } = await supabase
-            .from("capabilities")
-            .select("id")
-            .eq("epic_id", epicId);
-
-          if (capabilities?.length) {
-            for (const cap of capabilities) {
-              const { data: capFeatures } = await supabase
-                .from("features")
-                .select("estimate_points")
-                .eq("capability_id", cap.id);
-
-              totalEstimate +=
-                capFeatures?.reduce(
-                  (sum, f) => sum + (f.estimate_points || 0),
-                  0
-                ) || 0;
-            }
-          }
         }
 
         // Apply confidence adjustment
@@ -109,7 +84,7 @@ export function EnhancedBottomUpDialog({
     },
   });
 
-  const disabled = !includeFeatures && !includeCapabilities;
+  const disabled = !includeFeatures;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -136,20 +111,7 @@ export function EnhancedBottomUpDialog({
                 }
               />
               <Label htmlFor="features" className="font-normal cursor-pointer">
-                Include Direct Features
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="capabilities"
-                checked={includeCapabilities}
-                onCheckedChange={(checked) =>
-                  setIncludeCapabilities(checked as boolean)
-                }
-              />
-              <Label htmlFor="capabilities" className="font-normal cursor-pointer">
-                Include Capabilities & Their Features
+                Include All Features
               </Label>
             </div>
           </div>
@@ -179,14 +141,7 @@ export function EnhancedBottomUpDialog({
             <p className="text-sm font-medium">Calculation Method</p>
             <ul className="text-sm text-muted-foreground space-y-1 ml-4">
               <li>
-                • Sum story points from{" "}
-                {includeFeatures && includeCapabilities
-                  ? "features and capabilities"
-                  : includeFeatures
-                  ? "features only"
-                  : includeCapabilities
-                  ? "capabilities only"
-                  : "selected sources"}
+                • Sum story points from all features
               </li>
               <li>• Apply {confidenceLevel[0]}% confidence factor</li>
               <li>• Round to nearest integer</li>

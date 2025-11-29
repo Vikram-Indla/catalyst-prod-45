@@ -231,62 +231,6 @@ export type Database = {
         }
         Relationships: []
       }
-      capabilities: {
-        Row: {
-          capability_key: string | null
-          created_at: string | null
-          deleted_at: string | null
-          description: string | null
-          epic_id: string | null
-          global_rank: number | null
-          id: string
-          name: string
-          owner_id: string | null
-          parked_at: string | null
-          rank_within_epic: number | null
-          state: Database["public"]["Enums"]["epic_state"] | null
-          updated_at: string | null
-        }
-        Insert: {
-          capability_key?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          description?: string | null
-          epic_id?: string | null
-          global_rank?: number | null
-          id?: string
-          name: string
-          owner_id?: string | null
-          parked_at?: string | null
-          rank_within_epic?: number | null
-          state?: Database["public"]["Enums"]["epic_state"] | null
-          updated_at?: string | null
-        }
-        Update: {
-          capability_key?: string | null
-          created_at?: string | null
-          deleted_at?: string | null
-          description?: string | null
-          epic_id?: string | null
-          global_rank?: number | null
-          id?: string
-          name?: string
-          owner_id?: string | null
-          parked_at?: string | null
-          rank_within_epic?: number | null
-          state?: Database["public"]["Enums"]["epic_state"] | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "capabilities_epic_id_fkey"
-            columns: ["epic_id"]
-            isOneToOne: false
-            referencedRelation: "epics"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       capacity_allocations: {
         Row: {
           actual_capacity_points: number | null
@@ -1906,7 +1850,6 @@ export type Database = {
           blocked: boolean | null
           blocked_reason: string | null
           business_value: number | null
-          capability_id: string | null
           created_at: string | null
           deleted_at: string | null
           description: string | null
@@ -1945,7 +1888,6 @@ export type Database = {
           blocked?: boolean | null
           blocked_reason?: string | null
           business_value?: number | null
-          capability_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
@@ -1984,7 +1926,6 @@ export type Database = {
           blocked?: boolean | null
           blocked_reason?: string | null
           business_value?: number | null
-          capability_id?: string | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
@@ -2017,13 +1958,6 @@ export type Database = {
           wsjf_score?: number | null
         }
         Relationships: [
-          {
-            foreignKeyName: "features_capability_id_fkey"
-            columns: ["capability_id"]
-            isOneToOne: false
-            referencedRelation: "capabilities"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "features_epic_id_fkey"
             columns: ["epic_id"]
@@ -2753,13 +2687,6 @@ export type Database = {
           objective_id?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "objective_capability_links_capability_id_fkey"
-            columns: ["capability_id"]
-            isOneToOne: false
-            referencedRelation: "capabilities"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "objective_capability_links_objective_id_fkey"
             columns: ["objective_id"]
