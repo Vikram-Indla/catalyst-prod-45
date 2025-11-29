@@ -265,7 +265,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
               {tier === 'enterprise' && (
                 <div className="mb-3">
                   <div className="flex items-center gap-3 px-3 py-2">
-                    <div className="w-8 h-8 rounded bg-blue-500 flex items-center justify-center text-white text-xs font-semibold">
+                    <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
                       EN
                     </div>
                     <div>

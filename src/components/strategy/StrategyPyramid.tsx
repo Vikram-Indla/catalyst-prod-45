@@ -125,20 +125,20 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   const level6 = getXAtY(y6);
   const level7 = getXAtY(y7);
 
-  // Color shades (blue gradient from light to dark)
+  // Color shades - Enterprise Gold gradient with depth
   const colors = {
-    missions: 'hsl(210, 100%, 48%)',
-    visions: 'hsl(210, 100%, 48%)',
-    values: 'hsl(210, 100%, 48%)',
-    northStars: 'hsl(210, 100%, 60%)',
-    longTermGoals: 'hsl(210, 100%, 56%)',
-    longTermStrategies: 'hsl(210, 100%, 52%)',
-    yearlyGoals: 'hsl(210, 100%, 48%)',
-    themes: 'hsl(210, 100%, 48%)',
-    portfolioObjectives: 'hsl(210, 100%, 44%)',
-    epics: 'hsl(210, 100%, 44%)',
-    programObjectives: 'hsl(210, 100%, 40%)',
-    features: 'hsl(210, 100%, 40%)',
+    missions: 'hsl(28, 39%, 60%)',           // Brand gold
+    visions: 'hsl(28, 39%, 58%)',            // Slightly darker gold
+    values: 'hsl(28, 39%, 56%)',             // Medium gold
+    northStars: 'hsl(28, 39%, 54%)',         // Darker gold
+    longTermGoals: 'hsl(28, 37%, 52%)',      // Even darker
+    longTermStrategies: 'hsl(28, 35%, 50%)', // Rich gold
+    yearlyGoals: 'hsl(28, 39%, 56%)',        // Medium gold
+    themes: 'hsl(28, 39%, 56%)',             // Medium gold
+    portfolioObjectives: 'hsl(28, 37%, 52%)', // Darker gold
+    epics: 'hsl(28, 37%, 52%)',              // Darker gold
+    programObjectives: 'hsl(28, 35%, 48%)',  // Deep gold
+    features: 'hsl(28, 35%, 48%)',           // Deep gold
   };
 
   const handleNumberClick = (route: string, e: React.MouseEvent) => {

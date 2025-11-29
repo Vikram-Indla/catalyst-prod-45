@@ -38,13 +38,13 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
   const getStatusColor = (state?: string) => {
     switch (state) {
       case 'not_started':
-        return 'bg-gray-400';
+        return 'bg-muted-foreground';
       case 'in_progress':
-        return 'bg-blue-500';
+        return 'bg-brand-gold';
       case 'done':
-        return 'bg-green-500';
+        return 'bg-success';
       default:
-        return 'bg-orange-500';
+        return 'bg-warning';
     }
   };
 
@@ -167,7 +167,7 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <CheckSquare className="h-4 w-4 text-blue-500 flex-shrink-0" />
+                      <CheckSquare className="h-4 w-4 text-primary flex-shrink-0" />
                       <span className="text-sm font-medium">{epic.name}</span>
                     </div>
                     <div className="flex gap-2 flex-wrap">

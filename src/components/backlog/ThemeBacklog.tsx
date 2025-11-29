@@ -405,7 +405,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                                           pi === 'PI4' && "bg-orange-600 text-white",
                                           pi === 'PI3' && "bg-green-600 text-white",
                                           pi === 'PI2' && "bg-pink-500 text-white",
-                                          pi === 'PI1' && "bg-blue-700 text-white"
+                                          pi === 'PI1' && "bg-brand-gold text-white"
                                         )}
                                       >
                                         {pi}
@@ -436,10 +436,10 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                                     {/* Mock epic rows */}
                                     <div className="flex items-center gap-3 px-4 py-2 bg-background rounded">
                                       <span className="text-sm text-muted-foreground w-8">1</span>
-                                      <Circle className="h-3 w-3 fill-blue-500 text-blue-500" />
+                                      <Circle className="h-3 w-3 fill-primary text-primary" />
                                       <span className="text-sm text-muted-foreground w-12">1111</span>
                                       <div className="flex items-center gap-2 flex-1">
-                                        <Square className="h-4 w-4 text-blue-600 fill-blue-100" />
+                                        <Square className="h-4 w-4 text-primary" />
                                         <span className="text-sm">Interface: E2E transcription flow</span>
                                       </div>
                                       <div className="flex gap-1">

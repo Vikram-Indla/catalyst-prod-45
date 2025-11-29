@@ -112,8 +112,8 @@ export function PullRankThemesDialog({ open, onOpenChange, onApply }: PullRankTh
 
           {/* Preview Warning */}
           {showPreview && (
-            <div className="p-3 border rounded-lg bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900">
-              <p className="text-sm text-blue-900 dark:text-blue-100">
+            <div className="p-3 border rounded-lg bg-primary/5 dark:bg-primary/10 border-primary/20">
+              <p className="text-sm text-foreground">
                 Preview: Ranking will be applied based on the selected method. Click Apply to confirm.
               </p>
             </div>

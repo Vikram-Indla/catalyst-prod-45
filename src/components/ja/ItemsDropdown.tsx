@@ -13,24 +13,24 @@ import { Button } from "@/components/ui/button";
 import { Circle, Square, Hexagon, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, AlertCircle, FileCheck, Calendar, Package, Flag } from "lucide-react";
 
 const workItems = [
-  { label: "Themes", icon: Circle, color: "text-purple-500", path: "/themes" },
-  { label: "Epics", icon: Square, color: "text-blue-500", path: "/items/epics" },
-  { label: "Features", icon: Box, color: "text-indigo-500", path: "/features" },
-  { label: "Stories", icon: FileText, color: "text-green-500", path: "/work-items/stories" },
-  { label: "Defects", icon: Bug, color: "text-red-500", path: "/items/defects" },
-  { label: "Tasks", icon: CheckSquare, color: "text-gray-500", path: "/items/tasks" },
+  { label: "Themes", icon: Circle, color: "text-workitem-theme", path: "/themes" },
+  { label: "Epics", icon: Square, color: "text-workitem-epic", path: "/items/epics" },
+  { label: "Features", icon: Box, color: "text-workitem-feature", path: "/features" },
+  { label: "Stories", icon: FileText, color: "text-workitem-story", path: "/work-items/stories" },
+  { label: "Defects", icon: Bug, color: "text-workitem-defect", path: "/items/defects" },
+  { label: "Tasks", icon: CheckSquare, color: "text-workitem-subtask", path: "/items/tasks" },
 ];
 
 const otherItems = [
-  { label: "Objectives", icon: Target, color: "text-blue-600", path: "/enterprise/objectives" },
-  { label: "Dependencies", icon: GitBranch, color: "text-orange-500", path: "/dependencies" },
-  { label: "Ideation", icon: Lightbulb, color: "text-yellow-500", path: "/items/ideation" },
-  { label: "Risks", icon: AlertTriangle, color: "text-red-600", path: "/enterprise/risks" },
-  { label: "Impediments", icon: AlertCircle, color: "text-orange-600", path: "/items/impediments" },
-  { label: "Specifications", icon: FileCheck, color: "text-teal-500", path: "/items/success-criteria" },
-  { label: "Sprints", icon: Calendar, color: "text-blue-400", path: "/sprints" },
-  { label: "Program Increments", icon: Package, color: "text-purple-600", path: "/pis" },
-  { label: "Release Vehicles (Fix Versions)", icon: Flag, color: "text-green-600", path: "/items/release-vehicles" },
+  { label: "Objectives", icon: Target, color: "text-brand-gold", path: "/enterprise/objectives" },
+  { label: "Dependencies", icon: GitBranch, color: "text-warning", path: "/dependencies" },
+  { label: "Ideation", icon: Lightbulb, color: "text-warning-600", path: "/items/ideation" },
+  { label: "Risks", icon: AlertTriangle, color: "text-destructive", path: "/enterprise/risks" },
+  { label: "Impediments", icon: AlertCircle, color: "text-warning", path: "/items/impediments" },
+  { label: "Specifications", icon: FileCheck, color: "text-success", path: "/items/success-criteria" },
+  { label: "Sprints", icon: Calendar, color: "text-info", path: "/sprints" },
+  { label: "Program Increments", icon: Package, color: "text-workitem-theme", path: "/pis" },
+  { label: "Release Vehicles (Fix Versions)", icon: Flag, color: "text-success-600", path: "/items/release-vehicles" },
 ];
 
 export function ItemsDropdown() {

@@ -5,12 +5,12 @@ import {
 } from 'lucide-react';
 
 const workItems = [
-  { label: 'Themes', icon: Layers, color: 'bg-emerald-500' },
-  { label: 'Epics', icon: Diamond, color: 'bg-blue-500' },
-  { label: 'Features', icon: Zap, color: 'bg-purple-600' },
-  { label: 'Stories', icon: BookOpen, color: 'bg-teal-500' },
-  { label: 'Defects', icon: AlertCircle, color: 'bg-red-500' },
-  { label: 'Tasks', icon: CheckSquare, color: 'bg-blue-400' }
+  { label: 'Themes', icon: Layers, color: 'bg-workitem-theme' },
+  { label: 'Epics', icon: Diamond, color: 'bg-workitem-epic' },
+  { label: 'Features', icon: Zap, color: 'bg-workitem-theme' },
+  { label: 'Stories', icon: BookOpen, color: 'bg-success' },
+  { label: 'Defects', icon: AlertCircle, color: 'bg-destructive' },
+  { label: 'Tasks', icon: CheckSquare, color: 'bg-info' }
 ];
 
 const otherItems = [

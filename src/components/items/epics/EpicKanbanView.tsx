@@ -27,12 +27,12 @@ interface EpicKanbanViewProps {
 }
 
 const STATE_COLUMNS = [
-  { id: 'funnel', label: 'Funnel', color: 'bg-slate-100' },
-  { id: 'analyzing', label: 'Analyzing', color: 'bg-blue-100' },
-  { id: 'portfolio_backlog', label: 'Portfolio Backlog', color: 'bg-yellow-100' },
-  { id: 'implementing', label: 'Implementing', color: 'bg-green-100' },
-  { id: 'validating_in_production', label: 'Validating', color: 'bg-purple-100' },
-  { id: 'done', label: 'Done', color: 'bg-emerald-100' },
+  { id: 'funnel', label: 'Funnel', color: 'bg-muted/30' },
+  { id: 'analyzing', label: 'Analyzing', color: 'bg-primary/10' },
+  { id: 'portfolio_backlog', label: 'Portfolio Backlog', color: 'bg-warning/10' },
+  { id: 'implementing', label: 'Implementing', color: 'bg-success/10' },
+  { id: 'validating_in_production', label: 'Validating', color: 'bg-workitem-theme/10' },
+  { id: 'done', label: 'Done', color: 'bg-success/20' },
 ];
 
 export function EpicKanbanView({ epics, onEpicClick, onContextMenu }: EpicKanbanViewProps) {

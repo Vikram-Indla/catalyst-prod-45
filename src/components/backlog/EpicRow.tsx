@@ -36,8 +36,8 @@ export function EpicRow({
 
   return (
     <div 
-      className={`relative group grid grid-cols-[40px_50px_70px_1fr_auto_70px_50px_100px] items-center px-4 py-2 border-b border-[#EBECF0] hover:bg-[#F4F5F7] transition-colors cursor-pointer ${
-        isSelected ? "bg-[#E9F2FF] border-l-4 border-l-[#0052CC]" : "bg-white"
+      className={`relative group grid grid-cols-[40px_50px_70px_1fr_auto_70px_50px_100px] items-center px-4 py-2 border-b hover:bg-accent transition-colors cursor-pointer ${
+        isSelected ? "bg-primary/5 border-l-4 border-l-primary" : "bg-card"
       }`}
       onClick={() => onEpicClick(epic.id)}
       onDragOver={(e) => onDragOver(e, epic.id)}
@@ -51,7 +51,7 @@ export function EpicRow({
       <div className="flex items-center justify-center">
         {epic.hasChildren && (
           <button 
-            className={`w-6 h-6 flex items-center justify-center text-[#6B778C] hover:text-[#172B4D] transition-transform ${
+            className={`w-6 h-6 flex items-center justify-center text-muted-foreground hover:text-foreground transition-transform ${
               isExpanded ? "rotate-90" : ""
             }`}
             onClick={(e) => {
@@ -65,7 +65,7 @@ export function EpicRow({
       </div>
 
       {/* Rank Number */}
-      <div className="text-sm text-[#6B778C] text-center">
+      <div className="text-sm text-muted-foreground text-center">
         {epic.rank}
       </div>
 
@@ -74,13 +74,13 @@ export function EpicRow({
 
       {/* Epic ID + Checkbox + Title */}
       <div className="flex items-center gap-2 min-w-0">
-        <span className="text-sm font-medium text-[#6B778C] flex-shrink-0">
+        <span className="text-sm font-medium text-muted-foreground flex-shrink-0">
           {epic.numericId}
         </span>
-        <div className="w-4 h-4 bg-[#0052CC] rounded flex items-center justify-center flex-shrink-0">
+        <div className="w-4 h-4 bg-primary rounded flex items-center justify-center flex-shrink-0">
           <Check className="w-3 h-3 text-white" />
         </div>
-        <span className="text-sm text-[#0052CC] hover:underline truncate">
+        <span className="text-sm text-primary hover:underline truncate">
           {epic.title}
         </span>
       </div>
@@ -100,21 +100,21 @@ export function EpicRow({
 
       {/* Points */}
       {visibleColumns.includes("points") && (
-        <div className="text-sm text-[#172B4D] text-right">
+        <div className="text-sm text-foreground text-right">
           {epic.points}
         </div>
       )}
 
       {/* MVP */}
       {visibleColumns.includes("mvp") && (
-        <div className="text-sm text-[#6B778C] text-center">
+        <div className="text-sm text-muted-foreground text-center">
           {epic.mvp ? 'Yes' : 'No'}
         </div>
       )}
 
       {/* Process Step */}
       {visibleColumns.includes("processStep") && (
-        <div className="text-sm text-[#6B778C] truncate">
+        <div className="text-sm text-muted-foreground truncate">
           {epic.processStep}
         </div>
       )}
