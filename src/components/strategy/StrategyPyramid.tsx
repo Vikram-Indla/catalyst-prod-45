@@ -298,7 +298,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text 
                 x={centerX} 
-                y={y1 + 25} 
+                y={y1 + 35} 
                 fill="white" 
                 fontSize="20" 
                 fontWeight="700"
@@ -310,7 +310,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </text>
               <text
                 x={centerX}
-                y={(y1 + y2) / 2 + 15}
+                y={(y1 + y2) / 2 + 20}
                 fill="white"
                 fontSize="14"
                 fontWeight="600"
@@ -335,7 +335,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text 
                 x={centerX} 
-                y={y2 + 20} 
+                y={y2 + 30} 
                 fill="white" 
                 fontSize="20" 
                 fontWeight="700"
@@ -347,7 +347,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </text>
               <text
                 x={centerX}
-                y={(y2 + y3) / 2 + 5}
+                y={(y2 + y3) / 2 + 10}
                 fill="white"
                 fontSize="14"
                 fontWeight="600"
@@ -372,7 +372,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text 
                 x={centerX} 
-                y={y3 + 20} 
+                y={y3 + 30} 
                 fill="white" 
                 fontSize="20" 
                 fontWeight="700"
@@ -384,7 +384,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </text>
               <text
                 x={centerX}
-                y={(y3 + y4) / 2 + 5}
+                y={(y3 + y4) / 2 + 10}
                 fill="white"
                 fontSize="14"
                 fontWeight="600"
