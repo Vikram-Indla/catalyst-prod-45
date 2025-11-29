@@ -99,21 +99,21 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 bg-background border-b border-r border-border/40 w-32 h-32">
+                <th className="sticky left-0 z-10 bg-background border-b border-r border-border/40 w-48 h-40">
                   {/* Empty corner cell */}
                 </th>
                 {programs.map((toProg) => (
                   <th
                     key={toProg.id}
                     className="border-b border-r border-border/40 relative bg-background overflow-hidden"
-                    style={{ width: '50px', height: '130px', minWidth: '50px' }}
+                    style={{ width: '64px', height: '180px', minWidth: '64px' }}
                   >
                     <div 
-                      className="absolute top-2 left-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer"
+                      className="absolute top-3 left-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer"
                       style={{ 
-                        transform: 'rotate(90deg) translateY(-50%)',
+                        transform: 'rotate(90deg) translateX(-50%)',
                         transformOrigin: 'left center',
-                        maxWidth: '120px'
+                        maxWidth: '170px'
                       }}
                     >
                       {toProg.name}
@@ -125,7 +125,7 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
             <tbody>
               {programs.map((fromProg) => (
                 <tr key={fromProg.id}>
-                  <td className="sticky left-0 z-10 bg-background border-r border-b border-border/40 px-3 py-2 w-32 h-12">
+                  <td className="sticky left-0 z-10 bg-background border-r border-b border-border/40 px-3 py-2 w-48 h-16">
                     <div className="text-sm text-primary hover:text-primary/80 cursor-pointer truncate">
                       {fromProg.name}
                     </div>
@@ -145,7 +145,7 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
                               : 'cursor-pointer hover:opacity-80'
                         }`}
                         onClick={() => !isSameProgram && count > 0 && handleCellClick(fromProg, toProg)}
-                        style={{ width: '50px', height: '48px', minWidth: '50px' }}
+                        style={{ width: '64px', height: '64px', minWidth: '64px' }}
                       >
                         {!isSameProgram && count > 0 && (
                           <div className="inline-flex items-center justify-center bg-[#1e3a5f] text-white font-semibold text-xs rounded px-2 py-1 min-w-[28px]">
