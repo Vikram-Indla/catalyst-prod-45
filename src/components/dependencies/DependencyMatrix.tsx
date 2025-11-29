@@ -109,10 +109,12 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
                     style={{ width: '50px', height: '130px', minWidth: '50px' }}
                   >
                     <div 
-                      className="absolute bottom-2 left-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer"
+                      className="absolute left-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer"
                       style={{ 
-                        transform: 'rotate(90deg) translateX(50%)',
-                        transformOrigin: 'left bottom'
+                        bottom: '8px',
+                        transform: 'rotate(90deg)',
+                        transformOrigin: '0 0',
+                        marginLeft: '-4px'
                       }}
                     >
                       {toProg.name}
