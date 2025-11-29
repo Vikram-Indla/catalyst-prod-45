@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { 
   Layers, Diamond, Box, Zap, BookOpen, AlertCircle, CheckSquare,
-  Target, GitBranch, Lightbulb, AlertTriangle, Shield, Calendar, Package, List, Clock, Truck
+  Target, GitBranch, Lightbulb, AlertTriangle, Shield, Calendar, Package, List, Clock, Truck, Users
 } from 'lucide-react';
 
 const workItems = [
@@ -17,6 +17,7 @@ const workItems = [
 const otherItems = [
   { label: 'Objectives', icon: Target, color: 'bg-slate-600' },
   { label: 'Dependencies', icon: GitBranch, color: 'bg-slate-600' },
+  { label: 'Teams', icon: Users, color: 'bg-slate-600' },
   { label: 'Ideation', icon: Lightbulb, color: 'bg-slate-600' },
   { label: 'Risks', icon: AlertTriangle, color: 'bg-slate-600' },
   { label: 'Impediments', icon: Shield, color: 'bg-slate-600' },
@@ -55,6 +56,7 @@ export function CreateDropdown({ onClose, onCreateEpic }: CreateDropdownProps) {
       'Tasks': '/items/tasks',
       'Objectives': '/items/objectives',
       'Dependencies': '/items/dependencies',
+      'Teams': '/teams',
       'Ideation': '/items/ideation',
       'Risks': '/items/risks',
       'Impediments': '/items/impediments',

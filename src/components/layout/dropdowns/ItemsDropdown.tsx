@@ -1,6 +1,6 @@
 import { 
   Layers, Diamond, Box, Zap, BookOpen, AlertCircle, CheckSquare,
-  Target, GitBranch, Lightbulb, AlertTriangle, Shield, Calendar, Package, Award
+  Target, GitBranch, Lightbulb, AlertTriangle, Shield, Calendar, Package, Award, Users
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -18,6 +18,7 @@ const workItems = [
 const otherItems = [
   { key: 'objectives', label: 'Objectives', icon: Target, color: 'bg-slate-600' },
   { key: 'dependencies', label: 'Dependencies', icon: GitBranch, color: 'bg-slate-600' },
+  { key: 'teams', label: 'Teams', icon: Users, color: 'bg-indigo-600' },
   { key: 'ideation', label: 'Ideation', icon: Lightbulb, color: 'bg-slate-600' },
   { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'bg-slate-600' },
   { key: 'impediments', label: 'Impediments', icon: Shield, color: 'bg-slate-600' },
@@ -46,6 +47,7 @@ export function ItemsDropdown({ onClose }: ItemsDropdownProps) {
       'tasks': '/items/tasks',
       'objectives': '/pi-objectives',
       'dependencies': '/dependencies',
+      'teams': '/teams',
       'ideation': '/items/ideation',
       'risks': '/roam',
       'impediments': '/items/impediments',
