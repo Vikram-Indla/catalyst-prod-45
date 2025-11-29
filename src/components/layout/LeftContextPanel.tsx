@@ -72,6 +72,8 @@ interface LeftContextPanelProps {
 export function LeftContextPanel({ className }: LeftContextPanelProps) {
   const [expanded, setExpanded] = useState(true);
   const [moreItemsExpanded, setMoreItemsExpanded] = useState(false);
+  const [reportsExpanded, setReportsExpanded] = useState(false);
+  const [morePagesExpanded, setMorePagesExpanded] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const {
@@ -89,6 +91,15 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   // More items sub-menu for Enterprise
   const moreItemsSubMenu = [
     { id: 'ideation', label: 'Ideation', path: '/enterprise/ideation' },
+    { id: 'brainstorming', label: 'Brainstorming', path: '/enterprise/brainstorming' },
+    { id: 'innovation', label: 'Innovation', path: '/enterprise/innovation' },
+    { id: 'canvas', label: 'Canvas (labs)', path: '/enterprise/canvas' },
+    { id: 'mind-maps', label: 'Mind maps', path: '/enterprise/mind-maps' },
+    { id: 'competitors', label: 'Competitors', path: '/enterprise/competitors' },
+    { id: 'goals', label: 'Goals', path: '/enterprise/goals' },
+    { id: 'vision', label: 'Vision', path: '/enterprise/vision' },
+    { id: 'personas', label: 'Personas', path: '/enterprise/personas' },
+    { id: 'skills-inventory', label: 'Skills inventory', path: '/enterprise/skills-inventory' },
     { id: 'risks', label: 'Risks', path: '/enterprise/risks' },
     { id: 'impediments', label: 'Impediments', path: '/enterprise/impediments' },
     { id: 'epics', label: 'Epics', path: '/enterprise/epics' },
@@ -103,6 +114,29 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     { id: 'program-increments', label: 'Program Increments', path: '/enterprise/program-increments' },
     { id: 'release-vehicles', label: 'Release Vehicles', path: '/enterprise/release-vehicles' },
     { id: 'success-criteria', label: 'Success Criteria', path: '/enterprise/success-criteria' },
+  ];
+
+  // Reports sub-menu for Enterprise
+  const reportsSubMenu = [
+    { id: 'assessment-report', label: 'Assessment report', path: '/enterprise/reports/assessment' },
+    { id: 'assessment-results', label: 'Assessment results', path: '/enterprise/reports/assessment-results' },
+    { id: 'cumulative-effort', label: 'Cumulative effort', path: '/enterprise/reports/cumulative-effort' },
+    { id: 'strategic-balancing', label: 'Strategic balancing', path: '/enterprise/reports/strategic-balancing' },
+    { id: 'folios', label: 'Folios', path: '/enterprise/reports/folios' },
+    { id: 'external-reports', label: 'External reports', path: '/enterprise/reports/external' },
+    { id: 'organizational-hierarchy', label: 'Organizational hierarchy', path: '/enterprise/reports/organizational-hierarchy' },
+    { id: 'work-tree-report', label: 'Work tree', path: '/enterprise/reports/work-tree' },
+  ];
+
+  // More pages sub-menu for Enterprise
+  const morePagesSubMenu = [
+    { id: 'assessments', label: 'Assessments', path: '/enterprise/pages/assessments' },
+    { id: 'definition-of-done', label: 'Definition of done', path: '/enterprise/pages/definition-of-done' },
+    { id: 'framework-maps', label: 'Framework maps', path: '/enterprise/pages/framework-maps' },
+    { id: 'lean-process', label: 'Lean process', path: '/enterprise/pages/lean-process' },
+    { id: 'metrics', label: 'Metrics', path: '/enterprise/pages/metrics' },
+    { id: 'meetings', label: 'Meetings', path: '/enterprise/pages/meetings' },
+    { id: 'story-point-progress', label: 'Story point progress by team', path: '/enterprise/pages/story-point-progress' },
   ];
 
   // Mock data - in production these would come from API
@@ -158,6 +192,16 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     // Otherwise use regular menu items
     const menuItems = getMenuItems(portfolioId, programId, tier);
     return menuItems.filter(item => !item.tiers || item.tiers.includes(tier));
+  };
+
+  const handleExpandableClick = (itemId: string) => {
+    if (itemId === 'more-items') {
+      setMoreItemsExpanded(!moreItemsExpanded);
+    } else if (itemId === 'reports') {
+      setReportsExpanded(!reportsExpanded);
+    } else if (itemId === 'more-pages') {
+      setMorePagesExpanded(!morePagesExpanded);
+    }
   };
 
   return (
@@ -283,14 +327,17 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
           {getFilteredMenuItems().map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
+            const isExpandable = item.expandable;
             const isMoreItems = item.id === 'more-items';
+            const isReports = item.id === 'reports';
+            const isMorePages = item.id === 'more-pages';
 
             return (
               <div key={item.id}>
                 <button
                   onClick={() => {
-                    if (isMoreItems) {
-                      setMoreItemsExpanded(!moreItemsExpanded);
+                    if (isExpandable) {
+                      handleExpandableClick(item.id);
                     } else {
                       handleNavigation(item.path);
                     }
@@ -309,7 +356,9 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     <ChevronRight 
                       className={cn(
                         "h-4 w-4 text-muted-foreground transition-transform",
-                        moreItemsExpanded && "rotate-90"
+                        ((isMoreItems && moreItemsExpanded) || 
+                         (isReports && reportsExpanded) || 
+                         (isMorePages && morePagesExpanded)) && "rotate-90"
                       )} 
                     />
                   )}
@@ -319,6 +368,44 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 {isMoreItems && moreItemsExpanded && expanded && tier === 'enterprise' && (
                   <div className="bg-accent/20">
                     {moreItemsSubMenu.map((subItem) => (
+                      <button
+                        key={subItem.id}
+                        onClick={() => handleNavigation(subItem.path)}
+                        className={cn(
+                          "w-full flex items-center gap-3 pl-12 pr-4 py-2 text-sm font-normal transition-colors",
+                          "hover:bg-accent/50",
+                          isActive(subItem.path) && "bg-accent text-primary font-medium"
+                        )}
+                      >
+                        <span className="truncate text-left">{subItem.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Reports submenu - only for Enterprise tier */}
+                {isReports && reportsExpanded && expanded && tier === 'enterprise' && (
+                  <div className="bg-accent/20">
+                    {reportsSubMenu.map((subItem) => (
+                      <button
+                        key={subItem.id}
+                        onClick={() => handleNavigation(subItem.path)}
+                        className={cn(
+                          "w-full flex items-center gap-3 pl-12 pr-4 py-2 text-sm font-normal transition-colors",
+                          "hover:bg-accent/50",
+                          isActive(subItem.path) && "bg-accent text-primary font-medium"
+                        )}
+                      >
+                        <span className="truncate text-left">{subItem.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* More pages submenu - only for Enterprise tier */}
+                {isMorePages && morePagesExpanded && expanded && tier === 'enterprise' && (
+                  <div className="bg-accent/20">
+                    {morePagesSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}

@@ -112,6 +112,8 @@ import EnterpriseSuccessCriteria from "./pages/enterprise/EnterpriseSuccessCrite
 import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
 import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
 import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
+import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
+import TeamComingSoon from "./pages/team/ComingSoon";
 import SelfTest from "./pages/dev/SelfTest";
 import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
@@ -176,6 +178,37 @@ const App = () => (
               <Route path="/enterprise/program-increments" element={<EnterpriseProgramIncrements />} />
               <Route path="/enterprise/release-vehicles" element={<EnterpriseReleaseVehicles />} />
               <Route path="/enterprise/success-criteria" element={<EnterpriseSuccessCriteria />} />
+              
+              {/* Enterprise More Items - Placeholder Routes */}
+              <Route path="/enterprise/brainstorming" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/innovation" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/canvas" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/mind-maps" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/competitors" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/goals" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/vision" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/personas" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/skills-inventory" element={<EnterpriseComingSoon />} />
+              
+              {/* Enterprise Reports - Placeholder Routes */}
+              <Route path="/enterprise/reports/assessment" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/reports/assessment-results" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/reports/cumulative-effort" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/reports/strategic-balancing" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/reports/folios" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/reports/external" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/reports/organizational-hierarchy" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/reports/work-tree" element={<EnterpriseComingSoon />} />
+              
+              {/* Enterprise More Pages - Placeholder Routes */}
+              <Route path="/enterprise/pages/assessments" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/pages/definition-of-done" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/pages/framework-maps" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/pages/lean-process" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/pages/metrics" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/pages/meetings" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/pages/story-point-progress" element={<EnterpriseComingSoon />} />
+              
               <Route path="/themes" element={<Themes />} />
               <Route path="/themes/grid" element={<ThemesGrid />} />
               <Route path="/portfolio/:portfolioId/themes" element={<ThemesGrid />} />
@@ -225,6 +258,59 @@ const App = () => (
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/teams" element={<TeamsDirectory />} />
               <Route path="/teams/:teamId/room" element={<TeamRoomDetail />} />
+              <Route path="/team/:teamId/room" element={<TeamRoomDetail />} />
+              
+              {/* Team Routes - Placeholder Routes */}
+              <Route path="/team/:teamId/backlog" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/stories" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/roadmaps" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/objective-tree" element={<TeamOKRHub />} />
+              <Route path="/team/:teamId/meetings" element={<TeamComingSoon />} />
+              
+              {/* Team More Items - Placeholder Routes */}
+              <Route path="/team/:teamId/assign-tasks" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/defects" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/dependencies" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/design-components" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/estimation" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/impediments" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/sprints" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/tasks" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/objectives" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/teams" element={<TeamComingSoon />} />
+              
+              {/* Team Reports - Placeholder Routes */}
+              <Route path="/team/:teamId/reports/assessment" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/assessment-results" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/burndowns" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/capacity-planning" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/cumulative-effort" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/dependency-maps" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/detailed-sprint-progress" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/external" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/impediments-risks" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/organizational-hierarchy" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/risk-impediment-status" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/sprint-coaching" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/sprint-health" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/sprint-metrics" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/sprint-performance" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/sprint-planning" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/sprint-review" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/sprint-scope-changes" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/sprint-status" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/stories-by-state" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/story-point-progress" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/team-velocity-trend" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/work-tree" element={<TeamComingSoon />} />
+              
+              {/* Team More Pages - Placeholder Routes */}
+              <Route path="/team/:teamId/pages/assessments" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/pages/definition-of-done" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/pages/lean-process" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/pages/retrospectives" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/pages/surveys" element={<TeamComingSoon />} />
+              
               <Route path="/team-room" element={<TeamRoom />} />
               <Route path="/backlog" element={<Backlog />} />
               <Route path="/backlog-phase2" element={<BacklogPage />} />
