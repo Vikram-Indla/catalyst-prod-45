@@ -122,9 +122,9 @@ export default function EpicsSourceReference() {
     switch (type) {
       case 'doc':
       case 'pdf':
-        return 'bg-blue-500/10 text-blue-500';
+        return 'bg-primary/10 text-primary';
       case 'screenshot':
-        return 'bg-green-500/10 text-green-500';
+        return 'bg-success/10 text-success';
       case 'prd':
         return 'bg-purple-500/10 text-purple-500';
     }

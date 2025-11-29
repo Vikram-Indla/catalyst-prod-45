@@ -275,8 +275,8 @@ export default function EpicRequirementHierarchy() {
                                 <CollapsibleContent>
                                   <div className="ml-6 mt-2 space-y-2">
                                     {storySubtasks.map((subtask) => (
-                                      <div key={subtask.id} className="flex items-center gap-2 border-l-2 border-orange-500 pl-3 py-1">
-                                        <Badge variant="outline" className="text-xs bg-orange-500/10 text-orange-700">
+                                      <div key={subtask.id} className="flex items-center gap-2 border-l-2 border-warning pl-3 py-1">
+                                        <Badge variant="outline" className="text-xs bg-warning/10 text-warning">
                                           {subtask.id.slice(0, 8)}
                                         </Badge>
                                         <span className="text-sm">{subtask.name}</span>

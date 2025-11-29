@@ -443,7 +443,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                     if (col.key === 'kr_count') {
                       return (
                         <TableCell key={col.key}>
-                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-500 text-white text-xs font-semibold">
+                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
                             2
                           </div>
                         </TableCell>

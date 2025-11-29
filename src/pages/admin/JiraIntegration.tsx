@@ -131,7 +131,7 @@ export default function JiraIntegration() {
                 <CardDescription>Jira synchronization configuration</CardDescription>
               </div>
               {integration?.last_test_status === "success" ? (
-                <Badge className="bg-green-500">
+                <Badge className="bg-success text-success-foreground">
                   <CheckCircle className="h-4 w-4 mr-1" />
                   Connected
                 </Badge>

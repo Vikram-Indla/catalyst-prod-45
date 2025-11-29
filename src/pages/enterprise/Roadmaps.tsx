@@ -507,9 +507,9 @@ export default function Roadmaps() {
               <div className="text-sm text-center text-foreground">{item.storyPoints}</div>
               <div className="flex items-center justify-center px-2">
                 <div className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${
-                  item.state === 'not_started' ? 'bg-blue-50 text-blue-700' :
-                  item.state === 'in_progress' ? 'bg-blue-50 text-blue-700' :
-                  'bg-green-50 text-green-700'
+                  item.state === 'not_started' ? 'bg-primary/10 text-primary' :
+                  item.state === 'in_progress' ? 'bg-primary/10 text-primary' :
+                  'bg-success/10 text-success'
                 }`}>
                   <span>{item.state === 'not_started' ? 'NOT STARTED' : item.state === 'in_progress' ? 'IN PROGRESS' : 'ACCEPTED'}</span>
                   <div className="flex gap-px">
