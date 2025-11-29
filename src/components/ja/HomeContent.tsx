@@ -1,18 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { Star, Briefcase, GitBranch, Users, Target, Layers, Map, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRecentRooms } from "@/hooks/useRecentRooms";
+import { useStarredItems } from "@/hooks/useStarredItems";
 
 type RoomType = "program" | "portfolio" | "team" | "strategy" | "feature" | "roadmap" | "objective" | "product";
-
-interface Room {
-  id: string;
-  title: string;
-  subtitle: string;
-  type: RoomType;
-  pi?: string;
-  path: string;
-  isStarred?: boolean;
-}
 
 const roomIcons: Record<RoomType, React.ReactNode> = {
   program: <Briefcase className="h-8 w-8 text-cyan-500" />,
@@ -27,98 +19,45 @@ const roomIcons: Record<RoomType, React.ReactNode> = {
 
 export function HomeContent() {
   const navigate = useNavigate();
+  const { recentRooms, loading: loadingRecent, trackRoomAccess } = useRecentRooms();
+  const { starredItems, loading: loadingStarred, toggleStar, isStarred } = useStarredItems();
 
-  // Mock data for Jira Align home page
-  const recentRooms: Room[] = [
-    {
-      id: "mobile",
-      title: "Mobile",
-      subtitle: "Program",
-      type: "program",
-      pi: "PI-5",
-      path: "/programs",
-    },
-    {
-      id: "geekbooks-snapshot",
-      title: "Geekbooks 2023 Snapshot",
-      subtitle: "Strategy",
-      type: "strategy",
-      pi: "",
-      path: "/enterprise/strategy-room",
-    },
-    {
-      id: "geekbooks-1",
-      title: "Geekbooks Online Services",
-      subtitle: "Portfolio",
-      type: "portfolio",
-      pi: "PI 1",
-      path: "/portfolio-room",
-    },
-    {
-      id: "geekbooks-2",
-      title: "Geekbooks Online Services",
-      subtitle: "Portfolio",
-      type: "portfolio",
-      pi: "PI 1",
-      path: "/portfolio-room",
-    },
-    {
-      id: "geekbooks-3",
-      title: "Geekbooks Online Services",
-      subtitle: "Program",
-      type: "program",
-      pi: "PI 1",
-      path: "/programs",
-    },
-  ];
+  const handleRoomClick = async (room: typeof recentRooms[0] | typeof starredItems[0]) => {
+    // Track access for recent rooms
+    if ('last_accessed_at' in room) {
+      await trackRoomAccess(
+        room.room_type,
+        room.room_id,
+        room.room_name,
+        room.room_subtitle,
+        room.room_path,
+        room.pi_label
+      );
+    }
+    
+    // Navigate to room
+    navigate(room.room_path);
+  };
 
-  const starredRooms: Room[] = [
-    {
-      id: "star-product-room",
-      title: "Product Room (Labs)",
-      subtitle: "Product · Check Scanning App",
-      type: "product",
-      pi: "PI 5",
-      path: "/programs",
-      isStarred: true,
-    },
-    {
-      id: "star-objective-tree",
-      title: "Objective tree",
-      subtitle: "Program · Website Services",
-      type: "objective",
-      pi: "PI 1",
-      path: "/enterprise/okr-tree",
-      isStarred: true,
-    },
-    {
-      id: "star-roadmaps",
-      title: "Roadmaps",
-      subtitle: "Portfolio · Geekbooks Online Services",
-      type: "roadmap",
-      pi: "",
-      path: "/roadmaps",
-      isStarred: true,
-    },
-    {
-      id: "star-features",
-      title: "Features",
-      subtitle: "Program · Website Services",
-      type: "feature",
-      pi: "",
-      path: "/features",
-      isStarred: true,
-    },
-    {
-      id: "star-program-room",
-      title: "Program Room",
-      subtitle: "Program · Website Services",
-      type: "program",
-      pi: "",
-      path: "/programs",
-      isStarred: true,
-    },
-  ];
+  const handleToggleStar = async (room: typeof recentRooms[0], e: React.MouseEvent) => {
+    e.stopPropagation();
+    await toggleStar({
+      room_type: room.room_type,
+      room_id: room.room_id,
+      room_name: room.room_name,
+      room_subtitle: room.room_subtitle,
+      room_path: room.room_path,
+      pi_label: room.pi_label,
+    });
+  };
+
+  if (loadingRecent || loadingStarred) {
+    return (
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -128,24 +67,36 @@ export function HomeContent() {
           <h2 className="text-xl font-semibold text-foreground mb-6">Recent rooms</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            {recentRooms.map((room) => (
+            {recentRooms.slice(0, 10).map((room) => (
               <div
                 key={room.id}
-                onClick={() => navigate(room.path)}
+                onClick={() => handleRoomClick(room)}
                 className="group relative bg-card border border-border/40 rounded-md hover:shadow-lg hover:border-border transition-all cursor-pointer"
               >
+                <button
+                  onClick={(e) => handleToggleStar(room, e)}
+                  className="absolute top-4 right-4 z-10 p-1 hover:scale-110 transition-transform"
+                >
+                  <Star
+                    className={`h-5 w-5 ${
+                      isStarred(room.room_type, room.room_id)
+                        ? "text-yellow-500 fill-yellow-500"
+                        : "text-muted-foreground hover:text-yellow-500"
+                    }`}
+                  />
+                </button>
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-5">
                     <div className="flex items-center justify-center w-14 h-14 bg-cyan-50 dark:bg-cyan-950/20 rounded">
-                      {roomIcons[room.type]}
+                      {roomIcons[room.room_type as RoomType]}
                     </div>
                   </div>
                   <h3 className="font-semibold text-base mb-1.5 text-foreground group-hover:text-primary transition-colors">
-                    {room.title}
+                    {room.room_name}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-3">{room.subtitle}</p>
-                  {room.pi && (
-                    <p className="text-sm text-muted-foreground font-medium">{room.pi}</p>
+                  <p className="text-sm text-muted-foreground mb-3">{room.room_subtitle}</p>
+                  {room.pi_label && (
+                    <p className="text-sm text-muted-foreground font-medium">{room.pi_label}</p>
                   )}
                 </div>
               </div>
@@ -167,27 +118,40 @@ export function HomeContent() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            {starredRooms.map((room) => (
+            {starredItems.slice(0, 10).map((item) => (
               <div
-                key={room.id}
-                onClick={() => navigate(room.path)}
+                key={item.id}
+                onClick={() => handleRoomClick(item)}
                 className="group relative bg-card border border-border/40 rounded-md hover:shadow-lg hover:border-border transition-all cursor-pointer"
               >
-                <div className="absolute top-4 right-4 z-10">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleStar({
+                      room_type: item.room_type,
+                      room_id: item.room_id,
+                      room_name: item.room_name,
+                      room_subtitle: item.room_subtitle,
+                      room_path: item.room_path,
+                      pi_label: item.pi_label,
+                    });
+                  }}
+                  className="absolute top-4 right-4 z-10 p-1 hover:scale-110 transition-transform"
+                >
                   <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                </div>
+                </button>
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-5">
                     <div className="flex items-center justify-center w-14 h-14 bg-cyan-50 dark:bg-cyan-950/20 rounded">
-                      {roomIcons[room.type]}
+                      {roomIcons[item.room_type as RoomType]}
                     </div>
                   </div>
                   <h3 className="font-semibold text-base mb-1.5 text-foreground group-hover:text-primary transition-colors">
-                    {room.title}
+                    {item.room_name}
                   </h3>
-                  <p className="text-sm text-muted-foreground mb-3">{room.subtitle}</p>
-                  {room.pi && (
-                    <p className="text-sm text-muted-foreground font-medium">{room.pi}</p>
+                  <p className="text-sm text-muted-foreground mb-3">{item.room_subtitle}</p>
+                  {item.pi_label && (
+                    <p className="text-sm text-muted-foreground font-medium">{item.pi_label}</p>
                   )}
                 </div>
               </div>

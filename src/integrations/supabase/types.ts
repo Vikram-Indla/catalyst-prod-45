@@ -3828,6 +3828,45 @@ export type Database = {
           },
         ]
       }
+      recent_activity: {
+        Row: {
+          access_count: number
+          id: string
+          last_accessed_at: string
+          pi_label: string | null
+          room_id: string
+          room_name: string
+          room_path: string
+          room_subtitle: string | null
+          room_type: Database["public"]["Enums"]["room_type"]
+          user_id: string
+        }
+        Insert: {
+          access_count?: number
+          id?: string
+          last_accessed_at?: string
+          pi_label?: string | null
+          room_id: string
+          room_name: string
+          room_path: string
+          room_subtitle?: string | null
+          room_type: Database["public"]["Enums"]["room_type"]
+          user_id: string
+        }
+        Update: {
+          access_count?: number
+          id?: string
+          last_accessed_at?: string
+          pi_label?: string | null
+          room_id?: string
+          room_name?: string
+          room_path?: string
+          room_subtitle?: string | null
+          room_type?: Database["public"]["Enums"]["room_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       release_feature_links: {
         Row: {
           created_at: string | null
@@ -4382,6 +4421,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      starred_items: {
+        Row: {
+          created_at: string
+          id: string
+          pi_label: string | null
+          room_id: string
+          room_name: string
+          room_path: string
+          room_subtitle: string | null
+          room_type: Database["public"]["Enums"]["room_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          pi_label?: string | null
+          room_id: string
+          room_name: string
+          room_path: string
+          room_subtitle?: string | null
+          room_type: Database["public"]["Enums"]["room_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          pi_label?: string | null
+          room_id?: string
+          room_name?: string
+          room_path?: string
+          room_subtitle?: string | null
+          room_type?: Database["public"]["Enums"]["room_type"]
+          user_id?: string
+        }
+        Relationships: []
       }
       stories: {
         Row: {
@@ -5355,6 +5430,18 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      track_room_access: {
+        Args: {
+          p_pi_label?: string
+          p_room_id: string
+          p_room_name: string
+          p_room_path: string
+          p_room_subtitle: string
+          p_room_type: Database["public"]["Enums"]["room_type"]
+          p_user_id: string
+        }
+        Returns: undefined
+      }
       user_in_portfolio: {
         Args: { _portfolio_id: string; _user_id: string }
         Returns: boolean
@@ -5439,6 +5526,16 @@ export type Database = {
       release_vehicle_type: "program" | "team" | "portfolio"
       risk_level: "low" | "med" | "high"
       roam_status: "resolved" | "owned" | "accepted" | "mitigated"
+      room_type:
+        | "portfolio"
+        | "program"
+        | "team"
+        | "strategy"
+        | "epic"
+        | "feature"
+        | "objective"
+        | "roadmap"
+        | "product"
       story_status: "todo" | "in_progress" | "done"
       subtask_status: "todo" | "in_progress" | "done"
       team_status: "active" | "archived"
@@ -5657,6 +5754,17 @@ export const Constants = {
       release_vehicle_type: ["program", "team", "portfolio"],
       risk_level: ["low", "med", "high"],
       roam_status: ["resolved", "owned", "accepted", "mitigated"],
+      room_type: [
+        "portfolio",
+        "program",
+        "team",
+        "strategy",
+        "epic",
+        "feature",
+        "objective",
+        "roadmap",
+        "product",
+      ],
       story_status: ["todo", "in_progress", "done"],
       subtask_status: ["todo", "in_progress", "done"],
       team_status: ["active", "archived"],
