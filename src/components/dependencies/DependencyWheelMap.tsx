@@ -2,7 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { useState } from 'react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface DependencyWheelMapProps {
   piId?: string;
@@ -10,7 +11,11 @@ interface DependencyWheelMapProps {
 }
 
 export function DependencyWheelMap({ piId, selectedProgram }: DependencyWheelMapProps) {
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [showFeatures, setShowFeatures] = useState(true);
+  const [showEpics, setShowEpics] = useState(true);
+  const [showCapabilities, setShowCapabilities] = useState(true);
+  const [showOnlyAssociated, setShowOnlyAssociated] = useState(false);
+  const [showInactive, setShowInactive] = useState(false);
 
   const { data: programs } = useQuery({
     queryKey: ['programs'],
@@ -40,7 +45,6 @@ export function DependencyWheelMap({ piId, selectedProgram }: DependencyWheelMap
       const { data, error } = await query;
       if (error) throw error;
       
-      // Filter by selected program if provided
       if (selectedProgram) {
         return data.filter(
           (dep: any) =>
@@ -61,149 +65,211 @@ export function DependencyWheelMap({ piId, selectedProgram }: DependencyWheelMap
     );
   }
 
-  const centerX = 300;
-  const centerY = 300;
-  const radius = 200;
-  const nodeRadius = 40;
-
-  const programPositions = programs.map((prog, index) => {
-    const angle = (index / programs.length) * 2 * Math.PI - Math.PI / 2;
+  const width = 800;
+  const height = 800;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const outerRadius = 350;
+  const innerRadius = 120;
+  
+  // Calculate segment angles
+  const segmentAngle = (2 * Math.PI) / programs.length;
+  
+  // Alternating colors for segments (cyan/teal shades)
+  const colors = ['#06b6d4', '#0891b2', '#0e7490', '#155e75'];
+  
+  // Create segments for each program
+  const segments = programs.map((prog, index) => {
+    const startAngle = index * segmentAngle - Math.PI / 2;
+    const endAngle = (index + 1) * segmentAngle - Math.PI / 2;
+    
+    // Calculate path for segment
+    const x1 = centerX + innerRadius * Math.cos(startAngle);
+    const y1 = centerY + innerRadius * Math.sin(startAngle);
+    const x2 = centerX + outerRadius * Math.cos(startAngle);
+    const y2 = centerY + outerRadius * Math.sin(startAngle);
+    const x3 = centerX + outerRadius * Math.cos(endAngle);
+    const y3 = centerY + outerRadius * Math.sin(endAngle);
+    const x4 = centerX + innerRadius * Math.cos(endAngle);
+    const y4 = centerY + innerRadius * Math.sin(endAngle);
+    
+    const largeArcFlag = segmentAngle > Math.PI ? 1 : 0;
+    
+    const path = `
+      M ${x1} ${y1}
+      L ${x2} ${y2}
+      A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${x3} ${y3}
+      L ${x4} ${y4}
+      A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${x1} ${y1}
+      Z
+    `;
+    
+    // Calculate label position (on outer edge)
+    const labelAngle = startAngle + segmentAngle / 2;
+    const labelRadius = outerRadius + 30;
+    const labelX = centerX + labelRadius * Math.cos(labelAngle);
+    const labelY = centerY + labelRadius * Math.sin(labelAngle);
+    
+    // Calculate text rotation
+    let textAngle = (labelAngle * 180 / Math.PI) + 90;
+    if (textAngle > 90 && textAngle < 270) {
+      textAngle += 180;
+    }
+    
     return {
       id: prog.id,
       name: prog.name,
-      x: centerX + radius * Math.cos(angle),
-      y: centerY + radius * Math.sin(angle),
+      path,
+      labelX,
+      labelY,
+      textAngle,
+      color: colors[index % colors.length],
+      midAngle: startAngle + segmentAngle / 2,
     };
   });
-
-  const getDependencyLines = () => {
-    if (!dependencies) return [];
+  
+  // Create curved dependency lines using Bezier curves
+  const dependencyLines = dependencies?.map((dep: any) => {
+    const fromSegment = segments.find((s) => s.id === dep.from_feature?.program_id);
+    const toSegment = segments.find((s) => s.id === dep.to_feature?.program_id);
     
-    return dependencies.map((dep: any) => {
-      const fromPos = programPositions.find((p) => p.id === dep.from_feature?.program_id);
-      const toPos = programPositions.find((p) => p.id === dep.to_feature?.program_id);
-      
-      if (!fromPos || !toPos) return null;
-      
-      return {
-        id: dep.id,
-        from: fromPos,
-        to: toPos,
-        status: dep.status,
-        riskLevel: dep.risk_level,
-      };
-    }).filter(Boolean);
-  };
-
-  const lines = getDependencyLines();
-
-  const getLineColor = (status: string, riskLevel: string) => {
-    if (riskLevel === 'high') return '#ef4444';
-    if (riskLevel === 'med') return '#f59e0b';
-    if (status === 'done' || status === 'delivered') return '#22c55e';
-    return '#6b7280';
-  };
+    if (!fromSegment || !toSegment || fromSegment.id === toSegment.id) return null;
+    
+    // Calculate connection points on inner circle
+    const fromX = centerX + (innerRadius - 10) * Math.cos(fromSegment.midAngle);
+    const fromY = centerY + (innerRadius - 10) * Math.sin(fromSegment.midAngle);
+    const toX = centerX + (innerRadius - 10) * Math.cos(toSegment.midAngle);
+    const toY = centerY + (innerRadius - 10) * Math.sin(toSegment.midAngle);
+    
+    // Create curved path using quadratic Bezier curve through center
+    const path = `M ${fromX} ${fromY} Q ${centerX} ${centerY} ${toX} ${toY}`;
+    
+    // Color based on status and risk
+    let color = '#22c55e'; // green for completed
+    let opacity = 0.6;
+    
+    if (dep.risk_level === 'high') {
+      color = '#ef4444'; // red
+      opacity = 0.8;
+    } else if (dep.risk_level === 'med') {
+      color = '#f59e0b'; // yellow
+      opacity = 0.7;
+    } else if (dep.status === 'open' || dep.status === 'pending_commit') {
+      color = '#22c55e'; // green
+      opacity = 0.5;
+    }
+    
+    return {
+      id: dep.id,
+      path,
+      color,
+      opacity,
+    };
+  }).filter(Boolean) || [];
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Dependency Wheel Map</h3>
-        <div className="flex items-center gap-4 text-sm">
+      {/* Controls */}
+      <Card className="p-4">
+        <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-1 bg-green-500" />
-            <span className="text-muted-foreground">Complete</span>
+            <Switch
+              id="features"
+              checked={showFeatures}
+              onCheckedChange={setShowFeatures}
+            />
+            <Label htmlFor="features" className="cursor-pointer">Feature</Label>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-1 bg-yellow-500" />
-            <span className="text-muted-foreground">Medium Risk</span>
+            <Switch
+              id="epics"
+              checked={showEpics}
+              onCheckedChange={setShowEpics}
+            />
+            <Label htmlFor="epics" className="cursor-pointer">Epic</Label>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-1 bg-red-500" />
-            <span className="text-muted-foreground">High Risk</span>
+            <Switch
+              id="capabilities"
+              checked={showCapabilities}
+              onCheckedChange={setShowCapabilities}
+            />
+            <Label htmlFor="capabilities" className="cursor-pointer">Capability</Label>
+          </div>
+          <div className="flex items-center gap-2 ml-auto">
+            <Switch
+              id="associated"
+              checked={showOnlyAssociated}
+              onCheckedChange={setShowOnlyAssociated}
+            />
+            <Label htmlFor="associated" className="cursor-pointer">Show Only Associated</Label>
+          </div>
+          <div className="flex items-center gap-2">
+            <Switch
+              id="inactive"
+              checked={showInactive}
+              onCheckedChange={setShowInactive}
+            />
+            <Label htmlFor="inactive" className="cursor-pointer">Show Inactive</Label>
           </div>
         </div>
-      </div>
+      </Card>
 
-      <Card className="p-8 bg-muted/30">
-        <svg width="600" height="600" className="mx-auto">
-          {/* Dependency lines */}
-          {lines.map((line: any) => (
-            <line
+      {/* Wheel Map */}
+      <Card className="p-4 bg-background overflow-hidden">
+        <svg
+          width={width}
+          height={height}
+          viewBox={`0 0 ${width} ${height}`}
+          className="mx-auto"
+        >
+          {/* Radial segments */}
+          {segments.map((segment) => (
+            <g key={segment.id}>
+              <path
+                d={segment.path}
+                fill={segment.color}
+                opacity="0.8"
+                stroke="rgba(255,255,255,0.2)"
+                strokeWidth="1"
+              />
+              {/* Program label on outer edge */}
+              <text
+                x={segment.labelX}
+                y={segment.labelY}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                transform={`rotate(${segment.textAngle} ${segment.labelX} ${segment.labelY})`}
+                className="text-xs font-medium fill-white"
+                style={{ fontSize: '11px' }}
+              >
+                {segment.name}
+              </text>
+            </g>
+          ))}
+          
+          {/* Center white circle */}
+          <circle
+            cx={centerX}
+            cy={centerY}
+            r={innerRadius}
+            fill="white"
+            stroke="rgba(0,0,0,0.1)"
+            strokeWidth="1"
+          />
+          
+          {/* Curved dependency lines */}
+          {dependencyLines.map((line: any) => (
+            <path
               key={line.id}
-              x1={line.from.x}
-              y1={line.from.y}
-              x2={line.to.x}
-              y2={line.to.y}
-              stroke={getLineColor(line.status, line.riskLevel)}
+              d={line.path}
+              fill="none"
+              stroke={line.color}
               strokeWidth="2"
-              opacity="0.6"
+              opacity={line.opacity}
+              strokeLinecap="round"
             />
           ))}
-
-          {/* Program nodes */}
-          {programPositions.map((prog) => {
-            const depCount = dependencies?.filter(
-              (dep: any) =>
-                dep.from_feature?.program_id === prog.id ||
-                dep.to_feature?.program_id === prog.id
-            ).length || 0;
-
-            return (
-              <TooltipProvider key={prog.id}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <g
-                      onMouseEnter={() => setHoveredNode(prog.id)}
-                      onMouseLeave={() => setHoveredNode(null)}
-                      className="cursor-pointer"
-                    >
-                      <circle
-                        cx={prog.x}
-                        cy={prog.y}
-                        r={nodeRadius}
-                        fill={hoveredNode === prog.id ? 'hsl(var(--primary))' : 'hsl(var(--background))'}
-                        stroke="hsl(var(--border))"
-                        strokeWidth="2"
-                      />
-                      <text
-                        x={prog.x}
-                        y={prog.y}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        className="text-xs font-medium fill-foreground pointer-events-none"
-                        style={{ maxWidth: nodeRadius * 1.5 }}
-                      >
-                        {prog.name.length > 8 ? prog.name.substring(0, 8) + '...' : prog.name}
-                      </text>
-                      {depCount > 0 && (
-                        <circle
-                          cx={prog.x + nodeRadius - 10}
-                          cy={prog.y - nodeRadius + 10}
-                          r="12"
-                          fill="hsl(var(--primary))"
-                        />
-                      )}
-                      {depCount > 0 && (
-                        <text
-                          x={prog.x + nodeRadius - 10}
-                          y={prog.y - nodeRadius + 10}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          className="text-xs font-bold fill-primary-foreground pointer-events-none"
-                        >
-                          {depCount}
-                        </text>
-                      )}
-                    </g>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="font-semibold">{prog.name}</p>
-                    <p className="text-xs text-muted-foreground">{depCount} dependencies</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            );
-          })}
         </svg>
       </Card>
     </div>
