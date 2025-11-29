@@ -49,7 +49,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3 flex-1">
               <div className="flex items-center gap-2 px-2 py-1 bg-muted rounded text-xs text-muted-foreground">
-                <FileText className="h-3 w-3 text-green-600" />
+                <FileText className="h-3 w-3 text-success" />
                 <span>Theme {theme.id.slice(0, 2)}</span>
               </div>
               <button className="text-muted-foreground hover:text-foreground">
@@ -135,7 +135,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                     </div>
                     <div className="space-y-2">
                       <Label className="text-sm flex items-center gap-2">
-                        <span className="inline-block w-2 h-2 bg-red-500 rounded-sm"></span>
+                        <span className="inline-block w-2 h-2 bg-destructive rounded-sm"></span>
                         State:
                       </Label>
                       <Select defaultValue="in-progress">
@@ -170,7 +170,7 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label className="text-sm flex items-center gap-2">
-                        <span className="inline-block w-2 h-2 bg-red-500 rounded-sm"></span>
+                        <span className="inline-block w-2 h-2 bg-destructive rounded-sm"></span>
                         Active:
                       </Label>
                       <Select defaultValue="yes">
