@@ -46,14 +46,19 @@ export function JiraAlignHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-card">
         <div className="flex h-14 items-center px-4 gap-2">
-          {/* Logo */}
-          <div className="flex items-center gap-2 mr-4">
-            <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-              <span className="text-xs font-bold text-primary-foreground">JA</span>
+          {/* Logo - Catalyst Dark Branded */}
+          <div className="flex items-center gap-3 mr-4 px-3 py-2 bg-brand-dark rounded-md">
+            <div 
+              className="w-8 h-8 rounded-md flex items-center justify-center text-brand-dark font-bold text-lg"
+              style={{ background: 'linear-gradient(135deg, hsl(var(--brand-gold)) 0%, hsl(var(--brand-gold-light)) 100%)' }}
+            >
+              C
             </div>
-            <span className="font-semibold text-sm hidden md:inline">Catalyst</span>
+            <span className="font-bold text-base hidden md:inline text-white">
+              <span style={{ color: 'hsl(var(--brand-gold))' }}>C</span>atalyst
+            </span>
           </div>
 
           {/* Main Navigation */}
