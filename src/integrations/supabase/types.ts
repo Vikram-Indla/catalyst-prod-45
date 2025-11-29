@@ -128,6 +128,7 @@ export type Database = {
           target_roles: string[] | null
           target_team_ids: string[] | null
           title: string
+          type: string
         }
         Insert: {
           created_at?: string
@@ -142,6 +143,7 @@ export type Database = {
           target_roles?: string[] | null
           target_team_ids?: string[] | null
           title: string
+          type?: string
         }
         Update: {
           created_at?: string
@@ -156,6 +158,7 @@ export type Database = {
           target_roles?: string[] | null
           target_team_ids?: string[] | null
           title?: string
+          type?: string
         }
         Relationships: []
       }
@@ -4950,10 +4953,18 @@ export type Database = {
       user_notification_preferences: {
         Row: {
           created_at: string
+          email_frequency: string
           email_notifications_enabled: boolean
           id: string
           in_app_notifications_enabled: boolean
           mention_notifications_enabled: boolean
+          notify_comments: boolean
+          notify_dependencies: boolean
+          notify_mentions: boolean
+          notify_objectives: boolean
+          notify_subscriptions: boolean
+          notify_work_item_assigned: boolean
+          notify_work_item_state_change: boolean
           subscription_notifications_enabled: boolean
           updated_at: string
           user_id: string
@@ -4961,10 +4972,18 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email_frequency?: string
           email_notifications_enabled?: boolean
           id?: string
           in_app_notifications_enabled?: boolean
           mention_notifications_enabled?: boolean
+          notify_comments?: boolean
+          notify_dependencies?: boolean
+          notify_mentions?: boolean
+          notify_objectives?: boolean
+          notify_subscriptions?: boolean
+          notify_work_item_assigned?: boolean
+          notify_work_item_state_change?: boolean
           subscription_notifications_enabled?: boolean
           updated_at?: string
           user_id: string
@@ -4972,10 +4991,18 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email_frequency?: string
           email_notifications_enabled?: boolean
           id?: string
           in_app_notifications_enabled?: boolean
           mention_notifications_enabled?: boolean
+          notify_comments?: boolean
+          notify_dependencies?: boolean
+          notify_mentions?: boolean
+          notify_objectives?: boolean
+          notify_subscriptions?: boolean
+          notify_work_item_assigned?: boolean
+          notify_work_item_state_change?: boolean
           subscription_notifications_enabled?: boolean
           updated_at?: string
           user_id?: string
