@@ -1,4 +1,6 @@
 import { useBacklogState } from '../hooks/useBacklogState';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -29,6 +31,49 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
     setView,
   } = useBacklogState();
 
+  // Fetch Program Increments for PI selector
+  const { data: programIncrements } = useQuery({
+    queryKey: ['program-increments'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('program_increments')
+        .select('id, name, start_date')
+        .order('start_date', { ascending: false })
+        .limit(10);
+      return data || [];
+    },
+  });
+
+  // Fetch Sprints for sprint selector
+  const { data: sprints } = useQuery({
+    queryKey: ['iterations-sprints'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('iterations')
+        .select('id, name, start_date')
+        .order('start_date', { ascending: false })
+        .limit(20);
+      return data || [];
+    },
+  });
+
+  // Get allowed types based on scope
+  const getAllowedTypes = (scope: BacklogScope): BacklogType[] => {
+    switch (scope) {
+      case 'enterprise':
+      case 'portfolio':
+        return ['theme', 'epic', 'capability', 'objective'];
+      case 'program':
+        return ['epic', 'capability', 'feature', 'objective'];
+      case 'team':
+        return ['story', 'defect', 'objective'];
+      default:
+        return ['epic'];
+    }
+  };
+
+  const allowedTypes = getAllowedTypes(scope);
+
   return (
     <div className="flex items-center gap-3 border-b bg-card px-4 py-3">
       {/* Scope Selector */}
@@ -45,33 +90,86 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
         </SelectContent>
       </Select>
 
-      {/* Type Selector */}
-      <Select value={type} onValueChange={(val) => setType(val as BacklogType)}>
-        <SelectTrigger className="w-[140px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="theme">Themes</SelectItem>
-          <SelectItem value="epic">Epics</SelectItem>
-          <SelectItem value="capability">Capabilities</SelectItem>
-          <SelectItem value="feature">Features</SelectItem>
-          <SelectItem value="story">Stories</SelectItem>
-          <SelectItem value="defect">Defects</SelectItem>
-          <SelectItem value="objective">Objectives</SelectItem>
-        </SelectContent>
-      </Select>
+      {/* Viewing Dropdown (Type Selector) - Context-aware */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground font-medium">Viewing:</span>
+        <Select value={type} onValueChange={(val) => setType(val as BacklogType)}>
+          <SelectTrigger className="w-[140px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {allowedTypes.includes('theme') && (
+              <SelectItem value="theme">Themes</SelectItem>
+            )}
+            {allowedTypes.includes('epic') && (
+              <SelectItem value="epic">Epics</SelectItem>
+            )}
+            {allowedTypes.includes('capability') && (
+              <SelectItem value="capability">Capabilities</SelectItem>
+            )}
+            {allowedTypes.includes('feature') && (
+              <SelectItem value="feature">Features</SelectItem>
+            )}
+            {allowedTypes.includes('story') && (
+              <SelectItem value="story">Stories</SelectItem>
+            )}
+            {allowedTypes.includes('defect') && (
+              <SelectItem value="defect">Defects</SelectItem>
+            )}
+            {allowedTypes.includes('objective') && (
+              <SelectItem value="objective">Objectives</SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
 
-      {/* Timebox Type */}
-      <Select value={timeboxType} onValueChange={(val) => setTimebox(val as TimeboxType, timeboxId)}>
-        <SelectTrigger className="w-[120px]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="pi">PI</SelectItem>
-          <SelectItem value="sprint">Sprint</SelectItem>
-          <SelectItem value="all">All</SelectItem>
-        </SelectContent>
-      </Select>
+      {/* Time Dropdown - Two-level: Type + Specific Timebox */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground font-medium">Time:</span>
+        <Select value={timeboxType} onValueChange={(val) => setTimebox(val as TimeboxType, null)}>
+          <SelectTrigger className="w-[100px]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All</SelectItem>
+            <SelectItem value="pi">PI</SelectItem>
+            <SelectItem value="sprint">Sprint</SelectItem>
+          </SelectContent>
+        </Select>
+        
+        {/* Specific PI/Sprint Selector */}
+        {timeboxType === 'pi' && (
+          <Select value={timeboxId || 'none'} onValueChange={(val) => setTimebox('pi', val === 'none' ? null : val)}>
+            <SelectTrigger className="w-[120px]">
+              <SelectValue placeholder="Select PI" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">All PIs</SelectItem>
+              {programIncrements?.map((pi) => (
+                <SelectItem key={pi.id} value={pi.id}>
+                  {pi.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+        
+        {timeboxType === 'sprint' && (
+          <Select value={timeboxId || 'none'} onValueChange={(val) => setTimebox('sprint', val === 'none' ? null : val)}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue placeholder="Select Sprint" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">All Sprints</SelectItem>
+              {sprints?.map((sprint) => (
+                <SelectItem key={sprint.id} value={sprint.id}>
+                  {sprint.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+      </div>
 
       {/* View Selector */}
       <Select value={view} onValueChange={(val) => setView(val as BacklogViewType)}>
