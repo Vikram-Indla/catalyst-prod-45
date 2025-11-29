@@ -690,8 +690,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
             {hoveredLayer && (
               <g className="pointer-events-none">
                 <rect
-                  x={tooltipPos.x + 10}
-                  y={tooltipPos.y - 30}
+                  x={tooltipPos.x - 110}
+                  y={tooltipPos.y - 70}
                   width="200"
                   height="50"
                   fill="hsl(var(--popover))"
@@ -701,8 +701,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                   className="drop-shadow-md"
                 />
                 <text
-                  x={tooltipPos.x + 20}
-                  y={tooltipPos.y - 12}
+                  x={tooltipPos.x - 100}
+                  y={tooltipPos.y - 52}
                   fill="hsl(var(--popover-foreground))"
                   fontSize="13"
                   fontWeight="600"
@@ -710,8 +710,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                   {hoveredLayer}
                 </text>
                 <text
-                  x={tooltipPos.x + 20}
-                  y={tooltipPos.y + 5}
+                  x={tooltipPos.x - 100}
+                  y={tooltipPos.y - 35}
                   fill="hsl(var(--muted-foreground))"
                   fontSize="11"
                 >
