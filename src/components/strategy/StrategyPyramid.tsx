@@ -256,7 +256,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text
                 x={centerX}
-                y={(y1 + y2) / 2 + 5}
+                y={(y1 + y2) / 2 + 15}
                 fill="white"
                 fontSize="14"
                 fontWeight="600"
