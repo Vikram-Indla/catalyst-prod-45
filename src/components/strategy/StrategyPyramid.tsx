@@ -182,23 +182,19 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
         const tooltipX = Math.min(maxX, rightEdge + 20);
         setTooltipPos({ x: tooltipX, y: layerCenterY });
       } else {
-        // All other layers: tooltip half outside, half inside (straddling the edge)
+        // All other layers: position completely outside the pyramid edges
         const isLeftSide = ['Yearly Goals', 'Portfolio Objectives', 'Program Objectives'].includes(layerName);
         
         let tooltipX;
-        if (layerName === 'Visions') {
-          // Visions: position completely outside the right edge
+        if (layerName === 'Visions' || layerName === 'Values' || layerName === 'Themes') {
+          // Right side layers: position completely outside the right edge
           tooltipX = Math.min(maxX, rightEdge + 20);
-        } else if (layerName === 'Values') {
-          // Values: straddle the right edge
-          tooltipX = Math.min(maxX, rightEdge - tooltipHalfWidth);
+        } else if (isLeftSide) {
+          // Left side layers: position completely outside the left edge
+          tooltipX = Math.max(minX, leftEdge - tooltipWidth - 20);
         } else {
-          // Split layers: straddle the respective edge
-          if (isLeftSide) {
-            tooltipX = Math.max(minX, leftEdge - tooltipHalfWidth);
-          } else {
-            tooltipX = Math.min(maxX, rightEdge - tooltipHalfWidth);
-          }
+          // Other layers: straddle the respective edge
+          tooltipX = Math.min(maxX, rightEdge - tooltipHalfWidth);
         }
         
         setTooltipPos({ x: tooltipX, y: layerCenterY });
