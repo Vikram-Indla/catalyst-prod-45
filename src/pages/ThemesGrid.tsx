@@ -61,7 +61,10 @@ export default function ThemesGrid() {
     mutationFn: async (name: string) => {
       const { data, error } = await supabase
         .from('strategic_themes')
-        .insert({ name })
+        .insert({ 
+          name,
+          snapshot_id: 'f8c7e7b3-6b23-4261-a4ca-c011c1dc8836' // Default to Corporate Strategy 2025
+        })
         .select()
         .single();
       

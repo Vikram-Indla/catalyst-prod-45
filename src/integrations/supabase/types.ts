@@ -4306,6 +4306,7 @@ export type Database = {
           id: string
           name: string
           owner_id: string | null
+          snapshot_id: string
           start_date: string | null
           status: Database["public"]["Enums"]["theme_status"] | null
           updated_at: string | null
@@ -4318,6 +4319,7 @@ export type Database = {
           id?: string
           name: string
           owner_id?: string | null
+          snapshot_id: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["theme_status"] | null
           updated_at?: string | null
@@ -4330,11 +4332,20 @@ export type Database = {
           id?: string
           name?: string
           owner_id?: string | null
+          snapshot_id?: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["theme_status"] | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "strategic_themes_snapshot_id_fkey"
+            columns: ["snapshot_id"]
+            isOneToOne: false
+            referencedRelation: "strategy_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       strategy_snapshots: {
         Row: {
