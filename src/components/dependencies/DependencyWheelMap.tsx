@@ -341,20 +341,21 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
 
         {/* Wheel Map */}
         <Card className="p-4 bg-background overflow-hidden">
-          <svg
-            width={width}
-            height={height}
-            viewBox={`0 0 ${width} ${height}`}
-            className="mx-auto"
-          >
-            {/* Group for rotating the entire wheel */}
-            <g
-              transform={`rotate(${wheelRotation} ${centerX} ${centerY})`}
-              style={{
-                transition: 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
-                transformOrigin: `${centerX}px ${centerY}px`
-              }}
+          <div className="w-full h-full flex items-center justify-center">
+            <svg
+              width={width}
+              height={height}
+              viewBox={`0 0 ${width} ${height}`}
+              className="mx-auto"
             >
+              {/* Group for rotating the entire wheel around its center */}
+              <g
+                style={{
+                  transform: `rotate(${wheelRotation}deg)`,
+                  transformOrigin: `${centerX}px ${centerY}px`,
+                  transition: 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)'
+                }}
+              >
               {/* Radial segments */}
               {segments.map((segment) => {
               // Calculate label position INSIDE the segment (middle of the radial span)
@@ -448,8 +449,9 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
                 stroke="rgba(0,0,0,0.05)"
                 strokeWidth="1"
               />
-            </g>
-          </svg>
+              </g>
+            </svg>
+          </div>
         </Card>
       </div>
 
