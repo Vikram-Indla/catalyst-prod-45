@@ -27,12 +27,12 @@ export default function CustomFields() {
 
   const getFieldTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
-      text: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-      number: 'bg-green-500/10 text-green-500 border-green-500/20',
-      date: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-      select: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-      multi_select: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
-      boolean: 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20',
+      text: 'bg-info/10 text-info border-info/20',
+      number: 'bg-success/10 text-success border-success/20',
+      date: 'bg-primary/10 text-primary border-primary/20',
+      select: 'bg-warning/10 text-warning border-warning/20',
+      multi_select: 'bg-warning/10 text-warning border-warning/20',
+      boolean: 'bg-info/10 text-info border-info/20',
     };
     
     return colors[type] || '';

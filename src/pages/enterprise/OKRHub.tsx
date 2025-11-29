@@ -103,19 +103,19 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
 
   const getScoreColor = (score: number | null): string => {
     if (score === null || score === undefined) return 'text-muted-foreground';
-    if (score >= 0.7) return 'text-green-600';
-    if (score >= 0.4) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 0.7) return 'text-success';
+    if (score >= 0.4) return 'text-warning';
+    return 'text-destructive';
   };
 
   const getStatusBadgeVariant = (status: string) => {
     const statusColors: Record<string, string> = {
-      on_track: 'bg-green-100 text-green-800 border-green-200',
-      at_risk: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      off_track: 'bg-red-100 text-red-800 border-red-200',
-      completed: 'bg-blue-100 text-blue-800 border-blue-200',
-      pending: 'bg-gray-100 text-gray-800 border-gray-200',
-      blocked: 'bg-orange-100 text-orange-800 border-orange-200',
+      on_track: 'bg-success/10 text-success border-success/20',
+      at_risk: 'bg-warning/10 text-warning border-warning/20',
+      off_track: 'bg-destructive/10 text-destructive border-destructive/20',
+      completed: 'bg-info/10 text-info border-info/20',
+      pending: 'bg-muted text-muted-foreground border-border',
+      blocked: 'bg-warning/10 text-warning border-warning/20',
     };
     return statusColors[status] || statusColors.pending;
   };
@@ -398,7 +398,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                             </span>
                             <span className="text-sm text-foreground">{objective.summary}</span>
                             {objective.blocked && (
-                              <GitBranch className="h-4 w-4 text-orange-500" />
+                              <GitBranch className="h-4 w-4 text-warning" />
                             )}
                           </div>
                         </TableCell>

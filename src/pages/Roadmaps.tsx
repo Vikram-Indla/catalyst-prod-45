@@ -98,23 +98,23 @@ export default function Roadmaps() {
     switch (status) {
       case 'done':
       case 'accepted':
-        return 'bg-[#36B37E]';
+        return 'bg-success';
       case 'in_progress':
       case 'implementing':
-        return 'bg-[#0065FF]';
+        return 'bg-info';
       case 'funnel':
       case 'analyzing':
-        return 'bg-[#6B778C]';
+        return 'bg-muted-foreground';
       default:
-        return 'bg-[#FFAB00]';
+        return 'bg-warning';
     }
   };
 
   // Get progress percentage color
   const getProgressColor = (progress: number) => {
-    if (progress >= 75) return 'bg-[#36B37E]';
-    if (progress >= 25) return 'bg-[#FFAB00]';
-    return 'bg-[#FF5630]';
+    if (progress >= 75) return 'bg-success';
+    if (progress >= 25) return 'bg-warning';
+    return 'bg-destructive';
   };
 
   // Render feature bar on timeline
@@ -173,14 +173,12 @@ export default function Roadmaps() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <StarIcon
-                    className="absolute"
+                    className={`absolute ${milestone.milestone_type === 'start_date' ? 'fill-info' : 'fill-warning'} stroke-background`}
                     style={{
                       left: `${milestonePos.left - position.left}%`,
                       top: '-8px',
                     }}
                     size={20}
-                    fill={milestone.milestone_type === 'start_date' ? '#00B8D9' : '#FFAB00'}
-                    stroke="white"
                     strokeWidth={2}
                   />
                 </TooltipTrigger>
@@ -207,14 +205,12 @@ export default function Roadmaps() {
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Flag
-                    className="absolute"
+                    className="absolute fill-destructive stroke-background"
                     style={{
                       right: `${idx * 24}px`,
                       top: '-8px',
                     }}
                     size={18}
-                    fill="#FF5630"
-                    stroke="white"
                     strokeWidth={2}
                   />
                 </TooltipTrigger>
@@ -244,7 +240,7 @@ export default function Roadmaps() {
 
         {/* Blocked indicator */}
         {feature.blocked && (
-          <AlertTriangle className="absolute -right-1 -top-1" size={14} fill="#FF5630" stroke="white" />
+          <AlertTriangle className="absolute -right-1 -top-1 fill-destructive stroke-background" size={14} />
         )}
       </div>
     );
@@ -416,10 +412,10 @@ export default function Roadmaps() {
 
         {/* Timeline Scroll Bar */}
         <div className="border-b bg-card px-6 py-2">
-          <div className="relative h-2 bg-slate-800 rounded-full">
-            <div className="absolute inset-0 bg-slate-800 rounded-full" />
-            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-3 w-3 bg-slate-900 rounded-full border-2 border-white cursor-pointer" />
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-3 w-3 bg-slate-900 rounded-full border-2 border-white cursor-pointer" />
+          <div className="relative h-2 bg-foreground/80 rounded-full">
+            <div className="absolute inset-0 bg-foreground/80 rounded-full" />
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 h-3 w-3 bg-foreground rounded-full border-2 border-background cursor-pointer" />
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 h-3 w-3 bg-foreground rounded-full border-2 border-background cursor-pointer" />
           </div>
         </div>
 
@@ -442,10 +438,10 @@ export default function Roadmaps() {
                     const iterations = pi.iterations || [];
                     return (
                       <div key={pi.id} className="flex-1 min-w-[300px]">
-                        <div className="px-3 py-2 text-center font-semibold text-sm border-b bg-slate-50">
+                        <div className="px-3 py-2 text-center font-semibold text-sm border-b bg-muted/50">
                           {pi.name}
                         </div>
-                        <div className="flex border-b bg-slate-50/50">
+                        <div className="flex border-b bg-muted/30">
                           {iterations.map((iteration: any) => (
                             <div key={iteration.id} className="flex-1 px-2 py-1 text-center text-xs text-muted-foreground border-r last:border-r-0">
                               S{iteration.name.slice(-2)}

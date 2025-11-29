@@ -281,10 +281,10 @@ export default function ProgramBoard() {
     if (viewMode === 'heatmap') {
       // Calculate intensity based on status
       const getHeatIntensity = (feature: any) => {
-        if (feature.status === 'done' || feature.status === 'accepted') return 'bg-emerald-600';
-        if (feature.status === 'in progress') return 'bg-blue-500';
-        if (feature.blocked) return 'bg-red-500';
-        return 'bg-gray-400';
+        if (feature.status === 'done' || feature.status === 'accepted') return 'bg-success';
+        if (feature.status === 'in progress') return 'bg-info';
+        if (feature.blocked) return 'bg-destructive';
+        return 'bg-muted';
       };
       
       return (
@@ -319,8 +319,8 @@ export default function ProgramBoard() {
             <div className={`
               absolute left-0 top-0 bottom-0 w-0.5 sm:w-1 rounded-l
               ${feature.blocked ? 'bg-destructive' : ''}
-              ${feature.status === 'done' ? 'bg-emerald-500' : ''}
-              ${feature.status === 'in progress' ? 'bg-blue-500' : ''}
+              ${feature.status === 'done' ? 'bg-success' : ''}
+              ${feature.status === 'in progress' ? 'bg-info' : ''}
               ${!feature.status || feature.status === 'not started' ? 'bg-muted' : ''}
             `} />
             
