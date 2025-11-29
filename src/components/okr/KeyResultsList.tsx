@@ -66,9 +66,9 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
 
   const getScoreColor = (score?: number) => {
     if (score === null || score === undefined) return 'text-muted-foreground';
-    if (score >= 0.7) return 'text-green-600';
-    if (score >= 0.4) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 0.7) return 'text-success';
+    if (score >= 0.4) return 'text-warning';
+    return 'text-destructive';
   };
 
   const handleEdit = (kr: KeyResult, e: React.MouseEvent) => {

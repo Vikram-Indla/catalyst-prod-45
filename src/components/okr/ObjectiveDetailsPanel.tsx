@@ -47,23 +47,23 @@ export function ObjectiveDetailsPanel({ objectiveId }: ObjectiveDetailsPanelProp
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'on_track':
-        return 'bg-green-500/20 text-green-700';
+        return 'bg-success/20 text-success';
       case 'at_risk':
-        return 'bg-yellow-500/20 text-yellow-700';
+        return 'bg-warning/20 text-warning';
       case 'off_track':
-        return 'bg-red-500/20 text-red-700';
+        return 'bg-destructive/20 text-destructive';
       case 'completed':
-        return 'bg-blue-500/20 text-blue-700';
+        return 'bg-info/20 text-info';
       default:
-        return 'bg-gray-500/20 text-gray-700';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
   const getScoreColor = (score?: number) => {
     if (score === null || score === undefined) return 'text-muted-foreground';
-    if (score >= 0.7) return 'text-green-600';
-    if (score >= 0.4) return 'text-yellow-600';
-    return 'text-red-600';
+    if (score >= 0.7) return 'text-success';
+    if (score >= 0.4) return 'text-warning';
+    return 'text-destructive';
   };
 
   return (

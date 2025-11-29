@@ -220,22 +220,22 @@ export function EpicBacklogListView({
                                     </span>
                                   </div>
                                   <div className="flex gap-2 flex-wrap">
-                                    <Badge className="bg-orange-100 hover:bg-orange-200 text-orange-800 border-0 text-xs px-2 py-0.5">
+                                    <Badge className="bg-warning/10 hover:bg-warning/20 text-warning border-0 text-xs px-2 py-0.5">
                                       Opportunity
                                     </Badge>
-                                    <Badge className="bg-pink-100 hover:bg-pink-200 text-pink-800 border-0 text-xs px-2 py-0.5">
+                                    <Badge className="bg-accent hover:bg-accent/80 text-foreground border-0 text-xs px-2 py-0.5">
                                       Sales O...
                                     </Badge>
-                                    <Badge className="bg-red-100 hover:bg-red-200 text-red-800 border-0 text-xs px-2 py-0.5">
+                                    <Badge className="bg-destructive/10 hover:bg-destructive/20 text-destructive border-0 text-xs px-2 py-0.5">
                                       e2e
                                     </Badge>
-                                    <Badge className="bg-green-100 hover:bg-green-200 text-green-800 border-0 text-xs px-2 py-0.5">
+                                    <Badge className="bg-success/10 hover:bg-success/20 text-success border-0 text-xs px-2 py-0.5">
                                       PI7
                                     </Badge>
-                                    <Badge className="bg-gray-100 hover:bg-gray-200 text-gray-800 border-0 text-xs px-2 py-0.5">
+                                    <Badge className="bg-muted hover:bg-muted/80 text-muted-foreground border-0 text-xs px-2 py-0.5">
                                       PI6
                                     </Badge>
-                                    <Badge className="bg-orange-400 hover:bg-orange-500 text-white border-0 text-xs px-2 py-0.5">
+                                    <Badge className="bg-brand-gold hover:bg-brand-gold-hover text-primary-foreground border-0 text-xs px-2 py-0.5">
                                       PI5
                                     </Badge>
                                   </div>

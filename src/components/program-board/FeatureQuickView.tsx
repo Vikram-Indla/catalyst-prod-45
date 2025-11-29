@@ -75,19 +75,19 @@ export function FeatureQuickView({ feature, onClose }: FeatureQuickViewProps) {
   
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-500';
-      case 'in-progress': return 'bg-blue-500';
-      case 'blocked': return 'bg-red-500';
-      default: return 'bg-gray-400';
+      case 'completed': return 'bg-success';
+      case 'in-progress': return 'bg-info';
+      case 'blocked': return 'bg-destructive';
+      default: return 'bg-muted';
     }
   };
   
   const getHealthColor = (health: string) => {
     switch (health) {
-      case 'on-track': return 'text-green-600';
-      case 'at-risk': return 'text-yellow-600';
-      case 'off-track': return 'text-red-600';
-      default: return 'text-gray-600';
+      case 'on-track': return 'text-success';
+      case 'at-risk': return 'text-warning';
+      case 'off-track': return 'text-destructive';
+      default: return 'text-muted-foreground';
     }
   };
   
@@ -256,8 +256,8 @@ export function FeatureQuickView({ feature, onClose }: FeatureQuickViewProps) {
         
         {/* Blocked Status */}
         {formData.blocked && (
-          <div className="space-y-2 p-3 bg-red-50 dark:bg-red-950/20 rounded border border-red-200 dark:border-red-900">
-            <div className="flex items-center gap-2 text-red-700 dark:text-red-400">
+          <div className="space-y-2 p-3 bg-destructive/10 dark:bg-destructive/20 rounded border border-destructive/50">
+            <div className="flex items-center gap-2 text-destructive">
               <AlertTriangle className="h-4 w-4" />
               <Label className="text-xs font-semibold">Blocked</Label>
             </div>

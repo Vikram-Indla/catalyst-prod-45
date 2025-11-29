@@ -121,9 +121,9 @@ export function EpicSpendTab({ epic }: EpicSpendTabProps) {
           <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs">View breakdown</Button>
         </Card>
 
-        <Card className="p-4 bg-green-50 dark:bg-green-950 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('estimated'); setDrilldownOpen(true); }}>
+        <Card className="p-4 bg-success/10 dark:bg-success/20 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('estimated'); setDrilldownOpen(true); }}>
           <div className="flex items-center gap-2 mb-2">
-            <Calculator className="h-4 w-4 text-green-600" />
+            <Calculator className="h-4 w-4 text-success" />
             <span className="text-sm font-medium">Estimated Spend</span>
           </div>
           <div className="text-2xl font-bold">${formData.estimated_spend.toLocaleString()}</div>
@@ -134,7 +134,7 @@ export function EpicSpendTab({ epic }: EpicSpendTabProps) {
       <Card className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <AlertCircle className={`h-5 w-5 ${budgetVariance < 0 ? 'text-red-600' : 'text-green-600'}`} />
+            <AlertCircle className={`h-5 w-5 ${budgetVariance < 0 ? 'text-destructive' : 'text-success'}`} />
             <div>
               <div className="text-sm font-medium">Budget Status</div>
               <div className="text-xs text-muted-foreground">{budgetUtilization.toFixed(1)}% utilized</div>
@@ -143,7 +143,7 @@ export function EpicSpendTab({ epic }: EpicSpendTabProps) {
           <div className="text-right">
             <div className="text-sm text-muted-foreground">Budget</div>
             <div className="text-2xl font-bold">${formData.budget.toLocaleString()}</div>
-            <div className={`text-sm font-medium ${budgetVariance < 0 ? 'text-red-600' : 'text-green-600'}`}>
+            <div className={`text-sm font-medium ${budgetVariance < 0 ? 'text-destructive' : 'text-success'}`}>
               {budgetVariance < 0 ? 'Over' : 'Under'} by ${Math.abs(budgetVariance).toLocaleString()}
             </div>
           </div>

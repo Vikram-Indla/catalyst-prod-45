@@ -6,16 +6,16 @@ interface HeatmapCellProps {
 export function HeatmapCell({ percentage, avgScore }: HeatmapCellProps) {
   const getCellColor = (score: number | null) => {
     if (score === null) return 'bg-muted';
-    if (score >= 0.7) return 'bg-green-500/20 border-green-500';
-    if (score >= 0.4) return 'bg-yellow-500/20 border-yellow-500';
-    return 'bg-red-500/20 border-red-500';
+    if (score >= 0.7) return 'bg-success/20 border-success';
+    if (score >= 0.4) return 'bg-warning/20 border-warning';
+    return 'bg-destructive/20 border-destructive';
   };
 
   const getTextColor = (score: number | null) => {
     if (score === null) return 'text-muted-foreground';
-    if (score >= 0.7) return 'text-green-700 dark:text-green-400';
-    if (score >= 0.4) return 'text-yellow-700 dark:text-yellow-400';
-    return 'text-red-700 dark:text-red-400';
+    if (score >= 0.7) return 'text-success';
+    if (score >= 0.4) return 'text-warning';
+    return 'text-destructive';
   };
 
   return (
