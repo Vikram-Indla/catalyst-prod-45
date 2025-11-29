@@ -76,7 +76,7 @@ export function EpicLinksTab({ epic }: EpicLinksTabProps) {
   const getLinkTypeBadge = (type: string) => {
     const types: Record<string, { label: string; color: string }> = {
       documentation: { label: 'Documentation', color: 'bg-blue-500' },
-      design: { label: 'Design', color: 'bg-purple-500' },
+      design: { label: 'Design', color: 'bg-workitem-theme' },
       ticket: { label: 'Ticket', color: 'bg-green-500' },
       reference: { label: 'Reference', color: 'bg-orange-500' },
       other: { label: 'Other', color: 'bg-gray-500' }

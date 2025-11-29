@@ -25,7 +25,7 @@ export function PIProgressCard({
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
           <CardTitle className="text-base font-semibold">{piName}</CardTitle>
-          <Badge variant="default" className="bg-blue-500">
+          <Badge variant="default" className="bg-primary">
             {status}
           </Badge>
           <span className="text-sm text-muted-foreground ml-auto">

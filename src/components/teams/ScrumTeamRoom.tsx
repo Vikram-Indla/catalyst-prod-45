@@ -125,7 +125,7 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
                 <div className="text-xs text-muted-foreground">To Do</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{metrics.inProgress}</div>
+                <div className="text-2xl font-bold text-primary">{metrics.inProgress}</div>
                 <div className="text-xs text-muted-foreground">In Progress</div>
               </div>
               <div className="text-center">

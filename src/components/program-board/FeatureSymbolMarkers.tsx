@@ -91,7 +91,7 @@ export function FeatureSymbolMarkers({
       <div key="objective" title="Linked to PI Objective">
         <Hexagon 
           size={size} 
-          className="text-blue-600" 
+          className="text-primary" 
           fill="currentColor"
         />
       </div>
@@ -104,7 +104,7 @@ export function FeatureSymbolMarkers({
       <div key="work-link" title="Has Work Item Links">
         <Link2 
           size={size} 
-          className="text-purple-500"
+          className="text-workitem-theme"
         />
       </div>
     );
@@ -118,8 +118,8 @@ export function FeatureSymbolMarkers({
         className="flex items-center gap-0.5"
         title={`Split across ${feature.orphan_board_teams.length} teams`}
       >
-        <div className="h-3 w-1 bg-indigo-500 rounded-full" />
-        <div className="h-3 w-1 bg-cyan-500 rounded-full" />
+        <div className="h-3 w-1 bg-workitem-feature rounded-full" />
+        <div className="h-3 w-1 bg-workitem-story rounded-full" />
       </div>
     );
   }

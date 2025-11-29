@@ -25,7 +25,7 @@ const LABEL_COLORS = [
   { name: 'Green', value: 'green', bg: 'bg-green-500' },
   { name: 'Teal', value: 'teal', bg: 'bg-teal-500' },
   { name: 'Blue', value: 'blue', bg: 'bg-blue-500' },
-  { name: 'Purple', value: 'purple', bg: 'bg-purple-500' },
+  { name: 'Purple', value: 'purple', bg: 'bg-workitem-theme' },
   { name: 'Pink', value: 'pink', bg: 'bg-pink-500' },
   { name: 'Gray', value: 'gray', bg: 'bg-gray-500' },
 ];

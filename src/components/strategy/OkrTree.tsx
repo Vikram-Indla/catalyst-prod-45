@@ -147,9 +147,9 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
       <CardHeader className="pb-4">
         <div className="space-y-2">
           <CardTitle className="text-xl font-semibold">OKR Tree</CardTitle>
-          <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md p-3">
-            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-            <p className="text-xs text-blue-800 dark:text-blue-300">
+          <div className="flex items-start gap-2 bg-primary/5 dark:bg-primary/10 border border-primary/20 dark:border-primary/30 rounded-md p-3">
+            <Info className="h-4 w-4 text-primary dark:text-primary mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-foreground dark:text-foreground">
               Only work items tied to this Snapshot or its Program Increments are shown here
             </p>
           </div>

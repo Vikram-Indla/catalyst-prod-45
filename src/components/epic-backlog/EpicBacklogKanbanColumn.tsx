@@ -200,7 +200,7 @@ export function EpicBacklogKanbanColumn({ epics, programIncrements, onEpicSelect
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`flex-1 space-y-2 p-4 rounded-lg bg-blue-50 ${
+                      className={`flex-1 space-y-2 p-4 rounded-lg bg-primary/5 ${
                         snapshot.isDraggingOver ? 'ring-2 ring-primary' : ''
                       }`}
                     >

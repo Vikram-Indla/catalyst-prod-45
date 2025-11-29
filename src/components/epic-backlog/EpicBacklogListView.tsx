@@ -214,7 +214,7 @@ export function EpicBacklogListView({
                               <TableCell>
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2">
-                                    <CheckSquare className="h-4 w-4 text-blue-500" />
+                                    <CheckSquare className="h-4 w-4 text-primary" />
                                     <span className="font-medium text-sm cursor-pointer" onClick={() => onEpicSelect(epic.id)}>
                                       {epic.name}
                                     </span>

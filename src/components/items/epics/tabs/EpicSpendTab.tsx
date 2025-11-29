@@ -103,18 +103,18 @@ export function EpicSpendTab({ epic }: EpicSpendTabProps) {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        <Card className="p-4 bg-blue-50 dark:bg-blue-950 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('accepted'); setDrilldownOpen(true); }}>
+        <Card className="p-4 bg-primary/5 dark:bg-primary/10 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('accepted'); setDrilldownOpen(true); }}>
           <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="h-4 w-4 text-blue-600" />
+            <DollarSign className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">Accepted Spend</span>
           </div>
           <div className="text-2xl font-bold">${formData.accepted_spend.toLocaleString()}</div>
           <Button variant="link" size="sm" className="mt-2 p-0 h-auto text-xs">View breakdown</Button>
         </Card>
 
-        <Card className="p-4 bg-purple-50 dark:bg-purple-950 cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('forecasted'); setDrilldownOpen(true); }}>
+        <Card className="p-4 bg-secondary dark:bg-secondary cursor-pointer hover:shadow-md transition-shadow" onClick={() => { setDrilldownType('forecasted'); setDrilldownOpen(true); }}>
           <div className="flex items-center gap-2 mb-2">
-            <TrendingUp className="h-4 w-4 text-purple-600" />
+            <TrendingUp className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">Forecasted Spend</span>
           </div>
           <div className="text-2xl font-bold">${formData.forecasted_spend.toLocaleString()}</div>

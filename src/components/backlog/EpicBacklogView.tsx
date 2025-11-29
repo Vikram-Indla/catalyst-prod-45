@@ -185,7 +185,7 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
                             badge === 'PI9' && "bg-red-300 hover:bg-red-400 text-white",
                             badge === 'PI10' && "bg-pink-300 hover:bg-pink-400 text-white",
                             badge === 'PI11' && "bg-orange-200 hover:bg-orange-300 text-orange-900",
-                            badge === 'G12' && "bg-purple-300 hover:bg-purple-400 text-white"
+                            badge === 'G12' && "bg-workitem-theme hover:bg-workitem-theme/80 text-white"
                           )}
                         >
                           {badge}

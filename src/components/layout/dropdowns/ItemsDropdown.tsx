@@ -17,7 +17,7 @@ const workItems = [
 const otherItems = [
   { key: 'objectives', label: 'Objectives', icon: Target, color: 'bg-slate-600' },
   { key: 'dependencies', label: 'Dependencies', icon: GitBranch, color: 'bg-slate-600' },
-  { key: 'teams', label: 'Teams', icon: Users, color: 'bg-indigo-600' },
+  { key: 'teams', label: 'Teams', icon: Users, color: 'bg-workitem-feature' },
   { key: 'ideation', label: 'Ideation', icon: Lightbulb, color: 'bg-slate-600' },
   { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'bg-slate-600' },
   { key: 'impediments', label: 'Impediments', icon: Shield, color: 'bg-slate-600' },

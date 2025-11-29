@@ -129,7 +129,7 @@ export function LinksTab({ epicId }: LinksTabProps) {
                 className="flex items-center justify-between p-3 border rounded-md bg-card"
               >
                 <div className="flex items-center gap-2">
-                  <ExternalLink className="h-4 w-4 text-blue-600" />
+                  <ExternalLink className="h-4 w-4 text-primary" />
                   <div>
                     <div className="text-sm font-medium">{link.objective?.title}</div>
                     <div className="text-xs text-muted-foreground">
