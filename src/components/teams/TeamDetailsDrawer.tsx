@@ -92,7 +92,12 @@ export function TeamDetailsDrawer({ teamId, open, onOpenChange }: TeamDetailsDra
               </TabsContent>
 
               <TabsContent value="sprints" className="space-y-4">
-                <TeamSprintsTab teamId={team.id} teamType={team.team_type} />
+                <TeamSprintsTab 
+                  teamId={team.id} 
+                  teamType={team.team_type}
+                  teamName={team.name}
+                  sprintPrefix={team.sprint_prefix}
+                />
               </TabsContent>
 
               <TabsContent value="velocity" className="space-y-4">
