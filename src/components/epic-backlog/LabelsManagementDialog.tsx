@@ -19,15 +19,15 @@ interface LabelsManagementDialogProps {
 }
 
 const LABEL_COLORS = [
-  { name: 'Red', value: 'red', bg: 'bg-red-500' },
-  { name: 'Orange', value: 'orange', bg: 'bg-orange-500' },
-  { name: 'Yellow', value: 'yellow', bg: 'bg-yellow-500' },
-  { name: 'Green', value: 'green', bg: 'bg-green-500' },
-  { name: 'Teal', value: 'teal', bg: 'bg-teal-500' },
-  { name: 'Blue', value: 'blue', bg: 'bg-blue-500' },
+  { name: 'Red', value: 'red', bg: 'bg-destructive' },
+  { name: 'Orange', value: 'orange', bg: 'bg-brand-gold' },
+  { name: 'Yellow', value: 'yellow', bg: 'bg-warning' },
+  { name: 'Green', value: 'green', bg: 'bg-success' },
+  { name: 'Teal', value: 'teal', bg: 'bg-info' },
+  { name: 'Blue', value: 'blue', bg: 'bg-primary' },
   { name: 'Purple', value: 'purple', bg: 'bg-workitem-theme' },
-  { name: 'Pink', value: 'pink', bg: 'bg-pink-500' },
-  { name: 'Gray', value: 'gray', bg: 'bg-gray-500' },
+  { name: 'Pink', value: 'pink', bg: 'bg-accent' },
+  { name: 'Gray', value: 'gray', bg: 'bg-muted' },
 ];
 
 export function LabelsManagementDialog({ open, onOpenChange }: LabelsManagementDialogProps) {

@@ -20,8 +20,8 @@ export function AnnouncementBanner() {
         const bgColor = announcement.type === 'critical'
           ? 'bg-destructive/10 border-destructive'
           : announcement.type === 'warning'
-          ? 'bg-yellow-500/10 border-yellow-500'
-          : 'bg-blue-500/10 border-blue-500';
+          ? 'bg-warning/10 border-warning'
+          : 'bg-info/10 border-info';
 
         return (
           <div

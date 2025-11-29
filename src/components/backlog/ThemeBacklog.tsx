@@ -443,9 +443,9 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                                         <span className="text-sm">Interface: E2E transcription flow</span>
                                       </div>
                                       <div className="flex gap-1">
-                                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-500 text-white">PI7</span>
-                                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-gray-500 text-white">PI6</span>
-                                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-orange-400 text-white">PI5</span>
+                                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-success text-primary-foreground">PI7</span>
+                                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">PI6</span>
+                                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-brand-gold text-primary-foreground">PI5</span>
                                       </div>
                                       <span className="text-sm font-medium text-muted-foreground">4.25</span>
                                     </div>
