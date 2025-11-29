@@ -282,7 +282,7 @@ export function BacklogImportDialog({
                         )}
                       </div>
                       <Select
-                        value={mapping.csvColumn}
+                        value={mapping.csvColumn || undefined}
                         onValueChange={(value) => {
                           const newMappings = [...fieldMappings];
                           newMappings[index].csvColumn = value;
@@ -290,10 +290,9 @@ export function BacklogImportDialog({
                         }}
                       >
                         <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Select CSV column" />
+                          <SelectValue placeholder="Select CSV column (optional)" />
                         </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="">None</SelectItem>
+                        <SelectContent className="bg-popover z-50">
                           {csvHeaders.map(header => (
                             <SelectItem key={header} value={header}>
                               {header}

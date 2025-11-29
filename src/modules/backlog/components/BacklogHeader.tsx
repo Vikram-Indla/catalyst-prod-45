@@ -81,7 +81,7 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
         <SelectTrigger className="w-[140px]">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-popover z-50">
           <SelectItem value="enterprise">Enterprise</SelectItem>
           <SelectItem value="portfolio">Portfolio</SelectItem>
           <SelectItem value="solution">Solution</SelectItem>
@@ -97,7 +97,7 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
           <SelectTrigger className="w-[140px]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-popover z-50">
             {allowedTypes.includes('theme') && (
               <SelectItem value="theme">Themes</SelectItem>
             )}
@@ -130,21 +130,21 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
           <SelectTrigger className="w-[100px]">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="pi">PI</SelectItem>
-            <SelectItem value="sprint">Sprint</SelectItem>
-          </SelectContent>
+        <SelectContent className="bg-popover z-50">
+          <SelectItem value="all">All</SelectItem>
+          <SelectItem value="pi">PI</SelectItem>
+          <SelectItem value="sprint">Sprint</SelectItem>
+        </SelectContent>
         </Select>
         
         {/* Specific PI/Sprint Selector */}
         {timeboxType === 'pi' && (
-          <Select value={timeboxId || 'none'} onValueChange={(val) => setTimebox('pi', val === 'none' ? null : val)}>
+          <Select value={timeboxId || 'all-pis'} onValueChange={(val) => setTimebox('pi', val === 'all-pis' ? null : val)}>
             <SelectTrigger className="w-[120px]">
               <SelectValue placeholder="Select PI" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">All PIs</SelectItem>
+            <SelectContent className="bg-popover z-50">
+              <SelectItem value="all-pis">All PIs</SelectItem>
               {programIncrements?.map((pi) => (
                 <SelectItem key={pi.id} value={pi.id}>
                   {pi.name}
@@ -155,12 +155,12 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
         )}
         
         {timeboxType === 'sprint' && (
-          <Select value={timeboxId || 'none'} onValueChange={(val) => setTimebox('sprint', val === 'none' ? null : val)}>
+          <Select value={timeboxId || 'all-sprints'} onValueChange={(val) => setTimebox('sprint', val === 'all-sprints' ? null : val)}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Select Sprint" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="none">All Sprints</SelectItem>
+            <SelectContent className="bg-popover z-50">
+              <SelectItem value="all-sprints">All Sprints</SelectItem>
               {sprints?.map((sprint) => (
                 <SelectItem key={sprint.id} value={sprint.id}>
                   {sprint.name}
@@ -176,7 +176,7 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
         <SelectTrigger className="w-[140px]">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="bg-popover z-50">
           <SelectItem value="list">List View</SelectItem>
           <SelectItem value="state">State View</SelectItem>
           <SelectItem value="processFlow">Process Flow</SelectItem>
