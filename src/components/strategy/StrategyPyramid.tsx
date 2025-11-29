@@ -1,5 +1,12 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { mockStrategyPyramid } from '@/data/strategyMockData';
+import { Info } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface StrategyPyramidProps {
   onLayerClick: (label: string) => void;
@@ -50,7 +57,29 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Strategy Pyramid</CardTitle>
+        <div className="flex items-start justify-between">
+          <div className="space-y-1.5">
+            <CardTitle className="text-xl">Strategy Pyramid</CardTitle>
+            <CardDescription className="text-sm">
+              Hierarchical visualization of strategy management. Click any layer to create and edit items at that level.
+            </CardDescription>
+          </div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-5 w-5 text-muted-foreground cursor-help mt-1" />
+              </TooltipTrigger>
+              <TooltipContent side="left" className="max-w-sm">
+                <p className="text-xs">
+                  Themes, epics, capabilities, and features are included in the counts when the work item is 
+                  parented to a higher level objective or goal and planned for a program increment associated 
+                  with the selected strategic snapshot. Misaligned work items are those associated with 
+                  objectives or goals in the pyramid, but not planned in an aligned PI.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="relative w-full" style={{ paddingBottom: '75%' }}>

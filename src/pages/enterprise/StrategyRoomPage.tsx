@@ -7,8 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import { ExtraConfigsDialog } from '@/components/strategy/ExtraConfigsDialog';
 import { MissionVisionValues } from '@/components/strategy/MissionVisionValues';
 import { ExecutionAgainstOutcomesWidget } from '@/components/strategy/ExecutionAgainstOutcomesWidget';
+import { StrategicGoalsWidget } from '@/components/strategy/StrategicGoalsWidget';
 import { StrategyPyramid } from '@/components/strategy/StrategyPyramid';
 import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
+import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
 import { OkrHeatmap } from '@/components/strategy/OkrHeatmap';
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawer } from '@/components/strategy/ObjectiveDrawer';
@@ -146,20 +148,26 @@ export default function StrategyRoomPage() {
         </div>
       </div>
 
-      {/* Mission/Vision/Values + Execution Widget */}
-      <div className="grid grid-cols-[1fr_350px] gap-6">
-        <MissionVisionValues snapshot={selectedSnapshot} />
+      {/* Mission/Vision/Values */}
+      <MissionVisionValues snapshot={selectedSnapshot} />
+
+      {/* Execution and Goals Widgets */}
+      <div className="grid grid-cols-2 gap-6">
         <ExecutionAgainstOutcomesWidget 
           snapshotId={effectiveSelectedSnapshotId} 
           piIds={selectedPIs} 
         />
+        <StrategicGoalsWidget snapshotId={effectiveSelectedSnapshotId} />
       </div>
 
       {/* Strategy Pyramid */}
       <StrategyPyramid onLayerClick={handlePyramidLayerClick} />
 
-      {/* Snapshot Progress */}
-      <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
+      {/* Snapshot Progress and Misaligned Items */}
+      <div className="grid grid-cols-[1fr_400px] gap-6">
+        <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
+        <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
+      </div>
 
       {/* OKR Heatmap */}
       <OkrHeatmap
