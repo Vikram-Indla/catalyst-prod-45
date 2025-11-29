@@ -163,10 +163,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Missions")}
             />
-            <foreignObject x={level2.left + 15} y={y1 + 20} width={level2.right - level2.left - 30} height="55">
-              <div className="flex flex-col items-center justify-center h-full px-3 text-center">
-                <div className="text-white font-semibold text-xs md:text-sm leading-tight mb-1">Missions</div>
-                <div className="text-white/90 text-[8px] md:text-[9px] leading-tight">Why do we exist?</div>
+            <foreignObject x={level2.left + 10} y={y1 + 15} width={level2.right - level2.left - 20} height="65">
+              <div className="flex flex-col items-center justify-center h-full px-2 text-center">
+                <div className="text-white font-semibold text-xs leading-tight mb-0.5">Missions</div>
+                <div className="text-white/90 text-[7px] leading-[1.3] max-w-[90%]">Why do we exist?</div>
               </div>
             </foreignObject>
             {/* Clickable count on right side */}
