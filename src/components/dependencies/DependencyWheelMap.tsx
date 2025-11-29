@@ -364,11 +364,8 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
               const labelY = centerY + labelRadius * Math.sin(segment.midAngle);
               
               // Text should be RADIAL - following the segment direction from center outward
-              // Account for wheel rotation to determine effective text angle
-              let textAngle = (segment.midAngle * 180 / Math.PI) + wheelRotation;
-              
-              // Normalize angle to 0-360 range
-              textAngle = ((textAngle % 360) + 360) % 360;
+              // Convert midAngle to degrees for rotation
+              let textAngle = (segment.midAngle * 180 / Math.PI);
               
               // For bottom half of circle, flip text 180° so it reads upward instead of upside-down
               if (textAngle > 90 && textAngle < 270) {
