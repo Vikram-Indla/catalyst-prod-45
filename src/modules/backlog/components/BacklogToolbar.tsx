@@ -13,6 +13,8 @@ interface BacklogToolbarProps {
   onToggleUnassigned: () => void;
   isUnassignedOpen: boolean;
   onExport?: () => void;
+  onImport?: () => void;
+  onBulkDelete?: () => void;
 }
 
 export function BacklogToolbar({
@@ -21,6 +23,8 @@ export function BacklogToolbar({
   onToggleUnassigned,
   isUnassignedOpen,
   onExport,
+  onImport,
+  onBulkDelete,
 }: BacklogToolbarProps) {
   return (
     <div className="flex items-center gap-2 border-b bg-muted/30 px-4 py-2">
@@ -36,9 +40,9 @@ export function BacklogToolbar({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={onImport}>
             <Upload className="h-4 w-4 mr-2" />
-            Import
+            Import from CSV
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onExport}>
             <Download className="h-4 w-4 mr-2" />
@@ -48,7 +52,7 @@ export function BacklogToolbar({
             <Archive className="h-4 w-4 mr-2" />
             Mass Move ({selectedCount})
           </DropdownMenuItem>
-          <DropdownMenuItem disabled={selectedCount === 0}>
+          <DropdownMenuItem disabled={selectedCount === 0} onClick={onBulkDelete}>
             <Archive className="h-4 w-4 mr-2" />
             Mass Delete ({selectedCount})
           </DropdownMenuItem>
