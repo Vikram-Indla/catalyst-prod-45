@@ -127,15 +127,15 @@ export default {
         slow: "300ms",
       },
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Menlo', 'monospace'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],
+        mono: ['Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
       },
       fontSize: {
-        xs: '0.6875rem',
-        sm: '0.75rem',
+        xs: '0.6875rem',    // 11px - Jira Align XS for helpers
+        sm: '0.75rem',      // 12px - Jira Align SM for grid cells
         base: '0.8125rem',
-        md: '0.875rem',
-        lg: '1rem',
+        md: '0.875rem',     // 14px - Jira Align MD for row titles
+        lg: '1rem',         // 16px - Jira Align LG for page titles
         xl: '1.125rem',
         '2xl': '1.25rem',
         '3xl': '1.5rem',
