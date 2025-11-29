@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { mockStrategyPyramid } from '@/data/strategyMockData';
 import { Info } from 'lucide-react';
 import {
   Tooltip,
@@ -13,12 +12,11 @@ interface StrategyPyramidProps {
 }
 
 export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
-  // Perfect triangle coordinates matching Jira Align official structure
-  // 9 layers total: 6 full-width + 3 split layers
-  const centerX = 600;
-  const topY = 30;
-  const bottomY = 870;
-  const baseHalfWidth = 500;
+  // Pyramid geometry - 6 layers total: 3 full-width + 3 split
+  const centerX = 500;
+  const topY = 50;
+  const bottomY = 700;
+  const baseHalfWidth = 450;
   
   // Calculate left and right edge X coordinates at each Y level
   const getXAtY = (y: number) => {
@@ -30,17 +28,14 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
     };
   };
 
-  // Define Y coordinates for each layer boundary (9 layers)
-  const y1 = 30;   // Missions tip
-  const y2 = 120;  // Missions base / Visions top
-  const y3 = 210;  // Visions base / Values top
-  const y4 = 300;  // Values base / North Stars top
-  const y5 = 390;  // North Stars base / Long Term Goals top
-  const y6 = 480;  // Long Term Goals base / Long Term Strategies top
-  const y7 = 570;  // Long Term Strategies base / Yearly Goals+Themes top
-  const y8 = 690;  // Yearly Goals+Themes base / Portfolio Objectives+Epics top
-  const y9 = 810;  // Portfolio Objectives+Epics base / Program Objectives+Features top
-  const y10 = 870; // Bottom
+  // Define Y coordinates for 6 layers
+  const y1 = 50;   // Missions tip
+  const y2 = 150;  // Missions base / Visions top
+  const y3 = 250;  // Visions base / Values top
+  const y4 = 350;  // Values base / Strategic Goals+Themes top
+  const y5 = 500;  // Strategic Goals+Themes base / Portfolio Objectives+Epics top
+  const y6 = 650;  // Portfolio Objectives+Epics base / Program Objectives+Features top
+  const y7 = 700;  // Bottom
 
   // Get coordinates for each level
   const level1 = getXAtY(y1);
@@ -50,9 +45,19 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
   const level5 = getXAtY(y5);
   const level6 = getXAtY(y6);
   const level7 = getXAtY(y7);
-  const level8 = getXAtY(y8);
-  const level9 = getXAtY(y9);
-  const level10 = getXAtY(y10);
+
+  // Color shades (lighter at top, darker at bottom)
+  const colors = {
+    missions: 'hsl(210, 100%, 70%)',
+    visions: 'hsl(210, 100%, 65%)',
+    values: 'hsl(210, 100%, 60%)',
+    strategicGoals: 'hsl(210, 100%, 55%)',
+    themes: 'hsl(210, 100%, 55%)',
+    portfolioObjectives: 'hsl(210, 100%, 50%)',
+    epics: 'hsl(210, 100%, 50%)',
+    programObjectives: 'hsl(210, 100%, 45%)',
+    features: 'hsl(210, 100%, 45%)',
+  };
 
   return (
     <Card>
@@ -71,7 +76,7 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
               </TooltipTrigger>
               <TooltipContent side="left" className="max-w-sm">
                 <p className="text-xs">
-                  Themes, epics, capabilities, and features are included in the counts when the work item is 
+                  Themes, epics, and features are included in the counts when the work item is 
                   parented to a higher level objective or goal and planned for a program increment associated 
                   with the selected strategic snapshot. Misaligned work items are those associated with 
                   objectives or goals in the pyramid, but not planned in an aligned PI.
@@ -82,226 +87,181 @@ export function StrategyPyramid({ onLayerClick }: StrategyPyramidProps) {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="relative w-full" style={{ paddingBottom: '75%' }}>
-          <svg viewBox="0 0 1200 900" className="absolute inset-0 w-full h-full">
-            {/* Layer 1: Missions */}
+        <div className="relative w-full h-[700px]">
+          <svg viewBox="0 0 1000 750" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+            {/* Layer 1: Missions (full width) */}
             <path
               d={`M ${centerX} ${y1} L ${level2.left} ${y2} L ${level2.right} ${y2} Z`}
-              fill="hsl(217, 91%, 68%)"
+              fill={colors.missions}
               stroke="white"
               strokeWidth="3"
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Missions")}
             />
-            <text x={centerX} y={y1 + 55} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={centerX} y={y1 + 60} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
               Missions
             </text>
-            <text x={centerX} y={y1 + 70} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
+            <text x={centerX} y={y1 + 78} textAnchor="middle" fill="white" fontSize="11" opacity="0.95">
               Why do we exist?
             </text>
-            <text x={level2.right - 50} y={y2 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
+            {/* Count on right side */}
+            <text x={level2.right + 30} y={(y1 + y2) / 2 + 5} fill="currentColor" fontSize="18" fontWeight="500">
               1
             </text>
 
-            {/* Layer 2: Visions */}
+            {/* Layer 2: Visions (full width) */}
             <path
               d={`M ${level2.left} ${y2} L ${level2.right} ${y2} L ${level3.right} ${y3} L ${level3.left} ${y3} Z`}
-              fill="hsl(217, 91%, 63%)"
+              fill={colors.visions}
               stroke="white"
               strokeWidth="3"
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Visions")}
             />
-            <text x={centerX} y={y2 + 48} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={centerX} y={y2 + 55} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
               Visions
             </text>
-            <text x={centerX} y={y2 + 63} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
+            <text x={centerX} y={y2 + 73} textAnchor="middle" fill="white" fontSize="11" opacity="0.95">
               What value do we provide?
             </text>
-            <text x={level3.right - 50} y={y3 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
+            {/* Count on right side */}
+            <text x={level3.right + 30} y={(y2 + y3) / 2 + 5} fill="currentColor" fontSize="18" fontWeight="500">
               1
             </text>
 
-            {/* Layer 3: Values */}
+            {/* Layer 3: Values (full width) */}
             <path
               d={`M ${level3.left} ${y3} L ${level3.right} ${y3} L ${level4.right} ${y4} L ${level4.left} ${y4} Z`}
-              fill="hsl(217, 91%, 58%)"
+              fill={colors.values}
               stroke="white"
               strokeWidth="3"
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Values")}
             />
-            <text x={centerX} y={y3 + 48} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={centerX} y={y3 + 55} textAnchor="middle" fill="white" fontSize="16" fontWeight="600">
               Values
             </text>
-            <text x={centerX} y={y3 + 63} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
+            <text x={centerX} y={y3 + 73} textAnchor="middle" fill="white" fontSize="11" opacity="0.95">
               How do we behave?
             </text>
-            <text x={level4.right - 50} y={y4 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
-              6
+            {/* Count on right side */}
+            <text x={level4.right + 30} y={(y3 + y4) / 2 + 5} fill="currentColor" fontSize="18" fontWeight="500">
+              4
             </text>
 
-            {/* Layer 4: North Stars */}
+            {/* Layer 4: Strategic Goals (left) and Themes (right) - SPLIT */}
             <path
-              d={`M ${level4.left} ${y4} L ${level4.right} ${y4} L ${level5.right} ${y5} L ${level5.left} ${y5} Z`}
-              fill="hsl(217, 91%, 53%)"
+              d={`M ${level4.left} ${y4} L ${centerX} ${y4} L ${centerX} ${y5} L ${level5.left} ${y5} Z`}
+              fill={colors.strategicGoals}
               stroke="white"
               strokeWidth="3"
               className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("North Stars")}
+              onClick={() => onLayerClick("Strategic Goals")}
             />
-            <text x={centerX} y={y4 + 43} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
-              North Stars
+            <text x={level4.left + 35} y={y4 + 40} fill="white" fontSize="20" fontWeight="700">
+              4
             </text>
-            <text x={centerX} y={y4 + 60} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
-              What is our organization&apos;s single measurable goal?
+            <text x={(level4.left + centerX) / 2 + 20} y={y4 + 68} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+              Strategic Goals
             </text>
-            <text x={level5.right - 50} y={y5 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
-              1
-            </text>
-
-            {/* Layer 5: Long Term Goals */}
-            <path
-              d={`M ${level5.left} ${y5} L ${level5.right} ${y5} L ${level6.right} ${y6} L ${level6.left} ${y6} Z`}
-              fill="hsl(217, 91%, 48%)"
-              stroke="white"
-              strokeWidth="3"
-              className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("Long Term Goals")}
-            />
-            <text x={centerX} y={y5 + 43} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
-              Long Term Goals
-            </text>
-            <text x={centerX} y={y5 + 60} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
-              How will we succeed long-term?
-            </text>
-            <text x={level6.right - 50} y={y6 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
-              3
-            </text>
-
-            {/* Layer 6: Long Term Strategies */}
-            <path
-              d={`M ${level6.left} ${y6} L ${level6.right} ${y6} L ${level7.right} ${y7} L ${level7.left} ${y7} Z`}
-              fill="hsl(217, 91%, 43%)"
-              stroke="white"
-              strokeWidth="3"
-              className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("Long Term Strategies")}
-            />
-            <text x={centerX} y={y6 + 45} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
-              Long Term Strategies
-            </text>
-            <text x={centerX} y={y6 + 62} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
-              What is our approach to long-term success?
-            </text>
-            <text x={level7.right - 50} y={y7 - 20} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
-              8
-            </text>
-
-            {/* Layer 7: Yearly Goals (left) and Themes (right) */}
-            <path
-              d={`M ${level7.left} ${y7} L ${centerX} ${y7} L ${centerX} ${y8} L ${level8.left} ${y8} Z`}
-              fill="hsl(217, 91%, 38%)"
-              stroke="white"
-              strokeWidth="3"
-              className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("Yearly Goals")}
-            />
-            <text x={level7.left + 35} y={y7 + 32} fill="white" fontSize="22" fontWeight="700">
-              34
-            </text>
-            <text x={(level7.left + centerX) / 2 + 15} y={y7 + 48} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
-              Yearly Goals
-            </text>
-            <text x={(level7.left + centerX) / 2 + 15} y={y7 + 65} textAnchor="middle" fill="white" fontSize="9" opacity="0.9">
+            <text x={(level4.left + centerX) / 2 + 20} y={y4 + 88} textAnchor="middle" fill="white" fontSize="10" opacity="0.9">
               How will we succeed this year?
             </text>
 
             <path
-              d={`M ${centerX} ${y7} L ${level7.right} ${y7} L ${level8.right} ${y8} L ${centerX} ${y8} Z`}
-              fill="hsl(217, 91%, 38%)"
+              d={`M ${centerX} ${y4} L ${level4.right} ${y4} L ${level5.right} ${y5} L ${centerX} ${y5} Z`}
+              fill={colors.themes}
               stroke="white"
               strokeWidth="3"
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Themes")}
             />
-            <text x={level7.right - 35} y={y7 + 32} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
-              32
+            <text x={level4.right - 35} y={y4 + 40} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
+              2
             </text>
-            <text x={(centerX + level7.right) / 2 - 15} y={y7 + 48} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={(centerX + level4.right) / 2 - 20} y={y4 + 68} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Themes
+            </text>
+            <text x={(centerX + level4.right) / 2 - 20} y={y4 + 88} textAnchor="middle" fill="white" fontSize="10" opacity="0.85">
+              Misaligned Themes = 2
             </text>
 
             {/* Vertical divider for split layer */}
-            <line x1={centerX} y1={y7} x2={centerX} y2={y8} stroke="white" strokeWidth="3" />
+            <line x1={centerX} y1={y4} x2={centerX} y2={y5} stroke="white" strokeWidth="3" />
 
-            {/* Layer 8: Portfolio Objectives (left) and Epics (right) */}
+            {/* Layer 5: Portfolio Objectives (left) and Epics (right) - SPLIT */}
             <path
-              d={`M ${level8.left} ${y8} L ${centerX} ${y8} L ${centerX} ${y9} L ${level9.left} ${y9} Z`}
-              fill="hsl(217, 91%, 33%)"
+              d={`M ${level5.left} ${y5} L ${centerX} ${y5} L ${centerX} ${y6} L ${level6.left} ${y6} Z`}
+              fill={colors.portfolioObjectives}
               stroke="white"
               strokeWidth="3"
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Portfolio Objectives")}
             />
-            <text x={level8.left + 40} y={y8 + 35} fill="white" fontSize="22" fontWeight="700">
-              82
+            <text x={level5.left + 40} y={y5 + 45} fill="white" fontSize="20" fontWeight="700">
+              9
             </text>
-            <text x={(level8.left + centerX) / 2 + 20} y={y8 + 58} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={(level5.left + centerX) / 2 + 25} y={y5 + 70} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Portfolio Objectives
             </text>
 
             <path
-              d={`M ${centerX} ${y8} L ${level8.right} ${y8} L ${level9.right} ${y9} L ${centerX} ${y9} Z`}
-              fill="hsl(217, 91%, 33%)"
+              d={`M ${centerX} ${y5} L ${level5.right} ${y5} L ${level6.right} ${y6} L ${centerX} ${y6} Z`}
+              fill={colors.epics}
               stroke="white"
               strokeWidth="3"
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Epics")}
             />
-            <text x={level8.right - 45} y={y8 + 35} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
-              147
+            <text x={level5.right - 45} y={y5 + 45} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
+              5
             </text>
-            <text x={(centerX + level8.right) / 2 - 20} y={y8 + 58} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={(centerX + level5.right) / 2 - 20} y={y5 + 70} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Epics
+            </text>
+            <text x={(centerX + level5.right) / 2 - 20} y={y5 + 88} textAnchor="middle" fill="white" fontSize="10" opacity="0.85">
+              Misaligned Epics = 0
             </text>
 
             {/* Vertical divider for split layer */}
-            <line x1={centerX} y1={y8} x2={centerX} y2={y9} stroke="white" strokeWidth="3" />
+            <line x1={centerX} y1={y5} x2={centerX} y2={y6} stroke="white" strokeWidth="3" />
 
-            {/* Layer 9: Program Objectives (left) and Features (right) */}
+            {/* Layer 6: Program Objectives (left) and Features (right) - SPLIT */}
             <path
-              d={`M ${level9.left} ${y9} L ${centerX} ${y9} L ${centerX} ${y10} L ${level10.left} ${y10} Z`}
-              fill="hsl(217, 91%, 28%)"
+              d={`M ${level6.left} ${y6} L ${centerX} ${y6} L ${centerX} ${y7} L ${level7.left} ${y7} Z`}
+              fill={colors.programObjectives}
               stroke="white"
               strokeWidth="3"
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Program Objectives")}
             />
-            <text x={level9.left + 50} y={(y9 + y10) / 2 - 5} fill="white" fontSize="22" fontWeight="700">
-              160
+            <text x={level6.left + 55} y={y6 + 30} fill="white" fontSize="20" fontWeight="700">
+              113
             </text>
-            <text x={(level9.left + centerX) / 2 + 30} y={(y9 + y10) / 2 + 8} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={(level6.left + centerX) / 2 + 35} y={(y6 + y7) / 2 + 5} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Program Objectives
             </text>
 
             <path
-              d={`M ${centerX} ${y9} L ${level9.right} ${y9} L ${level10.right} ${y10} L ${centerX} ${y10} Z`}
-              fill="hsl(217, 91%, 28%)"
+              d={`M ${centerX} ${y6} L ${level6.right} ${y6} L ${level7.right} ${y7} L ${centerX} ${y7} Z`}
+              fill={colors.features}
               stroke="white"
               strokeWidth="3"
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Features")}
             />
-            <text x={level9.right - 60} y={(y9 + y10) / 2 - 5} textAnchor="end" fill="white" fontSize="22" fontWeight="700">
-              513
+            <text x={level6.right - 60} y={y6 + 30} textAnchor="end" fill="white" fontSize="20" fontWeight="700">
+              69
             </text>
-            <text x={(centerX + level9.right) / 2 - 25} y={(y9 + y10) / 2 + 8} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
+            <text x={(centerX + level6.right) / 2 - 30} y={(y6 + y7) / 2 - 8} textAnchor="middle" fill="white" fontSize="15" fontWeight="600">
               Features
+            </text>
+            <text x={(centerX + level6.right) / 2 - 30} y={(y6 + y7) / 2 + 10} textAnchor="middle" fill="white" fontSize="10" opacity="0.85">
+              Misaligned Features = 7
             </text>
 
             {/* Vertical divider for split layer */}
-            <line x1={centerX} y1={y9} x2={centerX} y2={y10} stroke="white" strokeWidth="3" />
+            <line x1={centerX} y1={y6} x2={centerX} y2={y7} stroke="white" strokeWidth="3" />
           </svg>
         </div>
       </CardContent>
