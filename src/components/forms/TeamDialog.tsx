@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
+import type { TeamType } from '@/types/team.types';
 
 interface TeamDialogProps {
   open: boolean;
@@ -17,8 +18,8 @@ interface TeamDialogProps {
 export function TeamDialog({ open, onOpenChange, team }: TeamDialogProps) {
   const [name, setName] = useState(team?.name || '');
   const [programId, setProgramId] = useState(team?.program_id || '');
-  const [status, setStatus] = useState(team?.status || 'active');
-  const [velocityBaseline, setVelocityBaseline] = useState(team?.velocity_baseline || 0);
+  const [teamType, setTeamType] = useState<TeamType>(team?.team_type || 'AGILE');
+  const [shortName, setShortName] = useState(team?.short_name || '');
 
   const queryClient = useQueryClient();
 
@@ -64,9 +65,10 @@ export function TeamDialog({ open, onOpenChange, team }: TeamDialogProps) {
     }
     mutation.mutate({
       name,
+      short_name: shortName || undefined,
       program_id: programId,
-      status,
-      velocity_baseline: velocityBaseline,
+      team_type: teamType,
+      is_active: true,
     });
   };
 
@@ -78,7 +80,7 @@ export function TeamDialog({ open, onOpenChange, team }: TeamDialogProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Name *</Label>
+            <Label htmlFor="name">Team Name *</Label>
             <Input
               id="name"
               value={name}
@@ -86,6 +88,17 @@ export function TeamDialog({ open, onOpenChange, team }: TeamDialogProps) {
               required
             />
           </div>
+          
+          <div>
+            <Label htmlFor="shortName">Short Name</Label>
+            <Input
+              id="shortName"
+              value={shortName}
+              onChange={(e) => setShortName(e.target.value)}
+              placeholder="e.g., PLT"
+            />
+          </div>
+          
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="program">Program *</Label>
@@ -103,26 +116,18 @@ export function TeamDialog({ open, onOpenChange, team }: TeamDialogProps) {
               </Select>
             </div>
             <div>
-              <Label htmlFor="status">Status</Label>
-              <Select value={status} onValueChange={setStatus}>
+              <Label htmlFor="teamType">Team Type *</Label>
+              <Select value={teamType} onValueChange={(value: any) => setTeamType(value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
+                  <SelectItem value="AGILE">Agile / Scrum</SelectItem>
+                  <SelectItem value="KANBAN">Kanban</SelectItem>
+                  <SelectItem value="COP">CoP</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </div>
-          <div>
-            <Label htmlFor="velocity">Velocity Baseline</Label>
-            <Input
-              id="velocity"
-              type="number"
-              value={velocityBaseline}
-              onChange={(e) => setVelocityBaseline(Number(e.target.value))}
-            />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
