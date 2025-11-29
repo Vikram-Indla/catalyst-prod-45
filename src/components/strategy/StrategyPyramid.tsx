@@ -93,8 +93,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   
   // Pyramid geometry - 9 layers: 6 full-width + 3 split
   const centerX = 500;
-  const topY = 50;
-  const bottomY = 900;
+  const topY = 30;
+  const bottomY = 550;
   const baseHalfWidth = 450;
   
   // Calculate left and right edge X coordinates at each Y level
@@ -107,17 +107,17 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
     };
   };
 
-  // Define Y coordinates for 9 layers
-  const y1 = 50;   // Missions tip
-  const y2 = 130;  // Missions base / Visions top
-  const y3 = 210;  // Visions base / Values top
-  const y4 = 290;  // Values base / North Stars top
-  const y5 = 370;  // North Stars base / Long Term Goals top
-  const y6 = 450;  // Long Term Goals base / Long Term Strategies top
-  const y7 = 530;  // Long Term Strategies base / Yearly Goals+Themes top
-  const y8 = 680;  // Yearly Goals+Themes base / Portfolio Objectives+Epics top
-  const y9 = 830;  // Portfolio Objectives+Epics base / Program Objectives+Features top
-  const y10 = 900; // Bottom
+  // Define Y coordinates for 9 layers (more compact)
+  const y1 = 30;   // Missions tip
+  const y2 = 85;   // Missions base / Visions top
+  const y3 = 140;  // Visions base / Values top
+  const y4 = 195;  // Values base / North Stars top
+  const y5 = 250;  // North Stars base / Long Term Goals top
+  const y6 = 305;  // Long Term Goals base / Long Term Strategies top
+  const y7 = 360;  // Long Term Strategies base / Yearly Goals+Themes top
+  const y8 = 435;  // Yearly Goals+Themes base / Portfolio Objectives+Epics top
+  const y9 = 510;  // Portfolio Objectives+Epics base / Program Objectives+Features top
+  const y10 = 550; // Bottom
 
   // Get coordinates for each level
   const level1 = getXAtY(y1);
@@ -236,9 +236,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
         </div>
       </CardHeader>
       <CardContent className="p-4 md:p-6">
-        <div className="relative w-full" style={{ paddingBottom: '95%' }}>
+        <div className="relative w-full" style={{ paddingBottom: '60%' }}>
           <svg 
-            viewBox="0 0 1000 950" 
+            viewBox="0 0 1000 600" 
             className="absolute inset-0 w-full h-full" 
             preserveAspectRatio="xMidYMid meet"
           >
@@ -472,9 +472,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text 
                 x={(level7.left + centerX) / 2} 
-                y={y7 + 60} 
+                y={y7 + 35} 
                 fill="white" 
-                fontSize="22" 
+                fontSize="20" 
                 fontWeight="700"
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
@@ -484,9 +484,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </text>
               <text
                 x={(level7.left + centerX) / 2}
-                y={y7 + 90}
+                y={y7 + 58}
                 fill="white"
-                fontSize="14"
+                fontSize="13"
                 fontWeight="600"
                 textAnchor="middle"
                 className="pointer-events-none select-none"
@@ -508,9 +508,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text 
                 x={(centerX + level7.right) / 2} 
-                y={y7 + 60} 
+                y={y7 + 35} 
                 fill="white" 
-                fontSize="22" 
+                fontSize="20" 
                 fontWeight="700"
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
@@ -520,9 +520,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </text>
               <text
                 x={(centerX + level7.right) / 2}
-                y={y7 + 90}
+                y={y7 + 58}
                 fill="white"
-                fontSize="14"
+                fontSize="13"
                 fontWeight="600"
                 textAnchor="middle"
                 className="pointer-events-none select-none"
@@ -548,9 +548,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text 
                 x={(level8.left + centerX) / 2} 
-                y={y8 + 60} 
+                y={y8 + 35} 
                 fill="white" 
-                fontSize="22" 
+                fontSize="20" 
                 fontWeight="700"
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
@@ -560,9 +560,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </text>
               <text
                 x={(level8.left + centerX) / 2}
-                y={y8 + 90}
+                y={y8 + 58}
                 fill="white"
-                fontSize="14"
+                fontSize="13"
                 fontWeight="600"
                 textAnchor="middle"
                 className="pointer-events-none select-none"
@@ -584,9 +584,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text 
                 x={(centerX + level8.right) / 2} 
-                y={y8 + 60} 
+                y={y8 + 35} 
                 fill="white" 
-                fontSize="22" 
+                fontSize="20" 
                 fontWeight="700"
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
@@ -596,9 +596,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </text>
               <text
                 x={(centerX + level8.right) / 2}
-                y={y8 + 90}
+                y={y8 + 58}
                 fill="white"
-                fontSize="14"
+                fontSize="13"
                 fontWeight="600"
                 textAnchor="middle"
                 className="pointer-events-none select-none"
@@ -624,9 +624,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text 
                 x={(level9.left + centerX) / 2} 
-                y={y9 + 30} 
+                y={y9 + 18} 
                 fill="white" 
-                fontSize="22" 
+                fontSize="20" 
                 fontWeight="700"
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
@@ -636,9 +636,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </text>
               <text
                 x={(level9.left + centerX) / 2}
-                y={y9 + 55}
+                y={y9 + 35}
                 fill="white"
-                fontSize="14"
+                fontSize="12"
                 fontWeight="600"
                 textAnchor="middle"
                 className="pointer-events-none select-none"
@@ -660,9 +660,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               />
               <text 
                 x={(centerX + level9.right) / 2} 
-                y={y9 + 30} 
+                y={y9 + 18} 
                 fill="white" 
-                fontSize="22" 
+                fontSize="20" 
                 fontWeight="700"
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
@@ -672,9 +672,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               </text>
               <text
                 x={(centerX + level9.right) / 2}
-                y={y9 + 55}
+                y={y9 + 35}
                 fill="white"
-                fontSize="14"
+                fontSize="12"
                 fontWeight="600"
                 textAnchor="middle"
                 className="pointer-events-none select-none"
