@@ -149,10 +149,10 @@ export default function EpicTraceReport() {
               const featureStories = stories?.filter(s => s.feature_id === feature.id) || [];
               
               return (
-                <div key={feature.id} className="ml-6 mt-4 border-l-4 border-blue-500 pl-4">
+                <div key={feature.id} className="ml-6 mt-4 border-l-4 border-primary pl-4">
                   <div className="flex items-center gap-2 mb-2">
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    <span className="font-mono text-sm bg-blue-500/10 px-2 py-1 rounded">
+                    <span className="font-mono text-sm bg-primary/10 px-2 py-1 rounded">
                       {feature.display_id}
                     </span>
                     <h3 className="text-lg font-semibold">{feature.name}</h3>
@@ -166,10 +166,10 @@ export default function EpicTraceReport() {
                     const storySubtasks = subtasks?.filter(st => st.story_id === story.id) || [];
                     
                     return (
-                      <div key={story.id} className="ml-6 mt-3 border-l-4 border-green-500 pl-4">
+                      <div key={story.id} className="ml-6 mt-3 border-l-4 border-success pl-4">
                         <div className="flex items-center gap-2 mb-2">
                           <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                          <span className="font-mono text-sm bg-green-500/10 px-2 py-1 rounded">
+                          <span className="font-mono text-sm bg-success/10 px-2 py-1 rounded">
                             {story.id.slice(0, 8)}
                           </span>
                           <h4 className="font-medium">{story.name}</h4>
@@ -182,9 +182,9 @@ export default function EpicTraceReport() {
                         {storySubtasks.length > 0 && (
                           <div className="ml-6 mt-2 space-y-2">
                             {storySubtasks.map((subtask) => (
-                              <div key={subtask.id} className="flex items-center gap-2 border-l-4 border-orange-500 pl-4 py-1">
+                              <div key={subtask.id} className="flex items-center gap-2 border-l-4 border-warning pl-4 py-1">
                                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                                <span className="font-mono text-xs bg-orange-500/10 px-2 py-1 rounded">
+                                <span className="font-mono text-xs bg-warning/10 px-2 py-1 rounded">
                                   {subtask.id.slice(0, 8)}
                                 </span>
                                 <span className="text-sm">{subtask.name}</span>

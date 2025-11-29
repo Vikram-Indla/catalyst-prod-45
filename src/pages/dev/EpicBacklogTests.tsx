@@ -128,14 +128,14 @@ export default function EpicBacklogTests() {
             <div
               key={index}
               className={`flex items-center justify-between p-4 rounded-lg border ${
-                test.passed ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
+                test.passed ? 'bg-success/10 border-success/30' : 'bg-destructive/10 border-destructive/30'
               }`}
             >
               <div className="flex items-center gap-3">
                 {test.passed ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                 ) : (
-                  <XCircle className="h-5 w-5 text-red-600" />
+                  <XCircle className="h-5 w-5 text-destructive" />
                 )}
                 <div>
                   <div className="font-medium">{test.name}</div>
@@ -149,12 +149,12 @@ export default function EpicBacklogTests() {
         </div>
 
         {!allPassed && (
-          <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div className="mt-6 p-4 bg-warning/10 border border-warning/30 rounded-lg">
             <div className="flex items-start gap-2">
-              <Clock className="h-5 w-5 text-yellow-600 mt-0.5" />
+              <Clock className="h-5 w-5 text-warning mt-0.5" />
               <div>
-                <div className="font-medium text-yellow-900">Action Required</div>
-                <div className="text-sm text-yellow-700 mt-1">
+                <div className="font-medium text-warning-foreground">Action Required</div>
+                <div className="text-sm text-muted-foreground mt-1">
                   Some tests are failing. Run the seed data script or check database configuration.
                 </div>
               </div>

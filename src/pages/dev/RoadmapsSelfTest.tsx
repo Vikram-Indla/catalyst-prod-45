@@ -61,7 +61,7 @@ export default function RoadmapsSelfTest() {
       <h1 className="text-3xl font-bold mb-6">Roadmaps Module Self-Test</h1>
       
       <div className="mb-6">
-        <div className={`p-4 rounded-lg ${allPassed ? 'bg-green-50 text-green-900' : 'bg-yellow-50 text-yellow-900'}`}>
+        <div className={`p-4 rounded-lg ${allPassed ? 'bg-success/10 text-success-foreground' : 'bg-warning/10 text-warning-foreground'}`}>
           {allPassed ? (
             <div className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5" />
