@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bell, HelpCircle, User, ChevronDown } from "lucide-react";
+import { Search, Bell, HelpCircle, User, ChevronDown, LogOut } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ItemsDropdown } from "./ItemsDropdown";
 import { CreateDropdown } from "./CreateDropdown";
@@ -33,6 +37,26 @@ export function CatalystHeader() {
   const navigate = useNavigate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  // Get current user
+  const { data: user } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      return user;
+    },
+  });
+
+  const handleSignOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      toast.success('Signed out successfully');
+      navigate('/auth');
+    } catch (error: any) {
+      toast.error('Error signing out: ' + error.message);
+    }
+  };
 
   const navItems = [
     { label: "Home", path: "/home" },
@@ -225,6 +249,29 @@ export function CatalystHeader() {
                   <p>Search (Ctrl+K)</p>
                 </TooltipContent>
               </Tooltip>
+
+              {/* User Profile Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                        {user?.email?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-popover">
+                  <div className="flex flex-col space-y-1 p-2">
+                    <p className="text-sm font-medium">{user?.email}</p>
+                    <p className="text-xs text-muted-foreground">User Account</p>
+                  </div>
+                  <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </TooltipProvider>
           </div>
         </div>
