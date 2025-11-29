@@ -80,13 +80,13 @@ export function FeatureStatusModal({
   const getStatusColor = (status: Feature["status"]) => {
     switch (status) {
       case "on_track":
-        return "bg-green-500";
+        return "bg-success";
       case "at_risk":
-        return "bg-yellow-500";
+        return "bg-warning";
       case "off_track":
-        return "bg-red-500";
+        return "bg-destructive";
       default:
-        return "bg-gray-500";
+        return "bg-muted";
     }
   };
 
