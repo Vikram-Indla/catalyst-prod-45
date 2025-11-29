@@ -411,7 +411,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                             dep.risk_level === 'high' 
                               ? 'bg-destructive text-destructive-foreground'
                               : dep.risk_level === 'med'
-                              ? 'bg-orange-500 text-white'
+                              ? 'bg-warning text-primary-foreground'
                               : 'bg-muted text-muted-foreground'
                           }`}
                         >
@@ -576,7 +576,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     </td>
                     <td className="py-2 px-3">
                       <Avatar className="w-6 h-6">
-                        <AvatarFallback className="bg-orange-500 text-white text-xs">
+                        <AvatarFallback className="bg-brand-gold text-primary-foreground text-xs">
                           {story.owner}
                         </AvatarFallback>
                       </Avatar>

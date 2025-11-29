@@ -124,7 +124,7 @@ export function FeaturesListView({
       case 'backlog':
         return 'bg-muted';
       default:
-        return 'bg-orange-500';
+        return 'bg-brand-gold';
     }
   };
 

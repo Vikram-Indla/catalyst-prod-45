@@ -48,7 +48,7 @@ export function FeatureSymbolMarkers({
       <div key="blocked" title="Feature is blocked">
         <AlertTriangle 
           size={size} 
-          className="text-orange-500" 
+          className="text-warning" 
           fill="currentColor"
         />
       </div>
