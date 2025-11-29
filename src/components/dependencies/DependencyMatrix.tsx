@@ -109,10 +109,10 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
                     style={{ width: '64px', height: '160px', minWidth: '64px' }}
                   >
                     <div 
-                      className="absolute top-3 left-1/2 whitespace-nowrap text-xs text-gray-600 font-normal cursor-pointer"
+                      className="absolute top-1/2 left-1/2 whitespace-nowrap text-xs text-gray-700 font-semibold cursor-pointer"
                       style={{ 
-                        transform: 'translateX(-50%) rotate(-90deg)',
-                        transformOrigin: 'center top',
+                        transform: 'translate(-50%, -50%) rotate(-90deg)',
+                        transformOrigin: 'center center',
                         maxWidth: '150px'
                       }}
                     >
@@ -126,7 +126,7 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
               {programs.map((fromProg) => (
                 <tr key={fromProg.id}>
                   <td className="sticky left-0 z-10 bg-white border-r border-b border-gray-200 px-4 py-3 w-48">
-                    <div className="text-sm text-gray-600 font-normal truncate">
+                    <div className="text-sm text-gray-700 font-semibold truncate">
                       {fromProg.name}
                     </div>
                   </td>
