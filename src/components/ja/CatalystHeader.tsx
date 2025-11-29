@@ -50,11 +50,11 @@ export function CatalystHeader() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-14 items-center px-4 gap-2">
           {/* Logo */}
-          <div className="flex items-center gap-2 mr-4">
-            <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-              <span className="text-xs font-bold text-primary-foreground">C</span>
-            </div>
-            <span className="font-semibold text-sm hidden md:inline text-primary">Catalyst</span>
+          <div className="flex items-center gap-2 mr-4 cursor-pointer" onClick={() => navigate('/home')}>
+            <span className="font-bold text-base hidden md:inline">
+              <span className="text-foreground">Cata</span>
+              <span className="text-primary">lyst</span>
+            </span>
           </div>
 
           {/* Main Navigation */}
