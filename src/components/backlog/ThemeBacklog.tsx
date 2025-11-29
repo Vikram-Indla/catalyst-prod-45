@@ -382,13 +382,13 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                                     )}
                                   </button>
                                   <span className="text-sm text-muted-foreground w-8">{index + 1}</span>
-                                  <Circle className="h-3 w-3 fill-orange-500 text-orange-500" />
+                                  <Circle className="h-3 w-3 fill-brand-gold text-brand-gold" />
                                   <span className="text-sm text-muted-foreground w-12">{Math.floor(Math.random() * 200)}</span>
                                   <div
                                     className="flex items-center gap-2 flex-1 cursor-pointer"
                                     onClick={() => handleThemeClick(theme)}
                                   >
-                                    <Square className="h-4 w-4 text-green-600 fill-green-100" />
+                                    <Square className="h-4 w-4 text-success fill-success/20" />
                                     <span className="text-sm font-medium hover:text-primary hover:underline">
                                       {theme.name}
                                     </span>
@@ -399,12 +399,12 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                                         key={i}
                                         className={cn(
                                           "px-2 py-0.5 rounded text-xs font-medium",
-                                          pi === 'PI7' && "bg-green-500 text-white",
-                                          pi === 'PI6' && "bg-gray-500 text-white",
-                                          pi === 'PI5' && "bg-orange-400 text-white",
-                                          pi === 'PI4' && "bg-orange-600 text-white",
-                                          pi === 'PI3' && "bg-green-600 text-white",
-                                          pi === 'PI2' && "bg-pink-500 text-white",
+                                          pi === 'PI7' && "bg-success text-success-foreground",
+                                          pi === 'PI6' && "bg-muted text-muted-foreground",
+                                          pi === 'PI5' && "bg-brand-gold text-white",
+                                          pi === 'PI4' && "bg-warning text-warning-foreground",
+                                          pi === 'PI3' && "bg-success/80 text-success-foreground",
+                                          pi === 'PI2' && "bg-accent text-accent-foreground",
                                           pi === 'PI1' && "bg-brand-gold text-white"
                                         )}
                                       >
