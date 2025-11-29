@@ -24,15 +24,15 @@ export default function OKRTree() {
   };
 
   const getProgressBarColor = (score: number) => {
-    if (score >= 0.7) return 'bg-green-500';
-    if (score >= 0.4) return 'bg-orange-500';
-    return 'bg-red-500';
+    if (score >= 0.7) return 'bg-success';
+    if (score >= 0.4) return 'bg-warning';
+    return 'bg-destructive';
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 0.7) return 'text-green-600';
-    if (score >= 0.4) return 'text-orange-600';
-    return 'text-red-600';
+    if (score >= 0.7) return 'text-success';
+    if (score >= 0.4) return 'text-warning';
+    return 'text-destructive';
   };
 
   const getLevelLabel = (tier: string) => {
