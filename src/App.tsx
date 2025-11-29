@@ -96,6 +96,9 @@ import { OKRHub as TeamOKRHub } from "./pages/team/OKRHub";
 import RoadmapsPage from "./pages/enterprise/Roadmaps";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
+import EnterpriseRoadmaps from "./pages/enterprise/EnterpriseRoadmaps";
+import EnterpriseOKRHub from "./pages/enterprise/EnterpriseOKRHub";
+import EnterpriseThemes from "./pages/enterprise/EnterpriseThemes";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
 import EnterpriseCapabilities from "./pages/enterprise/EnterpriseCapabilities";
 import EnterpriseFeatures from "./pages/enterprise/EnterpriseFeatures";
@@ -148,13 +151,14 @@ const App = () => (
               <Route path="/enterprise/strategy-room" element={<StrategyRoomNew />} />
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
+              <Route path="/enterprise/themes" element={<EnterpriseThemes />} />
               <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
               <Route path="/enterprise/okr-tree" element={<OKRTree />} />
-              <Route path="/enterprise/okr-hub" element={<OKRHub />} />
+              <Route path="/enterprise/okr-hub" element={<EnterpriseOKRHub />} />
               <Route path="/portfolio/:portfolioId/okr-hub" element={<PortfolioOKRHub />} />
               <Route path="/program/:programId/okr-hub" element={<ProgramOKRHub />} />
               <Route path="/team/:teamId/okr-hub" element={<TeamOKRHub />} />
-              <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
+              <Route path="/enterprise/roadmaps" element={<EnterpriseRoadmaps />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
