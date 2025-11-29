@@ -53,7 +53,7 @@ export function KeyResultItem({ keyResult, onOpenCheckIn, onUpdate }: KeyResultI
         <div className="flex items-center gap-2">
           <span className={cn(
             "text-sm font-semibold px-2 py-0.5 rounded",
-            score >= 0.7 ? "text-green-700 bg-green-100" : score >= 0.4 ? "text-yellow-700 bg-yellow-100" : "text-red-700 bg-red-100"
+            score >= 0.7 ? "text-success bg-success/10" : score >= 0.4 ? "text-warning bg-warning/10" : "text-destructive bg-destructive/10"
           )}>
             {score.toFixed(1)}
           </span>

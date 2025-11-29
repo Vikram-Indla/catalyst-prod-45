@@ -76,7 +76,7 @@ export function StarredDropdown({ onClose }: StarredDropdownProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 flex-shrink-0" />
+                    <Star className="h-3.5 w-3.5 text-brand-gold fill-brand-gold flex-shrink-0" />
                     <h4 className="font-medium text-sm truncate">{item.room_name}</h4>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{item.room_subtitle}</p>

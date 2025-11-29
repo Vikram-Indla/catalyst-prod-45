@@ -109,7 +109,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
                       </span>
                     </td>
                     <td className="text-center p-3">
-                      <span className="font-bold text-yellow-600">
+                      <span className="font-bold text-warning">
                         {totalFeatures > 0 ? Math.round((acceptedFeatures / totalFeatures) * 100) : 0}%
                       </span>
                     </td>

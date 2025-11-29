@@ -78,7 +78,7 @@ export function FeatureSymbolMarkers({
       <div key="milestone" title="Has Milestone">
         <Diamond 
           size={size} 
-          className="text-yellow-600" 
+          className="text-warning" 
           fill="currentColor"
         />
       </div>
