@@ -81,20 +81,20 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
 
 
   const teamMembers = [
-    { id: '1', initials: 'JT', color: 'bg-orange-500' },
-    { id: '2', initials: 'DF', color: 'bg-blue-900' },
-    { id: '3', initials: 'IH', color: 'bg-blue-700' },
+    { id: '1', initials: 'JT', color: 'bg-warning' },
+    { id: '2', initials: 'DF', color: 'bg-info' },
+    { id: '3', initials: 'IH', color: 'bg-info' },
     { id: '4', initials: 'BL', color: 'bg-workitem-story' },
-    { id: '5', initials: 'JM', color: 'bg-blue-400' },
-    { id: '6', initials: 'NM', color: 'bg-pink-500' },
-    { id: '7', initials: 'CM', color: 'bg-red-400' },
-    { id: '8', initials: 'MJ', color: 'bg-orange-700' },
-    { id: '9', initials: 'RG', color: 'bg-yellow-600' },
-    { id: '10', initials: 'DL', color: 'bg-green-500' },
-    { id: '11', initials: 'SB', color: 'bg-orange-400' },
-    { id: '12', initials: 'SS', color: 'bg-yellow-500' },
+    { id: '5', initials: 'JM', color: 'bg-info' },
+    { id: '6', initials: 'NM', color: 'bg-destructive' },
+    { id: '7', initials: 'CM', color: 'bg-destructive' },
+    { id: '8', initials: 'MJ', color: 'bg-warning' },
+    { id: '9', initials: 'RG', color: 'bg-warning' },
+    { id: '10', initials: 'DL', color: 'bg-success' },
+    { id: '11', initials: 'SB', color: 'bg-warning' },
+    { id: '12', initials: 'SS', color: 'bg-warning' },
     { id: '13', initials: 'SH', color: 'bg-workitem-story' },
-    { id: '14', initials: 'BS', color: 'bg-blue-500' },
+    { id: '14', initials: 'BS', color: 'bg-info' },
   ];
 
   // Map stories to display format
@@ -281,7 +281,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         fill="none"
                         strokeDasharray={`${2 * Math.PI * 28}`}
                         strokeDashoffset={`${2 * Math.PI * 28 * (1 - metrics.teamVelocity / 100)}`}
-                        className="text-green-500"
+                        className="text-success"
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -316,7 +316,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-semibold text-green-600">{metrics.accepted}%</span>
+                      <span className="text-xs font-semibold text-success">{metrics.accepted}%</span>
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground mt-1">Accepted</span>

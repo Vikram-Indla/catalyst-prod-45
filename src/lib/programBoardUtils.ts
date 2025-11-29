@@ -24,41 +24,41 @@ export function getFeatureStatusColor(feature: any): string {
   
   // Bright Emerald Green: Done/Accepted (all child stories complete)
   if (feature.status === 'done' || feature.status === 'accepted') {
-    return 'bg-emerald-400 text-white';
+    return 'bg-success text-success-foreground';
   }
   
   // Red: Blocked (child stories blocked, dependencies blocked, past due)
   if (feature.blocked || feature.status === 'blocked' || feature.has_blocked_story || feature.sprint_dates_past) {
-    return 'bg-red-500 text-white';
+    return 'bg-destructive text-destructive-foreground';
   }
   
   // Orange: Scheduling Issues/Planning Issues (unassigned stories, stories not in sprint)
   if (feature.status === 'funnel' || feature.status === 'analyzing' || feature.has_unassigned_story || feature.has_story_not_in_sprint) {
-    return 'bg-orange-500 text-white';
+    return 'bg-warning text-warning-foreground';
   }
   
   // Yellow: Risks Apply (open risks from ROAM model, health issues)
   if (feature.health === 'yellow' || feature.health === 'red' || feature.has_open_risks) {
-    return 'bg-yellow-500 text-white';
+    return 'bg-warning text-warning-foreground';
   }
   
   // Blue: In Progress/Implementing (child stories in progress, no blocking issues)
   if (feature.status === 'implementing' || feature.status === 'in-progress' || feature.status === 'in_progress') {
-    return 'bg-blue-500 text-white';
+    return 'bg-info text-info-foreground';
   }
   
   // Black: Orphan (feature has no child stories)
   if (feature.is_orphan_on_board || !feature.story_count) {
-    return 'bg-gray-900 text-white';
+    return 'bg-foreground text-background';
   }
   
   // Brown: Cancelled
   if (feature.status === 'cancelled') {
-    return 'bg-amber-800 text-white';
+    return 'bg-warning-600 text-warning-foreground';
   }
   
   // Light Gray: Not Started / Default (backlog state)
-  return 'bg-slate-300 text-slate-800';
+  return 'bg-muted text-foreground';
 }
 
 /**
@@ -70,7 +70,7 @@ export function getDependencyStatusColor(dependency: any): string {
     dependency.status === 'done' ||
     (dependency.committed && !dependency.committed_sprint_ended && dependency.all_stories_accepted)
   ) {
-    return 'bg-green-600 text-white border-green-600';
+    return 'bg-success-600 text-success-foreground border-success-600';
   }
   
   // Red: Blocked
@@ -79,7 +79,7 @@ export function getDependencyStatusColor(dependency: any): string {
     (!dependency.committed && dependency.pi_in_progress) ||
     (dependency.committed && dependency.committed_sprint_ended)
   ) {
-    return 'bg-red-600 text-white border-red-600';
+    return 'bg-destructive text-destructive-foreground border-destructive';
   }
   
   // Orange: Planning issues
@@ -90,10 +90,10 @@ export function getDependencyStatusColor(dependency: any): string {
     (!dependency.committed && !dependency.pi_begun) ||
     dependency.rejected
   ) {
-    return 'bg-orange-500 text-white border-orange-500';
+    return 'bg-warning text-warning-foreground border-warning';
   }
   
-  return 'bg-gray-400 text-white border-gray-400';
+  return 'bg-muted text-muted-foreground border-border';
 }
 
 /**
@@ -104,12 +104,12 @@ export function getObjectiveStatusColor(objective: any): string {
   
   // Green: Completed
   if (status === 'completed') {
-    return 'bg-green-600 text-white border-green-600';
+    return 'bg-success-600 text-success-foreground border-success-600';
   }
   
   // Brown: Cancelled
   if (status === 'cancelled') {
-    return 'bg-amber-800 text-white border-amber-800';
+    return 'bg-warning-600 text-warning-foreground border-warning-600';
   }
   
   // Red: Blocked/Missed or has blocking conditions
@@ -120,26 +120,26 @@ export function getObjectiveStatusColor(objective: any): string {
     objective.has_red_dependency ||
     objective.has_blocked_feature
   ) {
-    return 'bg-red-600 text-white border-red-600';
+    return 'bg-destructive text-destructive-foreground border-destructive';
   }
   
   // Yellow: Has risks
   if (objective.has_open_risk) {
-    return 'bg-yellow-500 text-black border-yellow-500';
+    return 'bg-warning text-warning-foreground border-warning';
   }
   
   // Orange: Paused
   if (status === 'paused') {
-    return 'bg-orange-500 text-white border-orange-500';
+    return 'bg-warning text-warning-foreground border-warning';
   }
   
   // Blue: In Progress/On Track
   if (status === 'in_progress' || status === 'on_track') {
-    return 'bg-blue-600 text-white border-blue-600';
+    return 'bg-info text-info-foreground border-info';
   }
   
   // Gray: Pending
-  return 'bg-gray-400 text-white border-gray-400';
+  return 'bg-muted text-muted-foreground border-border';
 }
 
 /**
