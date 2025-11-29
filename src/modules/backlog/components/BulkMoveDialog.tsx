@@ -122,7 +122,7 @@ export function BulkMoveDialog({
               <SelectTrigger>
                 <SelectValue placeholder="Choose PI..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover z-50">
                 {programIncrements?.map((pi) => (
                   <SelectItem key={pi.id} value={pi.id}>
                     {pi.name}
