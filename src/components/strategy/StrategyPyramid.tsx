@@ -150,9 +150,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
     const svgRect = e.currentTarget.ownerSVGElement?.getBoundingClientRect();
     const layerRect = e.currentTarget.getBoundingClientRect();
     if (svgRect && layerRect) {
-      // Position tooltip to the right of the pyramid
+      // Position tooltip just 2px to the right of the pyramid edge
       const layerCenterY = layerRect.top + layerRect.height / 2 - svgRect.top;
-      setTooltipPos({ x: 920, y: layerCenterY });
+      const layerRightX = layerRect.right - svgRect.left + 2;
+      setTooltipPos({ x: layerRightX, y: layerCenterY });
     }
     setHoveredLayer(layerName);
   };
