@@ -1,166 +1,215 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Star, Calendar, TrendingUp } from "lucide-react";
+import { Star, Briefcase, GitBranch, Users, Target, Layers, Map } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+
+type RoomType = "program" | "portfolio" | "team" | "strategy" | "feature" | "roadmap" | "objective";
+
+interface Room {
+  id: string;
+  title: string;
+  subtitle: string;
+  type: RoomType;
+  pi?: string;
+  path: string;
+  isStarred?: boolean;
+}
+
+const roomIcons: Record<RoomType, React.ReactNode> = {
+  program: <Briefcase className="h-8 w-8 text-cyan-600" />,
+  portfolio: <Layers className="h-8 w-8 text-blue-600" />,
+  team: <Users className="h-8 w-8 text-cyan-600" />,
+  strategy: <Target className="h-8 w-8 text-blue-500" />,
+  feature: <GitBranch className="h-8 w-8 text-purple-600" />,
+  roadmap: <Map className="h-8 w-8 text-cyan-600" />,
+  objective: <Target className="h-8 w-8 text-gray-600" />,
+};
 
 export function HomeContent() {
   const navigate = useNavigate();
+  const [selectedPortfolio] = useState<string>("all");
 
-  // Fetch default program and PI for proper navigation
-  const { data: programs } = useQuery({
-    queryKey: ['programs-for-nav'],
-    queryFn: async () => {
-      const { data } = await supabase.from('programs').select('id, name').order('name').limit(1);
-      return data;
-    },
-  });
-
-  const { data: programIncrements } = useQuery({
-    queryKey: ['pis-for-nav'],
-    queryFn: async () => {
-      // Get PI-5 which has features properly distributed across teams and sprints
-      const { data } = await supabase
-        .from('program_increments')
-        .select('id, name')
-        .eq('id', '3e5ae5ed-8aa9-4211-9add-2031b0f6541b')
-        .limit(1);
-      return data;
-    },
-  });
-
-  const handleProgramBoardClick = () => {
-    const defaultProgram = programs?.[0]?.id;
-    const defaultPI = programIncrements?.[0]?.id;
-    
-    // Only navigate if we have both values
-    if (defaultProgram && defaultPI) {
-      navigate(`/programs/program-board?program=${defaultProgram}&pi=${defaultPI}`);
-    } else {
-      // If data isn't loaded yet, just go to the route and let it load defaults
-      navigate('/programs/program-board');
-    }
-  };
-
-  const recentRooms = [
+  // Mock data for Jira Align home page
+  const recentRooms: Room[] = [
     {
-      id: "1",
-      title: "Enterprise Strategy",
-      subtitle: "Strategic Planning",
-      pi: "PI-24 Q1",
-      icon: "🎯",
+      id: "mobile",
+      title: "Mobile",
+      subtitle: "Program",
+      type: "program",
+      pi: "PI 5",
+      path: "/programs",
+    },
+    {
+      id: "geekbooks-snapshot",
+      title: "Geekbooks 2023 Snapshot",
+      subtitle: "Strategy",
+      type: "strategy",
+      pi: "",
       path: "/enterprise/strategy-room",
     },
     {
-      id: "2",
-      title: "Epic Backlog",
-      subtitle: "Portfolio Planning",
-      pi: "PI-24 Q1",
-      icon: "📊",
-      path: "/items/epics",
+      id: "geekbooks-1",
+      title: "Geekbooks Online Services",
+      subtitle: "Portfolio",
+      type: "portfolio",
+      pi: "PI 1",
+      path: "/portfolio-room",
     },
     {
-      id: "3",
-      title: "Program Board",
-      subtitle: "PI Planning",
-      pi: "PI-24 Q1",
-      icon: "📋",
-      onClick: handleProgramBoardClick,
+      id: "geekbooks-2",
+      title: "Geekbooks Online Services",
+      subtitle: "Portfolio",
+      type: "portfolio",
+      pi: "PI 1",
+      path: "/portfolio-room",
     },
     {
-      id: "4",
-      title: "Team Velocity",
-      subtitle: "Sprint Planning",
-      pi: "Sprint 5",
-      icon: "⚡",
-      path: "/team-room",
-    },
-    {
-      id: "5",
-      title: "OKR Hub",
-      subtitle: "Objectives & Key Results",
-      pi: "Q1 2024",
-      icon: "🎪",
-      path: "/enterprise/okr-hub",
+      id: "geekbooks-3",
+      title: "Geekbooks Online Services",
+      subtitle: "Program",
+      type: "program",
+      pi: "PI 1",
+      path: "/programs",
     },
   ];
 
-  const starredRooms = [
+  const starredRooms: Room[] = [
     {
-      id: "star-1",
-      title: "Epic Backlog",
-      subtitle: "Portfolio Planning",
-      pi: "PI-24 Q1",
-      icon: "📊",
-      path: "/items/epics",
+      id: "star-product-room",
+      title: "Product Room (Labs)",
+      subtitle: "Product · Check Scanning App",
+      type: "program",
+      pi: "PI 5",
+      path: "/programs",
+      isStarred: true,
+    },
+    {
+      id: "star-objective-tree",
+      title: "Objective tree",
+      subtitle: "Program · Website Services",
+      type: "objective",
+      pi: "PI 1",
+      path: "/enterprise/okr-tree",
+      isStarred: true,
+    },
+    {
+      id: "star-roadmaps",
+      title: "Roadmaps",
+      subtitle: "Portfolio · Geekbooks Online Services",
+      type: "roadmap",
+      pi: "",
+      path: "/roadmaps",
+      isStarred: true,
+    },
+    {
+      id: "star-features",
+      title: "Features",
+      subtitle: "Program · Website Services",
+      type: "feature",
+      pi: "",
+      path: "/features",
+      isStarred: true,
+    },
+    {
+      id: "star-program-room",
+      title: "Program Room",
+      subtitle: "Program · Website Services",
+      type: "program",
+      pi: "",
+      path: "/programs",
+      isStarred: true,
     },
   ];
 
   return (
-    <div className="container mx-auto px-6 py-8 max-w-7xl">
-      {/* Recent Rooms Section */}
-      <section className="mb-12">
-        <div className="flex items-center gap-2 mb-6">
-          <Calendar className="h-5 w-5 text-muted-foreground" />
-          <h2 className="text-xl font-semibold">Recent rooms</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {recentRooms.map((room) => (
-            <div
-              key={room.id}
-              onClick={() => room.onClick ? room.onClick() : navigate(room.path)}
-              className="group bg-card rounded-lg border shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden"
-            >
-              <div className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="text-3xl">{room.icon}</div>
-                  <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                    {room.pi}
-                  </div>
-                </div>
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">
-                  {room.title}
-                </h3>
-                <p className="text-xs text-muted-foreground">{room.subtitle}</p>
-              </div>
-              <div className="h-1 bg-gradient-to-r from-primary/20 to-primary/5 group-hover:from-primary/40 group-hover:to-primary/10 transition-all" />
-            </div>
-          ))}
-        </div>
-      </section>
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-6 py-8 max-w-[1400px]">
+        {/* Recent Rooms Section */}
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-foreground">Recent rooms</h2>
+            
+            <Select value={selectedPortfolio}>
+              <SelectTrigger className="w-[280px] bg-background border-border">
+                <SelectValue placeholder="Search to filter portfolios" />
+              </SelectTrigger>
+              <SelectContent className="bg-background border-border">
+                <SelectItem value="all">All Portfolios</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-      {/* Starred Section */}
-      <section>
-        <div className="flex items-center gap-2 mb-6">
-          <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-          <h2 className="text-xl font-semibold">Starred</h2>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {starredRooms.map((room) => (
-            <div
-              key={room.id}
-              onClick={() => navigate(room.path)}
-              className="group bg-card rounded-lg border shadow-sm hover:shadow-md transition-all cursor-pointer overflow-hidden relative"
-            >
-              <div className="absolute top-2 right-2">
-                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-              </div>
-              <div className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="text-3xl">{room.icon}</div>
-                  <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded mr-6">
-                    {room.pi}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {recentRooms.map((room) => (
+              <div
+                key={room.id}
+                onClick={() => navigate(room.path)}
+                className="group relative bg-card border border-border rounded-lg hover:shadow-md transition-all cursor-pointer"
+              >
+                <div className="p-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center justify-center w-12 h-12 bg-cyan-50 dark:bg-cyan-950/20 rounded">
+                      {roomIcons[room.type]}
+                    </div>
                   </div>
+                  <h3 className="font-semibold text-sm mb-1 text-foreground group-hover:text-primary transition-colors">
+                    {room.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mb-2">{room.subtitle}</p>
+                  {room.pi && (
+                    <p className="text-xs text-muted-foreground font-medium">{room.pi}</p>
+                  )}
                 </div>
-                <h3 className="font-semibold text-sm mb-1 group-hover:text-primary transition-colors">
-                  {room.title}
-                </h3>
-                <p className="text-xs text-muted-foreground">{room.subtitle}</p>
               </div>
-              <div className="h-1 bg-gradient-to-r from-yellow-500/20 to-yellow-500/5 group-hover:from-yellow-500/40 group-hover:to-yellow-500/10 transition-all" />
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+
+        {/* Starred Section */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-foreground">Starred</h2>
+            <Button variant="link" className="text-primary hover:text-primary/80 px-0">
+              View all
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {starredRooms.map((room) => (
+              <div
+                key={room.id}
+                onClick={() => navigate(room.path)}
+                className="group relative bg-card border border-border rounded-lg hover:shadow-md transition-all cursor-pointer"
+              >
+                <div className="absolute top-3 right-3 z-10">
+                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                </div>
+                <div className="p-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center justify-center w-12 h-12 bg-cyan-50 dark:bg-cyan-950/20 rounded">
+                      {roomIcons[room.type]}
+                    </div>
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1 text-foreground group-hover:text-primary transition-colors">
+                    {room.title}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mb-2">{room.subtitle}</p>
+                  {room.pi && (
+                    <p className="text-xs text-muted-foreground font-medium">{room.pi}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
