@@ -178,10 +178,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       
       // Special positioning for Missions (top tip)
       if (layerName === 'Missions') {
-        // Position tooltip centered above the pyramid tip, but within viewBox
-        const tooltipX = centerX - tooltipHalfWidth;
-        const tooltipY = -30; // Position above pyramid (renders at y - 35 = -65)
-        setTooltipPos({ x: tooltipX, y: tooltipY });
+        // Position tooltip completely outside the right edge
+        const tooltipX = Math.min(maxX, rightEdge + 20);
+        setTooltipPos({ x: tooltipX, y: layerCenterY });
       } else {
         // All other layers: tooltip half outside, half inside (straddling the edge)
         const isLeftSide = ['Yearly Goals', 'Portfolio Objectives', 'Program Objectives'].includes(layerName);
