@@ -10,6 +10,7 @@ import { PersonasPopover } from "./PersonasPopover";
 import { PortfolioSelectorDropdown } from "./PortfolioSelectorDropdown";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { TeamSelectorDropdown } from "./TeamSelectorDropdown";
+import { StarredDropdown } from "./StarredDropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -115,6 +116,25 @@ export function JiraAlignHeader() {
                     </PopoverTrigger>
                     <PopoverContent className="p-0 w-auto" align="start">
                       <TeamSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                    </PopoverContent>
+                  </Popover>
+                ) : item.label === "Starred" ? (
+                  <Popover
+                    open={activeDropdown === item.label}
+                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                      >
+                        {item.label}
+                        <ChevronDown className="ml-1 h-3 w-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-auto" align="start">
+                      <StarredDropdown onClose={() => setActiveDropdown(null)} />
                     </PopoverContent>
                   </Popover>
                 ) : item.hasDropdown ? (
