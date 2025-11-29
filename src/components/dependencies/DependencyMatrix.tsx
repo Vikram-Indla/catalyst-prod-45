@@ -105,17 +105,15 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
                 {programs.map((toProg) => (
                   <th
                     key={toProg.id}
-                    className="border-b border-r border-border/40 relative bg-background p-0"
+                    className="border-b border-r border-border/40 relative bg-background p-0 overflow-hidden"
                     style={{ width: '56px', height: '200px', minWidth: '56px' }}
                   >
                     <div 
-                      className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer origin-bottom-left"
+                      className="absolute top-1/2 left-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer"
                       style={{ 
-                        transform: 'translateX(-50%) rotate(-90deg)',
-                        transformOrigin: '50% 100%',
-                        maxHeight: '180px',
-                        textOverflow: 'ellipsis',
-                        overflow: 'visible'
+                        transform: 'translate(-50%, -50%) rotate(-90deg)',
+                        transformOrigin: 'center center',
+                        maxWidth: '190px'
                       }}
                     >
                       {toProg.name}
