@@ -53,6 +53,14 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
     return 'stroke-red-500';
   };
 
+  // Calculate summary statistics
+  const totalThemes = 1; // From documentation
+  const totalEpics = progressData.find(p => p.label === 'Portfolio Objectives')?.total || 0;
+  const totalFeatures = progressData.find(p => p.label === 'Program Objectives')?.total || 0;
+  
+  const acceptedEpics = progressData.find(p => p.label === 'Portfolio Objectives')?.completed || 0;
+  const acceptedFeatures = progressData.find(p => p.label === 'Program Objectives')?.completed || 0;
+
   return (
     <Card>
       <CardHeader>
@@ -68,6 +76,48 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
           </div>
         ) : (
           <>
+            {/* Summary Statistics Table */}
+            <div className="border rounded-md overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="text-left p-3 font-semibold">Category</th>
+                    <th className="text-center p-3 font-semibold">Themes</th>
+                    <th className="text-center p-3 font-semibold">Epics*</th>
+                    <th className="text-center p-3 font-semibold">Features*</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="p-3 font-medium text-muted-foreground">Total Count</td>
+                    <td className="text-center p-3">{totalThemes}</td>
+                    <td className="text-center p-3">{totalEpics}</td>
+                    <td className="text-center p-3">{totalFeatures}</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-3 font-medium text-muted-foreground">Accepted</td>
+                    <td className="text-center p-3">—</td>
+                    <td className="text-center p-3 font-semibold">{acceptedEpics}/{totalEpics}</td>
+                    <td className="text-center p-3 font-semibold">{acceptedFeatures}/{totalFeatures}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 font-medium text-muted-foreground">Acceptance %</td>
+                    <td className="text-center p-3">—</td>
+                    <td className="text-center p-3">
+                      <span className="font-bold text-green-600">
+                        {totalEpics > 0 ? Math.round((acceptedEpics / totalEpics) * 100) : 0}%
+                      </span>
+                    </td>
+                    <td className="text-center p-3">
+                      <span className="font-bold text-yellow-600">
+                        {totalFeatures > 0 ? Math.round((acceptedFeatures / totalFeatures) * 100) : 0}%
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
             {/* Donut Charts Row */}
             <div className="grid grid-cols-3 gap-4">
               {progressData.slice(0, 3).map((item, index) => {
