@@ -132,10 +132,16 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
                 {programs.map((toProg) => (
                   <th
                     key={toProg.id}
-                    className="border-b border-border p-2 text-center font-medium"
-                    style={{ minWidth: '80px' }}
+                    className="border-b border-border p-2 text-left font-medium relative"
+                    style={{ width: '60px', height: '140px' }}
                   >
-                    <div className="text-sm font-medium text-foreground whitespace-nowrap">
+                    <div 
+                      className="absolute bottom-2 left-1/2 origin-bottom-left whitespace-nowrap text-sm font-medium text-foreground"
+                      style={{ 
+                        transform: 'rotate(90deg) translateY(-100%)',
+                        transformOrigin: 'left bottom'
+                      }}
+                    >
                       {toProg.name}
                     </div>
                   </th>
@@ -171,7 +177,7 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
                               onMouseEnter={() => !isSameProgram && setHoveredCell(cellKey)}
                               onMouseLeave={() => setHoveredCell(null)}
                               onClick={() => !isSameProgram && handleCellClick(fromProg, toProg)}
-                              style={{ minWidth: '80px', height: '48px' }}
+                              style={{ width: '60px', height: '48px' }}
                             >
                               {!isSameProgram && count > 0 && (
                                 <div className="inline-flex items-center justify-center bg-[#1e3a5f] text-white font-semibold text-sm rounded px-3 py-1.5 min-w-[32px] hover:bg-[#2a4a7f] transition-colors">
