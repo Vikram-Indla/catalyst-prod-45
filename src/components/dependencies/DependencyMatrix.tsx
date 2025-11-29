@@ -14,9 +14,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 
 interface DependencyMatrixProps {
   piId?: string;
+  onDependencyClick?: (depId: string) => void;
 }
 
-export function DependencyMatrix({ piId }: DependencyMatrixProps) {
+export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixProps) {
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
   const [selectedCell, setSelectedCell] = useState<{ fromId: string; toId: string; fromName: string; toName: string } | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -137,7 +138,7 @@ export function DependencyMatrix({ piId }: DependencyMatrixProps) {
                     <div 
                       className="absolute bottom-2 left-1/2 origin-bottom-left whitespace-nowrap text-sm font-medium text-foreground"
                       style={{ 
-                        transform: 'rotate(-90deg) translateX(-100%)',
+                        transform: 'rotate(90deg) translateY(-100%)',
                         transformOrigin: 'left bottom'
                       }}
                     >
@@ -226,9 +227,18 @@ export function DependencyMatrix({ piId }: DependencyMatrixProps) {
                     <TableHead>Risk</TableHead>
                   </TableRow>
                 </TableHeader>
-                <TableBody>
+                                 <TableBody>
                   {getCellDependencies(selectedCell.fromId, selectedCell.toId).map((dep: any) => (
-                    <TableRow key={dep.id}>
+                    <TableRow 
+                      key={dep.id}
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => {
+                        if (onDependencyClick) {
+                          onDependencyClick(dep.id);
+                          setDialogOpen(false);
+                        }
+                      }}
+                    >
                       <TableCell className="font-medium">
                         {dep.from_feature?.name || '-'}
                       </TableCell>
