@@ -176,16 +176,18 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       const minX = 10; // Minimum X position to keep tooltip visible
       const maxX = 1000 - tooltipWidth - 10; // Maximum X position
       
-      // Check if this is a top layer (full width) or bottom layer (split)
+      // All layers: tooltip half outside, half inside (straddling the edge)
+      // For top 3 full-width layers, position on right edge
+      // For bottom 6 split layers, position based on left/right side
       const isTopLayer = ['Missions', 'Visions', 'Values'].includes(layerName);
       const isLeftSide = ['Yearly Goals', 'Portfolio Objectives', 'Program Objectives'].includes(layerName);
       
       let tooltipX;
       if (isTopLayer) {
-        // Top 3 layers: tooltip fully INSIDE pyramid, positioned on right side
-        tooltipX = rightEdge - tooltipWidth - 20; // 20px padding from edge
+        // Top 3 layers: straddle the right edge
+        tooltipX = Math.min(maxX, rightEdge - tooltipHalfWidth);
       } else {
-        // Bottom 6 compartments: tooltip half outside, half inside
+        // Bottom 6 compartments: straddle the respective edge
         if (isLeftSide) {
           // Left compartments: straddle the left edge, but ensure visibility
           tooltipX = Math.max(minX, leftEdge - tooltipHalfWidth);
