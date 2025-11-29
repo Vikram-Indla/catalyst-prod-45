@@ -3,7 +3,7 @@ import { Search, Settings, Maximize2, ChevronRight, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useOKRTree } from '@/hooks/useOKRTree';
 
 interface OkrTreeProps {
@@ -117,8 +117,9 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
           </div>
 
           <div className="flex justify-center">
-            <Avatar className="h-8 w-8" style={{ backgroundColor: item.owner.avatarColor || '#6554C0' }}>
-              <AvatarFallback className="text-white text-xs font-semibold">
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={item.owner.avatar} alt={item.owner.name} />
+              <AvatarFallback className="text-xs bg-primary/10 text-primary font-semibold">
                 {item.owner.initials}
               </AvatarFallback>
             </Avatar>
