@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { Star } from 'lucide-react';
+import { Star, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { useNavigate } from 'react-router-dom';
+import { ExtraConfigsDialog } from '@/components/strategy/ExtraConfigsDialog';
 import { MissionVisionValues } from '@/components/strategy/MissionVisionValues';
 import { ExecutionAgainstOutcomesWidget } from '@/components/strategy/ExecutionAgainstOutcomesWidget';
 import { StrategyPyramid } from '@/components/strategy/StrategyPyramid';
@@ -19,12 +21,14 @@ import {
 } from '@/data/strategyMockData';
 
 export default function StrategyRoomPage() {
+  const navigate = useNavigate();
   const [selectedPIs] = useState(['PI-5', 'PI-6', 'PI-7']);
   const [filterLevel, setFilterLevel] = useState<ObjectiveLevel | undefined>(undefined);
   const [filterPI, setFilterPI] = useState<string | undefined>(undefined);
   const [selectedObjective, setSelectedObjective] = useState<any>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [snapshotSearchQuery, setSnapshotSearchQuery] = useState('');
+  const [extraConfigsOpen, setExtraConfigsOpen] = useState(false);
 
   // Fetch snapshots from database
   const { data: snapshots = [], isLoading: snapshotsLoading } = useQuery({
@@ -124,11 +128,19 @@ export default function StrategyRoomPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <span className="mr-2">+</span>
-            Add Snapshot
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/enterprise/backlog')}
+          >
+            Strategic Backlog
           </Button>
-          <Button variant="outline" size="sm">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setExtraConfigsOpen(true)}
+          >
+            <Filter className="h-4 w-4 mr-2" />
             Extra Configs
           </Button>
         </div>
@@ -167,6 +179,12 @@ export default function StrategyRoomPage() {
         objectiveId={selectedObjective?.id || null}
         open={!!selectedObjective}
         onClose={() => setSelectedObjective(null)}
+      />
+
+      {/* Extra Configs Dialog */}
+      <ExtraConfigsDialog 
+        open={extraConfigsOpen}
+        onClose={() => setExtraConfigsOpen(false)}
       />
     </div>
   );
