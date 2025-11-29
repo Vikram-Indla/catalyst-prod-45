@@ -147,7 +147,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   };
 
   const handleMouseEnter = (layerName: string, e: React.MouseEvent<SVGElement>) => {
-    // Get the mouse Y position in SVG coordinates
     const svgElement = e.currentTarget.ownerSVGElement;
     if (svgElement) {
       const pt = svgElement.createSVGPoint();
@@ -155,11 +154,41 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       pt.y = e.clientY;
       const svgP = pt.matrixTransform(svgElement.getScreenCTM()?.inverse());
       
-      // Calculate the right edge of the pyramid at this Y position
-      const rightEdge = getXAtY(svgP.y).right;
+      // Get layer boundaries - find the Y range for this layer
+      let layerTop = 0, layerBottom = 0;
       
-      // Position tooltip 15px to the right of the pyramid edge
-      setTooltipPos({ x: rightEdge + 15, y: svgP.y });
+      // Determine layer boundaries based on layer name
+      if (layerName === 'Missions') { layerTop = y1; layerBottom = y2; }
+      else if (layerName === 'Visions') { layerTop = y2; layerBottom = y3; }
+      else if (layerName === 'Values') { layerTop = y3; layerBottom = y4; }
+      else if (layerName === 'Yearly Goals' || layerName === 'Themes') { layerTop = y4; layerBottom = y5; }
+      else if (layerName === 'Portfolio Objectives' || layerName === 'Epics') { layerTop = y5; layerBottom = y6; }
+      else if (layerName === 'Program Objectives' || layerName === 'Features') { layerTop = y6; layerBottom = y7; }
+      
+      // Calculate vertical center of the layer
+      const layerCenterY = (layerTop + layerBottom) / 2;
+      
+      // Get pyramid boundaries at layer center
+      const { left: leftEdge, right: rightEdge } = getXAtY(layerCenterY);
+      
+      // For split layers, position tooltip on the appropriate side
+      const isSplitLayer = ['Yearly Goals', 'Themes', 'Portfolio Objectives', 'Epics', 'Program Objectives', 'Features'].includes(layerName);
+      const isLeftSide = ['Yearly Goals', 'Portfolio Objectives', 'Program Objectives'].includes(layerName);
+      
+      let tooltipX;
+      if (isSplitLayer) {
+        // Position tooltip on the outer edge of the split compartment, but inside pyramid
+        if (isLeftSide) {
+          tooltipX = leftEdge + 20; // 20px from left edge, inside the compartment
+        } else {
+          tooltipX = rightEdge - 240; // 240px is tooltip width, positioned from right edge
+        }
+      } else {
+        // For full-width layers, position on right side but inside pyramid
+        tooltipX = rightEdge - 240; // Inside the right side of the pyramid
+      }
+      
+      setTooltipPos({ x: tooltipX, y: layerCenterY });
     }
     setHoveredLayer(layerName);
   };
