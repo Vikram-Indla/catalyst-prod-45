@@ -99,6 +99,7 @@ import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
 import EnterpriseRoadmaps from "./pages/enterprise/EnterpriseRoadmaps";
 import EnterpriseOKRHub from "./pages/enterprise/EnterpriseOKRHub";
 import EnterpriseThemes from "./pages/enterprise/EnterpriseThemes";
+import EnterpriseInitiatives from "./pages/enterprise/EnterpriseInitiatives";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
 import EnterpriseCapabilities from "./pages/enterprise/EnterpriseCapabilities";
 import EnterpriseFeatures from "./pages/enterprise/EnterpriseFeatures";
@@ -152,6 +153,7 @@ const App = () => (
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
               <Route path="/enterprise/themes" element={<EnterpriseThemes />} />
+              <Route path="/enterprise/initiatives" element={<EnterpriseInitiatives />} />
               <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
               <Route path="/enterprise/okr-tree" element={<OKRTree />} />
               <Route path="/enterprise/okr-hub" element={<EnterpriseOKRHub />} />
