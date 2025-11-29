@@ -4,6 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface DependencyMatrixProps {
   piId?: string;
@@ -11,6 +18,8 @@ interface DependencyMatrixProps {
 
 export function DependencyMatrix({ piId }: DependencyMatrixProps) {
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
+  const [selectedCell, setSelectedCell] = useState<{ fromId: string; toId: string; fromName: string; toName: string } | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const { data: programs } = useQuery({
     queryKey: ['programs'],
@@ -52,6 +61,28 @@ export function DependencyMatrix({ piId }: DependencyMatrixProps) {
         dep.from_feature?.program_id === fromProgramId &&
         dep.to_feature?.program_id === toProgramId
     ).length;
+  };
+
+  const getCellDependencies = (fromProgramId: string, toProgramId: string) => {
+    if (!dependencies) return [];
+    return dependencies.filter(
+      (dep: any) =>
+        dep.from_feature?.program_id === fromProgramId &&
+        dep.to_feature?.program_id === toProgramId
+    );
+  };
+
+  const handleCellClick = (fromProg: any, toProg: any) => {
+    const count = getDependencyCount(fromProg.id, toProg.id);
+    if (count > 0) {
+      setSelectedCell({
+        fromId: fromProg.id,
+        toId: toProg.id,
+        fromName: fromProg.name,
+        toName: toProg.name,
+      });
+      setDialogOpen(true);
+    }
   };
 
   const getCellColor = (count: number) => {
@@ -123,9 +154,10 @@ export function DependencyMatrix({ piId }: DependencyMatrixProps) {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <td
-                              className={`border-b border-border p-3 text-center cursor-pointer transition-colors ${getCellColor(count)} ${isHovered ? 'ring-2 ring-primary' : ''}`}
+                              className={`border-b border-border p-3 text-center transition-colors ${getCellColor(count)} ${isHovered ? 'ring-2 ring-primary' : ''} ${count > 0 ? 'cursor-pointer' : 'cursor-default'}`}
                               onMouseEnter={() => setHoveredCell(cellKey)}
                               onMouseLeave={() => setHoveredCell(null)}
+                              onClick={() => handleCellClick(fromProg, toProg)}
                             >
                               {count > 0 && (
                                 <Badge variant="secondary" className="font-mono">
@@ -140,6 +172,7 @@ export function DependencyMatrix({ piId }: DependencyMatrixProps) {
                               <p className="text-xs text-muted-foreground">
                                 From {fromProg.name} to {toProg.name}
                               </p>
+                              <p className="text-xs text-muted-foreground mt-1">Click to view details</p>
                             </TooltipContent>
                           )}
                         </Tooltip>
@@ -152,6 +185,68 @@ export function DependencyMatrix({ piId }: DependencyMatrixProps) {
           </table>
         </div>
       </Card>
+
+      {/* Dependency Details Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Dependencies: {selectedCell?.fromName} → {selectedCell?.toName}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedCell && (
+            <div className="space-y-4">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Action Required</TableHead>
+                    <TableHead>Requested For</TableHead>
+                    <TableHead>Level</TableHead>
+                    <TableHead>Need By</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Risk</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {getCellDependencies(selectedCell.fromId, selectedCell.toId).map((dep: any) => (
+                    <TableRow key={dep.id}>
+                      <TableCell className="font-medium">
+                        {dep.from_feature?.name || '-'}
+                      </TableCell>
+                      <TableCell>{dep.to_feature?.name || '-'}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="text-xs capitalize">
+                          {dep.dependency_level || dep.type}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">
+                        {dep.needed_by_date || '-'}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={dep.status === 'committed' ? 'default' : 'outline'} className="text-xs">
+                          {dep.status?.replace('_', ' ').toUpperCase() || 'OPEN'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            dep.risk_level === 'high' ? 'destructive' :
+                            dep.risk_level === 'med' ? 'secondary' :
+                            'outline'
+                          }
+                          className="text-xs"
+                        >
+                          {dep.risk_level?.toUpperCase() || 'LOW'}
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
