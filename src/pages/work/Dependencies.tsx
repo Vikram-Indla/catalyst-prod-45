@@ -14,6 +14,8 @@ import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDet
 import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
 import { DependencyWheelMap } from '@/components/dependencies/DependencyWheelMap';
 import { DependencyContextMenu } from '@/components/dependencies/DependencyContextMenu';
+import { DependenciesSidebar } from '@/components/dependencies/DependenciesSidebar';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -148,7 +150,16 @@ export default function DependenciesPage() {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <DependenciesSidebar />
+        
+        <div className="flex-1 flex flex-col">
+          <div className="h-12 flex items-center border-b px-4">
+            <SidebarTrigger />
+          </div>
+
+          <div className="flex-1 flex flex-col" style={{ padding: 'var(--s6)' }}>
       <div className="flex items-center justify-between mb-6" style={{ height: 'var(--toolbar-h)' }}>
         <div>
           <h1 className="text-2xl font-semibold">Dependencies</h1>
@@ -412,6 +423,9 @@ export default function DependenciesPage() {
         }}
         dependencyId={selectedDependencyId}
       />
-    </div>
+        </div>
+      </div>
+      </div>
+    </SidebarProvider>
   );
 }
