@@ -291,6 +291,18 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 onMouseEnter={(e) => handleMouseEnter('Missions', e)}
                 onMouseLeave={handleMouseLeave}
               />
+              <text 
+                x={centerX} 
+                y={y1 + 25} 
+                fill="white" 
+                fontSize="20" 
+                fontWeight="700"
+                textAnchor="middle"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=mission&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.mission || 0}
+              </text>
               <text
                 x={centerX}
                 y={(y1 + y2) / 2 + 15}
@@ -301,17 +313,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 className="pointer-events-none select-none"
               >
                 Missions
-              </text>
-              <text 
-                x={level2.right + 40} 
-                y={(y1 + y2) / 2 + 5} 
-                fill="currentColor" 
-                fontSize="18" 
-                fontWeight="600"
-                className="cursor-pointer hover:underline"
-                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=mission&snapshot=${snapshotId}`, e)}
-              >
-                {counts?.mission || 0}
               </text>
             </g>
 
@@ -327,6 +328,18 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 onMouseEnter={(e) => handleMouseEnter('Visions', e)}
                 onMouseLeave={handleMouseLeave}
               />
+              <text 
+                x={centerX} 
+                y={y2 + 20} 
+                fill="white" 
+                fontSize="20" 
+                fontWeight="700"
+                textAnchor="middle"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=vision&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.vision || 0}
+              </text>
               <text
                 x={centerX}
                 y={(y2 + y3) / 2 + 5}
@@ -337,17 +350,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 className="pointer-events-none select-none"
               >
                 Visions
-              </text>
-              <text 
-                x={level3.right + 40} 
-                y={(y2 + y3) / 2 + 5} 
-                fill="currentColor" 
-                fontSize="18" 
-                fontWeight="600"
-                className="cursor-pointer hover:underline"
-                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=vision&snapshot=${snapshotId}`, e)}
-              >
-                {counts?.vision || 0}
               </text>
             </g>
 
@@ -363,6 +365,18 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 onMouseEnter={(e) => handleMouseEnter('Values', e)}
                 onMouseLeave={handleMouseLeave}
               />
+              <text 
+                x={centerX} 
+                y={y3 + 20} 
+                fill="white" 
+                fontSize="20" 
+                fontWeight="700"
+                textAnchor="middle"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=value&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.value || 0}
+              </text>
               <text
                 x={centerX}
                 y={(y3 + y4) / 2 + 5}
@@ -373,17 +387,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 className="pointer-events-none select-none"
               >
                 Values
-              </text>
-              <text 
-                x={level4.right + 40} 
-                y={(y3 + y4) / 2 + 5} 
-                fill="currentColor" 
-                fontSize="18" 
-                fontWeight="600"
-                className="cursor-pointer hover:underline"
-                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=value&snapshot=${snapshotId}`, e)}
-              >
-                {counts?.value || 0}
               </text>
             </g>
 
