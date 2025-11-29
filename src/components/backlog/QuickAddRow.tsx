@@ -21,13 +21,13 @@ export function QuickAddRow({ programs, onAdd }: QuickAddRowProps) {
   };
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-t border-b border-[#EBECF0] bg-white">
+    <div className="flex items-center gap-3 px-4 py-3 border-t border-b border-border bg-background">
       <input
         type="text"
         placeholder="New Epic Name..."
         value={epicName}
         onChange={(e) => setEpicName(e.target.value)}
-        className="flex-1 max-w-[400px] px-3 py-2 border border-[#DFE1E6] rounded text-sm text-[#172B4D] placeholder:text-[#97A0AF] focus:border-[#0052CC] focus:outline-none focus:ring-2 focus:ring-[#DEEBFF]"
+        className="flex-1 max-w-[400px] px-3 py-2 border border-input rounded text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring"
         onKeyDown={(e) => {
           if (e.key === 'Enter' && epicName.trim() && selectedProgram) {
             handleAdd();
@@ -36,7 +36,7 @@ export function QuickAddRow({ programs, onAdd }: QuickAddRowProps) {
       />
       
       <Select value={selectedProgram} onValueChange={setSelectedProgram}>
-        <SelectTrigger className="w-[150px] border-[#DFE1E6] text-sm">
+        <SelectTrigger className="w-[150px] border-input text-sm">
           <SelectValue placeholder="Select Program" />
         </SelectTrigger>
         <SelectContent>
@@ -51,13 +51,13 @@ export function QuickAddRow({ programs, onAdd }: QuickAddRowProps) {
       <button
         onClick={handleAdd}
         disabled={!epicName.trim() || !selectedProgram}
-        className="flex items-center gap-1.5 px-4 py-2 border border-[#DFE1E6] rounded text-sm text-[#172B4D] bg-white hover:bg-[#F4F5F7] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-1.5 px-4 py-2 border border-input rounded text-sm text-foreground bg-background hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <Plus className="w-4 h-4" />
         Add
       </button>
 
-      <div className="ml-auto flex items-center gap-1 px-3 text-sm text-[#6B778C] cursor-pointer hover:text-[#172B4D]">
+      <div className="ml-auto flex items-center gap-1 px-3 text-sm text-muted-foreground cursor-pointer hover:text-foreground">
         Labels
         <span className="ml-1">▼</span>
       </div>

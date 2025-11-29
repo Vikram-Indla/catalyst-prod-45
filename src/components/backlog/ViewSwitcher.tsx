@@ -37,7 +37,7 @@ export function ViewSwitcher({ currentView, kanbanMode, onViewChange, onKanbanMo
         onClick={() => onViewChange('list')}
         className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded transition-colors ${
           currentView === 'list'
-            ? 'bg-[#DEEBFF] text-primary'
+            ? 'bg-primary/10 text-primary'
             : 'text-muted-foreground hover:bg-muted hover:text-foreground'
         }`}
       >
@@ -53,7 +53,7 @@ export function ViewSwitcher({ currentView, kanbanMode, onViewChange, onKanbanMo
           }}
           className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded transition-colors ${
             currentView === 'kanban'
-              ? 'bg-[#DEEBFF] text-primary'
+              ? 'bg-primary/10 text-primary'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
           }`}
         >
@@ -73,7 +73,7 @@ export function ViewSwitcher({ currentView, kanbanMode, onViewChange, onKanbanMo
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors ${
                   kanbanMode === option.id
-                    ? 'bg-[#DEEBFF] text-primary font-medium'
+                    ? 'bg-primary/10 text-primary font-medium'
                     : 'text-foreground hover:bg-muted'
                 }`}
               >
@@ -89,7 +89,7 @@ export function ViewSwitcher({ currentView, kanbanMode, onViewChange, onKanbanMo
         onClick={() => onViewChange('unassigned')}
         className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded transition-colors ${
           currentView === 'unassigned'
-            ? 'bg-[#DEEBFF] text-primary'
+            ? 'bg-primary/10 text-primary'
             : 'text-muted-foreground hover:bg-muted hover:text-foreground'
         }`}
       >

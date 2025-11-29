@@ -8,16 +8,16 @@ export function StatusDot({ status }: StatusDotProps) {
   const getStatusColor = () => {
     switch (status) {
       case 'in_progress':
-        return 'bg-[#FF8B00]';
+        return 'bg-brand-gold';
       case 'done':
       case 'accepted':
-        return 'bg-[#0052CC]';
+        return 'bg-primary';
       case 'not_started':
-        return 'bg-[#C1C7D0]';
+        return 'bg-muted';
       case 'blocked':
-        return 'bg-[#DE350B]';
+        return 'bg-destructive';
       default:
-        return 'bg-[#C1C7D0]';
+        return 'bg-muted';
     }
   };
 
