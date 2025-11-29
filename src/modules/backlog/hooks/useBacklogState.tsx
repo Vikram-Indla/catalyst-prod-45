@@ -17,6 +17,13 @@ interface BacklogStateContextValue extends BacklogState {
 
 const BacklogStateContext = createContext<BacklogStateContextValue | null>(null);
 
+interface BacklogStateProviderProps {
+  children: ReactNode;
+  initialScope?: BacklogScope;
+  initialType?: BacklogType;
+  contextId?: string;
+}
+
 const DEFAULT_STATE: BacklogState = {
   scope: 'program',
   type: 'epic',
@@ -30,7 +37,12 @@ const DEFAULT_STATE: BacklogState = {
   unassignedOpen: false,
 };
 
-export function BacklogStateProvider({ children }: { children: ReactNode }) {
+export function BacklogStateProvider({ 
+  children, 
+  initialScope, 
+  initialType, 
+  contextId 
+}: BacklogStateProviderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -38,8 +50,8 @@ export function BacklogStateProvider({ children }: { children: ReactNode }) {
   const parseURLParams = (): BacklogState => {
     const params = new URLSearchParams(location.search);
     return {
-      scope: (params.get('scope') as BacklogScope) || DEFAULT_STATE.scope,
-      type: (params.get('type') as BacklogType) || DEFAULT_STATE.type,
+      scope: (params.get('scope') as BacklogScope) || initialScope || DEFAULT_STATE.scope,
+      type: (params.get('type') as BacklogType) || initialType || DEFAULT_STATE.type,
       timeboxType: (params.get('timeboxType') as TimeboxType) || DEFAULT_STATE.timeboxType,
       timeboxId: params.get('timeboxId') || DEFAULT_STATE.timeboxId,
       view: (params.get('view') as BacklogViewType) || DEFAULT_STATE.view,
