@@ -29,15 +29,14 @@ export function FeatureStatusModal({ isOpen, onClose, feature }: FeatureStatusMo
     : 0;
 
   const isOnTrack = feature.status === 'on_track';
-  const statusColor = isOnTrack ? '#36B37E' : feature.status === 'at_risk' ? '#FF991F' : '#DE350B';
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[460px] p-0 bg-[#172B4D] text-white border-none">
+      <DialogContent className="max-w-[460px] p-0 bg-primary text-primary-foreground border-none">
         <div className="relative p-6">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-white/70 hover:text-white"
+            className="absolute top-4 right-4 text-primary-foreground/70 hover:text-primary-foreground"
           >
             <X className="w-5 h-5" />
           </button>
@@ -47,7 +46,7 @@ export function FeatureStatusModal({ isOpen, onClose, feature }: FeatureStatusMo
             <h3 className="text-2xl font-semibold mb-2">
               {isOnTrack ? 'On Track' : feature.status === 'at_risk' ? 'At Risk' : 'Off Track'}
             </h3>
-            <p className="text-sm text-white/80">
+            <p className="text-sm text-primary-foreground/80">
               The Feature is in <span className="font-semibold">{feature.processStep || '2 - In Progress'}</span> and is currently in{' '}
               <span className="font-semibold">Implementing</span>
             </p>
@@ -56,53 +55,44 @@ export function FeatureStatusModal({ isOpen, onClose, feature }: FeatureStatusMo
           {/* Completion Percentage */}
           <div className="mb-6">
             <h4 className="text-xl font-semibold mb-3">
-              {completionPercent}% Done <span className="text-sm font-normal text-white/70">(based on story points)</span>
+              {completionPercent}% Done <span className="text-sm font-normal text-primary-foreground/70">(based on story points)</span>
             </h4>
 
             {/* Story Points Progress */}
             <div className="mb-3">
-              <div className="flex justify-between text-sm text-white/80 mb-1">
+              <div className="flex justify-between text-sm text-primary-foreground/80 mb-1">
                 <span>{feature.storyPointsAccepted} of {feature.storyPointsTotal} Story Points Accepted</span>
               </div>
-              <div className="h-3 bg-white/20 rounded-full overflow-hidden">
+              <div className="h-3 bg-primary-foreground/20 rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${completionPercent}%`,
-                    backgroundColor: '#36B37E'
-                  }}
+                  className="h-full rounded-full bg-success"
+                  style={{ width: `${completionPercent}%` }}
                 />
               </div>
             </div>
 
             {/* Stories Accepted Progress */}
             <div className="mb-3">
-              <div className="flex justify-between text-sm text-white/80 mb-1">
+              <div className="flex justify-between text-sm text-primary-foreground/80 mb-1">
                 <span>{feature.storiesAccepted} of {feature.storiesTotal} Stories Accepted</span>
               </div>
-              <div className="h-3 bg-white/20 rounded-full overflow-hidden">
+              <div className="h-3 bg-primary-foreground/20 rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${storiesAcceptedPercent}%`,
-                    backgroundColor: '#36B37E'
-                  }}
+                  className="h-full rounded-full bg-success"
+                  style={{ width: `${storiesAcceptedPercent}%` }}
                 />
               </div>
             </div>
 
             {/* Stories Delivered Progress */}
             <div className="mb-3">
-              <div className="flex justify-between text-sm text-white/80 mb-1">
+              <div className="flex justify-between text-sm text-primary-foreground/80 mb-1">
                 <span>{feature.storiesDelivered} of {feature.storiesTotal} Stories Delivered</span>
               </div>
-              <div className="h-3 bg-white/20 rounded-full overflow-hidden">
+              <div className="h-3 bg-primary-foreground/20 rounded-full overflow-hidden">
                 <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${storiesDeliveredPercent}%`,
-                    backgroundColor: storiesDeliveredPercent === 0 ? '#FFFFFF' : '#36B37E'
-                  }}
+                  className={`h-full rounded-full ${storiesDeliveredPercent === 0 ? 'bg-primary-foreground' : 'bg-success'}`}
+                  style={{ width: `${storiesDeliveredPercent}%` }}
                 />
               </div>
             </div>
@@ -111,16 +101,13 @@ export function FeatureStatusModal({ isOpen, onClose, feature }: FeatureStatusMo
           {/* Scope Section */}
           <div className="mb-6">
             <h4 className="text-lg font-semibold mb-3">Scope</h4>
-            <div className="h-4 bg-white/20 rounded-full overflow-hidden mb-2">
+            <div className="h-4 bg-primary-foreground/20 rounded-full overflow-hidden mb-2">
               <div
-                className="h-full rounded-full"
-                style={{
-                  width: `${scopePercent}%`,
-                  backgroundColor: '#0052CC'
-                }}
+                className="h-full rounded-full bg-brand-gold"
+                style={{ width: `${scopePercent}%` }}
               />
             </div>
-            <p className="text-sm text-white/80">
+            <p className="text-sm text-primary-foreground/80">
               Estimate of {feature.scopeEstimate} points / {feature.scopeActual} points
             </p>
           </div>
@@ -129,7 +116,7 @@ export function FeatureStatusModal({ isOpen, onClose, feature }: FeatureStatusMo
           <div>
             <h4 className="text-lg font-semibold mb-2">Add Notes</h4>
             <textarea
-              className="w-full min-h-[80px] px-3 py-2 bg-white/10 border border-white/20 rounded text-sm text-white placeholder:text-white/50 focus:outline-none focus:border-white/40"
+              className="w-full min-h-[80px] px-3 py-2 bg-primary-foreground/10 border border-primary-foreground/20 rounded text-sm text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:border-primary-foreground/40"
               placeholder="Add notes about this feature..."
             />
           </div>

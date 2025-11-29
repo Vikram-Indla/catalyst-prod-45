@@ -11,9 +11,9 @@ interface ValueTabProps {
 }
 
 function getScoreColor(score: number): string {
-  if (score >= 80) return '#36B37E'; // green
-  if (score >= 50) return '#FF991F'; // orange
-  return '#DE350B'; // red
+  if (score >= 80) return 'hsl(var(--success))';
+  if (score >= 50) return 'hsl(var(--warning))';
+  return 'hsl(var(--destructive))';
 }
 
 export function ValueTab({ 
@@ -70,7 +70,7 @@ export function ValueTab({
         )}
         {valueScoreComparison !== undefined && (
           <p className="text-sm text-foreground text-center mb-6">
-            That's <span className="font-semibold" style={{ color: '#36B37E' }}>{valueScoreComparison}% Higher</span> than other associated Epics that are using this score card.
+            That's <span className="font-semibold text-success">{valueScoreComparison}% Higher</span> than other associated Epics that are using this score card.
           </p>
         )}
         <Button size="lg" className="w-full">Analyze</Button>

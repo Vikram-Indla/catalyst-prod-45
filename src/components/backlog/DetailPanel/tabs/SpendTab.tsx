@@ -34,7 +34,7 @@ function DonutChart({ budget, acceptedSpend }: { budget: number; acceptedSpend: 
           cy="80"
           r={radius}
           fill="none"
-          stroke="#36B37E"
+          stroke="hsl(var(--success))"
           strokeWidth="20"
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -42,7 +42,7 @@ function DonutChart({ budget, acceptedSpend }: { budget: number; acceptedSpend: 
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-        <div className="text-sm font-semibold" style={{ color: '#36B37E' }}>${acceptedSpend.toLocaleString()}</div>
+        <div className="text-sm font-semibold text-success">${acceptedSpend.toLocaleString()}</div>
         <div className="text-xs text-muted-foreground">of ${budget?.toLocaleString()}</div>
         <div className="text-xs text-muted-foreground">spent</div>
       </div>
@@ -95,10 +95,10 @@ export function SpendTab({
           <div className="h-px bg-border"></div>
           <div className="flex items-center justify-between py-3">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-[#36B37E]" />
+              <div className="w-3 h-3 rounded-full bg-success" />
               <span className="text-base text-muted-foreground">Accepted Spend</span>
             </div>
-            <span className="text-lg font-semibold" style={{ color: '#36B37E' }}>
+            <span className="text-lg font-semibold text-success">
               ${acceptedSpend.toLocaleString()}
             </span>
           </div>
@@ -136,7 +136,7 @@ export function SpendTab({
           >
             <div className="text-base font-semibold text-foreground mb-1">Forecasted Spend</div>
             <div className="text-sm text-muted-foreground mb-4">by forecasts</div>
-            <div className="text-3xl font-bold" style={{ color: '#36B37E' }}>
+            <div className="text-3xl font-bold text-success">
               ${forecastedSpend.toLocaleString()}
             </div>
           </button>
@@ -148,11 +148,11 @@ export function SpendTab({
             <div className="text-base font-semibold text-foreground mb-1">Estimated Spend</div>
             <div className="text-sm text-muted-foreground mb-4">by features</div>
             <div className="flex items-center gap-3">
-              <div className="text-3xl font-bold" style={{ color: '#FF991F' }}>
+              <div className="text-3xl font-bold text-warning">
                 ${estimatedSpend.toLocaleString()}
               </div>
               {estimatedSpend > (budget || 0) && (
-                <AlertTriangle className="w-6 h-6" style={{ color: '#FFAB00' }} />
+                <AlertTriangle className="w-6 h-6 text-warning" />
               )}
             </div>
           </button>
@@ -166,7 +166,7 @@ export function SpendTab({
               <ExternalLink className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <div className="text-sm text-muted-foreground mb-4">by stories</div>
-            <div className="text-3xl font-bold" style={{ color: '#36B37E' }}>
+            <div className="text-3xl font-bold text-success">
               ${acceptedSpend.toLocaleString()}
             </div>
           </button>
