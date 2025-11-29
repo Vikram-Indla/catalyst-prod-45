@@ -3,6 +3,7 @@ export * from './types';
 
 // Hooks
 export { useBacklogState, BacklogStateProvider } from './hooks/useBacklogState';
+export { useBacklogActions } from './hooks/useBacklogActions';
 
 // API
 export * from './api/backlogApi';

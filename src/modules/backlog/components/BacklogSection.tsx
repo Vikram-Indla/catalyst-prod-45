@@ -7,6 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { QuickAddRow } from './QuickAddRow';
 import { BacklogContextMenu } from './BacklogContextMenu';
+import { useBacklogActions } from '../hooks/useBacklogActions';
+import { useBacklogState } from '../hooks/useBacklogState';
 
 interface BacklogSectionProps {
   section: BacklogPISection;
@@ -110,6 +112,9 @@ function BacklogItemRow({
   dragHandleProps,
   isDragging,
 }: BacklogItemRowProps) {
+  const { type } = useBacklogState();
+  const actions = useBacklogActions(type);
+
   const healthColor = {
     green: 'bg-green-500',
     yellow: 'bg-yellow-500',
@@ -121,11 +126,13 @@ function BacklogItemRow({
     <BacklogContextMenu
       itemId={item.id}
       onOpen={() => onItemClick(item.id)}
-      onDuplicate={() => console.log('Duplicate', item.id)}
-      onMoveToTop={() => console.log('Move to top', item.id)}
-      onMoveToBottom={() => console.log('Move to bottom', item.id)}
-      onDelete={() => console.log('Delete', item.id)}
-      onPark={() => console.log('Park', item.id)}
+      onDuplicate={() => actions.duplicate(item.id)}
+      onMoveToTop={() => actions.moveToTop(item.id)}
+      onMoveToBottom={() => actions.moveToBottom(item.id)}
+      onMoveToPI={(piId) => actions.moveToPI(item.id, piId)}
+      onDelete={() => actions.deleteItem(item.id)}
+      onPark={() => actions.park(item.id)}
+      availablePIs={actions.availablePIs}
     >
       <div
         className={cn(
