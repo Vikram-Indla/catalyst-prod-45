@@ -187,8 +187,11 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
         const isLeftSide = ['Yearly Goals', 'Portfolio Objectives', 'Program Objectives'].includes(layerName);
         
         let tooltipX;
-        if (layerName === 'Visions' || layerName === 'Values') {
-          // Full-width layers: straddle the right edge
+        if (layerName === 'Visions') {
+          // Visions: position completely outside the right edge
+          tooltipX = Math.min(maxX, rightEdge + 20);
+        } else if (layerName === 'Values') {
+          // Values: straddle the right edge
           tooltipX = Math.min(maxX, rightEdge - tooltipHalfWidth);
         } else {
           // Split layers: straddle the respective edge
