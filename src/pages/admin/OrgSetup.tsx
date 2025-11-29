@@ -41,7 +41,7 @@ export default function OrgSetup() {
   const { data: teams } = useQuery({
     queryKey: ['admin-teams'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('teams').select('*, programs(name)').order('name');
+      const { data, error } = await supabase.from('teams').select('*, programs!program_id(name)').order('name');
       if (error) throw error;
       return data;
     },

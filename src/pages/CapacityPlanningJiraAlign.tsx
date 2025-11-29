@@ -143,7 +143,7 @@ export default function CapacityPlanningJiraAlign() {
     queryFn: async () => {
       let query = supabase
         .from('teams')
-        .select('*, programs!inner(id, name, portfolio_id)');
+        .select('*, programs!program_id(id, name, portfolio_id)');
       
       if (selectedPrograms.length > 0) {
         query = query.in('program_id', selectedPrograms);

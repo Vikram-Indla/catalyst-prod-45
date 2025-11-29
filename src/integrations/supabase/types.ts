@@ -2217,30 +2217,39 @@ export type Database = {
         Row: {
           created_at: string | null
           end_date: string | null
+          goal: string | null
           id: string
           name: string
           pi_id: string
+          short_name: string | null
           start_date: string | null
+          sync_date: string | null
           team_id: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           end_date?: string | null
+          goal?: string | null
           id?: string
           name: string
           pi_id: string
+          short_name?: string | null
           start_date?: string | null
+          sync_date?: string | null
           team_id?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           end_date?: string | null
+          goal?: string | null
           id?: string
           name?: string
           pi_id?: string
+          short_name?: string | null
           start_date?: string | null
+          sync_date?: string | null
           team_id?: string | null
           updated_at?: string | null
         }
@@ -4449,35 +4458,182 @@ export type Database = {
           },
         ]
       }
-      teams: {
+      team_metrics: {
+        Row: {
+          actual_velocity: number | null
+          created_at: string | null
+          cycle_time_avg: number | null
+          id: string
+          iteration_id: string | null
+          metric_date: string
+          planned_velocity: number | null
+          story_points_committed: number | null
+          story_points_completed: number | null
+          team_id: string
+          throughput: number | null
+          updated_at: string | null
+          wip_count: number | null
+        }
+        Insert: {
+          actual_velocity?: number | null
+          created_at?: string | null
+          cycle_time_avg?: number | null
+          id?: string
+          iteration_id?: string | null
+          metric_date: string
+          planned_velocity?: number | null
+          story_points_committed?: number | null
+          story_points_completed?: number | null
+          team_id: string
+          throughput?: number | null
+          updated_at?: string | null
+          wip_count?: number | null
+        }
+        Update: {
+          actual_velocity?: number | null
+          created_at?: string | null
+          cycle_time_avg?: number | null
+          id?: string
+          iteration_id?: string | null
+          metric_date?: string
+          planned_velocity?: number | null
+          story_points_committed?: number | null
+          story_points_completed?: number | null
+          team_id?: string
+          throughput?: number | null
+          updated_at?: string | null
+          wip_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_metrics_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_subscriptions: {
         Row: {
           created_at: string | null
           id: string
-          name: string
-          program_id: string
-          status: Database["public"]["Enums"]["team_status"] | null
-          updated_at: string | null
-          velocity_baseline: number | null
+          team_id: string
+          user_id: string
         }
         Insert: {
           created_at?: string | null
           id?: string
-          name: string
-          program_id: string
-          status?: Database["public"]["Enums"]["team_status"] | null
-          updated_at?: string | null
-          velocity_baseline?: number | null
+          team_id: string
+          user_id: string
         }
         Update: {
           created_at?: string | null
           id?: string
-          name?: string
-          program_id?: string
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_subscriptions_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          allow_task_deletion: boolean | null
+          burn_hours: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          kanban_auto_populate_estimate: boolean | null
+          kanban_throughput: number | null
+          kanban_wip_limit: number | null
+          name: string
+          parent_portfolio_id: string | null
+          parent_program_id: string | null
+          parent_solution_id: string | null
+          program_id: string | null
+          region_id: string | null
+          short_name: string | null
+          sprint_prefix: string | null
+          status: Database["public"]["Enums"]["team_status"] | null
+          team_type: Database["public"]["Enums"]["team_type"] | null
+          track_by: Database["public"]["Enums"]["track_by_type"] | null
+          updated_at: string | null
+          velocity_baseline: number | null
+        }
+        Insert: {
+          allow_task_deletion?: boolean | null
+          burn_hours?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          kanban_auto_populate_estimate?: boolean | null
+          kanban_throughput?: number | null
+          kanban_wip_limit?: number | null
+          name: string
+          parent_portfolio_id?: string | null
+          parent_program_id?: string | null
+          parent_solution_id?: string | null
+          program_id?: string | null
+          region_id?: string | null
+          short_name?: string | null
+          sprint_prefix?: string | null
           status?: Database["public"]["Enums"]["team_status"] | null
+          team_type?: Database["public"]["Enums"]["team_type"] | null
+          track_by?: Database["public"]["Enums"]["track_by_type"] | null
+          updated_at?: string | null
+          velocity_baseline?: number | null
+        }
+        Update: {
+          allow_task_deletion?: boolean | null
+          burn_hours?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          kanban_auto_populate_estimate?: boolean | null
+          kanban_throughput?: number | null
+          kanban_wip_limit?: number | null
+          name?: string
+          parent_portfolio_id?: string | null
+          parent_program_id?: string | null
+          parent_solution_id?: string | null
+          program_id?: string | null
+          region_id?: string | null
+          short_name?: string | null
+          sprint_prefix?: string | null
+          status?: Database["public"]["Enums"]["team_status"] | null
+          team_type?: Database["public"]["Enums"]["team_type"] | null
+          track_by?: Database["public"]["Enums"]["track_by_type"] | null
           updated_at?: string | null
           velocity_baseline?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "teams_parent_portfolio_id_fkey"
+            columns: ["parent_portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "teams_parent_program_id_fkey"
+            columns: ["parent_program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "teams_program_id_fkey"
             columns: ["program_id"]
@@ -4926,8 +5082,17 @@ export type Database = {
       story_status: "todo" | "in_progress" | "done"
       subtask_status: "todo" | "in_progress" | "done"
       team_status: "active" | "archived"
+      team_type:
+        | "AGILE"
+        | "KANBAN"
+        | "COP"
+        | "PROGRAM"
+        | "PORTFOLIO"
+        | "SOLUTION"
+        | "PROCESS_FLOW"
       test_status: "never_tested" | "success" | "fail"
       theme_status: "proposed" | "active" | "done" | "cancelled"
+      track_by_type: "POINTS" | "HOURS"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -5135,8 +5300,18 @@ export const Constants = {
       story_status: ["todo", "in_progress", "done"],
       subtask_status: ["todo", "in_progress", "done"],
       team_status: ["active", "archived"],
+      team_type: [
+        "AGILE",
+        "KANBAN",
+        "COP",
+        "PROGRAM",
+        "PORTFOLIO",
+        "SOLUTION",
+        "PROCESS_FLOW",
+      ],
       test_status: ["never_tested", "success", "fail"],
       theme_status: ["proposed", "active", "done", "cancelled"],
+      track_by_type: ["POINTS", "HOURS"],
     },
   },
 } as const
