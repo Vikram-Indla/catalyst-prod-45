@@ -172,32 +172,36 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       const { left: leftEdge, right: rightEdge } = getXAtY(layerCenterY);
       
       const tooltipWidth = 220; // Width of the tooltip rect
+      const tooltipHeight = 60; // Height of the tooltip rect
       const tooltipHalfWidth = tooltipWidth / 2;
       const minX = 10; // Minimum X position to keep tooltip visible
       const maxX = 1000 - tooltipWidth - 10; // Maximum X position
       
-      // All layers: tooltip half outside, half inside (straddling the edge)
-      // For top 3 full-width layers, position on right edge
-      // For bottom 6 split layers, position based on left/right side
-      const isTopLayer = ['Missions', 'Visions', 'Values'].includes(layerName);
-      const isLeftSide = ['Yearly Goals', 'Portfolio Objectives', 'Program Objectives'].includes(layerName);
-      
-      let tooltipX;
-      if (isTopLayer) {
-        // Top 3 layers: straddle the right edge
-        tooltipX = Math.min(maxX, rightEdge - tooltipHalfWidth);
+      // Special positioning for Missions (top tip)
+      if (layerName === 'Missions') {
+        // Position tooltip centered above the pyramid tip
+        const tooltipX = centerX - tooltipHalfWidth;
+        const tooltipY = y1 - tooltipHeight - 10; // 10px above the tip
+        setTooltipPos({ x: tooltipX, y: tooltipY + tooltipHeight / 2 }); // Center point for proper rendering
       } else {
-        // Bottom 6 compartments: straddle the respective edge
-        if (isLeftSide) {
-          // Left compartments: straddle the left edge, but ensure visibility
-          tooltipX = Math.max(minX, leftEdge - tooltipHalfWidth);
-        } else {
-          // Right compartments: straddle the right edge, but ensure visibility
+        // All other layers: tooltip half outside, half inside (straddling the edge)
+        const isLeftSide = ['Yearly Goals', 'Portfolio Objectives', 'Program Objectives'].includes(layerName);
+        
+        let tooltipX;
+        if (layerName === 'Visions' || layerName === 'Values') {
+          // Full-width layers: straddle the right edge
           tooltipX = Math.min(maxX, rightEdge - tooltipHalfWidth);
+        } else {
+          // Split layers: straddle the respective edge
+          if (isLeftSide) {
+            tooltipX = Math.max(minX, leftEdge - tooltipHalfWidth);
+          } else {
+            tooltipX = Math.min(maxX, rightEdge - tooltipHalfWidth);
+          }
         }
+        
+        setTooltipPos({ x: tooltipX, y: layerCenterY });
       }
-      
-      setTooltipPos({ x: tooltipX, y: layerCenterY });
     }
     setHoveredLayer(layerName);
   };
