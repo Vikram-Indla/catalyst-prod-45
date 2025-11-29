@@ -80,8 +80,8 @@ export function HomeContent() {
                   <Star
                     className={`h-5 w-5 ${
                       isStarred(room.room_type, room.room_id)
-                        ? "text-yellow-500 fill-yellow-500"
-                        : "text-muted-foreground hover:text-yellow-500"
+                        ? "text-brand-gold fill-brand-gold"
+                        : "text-muted-foreground hover:text-brand-gold"
                     }`}
                   />
                 </button>
@@ -138,7 +138,7 @@ export function HomeContent() {
                   }}
                   className="absolute top-4 right-4 z-10 p-1 hover:scale-110 transition-transform"
                 >
-                  <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                  <Star className="h-5 w-5 text-brand-gold fill-brand-gold" />
                 </button>
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-5">

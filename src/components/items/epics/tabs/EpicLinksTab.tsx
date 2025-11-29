@@ -75,15 +75,15 @@ export function EpicLinksTab({ epic }: EpicLinksTabProps) {
 
   const getLinkTypeBadge = (type: string) => {
     const types: Record<string, { label: string; color: string }> = {
-      documentation: { label: 'Documentation', color: 'bg-blue-500' },
+      documentation: { label: 'Documentation', color: 'bg-info' },
       design: { label: 'Design', color: 'bg-workitem-theme' },
-      ticket: { label: 'Ticket', color: 'bg-green-500' },
-      reference: { label: 'Reference', color: 'bg-orange-500' },
-      other: { label: 'Other', color: 'bg-gray-500' }
+      ticket: { label: 'Ticket', color: 'bg-success' },
+      reference: { label: 'Reference', color: 'bg-brand-gold' },
+      other: { label: 'Other', color: 'bg-muted' }
     };
     const t = types[type] || types.other;
     return (
-      <span className={`inline-block px-2 py-1 text-xs font-medium text-white rounded ${t.color}`}>
+      <span className={`inline-block px-2 py-1 text-xs font-medium text-primary-foreground rounded ${t.color}`}>
         {t.label}
       </span>
     );
