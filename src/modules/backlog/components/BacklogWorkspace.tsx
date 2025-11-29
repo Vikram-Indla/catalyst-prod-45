@@ -9,20 +9,24 @@ import { EpicDetailsPanel } from './EpicDetailsPanel';
 import { BacklogFiltersDialog } from './BacklogFiltersDialog';
 import { BacklogColumnsDialog } from './BacklogColumnsDialog';
 import { PrioritizationDialog } from './PrioritizationDialog';
-import { useQuery } from '@tanstack/react-query';
+import { BacklogImportDialog } from './BacklogImportDialog';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchBacklogItems, fetchUnassignedItems } from '../api/backlogApi';
 import { exportBacklogToCsv } from '../utils/exportCsv';
 import { useEpicBacklogPreferences } from '@/hooks/useEpicBacklogPreferences';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export function BacklogWorkspace() {
   const backlogState = useBacklogState();
   const { preferences, updatePreferences } = useEpicBacklogPreferences();
+  const queryClient = useQueryClient();
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isUnassignedOpen, setIsUnassignedOpen] = useState(false);
   const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false);
   const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
   const [isPrioritizationOpen, setIsPrioritizationOpen] = useState(false);
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
 
   // Sync view changes to user preferences
@@ -90,6 +94,36 @@ export function BacklogWorkspace() {
     toast.success(`Exported ${items.length} items to CSV`);
   };
 
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (itemIds: string[]) => {
+      const tableName = backlogState.type === 'epic' ? 'epics' : backlogState.type === 'feature' ? 'features' : 'capabilities';
+      
+      const { error } = await supabase
+        .from(tableName)
+        .update({ deleted_at: new Date().toISOString() })
+        .in('id', itemIds);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
+      toast.success(`Deleted ${selectedItems.length} item(s)`);
+      setSelectedItems([]);
+    },
+    onError: (error: any) => {
+      toast.error(`Delete failed: ${error.message}`);
+    },
+  });
+
+  const handleBulkDelete = () => {
+    if (selectedItems.length > 0) {
+      if (confirm(`Are you sure you want to delete ${selectedItems.length} item(s)?`)) {
+        bulkDeleteMutation.mutate(selectedItems);
+      }
+    }
+  };
+
   const isListView = ['list', 'sprint'].includes(backlogState.view);
 
   return (
@@ -105,6 +139,8 @@ export function BacklogWorkspace() {
         onToggleUnassigned={() => setIsUnassignedOpen(!isUnassignedOpen)}
         isUnassignedOpen={isUnassignedOpen}
         onExport={handleExport}
+        onImport={() => setIsImportDialogOpen(true)}
+        onBulkDelete={handleBulkDelete}
       />
 
       <div className="flex flex-1 overflow-hidden">
@@ -169,6 +205,12 @@ export function BacklogWorkspace() {
         open={isPrioritizationOpen}
         onOpenChange={setIsPrioritizationOpen}
         selectedItems={selectedItems}
+        itemType={backlogState.type}
+      />
+
+      <BacklogImportDialog
+        open={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
         itemType={backlogState.type}
       />
     </div>
