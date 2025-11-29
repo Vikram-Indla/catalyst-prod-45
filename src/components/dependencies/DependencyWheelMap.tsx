@@ -277,8 +277,8 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
       setWheelRotation(0);
     } else {
       setSelectedNodeId(nodeId);
-      // Calculate rotation needed to position this segment at 90 degrees (horizontal, facing right)
-      const targetAngle = Math.PI / 2; // 90 degrees in radians
+      // Calculate rotation needed to position this segment at 0 radians (pointing right, 3 o'clock)
+      const targetAngle = 0; // 0 radians = pointing right
       const rotationNeeded = (targetAngle - segmentMidAngle) * (180 / Math.PI);
       setWheelRotation(rotationNeeded);
     }
