@@ -124,7 +124,7 @@ export function PortfolioRoomSidebar({
               {/* Portfolio Display (read-only, controlled by header) */}
               <div className="py-2 px-3 mb-3 bg-accent/30 border border-border/50 rounded-lg">
                 <div className="flex items-center gap-3 w-full">
-                  <div className="w-8 h-8 rounded bg-teal-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                  <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold flex-shrink-0">
                     {portfolio?.name?.substring(0, 2).toUpperCase() || 'PF'}
                   </div>
                   <div className="flex-1 text-left min-w-0">

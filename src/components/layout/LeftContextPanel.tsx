@@ -140,7 +140,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
   // Mock data - in production these would come from API
   const portfolios = [
-    { id: '1', name: 'Digital Services', abbr: 'DS', color: 'bg-teal-500' },
+    { id: '1', name: 'Digital Services', abbr: 'DS', color: 'bg-primary' },
     { id: '2', name: 'Innovation', abbr: 'IN', color: 'bg-workitem-theme' },
   ];
 
