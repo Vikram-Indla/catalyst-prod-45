@@ -40,6 +40,7 @@ interface MenuItem {
 const getEnterpriseMenuItems = (): MenuItem[] => [
   { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
   { id: 'strategic-snapshots', label: 'Strategic Snapshots', icon: Target, path: '/enterprise/snapshots', tiers: ['enterprise'] },
+  { id: 'themes', label: 'Themes', icon: Boxes, path: '/enterprise/themes', tiers: ['enterprise'] },
   { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-hub', tiers: ['enterprise'] },
   { id: 'backlog', label: 'Backlog', icon: List, path: '/enterprise/backlog', tiers: ['enterprise'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps', tiers: ['enterprise'] },
