@@ -274,13 +274,13 @@ export default function EnterpriseOKRHub() {
                       <td className="px-4 text-sm font-mono">{objective.id.slice(0, 8)}</td>
                       <td className="px-4 text-sm font-medium">{objective.summary}</td>
                       <td className="px-4 text-sm capitalize">
-                        {objective.tier.replace('_', ' ')}
+                        {objective.tier ? objective.tier.replace('_', ' ') : 'N/A'}
                       </td>
                       <td className="px-4">
                         <div className="flex items-center gap-2">
                           {getStatusIcon(objective.status)}
                           <Badge className={`text-xs ${getStatusColor(objective.status)}`}>
-                            {objective.status.replace('_', ' ').toUpperCase()}
+                            {objective.status ? objective.status.replace('_', ' ').toUpperCase() : 'N/A'}
                           </Badge>
                         </div>
                       </td>
