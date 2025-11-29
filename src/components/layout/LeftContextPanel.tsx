@@ -13,6 +13,7 @@ import {
   Users as UsersIcon,
   Target,
   Boxes,
+  Link,
 } from 'lucide-react';
 import {
   Select,
@@ -58,6 +59,7 @@ const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): 
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: portfolioId ? `/portfolio/${portfolioId}/forecast` : '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
   { id: 'program-board', label: 'Program Board', icon: Boxes, path: '/programs/program-board', tiers: ['program'] },
+  { id: 'dependencies', label: 'Dependencies', icon: Link, path: '/dependencies', tiers: ['program'] },
   { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['portfolio', 'program'] },
   { id: 'more-pages', label: 'More pages', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },

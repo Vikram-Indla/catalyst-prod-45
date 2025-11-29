@@ -42,7 +42,7 @@ import SuccessCriteria from "./pages/SuccessCriteria";
 import PortfolioKanban from "./pages/PortfolioKanban";
 import PortfolioRoadmap from "./pages/PortfolioRoadmap";
 import Roadmaps from "./pages/Roadmaps";
-import Dependencies from "./pages/Dependencies";
+import DependenciesPage from "./pages/work/Dependencies";
 import PortfolioInsights from "./pages/PortfolioInsights";
 import ProgramRoom from "./pages/ProgramRoom";
 import ProgramBoardNew from "./pages/ProgramBoardNew";
@@ -195,7 +195,7 @@ const App = () => (
               <Route path="/portfolio-kanban" element={<PortfolioKanban />} />
           <Route path="/portfolio-roadmap" element={<PortfolioRoadmap />} />
           <Route path="/roadmaps" element={<Roadmaps />} />
-              <Route path="/dependencies" element={<Dependencies />} />
+              <Route path="/dependencies" element={<DependenciesPage />} />
               <Route path="/portfolio-insights" element={<PortfolioInsights />} />
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
               <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
