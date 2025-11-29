@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+import { QuickAddRow } from './QuickAddRow';
+import { BacklogContextMenu } from './BacklogContextMenu';
 
 interface BacklogSectionProps {
   section: BacklogPISection;
@@ -55,22 +57,25 @@ export function BacklogSection({
 
       {/* Section Content */}
       {isExpanded && (
-        <div className="divide-y">
-          {section.items.length === 0 ? (
-            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-              No items in this section
-            </div>
-          ) : (
-            section.items.map((item) => (
-              <BacklogItemRow
-                key={item.id}
-                item={item}
-                isSelected={selectedItems.includes(item.id)}
-                onItemClick={onItemClick}
-                onItemSelect={onItemSelect}
-              />
-            ))
-          )}
+        <div>
+          <QuickAddRow itemType="epic" />
+          <div className="divide-y">
+            {section.items.length === 0 ? (
+              <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                No items in this section
+              </div>
+            ) : (
+              section.items.map((item) => (
+                <BacklogItemRow
+                  key={item.id}
+                  item={item}
+                  isSelected={selectedItems.includes(item.id)}
+                  onItemClick={onItemClick}
+                  onItemSelect={onItemSelect}
+                />
+              ))
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -98,13 +103,22 @@ function BacklogItemRow({
   }[item.health || 'gray'];
 
   return (
-    <div
-      className={cn(
-        'flex items-center gap-3 px-4 py-3 hover:bg-muted/50 cursor-pointer transition-colors',
-        isSelected && 'bg-muted'
-      )}
-      onClick={() => onItemClick(item.id)}
+    <BacklogContextMenu
+      itemId={item.id}
+      onOpen={() => onItemClick(item.id)}
+      onDuplicate={() => console.log('Duplicate', item.id)}
+      onMoveToTop={() => console.log('Move to top', item.id)}
+      onMoveToBottom={() => console.log('Move to bottom', item.id)}
+      onDelete={() => console.log('Delete', item.id)}
+      onPark={() => console.log('Park', item.id)}
     >
+      <div
+        className={cn(
+          'flex items-center gap-3 px-4 py-3 hover:bg-muted/50 cursor-pointer transition-colors',
+          isSelected && 'bg-muted'
+        )}
+        onClick={() => onItemClick(item.id)}
+      >
       <Checkbox
         checked={isSelected}
         onCheckedChange={(checked) => onItemSelect(item.id, checked as boolean)}
@@ -142,6 +156,7 @@ function BacklogItemRow({
           Blocked
         </div>
       )}
-    </div>
+      </div>
+    </BacklogContextMenu>
   );
 }
