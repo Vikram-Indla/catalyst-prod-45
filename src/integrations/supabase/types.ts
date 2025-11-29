@@ -1908,10 +1908,12 @@ export type Database = {
           business_value: number | null
           capability_id: string | null
           created_at: string | null
+          deleted_at: string | null
           description: string | null
           display_id: string | null
           epic_id: string
           estimate_points: number | null
+          global_rank: number | null
           health: Database["public"]["Enums"]["health_status"] | null
           id: string
           is_orphan_on_board: boolean | null
@@ -1921,6 +1923,7 @@ export type Database = {
           notes: string | null
           orphan_board_teams: string[] | null
           owner_id: string | null
+          parked_at: string | null
           pi_id: string | null
           planned_end_date: string | null
           planned_start_date: string | null
@@ -1944,10 +1947,12 @@ export type Database = {
           business_value?: number | null
           capability_id?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           display_id?: string | null
           epic_id: string
           estimate_points?: number | null
+          global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
           is_orphan_on_board?: boolean | null
@@ -1957,6 +1962,7 @@ export type Database = {
           notes?: string | null
           orphan_board_teams?: string[] | null
           owner_id?: string | null
+          parked_at?: string | null
           pi_id?: string | null
           planned_end_date?: string | null
           planned_start_date?: string | null
@@ -1980,10 +1986,12 @@ export type Database = {
           business_value?: number | null
           capability_id?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           display_id?: string | null
           epic_id?: string
           estimate_points?: number | null
+          global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
           is_orphan_on_board?: boolean | null
@@ -1993,6 +2001,7 @@ export type Database = {
           notes?: string | null
           orphan_board_teams?: string[] | null
           owner_id?: string | null
+          parked_at?: string | null
           pi_id?: string | null
           planned_end_date?: string | null
           planned_start_date?: string | null
