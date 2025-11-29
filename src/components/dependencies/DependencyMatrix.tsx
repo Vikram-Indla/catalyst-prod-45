@@ -111,7 +111,7 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
                     <div 
                       className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer origin-bottom-left"
                       style={{ 
-                        transform: 'translateX(-50%) rotate(90deg)',
+                        transform: 'translateX(-50%) rotate(-90deg)',
                         transformOrigin: '50% 100%',
                         maxHeight: '180px',
                         textOverflow: 'ellipsis',
