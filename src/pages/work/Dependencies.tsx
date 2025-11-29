@@ -8,9 +8,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock } from 'lucide-react';
+import { Search, Plus, Download, MoreHorizontal, AlertTriangle, CheckCircle2, Clock, Grid3x3, GitBranch, List } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
+import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
+import { DependencyWheelMap } from '@/components/dependencies/DependencyWheelMap';
+import { DependencyContextMenu } from '@/components/dependencies/DependencyContextMenu';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
@@ -23,6 +26,7 @@ export default function DependenciesPage() {
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [viewMode, setViewMode] = useState<'yourRequests' | 'toDo' | 'all'>('all');
+  const [visualizationMode, setVisualizationMode] = useState<'list' | 'matrix' | 'wheel'>('list');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedDependencyId, setSelectedDependencyId] = useState<string | undefined>();
 
@@ -151,6 +155,29 @@ export default function DependenciesPage() {
           <p className="text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
         </div>
         <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 border rounded-lg p-1">
+            <Button
+              variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setVisualizationMode('list')}
+            >
+              <List className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={visualizationMode === 'matrix' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setVisualizationMode('matrix')}
+            >
+              <Grid3x3 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={visualizationMode === 'wheel' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setVisualizationMode('wheel')}
+            >
+              <GitBranch className="h-4 w-4" />
+            </Button>
+          </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -237,17 +264,24 @@ export default function DependenciesPage() {
         </Select>
       </div>
 
-      {/* View Mode Tabs */}
-      <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="mb-4">
-        <TabsList>
-          <TabsTrigger value="yourRequests">Your Requests</TabsTrigger>
-          <TabsTrigger value="toDo">To Do</TabsTrigger>
-          <TabsTrigger value="all">All</TabsTrigger>
-        </TabsList>
-      </Tabs>
+      {/* Visualization Views */}
+      {visualizationMode === 'matrix' && <DependencyMatrix piId={piFilter} />}
+      
+      {visualizationMode === 'wheel' && <DependencyWheelMap piId={piFilter} />}
 
-      {/* Dependencies Table */}
-      <Card className="flex-1 overflow-hidden">
+      {visualizationMode === 'list' && (
+        <>
+          {/* View Mode Tabs */}
+          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="mb-4">
+            <TabsList>
+              <TabsTrigger value="yourRequests">Your Requests</TabsTrigger>
+              <TabsTrigger value="toDo">To Do</TabsTrigger>
+              <TabsTrigger value="all">All</TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {/* Dependencies Table */}
+          <Card className="flex-1 overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <p className="text-muted-foreground">Loading dependencies...</p>
@@ -285,11 +319,26 @@ export default function DependenciesPage() {
               </TableHeader>
               <TableBody>
                 {filteredDependencies.map((dep) => (
-                  <TableRow
+                  <DependencyContextMenu
                     key={dep.id}
-                    className="cursor-pointer hover:bg-muted/50"
-                    onClick={() => handleRowClick(dep.id)}
+                    onEdit={() => handleRowClick(dep.id)}
+                    onDelete={async () => {
+                      if (confirm('Delete this dependency?')) {
+                        await supabase.from('dependencies').delete().eq('id', dep.id);
+                        queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
+                        toast.success('Dependency deleted');
+                      }
+                    }}
+                    onChangeStatus={async (status) => {
+                      await supabase.from('dependencies').update({ status: status as any }).eq('id', dep.id);
+                      queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
+                      toast.success('Status updated');
+                    }}
                   >
+                    <TableRow
+                      className="cursor-pointer hover:bg-muted/50"
+                      onClick={() => handleRowClick(dep.id)}
+                    >
                     <TableCell className="font-medium">
                       {dep.from_feature?.name || dep.description || '-'}
                     </TableCell>
@@ -334,12 +383,15 @@ export default function DependenciesPage() {
                       )}
                     </TableCell>
                   </TableRow>
+                  </DependencyContextMenu>
                 ))}
               </TableBody>
             </Table>
           </div>
         )}
       </Card>
+        </>
+      )}
 
       {/* Dependency Details Drawer */}
       <DependencyDetailsDrawer
