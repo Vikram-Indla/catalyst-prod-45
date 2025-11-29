@@ -71,9 +71,9 @@ export function KanbanTeamRoom({ team }: KanbanTeamRoomProps) {
             </div>
             <p className="text-xs text-muted-foreground mt-1">
               {metrics.wip <= metrics.wipLimit ? (
-                <span className="text-green-600">Within limit</span>
+                <span className="text-success">Within limit</span>
               ) : (
-                <span className="text-red-600">Over limit</span>
+                <span className="text-destructive">Over limit</span>
               )}
             </p>
           </CardContent>

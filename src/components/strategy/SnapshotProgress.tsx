@@ -104,7 +104,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
                     <td className="p-3 font-medium text-muted-foreground">Acceptance %</td>
                     <td className="text-center p-3">—</td>
                     <td className="text-center p-3">
-                      <span className="font-bold text-green-600">
+                      <span className="font-bold text-success">
                         {totalEpics > 0 ? Math.round((acceptedEpics / totalEpics) * 100) : 0}%
                       </span>
                     </td>

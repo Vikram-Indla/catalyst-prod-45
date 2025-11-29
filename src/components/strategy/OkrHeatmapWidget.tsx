@@ -17,9 +17,9 @@ export function OkrHeatmapWidget({ snapshotId, piIds }: OkrHeatmapWidgetProps) {
 
   const getCellColor = (score: number | null) => {
     if (score === null) return 'bg-muted';
-    if (score >= 0.7) return 'bg-green-500/30';
-    if (score >= 0.4) return 'bg-yellow-500/30';
-    return 'bg-red-500/30';
+    if (score >= 0.7) return 'bg-success/30';
+    if (score >= 0.4) return 'bg-warning/30';
+    return 'bg-destructive/30';
   };
 
   return (

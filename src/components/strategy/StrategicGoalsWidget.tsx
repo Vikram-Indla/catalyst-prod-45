@@ -47,7 +47,7 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
             <CardTitle className="text-base">Strategic Goals</CardTitle>
           </div>
           <div className="flex items-center gap-1 text-sm">
-            <TrendingUp className="h-4 w-4 text-green-600" />
+            <TrendingUp className="h-4 w-4 text-success" />
             <span className="font-semibold">{avgProgress}%</span>
           </div>
         </div>
