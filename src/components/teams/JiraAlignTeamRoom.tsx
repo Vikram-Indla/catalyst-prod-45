@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Team } from '@/types/team.types';
 import { useTeams } from '@/hooks/useTeams';
 import { useTeamSprints, useSprintStories, useTeamDependencies } from '@/hooks/useTeamRoom';
+import { CreateDependencyDialog } from '@/components/dependencies/CreateDependencyDialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -31,6 +32,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
   const [activeView, setActiveView] = useState<'team' | 'my'>('team');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'sprint-board'>('dashboard');
   const [workItemFilter, setWorkItemFilter] = useState('stories');
+  const [createDependencyOpen, setCreateDependencyOpen] = useState(false);
 
   // Auto-select first sprint if available
   const currentSprint = selectedSprintId 
@@ -386,12 +388,18 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     variant="link" 
                     size="sm" 
                     className="text-xs h-auto p-0"
-                    onClick={() => navigate('/dependencies?action=create')}
+                    onClick={() => setCreateDependencyOpen(true)}
                   >
                     Add New
                   </Button>
                 </div>
               </Card>
+              
+              <CreateDependencyDialog
+                open={createDependencyOpen}
+                onOpenChange={setCreateDependencyOpen}
+                teamId={team.id}
+              />
             </div>
 
             {/* Impediments Section */}
