@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -7,7 +8,15 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface BacklogFiltersDialogProps {
   open: boolean;
@@ -22,35 +31,143 @@ export function BacklogFiltersDialog({
   filters,
   onFiltersChange,
 }: BacklogFiltersDialogProps) {
+  const [localFilters, setLocalFilters] = useState(filters);
+
+  useEffect(() => {
+    if (open) {
+      setLocalFilters(filters);
+    }
+  }, [open, filters]);
+
+  // Fetch portfolios for filter
+  const { data: portfolios } = useQuery({
+    queryKey: ['portfolios-filter'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('portfolios')
+        .select('id, name')
+        .order('name');
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   const handleApply = () => {
+    onFiltersChange(localFilters);
     onOpenChange(false);
   };
 
   const handleClear = () => {
+    setLocalFilters({});
     onFiltersChange({});
   };
+
+  const states = [
+    { value: 'not_started', label: 'Not Started' },
+    { value: 'in_progress', label: 'In Progress' },
+    { value: 'accepted', label: 'Accepted' },
+  ];
+
+  const healthOptions = [
+    { value: 'green', label: 'Green' },
+    { value: 'yellow', label: 'Yellow' },
+    { value: 'red', label: 'Red' },
+    { value: 'gray', label: 'Gray' },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Filters</DialogTitle>
+          <DialogTitle>Filter Backlog Items</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Owner</Label>
-            <Input placeholder="Filter by owner..." />
+            <Label>Portfolio</Label>
+            <Select
+              value={localFilters.portfolio_id as string || ''}
+              onValueChange={(value) =>
+                setLocalFilters({ ...localFilters, portfolio_id: value || undefined })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All Portfolios" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Portfolios</SelectItem>
+                {portfolios?.map((portfolio) => (
+                  <SelectItem key={portfolio.id} value={portfolio.id}>
+                    {portfolio.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
             <Label>State</Label>
-            <Input placeholder="Filter by state..." />
+            <Select
+              value={localFilters.state as string || ''}
+              onValueChange={(value) =>
+                setLocalFilters({ ...localFilters, state: value || undefined })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All States" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All States</SelectItem>
+                {states.map((state) => (
+                  <SelectItem key={state.value} value={state.value}>
+                    {state.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
             <Label>Health</Label>
-            <Input placeholder="Filter by health..." />
+            <Select
+              value={localFilters.health as string || ''}
+              onValueChange={(value) =>
+                setLocalFilters({ ...localFilters, health: value || undefined })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All Health Statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">All Health Statuses</SelectItem>
+                {healthOptions.map((health) => (
+                  <SelectItem key={health.value} value={health.value}>
+                    {health.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Show</Label>
+            <Select
+              value={localFilters.show as string || 'active'}
+              onValueChange={(value) =>
+                setLocalFilters({ ...localFilters, show: value })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="active">Active Items</SelectItem>
+                <SelectItem value="mvp">MVP Items Only</SelectItem>
+                <SelectItem value="blocked">Blocked Items Only</SelectItem>
+                <SelectItem value="all">All Items</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
