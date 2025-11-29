@@ -163,10 +163,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Missions")}
             />
-            <foreignObject x={level2.left + 10} y={y1 + 25} width={level2.right - level2.left - 20} height="70">
-              <div className="flex flex-col items-center justify-center h-full px-2 text-center">
-                <div className="text-white font-semibold text-sm md:text-base leading-tight">Missions</div>
-                <div className="text-white/90 text-[9px] md:text-[10px] mt-1 leading-tight">Why do we exist?</div>
+            <foreignObject x={level2.left + 15} y={y1 + 20} width={level2.right - level2.left - 30} height="55">
+              <div className="flex flex-col items-center justify-center h-full px-3 text-center">
+                <div className="text-white font-semibold text-xs md:text-sm leading-tight mb-1">Missions</div>
+                <div className="text-white/90 text-[8px] md:text-[9px] leading-tight">Why do we exist?</div>
               </div>
             </foreignObject>
             {/* Clickable count on right side */}
@@ -191,10 +191,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Visions")}
             />
-            <foreignObject x={level2.left + 10} y={y2 + 15} width={level2.right - level2.left - 20} height="70">
-              <div className="flex flex-col items-center justify-center h-full px-2 text-center">
-                <div className="text-white font-semibold text-sm md:text-base leading-tight">Visions</div>
-                <div className="text-white/90 text-[9px] md:text-[10px] mt-1 leading-tight">What value do we provide?</div>
+            <foreignObject x={level2.left + 15} y={y2 + 18} width={level2.right - level2.left - 30} height="58">
+              <div className="flex flex-col items-center justify-center h-full px-3 text-center">
+                <div className="text-white font-semibold text-xs md:text-sm leading-tight mb-1">Visions</div>
+                <div className="text-white/90 text-[8px] md:text-[9px] leading-tight">What value do we provide?</div>
               </div>
             </foreignObject>
             {/* Clickable count on right side */}
@@ -219,10 +219,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Values")}
             />
-            <foreignObject x={level3.left + 10} y={y3 + 15} width={level3.right - level3.left - 20} height="70">
-              <div className="flex flex-col items-center justify-center h-full px-2 text-center">
-                <div className="text-white font-semibold text-sm md:text-base leading-tight">Values</div>
-                <div className="text-white/90 text-[9px] md:text-[10px] mt-1 leading-tight">How do we behave?</div>
+            <foreignObject x={level3.left + 15} y={y3 + 18} width={level3.right - level3.left - 30} height="58">
+              <div className="flex flex-col items-center justify-center h-full px-3 text-center">
+                <div className="text-white font-semibold text-xs md:text-sm leading-tight mb-1">Values</div>
+                <div className="text-white/90 text-[8px] md:text-[9px] leading-tight">How do we behave?</div>
               </div>
             </foreignObject>
             {/* Clickable count on right side */}
@@ -247,10 +247,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("North Stars")}
             />
-            <foreignObject x={level4.left + 10} y={y4 + 15} width={level4.right - level4.left - 20} height="70">
-              <div className="flex flex-col items-center justify-center h-full px-2 text-center">
-                <div className="text-white font-semibold text-sm md:text-base leading-tight">North Stars</div>
-                <div className="text-white/90 text-[9px] md:text-[10px] mt-1 leading-tight">What is our measurable goal?</div>
+            <foreignObject x={level4.left + 15} y={y4 + 18} width={level4.right - level4.left - 30} height="58">
+              <div className="flex flex-col items-center justify-center h-full px-3 text-center">
+                <div className="text-white font-semibold text-xs md:text-sm leading-tight mb-1">North Stars</div>
+                <div className="text-white/90 text-[8px] md:text-[9px] leading-tight">What is our measurable goal?</div>
               </div>
             </foreignObject>
             {/* Clickable count on right side */}
@@ -275,10 +275,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Long Term Goals")}
             />
-            <foreignObject x={level5.left + 10} y={y5 + 15} width={level5.right - level5.left - 20} height="70">
-              <div className="flex flex-col items-center justify-center h-full px-2 text-center">
-                <div className="text-white font-semibold text-sm md:text-base leading-tight">Long Term Goals</div>
-                <div className="text-white/90 text-[9px] md:text-[10px] mt-1 leading-tight">How will we succeed long-term?</div>
+            <foreignObject x={level5.left + 15} y={y5 + 18} width={level5.right - level5.left - 30} height="58">
+              <div className="flex flex-col items-center justify-center h-full px-3 text-center">
+                <div className="text-white font-semibold text-xs md:text-sm leading-tight mb-1">Long Term Goals</div>
+                <div className="text-white/90 text-[8px] md:text-[9px] leading-tight">How will we succeed long-term?</div>
               </div>
             </foreignObject>
             {/* Clickable count on right side */}
@@ -303,10 +303,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
               className="cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => onLayerClick("Long Term Strategies")}
             />
-            <foreignObject x={level6.left + 10} y={y6 + 15} width={level6.right - level6.left - 20} height="70">
-              <div className="flex flex-col items-center justify-center h-full px-2 text-center">
-                <div className="text-white font-semibold text-sm md:text-base leading-tight">Long Term Strategies</div>
-                <div className="text-white/90 text-[9px] md:text-[10px] mt-1 leading-tight">What is our approach?</div>
+            <foreignObject x={level6.left + 15} y={y6 + 18} width={level6.right - level6.left - 30} height="58">
+              <div className="flex flex-col items-center justify-center h-full px-3 text-center">
+                <div className="text-white font-semibold text-xs md:text-sm leading-tight mb-1">Long Term Strategies</div>
+                <div className="text-white/90 text-[8px] md:text-[9px] leading-tight">What is our approach?</div>
               </div>
             </foreignObject>
             {/* Clickable count on right side */}
