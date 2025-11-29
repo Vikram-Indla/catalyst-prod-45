@@ -7,6 +7,9 @@ export { useBacklogState, BacklogStateProvider } from './hooks/useBacklogState';
 // API
 export * from './api/backlogApi';
 
+// Utils
+export { exportBacklogToCsv } from './utils/exportCsv';
+
 // Components
 export { BacklogWorkspace } from './components/BacklogWorkspace';
 export { BacklogHeader } from './components/BacklogHeader';

@@ -31,6 +31,24 @@ export function EpicDetailsPanel({
     },
   });
 
+  const { data: children } = useQuery({
+    queryKey: ['backlog-item-children', itemId, itemType],
+    queryFn: async () => {
+      if (itemType === 'epic') {
+        const { data, error }: any = await supabase
+          .from('features')
+          .select('id, name, state, health, estimate_points')
+          .eq('epic_id', itemId)
+          .order('rank_within_epic');
+
+        if (error) throw error;
+        return data || [];
+      }
+      return [];
+    },
+    enabled: itemType === 'epic',
+  });
+
   if (!item) {
     return null;
   }
@@ -91,10 +109,49 @@ export function EpicDetailsPanel({
             </div>
           </TabsContent>
 
-          <TabsContent value="children" className="p-4 mt-0">
-            <div className="text-sm text-muted-foreground">
-              Child items will be displayed here
-            </div>
+          <TabsContent value="children" className="p-4 mt-0 space-y-2">
+            {children && children.length > 0 ? (
+              <>
+                <div className="text-xs font-medium text-muted-foreground mb-2">
+                  Features ({children.length})
+                </div>
+                {children.map((child: any) => (
+                  <div
+                    key={child.id}
+                    className="p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate">{child.name}</div>
+                        <div className="flex items-center gap-2 mt-1">
+                          {child.state && (
+                            <span className="text-xs px-2 py-0.5 bg-muted rounded">
+                              {child.state}
+                            </span>
+                          )}
+                          {child.estimate_points && (
+                            <span className="text-xs text-muted-foreground">
+                              {child.estimate_points} pts
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {child.health && (
+                        <div className={`h-2 w-2 rounded-full mt-1 ${
+                          child.health === 'green' ? 'bg-green-500' :
+                          child.health === 'yellow' ? 'bg-yellow-500' :
+                          child.health === 'red' ? 'bg-red-500' : 'bg-gray-400'
+                        }`} />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <div className="text-sm text-muted-foreground text-center py-8">
+                No child items
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="intake" className="p-4 mt-0">
