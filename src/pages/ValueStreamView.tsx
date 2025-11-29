@@ -130,7 +130,7 @@ export default function ValueStreamView() {
                 <div className="text-3xl font-bold">
                   {metrics.flowEfficiency.toFixed(0)}%
                 </div>
-                <TrendingUp className={`h-8 w-8 ${metrics.flowEfficiency >= 30 ? 'text-green-500' : 'text-amber-500'}`} />
+                <TrendingUp className={`h-8 w-8 ${metrics.flowEfficiency >= 30 ? 'text-success' : 'text-warning'}`} />
               </div>
               <Progress value={metrics.flowEfficiency} className="mt-2" />
               <p className="text-xs text-muted-foreground mt-2">
@@ -149,7 +149,7 @@ export default function ValueStreamView() {
                   {metrics.throughput}
                   <span className="text-sm font-normal text-muted-foreground ml-1">/week</span>
                 </div>
-                <Activity className="h-8 w-8 text-green-500" />
+                <Activity className="h-8 w-8 text-success" />
               </div>
               <p className="text-xs text-muted-foreground mt-2">
                 Features completed per week
