@@ -60,7 +60,7 @@ export function MilestonesTab({ epicId }: MilestonesTabProps) {
             >
               <div className="mt-0.5">
                 {milestone.state === "completed" ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
+                  <CheckCircle2 className="h-5 w-5 text-success" />
                 ) : (
                   <Circle className="h-5 w-5 text-muted-foreground" />
                 )}
@@ -78,7 +78,7 @@ export function MilestonesTab({ epicId }: MilestonesTabProps) {
                     <span>Due: {format(new Date(milestone.due_date), "MMM d, yyyy")}</span>
                   </div>
                   {milestone.completed_date && (
-                    <span className="text-green-600">
+                    <span className="text-success">
                       Completed: {format(new Date(milestone.completed_date), "MMM d, yyyy")}
                     </span>
                   )}
