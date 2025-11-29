@@ -14,12 +14,14 @@ import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDet
 import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
 import { DependencyWheelMap } from '@/components/dependencies/DependencyWheelMap';
 import { DependencyContextMenu } from '@/components/dependencies/DependencyContextMenu';
+import { ProgramRoomSidebar } from '@/components/program/ProgramRoomSidebar';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function DependenciesPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { programId } = useParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [piFilter, setPiFilter] = useState<string | undefined>(undefined);
   const [levelFilter, setLevelFilter] = useState<string | undefined>(undefined);
@@ -29,6 +31,24 @@ export default function DependenciesPage() {
   const [visualizationMode, setVisualizationMode] = useState<'list' | 'matrix' | 'wheel'>('list');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedDependencyId, setSelectedDependencyId] = useState<string | undefined>();
+
+  // Get first program as default if no programId in params
+  const { data: defaultProgram } = useQuery({
+    queryKey: ['first-program'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id')
+        .order('name')
+        .limit(1)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !programId,
+  });
+
+  const activeProgramId = programId || defaultProgram?.id;
 
   // Fetch program increments for filter
   const { data: programIncrements } = useQuery({
@@ -148,12 +168,18 @@ export default function DependenciesPage() {
   };
 
   return (
-    <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
-      <div className="flex items-center justify-between mb-6" style={{ height: 'var(--toolbar-h)' }}>
-        <div>
-          <h1 className="text-2xl font-semibold">Dependencies</h1>
-          <p className="text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
-        </div>
+    <div className="flex h-screen overflow-hidden">
+      {/* Program Room Sidebar */}
+      {activeProgramId && <ProgramRoomSidebar programId={activeProgramId} />}
+      
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
+          <div className="flex items-center justify-between mb-6" style={{ height: 'var(--toolbar-h)' }}>
+            <div>
+              <h1 className="text-2xl font-semibold">Dependencies</h1>
+              <p className="text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
+            </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1 border rounded-lg p-1">
             <Button
@@ -412,6 +438,8 @@ export default function DependenciesPage() {
         }}
         dependencyId={selectedDependencyId}
       />
+        </div>
+      </div>
     </div>
   );
 }
