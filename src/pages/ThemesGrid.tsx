@@ -326,8 +326,8 @@ export default function ThemesGrid() {
                 Navigate to: <span className="font-mono">Reports → Investment by Feature</span>
               </p>
             </div>
-            <div className="p-3 border rounded-lg bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900">
-              <p className="text-xs text-amber-900 dark:text-amber-100">
+            <div className="p-3 border rounded-lg bg-warning/10 border-warning/50">
+              <p className="text-xs text-warning-foreground">
                 <strong>Note:</strong> This is a read-only report page, not a dialog. 
                 It shows feature counts by category and business driver per PI.
               </p>

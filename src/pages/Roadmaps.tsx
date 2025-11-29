@@ -101,7 +101,7 @@ export default function Roadmaps() {
         return 'bg-success';
       case 'in_progress':
       case 'implementing':
-        return 'bg-info';
+        return 'bg-primary';
       case 'funnel':
       case 'analyzing':
         return 'bg-muted-foreground';
@@ -514,10 +514,10 @@ export default function Roadmaps() {
                     {/* Today line */}
                     {todayPosition !== null && (
                       <div
-                        className="absolute top-0 bottom-0 w-px bg-red-500 z-10"
+                        className="absolute top-0 bottom-0 w-px bg-destructive z-10"
                         style={{ left: `${todayPosition}%` }}
                       >
-                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-red-500 rounded-full" />
+                        <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-destructive rounded-full" />
                       </div>
                     )}
                   </div>

@@ -572,7 +572,7 @@ export default function ProgramBoard() {
                             setQuickViewOpen(true);
                           }}
                         >
-                          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[8px] sm:text-[9px] font-bold">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[8px] sm:text-[9px] font-bold">
                             {idx + 1}
                           </div>
                           <span className="line-clamp-1 hidden sm:inline">{objective.name}</span>
@@ -586,27 +586,27 @@ export default function ProgramBoard() {
           </div>
           
           {/* Dependencies row */}
-          <div className="border-b border-border bg-yellow-50/50">
+          <div className="border-b border-border bg-warning/10">
             <div className="flex">
-              <div className="w-32 sm:w-56 flex-shrink-0 py-2 px-2 sm:px-3 border-r border-border bg-yellow-100/50 font-medium text-[10px] sm:text-xs text-foreground">
+              <div className="w-32 sm:w-56 flex-shrink-0 py-2 px-2 sm:px-3 border-r border-border bg-warning/20 font-medium text-[10px] sm:text-xs text-foreground">
                 Dependencies
               </div>
-              <div className="w-28 sm:w-44 flex-shrink-0 py-2 px-2 sm:px-3 border-r border-border bg-yellow-50/30"></div>
+              <div className="w-28 sm:w-44 flex-shrink-0 py-2 px-2 sm:px-3 border-r border-border bg-warning/10"></div>
               {sprints?.map((sprint) => {
                 const sprintDependencies = dependencies?.filter(dep => {
                   const fromFeature = featuresData?.find(f => f.id === dep.from_feature_id);
                   return fromFeature?.team_target_completion_sprint_id === sprint.id;
                 }) || [];
                 return (
-                  <div key={sprint.id} className="flex-1 min-w-[100px] sm:min-w-[140px] py-2 px-2 sm:px-3 border-r border-border bg-yellow-50/20">
+                  <div key={sprint.id} className="flex-1 min-w-[100px] sm:min-w-[140px] py-2 px-2 sm:px-3 border-r border-border bg-warning/5">
                     <div className="flex gap-1 flex-wrap">
                       {sprintDependencies.map((dep) => (
                         <div 
                           key={dep.id}
                           className={`w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ${
-                            dep.risk_level === 'high' ? 'bg-red-500' :
-                            dep.risk_level === 'med' ? 'bg-orange-500' :
-                            'bg-yellow-500'
+                            dep.risk_level === 'high' ? 'bg-destructive' :
+                            dep.risk_level === 'med' ? 'bg-warning' :
+                            'bg-warning/70'
                           }`}
                           onClick={() => {
                             setSelectedItem(dep);
