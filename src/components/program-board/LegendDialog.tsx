@@ -18,11 +18,11 @@ export function LegendDialog({ open, onOpenChange }: LegendDialogProps) {
               <h3 className="font-semibold mb-4 text-xs uppercase tracking-wide text-muted-foreground">STATUS</h3>
               <ul className="space-y-2.5">
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-emerald-400 rounded"></span>
+                  <span className="inline-block w-5 h-5 bg-success rounded"></span>
                   <span className="text-sm">Done</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-slate-300 rounded"></span>
+                  <span className="inline-block w-5 h-5 bg-muted rounded"></span>
                   <span className="text-sm">Not Started</span>
                 </li>
                 <li className="flex items-center gap-2.5">

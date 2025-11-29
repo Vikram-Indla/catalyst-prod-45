@@ -128,7 +128,7 @@ export function EpicProcessFlowKanban({ epics, onEpicClick, onContextMenu }: Epi
       <div className="flex gap-4 overflow-x-auto pb-4">
         {/* Unassigned Column */}
         <div className="flex-shrink-0 w-80">
-          <div className="rounded-t-lg p-3 bg-slate-200">
+          <div className="rounded-t-lg p-3 bg-muted">
             <h3 className="font-semibold text-sm">Unassigned</h3>
             <span className="text-xs text-muted-foreground">
               {columns['unassigned']?.length || 0} epics
