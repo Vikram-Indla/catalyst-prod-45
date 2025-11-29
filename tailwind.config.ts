@@ -14,6 +14,22 @@ export default {
     },
     extend: {
       colors: {
+        // Enterprise Gold Brand Colors
+        brand: {
+          dark: "hsl(var(--brand-dark))",
+          gold: "hsl(var(--brand-gold))",
+          "gold-hover": "hsl(var(--brand-gold-hover))",
+          "gold-pale": "hsl(var(--brand-gold-pale))",
+          "gold-border": "hsl(var(--brand-gold-border))",
+        },
+        // Text Colors
+        text: {
+          primary: "hsl(var(--text-primary))",
+          secondary: "hsl(var(--text-secondary))",
+          tertiary: "hsl(var(--text-tertiary))",
+          muted: "hsl(var(--text-muted))",
+          inverse: "hsl(var(--text-inverse))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -127,7 +143,7 @@ export default {
         slow: "300ms",
       },
       fontFamily: {
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
         mono: ['Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
       },
       fontSize: {
