@@ -16,7 +16,6 @@ import PortfolioBacklog from "./pages/PortfolioBacklog";
 import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
 import StrategyRoom from "./pages/StrategyRoom";
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
-import { StrategyRoomNew } from "./pages/enterprise/StrategyRoomNew";
 import Themes from "./pages/Themes";
 import ThemesGrid from "./pages/ThemesGrid";
 import Initiatives from "./pages/Initiatives";
@@ -96,13 +95,6 @@ import { OKRHub as TeamOKRHub } from "./pages/team/OKRHub";
 import RoadmapsPage from "./pages/enterprise/Roadmaps";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
-import EnterpriseRoadmaps from "./pages/enterprise/EnterpriseRoadmaps";
-import EnterpriseOKRHub from "./pages/enterprise/EnterpriseOKRHub";
-import EnterpriseThemes from "./pages/enterprise/EnterpriseThemes";
-import EnterpriseInitiatives from "./pages/enterprise/EnterpriseInitiatives";
-import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
-import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
-import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
 import EnterpriseCapabilities from "./pages/enterprise/EnterpriseCapabilities";
 import EnterpriseFeatures from "./pages/enterprise/EnterpriseFeatures";
@@ -115,6 +107,9 @@ import EnterpriseSprints from "./pages/enterprise/EnterpriseSprints";
 import EnterpriseProgramIncrements from "./pages/enterprise/EnterpriseProgramIncrements";
 import EnterpriseReleaseVehicles from "./pages/enterprise/EnterpriseReleaseVehicles";
 import EnterpriseSuccessCriteria from "./pages/enterprise/EnterpriseSuccessCriteria";
+import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
+import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
+import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import SelfTest from "./pages/dev/SelfTest";
 import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
@@ -149,18 +144,16 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
               <Route path="/strategy-room" element={<StrategyRoom />} />
-              <Route path="/enterprise/strategy-room" element={<StrategyRoomNew />} />
+              <Route path="/enterprise/strategy-room" element={<StrategyRoomPage />} />
               <Route path="/enterprise/snapshots" element={<StrategicSnapshots />} />
               <Route path="/enterprise/backlog" element={<StrategicBacklog />} />
-              <Route path="/enterprise/themes" element={<EnterpriseThemes />} />
-            <Route path="/enterprise/initiatives" element={<EnterpriseInitiatives />} />
               <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
               <Route path="/enterprise/okr-tree" element={<OKRTree />} />
-              <Route path="/enterprise/okr-hub" element={<EnterpriseOKRHub />} />
+              <Route path="/enterprise/okr-hub" element={<OKRHub />} />
               <Route path="/portfolio/:portfolioId/okr-hub" element={<PortfolioOKRHub />} />
               <Route path="/program/:programId/okr-hub" element={<ProgramOKRHub />} />
               <Route path="/team/:teamId/okr-hub" element={<TeamOKRHub />} />
-              <Route path="/enterprise/roadmaps" element={<EnterpriseRoadmaps />} />
+              <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
