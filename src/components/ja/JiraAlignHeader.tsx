@@ -53,7 +53,7 @@ export function JiraAlignHeader() {
             <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
               <span className="text-xs font-bold text-primary-foreground">JA</span>
             </div>
-            <span className="font-semibold text-sm hidden md:inline">Jira Align</span>
+            <span className="font-semibold text-sm hidden md:inline">Catalyst</span>
           </div>
 
           {/* Main Navigation */}
