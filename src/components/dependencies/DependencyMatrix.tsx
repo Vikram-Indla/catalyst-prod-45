@@ -94,26 +94,26 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
 
   return (
     <div className="space-y-4">
-      <Card className="overflow-auto bg-background">
+      <Card className="overflow-auto bg-white">
         <div className="min-w-max">
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 bg-background border-b border-r border-border/40 w-48 h-44">
+                <th className="sticky left-0 z-10 bg-white border-b border-r border-gray-200 w-48 h-44">
                   {/* Empty corner cell */}
                 </th>
                 {programs.map((toProg) => (
                   <th
                     key={toProg.id}
-                    className="border-b border-r border-border/40 relative bg-background p-0 overflow-hidden"
-                    style={{ width: '56px', height: '200px', minWidth: '56px' }}
+                    className="border-b border-r border-gray-200 relative bg-white p-0 overflow-hidden"
+                    style={{ width: '64px', height: '160px', minWidth: '64px' }}
                   >
                     <div 
-                      className="absolute top-1/2 left-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer"
+                      className="absolute top-3 left-1/2 whitespace-nowrap text-xs text-gray-600 font-normal cursor-pointer"
                       style={{ 
-                        transform: 'translate(-50%, -50%) rotate(-90deg)',
-                        transformOrigin: 'center center',
-                        maxWidth: '190px'
+                        transform: 'translateX(-50%) rotate(-90deg)',
+                        transformOrigin: 'center top',
+                        maxWidth: '150px'
                       }}
                     >
                       {toProg.name}
@@ -125,8 +125,8 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
             <tbody>
               {programs.map((fromProg) => (
                 <tr key={fromProg.id}>
-                  <td className="sticky left-0 z-10 bg-background border-r border-b border-border/40 px-3 py-3 w-48">
-                    <div className="text-xs text-primary hover:text-primary/80 cursor-pointer truncate">
+                  <td className="sticky left-0 z-10 bg-white border-r border-b border-gray-200 px-4 py-3 w-48">
+                    <div className="text-sm text-gray-600 font-normal truncate">
                       {fromProg.name}
                     </div>
                   </td>
@@ -137,18 +137,18 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
                     return (
                       <td
                         key={toProg.id}
-                        className={`border-r border-b border-border/40 text-center align-middle ${
+                        className={`border-r border-b border-gray-200 text-center align-middle p-0 ${
                           isSameProgram 
-                            ? 'bg-muted/30' 
+                            ? 'bg-gray-200' 
                             : count === 0 
-                              ? 'bg-background hover:bg-muted/20' 
-                              : 'cursor-pointer hover:opacity-80 transition-opacity'
+                              ? 'bg-white' 
+                              : 'bg-[#2c3e50] cursor-pointer hover:bg-[#34495e] transition-colors'
                         }`}
                         onClick={() => !isSameProgram && count > 0 && handleCellClick(fromProg, toProg)}
-                        style={{ width: '56px', height: '56px', minWidth: '56px' }}
+                        style={{ width: '64px', height: '56px', minWidth: '64px' }}
                       >
                         {!isSameProgram && count > 0 && (
-                          <div className="inline-flex items-center justify-center bg-[#1e3a5f] text-white font-semibold text-sm rounded-md px-2.5 py-1 min-w-[32px] shadow-sm">
+                          <div className="w-full h-full flex items-center justify-center text-white font-medium text-sm">
                             {count}
                           </div>
                         )}
