@@ -40,6 +40,7 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [hoveredLinkId, setHoveredLinkId] = useState<string | null>(null);
+  const [wheelRotation, setWheelRotation] = useState(0);
 
   const { data: programs } = useQuery({
     queryKey: ['programs'],
@@ -270,8 +271,17 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
 
   const selectedNode = selectedNodeId ? nodes.find(n => n.id === selectedNodeId) || null : null;
 
-  const handleNodeClick = (nodeId: string) => {
-    setSelectedNodeId(nodeId === selectedNodeId ? null : nodeId);
+  const handleNodeClick = (nodeId: string, segmentMidAngle: number) => {
+    if (nodeId === selectedNodeId) {
+      setSelectedNodeId(null);
+      setWheelRotation(0);
+    } else {
+      setSelectedNodeId(nodeId);
+      // Calculate rotation needed to position this segment at 90 degrees (horizontal, facing right)
+      const targetAngle = Math.PI / 2; // 90 degrees in radians
+      const rotationNeeded = (targetAngle - segmentMidAngle) * (180 / Math.PI);
+      setWheelRotation(rotationNeeded);
+    }
   };
 
   const handleLinkClick = (depId: string) => {
@@ -330,15 +340,23 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
         </Card>
 
         {/* Wheel Map */}
-        <Card className="p-4 bg-background">
+        <Card className="p-4 bg-background overflow-hidden">
           <svg
             width={width}
             height={height}
             viewBox={`0 0 ${width} ${height}`}
             className="mx-auto"
           >
-            {/* Radial segments */}
-            {segments.map((segment) => {
+            {/* Group for rotating the entire wheel */}
+            <g
+              transform={`rotate(${wheelRotation} ${centerX} ${centerY})`}
+              style={{
+                transition: 'transform 0.8s cubic-bezier(0.4, 0.0, 0.2, 1)',
+                transformOrigin: `${centerX}px ${centerY}px`
+              }}
+            >
+              {/* Radial segments */}
+              {segments.map((segment) => {
               // Calculate label position INSIDE the segment (middle of the radial span)
               const labelRadius = (outerRadius + innerRadius) / 2;
               const labelX = centerX + labelRadius * Math.cos(segment.midAngle);
@@ -359,12 +377,16 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
                     d={segment.path}
                     fill={segment.color}
                     opacity={segment.isSelected ? 1 : segment.isHovered ? 0.9 : 0.8}
-                    stroke="white"
-                    strokeWidth={segment.isSelected ? 3 : 2}
-                    className="cursor-pointer transition-all"
+                    stroke={segment.isSelected ? '#fbbf24' : 'white'}
+                    strokeWidth={segment.isSelected ? 5 : 2}
+                    className="cursor-pointer"
+                    style={{
+                      filter: segment.isSelected ? 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.8))' : 'none',
+                      transition: 'all 0.3s ease'
+                    }}
                     onMouseEnter={() => setHoveredNodeId(segment.id)}
                     onMouseLeave={() => setHoveredNodeId(null)}
-                    onClick={() => handleNodeClick(segment.id)}
+                    onClick={() => handleNodeClick(segment.id, segment.midAngle)}
                   />
                   {/* Program label - RADIAL direction (following segment from center outward) */}
                   <text
@@ -388,7 +410,7 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
               );
             })}
             
-            {/* Center white circle (hub) */}
+              {/* Center white circle (hub) */}
             <circle
               cx={centerX}
               cy={centerY}
@@ -398,8 +420,8 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
               strokeWidth="1"
             />
             
-            {/* Curved dependency lines */}
-            {dependencyLines.map((line: any) => (
+              {/* Curved dependency lines */}
+              {dependencyLines.map((line: any) => (
               <path
                 key={line.id}
                 d={line.path}
@@ -415,17 +437,18 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
               >
                 <title>{`${line.fromFeature?.name || 'Feature'} → ${line.toFeature?.name || 'Feature'} (${line.status})`}</title>
               </path>
-            ))}
+              ))}
             
-            {/* Small inner circle */}
-            <circle
-              cx={centerX}
-              cy={centerY}
-              r={hubInnerRadius}
-              fill="white"
-              stroke="rgba(0,0,0,0.05)"
-              strokeWidth="1"
-            />
+              {/* Small inner circle */}
+              <circle
+                cx={centerX}
+                cy={centerY}
+                r={hubInnerRadius}
+                fill="white"
+                stroke="rgba(0,0,0,0.05)"
+                strokeWidth="1"
+              />
+            </g>
           </svg>
         </Card>
       </div>
