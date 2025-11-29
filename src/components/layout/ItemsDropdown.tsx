@@ -42,7 +42,7 @@ const workItems = [
 ];
 
 const otherItems = [
-  { key: 'objectives', label: 'Objectives', icon: Target, color: 'text-indigo-600', path: '/portfolio/:portfolioId/objectives' },
+  { key: 'objectives', label: 'Objectives', icon: Target, color: 'text-workitem-theme', path: '/portfolio/:portfolioId/objectives' },
   { key: 'dependencies', label: 'Dependencies', icon: Link2, color: 'text-pink-600', path: '/programs/:programId/dependencies' },
   { key: 'ideation', label: 'Ideation', icon: Lightbulb, color: 'text-warning-600', path: '/portfolio/:portfolioId/ideation' },
   { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'text-destructive', path: '/programs/:programId/risks' },

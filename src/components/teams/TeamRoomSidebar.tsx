@@ -183,7 +183,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle }: TeamRoomSidebarP
               {/* Team Display */}
               <div className="py-2 px-3 mb-3 bg-accent/30 border border-border/50 rounded-lg">
                 <div className="flex items-center gap-3 w-full">
-                  <div className="w-8 h-8 rounded bg-blue-500 flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                  <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
                     {team?.name?.substring(0, 2).toUpperCase() || 'TM'}
                   </div>
                   <div className="flex-1 text-left min-w-0">
@@ -250,7 +250,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle }: TeamRoomSidebarP
                     <>
                       <span className="truncate text-left flex-1">{item.label}</span>
                       {item.badge && (
-                        <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-blue-500 text-white rounded uppercase">
+                        <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-primary text-white rounded uppercase">
                           {item.badge}
                         </span>
                       )}

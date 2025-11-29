@@ -84,7 +84,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
     { id: '1', initials: 'JT', color: 'bg-orange-500' },
     { id: '2', initials: 'DF', color: 'bg-blue-900' },
     { id: '3', initials: 'IH', color: 'bg-blue-700' },
-    { id: '4', initials: 'BL', color: 'bg-cyan-500' },
+    { id: '4', initials: 'BL', color: 'bg-workitem-story' },
     { id: '5', initials: 'JM', color: 'bg-blue-400' },
     { id: '6', initials: 'NM', color: 'bg-pink-500' },
     { id: '7', initials: 'CM', color: 'bg-red-400' },
@@ -93,7 +93,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
     { id: '10', initials: 'DL', color: 'bg-green-500' },
     { id: '11', initials: 'SB', color: 'bg-orange-400' },
     { id: '12', initials: 'SS', color: 'bg-yellow-500' },
-    { id: '13', initials: 'SH', color: 'bg-cyan-400' },
+    { id: '13', initials: 'SH', color: 'bg-workitem-story' },
     { id: '14', initials: 'BS', color: 'bg-blue-500' },
   ];
 
@@ -250,11 +250,11 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         fill="none"
                         strokeDasharray={`${2 * Math.PI * 28}`}
                         strokeDashoffset={`${2 * Math.PI * 28 * (1 - metrics.timeLeft / 100)}`}
-                        className="text-cyan-500"
+                        className="text-success"
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-semibold text-cyan-500">{metrics.timeLeft}%</span>
+                      <span className="text-xs font-semibold text-success">{metrics.timeLeft}%</span>
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground mt-1">Time Left</span>

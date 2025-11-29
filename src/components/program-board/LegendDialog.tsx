@@ -26,7 +26,7 @@ export function LegendDialog({ open, onOpenChange }: LegendDialogProps) {
                   <span className="text-sm">Not Started</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-blue-500 rounded"></span>
+                  <span className="inline-block w-5 h-5 bg-primary rounded"></span>
                   <span className="text-sm">In Progress</span>
                 </li>
                 <li className="flex items-center gap-2.5">
@@ -104,15 +104,15 @@ export function LegendDialog({ open, onOpenChange }: LegendDialogProps) {
                   <span className="text-sm">Out of Program depends on Dependency</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="text-blue-500 text-base">🔗</span>
+                  <span className="text-primary text-base">🔗</span>
                   <span className="text-sm">Predecessor Feature with successors</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="text-blue-500 text-base">🔗</span>
+                  <span className="text-primary text-base">🔗</span>
                   <span className="text-sm">Successor Feature with predecessors</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="text-blue-500 text-base">🔗</span>
+                  <span className="text-primary text-base">🔗</span>
                   <span className="text-sm">Feature with successors and predecessors</span>
                 </li>
               </ul>

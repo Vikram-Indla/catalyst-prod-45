@@ -162,7 +162,7 @@ export function EpicProcessFlowKanban({ epics, onEpicClick, onContextMenu }: Epi
         {/* Process Step Columns */}
         {processSteps.map(step => (
           <div key={step.id} className="flex-shrink-0 w-80">
-            <div className="rounded-t-lg p-3 bg-blue-100">
+            <div className="rounded-t-lg p-3 bg-primary/10">
               <h3 className="font-semibold text-sm">{step.name}</h3>
               <span className="text-xs text-muted-foreground">
                 {columns[step.id]?.length || 0} epics

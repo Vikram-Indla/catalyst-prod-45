@@ -89,7 +89,7 @@ export function SpendTab({ epicId }: SpendTabProps) {
 
           <div className="flex items-center justify-between p-3 border rounded-md bg-card hover:bg-accent/50 transition-colors cursor-pointer">
             <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-blue-600" />
+              <TrendingUp className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">Forecasted Spend</span>
             </div>
             <span className="font-semibold">{formatCurrency(spend.forecasted_spend || 0)}</span>

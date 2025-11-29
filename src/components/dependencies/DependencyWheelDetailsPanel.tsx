@@ -183,7 +183,7 @@ export function DependencyWheelDetailsPanel({
                   {link.dependency?.description && (
                     <div className="pl-8 pr-2 pb-2">
                       <div className="flex items-start gap-2 py-1">
-                        <Circle className="h-2.5 w-2.5 fill-purple-500 text-purple-500 mt-1 flex-shrink-0" />
+                        <Circle className="h-2.5 w-2.5 fill-workitem-theme text-workitem-theme mt-1 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs text-muted-foreground truncate">
                             {link.toFeature?.display_id || 'F-'}: {link.toFeature?.name || 'Related Feature'}
