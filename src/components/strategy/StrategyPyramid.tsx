@@ -32,10 +32,39 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
         return acc;
       }, {} as Record<string, number>) || {};
 
-      // Fetch work items counts
-      const { data: themes } = await supabase.from('strategic_themes').select('id', { count: 'exact', head: true });
-      const { data: epics } = await supabase.from('epics').select('id', { count: 'exact', head: true });
-      const { data: features } = await supabase.from('features').select('id', { count: 'exact', head: true });
+      // Fetch work items counts filtered by snapshot
+      const { count: themesCount } = await supabase
+        .from('strategic_themes')
+        .select('id', { count: 'exact', head: true })
+        .eq('snapshot_id', snapshotId || '');
+      
+      const { count: epicsCount } = await supabase
+        .from('epics')
+        .select('id', { count: 'exact', head: true })
+        .in('theme_id', 
+          (await supabase
+            .from('strategic_themes')
+            .select('id')
+            .eq('snapshot_id', snapshotId || '')
+          ).data?.map(t => t.id) || []
+        );
+      
+      const { count: featuresCount } = await supabase
+        .from('features')
+        .select('id', { count: 'exact', head: true })
+        .in('epic_id',
+          (await supabase
+            .from('epics')
+            .select('id')
+            .in('theme_id',
+              (await supabase
+                .from('strategic_themes')
+                .select('id')
+                .eq('snapshot_id', snapshotId || '')
+              ).data?.map(t => t.id) || []
+            )
+          ).data?.map(e => e.id) || []
+        );
 
       // For objectives, use strategic_goal level from goals table
       const portfolioObjectives = countByLevel['strategic_goal'] || 0;
@@ -49,11 +78,11 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
         long_term_goal: countByLevel['long_term_goal'] || 0,
         long_term_strategy: countByLevel['long_term_strategy'] || 0,
         yearly_goal: countByLevel['yearly_goal'] || 0,
-        themes: themes?.length || 0,
+        themes: themesCount || 0,
         portfolio_objective: portfolioObjectives,
-        epics: epics?.length || 0,
+        epics: epicsCount || 0,
         program_objective: programObjectives,
-        features: features?.length || 0,
+        features: featuresCount || 0,
       };
     },
     enabled: !!snapshotId,

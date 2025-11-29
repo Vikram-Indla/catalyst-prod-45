@@ -95,6 +95,7 @@ export default function Themes() {
         start_date: row.start_date || null,
         end_date: row.end_date || null,
         color_tag: row.color_tag || null,
+        snapshot_id: 'f8c7e7b3-6b23-4261-a4ca-c011c1dc8836', // Default to Corporate Strategy 2025
       }));
       const { error } = await supabase.from('strategic_themes').insert(themesToInsert);
       if (error) throw error;
