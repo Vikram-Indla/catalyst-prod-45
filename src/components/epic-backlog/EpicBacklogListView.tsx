@@ -131,13 +131,13 @@ export function EpicBacklogListView({
   const getStatusColor = (state?: string) => {
     switch (state) {
       case 'not_started':
-        return 'bg-gray-500';
+        return 'bg-muted';
       case 'in_progress':
-        return 'bg-blue-500';
+        return 'bg-info';
       case 'done':
-        return 'bg-green-500';
+        return 'bg-success';
       default:
-        return 'bg-orange-500';
+        return 'bg-brand-gold';
     }
   };
 

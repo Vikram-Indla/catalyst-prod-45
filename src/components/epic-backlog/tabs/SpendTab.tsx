@@ -66,9 +66,9 @@ export function SpendTab({ epicId }: SpendTabProps) {
             <div className="text-xs text-muted-foreground mb-1">Total Budget</div>
             <div className="text-lg font-semibold">{formatCurrency(spend.budget || 0)}</div>
           </div>
-          <div className={`p-3 border rounded-md ${isOverBudget ? "bg-red-50 border-red-200" : "bg-card"}`}>
+          <div className={`p-3 border rounded-md ${isOverBudget ? "bg-destructive/10 border-destructive/50" : "bg-card"}`}>
             <div className="text-xs text-muted-foreground mb-1">Budget Utilization</div>
-            <div className={`text-lg font-semibold ${isOverBudget ? "text-red-600" : ""}`}>
+            <div className={`text-lg font-semibold ${isOverBudget ? "text-destructive" : ""}`}>
               {budgetUtilization.toFixed(1)}%
             </div>
           </div>
@@ -81,7 +81,7 @@ export function SpendTab({ epicId }: SpendTabProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3 border rounded-md bg-card hover:bg-accent/50 transition-colors cursor-pointer">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-green-600" />
+              <DollarSign className="h-4 w-4 text-success" />
               <span className="text-sm font-medium">Accepted Spend</span>
             </div>
             <span className="font-semibold">{formatCurrency(spend.accepted_spend || 0)}</span>
@@ -97,7 +97,7 @@ export function SpendTab({ epicId }: SpendTabProps) {
 
           <div className="flex items-center justify-between p-3 border rounded-md bg-card hover:bg-accent/50 transition-colors cursor-pointer">
             <div className="flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 text-yellow-600" />
+              <AlertCircle className="h-4 w-4 text-warning" />
               <span className="text-sm font-medium">Estimated Spend</span>
             </div>
             <span className="font-semibold">{formatCurrency(spend.estimated_spend || 0)}</span>
@@ -119,7 +119,7 @@ export function SpendTab({ epicId }: SpendTabProps) {
             </div>
             <div className="p-3 border rounded-md bg-card">
               <div className="text-xs text-muted-foreground mb-1">ROI</div>
-              <div className="text-lg font-semibold text-green-600">
+              <div className="text-lg font-semibold text-success">
                 {spend.return_on_investment}%
               </div>
             </div>

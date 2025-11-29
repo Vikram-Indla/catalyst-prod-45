@@ -86,9 +86,9 @@ export function EpicColumnsDialog({
           <p className="text-sm text-muted-foreground">Page Settings For Jason Kidner</p>
         </DialogHeader>
         
-        <Alert className="bg-orange-500/10 border-orange-500/50">
-          <AlertTriangle className="h-4 w-4 text-orange-500" />
-          <AlertDescription className="text-sm text-orange-800 dark:text-orange-200">
+        <Alert className="bg-warning/10 border-warning/50">
+          <AlertTriangle className="h-4 w-4 text-warning" />
+          <AlertDescription className="text-sm text-warning-foreground">
             You can select up to 5 columns below
           </AlertDescription>
         </Alert>
