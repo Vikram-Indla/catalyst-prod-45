@@ -165,9 +165,9 @@ export default function Dependencies() {
             </div>
           </div>
         </Card>
-        <Card className="p-4 border-blue-500/20">
+        <Card className="p-4 border-primary/20">
           <div className="flex items-center gap-3">
-            <Network className="h-8 w-8 text-blue-500" />
+            <Network className="h-8 w-8 text-primary" />
             <div>
               <div className="text-2xl font-bold">{stats.crossProgram}</div>
               <div className="text-sm text-muted-foreground">Cross-Program</div>
@@ -274,7 +274,7 @@ export default function Dependencies() {
                     <Badge
                       className={`capitalize ${
                         dependency.risk_level === 'high' ? 'bg-destructive' :
-                        dependency.risk_level === 'med' ? 'bg-amber-500' : 'bg-green-500'
+                        dependency.risk_level === 'med' ? 'bg-warning' : 'bg-success'
                       }`}
                     >
                       {dependency.risk_level}
