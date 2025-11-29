@@ -262,19 +262,16 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                 </Select>
               )}
 
-              {/* Enterprise Header - Catalyst Dark Branded */}
+              {/* Enterprise Header */}
               {tier === 'enterprise' && (
-                <div className="mb-3 bg-brand-dark rounded-md px-3 py-3">
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-8 h-8 rounded flex items-center justify-center text-brand-dark text-xs font-semibold"
-                      style={{ background: 'linear-gradient(135deg, hsl(var(--brand-gold)) 0%, hsl(var(--brand-gold-light)) 100%)' }}
-                    >
+                <div className="mb-3">
+                  <div className="flex items-center gap-3 px-3 py-2">
+                    <div className="w-8 h-8 rounded bg-blue-500 flex items-center justify-center text-white text-xs font-semibold">
                       EN
                     </div>
                     <div>
-                      <div className="text-sm font-medium text-white">Enterprise</div>
-                      <div className="text-xs text-neutral-400">Strategy</div>
+                      <div className="text-sm font-medium">Enterprise</div>
+                      <div className="text-xs text-muted-foreground">Strategy</div>
                     </div>
                   </div>
                 </div>
@@ -347,8 +344,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                   }}
                   className={cn(
                     "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
-                    "hover:bg-neutral-100",
-                    active && "bg-primary-100 text-primary font-medium",
+                    "hover:bg-accent/50",
+                    active && "bg-accent text-primary font-medium",
                     !expanded && "justify-center px-2"
                   )}
                   title={!expanded ? item.label : undefined}
@@ -369,15 +366,15 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
                 {/* More items submenu - only for Enterprise tier */}
                 {isMoreItems && moreItemsExpanded && expanded && tier === 'enterprise' && (
-                  <div className="bg-primary-50/50">
+                  <div className="bg-accent/20">
                     {moreItemsSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}
                         className={cn(
                           "w-full flex items-center gap-3 pl-12 pr-4 py-2 text-sm font-normal transition-colors",
-                          "hover:bg-neutral-100",
-                          isActive(subItem.path) && "bg-primary-100 text-primary font-medium"
+                          "hover:bg-accent/50",
+                          isActive(subItem.path) && "bg-accent text-primary font-medium"
                         )}
                       >
                         <span className="truncate text-left">{subItem.label}</span>
@@ -388,15 +385,15 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
                 {/* Reports submenu - only for Enterprise tier */}
                 {isReports && reportsExpanded && expanded && tier === 'enterprise' && (
-                  <div className="bg-primary-50/50">
+                  <div className="bg-accent/20">
                     {reportsSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}
                         className={cn(
                           "w-full flex items-center gap-3 pl-12 pr-4 py-2 text-sm font-normal transition-colors",
-                          "hover:bg-neutral-100",
-                          isActive(subItem.path) && "bg-primary-100 text-primary font-medium"
+                          "hover:bg-accent/50",
+                          isActive(subItem.path) && "bg-accent text-primary font-medium"
                         )}
                       >
                         <span className="truncate text-left">{subItem.label}</span>
@@ -407,15 +404,15 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
                 {/* More pages submenu - only for Enterprise tier */}
                 {isMorePages && morePagesExpanded && expanded && tier === 'enterprise' && (
-                  <div className="bg-primary-50/50">
+                  <div className="bg-accent/20">
                     {morePagesSubMenu.map((subItem) => (
                       <button
                         key={subItem.id}
                         onClick={() => handleNavigation(subItem.path)}
                         className={cn(
                           "w-full flex items-center gap-3 pl-12 pr-4 py-2 text-sm font-normal transition-colors",
-                          "hover:bg-neutral-100",
-                          isActive(subItem.path) && "bg-primary-100 text-primary font-medium"
+                          "hover:bg-accent/50",
+                          isActive(subItem.path) && "bg-accent text-primary font-medium"
                         )}
                       >
                         <span className="truncate text-left">{subItem.label}</span>
@@ -431,7 +428,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
         {/* Footer */}
         {expanded && (
           <div className="border-t">
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-neutral-100 transition-colors">
+            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors">
               <Settings className="h-5 w-5 text-muted-foreground" />
               <span className="text-left">Settings</span>
             </button>

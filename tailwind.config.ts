@@ -14,12 +14,6 @@ export default {
     },
     extend: {
       colors: {
-        /* Catalyst Brand Colors */
-        brand: {
-          dark: "hsl(var(--brand-dark))",
-          gold: "hsl(var(--brand-gold))",
-          "gold-light": "hsl(var(--brand-gold-light))",
-        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -70,20 +64,11 @@ export default {
         },
         success: {
           DEFAULT: "hsl(var(--success))",
-          bg: "hsl(var(--success-bg))",
-          text: "hsl(var(--success-text))",
           600: "hsl(var(--success-600))",
         },
         warning: {
           DEFAULT: "hsl(var(--warning))",
-          bg: "hsl(var(--warning-bg))",
-          text: "hsl(var(--warning-text))",
           600: "hsl(var(--warning-600))",
-        },
-        error: {
-          DEFAULT: "hsl(var(--error))",
-          bg: "hsl(var(--error-bg))",
-          text: "hsl(var(--error-text))",
         },
         info: {
           DEFAULT: "hsl(var(--info))",
