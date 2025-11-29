@@ -37,7 +37,7 @@ export function EpicRow({
   return (
     <div 
       className={`relative group grid grid-cols-[40px_50px_70px_1fr_auto_70px_50px_100px] items-center px-4 py-2 border-b border-[#EBECF0] hover:bg-[#F4F5F7] transition-colors cursor-pointer ${
-        isSelected ? "bg-[#E9F2FF] border-l-4 border-l-[#0052CC]" : "bg-white"
+        isSelected ? "bg-primary-100 border-l-4 border-l-primary" : "bg-card"
       }`}
       onClick={() => onEpicClick(epic.id)}
       onDragOver={(e) => onDragOver(e, epic.id)}

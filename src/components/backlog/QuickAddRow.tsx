@@ -21,7 +21,7 @@ export function QuickAddRow({ programs, onAdd }: QuickAddRowProps) {
   };
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 border-t border-b border-[#EBECF0] bg-white">
+    <div className="flex items-center gap-3 px-4 py-3 border-t border-b border-border bg-card">
       <input
         type="text"
         placeholder="New Epic Name..."
@@ -51,7 +51,7 @@ export function QuickAddRow({ programs, onAdd }: QuickAddRowProps) {
       <button
         onClick={handleAdd}
         disabled={!epicName.trim() || !selectedProgram}
-        className="flex items-center gap-1.5 px-4 py-2 border border-[#DFE1E6] rounded text-sm text-[#172B4D] bg-white hover:bg-[#F4F5F7] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-1.5 px-4 py-2 border border-border rounded text-sm text-foreground bg-card hover:bg-neutral-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <Plus className="w-4 h-4" />
         Add

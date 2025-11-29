@@ -1,6 +1,6 @@
 export function ColumnHeaders() {
   return (
-    <div className="grid grid-cols-[40px_50px_70px_1fr_auto_70px_50px_100px] items-center px-4 py-2 bg-white border-b border-[#EBECF0] text-xs font-semibold text-[#6B778C]">
+    <div className="grid grid-cols-[40px_50px_70px_1fr_auto_70px_50px_100px] items-center px-4 py-2 bg-card border-b border-border text-xs font-semibold text-muted-foreground">
       {/* Empty for expand arrow */}
       <div />
       
