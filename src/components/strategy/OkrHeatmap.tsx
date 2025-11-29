@@ -77,7 +77,13 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
   return (
     <Card className="border rounded-lg">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
+        <div className="space-y-2">
+          <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Visual overview of progress on achieving strategic goals and objectives across Program Increments. 
+            Click any cell to filter objectives by level and PI.
+          </p>
+        </div>
       </CardHeader>
       <CardContent>
         {/* Heatmap Grid */}

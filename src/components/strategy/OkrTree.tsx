@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Settings, Maximize2, ChevronRight } from 'lucide-react';
+import { Search, Settings, Maximize2, ChevronRight, Info } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -145,10 +145,15 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
   return (
     <Card className="border rounded-lg">
       <CardHeader className="pb-4">
-        <CardTitle className="text-xl font-semibold">OKR Tree</CardTitle>
-        <p className="text-sm italic text-muted-foreground mt-1">
-          Only work items tied to this Snapshot or its Program Increments are shown here
-        </p>
+        <div className="space-y-2">
+          <CardTitle className="text-xl font-semibold">OKR Tree</CardTitle>
+          <div className="flex items-start gap-2 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-md p-3">
+            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+            <p className="text-xs text-blue-800 dark:text-blue-300">
+              Only work items tied to this Snapshot or its Program Increments are shown here
+            </p>
+          </div>
+        </div>
         <div className="flex items-center justify-between mt-4">
           <div className="relative flex-1 max-w-[240px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
