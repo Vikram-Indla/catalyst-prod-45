@@ -115,6 +115,7 @@ import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import SelfTest from "./pages/dev/SelfTest";
 import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
+import TeamsSelfTest from "./pages/dev/TeamsSelfTest";
 import SourcesReference from "./pages/dev/SourcesReference";
 
 const queryClient = new QueryClient();
@@ -255,6 +256,7 @@ const App = () => (
               <Route path="/dev/self-test" element={<SelfTest />} />
               <Route path="/dev/epic-backlog-tests" element={<EpicBacklogTests />} />
               <Route path="/dev/forecast-self-test" element={<ForecastSelfTest />} />
+              <Route path="/dev/teams-self-test" element={<TeamsSelfTest />} />
               <Route path="/dev/sources" element={<SourcesReference />} />
             </Route>
             
