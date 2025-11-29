@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useBacklogState } from '../hooks/useBacklogState';
 import { BacklogHeader } from './BacklogHeader';
 import { BacklogToolbar } from './BacklogToolbar';
@@ -12,16 +12,33 @@ import { PrioritizationDialog } from './PrioritizationDialog';
 import { useQuery } from '@tanstack/react-query';
 import { fetchBacklogItems, fetchUnassignedItems } from '../api/backlogApi';
 import { exportBacklogToCsv } from '../utils/exportCsv';
+import { useEpicBacklogPreferences } from '@/hooks/useEpicBacklogPreferences';
 import { toast } from 'sonner';
 
 export function BacklogWorkspace() {
   const backlogState = useBacklogState();
+  const { preferences, updatePreferences } = useEpicBacklogPreferences();
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [isUnassignedOpen, setIsUnassignedOpen] = useState(false);
   const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false);
   const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
   const [isPrioritizationOpen, setIsPrioritizationOpen] = useState(false);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+
+  // Sync view changes to user preferences
+  useEffect(() => {
+    if (preferences && backlogState.view !== preferences.last_view) {
+      const validView = backlogState.view === 'column' ? 'kanban' : backlogState.view;
+      updatePreferences({ last_view: validView as 'list' | 'kanban' });
+    }
+  }, [backlogState.view, preferences]);
+
+  // Sync column changes to user preferences
+  useEffect(() => {
+    if (preferences && JSON.stringify(backlogState.columnsShown) !== JSON.stringify(preferences.selected_columns_main)) {
+      updatePreferences({ selected_columns_main: backlogState.columnsShown });
+    }
+  }, [backlogState.columnsShown, preferences]);
 
   // Fetch backlog items
   const { data: backlogData, isLoading } = useQuery({

@@ -175,6 +175,15 @@ The backlog state syncs with URL query parameters:
 </BacklogStateProvider>
 ```
 
+### User Preferences Persistence
+User preferences are automatically saved to the database using `useEpicBacklogPreferences`:
+- **Last view mode** - Remembers list/kanban preference
+- **Column configuration** - Persists main and unassigned panel columns
+- **Kanban subview** - Saves state/process/column preference
+- **Labels display** - Program/parent display mode
+
+Preferences sync across sessions and devices for authenticated users.
+
 ## Testing
 
 ### E2E Tests (Playwright)
@@ -182,6 +191,8 @@ The backlog state syncs with URL query parameters:
 - `e2e/epic-backlog-kanban.spec.ts` - Kanban view tests
 - `e2e/epic-backlog-filters.spec.ts` - Filter dialog tests
 - `e2e/epic-backlog-actions.spec.ts` - Actions and dialogs tests
+- `e2e/epic-backlog-prioritization.spec.ts` - WSJF prioritization tests
+- `e2e/epic-backlog-preferences.spec.ts` - User preferences persistence tests
 - `e2e/epic-search-filter.spec.ts` - Search functionality tests
 - `e2e/epic-details-panel.spec.ts` - Details panel tests
 
