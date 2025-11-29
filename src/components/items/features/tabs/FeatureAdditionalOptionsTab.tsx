@@ -83,7 +83,7 @@ export function FeatureAdditionalOptionsTab({ feature, onAction }: FeatureAdditi
         
         <Button 
           variant="outline" 
-          className="w-full justify-start text-yellow-600 hover:text-yellow-600 border-yellow-600/20"
+          className="w-full justify-start text-warning hover:text-warning border-warning/20"
           onClick={() => onAction('cancel')}
         >
           <XCircle className="w-4 h-4 mr-2" />

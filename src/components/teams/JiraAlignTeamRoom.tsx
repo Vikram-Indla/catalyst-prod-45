@@ -610,8 +610,8 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         variant="secondary" 
                         className={
                           story.state === 'ACCEPTED' 
-                            ? 'bg-green-500/10 text-green-700 border-green-500/20' 
-                            : 'bg-blue-500/10 text-blue-700 border-blue-500/20'
+                            ? 'bg-success/10 text-success border-success/20' 
+                            : 'bg-info/10 text-info border-info/20'
                         }
                       >
                         {story.state}

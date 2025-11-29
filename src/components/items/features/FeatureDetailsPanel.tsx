@@ -105,7 +105,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => handleAdditionalOption('cancel')}
-                    className="text-yellow-600"
+                    className="text-warning"
                   >
                     Cancel Item
                   </DropdownMenuItem>
