@@ -314,7 +314,7 @@ export default function EpicBacklog() {
                 <span className="text-sm font-medium">PI Progress:</span>
                 <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-orange-500 transition-all" 
+                    className="h-full bg-brand-gold transition-all" 
                     style={{ width: `${piProgress?.percentage || 0}%` }} 
                   />
                 </div>

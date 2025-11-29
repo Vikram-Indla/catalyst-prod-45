@@ -264,7 +264,7 @@ export default function TeamRoom() {
                       <div className="text-xs text-muted-foreground">Planned</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-green-500">{completedPoints}</div>
+                      <div className="text-2xl font-bold text-success">{completedPoints}</div>
                       <div className="text-xs text-muted-foreground">Completed</div>
                     </div>
                     <div>
@@ -276,7 +276,7 @@ export default function TeamRoom() {
                   <div className="p-4 bg-muted rounded-lg">
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-medium">Sprint Status</span>
-                      <Badge className={isOnTrack ? "bg-green-500" : "bg-amber-500"}>
+                      <Badge className={isOnTrack ? "bg-success" : "bg-warning"}>
                         {isOnTrack ? "On Track" : "At Risk"}
                       </Badge>
                     </div>
@@ -325,12 +325,12 @@ export default function TeamRoom() {
             <CardContent>
               <div className="grid grid-cols-3 gap-6">
                 <div className="text-center p-6 border rounded-lg">
-                  <div className="text-4xl font-bold text-green-500">{storiesByStatus.done}</div>
+                  <div className="text-4xl font-bold text-success">{storiesByStatus.done}</div>
                   <div className="text-sm text-muted-foreground mt-2">Done</div>
                   <Progress value={(storiesByStatus.done / (stories?.length || 1)) * 100} className="mt-3" />
                 </div>
                 <div className="text-center p-6 border rounded-lg">
-                  <div className="text-4xl font-bold text-blue-500">{storiesByStatus.in_progress}</div>
+                  <div className="text-4xl font-bold text-primary">{storiesByStatus.in_progress}</div>
                   <div className="text-sm text-muted-foreground mt-2">In Progress</div>
                   <Progress value={(storiesByStatus.in_progress / (stories?.length || 1)) * 100} className="mt-3" />
                 </div>
