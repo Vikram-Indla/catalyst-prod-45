@@ -18,11 +18,11 @@ export function MilestonesTab({ milestones, onAddMilestone, onUpdateMilestone }:
   const getStateColor = (state: string) => {
     switch (state.toLowerCase()) {
       case 'in progress':
-        return 'text-green-600';
+        return 'text-success';
       case 'complete':
-        return 'text-gray-500';
+        return 'text-muted-foreground';
       case 'blocked':
-        return 'text-red-600';
+        return 'text-destructive';
       default:
         return 'text-muted-foreground';
     }

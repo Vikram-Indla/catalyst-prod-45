@@ -36,7 +36,7 @@ export function ProgressIndicators({ epic }: ProgressIndicatorsProps) {
         <div className="text-xs text-muted-foreground">Story points accepted</div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#36B37E] rounded-full transition-all duration-300"
+            className="h-full bg-success rounded-full transition-all duration-300"
             style={{ width: `${acceptedPercentage}%` }}
           />
         </div>
@@ -51,7 +51,7 @@ export function ProgressIndicators({ epic }: ProgressIndicatorsProps) {
         <div className="text-xs text-muted-foreground">Features Accepted</div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#36B37E] rounded-full transition-all duration-300"
+            className="h-full bg-success rounded-full transition-all duration-300"
             style={{ width: `${featuresAcceptedPercentage}%` }}
           />
         </div>
@@ -66,7 +66,7 @@ export function ProgressIndicators({ epic }: ProgressIndicatorsProps) {
         <div className="text-xs text-muted-foreground">Features in Delivery</div>
         <div className="h-2 bg-muted rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#00B8D9] rounded-full transition-all duration-300"
+            className="h-full bg-primary rounded-full transition-all duration-300"
             style={{ width: `${featuresInDeliveryPercentage}%` }}
           />
         </div>
