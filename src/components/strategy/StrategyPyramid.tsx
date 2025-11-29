@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useState } from 'react';
 
 interface StrategyPyramidProps {
   onLayerClick: (label: string) => void;
@@ -17,6 +18,8 @@ interface StrategyPyramidProps {
 
 export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidProps) {
   const navigate = useNavigate();
+  const [hoveredLayer, setHoveredLayer] = useState<string | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   // Fetch counts from database
   const { data: counts } = useQuery({
@@ -149,6 +152,62 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
     navigate(route);
   };
 
+  const handleMouseEnter = (layerName: string, e: React.MouseEvent<SVGElement>) => {
+    const svgRect = e.currentTarget.ownerSVGElement?.getBoundingClientRect();
+    if (svgRect) {
+      setTooltipPos({ x: e.clientX - svgRect.left, y: e.clientY - svgRect.top });
+    }
+    setHoveredLayer(layerName);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredLayer(null);
+  };
+
+  // Helper to wrap text into multiple tspan lines
+  const wrapText = (text: string, maxWidth: number, fontSize: number = 14) => {
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let currentLine = '';
+    
+    // Approximate character width (adjust based on font)
+    const charWidth = fontSize * 0.5;
+    const maxChars = Math.floor(maxWidth / charWidth);
+    
+    words.forEach(word => {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      if (testLine.length <= maxChars) {
+        currentLine = testLine;
+      } else {
+        if (currentLine) lines.push(currentLine);
+        currentLine = word;
+      }
+    });
+    if (currentLine) lines.push(currentLine);
+    
+    // Limit to 2 lines with ellipsis
+    if (lines.length > 2) {
+      lines[1] = lines[1].substring(0, lines[1].length - 3) + '...';
+      return lines.slice(0, 2);
+    }
+    return lines;
+  };
+
+  const layerTooltips: Record<string, string> = {
+    'Missions': 'Why do we exist?',
+    'Visions': 'What value do we provide?',
+    'Values': 'How do we behave?',
+    'North Stars': 'What is our measurable goal?',
+    'Long Term Goals': 'How will we succeed long-term?',
+    'Long Term Strategies': 'What is our approach?',
+    'Yearly Goals': 'Shorter-term strategic objectives',
+    'Themes': 'Strategic themes for execution',
+    'Portfolio Objectives': 'Portfolio-level objectives',
+    'Epics': 'Large initiatives',
+    'Program Objectives': 'Program-level objectives',
+    'Features': 'Deliverable features',
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -184,352 +243,482 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
             preserveAspectRatio="xMidYMid meet"
           >
             {/* Layer 1: Missions (full width) */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <path
-                    d={`M ${centerX} ${y1} L ${level2.left} ${y2} L ${level2.right} ${y2} Z`}
-                    fill={colors.missions}
-                    stroke="white"
-                    strokeWidth="2"
-                    className="cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => onLayerClick("Missions")}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="right" className="bg-popover text-popover-foreground">
-                  <p className="text-xs">Why do we exist?</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <foreignObject x={level2.left + 10} y={y1 + 30} width={level2.right - level2.left - 20} height="50">
-              <div className="flex items-center justify-center h-full text-center">
-                <div className="text-white font-semibold text-sm leading-tight">Missions</div>
-              </div>
-            </foreignObject>
-            {/* Clickable count on right side */}
-            <text 
-              x={level2.right + 40} 
-              y={(y1 + y2) / 2 + 5} 
-              fill="currentColor" 
-              fontSize="16" 
-              fontWeight="600"
-              className="cursor-pointer hover:underline"
-              onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=mission&snapshot=${snapshotId}`, e)}
-            >
-              {counts?.mission || 0}
-            </text>
+            <g>
+              <path
+                d={`M ${centerX} ${y1} L ${level2.left} ${y2} L ${level2.right} ${y2} Z`}
+                fill={colors.missions}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Missions")}
+                onMouseEnter={(e) => handleMouseEnter('Missions', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text
+                x={centerX}
+                y={(y1 + y2) / 2 + 5}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Missions
+              </text>
+              <text 
+                x={level2.right + 40} 
+                y={(y1 + y2) / 2 + 5} 
+                fill="currentColor" 
+                fontSize="18" 
+                fontWeight="600"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=mission&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.mission || 0}
+              </text>
+            </g>
 
             {/* Layer 2: Visions (full width) */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <path
-                    d={`M ${level2.left} ${y2} L ${level2.right} ${y2} L ${level3.right} ${y3} L ${level3.left} ${y3} Z`}
-                    fill={colors.visions}
-                    stroke="white"
-                    strokeWidth="2"
-                    className="cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => onLayerClick("Visions")}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="right" className="bg-popover text-popover-foreground">
-                  <p className="text-xs">What value do we provide?</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <foreignObject x={level2.left + 15} y={y2 + 25} width={level2.right - level2.left - 30} height="55">
-              <div className="flex items-center justify-center h-full text-center">
-                <div className="text-white font-semibold text-sm leading-tight">Visions</div>
-              </div>
-            </foreignObject>
-            {/* Clickable count on right side */}
-            <text 
-              x={level3.right + 40} 
-              y={(y2 + y3) / 2 + 5} 
-              fill="currentColor" 
-              fontSize="16" 
-              fontWeight="600"
-              className="cursor-pointer hover:underline"
-              onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=vision&snapshot=${snapshotId}`, e)}
-            >
-              {counts?.vision || 0}
-            </text>
+            <g>
+              <path
+                d={`M ${level2.left} ${y2} L ${level2.right} ${y2} L ${level3.right} ${y3} L ${level3.left} ${y3} Z`}
+                fill={colors.visions}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Visions")}
+                onMouseEnter={(e) => handleMouseEnter('Visions', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text
+                x={centerX}
+                y={(y2 + y3) / 2 + 5}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Visions
+              </text>
+              <text 
+                x={level3.right + 40} 
+                y={(y2 + y3) / 2 + 5} 
+                fill="currentColor" 
+                fontSize="18" 
+                fontWeight="600"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=vision&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.vision || 0}
+              </text>
+            </g>
 
             {/* Layer 3: Values (full width) */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <path
-                    d={`M ${level3.left} ${y3} L ${level3.right} ${y3} L ${level4.right} ${y4} L ${level4.left} ${y4} Z`}
-                    fill={colors.values}
-                    stroke="white"
-                    strokeWidth="2"
-                    className="cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => onLayerClick("Values")}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="right" className="bg-popover text-popover-foreground">
-                  <p className="text-xs">How do we behave?</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <foreignObject x={level3.left + 15} y={y3 + 25} width={level3.right - level3.left - 30} height="55">
-              <div className="flex items-center justify-center h-full text-center">
-                <div className="text-white font-semibold text-sm leading-tight">Values</div>
-              </div>
-            </foreignObject>
-            {/* Clickable count on right side */}
-            <text 
-              x={level4.right + 40} 
-              y={(y3 + y4) / 2 + 5} 
-              fill="currentColor" 
-              fontSize="16" 
-              fontWeight="600"
-              className="cursor-pointer hover:underline"
-              onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=value&snapshot=${snapshotId}`, e)}
-            >
-              {counts?.value || 0}
-            </text>
+            <g>
+              <path
+                d={`M ${level3.left} ${y3} L ${level3.right} ${y3} L ${level4.right} ${y4} L ${level4.left} ${y4} Z`}
+                fill={colors.values}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Values")}
+                onMouseEnter={(e) => handleMouseEnter('Values', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text
+                x={centerX}
+                y={(y3 + y4) / 2 + 5}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Values
+              </text>
+              <text 
+                x={level4.right + 40} 
+                y={(y3 + y4) / 2 + 5} 
+                fill="currentColor" 
+                fontSize="18" 
+                fontWeight="600"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=value&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.value || 0}
+              </text>
+            </g>
 
             {/* Layer 4: North Stars (full width) */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <path
-                    d={`M ${level4.left} ${y4} L ${level4.right} ${y4} L ${level5.right} ${y5} L ${level5.left} ${y5} Z`}
-                    fill={colors.northStars}
-                    stroke="white"
-                    strokeWidth="2"
-                    className="cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => onLayerClick("North Stars")}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="right" className="bg-popover text-popover-foreground">
-                  <p className="text-xs">What is our measurable goal?</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <foreignObject x={level4.left + 15} y={y4 + 25} width={level4.right - level4.left - 30} height="55">
-              <div className="flex items-center justify-center h-full text-center">
-                <div className="text-white font-semibold text-sm leading-tight">North Stars</div>
-              </div>
-            </foreignObject>
-            {/* Clickable count on right side */}
-            <text 
-              x={level5.right + 40} 
-              y={(y4 + y5) / 2 + 5} 
-              fill="currentColor" 
-              fontSize="16" 
-              fontWeight="600"
-              className="cursor-pointer hover:underline"
-              onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=north_star&snapshot=${snapshotId}`, e)}
-            >
-              {counts?.north_star || 0}
-            </text>
+            <g>
+              <path
+                d={`M ${level4.left} ${y4} L ${level4.right} ${y4} L ${level5.right} ${y5} L ${level5.left} ${y5} Z`}
+                fill={colors.northStars}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("North Stars")}
+                onMouseEnter={(e) => handleMouseEnter('North Stars', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text
+                x={centerX}
+                y={(y4 + y5) / 2 + 5}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                North Stars
+              </text>
+              <text 
+                x={level5.right + 40} 
+                y={(y4 + y5) / 2 + 5} 
+                fill="currentColor" 
+                fontSize="18" 
+                fontWeight="600"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=north_star&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.north_star || 0}
+              </text>
+            </g>
 
             {/* Layer 5: Long Term Goals (full width) */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <path
-                    d={`M ${level5.left} ${y5} L ${level5.right} ${y5} L ${level6.right} ${y6} L ${level6.left} ${y6} Z`}
-                    fill={colors.longTermGoals}
-                    stroke="white"
-                    strokeWidth="2"
-                    className="cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => onLayerClick("Long Term Goals")}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="right" className="bg-popover text-popover-foreground">
-                  <p className="text-xs">How will we succeed long-term?</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <foreignObject x={level5.left + 15} y={y5 + 25} width={level5.right - level5.left - 30} height="55">
-              <div className="flex items-center justify-center h-full text-center">
-                <div className="text-white font-semibold text-sm leading-tight">Long Term Goals</div>
-              </div>
-            </foreignObject>
-            {/* Clickable count on right side */}
-            <text 
-              x={level6.right + 40} 
-              y={(y5 + y6) / 2 + 5} 
-              fill="currentColor" 
-              fontSize="16" 
-              fontWeight="600"
-              className="cursor-pointer hover:underline"
-              onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=long_term_goal&snapshot=${snapshotId}`, e)}
-            >
-              {counts?.long_term_goal || 0}
-            </text>
+            <g>
+              <path
+                d={`M ${level5.left} ${y5} L ${level5.right} ${y5} L ${level6.right} ${y6} L ${level6.left} ${y6} Z`}
+                fill={colors.longTermGoals}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Long Term Goals")}
+                onMouseEnter={(e) => handleMouseEnter('Long Term Goals', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text
+                x={centerX}
+                y={(y5 + y6) / 2 + 5}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Long Term Goals
+              </text>
+              <text 
+                x={level6.right + 40} 
+                y={(y5 + y6) / 2 + 5} 
+                fill="currentColor" 
+                fontSize="18" 
+                fontWeight="600"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=long_term_goal&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.long_term_goal || 0}
+              </text>
+            </g>
 
             {/* Layer 6: Long Term Strategies (full width) */}
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <path
-                    d={`M ${level6.left} ${y6} L ${level6.right} ${y6} L ${level7.right} ${y7} L ${level7.left} ${y7} Z`}
-                    fill={colors.longTermStrategies}
-                    stroke="white"
-                    strokeWidth="2"
-                    className="cursor-pointer hover:opacity-90 transition-opacity"
-                    onClick={() => onLayerClick("Long Term Strategies")}
-                  />
-                </TooltipTrigger>
-                <TooltipContent side="right" className="bg-popover text-popover-foreground">
-                  <p className="text-xs">What is our approach?</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <foreignObject x={level6.left + 15} y={y6 + 25} width={level6.right - level6.left - 30} height="55">
-              <div className="flex items-center justify-center h-full text-center">
-                <div className="text-white font-semibold text-sm leading-tight">Long Term Strategies</div>
-              </div>
-            </foreignObject>
-            {/* Clickable count on right side */}
-            <text 
-              x={level7.right + 40} 
-              y={(y6 + y7) / 2 + 5} 
-              fill="currentColor" 
-              fontSize="16" 
-              fontWeight="600"
-              className="cursor-pointer hover:underline"
-              onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=long_term_strategy&snapshot=${snapshotId}`, e)}
-            >
-              {counts?.long_term_strategy || 0}
-            </text>
+            <g>
+              <path
+                d={`M ${level6.left} ${y6} L ${level6.right} ${y6} L ${level7.right} ${y7} L ${level7.left} ${y7} Z`}
+                fill={colors.longTermStrategies}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Long Term Strategies")}
+                onMouseEnter={(e) => handleMouseEnter('Long Term Strategies', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text
+                x={centerX}
+                y={(y6 + y7) / 2 + 5}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Long Term Strategies
+              </text>
+              <text 
+                x={level7.right + 40} 
+                y={(y6 + y7) / 2 + 5} 
+                fill="currentColor" 
+                fontSize="18" 
+                fontWeight="600"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=long_term_strategy&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.long_term_strategy || 0}
+              </text>
+            </g>
 
             {/* Layer 7: Yearly Goals (left) and Themes (right) - SPLIT */}
-            <path
-              d={`M ${level7.left} ${y7} L ${centerX} ${y7} L ${centerX} ${y8} L ${level8.left} ${y8} Z`}
-              fill={colors.yearlyGoals}
-              stroke="white"
-              strokeWidth="2"
-              className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("Yearly Goals")}
-            />
-            <foreignObject x={level7.left + 15} y={y7 + 50} width={centerX - level7.left - 30} height="90">
-              <div className="flex flex-col items-center justify-start h-full text-center">
-                <div 
-                  className="text-white font-bold text-xl leading-none cursor-pointer hover:underline"
-                  onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=yearly_goal&snapshot=${snapshotId}`, e)}
-                >
-                  {counts?.yearly_goal || 0}
-                </div>
-                <div className="text-white font-semibold text-sm leading-tight mt-3">Yearly Goals</div>
-              </div>
-            </foreignObject>
+            <g>
+              <path
+                d={`M ${level7.left} ${y7} L ${centerX} ${y7} L ${centerX} ${y8} L ${level8.left} ${y8} Z`}
+                fill={colors.yearlyGoals}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Yearly Goals")}
+                onMouseEnter={(e) => handleMouseEnter('Yearly Goals', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text 
+                x={(level7.left + centerX) / 2} 
+                y={y7 + 60} 
+                fill="white" 
+                fontSize="22" 
+                fontWeight="700"
+                textAnchor="middle"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=yearly_goal&snapshot=${snapshotId}`, e)}
+              >
+                {counts?.yearly_goal || 0}
+              </text>
+              <text
+                x={(level7.left + centerX) / 2}
+                y={y7 + 90}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Yearly Goals
+              </text>
+            </g>
 
-            <path
-              d={`M ${centerX} ${y7} L ${level7.right} ${y7} L ${level8.right} ${y8} L ${centerX} ${y8} Z`}
-              fill={colors.themes}
-              stroke="white"
-              strokeWidth="2"
-              className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("Themes")}
-            />
-            <foreignObject x={centerX + 15} y={y7 + 50} width={level7.right - centerX - 30} height="90">
-              <div className="flex flex-col items-center justify-start h-full text-center">
-                <div 
-                  className="text-white font-bold text-xl leading-none cursor-pointer hover:underline"
-                  onClick={(e) => handleNumberClick(`/themes`, e)}
-                >
-                  {counts?.themes || 0}
-                </div>
-                <div className="text-white font-semibold text-sm leading-tight mt-3">Themes</div>
-              </div>
-            </foreignObject>
+            <g>
+              <path
+                d={`M ${centerX} ${y7} L ${level7.right} ${y7} L ${level8.right} ${y8} L ${centerX} ${y8} Z`}
+                fill={colors.themes}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Themes")}
+                onMouseEnter={(e) => handleMouseEnter('Themes', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text 
+                x={(centerX + level7.right) / 2} 
+                y={y7 + 60} 
+                fill="white" 
+                fontSize="22" 
+                fontWeight="700"
+                textAnchor="middle"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/themes`, e)}
+              >
+                {counts?.themes || 0}
+              </text>
+              <text
+                x={(centerX + level7.right) / 2}
+                y={y7 + 90}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Themes
+              </text>
+            </g>
 
             {/* Vertical divider for split layer */}
             <line x1={centerX} y1={y7} x2={centerX} y2={y8} stroke="white" strokeWidth="2" />
 
             {/* Layer 8: Portfolio Objectives (left) and Epics (right) - SPLIT */}
-            <path
-              d={`M ${level8.left} ${y8} L ${centerX} ${y8} L ${centerX} ${y9} L ${level9.left} ${y9} Z`}
-              fill={colors.portfolioObjectives}
-              stroke="white"
-              strokeWidth="2"
-              className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("Portfolio Objectives")}
-            />
-            <foreignObject x={level8.left + 15} y={y8 + 50} width={centerX - level8.left - 30} height="90">
-              <div className="flex flex-col items-center justify-start h-full text-center">
-                <div 
-                  className="text-white font-bold text-xl leading-none cursor-pointer hover:underline"
-                  onClick={(e) => handleNumberClick(`/enterprise/okr-hub?level=portfolio`, e)}
-                >
-                  {counts?.portfolio_objective || 0}
-                </div>
-                <div className="text-white font-semibold text-sm leading-tight mt-3">Portfolio Objectives</div>
-              </div>
-            </foreignObject>
+            <g>
+              <path
+                d={`M ${level8.left} ${y8} L ${centerX} ${y8} L ${centerX} ${y9} L ${level9.left} ${y9} Z`}
+                fill={colors.portfolioObjectives}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Portfolio Objectives")}
+                onMouseEnter={(e) => handleMouseEnter('Portfolio Objectives', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text 
+                x={(level8.left + centerX) / 2} 
+                y={y8 + 60} 
+                fill="white" 
+                fontSize="22" 
+                fontWeight="700"
+                textAnchor="middle"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/enterprise/okr-hub?level=portfolio`, e)}
+              >
+                {counts?.portfolio_objective || 0}
+              </text>
+              <text
+                x={(level8.left + centerX) / 2}
+                y={y8 + 90}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Portfolio Objectives
+              </text>
+            </g>
 
-            <path
-              d={`M ${centerX} ${y8} L ${level8.right} ${y8} L ${level9.right} ${y9} L ${centerX} ${y9} Z`}
-              fill={colors.epics}
-              stroke="white"
-              strokeWidth="2"
-              className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("Epics")}
-            />
-            <foreignObject x={centerX + 15} y={y8 + 50} width={level8.right - centerX - 30} height="90">
-              <div className="flex flex-col items-center justify-start h-full text-center">
-                <div 
-                  className="text-white font-bold text-xl leading-none cursor-pointer hover:underline"
-                  onClick={(e) => handleNumberClick(`/backlog/epics`, e)}
-                >
-                  {counts?.epics || 0}
-                </div>
-                <div className="text-white font-semibold text-sm leading-tight mt-3">Epics</div>
-              </div>
-            </foreignObject>
+            <g>
+              <path
+                d={`M ${centerX} ${y8} L ${level8.right} ${y8} L ${level9.right} ${y9} L ${centerX} ${y9} Z`}
+                fill={colors.epics}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Epics")}
+                onMouseEnter={(e) => handleMouseEnter('Epics', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text 
+                x={(centerX + level8.right) / 2} 
+                y={y8 + 60} 
+                fill="white" 
+                fontSize="22" 
+                fontWeight="700"
+                textAnchor="middle"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/backlog/epics`, e)}
+              >
+                {counts?.epics || 0}
+              </text>
+              <text
+                x={(centerX + level8.right) / 2}
+                y={y8 + 90}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Epics
+              </text>
+            </g>
 
             {/* Vertical divider for split layer */}
             <line x1={centerX} y1={y8} x2={centerX} y2={y9} stroke="white" strokeWidth="2" />
 
             {/* Layer 9: Program Objectives (left) and Features (right) - SPLIT */}
-            <path
-              d={`M ${level9.left} ${y9} L ${centerX} ${y9} L ${centerX} ${y10} L ${level10.left} ${y10} Z`}
-              fill={colors.programObjectives}
-              stroke="white"
-              strokeWidth="2"
-              className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("Program Objectives")}
-            />
-            <foreignObject x={level9.left + 15} y={y9 + 22} width={centerX - level9.left - 30} height="46">
-              <div className="flex flex-col items-center justify-start h-full text-center">
-                <div 
-                  className="text-white font-bold text-xl leading-none cursor-pointer hover:underline"
-                  onClick={(e) => handleNumberClick(`/program/okr-hub?level=program`, e)}
-                >
-                  {counts?.program_objective || 0}
-                </div>
-                <div className="text-white font-semibold text-sm leading-tight mt-2">Program Objectives</div>
-              </div>
-            </foreignObject>
+            <g>
+              <path
+                d={`M ${level9.left} ${y9} L ${centerX} ${y9} L ${centerX} ${y10} L ${level10.left} ${y10} Z`}
+                fill={colors.programObjectives}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Program Objectives")}
+                onMouseEnter={(e) => handleMouseEnter('Program Objectives', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text 
+                x={(level9.left + centerX) / 2} 
+                y={y9 + 30} 
+                fill="white" 
+                fontSize="22" 
+                fontWeight="700"
+                textAnchor="middle"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/program/okr-hub?level=program`, e)}
+              >
+                {counts?.program_objective || 0}
+              </text>
+              <text
+                x={(level9.left + centerX) / 2}
+                y={y9 + 55}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Program Objectives
+              </text>
+            </g>
 
-            <path
-              d={`M ${centerX} ${y9} L ${level9.right} ${y9} L ${level10.right} ${y10} L ${centerX} ${y10} Z`}
-              fill={colors.features}
-              stroke="white"
-              strokeWidth="2"
-              className="cursor-pointer hover:opacity-90 transition-opacity"
-              onClick={() => onLayerClick("Features")}
-            />
-            <foreignObject x={centerX + 15} y={y9 + 22} width={level9.right - centerX - 30} height="46">
-              <div className="flex flex-col items-center justify-start h-full text-center">
-                <div 
-                  className="text-white font-bold text-xl leading-none cursor-pointer hover:underline"
-                  onClick={(e) => handleNumberClick(`/features`, e)}
-                >
-                  {counts?.features || 0}
-                </div>
-                <div className="text-white font-semibold text-sm leading-tight mt-2">Features</div>
-              </div>
-            </foreignObject>
+            <g>
+              <path
+                d={`M ${centerX} ${y9} L ${level9.right} ${y9} L ${level10.right} ${y10} L ${centerX} ${y10} Z`}
+                fill={colors.features}
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => onLayerClick("Features")}
+                onMouseEnter={(e) => handleMouseEnter('Features', e)}
+                onMouseLeave={handleMouseLeave}
+              />
+              <text 
+                x={(centerX + level9.right) / 2} 
+                y={y9 + 30} 
+                fill="white" 
+                fontSize="22" 
+                fontWeight="700"
+                textAnchor="middle"
+                className="cursor-pointer hover:underline"
+                onClick={(e) => handleNumberClick(`/features`, e)}
+              >
+                {counts?.features || 0}
+              </text>
+              <text
+                x={(centerX + level9.right) / 2}
+                y={y9 + 55}
+                fill="white"
+                fontSize="14"
+                fontWeight="600"
+                textAnchor="middle"
+                className="pointer-events-none select-none"
+              >
+                Features
+              </text>
+            </g>
 
             {/* Vertical divider for split layer */}
             <line x1={centerX} y1={y9} x2={centerX} y2={y10} stroke="white" strokeWidth="2" />
+
+            {/* Hover Tooltip */}
+            {hoveredLayer && (
+              <g className="pointer-events-none">
+                <rect
+                  x={tooltipPos.x + 10}
+                  y={tooltipPos.y - 30}
+                  width="200"
+                  height="50"
+                  fill="hsl(var(--popover))"
+                  stroke="hsl(var(--border))"
+                  strokeWidth="1"
+                  rx="6"
+                  className="drop-shadow-md"
+                />
+                <text
+                  x={tooltipPos.x + 20}
+                  y={tooltipPos.y - 12}
+                  fill="hsl(var(--popover-foreground))"
+                  fontSize="13"
+                  fontWeight="600"
+                >
+                  {hoveredLayer}
+                </text>
+                <text
+                  x={tooltipPos.x + 20}
+                  y={tooltipPos.y + 5}
+                  fill="hsl(var(--muted-foreground))"
+                  fontSize="11"
+                >
+                  {layerTooltips[hoveredLayer]}
+                </text>
+              </g>
+            )}
           </svg>
         </div>
       </CardContent>
