@@ -51,7 +51,7 @@ export function CatalystHeader() {
         <div className="flex h-14 items-center px-4 gap-2">
           {/* Logo */}
           <div className="flex items-center gap-2 mr-4 cursor-pointer" onClick={() => navigate('/home')}>
-            <span className="font-bold text-base hidden md:inline">
+            <span className="font-extrabold text-lg tracking-tight hidden md:inline">
               <span className="text-foreground">Cata</span>
               <span className="text-primary">lyst</span>
             </span>
