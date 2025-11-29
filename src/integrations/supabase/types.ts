@@ -423,52 +423,155 @@ export type Database = {
       dependencies: {
         Row: {
           blocked_days: number | null
+          blocked_reason_requestor: string | null
+          blocked_reason_respondent: string | null
+          blocked_requestor: boolean | null
+          blocked_respondent: boolean | null
+          committed_by_date: string | null
+          committed_by_sprint_id: string | null
           created_at: string | null
           criticality_score: number | null
+          delivered_at: string | null
+          dependency_level: string | null
+          depends_on_program_id: string | null
+          depends_on_team_id: string | null
+          description: string | null
           due_iteration_id: string | null
+          external_entity_id: string | null
           from_feature_id: string
           id: string
+          needed_by_date: string | null
+          needed_by_sprint_id: string | null
+          no_work_required: boolean | null
+          notify_on_commit: boolean | null
+          notify_on_delivery: boolean | null
+          owner_id: string | null
+          pi_id: string | null
+          rank_order: number | null
+          rejection_reason: string | null
+          related_stories_count: number | null
+          requesting_program_id: string | null
+          requesting_team_id: string | null
           resolution_plan: string | null
           risk_level: Database["public"]["Enums"]["risk_level"] | null
           status: Database["public"]["Enums"]["dependency_status"] | null
+          subscribed_users: string[] | null
           to_feature_id: string
           type: Database["public"]["Enums"]["dependency_type"] | null
           updated_at: string | null
         }
         Insert: {
           blocked_days?: number | null
+          blocked_reason_requestor?: string | null
+          blocked_reason_respondent?: string | null
+          blocked_requestor?: boolean | null
+          blocked_respondent?: boolean | null
+          committed_by_date?: string | null
+          committed_by_sprint_id?: string | null
           created_at?: string | null
           criticality_score?: number | null
+          delivered_at?: string | null
+          dependency_level?: string | null
+          depends_on_program_id?: string | null
+          depends_on_team_id?: string | null
+          description?: string | null
           due_iteration_id?: string | null
+          external_entity_id?: string | null
           from_feature_id: string
           id?: string
+          needed_by_date?: string | null
+          needed_by_sprint_id?: string | null
+          no_work_required?: boolean | null
+          notify_on_commit?: boolean | null
+          notify_on_delivery?: boolean | null
+          owner_id?: string | null
+          pi_id?: string | null
+          rank_order?: number | null
+          rejection_reason?: string | null
+          related_stories_count?: number | null
+          requesting_program_id?: string | null
+          requesting_team_id?: string | null
           resolution_plan?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
           status?: Database["public"]["Enums"]["dependency_status"] | null
+          subscribed_users?: string[] | null
           to_feature_id: string
           type?: Database["public"]["Enums"]["dependency_type"] | null
           updated_at?: string | null
         }
         Update: {
           blocked_days?: number | null
+          blocked_reason_requestor?: string | null
+          blocked_reason_respondent?: string | null
+          blocked_requestor?: boolean | null
+          blocked_respondent?: boolean | null
+          committed_by_date?: string | null
+          committed_by_sprint_id?: string | null
           created_at?: string | null
           criticality_score?: number | null
+          delivered_at?: string | null
+          dependency_level?: string | null
+          depends_on_program_id?: string | null
+          depends_on_team_id?: string | null
+          description?: string | null
           due_iteration_id?: string | null
+          external_entity_id?: string | null
           from_feature_id?: string
           id?: string
+          needed_by_date?: string | null
+          needed_by_sprint_id?: string | null
+          no_work_required?: boolean | null
+          notify_on_commit?: boolean | null
+          notify_on_delivery?: boolean | null
+          owner_id?: string | null
+          pi_id?: string | null
+          rank_order?: number | null
+          rejection_reason?: string | null
+          related_stories_count?: number | null
+          requesting_program_id?: string | null
+          requesting_team_id?: string | null
           resolution_plan?: string | null
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
           status?: Database["public"]["Enums"]["dependency_status"] | null
+          subscribed_users?: string[] | null
           to_feature_id?: string
           type?: Database["public"]["Enums"]["dependency_type"] | null
           updated_at?: string | null
         }
         Relationships: [
           {
+            foreignKeyName: "dependencies_committed_by_sprint_id_fkey"
+            columns: ["committed_by_sprint_id"]
+            isOneToOne: false
+            referencedRelation: "iterations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dependencies_depends_on_program_id_fkey"
+            columns: ["depends_on_program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dependencies_depends_on_team_id_fkey"
+            columns: ["depends_on_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "dependencies_due_iteration_id_fkey"
             columns: ["due_iteration_id"]
             isOneToOne: false
             referencedRelation: "iterations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dependencies_external_entity_id_fkey"
+            columns: ["external_entity_id"]
+            isOneToOne: false
+            referencedRelation: "external_entities"
             referencedColumns: ["id"]
           },
           {
@@ -479,10 +582,133 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "dependencies_needed_by_sprint_id_fkey"
+            columns: ["needed_by_sprint_id"]
+            isOneToOne: false
+            referencedRelation: "iterations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dependencies_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dependencies_requesting_program_id_fkey"
+            columns: ["requesting_program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dependencies_requesting_team_id_fkey"
+            columns: ["requesting_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "dependencies_to_feature_id_fkey"
             columns: ["to_feature_id"]
             isOneToOne: false
             referencedRelation: "features"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dependency_audit_log: {
+        Row: {
+          action: string
+          changed_by: string | null
+          created_at: string | null
+          dependency_id: string
+          field_changed: string | null
+          id: string
+          new_value: string | null
+          notes: string | null
+          old_value: string | null
+        }
+        Insert: {
+          action: string
+          changed_by?: string | null
+          created_at?: string | null
+          dependency_id: string
+          field_changed?: string | null
+          id?: string
+          new_value?: string | null
+          notes?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          action?: string
+          changed_by?: string | null
+          created_at?: string | null
+          dependency_id?: string
+          field_changed?: string | null
+          id?: string
+          new_value?: string | null
+          notes?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dependency_audit_log_dependency_id_fkey"
+            columns: ["dependency_id"]
+            isOneToOne: false
+            referencedRelation: "dependencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dependency_negotiations: {
+        Row: {
+          counter_proposal: boolean | null
+          created_at: string | null
+          dependency_id: string
+          id: string
+          notes: string | null
+          proposed_by: string | null
+          proposed_date: string | null
+          proposed_sprint_id: string | null
+          status: string | null
+        }
+        Insert: {
+          counter_proposal?: boolean | null
+          created_at?: string | null
+          dependency_id: string
+          id?: string
+          notes?: string | null
+          proposed_by?: string | null
+          proposed_date?: string | null
+          proposed_sprint_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          counter_proposal?: boolean | null
+          created_at?: string | null
+          dependency_id?: string
+          id?: string
+          notes?: string | null
+          proposed_by?: string | null
+          proposed_date?: string | null
+          proposed_sprint_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dependency_negotiations_dependency_id_fkey"
+            columns: ["dependency_id"]
+            isOneToOne: false
+            referencedRelation: "dependencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dependency_negotiations_proposed_sprint_id_fkey"
+            columns: ["proposed_sprint_id"]
+            isOneToOne: false
+            referencedRelation: "iterations"
             referencedColumns: ["id"]
           },
         ]
@@ -1368,6 +1594,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      external_entities: {
+        Row: {
+          contact_info: Json | null
+          created_at: string | null
+          description: string | null
+          entity_type: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          proxy_owner_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          contact_info?: Json | null
+          created_at?: string | null
+          description?: string | null
+          entity_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          proxy_owner_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          contact_info?: Json | null
+          created_at?: string | null
+          description?: string | null
+          entity_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          proxy_owner_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       feature_flags: {
         Row: {
@@ -4463,6 +4725,66 @@ export type Database = {
           },
         ]
       }
+      work_item_links: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          from_work_item_id: string
+          from_work_item_type: string
+          id: string
+          link_type: string | null
+          pi_id: string | null
+          program_id: string | null
+          to_work_item_id: string
+          to_work_item_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          from_work_item_id: string
+          from_work_item_type: string
+          id?: string
+          link_type?: string | null
+          pi_id?: string | null
+          program_id?: string | null
+          to_work_item_id: string
+          to_work_item_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          from_work_item_id?: string
+          from_work_item_type?: string
+          id?: string
+          link_type?: string | null
+          pi_id?: string | null
+          program_id?: string | null
+          to_work_item_id?: string
+          to_work_item_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_links_pi_id_fkey"
+            columns: ["pi_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_item_links_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -4543,8 +4865,17 @@ export type Database = {
         | "done"
         | "cancelled"
       confidence_level: "high" | "med" | "low"
-      dependency_status: "open" | "in_progress" | "done"
-      dependency_type: "sequential" | "concurrent"
+      dependency_status:
+        | "open"
+        | "in_progress"
+        | "done"
+        | "pending_commit"
+        | "negotiation"
+        | "committed"
+        | "delivered"
+        | "no_work_done"
+        | "rejected"
+      dependency_type: "sequential" | "concurrent" | "program" | "external"
       epic_state: "not_started" | "in_progress" | "accepted"
       epic_status:
         | "proposed"
@@ -4737,8 +5068,18 @@ export const Constants = {
         "cancelled",
       ],
       confidence_level: ["high", "med", "low"],
-      dependency_status: ["open", "in_progress", "done"],
-      dependency_type: ["sequential", "concurrent"],
+      dependency_status: [
+        "open",
+        "in_progress",
+        "done",
+        "pending_commit",
+        "negotiation",
+        "committed",
+        "delivered",
+        "no_work_done",
+        "rejected",
+      ],
+      dependency_type: ["sequential", "concurrent", "program", "external"],
       epic_state: ["not_started", "in_progress", "accepted"],
       epic_status: [
         "proposed",

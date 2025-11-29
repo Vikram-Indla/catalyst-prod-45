@@ -38,7 +38,7 @@ export default function Dependencies() {
           *,
           from_feature:features!dependencies_from_feature_id_fkey(id, name, program_id, status, blocked, programs(name)),
           to_feature:features!dependencies_to_feature_id_fkey(id, name, program_id, status, blocked, programs(name)),
-          due_iteration:iterations(id, name, start_date, end_date)
+          due_iteration:iterations!dependencies_due_iteration_id_fkey(id, name, start_date, end_date)
         `);
 
       if (statusFilter) query = query.eq('status', statusFilter);

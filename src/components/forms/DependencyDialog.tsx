@@ -13,9 +13,9 @@ import { toast } from 'sonner';
 const formSchema = z.object({
   from_feature_id: z.string().min(1, 'Source feature is required'),
   to_feature_id: z.string().min(1, 'Target feature is required'),
-  type: z.enum(['sequential', 'concurrent']),
+  type: z.enum(['sequential', 'concurrent', 'program', 'external']),
   risk_level: z.enum(['low', 'med', 'high']),
-  status: z.enum(['open', 'in_progress', 'done']),
+  status: z.enum(['open', 'in_progress', 'done', 'pending_commit', 'negotiation', 'committed', 'delivered', 'no_work_done', 'rejected']),
   due_iteration_id: z.string().optional(),
 });
 
@@ -205,6 +205,8 @@ export function DependencyDialog({ open, onClose, dependencyId }: DependencyDial
                     <SelectContent>
                       <SelectItem value="sequential">Sequential</SelectItem>
                       <SelectItem value="concurrent">Concurrent</SelectItem>
+                      <SelectItem value="program">Program</SelectItem>
+                      <SelectItem value="external">External</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -249,8 +251,14 @@ export function DependencyDialog({ open, onClose, dependencyId }: DependencyDial
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="open">Open</SelectItem>
+                      <SelectItem value="pending_commit">Pending Commit</SelectItem>
+                      <SelectItem value="negotiation">Negotiation</SelectItem>
+                      <SelectItem value="committed">Committed</SelectItem>
                       <SelectItem value="in_progress">In Progress</SelectItem>
+                      <SelectItem value="delivered">Delivered</SelectItem>
                       <SelectItem value="done">Done</SelectItem>
+                      <SelectItem value="no_work_done">No Work Done</SelectItem>
+                      <SelectItem value="rejected">Rejected</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
