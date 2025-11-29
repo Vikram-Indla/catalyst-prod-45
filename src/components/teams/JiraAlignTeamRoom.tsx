@@ -391,37 +391,36 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
               ) : (
                 <div className="space-y-2">
                   {dependencies.slice(0, 3).map((dep) => (
-                    <Card key={dep.id} className="p-3">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Badge 
-                              variant={
-                                dep.status === 'done' || dep.status === 'delivered' ? 'default' :
-                                dep.status === 'in_progress' ? 'secondary' :
-                                dep.status === 'committed' ? 'outline' :
-                                'destructive'
-                              }
-                              className="text-xs"
-                            >
-                              {dep.status?.replace('_', ' ').toUpperCase()}
-                            </Badge>
-                            <Badge 
-                              variant={
-                                dep.risk_level === 'high' ? 'destructive' :
-                                dep.risk_level === 'med' ? 'secondary' :
-                                'outline'
-                              }
-                              className="text-xs"
-                            >
-                              {dep.risk_level?.toUpperCase()} RISK
-                            </Badge>
-                          </div>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {dep.description || `${dep.type} dependency`}
-                          </p>
-                        </div>
+                    <Card key={dep.id} className="p-3 bg-background">
+                      <div className="flex items-start gap-2 mb-1.5">
+                        <span 
+                          className={`px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap ${
+                            dep.status === 'pending_commit' || dep.status === 'open' 
+                              ? 'bg-destructive text-destructive-foreground'
+                              : dep.status === 'committed' 
+                              ? 'bg-muted text-muted-foreground'
+                              : dep.status === 'done' || dep.status === 'delivered'
+                              ? 'bg-muted text-muted-foreground'
+                              : 'bg-secondary text-secondary-foreground'
+                          }`}
+                        >
+                          {dep.status === 'pending_commit' ? 'PENDING COMMIT' : dep.status?.replace('_', ' ').toUpperCase()}
+                        </span>
+                        <span 
+                          className={`px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap ${
+                            dep.risk_level === 'high' 
+                              ? 'bg-destructive text-destructive-foreground'
+                              : dep.risk_level === 'med'
+                              ? 'bg-orange-500 text-white'
+                              : 'bg-muted text-muted-foreground'
+                          }`}
+                        >
+                          {dep.risk_level?.toUpperCase()} RISK
+                        </span>
                       </div>
+                      <p className="text-xs text-muted-foreground">
+                        {dep.description || `${dep.type} dependency`}
+                      </p>
                     </Card>
                   ))}
                   <div className="flex gap-2 mt-3">
@@ -429,7 +428,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                       variant="link" 
                       size="sm" 
                       className="text-xs h-auto p-0"
-                      onClick={() => navigate('/dependencies')}
+                      onClick={() => navigate(`/dependencies?teamId=${team.id}`)}
                     >
                       View All ({dependencies.length})
                     </Button>
