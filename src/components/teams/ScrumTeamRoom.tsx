@@ -83,7 +83,7 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-green-600">{metrics.completed}</div>
+            <div className="text-3xl font-bold text-success">{metrics.completed}</div>
             <p className="text-xs text-muted-foreground mt-1">story points</p>
           </CardContent>
         </Card>
@@ -97,7 +97,7 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{metrics.burndownTrend}%</div>
-            <p className="text-xs text-green-600 mt-1">On Track</p>
+            <p className="text-xs text-success mt-1">On Track</p>
           </CardContent>
         </Card>
       </div>
@@ -129,7 +129,7 @@ export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
                 <div className="text-xs text-muted-foreground">In Progress</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{metrics.completed}</div>
+                <div className="text-2xl font-bold text-success">{metrics.completed}</div>
                 <div className="text-xs text-muted-foreground">Completed</div>
               </div>
             </div>

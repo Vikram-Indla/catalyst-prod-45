@@ -92,9 +92,9 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId, piIds }: ExecutionA
                 <div className="flex items-center gap-2">
                   <div className="text-2xl font-bold">{executionData.avgKRProgress}%</div>
                   {executionData.gap > 5 ? (
-                    <TrendingUp className="h-4 w-4 text-green-500" />
+                    <TrendingUp className="h-4 w-4 text-success" />
                   ) : executionData.gap < -5 ? (
-                    <TrendingDown className="h-4 w-4 text-red-500" />
+                    <TrendingDown className="h-4 w-4 text-destructive" />
                   ) : null}
                 </div>
                 <Progress value={executionData.avgKRProgress} className="h-2" />
@@ -106,8 +106,8 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId, piIds }: ExecutionA
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium">Execution Gap</span>
                 <span className={`text-sm font-bold ${
-                  executionData.gap > 5 ? 'text-green-600' : 
-                  executionData.gap < -5 ? 'text-red-600' : 
+                  executionData.gap > 5 ? 'text-success' : 
+                  executionData.gap < -5 ? 'text-destructive' : 
                   'text-muted-foreground'
                 }`}>
                   {executionData.gap > 0 ? '+' : ''}{executionData.gap}%

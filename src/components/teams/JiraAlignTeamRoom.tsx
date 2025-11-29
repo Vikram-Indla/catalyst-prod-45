@@ -285,7 +285,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-semibold text-green-500">{metrics.teamVelocity}%</span>
+                      <span className="text-xs font-semibold text-success">{metrics.teamVelocity}%</span>
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground mt-1">Team Velocity</span>
@@ -312,7 +312,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         fill="none"
                         strokeDasharray={`${2 * Math.PI * 28}`}
                         strokeDashoffset={`${2 * Math.PI * 28 * (1 - metrics.accepted / 100)}`}
-                        className="text-green-600"
+                        className="text-success"
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">

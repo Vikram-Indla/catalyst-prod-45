@@ -69,7 +69,7 @@ export function CheckInModal({ open, onClose, keyResult, checkins, onUpdate, onD
         <div className="grid grid-cols-[200px_1fr] gap-6 mt-4">
           {/* Left: Score display */}
           <div className="flex flex-col items-center justify-center border rounded-lg p-6 bg-muted/30">
-            <div className="text-5xl font-bold text-green-600">{score.toFixed(1)}</div>
+            <div className="text-5xl font-bold text-success">{score.toFixed(1)}</div>
             <div className="text-sm text-muted-foreground mt-2">Score</div>
             <div className="text-xs text-muted-foreground mt-1">{achievedPercent}% achieved</div>
           </div>
