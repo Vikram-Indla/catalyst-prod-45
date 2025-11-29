@@ -215,15 +215,16 @@ export function DependencyWheelDetailsPanel({
 
   return (
     <div className="w-[400px] flex-shrink-0 space-y-4">
-      <Card>
+      <Card className="border-2 border-amber-400 bg-amber-50/50 dark:bg-amber-950/20 shadow-lg shadow-amber-200/50 dark:shadow-amber-900/20 transition-all">
         <CardHeader>
-          <CardTitle className="text-base">
+          <CardTitle className="text-base font-bold text-amber-900 dark:text-amber-100 flex items-center gap-2">
+            <div className="h-3 w-3 rounded-full bg-amber-400 animate-pulse" />
             {selectedNode.name}
           </CardTitle>
           <div className="flex gap-2 text-sm text-muted-foreground">
-            <span>{selectedNode.inboundCount} Incoming</span>
+            <span className="font-semibold">{selectedNode.inboundCount} Incoming</span>
             <span>•</span>
-            <span>{selectedNode.outboundCount} Outgoing</span>
+            <span className="font-semibold">{selectedNode.outboundCount} Outgoing</span>
           </div>
         </CardHeader>
       </Card>
