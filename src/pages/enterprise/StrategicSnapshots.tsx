@@ -1,17 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Search, Plus, Grid3x3, List } from 'lucide-react';
 import { useState } from 'react';
+import { useStrategySnapshots } from '@/hooks/useStrategySnapshots';
+import { Skeleton } from '@/components/ui/skeleton';
+import { format } from 'date-fns';
 
 export default function StrategicSnapshots() {
   const [view, setView] = useState<'grid' | 'list'>('grid');
-
-  const snapshots = [
-    { id: '1', name: 'Corporate Strategy 2024', date: '2024-01-01', status: 'Active' },
-    { id: '2', name: 'Acme Snapshot 2023', date: '2023-01-01', status: 'Archived' },
-    { id: '3', name: 'Corporate Strategy 2020', date: '2020-01-01', status: 'Archived' },
-  ];
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const { data: snapshots = [], isLoading } = useStrategySnapshots();
+  
+  const filteredSnapshots = snapshots.filter((s) =>
+    s.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
@@ -23,6 +28,8 @@ export default function StrategicSnapshots() {
             <Input
               placeholder="Search snapshots..."
               className="pl-9"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               style={{ height: 'var(--grid-row)' }}
             />
           </div>
@@ -51,17 +58,43 @@ export default function StrategicSnapshots() {
       </div>
 
       {/* Content */}
-      {view === 'grid' ? (
+      {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {snapshots.map((snapshot) => (
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+      ) : filteredSnapshots.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center text-muted-foreground">
+            No snapshots found
+          </CardContent>
+        </Card>
+      ) : view === 'grid' ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredSnapshots.map((snapshot) => (
             <Card key={snapshot.id} className="cursor-pointer hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="text-base">{snapshot.name}</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">{snapshot.name}</CardTitle>
+                  {snapshot.is_active && (
+                    <Badge variant="default" className="text-xs">Active</Badge>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-sm text-muted-foreground space-y-1">
-                  <div>Created: {snapshot.date}</div>
-                  <div>Status: <span className={snapshot.status === 'Active' ? 'text-green-600' : 'text-muted-foreground'}>{snapshot.status}</span></div>
+                <div className="text-sm space-y-2">
+                  {snapshot.description && (
+                    <p className="text-muted-foreground line-clamp-2">{snapshot.description}</p>
+                  )}
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Created: {format(new Date(snapshot.created_at), 'MMM dd, yyyy')}</span>
+                  </div>
+                  {snapshot.start_date && snapshot.end_date && (
+                    <div className="text-xs text-muted-foreground">
+                      {format(new Date(snapshot.start_date), 'MMM yyyy')} - {format(new Date(snapshot.end_date), 'MMM yyyy')}
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -71,14 +104,21 @@ export default function StrategicSnapshots() {
         <Card>
           <CardContent className="p-0">
             <div className="divide-y">
-              {snapshots.map((snapshot) => (
+              {filteredSnapshots.map((snapshot) => (
                 <div key={snapshot.id} className="p-4 hover:bg-accent cursor-pointer flex items-center justify-between">
-                  <div>
-                    <div className="font-medium">{snapshot.name}</div>
-                    <div className="text-sm text-muted-foreground">Created: {snapshot.date}</div>
-                  </div>
-                  <div className={`text-sm ${snapshot.status === 'Active' ? 'text-green-600' : 'text-muted-foreground'}`}>
-                    {snapshot.status}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <div className="font-medium">{snapshot.name}</div>
+                      {snapshot.is_active && (
+                        <Badge variant="default" className="text-xs">Active</Badge>
+                      )}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Created: {format(new Date(snapshot.created_at), 'MMM dd, yyyy')}
+                      {snapshot.start_date && snapshot.end_date && (
+                        <> • {format(new Date(snapshot.start_date), 'MMM yyyy')} - {format(new Date(snapshot.end_date), 'MMM yyyy')}</>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
