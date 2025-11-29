@@ -127,9 +127,9 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
 
   // Color shades (blue gradient from light to dark)
   const colors = {
-    missions: 'hsl(210, 100%, 72%)',
-    visions: 'hsl(210, 100%, 68%)',
-    values: 'hsl(210, 100%, 64%)',
+    missions: 'hsl(210, 100%, 48%)',
+    visions: 'hsl(210, 100%, 48%)',
+    values: 'hsl(210, 100%, 48%)',
     northStars: 'hsl(210, 100%, 60%)',
     longTermGoals: 'hsl(210, 100%, 56%)',
     longTermStrategies: 'hsl(210, 100%, 52%)',
