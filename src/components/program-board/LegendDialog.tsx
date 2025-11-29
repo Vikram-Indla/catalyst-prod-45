@@ -34,30 +34,30 @@ export function LegendDialog({ open, onOpenChange }: LegendDialogProps) {
                   <span className="text-sm">Risks Apply</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-orange-500 rounded"></span>
+                  <span className="inline-block w-5 h-5 bg-brand-gold rounded"></span>
                   <span className="text-sm">Scheduling Issues</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-red-500 rounded"></span>
+                  <span className="inline-block w-5 h-5 bg-destructive rounded"></span>
                   <span className="text-sm">Blocked</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-amber-800 rounded"></span>
+                  <span className="inline-block w-5 h-5 bg-warning rounded"></span>
                   <span className="text-sm">Cancelled</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-gray-900 rounded"></span>
+                  <span className="inline-block w-5 h-5 bg-foreground rounded"></span>
                   <span className="text-sm">Orphan</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-emerald-400 rounded relative">
-                    <span className="absolute -top-1 -right-1 text-white text-xs font-bold">✓</span>
+                  <span className="inline-block w-5 h-5 bg-success rounded relative">
+                    <span className="absolute -top-1 -right-1 text-primary-foreground text-xs font-bold">✓</span>
                   </span>
                   <span className="text-sm">Accepted</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-5 h-5 bg-emerald-400 rounded relative">
-                    <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-red-500 rounded-sm"></span>
+                  <span className="inline-block w-5 h-5 bg-success rounded relative">
+                    <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-destructive rounded-sm"></span>
                   </span>
                   <span className="text-sm">Accepted with Planning Issues</span>
                 </li>
