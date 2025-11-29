@@ -240,7 +240,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 fill={colors.missions}
                 stroke="white"
                 strokeWidth="2"
-                className="cursor-pointer hover:opacity-90 transition-opacity"
+                className="cursor-pointer transition-opacity"
                 onClick={() => onLayerClick("Missions")}
                 onMouseEnter={(e) => handleMouseEnter('Missions', e)}
                 onMouseLeave={handleMouseLeave}
@@ -276,7 +276,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 fill={colors.visions}
                 stroke="white"
                 strokeWidth="2"
-                className="cursor-pointer hover:opacity-90 transition-opacity"
+                className="cursor-pointer transition-opacity"
                 onClick={() => onLayerClick("Visions")}
                 onMouseEnter={(e) => handleMouseEnter('Visions', e)}
                 onMouseLeave={handleMouseLeave}
@@ -312,7 +312,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 fill={colors.values}
                 stroke="white"
                 strokeWidth="2"
-                className="cursor-pointer hover:opacity-90 transition-opacity"
+                className="cursor-pointer transition-opacity"
                 onClick={() => onLayerClick("Values")}
                 onMouseEnter={(e) => handleMouseEnter('Values', e)}
                 onMouseLeave={handleMouseLeave}
