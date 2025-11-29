@@ -14,7 +14,7 @@ export default function EnterpriseComingSoon() {
   return (
     <ComingSoonPage 
       title={feature}
-      description="This enterprise feature is being developed according to Jira Align specifications."
+      description="This enterprise feature is being developed according to Catalyst specifications."
     />
   );
 }

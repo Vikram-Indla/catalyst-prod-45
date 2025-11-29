@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 /**
- * Navigation Context for Jira Align-style persistent scope and time filters
+ * Navigation Context for Catalyst-style persistent scope and time filters
  * Source: https://help.jiraalign.com/hc/en-us/articles/17158556046612-Navigate-Jira-Align
  * 
  * Provides persistent filtering across all rooms and views:

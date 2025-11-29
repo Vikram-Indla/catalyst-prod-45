@@ -14,7 +14,7 @@ export default function SelfTest() {
     <div className="container mx-auto p-6">
       <Card>
         <CardHeader>
-          <CardTitle>Jira Align Implementation Self-Test</CardTitle>
+          <CardTitle>Catalyst Implementation Self-Test</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {tests.map((test) => (

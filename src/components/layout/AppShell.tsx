@@ -21,7 +21,7 @@ import { HelpCircle, User, LogOut } from 'lucide-react';
 import { Outlet } from 'react-router-dom';
 
 /**
- * Jira Align-style App Shell with Room Navigation
+ * Catalyst-style App Shell with Room Navigation
  * Source: https://help.jiraalign.com/hc/en-us/articles/17158556046612-Navigate-Jira-Align
  */
 

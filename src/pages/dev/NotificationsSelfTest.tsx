@@ -65,7 +65,7 @@ export default function NotificationsSelfTest() {
         <CardHeader>
           <CardTitle>Notifications System Self-Test</CardTitle>
           <CardDescription>
-            Test all notification features implemented per Jira Align specification
+            Test all notification features implemented per Catalyst specification
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

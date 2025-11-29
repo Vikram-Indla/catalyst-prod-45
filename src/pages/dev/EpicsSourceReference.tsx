@@ -17,7 +17,7 @@ const sources: Source[] = [
     title: 'Create Epics',
     type: 'pdf',
     url: 'https://help.jiraalign.com/hc/en-us/articles/115002851494-Create-epics',
-    description: 'Official Jira Align documentation on creating epics with required fields and hierarchy rules',
+    description: 'Official Catalyst documentation on creating epics with required fields and hierarchy rules',
     implemented: true,
     features: [
       'Create epic form with required fields',
@@ -79,7 +79,7 @@ const sources: Source[] = [
     ]
   },
   {
-    title: 'JIRA Align Epic Work Items',
+    title: 'Catalyst Epic Work Items',
     type: 'pdf',
     description: 'Visual reference showing epic details panel layout and field organization',
     implemented: true,

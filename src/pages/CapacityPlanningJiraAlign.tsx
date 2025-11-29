@@ -22,7 +22,7 @@ import { toast } from 'sonner';
 import { useJiraAlignContext } from '@/contexts/JiraAlignContext';
 
 /**
- * Jira Align-compliant Capacity Planning Page
+ * Catalyst-compliant Capacity Planning Page
  * 
  * SOURCE: https://help.jiraalign.com/hc/en-us/articles/20106337580052-Understand-the-capacity-page
  * SOURCE: https://help.jiraalign.com/hc/en-us/articles/115000593093-Build-your-capacity-plan

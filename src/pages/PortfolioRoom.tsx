@@ -111,7 +111,7 @@ export default function PortfolioRoom() {
         </div>
       </div>
 
-      {/* 3-Panel Layout - Per Jira Align spec: Left (Theme), Center (Epic/Timeline), Right (PI/Program) */}
+      {/* 3-Panel Layout - Per Catalyst spec: Left (Theme), Center (Epic/Timeline), Right (PI/Program) */}
       <div className="flex-1 overflow-auto">
         <div className="grid grid-cols-12 gap-4 p-6">
           {/* LEFT PANEL - Theme Program Increment Progress */}

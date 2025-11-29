@@ -17,7 +17,7 @@ export function ImportThemesDialog({ open, onOpenChange }: ImportThemesDialogPro
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleDownloadTemplate = () => {
-    // Create CSV template based on Jira Align spec
+    // Create CSV template based on Catalyst spec
     const headers = ['Theme Name', 'Description', 'Strategic Initiative', 'State', 'Major Theme', 'Process Step', 'Owner Email'];
     const csvContent = headers.join(',') + '\n';
     

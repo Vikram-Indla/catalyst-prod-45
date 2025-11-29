@@ -304,7 +304,7 @@ export default function ThemesGrid() {
         </DialogContent>
       </Dialog>
 
-      {/* Import Themes Dialog - Jira Align spec compliant */}
+      {/* Import Themes Dialog - Catalyst spec compliant */}
       <ImportThemesDialog
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
@@ -377,7 +377,7 @@ export default function ThemesGrid() {
         </DialogContent>
       </Dialog>
 
-      {/* Pull Rank Dialog - Jira Align spec compliant */}
+      {/* Pull Rank Dialog - Catalyst spec compliant */}
       <PullRankThemesDialog
         open={prioritizeOpen}
         onOpenChange={setPrioritizeOpen}

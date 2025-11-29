@@ -1,5 +1,5 @@
 // Backlog Management Module Types
-// Based on Jira Align Backlog specification
+// Based on Catalyst Backlog specification
 
 export type BacklogScope = 'enterprise' | 'portfolio' | 'solution' | 'program' | 'team';
 

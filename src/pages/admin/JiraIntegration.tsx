@@ -119,7 +119,7 @@ export default function JiraIntegration() {
         <div>
           <h1 className="text-3xl font-bold text-foreground">Jira Integration</h1>
           <p className="text-muted-foreground mt-1">
-            Configure bidirectional sync with Jira Align
+            Configure bidirectional sync with external systems
           </p>
         </div>
 
@@ -239,7 +239,7 @@ export default function JiraIntegration() {
         <Card>
           <CardHeader>
             <CardTitle>Field Mapping</CardTitle>
-            <CardDescription>Map Catalyst fields to Jira Align</CardDescription>
+            <CardDescription>Map Catalyst fields to external systems</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -256,7 +256,7 @@ export default function JiraIntegration() {
                   </div>
                 </div>
                 <div>
-                  <Label>Jira Align</Label>
+                  <Label>External System</Label>
                   <div className="mt-2 space-y-2 text-sm">
                     <div className="p-2 bg-primary/10 rounded">Epic</div>
                     <div className="p-2 bg-primary/10 rounded">Initiative</div>

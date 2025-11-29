@@ -31,7 +31,7 @@ export function FeatureDialog({ open, onOpenChange, feature }: FeatureDialogProp
   const [riskReduction, setRiskReduction] = useState(feature?.risk_reduction || 0);
   const [jobSize, setJobSize] = useState(feature?.job_size || 0);
   
-  // Additional Jira Align fields
+  // Additional Catalyst fields
   const [blocked, setBlocked] = useState(feature?.blocked || false);
   const [blockedReason, setBlockedReason] = useState(feature?.blocked_reason || '');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState(feature?.acceptance_criteria || '');

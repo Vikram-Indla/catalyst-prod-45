@@ -14,7 +14,7 @@ export default function TeamComingSoon() {
   return (
     <ComingSoonPage 
       title={feature}
-      description="This team feature is being developed according to Jira Align specifications."
+      description="This team feature is being developed according to Catalyst specifications."
     />
   );
 }
