@@ -52,8 +52,19 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
     
     const acceptedPercentage = totalPoints > 0 ? Math.round((donePoints / totalPoints) * 100) : 0;
     
+    // Calculate time left from sprint dates
+    let timeLeft = 0;
+    if (currentSprint?.start_date && currentSprint?.end_date) {
+      const now = new Date();
+      const start = new Date(currentSprint.start_date);
+      const end = new Date(currentSprint.end_date);
+      const total = end.getTime() - start.getTime();
+      const elapsed = now.getTime() - start.getTime();
+      timeLeft = Math.max(0, Math.min(100, Math.round((1 - elapsed / total) * 100)));
+    }
+    
     return {
-      timeLeft: 100, // Mock - would calculate from sprint dates
+      timeLeft,
       teamVelocity: acceptedPercentage > 70 ? 82 : acceptedPercentage,
       accepted: acceptedPercentage,
       storiesTotal: totalStories,
@@ -62,7 +73,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
       storiesToDo: todoStories,
       dependenciesCount: dependencies.length,
     };
-  }, [stories, dependencies]);
+  }, [stories, dependencies, currentSprint]);
 
   const handleTeamChange = (teamId: string) => {
     navigate(`/teams/${teamId}/room`);
@@ -88,17 +99,17 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
 
   // Map stories to display format
   const displayStories = stories.map((story, index) => ({
-    id: (369 + index).toString(),
+    id: story.id,
     title: story.name,
     progress: story.status === 'done' ? 100 : story.status === 'in_progress' ? 60 : 0,
-    owner: 'UN', // Would come from assignee
+    owner: story.assignee_id ? story.assignee_id.substring(0, 2).toUpperCase() : 'UN',
     estimate: Number(story.estimate_points) || 0,
     hours: `${Number(story.points_loe) || 0}/0`,
-    lov: Math.floor(Math.random() * 6),
-    lce: Math.floor(Math.random() * 4),
-    ac: `${Math.floor(Math.random() * 2)}/${Math.floor(Math.random() * 6)}`,
+    lov: 0,
+    lce: 0,
+    ac: '0/0',
     state: story.status === 'done' ? 'ACCEPTED' : story.status === 'in_progress' ? 'BUILDING' : 'TODO',
-    defects: story.status === 'done' && Math.random() > 0.7 ? 1 : 0,
+    defects: 0,
   }));
 
   return (
@@ -314,24 +325,6 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
 
               {/* Work Item Counts */}
               <div className="space-y-2">
-                <div className="flex items-center justify-between py-2 px-3 bg-muted/30 rounded">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-foreground">Defects</span>
-                  </div>
-                  <span className="text-sm font-medium text-foreground">
-                    17/22
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between py-2 px-3 rounded">
-                  <div className="flex items-center gap-2">
-                    <Target className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm text-foreground">Tasks</span>
-                  </div>
-                  <span className="text-sm font-medium text-foreground">100%</span>
-                </div>
-
                 <div className="flex items-center justify-between py-2 px-3 rounded">
                   <div className="flex items-center gap-2">
                     <ChevronRight className="w-4 h-4 text-muted-foreground" />
