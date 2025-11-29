@@ -363,8 +363,14 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
               const labelX = centerX + labelRadius * Math.cos(segment.midAngle);
               const labelY = centerY + labelRadius * Math.sin(segment.midAngle);
               
-              // Keep text horizontal and readable from left to right
-              // No rotation - text stays horizontal regardless of segment position
+              // Text should be RADIAL - following the segment direction from center outward
+              // Convert midAngle to degrees for rotation
+              let textAngle = (segment.midAngle * 180 / Math.PI);
+              
+              // For bottom half of circle, flip text 180° so it reads upward instead of upside-down
+              if (textAngle > 90 && textAngle < 270) {
+                textAngle += 180;
+              }
               
               return (
                 <g key={segment.id}>
@@ -383,12 +389,13 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
                     onMouseLeave={() => setHoveredNodeId(null)}
                     onClick={() => handleNodeClick(segment.id, segment.midAngle)}
                   />
-                  {/* Program label - Horizontal and always readable left to right */}
+                  {/* Program label - RADIAL direction (following segment from center outward) */}
                   <text
                     x={labelX}
                     y={labelY}
                     textAnchor="middle"
                     dominantBaseline="middle"
+                    transform={`rotate(${textAngle} ${labelX} ${labelY})`}
                     className="font-semibold pointer-events-none select-none"
                     style={{ 
                       fontSize: segment.isSelected ? '14px' : '13px',
