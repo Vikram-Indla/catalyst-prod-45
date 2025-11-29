@@ -99,21 +99,23 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
           <table className="w-full border-collapse">
             <thead>
               <tr>
-                <th className="sticky left-0 z-10 bg-background border-b border-r border-border/40 w-48 h-40">
+                <th className="sticky left-0 z-10 bg-background border-b border-r border-border/40 w-48 h-44">
                   {/* Empty corner cell */}
                 </th>
                 {programs.map((toProg) => (
                   <th
                     key={toProg.id}
-                    className="border-b border-r border-border/40 relative bg-background overflow-hidden"
-                    style={{ width: '64px', height: '180px', minWidth: '64px' }}
+                    className="border-b border-r border-border/40 relative bg-background p-0"
+                    style={{ width: '56px', height: '200px', minWidth: '56px' }}
                   >
                     <div 
-                      className="absolute top-3 left-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer"
+                      className="absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-primary hover:text-primary/80 cursor-pointer origin-bottom-left"
                       style={{ 
-                        transform: 'rotate(90deg) translateX(-50%)',
-                        transformOrigin: 'left center',
-                        maxWidth: '170px'
+                        transform: 'translateX(-50%) rotate(90deg)',
+                        transformOrigin: '50% 100%',
+                        maxHeight: '180px',
+                        textOverflow: 'ellipsis',
+                        overflow: 'visible'
                       }}
                     >
                       {toProg.name}
@@ -125,8 +127,8 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
             <tbody>
               {programs.map((fromProg) => (
                 <tr key={fromProg.id}>
-                  <td className="sticky left-0 z-10 bg-background border-r border-b border-border/40 px-3 py-2 w-48 h-16">
-                    <div className="text-sm text-primary hover:text-primary/80 cursor-pointer truncate">
+                  <td className="sticky left-0 z-10 bg-background border-r border-b border-border/40 px-3 py-3 w-48">
+                    <div className="text-xs text-primary hover:text-primary/80 cursor-pointer truncate">
                       {fromProg.name}
                     </div>
                   </td>
@@ -141,14 +143,14 @@ export function DependencyMatrix({ piId, onDependencyClick }: DependencyMatrixPr
                           isSameProgram 
                             ? 'bg-muted/30' 
                             : count === 0 
-                              ? 'bg-muted/10' 
-                              : 'cursor-pointer hover:opacity-80'
+                              ? 'bg-background hover:bg-muted/20' 
+                              : 'cursor-pointer hover:opacity-80 transition-opacity'
                         }`}
                         onClick={() => !isSameProgram && count > 0 && handleCellClick(fromProg, toProg)}
-                        style={{ width: '64px', height: '64px', minWidth: '64px' }}
+                        style={{ width: '56px', height: '56px', minWidth: '56px' }}
                       >
                         {!isSameProgram && count > 0 && (
-                          <div className="inline-flex items-center justify-center bg-[#1e3a5f] text-white font-semibold text-xs rounded px-2 py-1 min-w-[28px]">
+                          <div className="inline-flex items-center justify-center bg-[#1e3a5f] text-white font-semibold text-sm rounded-md px-2.5 py-1 min-w-[32px] shadow-sm">
                             {count}
                           </div>
                         )}
