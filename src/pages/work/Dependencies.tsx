@@ -21,10 +21,10 @@ export default function DependenciesPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [piFilter, setPiFilter] = useState<string>('');
-  const [levelFilter, setLevelFilter] = useState<string>('');
-  const [typeFilter, setTypeFilter] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [piFilter, setPiFilter] = useState<string | undefined>(undefined);
+  const [levelFilter, setLevelFilter] = useState<string | undefined>(undefined);
+  const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [viewMode, setViewMode] = useState<'yourRequests' | 'toDo' | 'all'>('all');
   const [visualizationMode, setVisualizationMode] = useState<'list' | 'matrix' | 'wheel'>('list');
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -62,10 +62,10 @@ export default function DependenciesPage() {
           external_entity:external_entities(id, name, entity_type)
         `);
 
-      if (piFilter) query = query.eq('pi_id', piFilter);
-      if (levelFilter) query = query.eq('dependency_level', levelFilter as any);
-      if (typeFilter) query = query.eq('type', typeFilter as any);
-      if (statusFilter) query = query.eq('status', statusFilter as any);
+      if (piFilter && piFilter !== 'all') query = query.eq('pi_id', piFilter);
+      if (levelFilter && levelFilter !== 'all') query = query.eq('dependency_level', levelFilter as any);
+      if (typeFilter && typeFilter !== 'all') query = query.eq('type', typeFilter as any);
+      if (statusFilter && statusFilter !== 'all') query = query.eq('status', statusFilter as any);
 
       // TODO: Implement viewMode filtering based on current user
       // yourRequests: where requesting_team/program matches user's context
@@ -221,7 +221,7 @@ export default function DependenciesPage() {
             <SelectValue placeholder="All PIs" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All PIs</SelectItem>
+            <SelectItem value="all">All PIs</SelectItem>
             {programIncrements?.map(pi => (
               <SelectItem key={pi.id} value={pi.id}>{pi.name}</SelectItem>
             ))}
@@ -232,7 +232,7 @@ export default function DependenciesPage() {
             <SelectValue placeholder="All Levels" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Levels</SelectItem>
+            <SelectItem value="all">All Levels</SelectItem>
             <SelectItem value="team">Team</SelectItem>
             <SelectItem value="program">Program</SelectItem>
             <SelectItem value="external">External</SelectItem>
@@ -243,7 +243,7 @@ export default function DependenciesPage() {
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="all">All Types</SelectItem>
             <SelectItem value="sequential">Sequential</SelectItem>
             <SelectItem value="concurrent">Concurrent</SelectItem>
           </SelectContent>
@@ -253,7 +253,7 @@ export default function DependenciesPage() {
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Statuses</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="pending_commit">Pending Commit</SelectItem>
             <SelectItem value="negotiation">Negotiation</SelectItem>
             <SelectItem value="committed">Committed</SelectItem>
