@@ -303,6 +303,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
                 onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=mission&snapshot=${snapshotId}`, e)}
+                onMouseEnter={(e) => handleMouseEnter('Missions', e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {counts?.mission || 0}
               </text>
@@ -340,6 +342,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
                 onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=vision&snapshot=${snapshotId}`, e)}
+                onMouseEnter={(e) => handleMouseEnter('Visions', e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {counts?.vision || 0}
               </text>
@@ -377,6 +381,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
                 onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=value&snapshot=${snapshotId}`, e)}
+                onMouseEnter={(e) => handleMouseEnter('Values', e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {counts?.value || 0}
               </text>
@@ -415,6 +421,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
                 onClick={(e) => handleNumberClick(`/enterprise/strategy-room?level=yearly_goal&snapshot=${snapshotId}`, e)}
+                onMouseEnter={(e) => handleMouseEnter('Yearly Goals', e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {counts?.yearly_goal || 0}
               </text>
@@ -451,6 +459,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
                 onClick={(e) => handleNumberClick(`/themes`, e)}
+                onMouseEnter={(e) => handleMouseEnter('Themes', e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {counts?.themes || 0}
               </text>
@@ -492,6 +502,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
                 onClick={(e) => handleNumberClick(`/enterprise/okr-hub?level=portfolio`, e)}
+                onMouseEnter={(e) => handleMouseEnter('Portfolio Objectives', e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {counts?.portfolio_objective || 0}
               </text>
@@ -528,6 +540,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
                 onClick={(e) => handleNumberClick(`/backlog/epics`, e)}
+                onMouseEnter={(e) => handleMouseEnter('Epics', e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {counts?.epics || 0}
               </text>
@@ -569,6 +583,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
                 onClick={(e) => handleNumberClick(`/program/okr-hub?level=program`, e)}
+                onMouseEnter={(e) => handleMouseEnter('Program Objectives', e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {counts?.program_objective || 0}
               </text>
@@ -605,6 +621,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 textAnchor="middle"
                 className="cursor-pointer hover:underline"
                 onClick={(e) => handleNumberClick(`/features`, e)}
+                onMouseEnter={(e) => handleMouseEnter('Features', e)}
+                onMouseLeave={handleMouseLeave}
               >
                 {counts?.features || 0}
               </text>
