@@ -19,3 +19,5 @@ export { EpicDetailsPanel } from './components/EpicDetailsPanel';
 export { BacklogFiltersDialog } from './components/BacklogFiltersDialog';
 export { BacklogColumnsDialog } from './components/BacklogColumnsDialog';
 export { PrioritizationDialog } from './components/PrioritizationDialog';
+export { BacklogContextMenu } from './components/BacklogContextMenu';
+export { QuickAddRow } from './components/QuickAddRow';
