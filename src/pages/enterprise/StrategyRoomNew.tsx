@@ -14,6 +14,8 @@ import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
 import { OkrHeatmap } from '@/components/strategy/OkrHeatmap';
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDetailsPanelNew } from '@/components/okr/ObjectiveDetailsPanelNew';
+import { ObjectiveDialogNew } from '@/components/forms/ObjectiveDialogNew';
+import { toast } from 'sonner';
 
 export function StrategyRoomNew() {
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ export function StrategyRoomNew() {
   
   const { data: snapshots, isLoading: snapshotsLoading } = useStrategySnapshots();
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
+  const [showNewObjectiveDialog, setShowNewObjectiveDialog] = useState(false);
 
   const activeSnapshot = snapshots?.find(s => s.id === snapshotId) || snapshots?.[0];
 
@@ -31,6 +34,14 @@ export function StrategyRoomNew() {
 
   const handleObjectiveClick = (objectiveId: string) => {
     setSelectedObjectiveId(objectiveId);
+  };
+
+  const handleExport = () => {
+    toast.info('Export feature coming soon');
+  };
+
+  const handleConfigure = () => {
+    toast.info('Configuration feature coming soon');
   };
 
   if (snapshotsLoading) {
@@ -65,15 +76,15 @@ export function StrategyRoomNew() {
           </Select>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleExport}>
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleConfigure}>
             <Settings2 className="h-4 w-4 mr-2" />
             Configure
           </Button>
-          <Button size="sm">
+          <Button size="sm" onClick={() => setShowNewObjectiveDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
             New Objective
           </Button>
@@ -122,6 +133,13 @@ export function StrategyRoomNew() {
           onClose={() => setSelectedObjectiveId(null)}
         />
       )}
+
+      {/* New Objective Dialog */}
+      <ObjectiveDialogNew
+        open={showNewObjectiveDialog}
+        onClose={() => setShowNewObjectiveDialog(false)}
+        snapshotId={activeSnapshot?.id}
+      />
     </div>
   );
 }
