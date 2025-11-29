@@ -208,7 +208,7 @@ export default function ValueStreamView() {
             <div className="p-4 border rounded-lg">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="font-semibold">Implementation Stage</h4>
-                <Badge className="bg-amber-500">Medium WIP</Badge>
+                <Badge className="bg-warning text-warning-foreground">Medium WIP</Badge>
               </div>
               <p className="text-sm text-muted-foreground">
                 {features?.filter(f => f.status === 'implementing').length} features in development.

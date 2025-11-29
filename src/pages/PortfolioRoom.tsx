@@ -165,7 +165,7 @@ export default function PortfolioRoom() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">PI-5</span>
-                  <Badge className="bg-[#00BCD4] text-white text-xs">In Progress</Badge>
+                  <Badge className="bg-info text-info-foreground text-xs">In Progress</Badge>
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">83% Complete</div>
               </CardHeader>
