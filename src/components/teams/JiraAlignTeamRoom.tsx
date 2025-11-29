@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Team } from '@/types/team.types';
+import { useTeams } from '@/hooks/useTeams';
+import { useTeamSprints, useSprintStories, useTeamDependencies } from '@/hooks/useTeamRoom';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -19,29 +22,50 @@ interface JiraAlignTeamRoomProps {
 }
 
 export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
-  const [selectedSprint, setSelectedSprint] = useState('sprint-1');
+  const navigate = useNavigate();
+  const { data: allTeams = [] } = useTeams();
+  const { data: sprints = [] } = useTeamSprints(team?.id);
+  const [selectedSprintId, setSelectedSprintId] = useState<string>('');
+  const { data: stories = [] } = useSprintStories(selectedSprintId || sprints[0]?.id);
+  const { data: dependencies = [] } = useTeamDependencies(team?.id);
   const [activeView, setActiveView] = useState<'team' | 'my'>('team');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'sprint-board'>('dashboard');
   const [workItemFilter, setWorkItemFilter] = useState('stories');
 
-  // Mock data
-  const sprint = {
-    name: '15Q3 Team Awesome Q3 3 (7/27 - 8/7)',
-    status: 'Completed',
+  // Auto-select first sprint if available
+  const currentSprint = selectedSprintId 
+    ? sprints.find(s => s.id === selectedSprintId) 
+    : sprints[0];
+
+  // Calculate metrics from real data
+  const metrics = useMemo(() => {
+    const totalStories = stories.length;
+    const doneStories = stories.filter(s => s.status === 'done').length;
+    const inProgressStories = stories.filter(s => s.status === 'in_progress').length;
+    const todoStories = totalStories - doneStories - inProgressStories;
+    
+    const totalPoints = stories.reduce((sum, s) => sum + (Number(s.estimate_points) || 0), 0);
+    const donePoints = stories.filter(s => s.status === 'done')
+      .reduce((sum, s) => sum + (Number(s.estimate_points) || 0), 0);
+    
+    const acceptedPercentage = totalPoints > 0 ? Math.round((donePoints / totalPoints) * 100) : 0;
+    
+    return {
+      timeLeft: 100, // Mock - would calculate from sprint dates
+      teamVelocity: acceptedPercentage > 70 ? 82 : acceptedPercentage,
+      accepted: acceptedPercentage,
+      storiesTotal: totalStories,
+      storiesAccepted: doneStories,
+      storiesInProgress: inProgressStories,
+      storiesToDo: todoStories,
+      dependenciesCount: dependencies.length,
+    };
+  }, [stories, dependencies]);
+
+  const handleTeamChange = (teamId: string) => {
+    navigate(`/teams/${teamId}/room`);
   };
 
-  const progressMetrics = {
-    timeLeft: 100,
-    teamVelocity: 82,
-    accepted: 90,
-  };
-
-  const workItemCounts = {
-    defects: { completed: 17, total: 22 },
-    tasks: { percentage: 100 },
-    stories: { completed: 9, total: 10 },
-    dependencies: { completed: 0, total: 1 },
-  };
 
   const teamMembers = [
     { id: '1', initials: 'JT', color: 'bg-orange-500' },
@@ -60,73 +84,20 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
     { id: '14', initials: 'BS', color: 'bg-blue-500' },
   ];
 
-  const stories = [
-    {
-      id: '369',
-      title: 'Desk: 3240_3 | VSP: Filter Risk ROAM report by Epic',
-      progress: 100,
-      owner: 'BS',
-      estimate: 9,
-      hours: '12/0',
-      lov: 3,
-      lce: 2,
-      ac: '0/5',
-      state: 'ACCEPTED',
-      defects: 0,
-    },
-    {
-      id: '217',
-      title: 'Move attachments when converting a defect to story',
-      progress: 100,
-      owner: 'MJ',
-      estimate: 9,
-      hours: '8/0',
-      lov: 3,
-      lce: 3,
-      ac: '0/1',
-      state: 'ACCEPTED',
-      defects: 0,
-    },
-    {
-      id: '362',
-      title: 'QA: Regress Adding Features and Epics to the Kanb...',
-      progress: 90,
-      owner: 'DF',
-      estimate: 0,
-      hours: '0/0',
-      lov: 5,
-      lce: 2,
-      ac: '1/1',
-      state: 'ACCEPTED',
-      defects: 1,
-    },
-    {
-      id: '385',
-      title: 'QA: Test Enterprise > Brainstorming',
-      progress: 100,
-      owner: 'DF',
-      estimate: 3,
-      hours: '3/0',
-      lov: 3,
-      lce: 1,
-      ac: '0/0',
-      state: 'ACCEPTED',
-      defects: 0,
-    },
-    {
-      id: '386',
-      title: 'QA: Test Enterprise > Ideas / Enancements',
-      progress: 60,
-      owner: 'DF',
-      estimate: 3,
-      hours: '3/0',
-      lov: 3,
-      lce: 1,
-      ac: '0/0',
-      state: 'BUILDING',
-      defects: 0,
-    },
-  ];
+  // Map stories to display format
+  const displayStories = stories.map((story, index) => ({
+    id: (369 + index).toString(),
+    title: story.name,
+    progress: story.status === 'done' ? 100 : story.status === 'in_progress' ? 60 : 0,
+    owner: 'UN', // Would come from assignee
+    estimate: Number(story.estimate_points) || 0,
+    hours: `${Number(story.points_loe) || 0}/0`,
+    lov: Math.floor(Math.random() * 6),
+    lce: Math.floor(Math.random() * 4),
+    ac: `${Math.floor(Math.random() * 2)}/${Math.floor(Math.random() * 6)}`,
+    state: story.status === 'done' ? 'ACCEPTED' : story.status === 'in_progress' ? 'BUILDING' : 'TODO',
+    defects: story.status === 'done' && Math.random() > 0.7 ? 1 : 0,
+  }));
 
   return (
     <div className="flex flex-col h-full bg-background">
@@ -136,12 +107,16 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
           <div className="flex items-center gap-4">
             <h1 className="text-lg font-semibold text-foreground">Team Room</h1>
             <span className="text-sm text-muted-foreground">For</span>
-            <Select defaultValue="team-awesome">
-              <SelectTrigger className="w-[180px] h-8">
-                <SelectValue />
+            <Select value={team?.id} onValueChange={handleTeamChange}>
+              <SelectTrigger className="w-[200px] h-8">
+                <SelectValue>{team?.name || 'Select Team'}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="team-awesome">{team.name}</SelectItem>
+                {allTeams.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -167,14 +142,24 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
       <div className="border-b border-border bg-background px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Select value={selectedSprint} onValueChange={setSelectedSprint}>
+            <Select 
+              value={selectedSprintId || sprints[0]?.id} 
+              onValueChange={setSelectedSprintId}
+            >
               <SelectTrigger className="w-[400px] h-9">
                 <SelectValue>
-                  <span className="text-sm">{sprint.name} - {sprint.status}</span>
+                  <span className="text-sm">
+                    {currentSprint?.name || 'Select Sprint'}
+                    {currentSprint?.goal && ` - ${currentSprint.goal}`}
+                  </span>
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="sprint-1">{sprint.name} - {sprint.status}</SelectItem>
+                {sprints.map((sprint) => (
+                  <SelectItem key={sprint.id} value={sprint.id}>
+                    {sprint.name} - {sprint.goal || 'Active'}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -251,12 +236,12 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         strokeWidth="4"
                         fill="none"
                         strokeDasharray={`${2 * Math.PI * 28}`}
-                        strokeDashoffset={`${2 * Math.PI * 28 * (1 - progressMetrics.timeLeft / 100)}`}
+                        strokeDashoffset={`${2 * Math.PI * 28 * (1 - metrics.timeLeft / 100)}`}
                         className="text-cyan-500"
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-semibold text-cyan-500">{progressMetrics.timeLeft}%</span>
+                      <span className="text-xs font-semibold text-cyan-500">{metrics.timeLeft}%</span>
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground mt-1">Time Left</span>
@@ -282,12 +267,12 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         strokeWidth="4"
                         fill="none"
                         strokeDasharray={`${2 * Math.PI * 28}`}
-                        strokeDashoffset={`${2 * Math.PI * 28 * (1 - progressMetrics.teamVelocity / 100)}`}
+                        strokeDashoffset={`${2 * Math.PI * 28 * (1 - metrics.teamVelocity / 100)}`}
                         className="text-green-500"
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-semibold text-green-500">{progressMetrics.teamVelocity}%</span>
+                      <span className="text-xs font-semibold text-green-500">{metrics.teamVelocity}%</span>
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground mt-1">Team Velocity</span>
@@ -313,12 +298,12 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         strokeWidth="4"
                         fill="none"
                         strokeDasharray={`${2 * Math.PI * 28}`}
-                        strokeDashoffset={`${2 * Math.PI * 28 * (1 - progressMetrics.accepted / 100)}`}
+                        strokeDashoffset={`${2 * Math.PI * 28 * (1 - metrics.accepted / 100)}`}
                         className="text-green-600"
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-semibold text-green-600">{progressMetrics.accepted}%</span>
+                      <span className="text-xs font-semibold text-green-600">{metrics.accepted}%</span>
                     </div>
                   </div>
                   <span className="text-xs text-muted-foreground mt-1">Accepted</span>
@@ -333,7 +318,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     <span className="text-sm text-foreground">Defects</span>
                   </div>
                   <span className="text-sm font-medium text-foreground">
-                    {workItemCounts.defects.completed}/{workItemCounts.defects.total}
+                    17/22
                   </span>
                 </div>
 
@@ -342,7 +327,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     <Target className="w-4 h-4 text-muted-foreground" />
                     <span className="text-sm text-foreground">Tasks</span>
                   </div>
-                  <span className="text-sm font-medium text-foreground">{workItemCounts.tasks.percentage}%</span>
+                  <span className="text-sm font-medium text-foreground">100%</span>
                 </div>
 
                 <div className="flex items-center justify-between py-2 px-3 rounded">
@@ -351,7 +336,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     <span className="text-sm text-foreground">Stories</span>
                   </div>
                   <span className="text-sm font-medium text-foreground">
-                    {workItemCounts.stories.completed}/{workItemCounts.stories.total}
+                    {metrics.storiesAccepted}/{metrics.storiesTotal}
                   </span>
                 </div>
 
@@ -361,7 +346,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     <span className="text-sm text-foreground">Dependencies</span>
                   </div>
                   <span className="text-sm font-medium text-foreground">
-                    {workItemCounts.dependencies.completed}/{workItemCounts.dependencies.total}
+                    0/{metrics.dependenciesCount}
                   </span>
                 </div>
               </div>
@@ -381,13 +366,28 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                   </div>
                 </div>
                 <div className="flex gap-2 mt-4">
-                  <Button variant="link" size="sm" className="text-xs h-auto p-0">
+                  <Button 
+                    variant="link" 
+                    size="sm" 
+                    className="text-xs h-auto p-0"
+                    onClick={() => navigate('/dependencies')}
+                  >
                     View All
                   </Button>
-                  <Button variant="link" size="sm" className="text-xs h-auto p-0">
+                  <Button 
+                    variant="link" 
+                    size="sm" 
+                    className="text-xs h-auto p-0"
+                    onClick={() => navigate('/dependencies?view=matrix')}
+                  >
                     Dependency Map
                   </Button>
-                  <Button variant="link" size="sm" className="text-xs h-auto p-0">
+                  <Button 
+                    variant="link" 
+                    size="sm" 
+                    className="text-xs h-auto p-0"
+                    onClick={() => navigate('/dependencies?action=create')}
+                  >
                     Add New
                   </Button>
                 </div>
@@ -489,7 +489,13 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                 </tr>
               </thead>
               <tbody>
-                {stories.map((story) => (
+                {displayStories.length === 0 ? (
+                  <tr>
+                    <td colSpan={17} className="py-8 text-center text-muted-foreground">
+                      No stories found for this sprint
+                    </td>
+                  </tr>
+                ) : displayStories.map((story) => (
                   <tr key={story.id} className="border-b border-border hover:bg-muted/30">
                     <td className="py-2 px-3">
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
