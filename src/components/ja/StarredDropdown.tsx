@@ -4,21 +4,13 @@ import { Search, Star, Briefcase, GitBranch, Users, Target, Map, FileText, Layer
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useStarredItems } from "@/hooks/useStarredItems";
 
 interface StarredDropdownProps {
   onClose: () => void;
 }
 
 type RoomType = "program" | "portfolio" | "team" | "strategy" | "feature" | "roadmap" | "objective" | "product";
-
-interface StarredItem {
-  id: string;
-  title: string;
-  subtitle: string;
-  type: RoomType;
-  pi?: string;
-  path: string;
-}
 
 const roomIcons: Record<RoomType, React.ReactNode> = {
   program: <Briefcase className="h-5 w-5 text-cyan-500" />,
@@ -34,55 +26,16 @@ const roomIcons: Record<RoomType, React.ReactNode> = {
 export function StarredDropdown({ onClose }: StarredDropdownProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-
-  const starredItems: StarredItem[] = [
-    {
-      id: "star-product-room",
-      title: "Product Room (Labs)",
-      subtitle: "Product · Check Scanning App",
-      type: "product",
-      pi: "PI 5",
-      path: "/programs",
-    },
-    {
-      id: "star-objective-tree",
-      title: "Objective tree",
-      subtitle: "Program · Website Services",
-      type: "objective",
-      pi: "PI 1",
-      path: "/enterprise/okr-tree",
-    },
-    {
-      id: "star-roadmaps",
-      title: "Roadmaps",
-      subtitle: "Portfolio · Geekbooks Online Services",
-      type: "roadmap",
-      path: "/roadmaps",
-    },
-    {
-      id: "star-features",
-      title: "Features",
-      subtitle: "Program · Website Services",
-      type: "feature",
-      path: "/features",
-    },
-    {
-      id: "star-program-room",
-      title: "Program Room",
-      subtitle: "Program · Website Services",
-      type: "program",
-      path: "/programs",
-    },
-  ];
+  const { starredItems, loading } = useStarredItems();
 
   const filteredItems = starredItems.filter(
     (item) =>
-      item.title.toLowerCase().includes(search.toLowerCase()) ||
-      item.subtitle.toLowerCase().includes(search.toLowerCase())
+      item.room_name.toLowerCase().includes(search.toLowerCase()) ||
+      (item.room_subtitle && item.room_subtitle.toLowerCase().includes(search.toLowerCase()))
   );
 
-  const handleSelect = (item: StarredItem) => {
-    navigate(item.path);
+  const handleSelect = (path: string) => {
+    navigate(path);
     onClose();
   };
 
@@ -103,7 +56,11 @@ export function StarredDropdown({ onClose }: StarredDropdownProps) {
 
       <ScrollArea className="h-[320px]">
         <div className="p-2">
-          {filteredItems.length === 0 ? (
+          {loading ? (
+            <div className="text-center py-8 text-sm text-muted-foreground">
+              Loading...
+            </div>
+          ) : filteredItems.length === 0 ? (
             <div className="text-center py-8 text-sm text-muted-foreground">
               No starred pages found
             </div>
@@ -111,20 +68,20 @@ export function StarredDropdown({ onClose }: StarredDropdownProps) {
             filteredItems.map((item) => (
               <div
                 key={item.id}
-                onClick={() => handleSelect(item)}
+                onClick={() => handleSelect(item.room_path)}
                 className="flex items-start gap-3 p-3 rounded-md hover:bg-accent cursor-pointer transition-colors"
               >
                 <div className="flex items-center justify-center w-10 h-10 bg-cyan-50 dark:bg-cyan-950/20 rounded flex-shrink-0">
-                  {roomIcons[item.type]}
+                  {roomIcons[item.room_type as RoomType]}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <Star className="h-3.5 w-3.5 text-yellow-500 fill-yellow-500 flex-shrink-0" />
-                    <h4 className="font-medium text-sm truncate">{item.title}</h4>
+                    <h4 className="font-medium text-sm truncate">{item.room_name}</h4>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">{item.subtitle}</p>
-                  {item.pi && (
-                    <p className="text-xs text-muted-foreground font-medium mt-1">{item.pi}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{item.room_subtitle}</p>
+                  {item.pi_label && (
+                    <p className="text-xs text-muted-foreground font-medium mt-1">{item.pi_label}</p>
                   )}
                 </div>
               </div>
