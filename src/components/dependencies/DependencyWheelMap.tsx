@@ -65,18 +65,27 @@ export function DependencyWheelMap({ piId, selectedProgram }: DependencyWheelMap
     );
   }
 
-  const width = 800;
-  const height = 800;
+  const width = 900;
+  const height = 900;
   const centerX = width / 2;
   const centerY = height / 2;
-  const outerRadius = 350;
-  const innerRadius = 120;
+  const outerRadius = 400;
+  const innerRadius = 140;
   
   // Calculate segment angles
   const segmentAngle = (2 * Math.PI) / programs.length;
   
-  // Alternating colors for segments (cyan/teal shades)
-  const colors = ['#06b6d4', '#0891b2', '#0e7490', '#155e75'];
+  // Multiple shades of blue/teal/cyan/gray for segments (matching Jira Align reference)
+  const colors = [
+    '#67b7d1', // light blue
+    '#5da9c1', // medium blue
+    '#5a9fb0', // teal blue
+    '#4d8a9d', // darker teal
+    '#71b8ca', // cyan
+    '#5f9fae', // slate blue
+    '#4a7c8a', // dark slate
+    '#608fa0', // medium slate
+  ];
   
   // Create segments for each program
   const segments = programs.map((prog, index) => {
@@ -233,9 +242,9 @@ export function DependencyWheelMap({ piId, selectedProgram }: DependencyWheelMap
               <path
                 d={segment.path}
                 fill={segment.color}
-                opacity="0.8"
-                stroke="rgba(255,255,255,0.2)"
-                strokeWidth="1"
+                opacity="0.95"
+                stroke="white"
+                strokeWidth="2"
               />
               {/* Program label on outer edge */}
               <text
@@ -244,8 +253,8 @@ export function DependencyWheelMap({ piId, selectedProgram }: DependencyWheelMap
                 textAnchor="middle"
                 dominantBaseline="middle"
                 transform={`rotate(${segment.textAngle} ${segment.labelX} ${segment.labelY})`}
-                className="text-xs font-medium fill-white"
-                style={{ fontSize: '11px' }}
+                className="font-medium"
+                style={{ fontSize: '12px', fill: '#1f2937' }}
               >
                 {segment.name}
               </text>
@@ -269,7 +278,7 @@ export function DependencyWheelMap({ piId, selectedProgram }: DependencyWheelMap
               d={line.path}
               fill="none"
               stroke={line.color}
-              strokeWidth="2"
+              strokeWidth="3"
               opacity={line.opacity}
               strokeLinecap="round"
             />
