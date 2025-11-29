@@ -117,6 +117,7 @@ import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
 import TeamsSelfTest from "./pages/dev/TeamsSelfTest";
 import PortfolioThemeSelfTest from "./pages/dev/PortfolioThemeSelfTest";
+import ProgramBoardSelfTest from "./pages/dev/ProgramBoardSelfTest";
 import SourcesReference from "./pages/dev/SourcesReference";
 
 const queryClient = new QueryClient();
@@ -259,6 +260,7 @@ const App = () => (
               <Route path="/dev/forecast-self-test" element={<ForecastSelfTest />} />
               <Route path="/dev/teams-self-test" element={<TeamsSelfTest />} />
               <Route path="/dev/portfolio-theme-self-test" element={<PortfolioThemeSelfTest />} />
+              <Route path="/dev/program-board-self-test" element={<ProgramBoardSelfTest />} />
               <Route path="/dev/sources" element={<SourcesReference />} />
             </Route>
             
