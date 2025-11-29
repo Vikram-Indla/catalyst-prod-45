@@ -5,18 +5,20 @@ import { supabase } from '@/integrations/supabase/client';
 import { JiraAlignHeader } from '@/components/ja/JiraAlignHeader';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
 import { ProgramRoomSidebar } from '@/components/program/ProgramRoomSidebar';
+import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { JiraAlignContextProvider, useJiraAlignContext } from '@/contexts/JiraAlignContext';
 
 function JiraAlignShellContent() {
   const location = useLocation();
-  const params = useParams<{ programId?: string; portfolioId?: string }>();
+  const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
   const { tier, setTier } = useJiraAlignContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   
   // Extract IDs from URL params
   const currentProgramId = params.programId || null;
   const currentPortfolioId = params.portfolioId || null;
+  const currentTeamId = params.teamId || null;
   
   const { data: programIncrements } = useQuery({
     queryKey: ['pis-for-shell'],
@@ -79,6 +81,12 @@ function JiraAlignShellContent() {
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
                   selectedPI={selectedPI || undefined}
                   onPIChange={(pi) => setSelectedPI(pi)}
+                />
+              ) : tier === 'team' && currentTeamId ? (
+                <TeamRoomSidebar
+                  teamId={currentTeamId}
+                  expanded={sidebarExpanded}
+                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
                 />
               ) : null}
             </>
