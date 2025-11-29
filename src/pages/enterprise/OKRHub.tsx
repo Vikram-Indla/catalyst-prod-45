@@ -460,7 +460,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                       return (
                         <TableCell key={col.key}>
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs font-semibold">
+                            <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold">
                               JD
                             </div>
                           </div>

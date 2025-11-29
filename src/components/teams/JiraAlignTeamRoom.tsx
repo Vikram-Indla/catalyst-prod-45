@@ -523,7 +523,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
 
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
-                  <div className="w-24 h-6 bg-gradient-to-r from-blue-500 via-green-500 to-green-600" />
+                  <div className="w-24 h-6 bg-gradient-to-r from-primary via-success to-success" />
                 </div>
               </div>
             </div>
