@@ -1,7 +1,7 @@
 import { BacklogStateProvider } from '@/modules/backlog/hooks/useBacklogState';
 import { BacklogWorkspace } from '@/modules/backlog/components/BacklogWorkspace';
 
-export default function EpicBacklogWithSidebar() {
+export default function BacklogEpics() {
   return (
     <BacklogStateProvider>
       <BacklogWorkspace />

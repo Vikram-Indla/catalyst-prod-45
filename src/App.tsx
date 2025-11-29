@@ -28,6 +28,7 @@ import EpicTraceReport from "./pages/items/reports/EpicTraceReport";
 import EpicRequirementHierarchy from "./pages/items/reports/EpicRequirementHierarchy";
 import EpicBacklog from "./pages/EpicBacklog";
 import EpicBacklogWithSidebar from "./pages/EpicBacklogWithSidebar";
+import BacklogEpics from "./pages/BacklogEpics";
 import Features from "./pages/Features";
 import FeaturesPage from "./pages/items/FeaturesPage";
 import FeaturesBacklog from "./pages/FeaturesBacklog";
@@ -144,7 +145,7 @@ const App = () => (
               <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
               <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
               <Route path="/portfolio/:portfolioId/epics" element={<EpicsPage />} />
-              <Route path="/portfolio/:portfolioId/backlog" element={<PortfolioBacklog />} />
+              <Route path="/portfolio/:portfolioId/backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/objective-tree" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<PlaceholderPage />} />
