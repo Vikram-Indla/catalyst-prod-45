@@ -103,9 +103,9 @@ export function PullRankThemesDialog({ open, onOpenChange, onApply }: PullRankTh
           </div>
 
           {/* Important Note */}
-          <div className="p-3 border rounded-lg bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900">
-            <p className="text-sm font-medium text-amber-900 dark:text-amber-100">Important</p>
-            <p className="text-xs text-amber-800 dark:text-amber-200 mt-1">
+          <div className="p-3 border rounded-lg bg-warning/10 dark:bg-warning/5 border-warning/30 dark:border-warning/20">
+            <p className="text-sm font-medium text-warning-foreground">Important</p>
+            <p className="text-xs text-warning-foreground/80 mt-1">
               Multiple themes may inherit the same rank from a parent item. Further manual ranking may be required to establish a complete priority order.
             </p>
           </div>

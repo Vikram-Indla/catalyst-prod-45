@@ -86,7 +86,7 @@ export function DependencyWheelDetailsPanel({
         );
       case 'DONE':
         return (
-          <Badge className="text-xs bg-green-500">
+          <Badge className="text-xs bg-success text-success-foreground">
             <CheckCircle2 className="h-3 w-3 mr-1" />
             Done
           </Badge>
@@ -119,7 +119,7 @@ export function DependencyWheelDetailsPanel({
       case 'COMMITTED': return <Circle className="h-3 w-3 fill-brand-gold text-brand-gold" />;
       case 'NOT_COMMITTED': return <Circle className="h-3 w-3 fill-destructive text-destructive" />;
       case 'BLOCKED': return <Circle className="h-3 w-3 fill-warning text-warning" />;
-      default: return <Circle className="h-3 w-3 fill-gray-400 text-gray-400" />;
+      default: return <Circle className="h-3 w-3 fill-muted text-muted" />;
     }
   };
 
@@ -131,16 +131,16 @@ export function DependencyWheelDetailsPanel({
         </CardTitle>
         <div className="grid grid-cols-3 gap-2 mt-3">
           <div className="text-center p-2 border rounded-sm">
-            <div className="text-xs text-red-600 font-medium mb-1">NOT COMMITTED</div>
-            <div className="text-2xl font-bold text-red-600">{metrics.notCommitted}</div>
+            <div className="text-xs text-destructive font-medium mb-1">NOT COMMITTED</div>
+            <div className="text-2xl font-bold text-destructive">{metrics.notCommitted}</div>
           </div>
           <div className="text-center p-2 border rounded-sm">
-            <div className="text-xs text-gray-600 font-medium mb-1">COMMITTED</div>
-            <div className="text-2xl font-bold text-gray-900">{metrics.committedPct}%</div>
+            <div className="text-xs text-muted-foreground font-medium mb-1">COMMITTED</div>
+            <div className="text-2xl font-bold text-foreground">{metrics.committedPct}%</div>
           </div>
           <div className="text-center p-2 border rounded-sm">
-            <div className="text-xs text-green-600 font-medium mb-1">DONE</div>
-            <div className="text-2xl font-bold text-green-600">{metrics.donePct}%</div>
+            <div className="text-xs text-success font-medium mb-1">DONE</div>
+            <div className="text-2xl font-bold text-success">{metrics.donePct}%</div>
           </div>
         </div>
       </CardHeader>
@@ -192,7 +192,7 @@ export function DependencyWheelDetailsPanel({
                       </div>
                       {/* Additional nested story level */}
                       <div className="flex items-start gap-2 py-1 pl-4">
-                        <Circle className="h-2 w-2 fill-teal-500 text-teal-500 mt-1 flex-shrink-0" />
+                        <Circle className="h-2 w-2 fill-primary text-primary mt-1 flex-shrink-0" />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs text-muted-foreground truncate">
                             Story: {link.dependency.description?.substring(0, 50) || 'Related story item'}
@@ -215,10 +215,10 @@ export function DependencyWheelDetailsPanel({
 
   return (
     <div className="w-[400px] flex-shrink-0 space-y-4">
-      <Card className="border-2 border-amber-400 bg-amber-50/50 dark:bg-amber-950/20 shadow-lg shadow-amber-200/50 dark:shadow-amber-900/20 transition-all">
+      <Card className="border-2 border-warning bg-warning/10 dark:bg-warning/5 shadow-lg shadow-warning/20 dark:shadow-warning/10 transition-all">
         <CardHeader>
-          <CardTitle className="text-base font-bold text-amber-900 dark:text-amber-100 flex items-center gap-2">
-            <div className="h-3 w-3 rounded-full bg-amber-400 animate-pulse" />
+          <CardTitle className="text-base font-bold text-warning-foreground flex items-center gap-2">
+            <div className="h-3 w-3 rounded-full bg-warning animate-pulse" />
             {selectedNode.name}
           </CardTitle>
           <div className="flex gap-2 text-sm text-muted-foreground">
