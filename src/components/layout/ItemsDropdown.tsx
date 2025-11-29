@@ -38,18 +38,18 @@ const workItems = [
   { key: 'features', label: 'Features', icon: Layers3, color: 'text-workitem-story', path: '/programs/:programId/backlog?type=feature' },
   { key: 'stories', label: 'Stories', icon: FileText, color: 'text-warning', path: '/teams/:teamId/backlog?type=story' },
   { key: 'defects', label: 'Defects', icon: Bug, color: 'text-destructive', path: '/teams/:teamId/backlog?type=defect' },
-  { key: 'tasks', label: 'Tasks', icon: CheckSquare, color: 'text-gray-600', path: '/teams/:teamId/backlog?type=task' },
+  { key: 'tasks', label: 'Tasks', icon: CheckSquare, color: 'text-muted-foreground', path: '/teams/:teamId/backlog?type=task' },
 ];
 
 const otherItems = [
   { key: 'objectives', label: 'Objectives', icon: Target, color: 'text-workitem-theme', path: '/portfolio/:portfolioId/objectives' },
-  { key: 'dependencies', label: 'Dependencies', icon: Link2, color: 'text-pink-600', path: '/programs/:programId/dependencies' },
-  { key: 'ideation', label: 'Ideation', icon: Lightbulb, color: 'text-warning-600', path: '/portfolio/:portfolioId/ideation' },
+  { key: 'dependencies', label: 'Dependencies', icon: Link2, color: 'text-accent-foreground', path: '/programs/:programId/dependencies' },
+  { key: 'ideation', label: 'Ideation', icon: Lightbulb, color: 'text-warning', path: '/portfolio/:portfolioId/ideation' },
   { key: 'risks', label: 'Risks', icon: AlertTriangle, color: 'text-destructive', path: '/programs/:programId/risks' },
   { key: 'impediments', label: 'Impediments', icon: AlertTriangle, color: 'text-warning', path: '/teams/:teamId/impediments' },
   { key: 'sprints', label: 'Sprints', icon: Calendar, color: 'text-info', path: '/teams/:teamId/sprints' },
   { key: 'program-increments', label: 'Program Increments', icon: Calendar, color: 'text-workitem-theme', path: '/programs/:programId/increments' },
-  { key: 'release-vehicles', label: 'Release Vehicles', icon: Rocket, color: 'text-success-600', path: '/programs/:programId/releases' },
+  { key: 'release-vehicles', label: 'Release Vehicles', icon: Rocket, color: 'text-success', path: '/programs/:programId/releases' },
   { key: 'teams', label: 'Teams', icon: Users, color: 'text-success', path: '/teams' },
 ];
 
