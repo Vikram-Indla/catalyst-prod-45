@@ -46,10 +46,10 @@ export function BacklogSection({
   onLabelConfigChange
 }: BacklogSectionProps) {
   return (
-    <div className="mx-6 mb-4 border border-[#DFE1E6] rounded bg-white">
+    <div className="mx-6 mb-4 border border-border rounded bg-card">
       {/* Section Header */}
       <div 
-        className="flex items-center px-4 py-3 bg-white hover:bg-[#F4F5F7] cursor-pointer select-none transition-colors"
+        className="flex items-center px-4 py-3 bg-card hover:bg-neutral-100 cursor-pointer select-none transition-colors"
         onClick={() => onToggleExpand(section.id)}
       >
         <div className="w-5 h-5 flex items-center justify-center text-[#0052CC] mr-2">

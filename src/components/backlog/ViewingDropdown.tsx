@@ -31,7 +31,7 @@ export function ViewingDropdown({ options, selectedId, onSelect }: ViewingDropdo
             className="fixed inset-0 z-40" 
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute top-full left-0 mt-1 min-w-[200px] bg-white border border-[#DFE1E6] rounded shadow-lg z-50">
+          <div className="absolute top-full left-0 mt-1 min-w-[200px] bg-card border border-border rounded shadow-lg z-50">
             <div className="px-4 py-2 text-xs text-[#6B778C] border-b border-[#EBECF0]">
               Select one
             </div>

@@ -32,7 +32,7 @@ export function BacklogHeader({
   onLabelConfigChange
 }: BacklogHeaderProps) {
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-[#DFE1E6] bg-white">
+    <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-card">
       <div className="flex flex-col gap-1">
         <span className="text-[11px] text-[#6B778C] uppercase">Viewing:</span>
         <ViewingDropdown 
@@ -74,7 +74,7 @@ export function BacklogHeader({
             className={`flex items-center gap-1.5 px-4 py-2 text-sm border-r border-[#DFE1E6] transition-colors ${
               activeView === 'list' 
                 ? 'bg-[#F4F5F7] text-[#172B4D] font-medium' 
-                : 'bg-white text-[#6B778C] hover:bg-[#EBECF0]'
+                : 'bg-card text-muted-foreground hover:bg-neutral-100'
             }`}
             onClick={() => onViewChange('list')}
           >
