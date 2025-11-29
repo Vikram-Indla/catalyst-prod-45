@@ -126,7 +126,7 @@ export default function EpicsSourceReference() {
       case 'screenshot':
         return 'bg-success/10 text-success';
       case 'prd':
-        return 'bg-purple-500/10 text-purple-500';
+        return 'bg-primary/10 text-primary';
     }
   };
 

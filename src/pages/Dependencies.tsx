@@ -174,9 +174,9 @@ export default function Dependencies() {
             </div>
           </div>
         </Card>
-        <Card className="p-4 border-purple-500/20">
+        <Card className="p-4 border-primary/20">
           <div className="flex items-center gap-3">
-            <AlertCircle className="h-8 w-8 text-purple-500" />
+            <AlertCircle className="h-8 w-8 text-primary" />
             <div>
               <div className="text-2xl font-bold">{stats.criticalPath}</div>
               <div className="text-sm text-muted-foreground">Critical Path</div>
