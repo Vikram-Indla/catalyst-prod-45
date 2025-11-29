@@ -68,31 +68,31 @@ export function LegendDialog({ open, onOpenChange }: LegendDialogProps) {
               <h3 className="font-semibold mb-4 text-xs uppercase tracking-wide text-muted-foreground">LEGEND</h3>
               <ul className="space-y-2.5">
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-flex items-center justify-center w-6 h-6 bg-gray-400 text-white text-[10px] font-bold rounded-sm">O</span>
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-muted text-muted-foreground text-[10px] font-bold rounded-sm">O</span>
                   <span className="text-sm">Objective</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-flex items-center justify-center w-6 h-6 bg-gray-400 text-white text-[10px] font-bold" style={{clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'}}>M</span>
+                  <span className="inline-flex items-center justify-center w-6 h-6 bg-muted text-muted-foreground text-[10px] font-bold" style={{clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'}}>M</span>
                   <span className="text-sm">Milestone</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-6 h-5 bg-gray-400 rounded-sm"></span>
+                  <span className="inline-block w-6 h-5 bg-muted rounded-sm"></span>
                   <span className="text-sm">Feature</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-6 h-5 bg-gray-400 rounded-sm relative">
-                    <span className="absolute right-0 top-0 bottom-0 w-1 bg-gray-700"></span>
+                  <span className="inline-block w-6 h-5 bg-muted rounded-sm relative">
+                    <span className="absolute right-0 top-0 bottom-0 w-1 bg-foreground"></span>
                   </span>
                   <span className="text-sm">Parent of split Feature</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-block w-6 h-5 bg-gray-400 rounded-sm relative">
-                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-gray-700"></span>
+                  <span className="inline-block w-6 h-5 bg-muted rounded-sm relative">
+                    <span className="absolute left-0 top-0 bottom-0 w-1 bg-foreground"></span>
                   </span>
                   <span className="text-sm">Child of split Feature</span>
                 </li>
                 <li className="flex items-center gap-2.5">
-                  <span className="inline-flex items-center justify-center w-6 h-5 bg-gray-400 text-white text-[10px] font-bold rounded-sm">D</span>
+                  <span className="inline-flex items-center justify-center w-6 h-5 bg-muted text-muted-foreground text-[10px] font-bold rounded-sm">D</span>
                   <span className="text-sm">Dependency</span>
                 </li>
                 <li className="flex items-center gap-2.5">

@@ -29,19 +29,19 @@ export function MisalignedWorkItems({ snapshotId }: MisalignedWorkItemsProps) {
   });
 
   const items = [
-    { label: 'Misaligned Themes', count: misalignedData.themes, color: 'text-orange-600' },
-    { label: 'Misaligned Epics', count: misalignedData.epics, color: 'text-orange-600' },
-    { label: 'Misaligned Features', count: misalignedData.features, color: 'text-orange-600' },
-    { label: 'Dependencies', count: misalignedData.dependencies, color: 'text-blue-600' },
+    { label: 'Misaligned Themes', count: misalignedData.themes, color: 'text-brand-gold' },
+    { label: 'Misaligned Epics', count: misalignedData.epics, color: 'text-brand-gold' },
+    { label: 'Misaligned Features', count: misalignedData.features, color: 'text-brand-gold' },
+    { label: 'Dependencies', count: misalignedData.dependencies, color: 'text-info' },
   ];
 
   const totalMisaligned = misalignedData.themes + misalignedData.epics + misalignedData.features;
 
   return (
-    <Card className="border-l-4 border-l-orange-500">
+    <Card className="border-l-4 border-l-brand-gold">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5 text-orange-600" />
+          <AlertTriangle className="h-5 w-5 text-brand-gold" />
           <CardTitle className="text-lg">Misaligned Work Items</CardTitle>
         </div>
       </CardHeader>
@@ -49,7 +49,7 @@ export function MisalignedWorkItems({ snapshotId }: MisalignedWorkItemsProps) {
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3 bg-muted/50 rounded-md">
             <span className="text-sm font-semibold">Total Misaligned</span>
-            <span className="text-2xl font-bold text-orange-600">{totalMisaligned}</span>
+            <span className="text-2xl font-bold text-brand-gold">{totalMisaligned}</span>
           </div>
           
           <div className="space-y-2">
