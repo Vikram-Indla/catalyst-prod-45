@@ -52,9 +52,9 @@ export function CatalystHeader() {
           {/* Logo */}
           <div className="flex items-center gap-2 mr-4">
             <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
-              <span className="text-xs font-bold text-primary-foreground">JA</span>
+              <span className="text-xs font-bold text-primary-foreground">C</span>
             </div>
-            <span className="font-semibold text-sm hidden md:inline">Catalyst</span>
+            <span className="font-semibold text-sm hidden md:inline text-primary">Catalyst</span>
           </div>
 
           {/* Main Navigation */}

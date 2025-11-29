@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { useJiraAlignContext, TierType } from '@/contexts/JiraAlignContext';
+import { useCatalystContext, TierType } from '@/contexts/CatalystContext';
 
 interface MenuItem {
   id: string;
@@ -86,7 +86,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     setPiIds,
     snapshotId,
     setSnapshotId,
-  } = useJiraAlignContext();
+  } = useCatalystContext();
 
   // More items sub-menu for Enterprise
   const moreItemsSubMenu = [

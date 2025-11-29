@@ -158,7 +158,7 @@ const adminViews: ViewGroup[] = [
       { title: 'Activity Log', path: '/admin/activity-log', icon: ClipboardList },
       { title: 'Reports Discovery', path: '/reports-discovery', icon: BarChart },
       { title: 'PI Wizard', path: '/pi-wizard', icon: Zap },
-      { title: 'Jira Integration', path: '/jira-integration', icon: Link2 },
+      { title: 'External Integration', path: '/jira-integration', icon: Link2 },
     ],
   },
 ];

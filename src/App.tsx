@@ -7,13 +7,13 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { JiraAlignShell } from "./components/layout/JiraAlignShell";
+import { CatalystShell } from "./components/layout/CatalystShell";
 import Auth from "./pages/Auth";
-import Home from "./pages/jira-align/Home";
-import PortfolioRoomPageOld from "./pages/jira-align/PortfolioRoomPage";
+import Home from "./pages/catalyst/Home";
+import PortfolioRoomPageOld from "./pages/catalyst/PortfolioRoomPage";
 import PortfolioRoomPage from "./pages/PortfolioRoomPage";
 import PortfolioBacklog from "./pages/PortfolioBacklog";
-import PlaceholderPage from "./pages/jira-align/PlaceholderPage";
+import PlaceholderPage from "./pages/catalyst/PlaceholderPage";
 import StrategyRoom from "./pages/StrategyRoom";
 import StrategyRoomPage from "./pages/enterprise/StrategyRoomPage";
 import Themes from "./pages/Themes";
@@ -139,8 +139,8 @@ const App = () => (
               <Route path="/" element={<Navigate to="/home" replace />} />
               <Route path="/auth" element={<Auth />} />
               
-              {/* All Routes - Jira Align Style */}
-              <Route element={<ProtectedRoute><JiraAlignShell /></ProtectedRoute>}>
+              {/* All Routes - Catalyst Style */}
+              <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
               <Route path="/home" element={<Home />} />
               <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
               <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
