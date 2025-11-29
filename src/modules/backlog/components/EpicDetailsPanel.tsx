@@ -154,27 +154,119 @@ export function EpicDetailsPanel({
             )}
           </TabsContent>
 
-          <TabsContent value="intake" className="p-4 mt-0">
-            <div className="text-sm text-muted-foreground">
-              Intake form responses will be displayed here
+          <TabsContent value="intake" className="p-4 mt-0 space-y-4">
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Strategic Driver</label>
+                <p className="text-sm mt-1">{item.strategic_driver || 'Not specified'}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Investment Type</label>
+                <p className="text-sm mt-1">{item.investment_type || 'Not specified'}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Customers</label>
+                <p className="text-sm mt-1">
+                  {item.customers && item.customers.length > 0 
+                    ? item.customers.join(', ') 
+                    : 'None specified'}
+                </p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Epic Type</label>
+                <p className="text-sm mt-1">{item.epic_type || 'Not specified'}</p>
+              </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="benefits" className="p-4 mt-0">
-            <div className="text-sm text-muted-foreground">
-              Benefits will be displayed here
+          <TabsContent value="benefits" className="p-4 mt-0 space-y-4">
+            <div className="space-y-3">
+              <div className="p-3 border rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Business Value</h4>
+                <p className="text-sm text-muted-foreground">
+                  Expected business value and ROI metrics will be tracked here.
+                </p>
+              </div>
+              <div className="p-3 border rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Cost Savings</h4>
+                <p className="text-sm text-muted-foreground">
+                  Estimated cost savings from implementing this epic.
+                </p>
+              </div>
+              <div className="p-3 border rounded-lg">
+                <h4 className="text-sm font-medium mb-2">Customer Impact</h4>
+                <p className="text-sm text-muted-foreground">
+                  Expected impact on customer satisfaction and engagement.
+                </p>
+              </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="value" className="p-4 mt-0">
-            <div className="text-sm text-muted-foreground">
-              Value metrics will be displayed here
+          <TabsContent value="value" className="p-4 mt-0 space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 border rounded-lg">
+                <label className="text-xs font-medium text-muted-foreground">Strategic Value Score</label>
+                <p className="text-2xl font-bold mt-1">
+                  {item.strategic_value_score || 'N/A'}
+                </p>
+              </div>
+              <div className="p-3 border rounded-lg">
+                <label className="text-xs font-medium text-muted-foreground">Estimate Confidence</label>
+                <p className="text-2xl font-bold mt-1">
+                  {item.estimate_confidence ? `${item.estimate_confidence}%` : 'N/A'}
+                </p>
+              </div>
+              <div className="p-3 border rounded-lg">
+                <label className="text-xs font-medium text-muted-foreground">Capitalized</label>
+                <p className="text-sm mt-1">{item.capitalized ? 'Yes' : 'No'}</p>
+              </div>
+              <div className="p-3 border rounded-lg">
+                <label className="text-xs font-medium text-muted-foreground">MVP</label>
+                <p className="text-sm mt-1">{item.mvp ? 'Yes' : 'No'}</p>
+              </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="forecast" className="p-4 mt-0">
-            <div className="text-sm text-muted-foreground">
-              Forecast data will be displayed here
+          <TabsContent value="forecast" className="p-4 mt-0 space-y-4">
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Start Date</label>
+                  <p className="text-sm mt-1">
+                    {item.start_date ? new Date(item.start_date).toLocaleDateString() : 'Not set'}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">End Date</label>
+                  <p className="text-sm mt-1">
+                    {item.end_date ? new Date(item.end_date).toLocaleDateString() : 'Not set'}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Target Completion</label>
+                  <p className="text-sm mt-1">
+                    {item.target_completion_date 
+                      ? new Date(item.target_completion_date).toLocaleDateString() 
+                      : 'Not set'}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground">Initiation Date</label>
+                  <p className="text-sm mt-1">
+                    {item.initiation_date 
+                      ? new Date(item.initiation_date).toLocaleDateString() 
+                      : 'Not set'}
+                  </p>
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Effort SWAG</label>
+                <p className="text-sm mt-1">{item.effort_swag || 'Not estimated'}</p>
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground">Estimation Method</label>
+                <p className="text-sm mt-1">{item.estimate_method || 'Not specified'}</p>
+              </div>
             </div>
           </TabsContent>
         </ScrollArea>
