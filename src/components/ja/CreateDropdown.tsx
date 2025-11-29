@@ -15,7 +15,6 @@ import { Circle, Square, Hexagon, Box, FileText, Bug, CheckSquare, Target, GitBr
 const workItems = [
   { label: "Themes", icon: Circle, color: "text-purple-500", type: "theme" },
   { label: "Epics", icon: Square, color: "text-blue-500", type: "epic" },
-  { label: "Capabilities", icon: Hexagon, color: "text-cyan-500", type: "capability" },
   { label: "Features", icon: Box, color: "text-indigo-500", type: "feature" },
   { label: "Stories", icon: FileText, color: "text-green-500", type: "story" },
   { label: "Defects", icon: Bug, color: "text-red-500", type: "defect" },
@@ -45,7 +44,6 @@ export function CreateDropdown() {
     const routeMap: Record<string, string> = {
       'theme': '/themes?create=true',
       'epic': '/items/epics?create=true',
-      'capability': '/items/capabilities?create=true',
       'feature': '/features?create=true',
       'story': '/stories?create=true',
       'defect': '/items/defects?create=true',

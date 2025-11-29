@@ -7,7 +7,6 @@ import {
 const workItems = [
   { label: 'Themes', icon: Layers, color: 'bg-emerald-500' },
   { label: 'Epics', icon: Diamond, color: 'bg-blue-500' },
-  { label: 'Capabilities', icon: Box, color: 'bg-amber-500' },
   { label: 'Features', icon: Zap, color: 'bg-purple-600' },
   { label: 'Stories', icon: BookOpen, color: 'bg-teal-500' },
   { label: 'Defects', icon: AlertCircle, color: 'bg-red-500' },
@@ -49,7 +48,6 @@ export function CreateDropdown({ onClose, onCreateEpic }: CreateDropdownProps) {
     const routeMap: Record<string, string> = {
       'Themes': '/items/themes',
       'Epics': '/items/epics?create=true',
-      'Capabilities': '/items/capabilities',
       'Features': '/features?create=true',
       'Stories': '/items/stories',
       'Defects': '/items/defects',

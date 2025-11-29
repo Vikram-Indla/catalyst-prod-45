@@ -56,8 +56,7 @@ export function BulkMoveDialog({
 
   const moveMutation = useMutation({
     mutationFn: async (piId: string) => {
-      const tableName = itemType === 'epic' ? 'epics' : 
-                       itemType === 'feature' ? 'features' : 'capabilities';
+      const tableName = itemType === 'epic' ? 'epics' : 'features';
       
       // For epics, use the join table
       if (itemType === 'epic') {
@@ -79,7 +78,7 @@ export function BulkMoveDialog({
 
         if (error) throw error;
       } else {
-        // For features/capabilities, direct update
+        // For features, direct update
         const { error } = await supabase
           .from(tableName)
           .update({ pi_id: piId })

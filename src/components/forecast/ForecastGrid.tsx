@@ -11,7 +11,7 @@ import { ForecastContextMenu } from './ForecastContextMenu';
 interface ForecastGridProps {
   piId: string;
   viewLevel: 'team' | 'program';
-  workItemLevel: 'epics' | 'capabilities' | 'features';
+  workItemLevel: 'epics' | 'features';
 }
 
 export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridProps) {
@@ -45,13 +45,6 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
           .order('global_rank', { ascending: true });
         if (error) throw error;
         return (data || []).map(d => ({ ...d, item_type: 'epic' as const }));
-      } else if (workItemLevel === 'capabilities') {
-        const { data, error } = await supabase
-          .from('capabilities')
-          .select('*')
-          .order('global_rank', { ascending: true });
-        if (error) throw error;
-        return (data || []).map(d => ({ ...d, item_type: 'capability' as const }));
       } else {
         const { data, error } = await supabase
           .from('features')

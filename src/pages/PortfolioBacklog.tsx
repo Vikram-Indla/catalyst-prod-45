@@ -129,16 +129,6 @@ export default function PortfolioBacklog() {
           <EpicBacklogView portfolioId={portfolioId} piId={piId || undefined} />
         )}
         
-        {viewingOption === 'capability' && (
-          <div className="p-6">
-            <div className="bg-muted/30 border border-dashed rounded-lg p-8 text-center">
-              <p className="text-sm text-muted-foreground">
-                Capability Backlog view will be implemented in Phase 2
-              </p>
-            </div>
-          </div>
-        )}
-        
         {viewingOption === 'feature' && (
           <div className="p-6">
             <div className="bg-muted/30 border border-dashed rounded-lg p-8 text-center">

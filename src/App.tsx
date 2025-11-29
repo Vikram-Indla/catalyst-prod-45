@@ -33,7 +33,7 @@ import Features from "./pages/Features";
 import FeaturesPage from "./pages/items/FeaturesPage";
 import FeaturesBacklog from "./pages/FeaturesBacklog";
 import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
-import Capabilities from "./pages/Capabilities";
+
 import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
 import Ideation from "./pages/Ideation";
@@ -99,7 +99,7 @@ import RoadmapsPage from "./pages/enterprise/Roadmaps";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
-import EnterpriseCapabilities from "./pages/enterprise/EnterpriseCapabilities";
+
 import EnterpriseFeatures from "./pages/enterprise/EnterpriseFeatures";
 import EnterpriseStories from "./pages/enterprise/EnterpriseStories";
 import EnterpriseDefects from "./pages/enterprise/EnterpriseDefects";
@@ -169,7 +169,7 @@ const App = () => (
               <Route path="/enterprise/risks" element={<EnterpriseRisks />} />
               <Route path="/enterprise/impediments" element={<EnterpriseImpediments />} />
               <Route path="/enterprise/epics" element={<EnterpriseEpics />} />
-              <Route path="/enterprise/capabilities" element={<EnterpriseCapabilities />} />
+              
               <Route path="/enterprise/features" element={<EnterpriseFeatures />} />
               <Route path="/enterprise/stories" element={<EnterpriseStories />} />
               <Route path="/enterprise/defects" element={<EnterpriseDefects />} />
@@ -225,7 +225,7 @@ const App = () => (
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
               <Route path="/items/epics/:epicId/trace" element={<EpicTraceReport />} />
               <Route path="/items/epics/:epicId/requirement-hierarchy" element={<EpicRequirementHierarchy />} />
-              <Route path="/items/capabilities" element={<Capabilities />} />
+              
               <Route path="/items/defects" element={<Defects />} />
               <Route path="/items/tasks" element={<Tasks />} />
               <Route path="/items/ideation" element={<Ideation />} />

@@ -35,7 +35,6 @@ interface ItemsDropdownProps {
 const workItems = [
   { key: 'themes', label: 'Themes', icon: Star, color: 'text-purple-600', path: '/portfolio/:portfolioId/backlog?type=theme' },
   { key: 'epics', label: 'Epics', icon: Diamond, color: 'text-blue-600', path: '/portfolio/:portfolioId/backlog?type=epic' },
-  { key: 'capabilities', label: 'Capabilities', icon: Package, color: 'text-teal-600', path: '/portfolio/:portfolioId/backlog?type=capability' },
   { key: 'features', label: 'Features', icon: Layers3, color: 'text-green-600', path: '/programs/:programId/backlog?type=feature' },
   { key: 'stories', label: 'Stories', icon: FileText, color: 'text-orange-600', path: '/teams/:teamId/backlog?type=story' },
   { key: 'defects', label: 'Defects', icon: Bug, color: 'text-red-600', path: '/teams/:teamId/backlog?type=defect' },

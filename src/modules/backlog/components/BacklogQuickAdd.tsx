@@ -19,7 +19,7 @@ export function BacklogQuickAdd({ type, programId, piId }: BacklogQuickAddProps)
 
   const createItemMutation = useMutation({
     mutationFn: async (itemName: string) => {
-      const tableName = type === 'epic' ? 'epics' : type === 'feature' ? 'features' : 'capabilities';
+      const tableName = type === 'epic' ? 'epics' : 'features';
       
       const itemData: any = {
         name: itemName,

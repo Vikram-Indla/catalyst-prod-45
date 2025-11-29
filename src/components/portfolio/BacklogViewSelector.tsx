@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 // Citation: (Doc: Navigate to the backlog - PDF provided)
 // Citation: (Screenshot: image-189.png)
 
-export type BacklogView = 'theme' | 'epic' | 'capability' | 'feature';
+export type BacklogView = 'theme' | 'epic' | 'feature';
 
 interface BacklogViewSelectorProps {
   value: BacklogView;
@@ -16,14 +16,12 @@ interface BacklogViewSelectorProps {
 const viewLabels: Record<BacklogView, string> = {
   theme: 'Theme Backlog',
   epic: 'Epic Backlog',
-  capability: 'Capability Backlog',
   feature: 'Feature Backlog',
 };
 
 const viewOptions: { value: BacklogView; label: string; disabled?: boolean }[] = [
   { value: 'theme', label: 'Theme Backlog' },
   { value: 'epic', label: 'Epic Backlog' },
-  { value: 'capability', label: 'Capability Backlog' },
   { value: 'feature', label: 'Feature Backlog' },
 ];
 

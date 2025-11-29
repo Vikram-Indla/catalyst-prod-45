@@ -70,16 +70,7 @@ export default function EpicBacklogTests() {
         actual: (deleted as any)?.[0]?.count || 0,
       });
 
-      // Test 7: Capabilities exist
-      const { data: capabilities } = await supabase.from('capabilities').select('count');
-      results.push({
-        name: 'Capabilities exist',
-        passed: (capabilities as any)?.[0]?.count >= 2,
-        expected: '2+',
-        actual: (capabilities as any)?.[0]?.count || 0,
-      });
-
-      // Test 8: Features with epic parent exist
+      // Test 7: Features with epic parent exist
       const { data: features } = await supabase
         .from('features')
         .select('count')

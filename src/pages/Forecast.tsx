@@ -21,7 +21,7 @@ export default function Forecast() {
   
   const queryClient = useQueryClient();
   const [viewLevel, setViewLevel] = useState<'team' | 'program'>('program');
-  const [workItemLevel, setWorkItemLevel] = useState<'epics' | 'capabilities' | 'features'>('epics');
+  const [workItemLevel, setWorkItemLevel] = useState<'epics' | 'features'>('epics');
   const [estimateUnit, setEstimateUnit] = useState<'points' | 'team_weeks' | 'member_weeks'>('points');
   const [selectedPIs, setSelectedPIs] = useState<string[]>(piParam ? [piParam] : []);
   const [filtersOpen, setFiltersOpen] = useState(false);
