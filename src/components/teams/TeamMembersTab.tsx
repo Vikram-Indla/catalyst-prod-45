@@ -1,15 +1,18 @@
+import { useState } from 'react';
 import { useTeamMembers, useRemoveTeamMember } from '@/hooks/useTeamMembers';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { UserMinus, Plus } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { AddTeamMemberDialog } from './AddTeamMemberDialog';
 
 interface TeamMembersTabProps {
   teamId: string;
 }
 
 export function TeamMembersTab({ teamId }: TeamMembersTabProps) {
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
   const { data: members = [], isLoading } = useTeamMembers(teamId);
   const removeMember = useRemoveTeamMember();
 
@@ -28,7 +31,7 @@ export function TeamMembersTab({ teamId }: TeamMembersTabProps) {
         <h3 className="text-sm font-medium text-foreground">
           Team Members ({members.length})
         </h3>
-        <Button size="sm">
+        <Button size="sm" onClick={() => setAddMemberOpen(true)}>
           <Plus className="w-3 h-3 mr-1" />
           Add Member
         </Button>
@@ -44,6 +47,7 @@ export function TeamMembersTab({ teamId }: TeamMembersTabProps) {
           </CardContent>
         </Card>
       ) : (
+        <>
         <div className="space-y-2">
           {members.map((member) => (
             <Card key={member.id}>
@@ -81,7 +85,14 @@ export function TeamMembersTab({ teamId }: TeamMembersTabProps) {
             </Card>
           ))}
         </div>
+        </>
       )}
+      
+      <AddTeamMemberDialog
+        teamId={teamId}
+        open={addMemberOpen}
+        onOpenChange={setAddMemberOpen}
+      />
     </div>
   );
 }
