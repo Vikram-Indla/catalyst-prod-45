@@ -235,7 +235,7 @@ export function WSJFModal({ open, onClose, epics, piId, piName, onSave }: WSJFMo
                           <div>{tv}</div>
                           <div>{rr}</div>
                           <div>{js}</div>
-                          <div className="font-semibold text-primary">{wsjf}</div>
+                          <div className="font-semibold text-brand-gold">{wsjf}</div>
                         </div>
                       );
                     })}
