@@ -171,21 +171,26 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       // Get pyramid boundaries at layer center
       const { left: leftEdge, right: rightEdge } = getXAtY(layerCenterY);
       
-      // For split layers, position tooltip on the appropriate side
-      const isSplitLayer = ['Yearly Goals', 'Themes', 'Portfolio Objectives', 'Epics', 'Program Objectives', 'Features'].includes(layerName);
+      const tooltipWidth = 220; // Width of the tooltip rect
+      const tooltipHalfWidth = tooltipWidth / 2;
+      
+      // Check if this is a top layer (full width) or bottom layer (split)
+      const isTopLayer = ['Missions', 'Visions', 'Values'].includes(layerName);
       const isLeftSide = ['Yearly Goals', 'Portfolio Objectives', 'Program Objectives'].includes(layerName);
       
       let tooltipX;
-      if (isSplitLayer) {
-        // Position tooltip on the outer edge of the split compartment, but inside pyramid
-        if (isLeftSide) {
-          tooltipX = leftEdge + 20; // 20px from left edge, inside the compartment
-        } else {
-          tooltipX = rightEdge - 240; // 240px is tooltip width, positioned from right edge
-        }
+      if (isTopLayer) {
+        // Top 3 layers: tooltip fully INSIDE pyramid, positioned on right side
+        tooltipX = rightEdge - tooltipWidth - 20; // 20px padding from edge
       } else {
-        // For full-width layers, position on right side but inside pyramid
-        tooltipX = rightEdge - 240; // Inside the right side of the pyramid
+        // Bottom 6 compartments: tooltip half outside, half inside
+        if (isLeftSide) {
+          // Left compartments: straddle the left edge
+          tooltipX = leftEdge - tooltipHalfWidth;
+        } else {
+          // Right compartments: straddle the right edge
+          tooltipX = rightEdge - tooltipHalfWidth;
+        }
       }
       
       setTooltipPos({ x: tooltipX, y: layerCenterY });
