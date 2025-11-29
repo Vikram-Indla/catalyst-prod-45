@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { Target, Briefcase, GitBranch, Users } from 'lucide-react';
 
 /**
- * Top navigation bar with Jira Align-style rooms
+ * Top navigation bar with Catalyst-style rooms
  * Source: https://help.jiraalign.com/hc/en-us/articles/17158556046612-Navigate-Jira-Align
  * 
  * Rooms provide different perspectives on the same data:

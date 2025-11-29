@@ -5,7 +5,7 @@ import { TrendingUp } from 'lucide-react';
 /**
  * WSJF Badge Component
  * Displays WSJF score with color coding based on value
- * Source: Jira Align WSJF calculation standards
+ * Source: Catalyst WSJF calculation standards
  */
 
 interface WSJFBadgeProps {

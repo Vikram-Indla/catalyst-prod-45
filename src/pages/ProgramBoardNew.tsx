@@ -252,7 +252,7 @@ export default function ProgramBoard() {
     enabled: !!piId && !!programId && !!featuresData && featuresData.length > 0,
   });
   
-  // Render feature cards with proper Jira Align styling
+  // Render feature cards with proper Catalyst styling
   const renderFeatureCard = (feature: any, sprintId: string) => {
     const statusColor = getFeatureStatusColor(feature);
     const showCheckmark = feature.status === 'done' || feature.status === 'accepted';

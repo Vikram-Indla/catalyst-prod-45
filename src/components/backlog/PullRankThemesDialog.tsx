@@ -13,7 +13,7 @@ interface PullRankThemesDialogProps {
 }
 
 /**
- * Pull Rank Dialog based on Jira Align spec:
+ * Pull Rank Dialog based on Catalyst spec:
  * https://help.jiraalign.com/hc/en-us/articles/115002917308-Prioritize-rank-work-items-in-the-backlog
  * 
  * Allows auto-ranking of themes by inheriting rank from parent items or by column values

@@ -209,7 +209,7 @@ export default function ProgramBoardSelfTest() {
     {
       name: 'Status color-coding implemented',
       status: 'pass',
-      message: 'Green/Yellow/Red/Gray/Blue/Orange/Brown colors per Jira Align spec',
+      message: 'Green/Yellow/Red/Gray/Blue/Orange/Brown colors per Catalyst spec',
     },
     {
       name: 'Screenshot capture functional',
@@ -335,10 +335,10 @@ export default function ProgramBoardSelfTest() {
         </CardHeader>
         <CardContent>
           <div className="text-sm text-muted-foreground space-y-1">
-            <p>Implementation based on official Jira Align specification:</p>
+            <p>Implementation based on official Catalyst specification:</p>
             <ul className="list-disc list-inside ml-2 space-y-1 mt-2">
               <li><strong>PDF:</strong> help.jiraalign.com-Program board.pdf</li>
-              <li><strong>Help Center:</strong> Jira Align Program Board documentation</li>
+              <li><strong>Help Center:</strong> Catalyst Program Board documentation</li>
               <li><strong>Reference Screenshots:</strong> Provided in implementation spec</li>
               <li><strong>Governance:</strong> Strict no-hallucination mandate enforced</li>
             </ul>

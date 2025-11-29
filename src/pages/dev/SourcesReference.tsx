@@ -12,7 +12,7 @@ interface Source {
 
 const sources: Source[] = [
   {
-    title: 'FRD for JIRA Align UI',
+    title: 'FRD for Catalyst UI',
     type: 'doc',
     description: 'Functional Requirements Document covering navigation, global features, and context setting',
     sections: [
@@ -35,13 +35,13 @@ const sources: Source[] = [
     title: 'Manage the backlog',
     type: 'doc',
     url: 'https://help.jiraalign.com/hc/en-us/articles/115000154693-Manage-the-backlog',
-    description: 'Official Jira Align documentation on backlog management and filtering'
+    description: 'Official Catalyst documentation on backlog management and filtering'
   },
   {
     title: 'Backlog for epics',
     type: 'doc',
     url: 'https://help.jiraalign.com/hc/en-us/articles/115000183848-Backlog-for-epics',
-    description: 'Official Jira Align documentation on epic backlog features, views, and ranking'
+    description: 'Official Catalyst documentation on epic backlog features, views, and ranking'
   },
   {
     title: 'Manage epics - Forecast',
@@ -103,9 +103,9 @@ export default function SourcesReference() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Jira Align Implementation Sources</h1>
+        <h1 className="text-3xl font-bold mb-2">Catalyst Implementation Sources</h1>
         <p className="text-muted-foreground">
-          Complete traceability of specifications, documentation, and visual references used in Catalyst's Jira Align implementation.
+          Complete traceability of specifications, documentation, and visual references used in Catalyst implementation.
         </p>
       </div>
 

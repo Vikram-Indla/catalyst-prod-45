@@ -1,4 +1,4 @@
-// Team types based on Jira Align specification
+// Team types based on Catalyst specification
 
 export type TeamType =
   | 'AGILE'

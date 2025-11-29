@@ -1,5 +1,5 @@
 // Mock data for Strategy Room & OKR Module
-// Based on FRD and Jira Align screenshots
+// Based on FRD and Catalyst screenshots
 
 export type ObjectiveLevel = "STRATEGIC" | "PORTFOLIO" | "PROGRAM" | "TEAM";
 

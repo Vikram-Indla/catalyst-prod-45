@@ -1,4 +1,4 @@
-// Feature types for Catalyst - aligned with Jira Align specification
+// Feature types for Catalyst - aligned with Catalyst specification
 export interface Feature {
   id: string;
   name: string;

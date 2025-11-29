@@ -1,13 +1,13 @@
 /**
  * Program Board Utilities
- * Status color-coding logic from Jira Align specification
+ * Status color-coding logic from Catalyst specification
  * Source: help.jiraalign.com-Program board.pdf pages 9-11
  */
 
 // No imports needed - returns string identifiers for icons
 
 /**
- * Get feature status color based on exact Jira Align rules
+ * Get feature status color based on exact Catalyst rules
  * 
  * Rules (in priority order):
  * - Black: Orphan (no child stories)
@@ -19,7 +19,7 @@
  * - Gray: Not started
  */
 export function getFeatureStatusColor(feature: any): string {
-  // Jira Align Program Board color specifications (solid background colors)
+  // Catalyst Program Board color specifications (solid background colors)
   // Source: help.jiraalign.com-Program board.pdf + reference screenshots
   
   // Bright Emerald Green: Done/Accepted (all child stories complete)
@@ -62,7 +62,7 @@ export function getFeatureStatusColor(feature: any): string {
 }
 
 /**
- * Get dependency status color based on Jira Align rules
+ * Get dependency status color based on Catalyst rules
  */
 export function getDependencyStatusColor(dependency: any): string {
   // Green: Done (marked Done, or committed + sprint not ended + all stories accepted)

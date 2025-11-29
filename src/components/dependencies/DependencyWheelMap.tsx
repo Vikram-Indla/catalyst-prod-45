@@ -157,7 +157,7 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
   // Calculate segment angles
   const segmentAngle = (2 * Math.PI) / nodes.length;
   
-  // Multiple shades of blue/teal for segments (Jira Align style)
+  // Multiple shades of blue/teal for segments (Catalyst style)
   const colors = [
     '#67b7d1', '#5da9c1', '#5a9fb0', '#4d8a9d',
     '#71b8ca', '#5f9fae', '#4a7c8a', '#608fa0',
