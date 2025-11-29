@@ -147,13 +147,19 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   };
 
   const handleMouseEnter = (layerName: string, e: React.MouseEvent<SVGElement>) => {
-    const svgRect = e.currentTarget.ownerSVGElement?.getBoundingClientRect();
-    const layerRect = e.currentTarget.getBoundingClientRect();
-    if (svgRect && layerRect) {
-      // Position tooltip just 2px to the right of the pyramid edge
-      const layerCenterY = layerRect.top + layerRect.height / 2 - svgRect.top;
-      const layerRightX = layerRect.right - svgRect.left + 2;
-      setTooltipPos({ x: layerRightX, y: layerCenterY });
+    // Get the mouse Y position in SVG coordinates
+    const svgElement = e.currentTarget.ownerSVGElement;
+    if (svgElement) {
+      const pt = svgElement.createSVGPoint();
+      pt.x = e.clientX;
+      pt.y = e.clientY;
+      const svgP = pt.matrixTransform(svgElement.getScreenCTM()?.inverse());
+      
+      // Calculate the right edge of the pyramid at this Y position
+      const rightEdge = getXAtY(svgP.y).right;
+      
+      // Position tooltip 15px to the right of the pyramid edge
+      setTooltipPos({ x: rightEdge + 15, y: svgP.y });
     }
     setHoveredLayer(layerName);
   };
