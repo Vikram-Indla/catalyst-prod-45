@@ -267,7 +267,12 @@ export default function DependenciesPage() {
       {/* Visualization Views */}
       {visualizationMode === 'matrix' && <DependencyMatrix piId={piFilter} />}
       
-      {visualizationMode === 'wheel' && <DependencyWheelMap piId={piFilter} />}
+      {visualizationMode === 'wheel' && (
+        <DependencyWheelMap 
+          piId={piFilter} 
+          onDependencyClick={handleRowClick}
+        />
+      )}
 
       {visualizationMode === 'list' && (
         <>
