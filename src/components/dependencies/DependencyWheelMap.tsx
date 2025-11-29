@@ -130,10 +130,14 @@ export function DependencyWheelMap({ piId, selectedProgram }: DependencyWheelMap
   
   // Create curved dependency lines using Bezier curves
   const dependencyLines = dependencies?.map((dep: any) => {
-    const fromSegment = segments.find((s) => s.id === dep.from_feature?.program_id);
-    const toSegment = segments.find((s) => s.id === dep.to_feature?.program_id);
+    // Use requesting_program_id and depends_on_program_id for cross-program dependencies
+    const fromSegment = segments.find((s) => s.id === dep.requesting_program_id);
+    const toSegment = segments.find((s) => s.id === dep.depends_on_program_id);
     
-    if (!fromSegment || !toSegment || fromSegment.id === toSegment.id) return null;
+    if (!fromSegment || !toSegment) return null;
+    
+    // Skip if same program (internal dependencies not shown in wheel map)
+    if (fromSegment.id === toSegment.id) return null;
     
     // Calculate connection points on inner circle
     const fromX = centerX + (innerRadius - 10) * Math.cos(fromSegment.midAngle);
