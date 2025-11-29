@@ -189,25 +189,12 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
       Z
     `;
     
-    // Calculate label position
-    const labelRadius = outerRadius + 30;
-    const labelX = centerX + labelRadius * Math.cos(midAngle);
-    const labelY = centerY + labelRadius * Math.sin(midAngle);
-    
-    let textAngle = (midAngle * 180 / Math.PI) + 90;
-    if (textAngle > 90 && textAngle < 270) {
-      textAngle += 180;
-    }
-    
     const isSelected = selectedNodeId === node.id;
     const isHovered = hoveredNodeId === node.id;
     
     return {
       ...node,
       path,
-      labelX,
-      labelY,
-      textAngle,
       color: colors[index % colors.length],
       midAngle,
       isSelected,
@@ -351,37 +338,52 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
             className="mx-auto"
           >
             {/* Radial segments */}
-            {segments.map((segment) => (
-              <g key={segment.id}>
-                <path
-                  d={segment.path}
-                  fill={segment.color}
-                  opacity={segment.isSelected ? 1 : segment.isHovered ? 0.85 : 0.75}
-                  stroke="white"
-                  strokeWidth={segment.isSelected ? 3 : 2}
-                  className="cursor-pointer transition-all"
-                  onMouseEnter={() => setHoveredNodeId(segment.id)}
-                  onMouseLeave={() => setHoveredNodeId(null)}
-                  onClick={() => handleNodeClick(segment.id)}
-                />
-                {/* Program label */}
-                <text
-                  x={segment.labelX}
-                  y={segment.labelY}
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  transform={`rotate(${segment.textAngle} ${segment.labelX} ${segment.labelY})`}
-                  className="font-medium pointer-events-none"
-                  style={{ 
-                    fontSize: segment.isSelected ? '13px' : '12px',
-                    fill: '#1f2937',
-                    fontWeight: segment.isSelected ? 600 : 500,
-                  }}
-                >
-                  {segment.name}
-                </text>
-              </g>
-            ))}
+            {segments.map((segment) => {
+              // Calculate label position INSIDE the segment
+              const labelRadius = (outerRadius + innerRadius) / 2; // Middle of the segment
+              const labelX = centerX + labelRadius * Math.cos(segment.midAngle);
+              const labelY = centerY + labelRadius * Math.sin(segment.midAngle);
+              
+              // Calculate text rotation to align with segment
+              let textAngle = (segment.midAngle * 180 / Math.PI) + 90;
+              if (textAngle > 90 && textAngle < 270) {
+                textAngle += 180;
+              }
+              
+              return (
+                <g key={segment.id}>
+                  <path
+                    d={segment.path}
+                    fill={segment.color}
+                    opacity={segment.isSelected ? 1 : segment.isHovered ? 0.9 : 0.8}
+                    stroke="white"
+                    strokeWidth={segment.isSelected ? 3 : 2}
+                    className="cursor-pointer transition-all"
+                    onMouseEnter={() => setHoveredNodeId(segment.id)}
+                    onMouseLeave={() => setHoveredNodeId(null)}
+                    onClick={() => handleNodeClick(segment.id)}
+                  />
+                  {/* Program label INSIDE segment */}
+                  <text
+                    x={labelX}
+                    y={labelY}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    transform={`rotate(${textAngle} ${labelX} ${labelY})`}
+                    className="font-medium pointer-events-none select-none"
+                    style={{ 
+                      fontSize: segment.isSelected ? '13px' : '12px',
+                      fill: 'white',
+                      fontWeight: segment.isSelected ? 700 : 600,
+                      letterSpacing: '0.02em',
+                      textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+                    }}
+                  >
+                    {segment.name}
+                  </text>
+                </g>
+              );
+            })}
             
             {/* Center white circle (hub) */}
             <circle
