@@ -9,7 +9,7 @@ const portfolios = [
   'Expium Portfolio (Training)',
   'Geekbooks Location Services',
   'Geekbooks Online Services',
-  'Jira Align Training Portfolio',
+  'Catalyst Training Portfolio',
   'Legacy Apps'
 ];
 

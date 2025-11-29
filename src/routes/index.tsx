@@ -1,5 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { JiraAlignShell } from '@/components/layout/JiraAlignShell';
+import { CatalystShell } from '@/components/layout/CatalystShell';
 
 // Dev pages
 import SelfTest from '@/pages/dev/SelfTest';
@@ -26,7 +26,7 @@ const Roadmap = () => <div>Roadmap</div>;
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <JiraAlignShell />,
+    element: <CatalystShell />,
     children: [
       { index: true, element: <Navigate to="/home" replace /> },
       { path: 'home', element: <Home /> },
