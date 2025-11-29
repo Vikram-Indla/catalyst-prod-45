@@ -173,6 +173,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       
       const tooltipWidth = 220; // Width of the tooltip rect
       const tooltipHalfWidth = tooltipWidth / 2;
+      const minX = 10; // Minimum X position to keep tooltip visible
+      const maxX = 1000 - tooltipWidth - 10; // Maximum X position
       
       // Check if this is a top layer (full width) or bottom layer (split)
       const isTopLayer = ['Missions', 'Visions', 'Values'].includes(layerName);
@@ -185,11 +187,11 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
       } else {
         // Bottom 6 compartments: tooltip half outside, half inside
         if (isLeftSide) {
-          // Left compartments: straddle the left edge
-          tooltipX = leftEdge - tooltipHalfWidth;
+          // Left compartments: straddle the left edge, but ensure visibility
+          tooltipX = Math.max(minX, leftEdge - tooltipHalfWidth);
         } else {
-          // Right compartments: straddle the right edge
-          tooltipX = rightEdge - tooltipHalfWidth;
+          // Right compartments: straddle the right edge, but ensure visibility
+          tooltipX = Math.min(maxX, rightEdge - tooltipHalfWidth);
         }
       }
       
