@@ -85,6 +85,80 @@ export type Database = {
           },
         ]
       }
+      announcement_dismissals: {
+        Row: {
+          announcement_id: string
+          dismissed_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          announcement_id: string
+          dismissed_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          announcement_id?: string
+          dismissed_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "announcement_dismissals_announcement_id_fkey"
+            columns: ["announcement_id"]
+            isOneToOne: false
+            referencedRelation: "announcements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      announcements: {
+        Row: {
+          created_at: string
+          created_by: string
+          end_date: string
+          id: string
+          is_active: boolean
+          is_dismissible: boolean
+          message: string
+          start_date: string
+          target_audience: string
+          target_roles: string[] | null
+          target_team_ids: string[] | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          end_date: string
+          id?: string
+          is_active?: boolean
+          is_dismissible?: boolean
+          message: string
+          start_date: string
+          target_audience?: string
+          target_roles?: string[] | null
+          target_team_ids?: string[] | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          end_date?: string
+          id?: string
+          is_active?: boolean
+          is_dismissible?: boolean
+          message?: string
+          start_date?: string
+          target_audience?: string
+          target_roles?: string[] | null
+          target_team_ids?: string[] | null
+          title?: string
+        }
+        Relationships: []
+      }
       attachments: {
         Row: {
           created_at: string
@@ -712,6 +786,78 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      discussion_mentions: {
+        Row: {
+          created_at: string
+          discussion_id: string
+          id: string
+          mentioned_team_id: string | null
+          mentioned_user_id: string | null
+          notification_sent: boolean
+        }
+        Insert: {
+          created_at?: string
+          discussion_id: string
+          id?: string
+          mentioned_team_id?: string | null
+          mentioned_user_id?: string | null
+          notification_sent?: boolean
+        }
+        Update: {
+          created_at?: string
+          discussion_id?: string
+          id?: string
+          mentioned_team_id?: string | null
+          mentioned_user_id?: string | null
+          notification_sent?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "discussion_mentions_discussion_id_fkey"
+            columns: ["discussion_id"]
+            isOneToOne: false
+            referencedRelation: "discussions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "discussion_mentions_mentioned_team_id_fkey"
+            columns: ["mentioned_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      discussions: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          message: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          message: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          message?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       epic_benefits: {
         Row: {
@@ -3994,6 +4140,54 @@ export type Database = {
           },
         ]
       }
+      scheduled_emails: {
+        Row: {
+          created_at: string
+          created_by: string
+          frequency: string
+          id: string
+          is_active: boolean
+          last_sent: string | null
+          message: string
+          name: string
+          notify_emails: string[] | null
+          notify_roles: string[] | null
+          recipient_filter: Json | null
+          send_day: number
+          send_time: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          frequency: string
+          id?: string
+          is_active?: boolean
+          last_sent?: string | null
+          message: string
+          name: string
+          notify_emails?: string[] | null
+          notify_roles?: string[] | null
+          recipient_filter?: Json | null
+          send_day: number
+          send_time: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          frequency?: string
+          id?: string
+          is_active?: boolean
+          last_sent?: string | null
+          message?: string
+          name?: string
+          notify_emails?: string[] | null
+          notify_roles?: string[] | null
+          recipient_filter?: Json | null
+          send_day?: number
+          send_time?: string
+        }
+        Relationships: []
+      }
       scorecard_answers: {
         Row: {
           answer_text: string
@@ -4389,6 +4583,33 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          is_active: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          is_active?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          is_active?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       subtasks: {
         Row: {
           assignee_id: string | null
@@ -4726,6 +4947,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_notification_preferences: {
+        Row: {
+          created_at: string
+          email_notifications_enabled: boolean
+          id: string
+          in_app_notifications_enabled: boolean
+          mention_notifications_enabled: boolean
+          subscription_notifications_enabled: boolean
+          updated_at: string
+          user_id: string
+          workflow_notifications_enabled: boolean
+        }
+        Insert: {
+          created_at?: string
+          email_notifications_enabled?: boolean
+          id?: string
+          in_app_notifications_enabled?: boolean
+          mention_notifications_enabled?: boolean
+          subscription_notifications_enabled?: boolean
+          updated_at?: string
+          user_id: string
+          workflow_notifications_enabled?: boolean
+        }
+        Update: {
+          created_at?: string
+          email_notifications_enabled?: boolean
+          id?: string
+          in_app_notifications_enabled?: boolean
+          mention_notifications_enabled?: boolean
+          subscription_notifications_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+          workflow_notifications_enabled?: boolean
+        }
+        Relationships: []
+      }
       user_role_history: {
         Row: {
           action: string
@@ -4957,6 +5214,62 @@ export type Database = {
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workflow_rules: {
+        Row: {
+          architecture_review_required: boolean
+          created_at: string
+          created_by: string | null
+          entity_type: string
+          id: string
+          is_active: boolean
+          name: string
+          notify_emails: string[] | null
+          notify_roles: string[] | null
+          program_increment_id: string | null
+          state_value: string | null
+          trigger_event: string
+          updated_at: string
+        }
+        Insert: {
+          architecture_review_required?: boolean
+          created_at?: string
+          created_by?: string | null
+          entity_type: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notify_emails?: string[] | null
+          notify_roles?: string[] | null
+          program_increment_id?: string | null
+          state_value?: string | null
+          trigger_event: string
+          updated_at?: string
+        }
+        Update: {
+          architecture_review_required?: boolean
+          created_at?: string
+          created_by?: string | null
+          entity_type?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notify_emails?: string[] | null
+          notify_roles?: string[] | null
+          program_increment_id?: string | null
+          state_value?: string | null
+          trigger_event?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workflow_rules_program_increment_id_fkey"
+            columns: ["program_increment_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
             referencedColumns: ["id"]
           },
         ]
