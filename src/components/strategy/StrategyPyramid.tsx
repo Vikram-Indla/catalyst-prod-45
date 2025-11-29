@@ -113,7 +113,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   const y3 = 180;  // Visions base / Values top
   const y4 = 255;  // Values base / Yearly Goals+Themes top
   const y5 = 380;  // Yearly Goals+Themes base / Portfolio Objectives+Epics top
-  const y6 = 505;  // Portfolio Objectives+Epics base / Program Objectives+Features top
+  const y6 = 485;  // Portfolio Objectives+Epics base / Program Objectives+Features top
   const y7 = 550;  // Bottom
 
   // Get coordinates for each level
