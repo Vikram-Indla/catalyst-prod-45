@@ -3,6 +3,8 @@
 
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Risk, RiskFormData } from "@/types/risks";
 import { ROAM_STATUSES, RISK_STATUSES, SEVERITY_LEVELS, RELATIONSHIP_TYPES } from "@/constants/risks";
+import { RiskLinksSection } from "./RiskLinksSection";
 
 interface CreateEditRiskPanelProps {
   risk?: Risk;
@@ -47,6 +50,51 @@ export function CreateEditRiskPanel({
     target_resolution_date: null,
     relationship: null,
     related_item_id: null,
+    owner_id: null,
+    program_id: null,
+    program_increment_id: null,
+  });
+
+  const [links, setLinks] = useState<any[]>([]);
+
+  // Fetch users for owner dropdown
+  const { data: users = [] } = useQuery({
+    queryKey: ['users'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .order('full_name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch programs
+  const { data: programs = [] } = useQuery({
+    queryKey: ['programs'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch program increments
+  const { data: programIncrements = [] } = useQuery({
+    queryKey: ['program-increments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('program_increments')
+        .select('id, name, start_date, end_date')
+        .order('start_date', { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return data || [];
+    },
   });
 
   useEffect(() => {
@@ -66,7 +114,11 @@ export function CreateEditRiskPanel({
         target_resolution_date: risk.target_resolution_date,
         relationship: risk.relationship,
         related_item_id: risk.related_item_id,
+        owner_id: risk.owner_id,
+        program_id: risk.program_id,
+        program_increment_id: risk.program_increment_id,
       });
+      setLinks([]); // TODO: Load links from database
     } else {
       setFormData({
         title: "",
@@ -83,7 +135,11 @@ export function CreateEditRiskPanel({
         target_resolution_date: null,
         relationship: null,
         related_item_id: null,
+        owner_id: null,
+        program_id: null,
+        program_increment_id: null,
       });
+      setLinks([]);
     }
   }, [risk]);
 
@@ -298,6 +354,72 @@ export function CreateEditRiskPanel({
             />
           </div>
 
+          {/* Owner, Program, PI */}
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm mb-2">Owner</Label>
+              <Select
+                value={formData.owner_id || undefined}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, owner_id: value || null })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select owner" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.full_name || user.email}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-sm mb-2">Program</Label>
+              <Select
+                value={formData.program_id || undefined}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, program_id: value || null })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select program" />
+                </SelectTrigger>
+                <SelectContent>
+                  {programs.map((program) => (
+                    <SelectItem key={program.id} value={program.id}>
+                      {program.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-sm mb-2">Program Increment</Label>
+              <Select
+                value={formData.program_increment_id || undefined}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, program_increment_id: value || null })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select PI" />
+                </SelectTrigger>
+                <SelectContent>
+                  {programIncrements.map((pi) => (
+                    <SelectItem key={pi.id} value={pi.id}>
+                      {pi.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           {/* Relationship */}
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -331,6 +453,9 @@ export function CreateEditRiskPanel({
               />
             </div>
           </div>
+
+          {/* Links Section */}
+          <RiskLinksSection links={links} onChange={setLinks} />
         </div>
 
         {/* Footer Actions */}
