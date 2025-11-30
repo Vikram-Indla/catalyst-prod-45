@@ -184,15 +184,15 @@ export default function Auth() {
       }} />
 
         {/* Logo - absolute positioned at top, doesn't affect form flow */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "clamp(100px, 15vh, 160px)" }}>
+        <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "16px" }}>
           <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
           height: "clamp(120px, 20vw, 280px)",
           filter: "brightness(1.2)"
         }} />
         </div>
 
-        {/* Login Container - positioned below logo */}
-        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "calc(clamp(100px, 15vh, 160px) + clamp(120px, 20vw, 280px) + 40px)" }}>
+        {/* Login Container - positioned to align Welcome back with enterprise text */}
+        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(100px, 15vh, 160px)" }}>
           {/* Login Header */}
           <h2 className="text-center mb-2" style={{
           fontFamily: "'Playfair Display', serif",
