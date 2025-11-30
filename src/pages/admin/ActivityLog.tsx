@@ -64,19 +64,19 @@ export default function ActivityLog() {
   });
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Activity className="h-8 w-8" />
+    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-2 flex items-center gap-2">
+            <Activity className="h-6 w-6 sm:h-8 sm:w-8" />
             Activity Log
           </h1>
           <p className="text-muted-foreground">Audit trail of all system changes</p>
         </div>
       </div>
 
-      <Card className="p-4">
-        <div className="flex gap-4">
+      <Card className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <Input
             placeholder="Search by entity type, action, or ID..."
             value={searchTerm}
