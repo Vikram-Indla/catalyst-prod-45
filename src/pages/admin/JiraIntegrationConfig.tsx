@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Plus, Trash2, TestTube, Link as LinkIcon } from "lucide-react";
-import AdminGuard from "@/components/guards/AdminGuard";
+import { AdminGuard } from "@/components/admin/AdminGuard";
 
 interface JiraConnection {
   id: string;
