@@ -61,7 +61,7 @@ export function AppShell() {
           <header className="h-14 border-b bg-card flex items-center gap-4 px-4 flex-shrink-0 z-50">
             <div className="flex items-center gap-4">
               <SidebarTrigger className="hover:bg-accent" />
-              <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <h1 className="text-lg font-bold bg-gradient-to-r from-brand-gold to-brand-gold-hover bg-clip-text text-transparent">
                 Catalyst
               </h1>
             </div>

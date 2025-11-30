@@ -95,6 +95,10 @@ export default {
           yellow: "hsl(var(--health-yellow))",
           red: "hsl(var(--health-red))",
           gray: "hsl(var(--health-gray))",
+          "on-track": "hsl(var(--health-on-track))",
+          "at-risk": "hsl(var(--health-at-risk))",
+          "off-track": "hsl(var(--health-off-track))",
+          unknown: "hsl(var(--health-unknown))",
         },
         workitem: {
           theme: "hsl(var(--workitem-theme))",
