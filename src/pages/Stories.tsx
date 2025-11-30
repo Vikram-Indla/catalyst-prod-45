@@ -17,6 +17,7 @@ import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { StoriesToolbar } from '@/components/stories/StoriesToolbar';
 import { StoriesFiltersDialog } from '@/components/stories/StoriesFiltersDialog';
 import { StoriesColumnConfig } from '@/components/stories/StoriesColumnConfig';
+import { StoryQuickAdd } from '@/components/stories/StoryQuickAdd';
 import { Plus, List, LayoutGrid, Filter, Columns } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 import { STORY_STATUS_LABELS, StoryWithRelations } from '@/types/story.types';
@@ -172,8 +173,12 @@ export default function Stories() {
       {/* Content */}
       <div className="flex-1 overflow-auto p-4">
         {viewMode === 'list' ? (
-          <div className="border rounded-lg bg-card">
-            <Table>
+          <div className="space-y-4">
+            {/* Quick Add */}
+            <StoryQuickAdd onSuccess={refetch} />
+            
+            <div className="border rounded-lg bg-card">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12">
@@ -223,6 +228,7 @@ export default function Stories() {
                 )}
               </TableBody>
             </Table>
+            </div>
           </div>
         ) : (
           <StoriesKanbanView

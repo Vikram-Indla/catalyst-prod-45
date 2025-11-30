@@ -16,6 +16,7 @@ import type { StoryWithRelations } from '@/types/story.types';
 import { StoryDiscussions } from './StoryDiscussions';
 import { StoryActivityLog } from './StoryActivityLog';
 import { StoryLinks } from './StoryLinks';
+import { SubtasksList } from './SubtasksList';
 
 interface StoryDetailPanelProps {
   story: StoryWithRelations;
@@ -300,7 +301,7 @@ export function StoryDetailPanel({ story, onClose, onUpdate }: StoryDetailPanelP
           </TabsContent>
 
           <TabsContent value="children" className="p-4">
-            <p className="text-sm text-muted-foreground">Child subtasks will be displayed here.</p>
+            <SubtasksList storyId={story.id} />
           </TabsContent>
 
           <TabsContent value="discussions" className="p-4">
