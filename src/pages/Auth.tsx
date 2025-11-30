@@ -196,6 +196,12 @@ export default function Auth() {
           }}>
             <span style={{ color: "#1a1a1a" }}>Cata</span>
             <span style={{ color: "#c69c6d" }}>lyst</span>
+            <sup style={{ 
+              fontSize: "0.4em", 
+              color: "#1a1a1a",
+              marginLeft: "2px",
+              fontWeight: 400
+            }}>TM</sup>
           </h1>
         </div>
 
