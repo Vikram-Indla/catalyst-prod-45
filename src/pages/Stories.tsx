@@ -11,10 +11,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
-import { RightDetailsPanel } from '@/components/shared/RightDetailsPanel';
 import { StoryDialog } from '@/components/forms/StoryDialog';
 import { StoriesKanbanView } from '@/components/stories/StoriesKanbanView';
-import { Plus, Edit, List, LayoutGrid } from 'lucide-react';
+import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
+import { Plus, List, LayoutGrid } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 import { STORY_STATUS_LABELS, StoryWithRelations } from '@/types/story.types';
 
@@ -202,63 +202,15 @@ export default function Stories() {
       </div>
 
       {/* Details Panel */}
-      <RightDetailsPanel
-        open={detailsOpen}
-        onClose={() => setDetailsOpen(false)}
-        title={selectedStory?.name || ''}
-        tabs={[
-          {
-            id: 'details',
-            label: 'Details',
-            content: selectedStory && (
-              <div className="space-y-4">
-                <PermissionGuard requiredRole="user" showMessage={false}>
-                  <Button onClick={() => handleEdit(selectedStory)} className="w-full mb-4">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Story
-                  </Button>
-                </PermissionGuard>
-                <div>
-                  <label className="text-sm font-medium">Description</label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {selectedStory.description || 'No description'}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Acceptance Criteria</label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {selectedStory.acceptance_criteria || 'No criteria'}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Feature</label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {selectedStory.features?.name || 'No feature'}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Team</label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {selectedStory.teams?.name || 'No team'}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Estimate</label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {selectedStory.estimate_points || 'Not estimated'} points
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Assignee</label>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Unassigned
-                  </p>
-                </div>
-              </div>
-            ),
-          },
-        ]}
-      />
+      {detailsOpen && selectedStory && (
+        <div className="fixed right-0 top-0 h-full w-[500px] border-l shadow-lg z-50">
+          <StoryDetailPanel
+            story={selectedStory}
+            onClose={() => setDetailsOpen(false)}
+            onUpdate={refetch}
+          />
+        </div>
+      )}
 
       {/* Create/Edit Dialog */}
       <StoryDialog
