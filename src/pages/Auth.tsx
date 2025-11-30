@@ -186,10 +186,10 @@ export default function Auth() {
       }} />
 
         {/* Catalyst Logo Text - absolute positioned */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "140px" }}>
+        <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "clamp(24px, 8vh, 140px)" }}>
           <h1 style={{
             fontFamily: "'Playfair Display', serif",
-            fontSize: "60px",
+            fontSize: "clamp(40px, 8vw, 60px)",
             fontWeight: 600,
             lineHeight: 1,
             letterSpacing: "-0.02em"
@@ -200,7 +200,7 @@ export default function Auth() {
         </div>
 
         {/* Login Container - positioned to align Welcome back with enterprise text */}
-        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "160px" }}>
+        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(100px, 18vh, 160px)" }}>
           {/* Login Header */}
           <h2 className="text-center mb-2" style={{
           fontFamily: "'Playfair Display', serif",
