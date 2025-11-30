@@ -94,6 +94,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
       team_id: editedStory.team_id,
       sprint_id: editedStory.sprint_id,
       estimate_points: editedStory.estimate_points,
+      points_loe: editedStory.points_loe,
     });
   };
 
@@ -215,13 +216,13 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
 
             {/* Status */}
             <div>
-              <label className="text-sm font-medium mb-1 block">Status</label>
+              <label className="text-sm font-medium mb-2 block">Status</label>
               {isEditing ? (
                 <Select
                   value={editedStory.status || 'todo'}
                   onValueChange={(value: any) => setEditedStory({ ...editedStory, status: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="focus:ring-brand-gold">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -239,15 +240,19 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
               )}
             </div>
 
+            <div className="border-t pt-4 mt-4">
+              <h3 className="text-sm font-semibold mb-4 text-brand-gold">Hierarchy & Assignment</h3>
+              <div className="space-y-4">
+
             {/* Feature */}
             <div>
-              <label className="text-sm font-medium mb-1 block">Feature</label>
+              <label className="text-sm font-medium mb-2 block">Feature</label>
               {isEditing ? (
                 <Select
                   value={editedStory.feature_id}
                   onValueChange={(value) => setEditedStory({ ...editedStory, feature_id: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="focus:ring-brand-gold">
                     <SelectValue placeholder="Select feature" />
                   </SelectTrigger>
                   <SelectContent>
@@ -265,8 +270,8 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
 
             {/* Team */}
             <div>
-              <label className="text-sm font-medium flex items-center gap-2 mb-1">
-                <User className="h-4 w-4" />
+              <label className="text-sm font-medium flex items-center gap-2 mb-2">
+                <User className="h-4 w-4 text-brand-gold" />
                 Team
               </label>
               {isEditing ? (
@@ -274,7 +279,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                   value={editedStory.team_id || undefined}
                   onValueChange={(value) => setEditedStory({ ...editedStory, team_id: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="focus:ring-brand-gold">
                     <SelectValue placeholder="Select team" />
                   </SelectTrigger>
                   <SelectContent>
@@ -292,8 +297,8 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
 
             {/* Sprint */}
             <div>
-              <label className="text-sm font-medium flex items-center gap-2 mb-1">
-                <Calendar className="h-4 w-4" />
+              <label className="text-sm font-medium flex items-center gap-2 mb-2">
+                <Calendar className="h-4 w-4 text-brand-gold" />
                 Sprint
               </label>
               {isEditing ? (
@@ -301,7 +306,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                   value={editedStory.sprint_id || undefined}
                   onValueChange={(value) => setEditedStory({ ...editedStory, sprint_id: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="focus:ring-brand-gold">
                     <SelectValue placeholder="Select sprint" />
                   </SelectTrigger>
                   <SelectContent>
@@ -316,19 +321,61 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                 <p className="text-sm text-muted-foreground">{story.iterations?.name || 'Backlog'}</p>
               )}
             </div>
+              </div>
+            </div>
+
+            <div className="border-t pt-4 mt-4">
+              <h3 className="text-sm font-semibold mb-4 text-brand-gold">Estimation</h3>
+              <div className="space-y-4">
 
             {/* Estimate Points */}
             <div>
-              <label className="text-sm font-medium mb-1 block">Story Points</label>
+              <label className="text-sm font-medium mb-2 block">Story Points (Estimate)</label>
               {isEditing ? (
-                <Input
-                  type="number"
-                  value={editedStory.estimate_points || ''}
-                  onChange={(e) => setEditedStory({ ...editedStory, estimate_points: parseInt(e.target.value) || null })}
-                />
+                <Select
+                  value={editedStory.estimate_points?.toString() || 'undefined'}
+                  onValueChange={(value) => setEditedStory({ 
+                    ...editedStory, 
+                    estimate_points: value === 'undefined' ? null : parseInt(value) 
+                  })}
+                >
+                  <SelectTrigger className="focus:ring-brand-gold">
+                    <SelectValue placeholder="Select points" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="undefined">Not estimated</SelectItem>
+                    <SelectItem value="1">1</SelectItem>
+                    <SelectItem value="2">2</SelectItem>
+                    <SelectItem value="3">3</SelectItem>
+                    <SelectItem value="5">5</SelectItem>
+                    <SelectItem value="8">8</SelectItem>
+                    <SelectItem value="13">13</SelectItem>
+                    <SelectItem value="21">21</SelectItem>
+                  </SelectContent>
+                </Select>
               ) : (
                 <p className="text-sm text-muted-foreground">{story.estimate_points || 'Not estimated'}</p>
               )}
+              <p className="text-xs text-muted-foreground mt-1">Fibonacci sequence: 1, 2, 3, 5, 8, 13, 21</p>
+            </div>
+
+            {/* LOE Points */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">LOE Points (Level of Effort)</label>
+              {isEditing ? (
+                <Input
+                  type="number"
+                  value={editedStory.points_loe || ''}
+                  onChange={(e) => setEditedStory({ ...editedStory, points_loe: parseInt(e.target.value) || null })}
+                  className="focus-visible:ring-brand-gold"
+                  placeholder="Enter LOE"
+                />
+              ) : (
+                <p className="text-sm text-muted-foreground">{story.points_loe || 'Not set'}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">Level of Effort for technical complexity</p>
+            </div>
+              </div>
             </div>
           </TabsContent>
 
