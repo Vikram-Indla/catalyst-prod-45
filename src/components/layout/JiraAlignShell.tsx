@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CatalystHeader } from '@/components/ja/CatalystHeader';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
-import { ProgramRoomSidebar } from '@/components/program/ProgramRoomSidebar';
+import { ProgramRoomSidebar } from './ProgramRoomSidebar';
 import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
@@ -70,10 +70,15 @@ function CatalystShellContent() {
           {location.pathname !== '/home' && (
             <>
               {tier === 'enterprise' ? (
-                <LeftContextPanel />
+                <LeftContextPanel className="hidden lg:flex" />
               ) : tier === 'program' && currentProgramId ? (
                 <ProgramRoomSidebar
                   programId={currentProgramId}
+                  expanded={sidebarExpanded}
+                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                  selectedPI={selectedPI || undefined}
+                  onPIChange={(pi) => setSelectedPI(pi)}
+                  className="hidden lg:flex"
                 />
               ) : tier === 'portfolio' ? (
                 <PortfolioRoomSidebar
@@ -82,18 +87,20 @@ function CatalystShellContent() {
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
                   selectedPI={selectedPI || undefined}
                   onPIChange={(pi) => setSelectedPI(pi)}
+                  className="hidden lg:flex"
                 />
               ) : tier === 'team' && currentTeamId ? (
                 <TeamRoomSidebar
                   teamId={currentTeamId}
                   expanded={sidebarExpanded}
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                  className="hidden lg:flex"
                 />
               ) : null}
             </>
           )}
-        <main className="flex-1 overflow-auto">
-          <div className="p-4">
+        <main className="flex-1 overflow-auto w-full">
+          <div className="p-3 sm:p-4 md:p-6">
             <AnnouncementBanner />
           </div>
           <Outlet />

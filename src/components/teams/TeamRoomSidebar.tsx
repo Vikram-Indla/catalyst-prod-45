@@ -29,6 +29,7 @@ interface TeamRoomSidebarProps {
   teamId: string;
   expanded: boolean;
   onToggle: () => void;
+  className?: string;
 }
 
 interface MenuItem {
@@ -102,7 +103,7 @@ const morePagesSubMenu = [
   { id: 'surveys', label: 'Surveys', path: '/team/:teamId/pages/surveys' },
 ];
 
-export function TeamRoomSidebar({ teamId, expanded, onToggle }: TeamRoomSidebarProps) {
+export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamRoomSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedSprint, setSelectedSprint] = useState<string>('');
@@ -158,8 +159,9 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle }: TeamRoomSidebarP
   return (
     <aside 
       className={cn(
-        "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative",
-        expanded ? "w-[280px]" : "w-16"
+        "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
+        expanded ? "w-[280px]" : "w-16",
+        className
       )}
     >
       {/* Toggle Handle */}

@@ -33,6 +33,7 @@ interface ProgramRoomSidebarProps {
   onToggle: () => void;
   selectedPI: string | null;
   onPIChange: (pi: string | null) => void;
+  className?: string;
 }
 
 type MenuItem = 
@@ -59,7 +60,8 @@ export function ProgramRoomSidebar({
   expanded, 
   onToggle,
   selectedPI,
-  onPIChange
+  onPIChange,
+  className
 }: ProgramRoomSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -98,8 +100,9 @@ export function ProgramRoomSidebar({
   return (
     <aside 
       className={cn(
-        "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative",
-        expanded ? "w-[280px]" : "w-16"
+        "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
+        expanded ? "w-[280px]" : "w-16",
+        className
       )}
     >
       {/* Toggle Handle */}
