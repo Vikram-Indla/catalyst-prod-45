@@ -9,12 +9,15 @@ import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
+import { MobileMenuButton } from './MobileMenuButton';
+import { MobileSidebarDrawer } from './MobileSidebarDrawer';
 
 function CatalystShellContent() {
   const location = useLocation();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
   const { tier, setTier } = useCatalystContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Extract IDs from URL params
   const currentProgramId = params.programId || null;
@@ -59,46 +62,102 @@ function CatalystShellContent() {
     }
   }, [location.pathname, tier, setTier]);
 
+  // Render the appropriate sidebar content for mobile drawer
+  const renderMobileSidebar = () => {
+    if (location.pathname === '/home') return null;
+    
+    if (tier === 'enterprise') {
+      return <LeftContextPanel className="flex" />;
+    } else if (tier === 'program' && currentProgramId) {
+      return (
+        <ProgramRoomSidebar
+          programId={currentProgramId}
+          expanded={true}
+          onToggle={() => {}}
+          selectedPI={selectedPI || undefined}
+          onPIChange={(pi) => setSelectedPI(pi)}
+          className="flex"
+        />
+      );
+    } else if (tier === 'portfolio') {
+      return (
+        <PortfolioRoomSidebar
+          portfolioId={currentPortfolioId || 'default'}
+          expanded={true}
+          onToggle={() => {}}
+          selectedPI={selectedPI || undefined}
+          onPIChange={(pi) => setSelectedPI(pi)}
+          className="flex"
+        />
+      );
+    } else if (tier === 'team' && currentTeamId) {
+      return (
+        <TeamRoomSidebar
+          teamId={currentTeamId}
+          expanded={true}
+          onToggle={() => {}}
+          className="flex"
+        />
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Global Header - Catalyst Style */}
-      <CatalystHeader />
+      <div className="flex items-center border-b">
+        {location.pathname !== '/home' && (
+          <MobileMenuButton onClick={() => setMobileMenuOpen(true)} />
+        )}
+        <div className="flex-1">
+          <CatalystHeader />
+        </div>
+      </div>
+
+      {/* Mobile Sidebar Drawer */}
+      <MobileSidebarDrawer
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      >
+        {renderMobileSidebar()}
+      </MobileSidebarDrawer>
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on Tier and Route */}
       <div className="flex flex-1 overflow-hidden">
-          {/* No sidebar for Home route */}
-          {location.pathname !== '/home' && (
-            <>
-              {tier === 'enterprise' ? (
-                <LeftContextPanel className="hidden lg:flex" />
-              ) : tier === 'program' && currentProgramId ? (
-                <ProgramRoomSidebar
-                  programId={currentProgramId}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                  selectedPI={selectedPI || undefined}
-                  onPIChange={(pi) => setSelectedPI(pi)}
-                  className="hidden lg:flex"
-                />
-              ) : tier === 'portfolio' ? (
-                <PortfolioRoomSidebar
-                  portfolioId={currentPortfolioId || 'default'}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                  selectedPI={selectedPI || undefined}
-                  onPIChange={(pi) => setSelectedPI(pi)}
-                  className="hidden lg:flex"
-                />
-              ) : tier === 'team' && currentTeamId ? (
-                <TeamRoomSidebar
-                  teamId={currentTeamId}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                  className="hidden lg:flex"
-                />
-              ) : null}
-            </>
-          )}
+        {/* Desktop Sidebar - Hidden on Mobile */}
+        {location.pathname !== '/home' && (
+          <>
+            {tier === 'enterprise' ? (
+              <LeftContextPanel className="hidden lg:flex" />
+            ) : tier === 'program' && currentProgramId ? (
+              <ProgramRoomSidebar
+                programId={currentProgramId}
+                expanded={sidebarExpanded}
+                onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                selectedPI={selectedPI || undefined}
+                onPIChange={(pi) => setSelectedPI(pi)}
+                className="hidden lg:flex"
+              />
+            ) : tier === 'portfolio' ? (
+              <PortfolioRoomSidebar
+                portfolioId={currentPortfolioId || 'default'}
+                expanded={sidebarExpanded}
+                onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                selectedPI={selectedPI || undefined}
+                onPIChange={(pi) => setSelectedPI(pi)}
+                className="hidden lg:flex"
+              />
+            ) : tier === 'team' && currentTeamId ? (
+              <TeamRoomSidebar
+                teamId={currentTeamId}
+                expanded={sidebarExpanded}
+                onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                className="hidden lg:flex"
+              />
+            ) : null}
+          </>
+        )}
         <main className="flex-1 overflow-auto w-full">
           <div className="p-3 sm:p-4 md:p-6">
             <AnnouncementBanner />
