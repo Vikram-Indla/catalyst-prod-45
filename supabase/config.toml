@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.jira-historical-migration]
 verify_jwt = false
+
+[functions.jira-resolve-conflict]
+verify_jwt = false
+
+[functions.jira-resolve-all-conflicts]
+verify_jwt = false

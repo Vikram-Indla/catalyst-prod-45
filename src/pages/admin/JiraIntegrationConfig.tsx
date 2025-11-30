@@ -15,6 +15,8 @@ import { SyncSettingsDialog } from "@/components/admin/jira/SyncSettingsDialog";
 import { WebhookSetupDialog } from "@/components/admin/jira/WebhookSetupDialog";
 import { StatusMappingDialog } from "@/components/admin/jira/StatusMappingDialog";
 import { HistoricalMigrationDialog } from "@/components/admin/jira/HistoricalMigrationDialog";
+import { ConflictResolutionDialog } from "@/components/admin/jira/ConflictResolutionDialog";
+import { SyncHealthDashboard } from "@/components/admin/jira/SyncHealthDashboard";
 
 interface JiraConnection {
   id: string;
@@ -39,6 +41,7 @@ export default function JiraIntegrationConfig() {
   const [showWebhookSetup, setShowWebhookSetup] = useState(false);
   const [showStatusMapping, setShowStatusMapping] = useState(false);
   const [showHistoricalMigration, setShowHistoricalMigration] = useState(false);
+  const [showConflictResolution, setShowConflictResolution] = useState(false);
   const [editingConnection, setEditingConnection] = useState<any>(null);
   const [syncingConnection, setSyncingConnection] = useState<string | null>(null);
 
@@ -272,6 +275,18 @@ export default function JiraIntegrationConfig() {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
+                              setSelectedConnection(conn.id);
+                              setShowConflictResolution(true);
+                            }}
+                            title="Resolve Conflicts"
+                          >
+                            ⚠️
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
                               handleSync(conn.id);
                             }}
                             disabled={syncingConnection === conn.id}
@@ -309,6 +324,20 @@ export default function JiraIntegrationConfig() {
                 )}
               </CardContent>
             </Card>
+
+            {selectedConnection && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Sync Health & Metrics</CardTitle>
+                  <CardDescription>
+                    Real-time synchronization health and performance metrics
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <SyncHealthDashboard connectionId={selectedConnection} />
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
 
@@ -357,6 +386,11 @@ export default function JiraIntegrationConfig() {
             <HistoricalMigrationDialog
               open={showHistoricalMigration}
               onOpenChange={setShowHistoricalMigration}
+              connectionId={selectedConnection}
+            />
+            <ConflictResolutionDialog
+              open={showConflictResolution}
+              onOpenChange={setShowConflictResolution}
               connectionId={selectedConnection}
             />
           </>
