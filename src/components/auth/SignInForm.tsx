@@ -46,32 +46,21 @@ export function SignInForm({ onSubmit, loading }: SignInFormProps) {
           checked={rememberMe}
           onChange={(e) => setRememberMe(e.target.checked)}
         />
-        <button
-          type="button"
-          className="font-body text-[13px] font-medium text-brand-gold hover:text-brand-gold-hover hover:underline transition-colors"
+        <a 
+          href="#" 
+          className="text-sm text-[hsl(var(--catalyst-gold))] hover:text-[hsl(var(--catalyst-gold))]/80 transition-colors font-medium"
         >
           Forgot password?
-        </button>
+        </a>
       </div>
 
-      <CatalystButton type="submit" loading={loading}>
-        Sign In
+      <CatalystButton 
+        type="submit" 
+        loading={loading}
+        className="w-full bg-[hsl(var(--catalyst-gold))] hover:bg-[hsl(var(--catalyst-gold))]/90 text-white font-medium"
+      >
+        Sign in
       </CatalystButton>
-
-      <div className="flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-surface-gray-200" />
-        <span className="font-body text-[11px] font-semibold text-text-muted uppercase tracking-wide">
-          or continue with
-        </span>
-        <div className="flex-1 h-px bg-surface-gray-200" />
-      </div>
-
-      <CatalystButton variant="secondary" type="button">
-        <Lock size={16} />
-        Enterprise SSO (SAML)
-      </CatalystButton>
-
-      <IntegrationBadge />
     </form>
   );
 }
