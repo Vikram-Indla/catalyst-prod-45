@@ -191,7 +191,7 @@ export default function Auth() {
         </div>
 
         {/* Login Container - positioned to align Welcome back with enterprise text */}
-        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "140px" }}>
+        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "160px" }}>
           {/* Login Header */}
           <h2 className="text-center mb-2" style={{
           fontFamily: "'Playfair Display', serif",
