@@ -134,6 +134,58 @@ export default function Auth() {
                 SUPPORT
               </div>
             </div>
+
+            {/* Stat 3 */}
+            <div>
+              <div 
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: '2.75rem',
+                  color: '#c69c6d',
+                  fontWeight: 500
+                }}
+              >
+                10+
+              </div>
+              <div 
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: '0.9rem',
+                  color: 'rgba(254, 255, 255, 0.7)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  fontWeight: 500
+                }}
+              >
+                INTEGRATIONS
+              </div>
+            </div>
+
+            {/* Stat 4 */}
+            <div>
+              <div 
+                style={{
+                  fontFamily: "'Playfair Display', serif",
+                  fontSize: '2.75rem',
+                  color: '#c69c6d',
+                  fontWeight: 500
+                }}
+              >
+                20+
+              </div>
+              <div 
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: '0.9rem',
+                  color: 'rgba(254, 255, 255, 0.7)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                  fontWeight: 500
+                }}
+              >
+                AI INSIGHTS
+              </div>
+            </div>
           </div>
         </div>
 
