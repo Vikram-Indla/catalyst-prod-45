@@ -16,7 +16,7 @@ export function Logo({ variant = "dark", size = "md", className }: LogoProps) {
   return (
     <div
       className={cn(
-        "font-heading font-bold tracking-tight",
+        "font-heading font-bold tracking-tight flex items-center",
         sizes[size],
         variant === "light" ? "text-white" : "text-text-primary",
         className
