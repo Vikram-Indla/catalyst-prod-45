@@ -78,6 +78,13 @@ import BoardConfig from "./pages/admin/BoardConfig";
 import Permissions from "./pages/admin/Permissions";
 import Integrations from "./pages/admin/Integrations";
 import JiraIntegrationConfig from "./pages/admin/JiraIntegrationConfig";
+import { AdminLayout } from "./pages/admin/AdminLayout";
+import Activity from "./pages/admin/Activity";
+import Changes from "./pages/admin/Changes";
+import UseTrend from "./pages/admin/UseTrend";
+import WorkCodes from "./pages/admin/WorkCodes";
+import DetailsPanels from "./pages/admin/DetailsPanels";
+import Terminology from "./pages/admin/Terminology";
 import ActivityLog from "./pages/admin/ActivityLog";
 import UserRoles from "./pages/admin/UserRoles";
 import ReportsDiscovery from "./pages/admin/ReportsDiscovery";
@@ -422,6 +429,18 @@ const App = () => (
               <Route path="/admin/permissions" element={<AdminGuard><Permissions /></AdminGuard>} />
               <Route path="/admin/integrations" element={<AdminGuard><Integrations /></AdminGuard>} />
               <Route path="/admin/activity-log" element={<AdminGuard><ActivityLog /></AdminGuard>} />
+              
+              {/* Admin Module Routes - Jira Align parity */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="activity" element={<Activity />} />
+                <Route path="changes" element={<Changes />} />
+                <Route path="use-trend" element={<UseTrend />} />
+                <Route path="work-codes" element={<WorkCodes />} />
+                <Route path="details-panels" element={<DetailsPanels />} />
+                <Route path="terminology" element={<Terminology />} />
+                <Route path="jira-config" element={<JiraIntegrationConfig />} />
+              </Route>
+              
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
               <Route path="/items/epics/:epicId/trace" element={<EpicTraceReport />} />
               <Route path="/items/epics/:epicId/requirement-hierarchy" element={<EpicRequirementHierarchy />} />
