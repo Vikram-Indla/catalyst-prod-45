@@ -72,17 +72,17 @@ export function CatalystHeader() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center px-2 sm:px-4 gap-1 sm:gap-2 w-full">
+        <div className="flex h-14 items-center justify-between px-3 sm:px-6 gap-3">
           {/* Logo */}
-          <div className="flex items-center gap-2 mr-2 sm:mr-4 cursor-pointer" onClick={() => navigate('/home')}>
-            <span className="font-extrabold text-base sm:text-lg tracking-tight">
+          <div className="flex items-center gap-2 shrink-0 cursor-pointer" onClick={() => navigate('/home')}>
+            <span className="font-extrabold text-lg tracking-tight whitespace-nowrap">
               <span className="text-foreground">Cata</span>
               <span className="text-brand-gold">lyst</span>
             </span>
           </div>
 
-          {/* Main Navigation - Always visible with horizontal scroll on small screens */}
-          <nav className="flex items-center gap-1 flex-1 overflow-x-auto">
+          {/* Main Navigation - Centered on larger screens */}
+          <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center max-w-4xl">
             {navItems.map((item) => (
               <div key={item.label}>
                 {item.label === "Portfolio" ? (
@@ -100,7 +100,7 @@ export function CatalystHeader() {
                         <ChevronDown className="ml-1 h-3 w-3" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="p-0 w-auto" align="start">
+                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
                       <PortfolioSelectorDropdown onClose={() => setActiveDropdown(null)} />
                     </PopoverContent>
                   </Popover>
@@ -119,7 +119,7 @@ export function CatalystHeader() {
                         <ChevronDown className="ml-1 h-3 w-3" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="p-0 w-auto" align="start">
+                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
                       <ProgramSelectorDropdown onClose={() => setActiveDropdown(null)} />
                     </PopoverContent>
                   </Popover>
@@ -138,7 +138,7 @@ export function CatalystHeader() {
                         <ChevronDown className="ml-1 h-3 w-3" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="p-0 w-auto" align="start">
+                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
                       <TeamSelectorDropdown onClose={() => setActiveDropdown(null)} />
                     </PopoverContent>
                   </Popover>
@@ -157,7 +157,7 @@ export function CatalystHeader() {
                         <ChevronDown className="ml-1 h-3 w-3" />
                       </Button>
                     </PopoverTrigger>
-                    <PopoverContent className="p-0 w-auto" align="start">
+                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
                       <StarredDropdown onClose={() => setActiveDropdown(null)} />
                     </PopoverContent>
                   </Popover>
@@ -170,13 +170,13 @@ export function CatalystHeader() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50 whitespace-nowrap"
                       >
                         {item.label}
                         <ChevronDown className="ml-1 h-3 w-3" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-48 bg-popover">
+                    <DropdownMenuContent align="start" className="w-48 bg-popover z-[60]">
                       <DropdownMenuItem className="text-muted-foreground text-xs">
                         TODO (needs confirmation)
                       </DropdownMenuItem>
@@ -186,7 +186,7 @@ export function CatalystHeader() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                    className="h-9 px-3 text-sm font-medium hover:bg-accent/50 whitespace-nowrap"
                     onClick={() => item.path && navigate(item.path)}
                   >
                     {item.label}
@@ -194,17 +194,20 @@ export function CatalystHeader() {
                 )}
               </div>
             ))}
-
           </nav>
 
-          {/* Create Button - Always visible */}
-          <CreateDropdown />
-          
-          {/* Items Dropdown - Always visible */}
-          <ItemsDropdown />
+          {/* Right Side Actions - Compact on mobile, full on desktop */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* Create Button - Desktop only, prominent placement */}
+            <div className="hidden lg:block">
+              <CreateDropdown />
+            </div>
 
-          {/* Right Side Icons */}
-          <div className="flex items-center gap-0.5 sm:gap-1 ml-auto">
+            {/* Items Dropdown - Desktop only */}
+            <div className="hidden lg:block">
+              <ItemsDropdown />
+            </div>
+
             <TooltipProvider>
               {/* Notifications - Always visible */}
               <Tooltip>
@@ -216,37 +219,13 @@ export function CatalystHeader() {
                 </TooltipContent>
               </Tooltip>
 
-              {/* Personas - Hidden on mobile */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <div className="hidden sm:block">
-                    <PersonasPopover />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Switch Persona</p>
-                </TooltipContent>
-              </Tooltip>
-
-              {/* Help - Hidden on mobile */}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="hidden sm:flex h-9 w-9 tap-target">
-                    <HelpCircle className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Help</p>
-                </TooltipContent>
-              </Tooltip>
-
               {/* Search - Always visible */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 tap-target"
+                    className="h-9 w-9"
                     onClick={() => setIsSearchOpen(true)}
                   >
                     <Search className="h-4 w-4" />
@@ -260,17 +239,17 @@ export function CatalystHeader() {
               {/* User Profile Menu - Always visible */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full tap-target">
-                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
-                      <AvatarFallback className="bg-primary text-primary-foreground text-xs">
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-brand-gold text-background text-sm font-semibold">
                         {user?.email?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 bg-popover">
+                <DropdownMenuContent align="end" className="w-56 bg-popover z-[60]">
                   <div className="flex flex-col space-y-1 p-2">
-                    <p className="text-sm font-medium">{user?.email}</p>
+                    <p className="text-sm font-medium truncate">{user?.email}</p>
                     <p className="text-xs text-muted-foreground">User Account</p>
                   </div>
                   <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
