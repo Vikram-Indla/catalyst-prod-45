@@ -297,18 +297,18 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
   };
 
   return (
-    <div className="flex gap-4">
-      <div className="flex-1 space-y-4">
+    <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex-1 space-y-4 min-w-0">
         {/* Controls */}
-        <Card className="p-4">
-          <div className="flex items-center gap-6 flex-wrap">
+        <Card className="p-3 sm:p-4">
+          <div className="flex items-center gap-3 sm:gap-6 flex-wrap">
             <div className="flex items-center gap-2">
               <Switch
                 id="features"
                 checked={showFeatures}
                 onCheckedChange={setShowFeatures}
               />
-              <Label htmlFor="features" className="cursor-pointer">Feature</Label>
+              <Label htmlFor="features" className="cursor-pointer text-xs sm:text-sm">Feature</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch
@@ -316,7 +316,7 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
                 checked={showEpics}
                 onCheckedChange={setShowEpics}
               />
-              <Label htmlFor="epics" className="cursor-pointer">Epic</Label>
+              <Label htmlFor="epics" className="cursor-pointer text-xs sm:text-sm">Epic</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch
@@ -324,15 +324,15 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
                 checked={showCapabilities}
                 onCheckedChange={setShowCapabilities}
               />
-              <Label htmlFor="capabilities" className="cursor-pointer">Capability</Label>
+              <Label htmlFor="capabilities" className="cursor-pointer text-xs sm:text-sm">Capability</Label>
             </div>
-            <div className="flex items-center gap-2 ml-auto">
+            <div className="flex items-center gap-2 sm:ml-auto">
               <Switch
                 id="associated"
                 checked={showOnlyAssociated}
                 onCheckedChange={setShowOnlyAssociated}
               />
-              <Label htmlFor="associated" className="cursor-pointer">Show Only Associated</Label>
+              <Label htmlFor="associated" className="cursor-pointer text-xs sm:text-sm">Show Only Associated</Label>
             </div>
             <div className="flex items-center gap-2">
               <Switch
@@ -340,19 +340,18 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
                 checked={showInactive}
                 onCheckedChange={setShowInactive}
               />
-              <Label htmlFor="inactive" className="cursor-pointer">Show Inactive</Label>
+              <Label htmlFor="inactive" className="cursor-pointer text-xs sm:text-sm">Show Inactive</Label>
             </div>
           </div>
         </Card>
 
         {/* Wheel Map */}
-        <Card className="p-4 bg-background overflow-hidden">
-          <div className="w-full h-full flex items-center justify-center">
+        <Card className="p-2 sm:p-4 bg-background overflow-hidden">
+          <div className="w-full flex items-center justify-center">
             <svg
-              width={width}
-              height={height}
-              viewBox={`0 0 ${width} ${height}`}
-              className="mx-auto"
+              viewBox="0 0 900 900"
+              className="w-full h-auto max-w-full"
+              style={{ maxHeight: '80vh' }}
             >
               {/* Group for rotating the entire wheel around its center */}
               <g
@@ -468,12 +467,25 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
         </Card>
       </div>
 
-      {/* Details Panel */}
-      <DependencyWheelDetailsPanel
-        selectedNode={selectedNode}
-        links={links}
-        onDependencyClick={handleLinkClick}
-      />
+      {/* Details Panel - Hidden on mobile, shown on lg+ */}
+      <div className="hidden lg:block">
+        <DependencyWheelDetailsPanel
+          selectedNode={selectedNode}
+          links={links}
+          onDependencyClick={handleLinkClick}
+        />
+      </div>
+      
+      {/* Mobile Details - Show below wheel on mobile */}
+      {selectedNode && (
+        <div className="lg:hidden">
+          <DependencyWheelDetailsPanel
+            selectedNode={selectedNode}
+            links={links}
+            onDependencyClick={handleLinkClick}
+          />
+        </div>
+      )}
     </div>
   );
 }
