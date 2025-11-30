@@ -2,3 +2,12 @@ project_id = "bijeobdozhjdsdgxtmsp"
 
 [functions.jira-test-connection]
 verify_jwt = false
+
+[functions.jira-fetch-projects]
+verify_jwt = false
+
+[functions.jira-sync-work-items]
+verify_jwt = false
+
+[functions.jira-webhook-handler]
+verify_jwt = false

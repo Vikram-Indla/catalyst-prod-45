@@ -2467,6 +2467,7 @@ export type Database = {
           last_test_message: string | null
           last_test_status: string | null
           name: string
+          sync_settings: Json | null
           updated_at: string | null
         }
         Insert: {
@@ -2481,6 +2482,7 @@ export type Database = {
           last_test_message?: string | null
           last_test_status?: string | null
           name: string
+          sync_settings?: Json | null
           updated_at?: string | null
         }
         Update: {
@@ -2495,6 +2497,7 @@ export type Database = {
           last_test_message?: string | null
           last_test_status?: string | null
           name?: string
+          sync_settings?: Json | null
           updated_at?: string | null
         }
         Relationships: []

@@ -3,14 +3,16 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2, TestTube, Link as LinkIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, Settings, Map, RefreshCw, Link as LinkIcon } from "lucide-react";
 import { AdminGuard } from "@/components/admin/AdminGuard";
+import { ConnectionFormDialog } from "@/components/admin/jira/ConnectionFormDialog";
+import { FieldMappingDialog } from "@/components/admin/jira/FieldMappingDialog";
+import { ProjectMappingDialog } from "@/components/admin/jira/ProjectMappingDialog";
+import { SyncLogsViewer } from "@/components/admin/jira/SyncLogsViewer";
+import { SyncSettingsDialog } from "@/components/admin/jira/SyncSettingsDialog";
+import { WebhookSetupDialog } from "@/components/admin/jira/WebhookSetupDialog";
 
 interface JiraConnection {
   id: string;
@@ -27,6 +29,14 @@ interface JiraConnection {
 export default function JiraIntegrationConfig() {
   const queryClient = useQueryClient();
   const [selectedConnection, setSelectedConnection] = useState<string | null>(null);
+  const [showConnectionDialog, setShowConnectionDialog] = useState(false);
+  const [showFieldMapping, setShowFieldMapping] = useState(false);
+  const [showProjectMapping, setShowProjectMapping] = useState(false);
+  const [showSyncLogs, setShowSyncLogs] = useState(false);
+  const [showSyncSettings, setShowSyncSettings] = useState(false);
+  const [showWebhookSetup, setShowWebhookSetup] = useState(false);
+  const [editingConnection, setEditingConnection] = useState<any>(null);
+  const [syncingConnection, setSyncingConnection] = useState<string | null>(null);
 
   const { data: connections, isLoading } = useQuery({
     queryKey: ["jira-connections"],
@@ -59,6 +69,31 @@ export default function JiraIntegrationConfig() {
       toast.error(`Failed to delete connection: ${error.message}`);
     },
   });
+
+  const syncMutation = useMutation({
+    mutationFn: async (connectionId: string) => {
+      const { data, error } = await supabase.functions.invoke("jira-sync-work-items", {
+        body: { connectionId, syncDirection: "bidirectional" },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      toast.success(`Sync complete: ${data.syncedToJira} to Jira, ${data.syncedFromJira} from Jira`);
+      if (data.errors?.length > 0) {
+        toast.error(`${data.errors.length} errors occurred`);
+      }
+      queryClient.invalidateQueries({ queryKey: ["jira-connections"] });
+    },
+    onError: (error: any) => {
+      toast.error(`Sync failed: ${error.message}`);
+    },
+  });
+
+  const handleSync = (connectionId: string) => {
+    setSyncingConnection(connectionId);
+    syncMutation.mutate(connectionId);
+  };
 
   const getStatusBadge = (status: string | null) => {
     if (!status) return <Badge variant="outline">Not Tested</Badge>;
@@ -101,7 +136,10 @@ export default function JiraIntegrationConfig() {
                 </div>
                 <Button 
                   className="bg-brand-gold hover:bg-brand-gold-hover text-white"
-                  onClick={() => setSelectedConnection("new")}
+                  onClick={() => {
+                    setEditingConnection(null);
+                    setShowConnectionDialog(true);
+                  }}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Connection
@@ -129,7 +167,7 @@ export default function JiraIntegrationConfig() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
                           <div className="text-right text-sm">
                             <div className="text-muted-foreground">
                               {conn.instance_type} · {conn.auth_method}
@@ -141,6 +179,81 @@ export default function JiraIntegrationConfig() {
                             </div>
                           </div>
                           {getStatusBadge(conn.last_test_status)}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedConnection(conn.id);
+                              setShowSyncSettings(true);
+                            }}
+                            title="Sync Settings"
+                          >
+                            <Settings className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedConnection(conn.id);
+                              setShowFieldMapping(true);
+                            }}
+                            title="Field Mappings"
+                          >
+                            <Map className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedConnection(conn.id);
+                              setShowProjectMapping(true);
+                            }}
+                            title="Project Mappings"
+                          >
+                            <LinkIcon className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedConnection(conn.id);
+                              setShowSyncLogs(true);
+                            }}
+                            title="View Logs"
+                          >
+                            📋
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedConnection(conn.id);
+                              setShowWebhookSetup(true);
+                            }}
+                            title="Webhook Setup"
+                          >
+                            🔗
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSync(conn.id);
+                            }}
+                            disabled={syncingConnection === conn.id}
+                          >
+                            {syncingConnection === conn.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <RefreshCw className="w-4 h-4" />
+                            )}
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -170,6 +283,46 @@ export default function JiraIntegrationConfig() {
             </Card>
           </div>
         </div>
+
+        <ConnectionFormDialog
+          open={showConnectionDialog}
+          onOpenChange={setShowConnectionDialog}
+          connection={editingConnection}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ["jira-connections"] });
+            setEditingConnection(null);
+          }}
+        />
+
+        {selectedConnection && (
+          <>
+            <FieldMappingDialog
+              open={showFieldMapping}
+              onOpenChange={setShowFieldMapping}
+              connectionId={selectedConnection}
+            />
+            <ProjectMappingDialog
+              open={showProjectMapping}
+              onOpenChange={setShowProjectMapping}
+              connectionId={selectedConnection}
+            />
+            <SyncLogsViewer
+              open={showSyncLogs}
+              onOpenChange={setShowSyncLogs}
+              connectionId={selectedConnection}
+            />
+            <SyncSettingsDialog
+              open={showSyncSettings}
+              onOpenChange={setShowSyncSettings}
+              connectionId={selectedConnection}
+            />
+            <WebhookSetupDialog
+              open={showWebhookSetup}
+              onOpenChange={setShowWebhookSetup}
+              connectionId={selectedConnection}
+            />
+          </>
+        )}
       </div>
     </AdminGuard>
   );
