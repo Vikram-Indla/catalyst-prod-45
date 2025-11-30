@@ -24,10 +24,11 @@ interface StoriesFiltersDialogProps {
 
 export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: StoriesFiltersDialogProps) {
   const [filters, setFilters] = useState({
-    status: 'all',
-    featureId: 'all',
-    teamId: 'all',
-    sprintId: 'all',
+    status: '',
+    featureId: '',
+    teamId: '',
+    sprintId: '',
+    programId: '',
     minPoints: '',
     maxPoints: '',
     assigneeId: '',
@@ -60,23 +61,40 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
     },
   });
 
+  const { data: programs } = useQuery({
+    queryKey: ['programs-list'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('programs').select('id, name').order('name');
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const handleApply = () => {
-    onApplyFilters(filters);
+    // Only pass non-empty filter values
+    const activeFilters = Object.entries(filters).reduce((acc, [key, value]) => {
+      if (value && value !== 'all' && value !== '') {
+        acc[key] = value;
+      }
+      return acc;
+    }, {} as any);
+    onApplyFilters(activeFilters);
     onOpenChange(false);
   };
 
   const handleClear = () => {
     const clearedFilters = {
-      status: 'all',
-      featureId: 'all',
-      teamId: 'all',
-      sprintId: 'all',
+      status: '',
+      featureId: '',
+      teamId: '',
+      sprintId: '',
+      programId: '',
       minPoints: '',
       maxPoints: '',
       assigneeId: '',
     };
     setFilters(clearedFilters);
-    onApplyFilters(clearedFilters);
+    onApplyFilters({});
   };
 
   return (
@@ -87,18 +105,37 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-4 py-4">
+          {/* Program */}
+          <div className="space-y-2">
+            <Label>Program</Label>
+            <Select
+              value={filters.programId || undefined}
+              onValueChange={(value) => setFilters({ ...filters, programId: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All Programs" />
+              </SelectTrigger>
+              <SelectContent>
+                {programs?.filter(p => p.id).map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    {p.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Status */}
           <div className="space-y-2">
             <Label>Status</Label>
             <Select
-              value={filters.status}
+              value={filters.status || undefined}
               onValueChange={(value) => setFilters({ ...filters, status: value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
                 {Object.entries(STORY_STATUS_LABELS).map(([key, label]) => (
                   <SelectItem key={key} value={key}>
                     {label}
@@ -112,14 +149,13 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
           <div className="space-y-2">
             <Label>Feature</Label>
             <Select
-              value={filters.featureId}
+              value={filters.featureId || undefined}
               onValueChange={(value) => setFilters({ ...filters, featureId: value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Features" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Features</SelectItem>
                 {features?.filter(f => f.id).map((f) => (
                   <SelectItem key={f.id} value={f.id}>
                     {f.name}
@@ -133,14 +169,13 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
           <div className="space-y-2">
             <Label>Team</Label>
             <Select
-              value={filters.teamId}
+              value={filters.teamId || undefined}
               onValueChange={(value) => setFilters({ ...filters, teamId: value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Teams" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Teams</SelectItem>
                 {teams?.filter(t => t.id).map((t) => (
                   <SelectItem key={t.id} value={t.id}>
                     {t.name}
@@ -154,14 +189,13 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
           <div className="space-y-2">
             <Label>Sprint</Label>
             <Select
-              value={filters.sprintId}
+              value={filters.sprintId || undefined}
               onValueChange={(value) => setFilters({ ...filters, sprintId: value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Sprints" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Sprints</SelectItem>
                 <SelectItem value="backlog">Backlog</SelectItem>
                 {sprints?.filter(s => s.id).map((s) => (
                   <SelectItem key={s.id} value={s.id}>
