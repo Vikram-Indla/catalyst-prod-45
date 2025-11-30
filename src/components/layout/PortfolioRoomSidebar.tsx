@@ -47,6 +47,7 @@ const menuItems: MenuItem[] = [
   { id: 'themes', label: 'Themes', icon: FolderTree, path: '/portfolio/:portfolioId/backlog?type=theme' },
   { id: 'epics', label: 'Epics', icon: Diamond, path: '/portfolio/:portfolioId/backlog?type=epic' },
   { id: 'objectives', label: 'Objectives', icon: Target, path: '/portfolio/:portfolioId/objectives' },
+  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
   { id: 'backlog', label: 'Backlog', icon: Layers3, path: '/portfolio/:portfolioId/backlog' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/portfolio/:portfolioId/roadmaps' },
   { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/portfolio/:portfolioId/forecast' },

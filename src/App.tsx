@@ -100,6 +100,7 @@ import RoadmapsPage from "./pages/enterprise/Roadmaps";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
 import EnterpriseEpics from "./pages/enterprise/EnterpriseEpics";
+import { WorkTreePage } from "./pages/work-tree";
 
 import EnterpriseFeatures from "./pages/enterprise/EnterpriseFeatures";
 import EnterpriseStories from "./pages/enterprise/EnterpriseStories";
@@ -149,7 +150,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/objective-tree" element={<PlaceholderPage />} />
-              <Route path="/portfolio/:portfolioId/work-tree" element={<PlaceholderPage />} />
+              <Route path="/portfolio/:portfolioId/work-tree" element={<WorkTreePage />} />
               <Route path="/portfolio/:portfolioId/forecast" element={<Forecast />} />
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
               <Route path="/portfolio/:portfolioId/programs" element={<PlaceholderPage />} />
@@ -164,6 +165,8 @@ const App = () => (
               <Route path="/program/:programId/okr-hub" element={<ProgramOKRHub />} />
               <Route path="/team/:teamId/okr-hub" element={<TeamOKRHub />} />
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
+              <Route path="/work-tree" element={<WorkTreePage />} />
+              <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
@@ -201,7 +204,7 @@ const App = () => (
               <Route path="/enterprise/reports/folios" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/reports/external" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/reports/organizational-hierarchy" element={<EnterpriseComingSoon />} />
-              <Route path="/enterprise/reports/work-tree" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/reports/work-tree" element={<WorkTreePage />} />
               
               {/* Enterprise More Pages - Placeholder Routes */}
               <Route path="/enterprise/pages/assessments" element={<EnterpriseComingSoon />} />
@@ -243,7 +246,7 @@ const App = () => (
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
               <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
               <Route path="/programs/:programId/objective-tree" element={<ProgramOKRHub />} />
-              <Route path="/programs/:programId/work-tree" element={<PlaceholderPage />} />
+              <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
               <Route path="/programs/:programId/forecast" element={<ForecastWithSidebar />} />
               <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
