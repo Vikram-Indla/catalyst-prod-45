@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ROAM_STATUSES, RISK_STATUSES, SEVERITY_LEVELS } from "@/constants/risks";
+import { RiskDiscussionsTab } from "./RiskDiscussionsTab";
 
 interface RiskDetailPanelProps {
   risk: Risk;
@@ -277,9 +278,7 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
           </TabsContent>
 
           <TabsContent value="discussions" className="px-6 py-4">
-            <div className="text-center py-8 text-text-muted">
-              <p className="text-sm">No discussions yet</p>
-            </div>
+            <RiskDiscussionsTab riskId={risk.id} />
           </TabsContent>
         </Tabs>
       </div>
