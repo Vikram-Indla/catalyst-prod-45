@@ -2,15 +2,17 @@
 // Source: Screenshot-Risk1, Implementation Spec Section 6.1
 // Route: /risks
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Search, Filter, MoreVertical, Plus } from "lucide-react";
 import { useRisks } from "@/hooks/risks/useRisks";
 import { Risk, RiskGridFilters } from "@/types/risks";
 import { RoamBadge } from "@/components/risks/RoamBadge";
 import { RiskDetailPanel } from "@/components/risks/RiskDetailPanel";
 import { RiskFiltersDialog } from "@/components/risks/RiskFiltersDialog";
+import { CreateEditRiskPanel } from "@/components/risks/CreateEditRiskPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 import {
   Table,
   TableBody,
@@ -32,6 +34,8 @@ export default function RisksGridPage() {
   const [selectedRiskIds, setSelectedRiskIds] = useState<string[]>([]);
   const [selectedRisk, setSelectedRisk] = useState<Risk | null>(null);
   const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false);
+  const [isCreateEditOpen, setIsCreateEditOpen] = useState(false);
+  const [editingRisk, setEditingRisk] = useState<Risk | null>(null);
   const [filters, setFilters] = useState<RiskGridFilters>({
     program_increment_id: null,
     owner_id: null,
@@ -43,25 +47,68 @@ export default function RisksGridPage() {
   });
 
   // Get programId from navigation context - for now, using first program
-  const { risks, isLoading } = useRisks();
+  const { risks, isLoading, createRisk, updateRisk, isCreating, isUpdating } = useRisks();
+  const { toast } = useToast();
 
   // Filter and search risks
-  const filteredRisks = risks?.filter((risk: Risk) => {
-    // Apply status filter
-    if (filters.status && risk.status !== filters.status) return false;
-    
-    // Apply search
-    if (searchQuery && !risk.title.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false;
-    }
+  const filteredRisks = useMemo(() => {
+    return risks?.filter((risk: Risk) => {
+      // Apply status filter
+      if (filters.status && risk.status !== filters.status) return false;
+      
+      // Apply search
+      if (searchQuery && !risk.title.toLowerCase().includes(searchQuery.toLowerCase())) {
+        return false;
+      }
 
-    return true;
-  }) || [];
+      return true;
+    }) || [];
+  }, [risks, filters, searchQuery]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRiskIds(prev =>
       prev.includes(riskId) ? prev.filter(id => id !== riskId) : [...prev, riskId]
     );
+  };
+
+  const handleCreateEditSave = (data: any) => {
+    if (editingRisk) {
+      updateRisk({ id: editingRisk.id, ...data });
+    } else {
+      createRisk(data);
+    }
+    setIsCreateEditOpen(false);
+    setEditingRisk(null);
+  };
+
+  const handleExport = () => {
+    const csv = [
+      ["Risk #", "Title", "Status", "ROAM", "Occurrence", "Impact", "Critical Path"].join(","),
+      ...filteredRisks.map((risk) =>
+        [
+          risk.risk_number,
+          `"${risk.title}"`,
+          risk.status,
+          risk.resolution_method,
+          risk.occurrence || "",
+          risk.impact || "",
+          risk.critical_path || "",
+        ].join(",")
+      ),
+    ].join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `risks-${new Date().toISOString().split("T")[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    toast({
+      title: "Export Complete",
+      description: "Risks exported to CSV successfully",
+    });
   };
 
   return (
@@ -98,12 +145,19 @@ export default function RisksGridPage() {
                 <DropdownMenuItem>Columns Shown</DropdownMenuItem>
                 <DropdownMenuItem>Mass Move</DropdownMenuItem>
                 <DropdownMenuItem>Delete</DropdownMenuItem>
-                <DropdownMenuItem>Export Risks</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleExport}>Export Risks</DropdownMenuItem>
                 <DropdownMenuItem>Risk ROAM Report</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+            <Button 
+              size="sm" 
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              onClick={() => {
+                setEditingRisk(null);
+                setIsCreateEditOpen(true);
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Add Risk
             </Button>
@@ -229,6 +283,18 @@ export default function RisksGridPage() {
         onClose={() => setIsFiltersDialogOpen(false)}
         filters={filters}
         onFiltersChange={setFilters}
+      />
+
+      {/* Create/Edit Risk Panel */}
+      <CreateEditRiskPanel
+        risk={editingRisk || undefined}
+        isOpen={isCreateEditOpen}
+        onClose={() => {
+          setIsCreateEditOpen(false);
+          setEditingRisk(null);
+        }}
+        onSave={handleCreateEditSave}
+        isSubmitting={isCreating || isUpdating}
       />
     </div>
   );
