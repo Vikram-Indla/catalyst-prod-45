@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/auth';
 import { TabSwitcher } from '@/components/auth/TabSwitcher';
 import { SignInForm } from '@/components/auth/SignInForm';
 import { SignUpForm } from '@/components/auth/SignUpForm';
-import catalystLogo from '@/assets/catalyst-logo-transparent.svg';
+import catalystLogo from '@/assets/catalyst-logo.png';
 
 export default function Auth() {
   const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
@@ -33,6 +33,11 @@ export default function Auth() {
       <div className="w-full max-w-[440px]">
         {/* Login Card */}
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl border border-surface-gray-200 p-6 sm:p-10">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <img src={catalystLogo} alt="Catalyst" className="h-12 sm:h-14 w-auto" />
+          </div>
+          
           <TabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
 
           {activeTab === "signin" ? (
