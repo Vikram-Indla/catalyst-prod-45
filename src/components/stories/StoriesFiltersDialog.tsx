@@ -24,10 +24,10 @@ interface StoriesFiltersDialogProps {
 
 export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: StoriesFiltersDialogProps) {
   const [filters, setFilters] = useState({
-    status: '',
-    featureId: '',
-    teamId: '',
-    sprintId: '',
+    status: 'all',
+    featureId: 'all',
+    teamId: 'all',
+    sprintId: 'all',
     minPoints: '',
     maxPoints: '',
     assigneeId: '',
@@ -67,10 +67,10 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
 
   const handleClear = () => {
     const clearedFilters = {
-      status: '',
-      featureId: '',
-      teamId: '',
-      sprintId: '',
+      status: 'all',
+      featureId: 'all',
+      teamId: 'all',
+      sprintId: 'all',
       minPoints: '',
       maxPoints: '',
       assigneeId: '',
@@ -98,7 +98,7 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
                 <SelectValue placeholder="All Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Statuses</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 {Object.entries(STORY_STATUS_LABELS).map(([key, label]) => (
                   <SelectItem key={key} value={key}>
                     {label}
@@ -119,8 +119,8 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
                 <SelectValue placeholder="All Features" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Features</SelectItem>
-                {features?.map((f) => (
+                <SelectItem value="all">All Features</SelectItem>
+                {features?.filter(f => f.id).map((f) => (
                   <SelectItem key={f.id} value={f.id}>
                     {f.name}
                   </SelectItem>
@@ -140,8 +140,8 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
                 <SelectValue placeholder="All Teams" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Teams</SelectItem>
-                {teams?.map((t) => (
+                <SelectItem value="all">All Teams</SelectItem>
+                {teams?.filter(t => t.id).map((t) => (
                   <SelectItem key={t.id} value={t.id}>
                     {t.name}
                   </SelectItem>
@@ -161,9 +161,9 @@ export function StoriesFiltersDialog({ open, onOpenChange, onApplyFilters }: Sto
                 <SelectValue placeholder="All Sprints" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Sprints</SelectItem>
+                <SelectItem value="all">All Sprints</SelectItem>
                 <SelectItem value="backlog">Backlog</SelectItem>
-                {sprints?.map((s) => (
+                {sprints?.filter(s => s.id).map((s) => (
                   <SelectItem key={s.id} value={s.id}>
                     {s.name}
                   </SelectItem>
