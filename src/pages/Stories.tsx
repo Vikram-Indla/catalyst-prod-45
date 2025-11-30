@@ -14,7 +14,10 @@ import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { StoryDialog } from '@/components/forms/StoryDialog';
 import { StoriesKanbanView } from '@/components/stories/StoriesKanbanView';
 import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
-import { Plus, List, LayoutGrid } from 'lucide-react';
+import { StoriesToolbar } from '@/components/stories/StoriesToolbar';
+import { StoriesFiltersDialog } from '@/components/stories/StoriesFiltersDialog';
+import { StoriesColumnConfig } from '@/components/stories/StoriesColumnConfig';
+import { Plus, List, LayoutGrid, Filter, Columns } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 import { STORY_STATUS_LABELS, StoryWithRelations } from '@/types/story.types';
 
@@ -27,9 +30,12 @@ export default function Stories() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingStory, setEditingStory] = useState<any>(null);
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [columnConfigOpen, setColumnConfigOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<any>({});
 
   const { data: stories, refetch } = useQuery({
-    queryKey: ['all-stories', searchTerm, statusFilter],
+    queryKey: ['all-stories', searchTerm, statusFilter, advancedFilters],
     queryFn: async () => {
       let query = supabase
         .from('stories')
@@ -37,6 +43,19 @@ export default function Stories() {
 
       if (searchTerm) query = query.ilike('name', `%${searchTerm}%`);
       if (statusFilter) query = query.eq('status', statusFilter as any);
+      
+      // Advanced filters
+      if (advancedFilters.featureId) query = query.eq('feature_id', advancedFilters.featureId);
+      if (advancedFilters.teamId) query = query.eq('team_id', advancedFilters.teamId);
+      if (advancedFilters.sprintId) {
+        if (advancedFilters.sprintId === 'backlog') {
+          query = query.is('sprint_id', null);
+        } else {
+          query = query.eq('sprint_id', advancedFilters.sprintId);
+        }
+      }
+      if (advancedFilters.minPoints) query = query.gte('estimate_points', parseInt(advancedFilters.minPoints));
+      if (advancedFilters.maxPoints) query = query.lte('estimate_points', parseInt(advancedFilters.maxPoints));
 
       const { data, error } = await query.order('created_at', { ascending: false });
       if (error) throw error;
@@ -128,11 +147,24 @@ export default function Stories() {
               <SelectItem value="blocked">Blocked</SelectItem>
             </SelectContent>
           </Select>
+          <Button variant="outline" onClick={() => setFiltersOpen(true)}>
+            <Filter className="h-4 w-4 mr-2" />
+            Filters
+          </Button>
+          <Button variant="outline" onClick={() => setColumnConfigOpen(true)}>
+            <Columns className="h-4 w-4 mr-2" />
+            Columns
+          </Button>
         </div>
 
         {viewMode === 'list' && selectedRows.size > 0 && (
           <div className="px-4 pb-4">
-            <ListScreenToolbar selectedCount={selectedRows.size} />
+            <StoriesToolbar
+              selectedCount={selectedRows.size}
+              selectedIds={Array.from(selectedRows)}
+              onRefetch={refetch}
+              onClearSelection={() => setSelectedRows(new Set())}
+            />
           </div>
         )}
       </div>
@@ -217,6 +249,20 @@ export default function Stories() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         story={editingStory}
+      />
+
+      {/* Filters Dialog */}
+      <StoriesFiltersDialog
+        open={filtersOpen}
+        onOpenChange={setFiltersOpen}
+        onApplyFilters={setAdvancedFilters}
+      />
+
+      {/* Column Config Dialog */}
+      <StoriesColumnConfig
+        open={columnConfigOpen}
+        onOpenChange={setColumnConfigOpen}
+        onApply={(columns) => console.log('Selected columns:', columns)}
       />
     </div>
   );
