@@ -25,6 +25,7 @@ import { StoryDiscussions } from './StoryDiscussions';
 import { StoryActivityLog } from './StoryActivityLog';
 import { StoryLinks } from './StoryLinks';
 import { SubtasksList } from './SubtasksList';
+import { StoryAttachments } from './StoryAttachments';
 
 interface StoryDetailPanelProps {
   story: StoryWithRelations;
@@ -163,6 +164,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="children">Children</TabsTrigger>
                 <TabsTrigger value="links">Links</TabsTrigger>
+                <TabsTrigger value="attachments">Attachments</TabsTrigger>
                 <TabsTrigger value="discussions">Discussions</TabsTrigger>
                 <TabsTrigger value="history">History</TabsTrigger>
               </TabsList>
@@ -385,6 +387,10 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
 
             <TabsContent value="links" className="p-6">
               <StoryLinks storyId={story.id} />
+            </TabsContent>
+
+            <TabsContent value="attachments" className="p-6">
+              <StoryAttachments storyId={story.id} />
             </TabsContent>
 
             <TabsContent value="discussions" className="p-6">

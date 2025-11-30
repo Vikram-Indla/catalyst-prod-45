@@ -223,6 +223,7 @@ export default function Stories() {
             <StoriesToolbar
               selectedCount={selectedRows.size}
               selectedIds={Array.from(selectedRows)}
+              stories={stories || []}
               onRefetch={refetch}
               onClearSelection={() => setSelectedRows(new Set())}
               onPullRank={handlePullRank}
