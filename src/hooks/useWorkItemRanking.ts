@@ -221,6 +221,7 @@ export function useWorkItemRanking(workItemType: string, queryKey: string[]) {
 
   /**
    * Pull rank from parent work items (e.g., Features → Stories)
+   * Jira Align Spec: Stories inherit parent Feature's rank (all get same rank, require manual adjustment)
    */
   const pullRankFromParent = useCallback(async (
     parentType: string,
@@ -228,13 +229,124 @@ export function useWorkItemRanking(workItemType: string, queryKey: string[]) {
   ) => {
     setIsRanking(true);
     try {
-      // This would implement the logic to inherit ranking from parent
-      // For stories, pull from parent features
-      toast({
-        title: 'Pull Rank',
-        description: 'Feature not yet implemented',
-        variant: 'default'
+      // Step 1: Fetch all work items in current context
+      let itemsQuery = supabase
+        .from('stories')
+        .select('id, feature_id');
+
+      // Apply context filters
+      if (context.type === 'team' && context.contextId) {
+        itemsQuery = itemsQuery.eq('team_id', context.contextId);
+      }
+      if (context.piId) {
+        itemsQuery = itemsQuery.eq('sprint_id', context.piId);
+      }
+
+      const { data: items, error: itemsError } = await itemsQuery;
+      if (itemsError) throw itemsError;
+
+      if (!items || items.length === 0) {
+        toast({
+          title: 'No stories to rank',
+          description: 'No stories found in current context',
+          variant: 'default'
+        });
+        return;
+      }
+
+      // Step 2: Fetch parent Features' ranks in same context
+      const featureIds = [...new Set(items.map(s => s.feature_id).filter(Boolean))];
+      
+      if (featureIds.length === 0) {
+        toast({
+          title: 'No parent features',
+          description: 'Stories must have parent Features to pull rank',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      let featureRanksQuery = supabase
+        .from('work_item_rankings')
+        .select('work_item_id, rank')
+        .eq('work_item_type', 'feature')
+        .eq('context_type', context.type)
+        .in('work_item_id', featureIds);
+
+      if (context.contextId) {
+        featureRanksQuery = featureRanksQuery.eq('context_id', context.contextId);
+      } else {
+        featureRanksQuery = featureRanksQuery.is('context_id', null);
+      }
+
+      if (context.piId) {
+        featureRanksQuery = featureRanksQuery.eq('pi_id', context.piId);
+      } else {
+        featureRanksQuery = featureRanksQuery.is('pi_id', null);
+      }
+
+      const { data: featureRanks, error: ranksError } = await featureRanksQuery;
+      if (ranksError) throw ranksError;
+
+      const featureRankMap = new Map(
+        featureRanks?.map(fr => [fr.work_item_id, fr.rank]) || []
+      );
+
+      // Step 3: Group stories by feature and assign inherited ranks
+      // Per Jira Align: "A feature may have multiple stories that inherit its rank"
+      // All stories under same feature get SAME rank (requires manual adjustment after)
+      const rankUpdates: Array<{ workItemId: string; newRank: number }> = [];
+      
+      // Group stories by feature
+      const storiesByFeature = new Map<string, string[]>();
+      items.forEach(item => {
+        if (!item.feature_id) return;
+        if (!storiesByFeature.has(item.feature_id)) {
+          storiesByFeature.set(item.feature_id, []);
+        }
+        storiesByFeature.get(item.feature_id)!.push(item.id);
       });
+
+      // Sort features by their rank
+      const sortedFeatures = Array.from(storiesByFeature.keys()).sort((a, b) => {
+        const rankA = featureRankMap.get(a) || 9999;
+        const rankB = featureRankMap.get(b) || 9999;
+        return rankA - rankB;
+      });
+
+      // Assign ranks: all stories under same feature get feature's rank
+      sortedFeatures.forEach(featureId => {
+        const featureRank = featureRankMap.get(featureId) || 9999;
+        const storyIds = storiesByFeature.get(featureId) || [];
+        
+        storyIds.forEach(storyId => {
+          rankUpdates.push({
+            workItemId: storyId,
+            newRank: featureRank
+          });
+        });
+      });
+
+      // Handle orphan stories (no feature) - put at bottom
+      const orphanStories = items.filter(item => !item.feature_id);
+      const maxRank = Math.max(...Array.from(featureRankMap.values()), 0);
+      orphanStories.forEach((story, idx) => {
+        rankUpdates.push({
+          workItemId: story.id,
+          newRank: maxRank + idx + 1
+        });
+      });
+
+      // Step 4: Batch update rankings
+      if (rankUpdates.length > 0) {
+        await batchUpdateRankings(rankUpdates, context);
+        
+        toast({
+          title: 'Pull Rank Complete',
+          description: `${rankUpdates.length} stories inherited rank from Features. Manual adjustment may be needed for stories with duplicate ranks.`,
+        });
+      }
+
     } catch (error) {
       console.error('Error pulling rank:', error);
       toast({
@@ -245,7 +357,7 @@ export function useWorkItemRanking(workItemType: string, queryKey: string[]) {
     } finally {
       setIsRanking(false);
     }
-  }, [toast]);
+  }, [toast, batchUpdateRankings, queryClient, queryKey]);
 
   return {
     detectRankingContext,

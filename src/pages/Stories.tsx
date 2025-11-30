@@ -39,7 +39,7 @@ export default function Stories() {
   const [advancedFilters, setAdvancedFilters] = useState<any>({});
   const [pullRankDialogOpen, setPullRankDialogOpen] = useState(false);
 
-  // Ranking context
+  // Ranking context - Program Rank is DEFAULT per Jira Align spec
   const { detectRankingContext, pullRankFromParent, isRanking } = useWorkItemRanking('story', ['all-stories']);
   const currentContext = detectRankingContext(
     advancedFilters.teamId,
@@ -49,6 +49,9 @@ export default function Stories() {
     advancedFilters.portfolioId
   );
   const hasActiveFilters = !!(searchTerm || statusFilter || Object.keys(advancedFilters).length > 0);
+  
+  // Jira Align Requirement: "To view the story backlog, select a program as your scope"
+  const requiresProgramSelection = !advancedFilters.programId && currentContext.type === 'global';
 
   // Check for create query parameter to auto-open dialog
   useEffect(() => {
@@ -226,7 +229,24 @@ export default function Stories() {
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-4">
-        {viewMode === 'list' ? (
+        {requiresProgramSelection ? (
+          <div className="flex items-center justify-center h-full">
+            <div className="text-center space-y-4 max-w-md">
+              <div className="w-16 h-16 mx-auto bg-brand-gold/10 rounded-full flex items-center justify-center">
+                <Filter className="h-8 w-8 text-brand-gold" />
+              </div>
+              <h3 className="text-lg font-semibold">Program Selection Required</h3>
+              <p className="text-sm text-muted-foreground">
+                To view the story backlog, select a program as your scope.
+                Use the Filters button above to choose a program.
+              </p>
+              <Button onClick={() => setFiltersOpen(true)} className="mt-4">
+                <Filter className="h-4 w-4 mr-2" />
+                Select Program
+              </Button>
+            </div>
+          </div>
+        ) : viewMode === 'list' ? (
           <div className="space-y-4">
             {/* Quick Add */}
             <StoryQuickAdd onSuccess={refetch} />
