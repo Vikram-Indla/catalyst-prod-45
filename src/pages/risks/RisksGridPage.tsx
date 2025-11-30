@@ -10,6 +10,7 @@ import { RoamBadge } from "@/components/risks/RoamBadge";
 import { RiskDetailPanel } from "@/components/risks/RiskDetailPanel";
 import { RiskFiltersDialog } from "@/components/risks/RiskFiltersDialog";
 import { CreateEditRiskPanel } from "@/components/risks/CreateEditRiskPanel";
+import { DeleteRiskDialog } from "@/components/risks/DeleteRiskDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -36,6 +37,8 @@ export default function RisksGridPage() {
   const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false);
   const [isCreateEditOpen, setIsCreateEditOpen] = useState(false);
   const [editingRisk, setEditingRisk] = useState<Risk | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [riskToDelete, setRiskToDelete] = useState<Risk | null>(null);
   const [filters, setFilters] = useState<RiskGridFilters>({
     program_increment_id: null,
     owner_id: null,
@@ -47,7 +50,7 @@ export default function RisksGridPage() {
   });
 
   // Get programId from navigation context - for now, using first program
-  const { risks, isLoading, createRisk, updateRisk, isCreating, isUpdating } = useRisks();
+  const { risks, isLoading, createRisk, updateRisk, deleteRisk, isCreating, isUpdating } = useRisks();
   const { toast } = useToast();
 
   // Filter and search risks
@@ -79,6 +82,19 @@ export default function RisksGridPage() {
     }
     setIsCreateEditOpen(false);
     setEditingRisk(null);
+  };
+
+  const handleDelete = (risk: Risk) => {
+    setRiskToDelete(risk);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (riskToDelete) {
+      deleteRisk(riskToDelete.id);
+      setIsDeleteDialogOpen(false);
+      setRiskToDelete(null);
+    }
   };
 
   const handleExport = () => {
@@ -144,7 +160,17 @@ export default function RisksGridPage() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>Columns Shown</DropdownMenuItem>
                 <DropdownMenuItem>Mass Move</DropdownMenuItem>
-                <DropdownMenuItem>Delete</DropdownMenuItem>
+                <DropdownMenuItem 
+                  disabled={selectedRiskIds.length === 0}
+                  onClick={() => {
+                    if (selectedRiskIds.length > 0 && filteredRisks.length > 0) {
+                      const firstSelected = filteredRisks.find(r => r.id === selectedRiskIds[0]);
+                      if (firstSelected) handleDelete(firstSelected);
+                    }
+                  }}
+                >
+                  Delete
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleExport}>Export Risks</DropdownMenuItem>
                 <DropdownMenuItem>Risk ROAM Report</DropdownMenuItem>
               </DropdownMenuContent>
@@ -299,6 +325,14 @@ export default function RisksGridPage() {
         }}
         onSave={handleCreateEditSave}
         isSubmitting={isCreating || isUpdating}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteRiskDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDeleteConfirm}
+        riskTitle={riskToDelete?.title || ''}
       />
     </div>
   );

@@ -1,6 +1,7 @@
 // ROAM Column Component - Single column in ROAM board
 // Source: Screenshot-RiskROAMReport, Implementation Spec Section 5.3
 
+import { Draggable } from "@hello-pangea/dnd";
 import { Risk } from "@/types/risks";
 import { RiskCard } from "./RiskCard";
 
@@ -27,8 +28,22 @@ export function RoamColumn({ status, risks, onRiskMove }: RoamColumnProps) {
 
       {/* Cards Container */}
       <div className="p-3 space-y-3 min-h-[200px]">
-        {risks.map(risk => (
-          <RiskCard key={risk.id} risk={risk} />
+        {risks.map((risk, index) => (
+          <Draggable key={risk.id} draggableId={risk.id} index={index}>
+            {(provided, snapshot) => (
+              <div
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                style={{
+                  ...provided.draggableProps.style,
+                  opacity: snapshot.isDragging ? 0.8 : 1,
+                }}
+              >
+                <RiskCard risk={risk} />
+              </div>
+            )}
+          </Draggable>
         ))}
       </div>
     </div>
