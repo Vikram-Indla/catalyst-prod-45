@@ -103,6 +103,11 @@ import Countries from "./pages/admin/Countries";
 import BusinessUnits from "./pages/admin/BusinessUnits";
 import Regions from "./pages/admin/Regions";
 import ThemeGroups from "./pages/admin/ThemeGroups";
+import Teams from "./pages/admin/Teams";
+import Programs from "./pages/admin/Programs";
+import Portfolios from "./pages/admin/Portfolios";
+import Estimation from "./pages/admin/Estimation";
+import Security from "./pages/admin/Security";
 import ActivityLog from "./pages/admin/ActivityLog";
 import UserRoles from "./pages/admin/UserRoles";
 import ReportsDiscovery from "./pages/admin/ReportsDiscovery";
@@ -473,6 +478,11 @@ const App = () => (
                 <Route path="business-units" element={<BusinessUnits />} />
                 <Route path="regions" element={<Regions />} />
                 <Route path="theme-groups" element={<ThemeGroups />} />
+                <Route path="teams" element={<Teams />} />
+                <Route path="programs" element={<Programs />} />
+                <Route path="portfolios" element={<Portfolios />} />
+                <Route path="estimation" element={<Estimation />} />
+                <Route path="security" element={<Security />} />
                 <Route path="jira-config" element={<JiraIntegrationConfig />} />
               </Route>
               
