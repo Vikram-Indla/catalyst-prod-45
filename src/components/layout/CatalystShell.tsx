@@ -51,8 +51,17 @@ function CatalystShellContent() {
       if (tier !== 'enterprise') setTier('enterprise');
     } else if (path.startsWith('/portfolio') || path.startsWith('/items/')) {
       if (tier !== 'portfolio') setTier('portfolio');
-    } else if (path.startsWith('/program') || path === '/dependencies' || path.startsWith('/programs/program-board')) {
-      // Dependencies and Program Board are Program-level features
+    } else if (
+      path.startsWith('/program') || 
+      path === '/dependencies' || 
+      path.startsWith('/programs/program-board') ||
+      path === '/risks' ||
+      path === '/risk-roam-report' ||
+      path.startsWith('/insights/') ||
+      path === '/stories' ||
+      path === '/work-items/stories'
+    ) {
+      // Program-level features: Dependencies, Program Board, Risks, Stories, Insights
       if (tier !== 'program') setTier('program');
     } else if (path.startsWith('/team')) {
       if (tier !== 'team') setTier('team');
@@ -71,9 +80,9 @@ function CatalystShellContent() {
             <>
               {tier === 'enterprise' ? (
                 <LeftContextPanel />
-              ) : tier === 'program' && currentProgramId ? (
+              ) : tier === 'program' ? (
                 <ProgramRoomSidebar
-                  programId={currentProgramId}
+                  programId={currentProgramId || '22222222-2222-2222-2222-222222222222'}
                 />
               ) : tier === 'portfolio' ? (
                 <PortfolioRoomSidebar
