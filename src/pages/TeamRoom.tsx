@@ -268,7 +268,7 @@ export default function TeamRoom() {
                       <div className="text-xs text-muted-foreground">Completed</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-amber-500">{remainingPoints}</div>
+                      <div className="text-2xl font-bold text-warning">{remainingPoints}</div>
                       <div className="text-xs text-muted-foreground">Remaining</div>
                     </div>
                   </div>

@@ -419,9 +419,9 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                     if (col.key === 'work_progress') {
                       return (
                         <TableCell key={col.key}>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div
-                              className="bg-gray-800 h-2 rounded-full"
+                              className="bg-foreground h-2 rounded-full"
                               style={{ width: `${objective.work_progress || 0}%` }}
                             />
                           </div>
@@ -431,9 +431,9 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                     if (col.key === 'kr_progress') {
                       return (
                         <TableCell key={col.key}>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="w-full bg-muted rounded-full h-2">
                             <div
-                              className="bg-gray-800 h-2 rounded-full"
+                              className="bg-foreground h-2 rounded-full"
                               style={{ width: `${objective.key_result_progress || 0}%` }}
                             />
                           </div>

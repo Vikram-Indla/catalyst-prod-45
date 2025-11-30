@@ -113,7 +113,7 @@ export default function ValueStreamView() {
                   {metrics.avgCycleTime.toFixed(1)}
                   <span className="text-sm font-normal text-muted-foreground ml-1">days</span>
                 </div>
-                <Zap className="h-8 w-8 text-amber-500" />
+                <Zap className="h-8 w-8 text-warning" />
               </div>
               <p className="text-xs text-muted-foreground mt-2">
                 Time from start to completion

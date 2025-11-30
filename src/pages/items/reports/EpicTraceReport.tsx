@@ -210,15 +210,15 @@ export default function EpicTraceReport() {
               <div className="text-sm text-muted-foreground">Epic</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-blue-600">{features?.length || 0}</div>
+              <div className="text-2xl font-bold text-primary">{features?.length || 0}</div>
               <div className="text-sm text-muted-foreground">Features</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-green-600">{stories?.length || 0}</div>
+              <div className="text-2xl font-bold text-success">{stories?.length || 0}</div>
               <div className="text-sm text-muted-foreground">Stories</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-orange-600">{subtasks?.length || 0}</div>
+              <div className="text-2xl font-bold text-warning">{subtasks?.length || 0}</div>
               <div className="text-sm text-muted-foreground">Subtasks</div>
             </div>
           </div>

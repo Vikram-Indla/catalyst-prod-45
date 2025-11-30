@@ -147,7 +147,7 @@ export default function Roadmaps() {
                 {feature.id.toString().slice(0, 4)} - {feature.name}
               </span>
             </TooltipTrigger>
-            <TooltipContent side="top" className="bg-slate-900 text-white p-3 max-w-xs">
+            <TooltipContent side="top" className="bg-popover text-popover-foreground p-3 max-w-xs">
               <div className="space-y-1">
                 <p className="font-semibold">{feature.name}</p>
                 <p className="text-xs">{feature.description}</p>
@@ -182,7 +182,7 @@ export default function Roadmaps() {
                     strokeWidth={2}
                   />
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-slate-900 text-white p-3">
+                <TooltipContent side="top" className="bg-popover text-popover-foreground p-3">
                   <div className="space-y-1 text-xs">
                     <p className="font-semibold">{milestone.title}</p>
                     {milestone.start_date && (
@@ -214,7 +214,7 @@ export default function Roadmaps() {
                     strokeWidth={2}
                   />
                 </TooltipTrigger>
-                <TooltipContent side="top" className="bg-slate-900 text-white p-3 max-w-xs">
+                <TooltipContent side="top" className="bg-popover text-popover-foreground p-3 max-w-xs">
                   <div className="space-y-1 text-xs">
                     <p className="font-semibold">{objective.name}</p>
                     {objective.end_date && (
