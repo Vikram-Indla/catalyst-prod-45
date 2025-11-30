@@ -17,6 +17,8 @@ import { StatusMappingDialog } from "@/components/admin/jira/StatusMappingDialog
 import { HistoricalMigrationDialog } from "@/components/admin/jira/HistoricalMigrationDialog";
 import { ConflictResolutionDialog } from "@/components/admin/jira/ConflictResolutionDialog";
 import { SyncHealthDashboard } from "@/components/admin/jira/SyncHealthDashboard";
+import { JiraSetupGuide } from "@/components/admin/jira/JiraSetupGuide";
+import { JiraIntegrationHelp } from "@/components/admin/jira/JiraIntegrationHelp";
 
 interface JiraConnection {
   id: string;
@@ -42,6 +44,7 @@ export default function JiraIntegrationConfig() {
   const [showStatusMapping, setShowStatusMapping] = useState(false);
   const [showHistoricalMigration, setShowHistoricalMigration] = useState(false);
   const [showConflictResolution, setShowConflictResolution] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
   const [editingConnection, setEditingConnection] = useState<any>(null);
   const [syncingConnection, setSyncingConnection] = useState<string | null>(null);
 
@@ -125,10 +128,21 @@ export default function JiraIntegrationConfig() {
     <AdminGuard>
       <div className="h-full w-full flex flex-col bg-background overflow-hidden">
         <div className="border-b bg-card px-6 py-4">
-          <h1 className="text-2xl font-semibold text-foreground">Jira Integration Configuration</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Configure bidirectional synchronization between Catalyst and Jira instances
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Jira Integration Configuration</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Configure bidirectional synchronization between Catalyst and Jira instances
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowHelp(true)}
+              className="border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-white"
+            >
+              📚 Documentation
+            </Button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-auto p-6">
@@ -325,6 +339,10 @@ export default function JiraIntegrationConfig() {
               </CardContent>
             </Card>
 
+            {!connections || connections.length === 0 ? (
+              <JiraSetupGuide hasConnections={false} />
+            ) : null}
+
             {selectedConnection && (
               <Card>
                 <CardHeader>
@@ -395,6 +413,8 @@ export default function JiraIntegrationConfig() {
             />
           </>
         )}
+
+        <JiraIntegrationHelp open={showHelp} onOpenChange={setShowHelp} />
       </div>
     </AdminGuard>
   );
