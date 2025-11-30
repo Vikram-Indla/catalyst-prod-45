@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import { Download, Settings } from "lucide-react";
+import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 import { useRisks } from "@/hooks/risks/useRisks";
 import { Risk, RoamFilters, ChartVisibility, RoamStatus } from "@/types/risks";
 import { ROAM_COLUMN_ORDER } from "@/constants/risks";
@@ -118,6 +119,21 @@ export default function RiskRoamReportPage() {
     });
   };
 
+  const handleDragEnd = (result: DropResult) => {
+    const { source, destination, draggableId } = result;
+
+    // Dropped outside valid droppable
+    if (!destination) return;
+
+    // No movement
+    if (source.droppableId === destination.droppableId) return;
+
+    const riskId = draggableId;
+    const newStatus = destination.droppableId as RoamStatus;
+
+    handleRiskMove(riskId, newStatus);
+  };
+
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Page Header */}
@@ -163,16 +179,24 @@ export default function RiskRoamReportPage() {
               Loading risks...
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-4 mb-8">
-              {ROAM_COLUMN_ORDER.map(status => (
-                <RoamColumn
-                  key={status}
-                  status={status}
-                  risks={risksByStatus[status]}
-                  onRiskMove={handleRiskMove}
-                />
-              ))}
-            </div>
+            <DragDropContext onDragEnd={handleDragEnd}>
+              <div className="grid grid-cols-4 gap-4 mb-8">
+                {ROAM_COLUMN_ORDER.map(status => (
+                  <Droppable key={status} droppableId={status}>
+                    {(provided) => (
+                      <div ref={provided.innerRef} {...provided.droppableProps}>
+                        <RoamColumn
+                          status={status}
+                          risks={risksByStatus[status]}
+                          onRiskMove={handleRiskMove}
+                        />
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                ))}
+              </div>
+            </DragDropContext>
           )}
 
           {/* Charts Section */}
