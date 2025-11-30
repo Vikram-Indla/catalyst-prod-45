@@ -14,7 +14,8 @@ import {
   TrendingUp,
   Menu,
   AlertTriangle,
-  Bug
+  Bug,
+  Network
 } from 'lucide-react';
 import {
   Select,
@@ -43,6 +44,7 @@ const menuItems: MenuItem[] = [
   { id: 'backlog', label: 'Backlog', icon: Layers3, path: '/teams/:teamId/backlog' },
   { id: 'board', label: 'Team Board', icon: Grid3x3, path: '/teams/:teamId/board' },
   { id: 'objectives', label: 'Objectives', icon: Target, path: '/teams/:teamId/objectives' },
+  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/teams/:teamId/work-tree' },
   { id: 'sprints', label: 'Sprints', icon: Calendar, path: '/teams/:teamId/sprints' },
   { id: 'velocity', label: 'Velocity', icon: TrendingUp, path: '/teams/:teamId/velocity' },
   { id: 'defects', label: 'Defects', icon: Bug, path: '/teams/:teamId/backlog?type=defect' },
