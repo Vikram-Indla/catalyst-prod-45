@@ -35,8 +35,7 @@ export function useRisks(programId?: string, programIncrementId?: string) {
 
       if (error) throw error;
       return data as Risk[];
-    },
-    enabled: !!programId
+    }
   });
 
   const createRiskMutation = useMutation({
