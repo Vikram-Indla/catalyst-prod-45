@@ -72,19 +72,13 @@ export function BacklogListView({
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="p-4 space-y-4">
           {sections.map((section) => (
-            <Droppable key={section.id} droppableId={section.id}>
-              {(provided) => (
-                <div ref={provided.innerRef} {...provided.droppableProps}>
-                  <BacklogSection
-                    section={section}
-                    selectedItems={selectedItems}
-                    onItemClick={onItemClick}
-                    onItemSelect={onItemSelect}
-                  />
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
+            <BacklogSection
+              key={section.id}
+              section={section}
+              selectedItems={selectedItems}
+              onItemClick={onItemClick}
+              onItemSelect={onItemSelect}
+            />
           ))}
         </div>
       </DragDropContext>
@@ -93,20 +87,22 @@ export function BacklogListView({
 
   // Otherwise render flat list
   return (
-    <div className="p-4">
-      <BacklogSection
-        section={{
-          id: 'all',
-          type: 'pi',
-          title: 'All Items',
-          itemCount: items.length,
-          isExpanded: true,
-          items,
-        }}
-        selectedItems={selectedItems}
-        onItemClick={onItemClick}
-        onItemSelect={onItemSelect}
-      />
-    </div>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="p-4">
+        <BacklogSection
+          section={{
+            id: 'all',
+            type: 'pi',
+            title: 'All Items',
+            itemCount: items.length,
+            isExpanded: true,
+            items,
+          }}
+          selectedItems={selectedItems}
+          onItemClick={onItemClick}
+          onItemSelect={onItemSelect}
+        />
+      </div>
+    </DragDropContext>
   );
 }
