@@ -85,6 +85,14 @@ import UseTrend from "./pages/admin/UseTrend";
 import WorkCodes from "./pages/admin/WorkCodes";
 import DetailsPanels from "./pages/admin/DetailsPanels";
 import Terminology from "./pages/admin/Terminology";
+import TeamSettings from "./pages/admin/TeamSettings";
+import ProgramSettings from "./pages/admin/ProgramSettings";
+import PortfolioSettings from "./pages/admin/PortfolioSettings";
+import ProgressBars from "./pages/admin/ProgressBars";
+import EstimationSettings from "./pages/admin/EstimationSettings";
+import GeneralSettings from "./pages/admin/GeneralSettings";
+import SecuritySettings from "./pages/admin/SecuritySettings";
+import Announcements from "./pages/admin/Announcements";
 import ActivityLog from "./pages/admin/ActivityLog";
 import UserRoles from "./pages/admin/UserRoles";
 import ReportsDiscovery from "./pages/admin/ReportsDiscovery";
@@ -438,6 +446,14 @@ const App = () => (
                 <Route path="work-codes" element={<WorkCodes />} />
                 <Route path="details-panels" element={<DetailsPanels />} />
                 <Route path="terminology" element={<Terminology />} />
+                <Route path="team-settings" element={<TeamSettings />} />
+                <Route path="program-settings" element={<ProgramSettings />} />
+                <Route path="portfolio-settings" element={<PortfolioSettings />} />
+                <Route path="progress-bars" element={<ProgressBars />} />
+                <Route path="estimation-settings" element={<EstimationSettings />} />
+                <Route path="general-settings" element={<GeneralSettings />} />
+                <Route path="security-settings" element={<SecuritySettings />} />
+                <Route path="announcements" element={<Announcements />} />
                 <Route path="jira-config" element={<JiraIntegrationConfig />} />
               </Route>
               
