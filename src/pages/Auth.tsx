@@ -171,7 +171,7 @@ export default function Auth() {
       </div>
 
       {/* Right Panel - Login Panel */}
-      <div className="relative w-full md:w-[55%] flex items-start justify-center p-12 md:p-16" style={{
+      <div className="relative w-full md:w-[55%] p-12 md:p-16" style={{
       backgroundColor: "#feffff"
     }}>
         {/* Subtle background gradients */}
@@ -182,18 +182,16 @@ export default function Auth() {
         background: "radial-gradient(circle, rgba(198, 156, 109, 0.02) 0%, transparent 70%)"
       }} />
 
-        {/* Login Container */}
-        <div className="w-full max-w-md relative z-10 h-full flex flex-col">
-          {/* Logo at top */}
-          <div className="flex justify-center pt-4 mb-auto">
-            <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
-            height: "280px",
-            filter: "brightness(1.2)"
-          }} />
-          </div>
+        {/* Logo - absolute positioned at top, doesn't affect form flow */}
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+          <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
+          height: "280px",
+          filter: "brightness(1.2)"
+        }} />
+        </div>
 
-          {/* Form content aligned with enterprise text */}
-          <div style={{ marginTop: "-12rem" }}>
+        {/* Login Container - positioned to align Welcome back with enterprise text */}
+        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "140px" }}>
           {/* Login Header */}
           <h2 className="text-center mb-2" style={{
           fontFamily: "'Playfair Display', serif",
@@ -357,7 +355,6 @@ export default function Auth() {
                 Request access
               </button>
             </p>
-          </div>
           </div>
         </div>
       </div>
