@@ -43,23 +43,25 @@ export default function PortfolioRoomPage() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Header Bar */}
-      <PortfolioRoomHeader
-        portfolioId={portfolioId || ''}
-        selectedSnapshot={selectedSnapshot}
-        onSnapshotChange={setSelectedSnapshot}
-      />
+      <div className="border-b">
+        <PortfolioRoomHeader
+          portfolioId={portfolioId || ''}
+          selectedSnapshot={selectedSnapshot}
+          onSnapshotChange={setSelectedSnapshot}
+        />
+      </div>
 
       {/* View Tabs */}
-      <div className="border-b px-4 py-2">
+      <div className="border-b px-3 sm:px-4 py-2">
         <Tabs value={selectedView} onValueChange={(v) => setSelectedView(v as any)}>
-          <TabsList className="h-9">
-            <TabsTrigger value="financials" className="text-sm">
+          <TabsList className="h-9 tabs-mobile">
+            <TabsTrigger value="financials" className="text-sm tap-target">
               Financials
             </TabsTrigger>
-            <TabsTrigger value="resources" className="text-sm">
+            <TabsTrigger value="resources" className="text-sm tap-target">
               Resources
             </TabsTrigger>
-            <TabsTrigger value="execution" className="text-sm">
+            <TabsTrigger value="execution" className="text-sm tap-target">
               Execution
             </TabsTrigger>
           </TabsList>
@@ -67,17 +69,17 @@ export default function PortfolioRoomPage() {
       </div>
 
       {/* Content */}
-      <main className="flex-1 overflow-auto p-4">
-        <div className="space-y-4">
-          {/* Three Column Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <main className="flex-1 overflow-auto p-3 sm:p-4 md:p-6">
+        <div className="space-y-3 sm:space-y-4">
+          {/* Three Column Layout - Stack on mobile, 3 columns on desktop */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {/* Left: Theme Program Increment Progress */}
-            <div>
+            <div className="min-w-0">
               <ThemeProgressCard themes={mockThemes} />
             </div>
 
             {/* Center: Program Increment Roadmap */}
-            <div>
+            <div className="min-w-0">
               <ProgramIncrementRoadmapCard
                 piName="PI-5"
                 progressPercent={83}
@@ -87,7 +89,7 @@ export default function PortfolioRoomPage() {
             </div>
 
             {/* Right: PI Progress with Capabilities */}
-            <div>
+            <div className="min-w-0 md:col-span-2 lg:col-span-1">
               <PIProgressCard
                 piName="PI-5"
                 status="In Progress"
@@ -97,11 +99,13 @@ export default function PortfolioRoomPage() {
             </div>
           </div>
 
-          {/* Bottom Epic Table */}
-          <PortfolioEpicGrid
-            epics={mockEpics}
-            onEpicClick={(epicId) => console.log('Epic clicked:', epicId)}
-          />
+          {/* Bottom Epic Table - Horizontal scroll on mobile */}
+          <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
+            <PortfolioEpicGrid
+              epics={mockEpics}
+              onEpicClick={(epicId) => console.log('Epic clicked:', epicId)}
+            />
+          </div>
         </div>
       </main>
     </div>

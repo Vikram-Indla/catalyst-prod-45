@@ -72,17 +72,17 @@ export function CatalystHeader() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center px-4 gap-2">
+        <div className="flex h-14 items-center px-2 sm:px-4 gap-1 sm:gap-2">
           {/* Logo */}
-          <div className="flex items-center gap-2 mr-4 cursor-pointer" onClick={() => navigate('/home')}>
-            <span className="font-extrabold text-lg tracking-tight hidden md:inline">
+          <div className="flex items-center gap-2 mr-2 sm:mr-4 cursor-pointer" onClick={() => navigate('/home')}>
+            <span className="font-extrabold text-base sm:text-lg tracking-tight">
               <span className="text-foreground">Cata</span>
               <span className="text-primary">lyst</span>
             </span>
           </div>
 
-          {/* Main Navigation */}
-          <nav className="flex items-center gap-1 flex-1">
+          {/* Main Navigation - Hidden on mobile, shown on tablet+ */}
+          <nav className="hidden md:flex items-center gap-1 flex-1">
             {navItems.map((item) => (
               <div key={item.label}>
                 {item.label === "Portfolio" ? (
@@ -200,11 +200,14 @@ export function CatalystHeader() {
           </nav>
 
           {/* Create Button */}
-          <CreateDropdown />
+          <div className="hidden sm:block">
+            <CreateDropdown />
+          </div>
 
           {/* Right Side Icons */}
-          <div className="flex items-center gap-1 ml-2">
+          <div className="flex items-center gap-0.5 sm:gap-1 ml-auto">
             <TooltipProvider>
+              {/* Notifications - Always visible */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <NotificationsPanel />
@@ -214,18 +217,22 @@ export function CatalystHeader() {
                 </TooltipContent>
               </Tooltip>
 
+              {/* Personas - Hidden on mobile */}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <PersonasPopover />
+                  <div className="hidden sm:block">
+                    <PersonasPopover />
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Switch Persona</p>
                 </TooltipContent>
               </Tooltip>
 
+              {/* Help - Hidden on mobile */}
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Button variant="ghost" size="icon" className="hidden sm:flex h-9 w-9 tap-target">
                     <HelpCircle className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
@@ -234,12 +241,13 @@ export function CatalystHeader() {
                 </TooltipContent>
               </Tooltip>
 
+              {/* Search - Always visible */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9"
+                    className="h-9 w-9 tap-target"
                     onClick={() => setIsSearchOpen(true)}
                   >
                     <Search className="h-4 w-4" />
@@ -250,11 +258,11 @@ export function CatalystHeader() {
                 </TooltipContent>
               </Tooltip>
 
-              {/* User Profile Menu */}
+              {/* User Profile Menu - Always visible */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
-                    <Avatar className="h-8 w-8">
+                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full tap-target">
+                    <Avatar className="h-7 w-7 sm:h-8 sm:w-8">
                       <AvatarFallback className="bg-primary text-primary-foreground text-xs">
                         {user?.email?.charAt(0).toUpperCase() || 'U'}
                       </AvatarFallback>
