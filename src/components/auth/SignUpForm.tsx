@@ -5,7 +5,6 @@ import { PasswordStrength } from "./ui/PasswordStrength";
 import { CatalystButton } from "./ui/CatalystButton";
 import { CatalystCheckbox } from "./ui/CatalystCheckbox";
 import { IntegrationBadge } from "@/components/brand/IntegrationBadge";
-import { Lock } from "lucide-react";
 
 interface SignUpFormProps {
   onSubmit: (email: string, password: string, fullName: string) => Promise<void>;
@@ -118,19 +117,6 @@ export function SignUpForm({ onSubmit, loading }: SignUpFormProps) {
 
       <CatalystButton type="submit" loading={loading}>
         Create Account
-      </CatalystButton>
-
-      <div className="flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-surface-gray-200" />
-        <span className="font-body text-[11px] font-semibold text-text-muted uppercase tracking-wide">
-          or
-        </span>
-        <div className="flex-1 h-px bg-surface-gray-200" />
-      </div>
-
-      <CatalystButton variant="secondary" type="button">
-        <Lock size={16} />
-        Sign up with Enterprise SSO
       </CatalystButton>
 
       <IntegrationBadge />

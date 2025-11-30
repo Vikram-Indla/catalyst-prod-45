@@ -4,7 +4,6 @@ import { CatalystPasswordInput } from "./ui/CatalystPasswordInput";
 import { CatalystButton } from "./ui/CatalystButton";
 import { CatalystCheckbox } from "./ui/CatalystCheckbox";
 import { IntegrationBadge } from "@/components/brand/IntegrationBadge";
-import { Lock } from "lucide-react";
 
 interface SignInFormProps {
   onSubmit: (email: string, password: string) => Promise<void>;
@@ -56,19 +55,6 @@ export function SignInForm({ onSubmit, loading }: SignInFormProps) {
 
       <CatalystButton type="submit" loading={loading}>
         Sign In
-      </CatalystButton>
-
-      <div className="flex items-center gap-3 my-5">
-        <div className="flex-1 h-px bg-surface-gray-200" />
-        <span className="font-body text-[11px] font-semibold text-text-muted uppercase tracking-wide">
-          or continue with
-        </span>
-        <div className="flex-1 h-px bg-surface-gray-200" />
-      </div>
-
-      <CatalystButton variant="secondary" type="button">
-        <Lock size={16} />
-        Enterprise SSO (SAML)
       </CatalystButton>
 
       <IntegrationBadge />
