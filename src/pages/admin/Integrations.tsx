@@ -3,9 +3,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
-import { Github, Gitlab, MessageSquare, Webhook } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Github, Gitlab, MessageSquare, Webhook, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Integrations() {
+  const navigate = useNavigate();
+  
   const { data: connectors } = useQuery({
     queryKey: ['integration-connectors'],
     queryFn: async () => {
@@ -113,32 +117,55 @@ export default function Integrations() {
           <div className="p-4 border rounded-lg">
             <Github className="h-8 w-8 mb-2" />
             <div className="font-medium">GitHub</div>
-            <div className="text-sm text-muted-foreground">Version control integration</div>
+            <div className="text-sm text-muted-foreground mb-3">Version control integration</div>
+            <Button variant="outline" size="sm" disabled>
+              Configure
+            </Button>
           </div>
           <div className="p-4 border rounded-lg">
             <Gitlab className="h-8 w-8 mb-2" />
             <div className="font-medium">GitLab</div>
-            <div className="text-sm text-muted-foreground">DevOps platform</div>
+            <div className="text-sm text-muted-foreground mb-3">DevOps platform</div>
+            <Button variant="outline" size="sm" disabled>
+              Configure
+            </Button>
           </div>
-          <div className="p-4 border rounded-lg">
-            <MessageSquare className="h-8 w-8 mb-2" />
+          <div className="p-4 border rounded-lg hover:border-brand-gold transition-colors cursor-pointer">
+            <MessageSquare className="h-8 w-8 mb-2 text-brand-gold" />
             <div className="font-medium">Jira</div>
-            <div className="text-sm text-muted-foreground">Issue tracking</div>
+            <div className="text-sm text-muted-foreground mb-3">Bidirectional sync with Jira</div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-white"
+              onClick={() => navigate('/admin/jira-config')}
+            >
+              Configure <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
           </div>
           <div className="p-4 border rounded-lg">
             <MessageSquare className="h-8 w-8 mb-2" />
             <div className="font-medium">Slack</div>
-            <div className="text-sm text-muted-foreground">Team communication</div>
+            <div className="text-sm text-muted-foreground mb-3">Team communication</div>
+            <Button variant="outline" size="sm" disabled>
+              Configure
+            </Button>
           </div>
           <div className="p-4 border rounded-lg">
             <MessageSquare className="h-8 w-8 mb-2" />
             <div className="font-medium">MS Teams</div>
-            <div className="text-sm text-muted-foreground">Collaboration platform</div>
+            <div className="text-sm text-muted-foreground mb-3">Collaboration platform</div>
+            <Button variant="outline" size="sm" disabled>
+              Configure
+            </Button>
           </div>
           <div className="p-4 border rounded-lg">
             <Webhook className="h-8 w-8 mb-2" />
             <div className="font-medium">Webhooks</div>
-            <div className="text-sm text-muted-foreground">Custom integrations</div>
+            <div className="text-sm text-muted-foreground mb-3">Custom integrations</div>
+            <Button variant="outline" size="sm" disabled>
+              Configure
+            </Button>
           </div>
         </CardContent>
       </Card>
