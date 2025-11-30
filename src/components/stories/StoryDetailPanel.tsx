@@ -13,6 +13,9 @@ import { toast } from 'sonner';
 import { X, Edit2, Save, Calendar, User, Flag } from 'lucide-react';
 import { STORY_STATUS_LABELS } from '@/types/story.types';
 import type { StoryWithRelations } from '@/types/story.types';
+import { StoryDiscussions } from './StoryDiscussions';
+import { StoryActivityLog } from './StoryActivityLog';
+import { StoryLinks } from './StoryLinks';
 
 interface StoryDetailPanelProps {
   story: StoryWithRelations;
@@ -301,15 +304,15 @@ export function StoryDetailPanel({ story, onClose, onUpdate }: StoryDetailPanelP
           </TabsContent>
 
           <TabsContent value="discussions" className="p-4">
-            <p className="text-sm text-muted-foreground">Discussions will be displayed here.</p>
+            <StoryDiscussions storyId={story.id} />
           </TabsContent>
 
           <TabsContent value="history" className="p-4">
-            <p className="text-sm text-muted-foreground">Change history will be displayed here.</p>
+            <StoryActivityLog storyId={story.id} />
           </TabsContent>
 
           <TabsContent value="links" className="p-4">
-            <p className="text-sm text-muted-foreground">Related links will be displayed here.</p>
+            <StoryLinks storyId={story.id} />
           </TabsContent>
         </Tabs>
       </div>
