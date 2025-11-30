@@ -34,8 +34,8 @@ export default function Auth() {
         {/* Login Card */}
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl border border-surface-gray-200 p-6 sm:p-10">
           {/* Logo */}
-          <div className="flex justify-center mb-8">
-            <img src={catalystLogo} alt="Catalyst" className="h-36 sm:h-40 w-auto" />
+          <div className="flex justify-center mb-4">
+            <img src={catalystLogo} alt="Catalyst" className="h-72 sm:h-80 w-auto" />
           </div>
           
           <TabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
