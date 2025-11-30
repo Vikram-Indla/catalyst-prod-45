@@ -167,6 +167,7 @@ const App = () => (
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
+              <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
@@ -205,6 +206,7 @@ const App = () => (
               <Route path="/enterprise/reports/external" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/reports/organizational-hierarchy" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/reports/work-tree" element={<WorkTreePage />} />
+              <Route path="/enterprise/reports/demand-capacity" element={<EnterpriseComingSoon />} />
               
               {/* Enterprise More Pages - Placeholder Routes */}
               <Route path="/enterprise/pages/assessments" element={<EnterpriseComingSoon />} />
