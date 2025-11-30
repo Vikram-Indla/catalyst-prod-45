@@ -208,25 +208,26 @@ export default function CapacityPlanning() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
+      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold">Capacity Planning</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-xl sm:text-2xl font-bold">Capacity Planning</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Plan and track team capacity across iterations
             </p>
           </div>
           <PermissionGuard requiredRole="program_manager" showMessage={false}>
-            <Button onClick={() => setSharedServiceDialogOpen(true)}>
+            <Button onClick={() => setSharedServiceDialogOpen(true)} size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              Add Shared Service
+              <span className="hidden sm:inline">Add Shared Service</span>
+              <span className="sm:hidden">Add</span>
             </Button>
           </PermissionGuard>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-6 space-y-6">
+      <div className="flex-1 overflow-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
         <PISelector value={selectedPIId} onChange={setSelectedPIId} />
 
         {selectedPIId.length > 0 && iterations && teams ? (

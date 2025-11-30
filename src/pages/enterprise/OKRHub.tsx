@@ -173,36 +173,36 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header with Title and Action Buttons */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <Star className="h-6 w-6 text-primary" />
-            <h1 className="text-2xl font-semibold text-foreground">OKR Hub</h1>
+      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Star className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground">OKR Hub</h1>
             <Badge variant="secondary" className="text-xs font-medium">NEW</Badge>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="text-sm" onClick={() => navigate('/enterprise/objectives')}>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="ghost" size="sm" className="text-xs sm:text-sm hidden lg:flex" onClick={() => navigate('/enterprise/objectives')}>
               <ArrowRight className="h-4 w-4 mr-2" />
-              Go to all objectives
+              All objectives
             </Button>
-            <Button variant="ghost" size="sm" className="text-sm" onClick={() => navigate('/enterprise/okr-tree')}>
+            <Button variant="ghost" size="sm" className="text-xs sm:text-sm hidden lg:flex" onClick={() => navigate('/enterprise/okr-tree')}>
               <GitBranch className="h-4 w-4 mr-2" />
-              Go to objectives tree
+              Tree
             </Button>
-            <Button variant="ghost" size="sm" className="text-sm">
+            <Button variant="ghost" size="sm" className="text-xs sm:text-sm hidden md:flex">
               <MessageSquare className="h-4 w-4 mr-2" />
-              Give feedback
+              Feedback
             </Button>
-            <Button onClick={() => setCreateDialogOpen(true)}>
+            <Button onClick={() => setCreateDialogOpen(true)} size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              Add Objective
+              Add
             </Button>
           </div>
         </div>
 
         {/* Filter Row */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="relative flex-1 max-w-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+          <div className="relative w-full sm:col-span-2">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search objectives or tags"
@@ -212,10 +212,10 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-1">
             <div className="text-xs font-semibold text-muted-foreground uppercase">Tier</div>
             <Select value={tierFilter || "all"} onValueChange={(val) => setTierFilter(val === "all" ? "" : val)}>
-              <SelectTrigger className="w-[140px] h-9 text-sm bg-background">
+              <SelectTrigger className="w-full h-9 text-sm bg-background">
                 <SelectValue placeholder="Portfolio" />
               </SelectTrigger>
               <SelectContent>
@@ -227,10 +227,10 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-1">
             <div className="text-xs font-semibold text-muted-foreground uppercase">Portfolios</div>
             <Select value={portfolioFilter || "all"} onValueChange={(val) => setPortfolioFilter(val === "all" ? "" : val)}>
-              <SelectTrigger className="w-[160px] h-9 text-sm bg-background">
+              <SelectTrigger className="w-full h-9 text-sm bg-background">
                 <SelectValue placeholder="Digital Services" />
               </SelectTrigger>
               <SelectContent>
@@ -240,10 +240,10 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="text-xs font-semibold text-muted-foreground uppercase">Program Increments</div>
+          <div className="flex flex-col gap-1">
+            <div className="text-xs font-semibold text-muted-foreground uppercase">PI</div>
             <Select value={piFilter || "all"} onValueChange={(val) => setPiFilter(val === "all" ? "" : val)}>
-              <SelectTrigger className="w-[120px] h-9 text-sm bg-background">
+              <SelectTrigger className="w-full h-9 text-sm bg-background">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -255,10 +255,10 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="text-xs font-semibold text-muted-foreground uppercase">Statuses</div>
+          <div className="flex flex-col gap-1">
+            <div className="text-xs font-semibold text-muted-foreground uppercase">Status</div>
             <Select value={statusFilter || "all"} onValueChange={(val) => setStatusFilter(val === "all" ? "" : val)}>
-              <SelectTrigger className="w-[120px] h-9 text-sm bg-background">
+              <SelectTrigger className="w-full h-9 text-sm bg-background">
                 <SelectValue placeholder="At Risk" />
               </SelectTrigger>
               <SelectContent>
@@ -271,10 +271,10 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
             </Select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="text-xs font-semibold text-muted-foreground uppercase">Owners</div>
+          <div className="flex flex-col gap-1">
+            <div className="text-xs font-semibold text-muted-foreground uppercase">Owner</div>
             <Select value={ownerFilter || "all"} onValueChange={(val) => setOwnerFilter(val === "all" ? "" : val)}>
-              <SelectTrigger className="w-[120px] h-9 text-sm bg-background">
+              <SelectTrigger className="w-full h-9 text-sm bg-background">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -285,9 +285,9 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
         </div>
 
         {/* Quick Filters */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
           <div className="text-xs font-semibold text-muted-foreground uppercase">Quick filters</div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-2">
               <Checkbox
                 id="blocked"
@@ -335,18 +335,19 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
       </div>
 
       {/* Table Header Actions */}
-      <div className="border-b bg-card px-6 py-3">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Objectives</h2>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={handleExportCSV}>
+      <div className="border-b bg-card px-3 sm:px-6 py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground">Objectives</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={handleExportCSV} className="text-xs sm:text-sm">
               Export
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setColumnsDialogOpen(true)}>
-              Columns shown
+            <Button variant="ghost" size="sm" onClick={() => setColumnsDialogOpen(true)} className="text-xs sm:text-sm">
+              Columns
             </Button>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Show only my objectives</span>
+              <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Show only my objectives</span>
+              <span className="text-xs sm:text-sm text-muted-foreground sm:hidden">My only</span>
               <Checkbox
                 checked={myObjectivesOnly}
                 onCheckedChange={(checked) => setMyObjectivesOnly(!!checked)}
@@ -357,8 +358,8 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
       </div>
 
       {/* Table */}
-      <div className="flex-1 overflow-auto px-6 py-4">
-        <Table>
+      <div className="flex-1 overflow-x-auto overflow-y-auto px-3 sm:px-6 py-4">
+        <Table className="min-w-[800px]">
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b-2">
               {enabledColumns.map(col => (

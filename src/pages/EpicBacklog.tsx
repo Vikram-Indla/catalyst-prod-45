@@ -175,14 +175,14 @@ export default function EpicBacklog() {
   return (
     <div className="flex flex-col h-full">
       {/* Top Action Bar - First Row */}
-      <div className="border-b bg-card px-6 py-3 flex-shrink-0">
-        <div className="flex items-center justify-between gap-4">
+      <div className="border-b bg-card px-3 sm:px-6 py-3 flex-shrink-0">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
           {/* Left: Star and Viewing dropdown */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <Star className="h-5 w-5 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Viewing:</span>
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 overflow-x-auto">
+            <Star className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+            <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">Viewing:</span>
             <Select value={backlogType} onValueChange={setBacklogType}>
-              <SelectTrigger className="w-[180px] border-0 shadow-none">
+              <SelectTrigger className="w-[140px] sm:w-[180px] border-0 shadow-none">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -197,42 +197,42 @@ export default function EpicBacklog() {
           </div>
 
           {/* Right: Action buttons */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="flex flex-wrap items-center gap-2 flex-shrink-0">
             <Button 
               variant="ghost" 
               size="sm" 
-              className="gap-2 text-muted-foreground hover:text-foreground"
+              className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm hidden lg:flex"
               onClick={() => setOrphanObjectsDialogOpen(true)}
             >
               <Eye className="h-4 w-4" />
-              Orphan Objects
+              Orphans
             </Button>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="gap-2 text-muted-foreground hover:text-foreground"
+              className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
               onClick={() => setLabelsDialogOpen(true)}
             >
               <Tag className="h-4 w-4" />
-              Manage Labels
+              <span className="hidden sm:inline">Labels</span>
             </Button>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="gap-2 text-muted-foreground hover:text-foreground"
+              className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
               onClick={() => setColumnsDialogOpen(true)}
             >
               <Grid3x3 className="h-4 w-4" />
-              Columns Shown
+              <span className="hidden sm:inline">Columns</span>
             </Button>
             <Button 
               variant="ghost" 
               size="sm" 
-              className="gap-2 text-muted-foreground hover:text-foreground"
+              className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
               onClick={() => setFiltersDialogOpen(true)}
             >
               <Filter className="h-4 w-4" />
-              Apply Filters
+              <span className="hidden sm:inline">Filters</span>
             </Button>
             <div className="relative flex-shrink-0">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -240,7 +240,7 @@ export default function EpicBacklog() {
                 placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 w-[200px]"
+                className="pl-9 w-[120px] sm:w-[200px]"
               />
             </div>
           </div>
@@ -248,7 +248,7 @@ export default function EpicBacklog() {
       </div>
 
       {/* View Switcher Row - Under Apply Filters */}
-      <div className="border-b bg-card px-6 py-2 flex justify-end">
+      <div className="border-b bg-card px-3 sm:px-6 py-2 flex justify-end overflow-x-auto">
         <ViewSwitcher 
           currentView={view}
           kanbanMode={kanbanMode}
@@ -258,12 +258,12 @@ export default function EpicBacklog() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto px-6 py-6">
-        <h1 className="text-2xl font-semibold mb-8">All Programs for Digital Services</h1>
+      <div className="flex-1 overflow-auto px-3 sm:px-6 py-4 sm:py-6">
+        <h1 className="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8">All Programs for Digital Services</h1>
 
         {/* Epics for PI-5 Section */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
@@ -278,41 +278,41 @@ export default function EpicBacklog() {
                   )}
                 />
               </Button>
-              <h2 className="text-lg font-semibold">Epics for PI-5</h2>
+              <h2 className="text-base sm:text-lg font-semibold">Epics for PI-5</h2>
             </div>
-            <div className="flex items-center gap-6">
-              <span className="text-sm text-muted-foreground">Total Items: {assignedEpics.length}</span>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 lg:gap-6">
+              <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">Total: {assignedEpics.length}</span>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="gap-2 text-muted-foreground hover:text-foreground"
+                className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
                 onClick={() => setBottomUpEstimateOpen(true)}
                 disabled={selectedEpicIds.length === 0}
               >
                 <TrendingUp className="h-4 w-4" />
-                Bottom-Up Estimate
+                <span className="hidden md:inline">Bottom-Up</span>
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="gap-2 text-muted-foreground hover:text-foreground"
+                className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
                 onClick={() => setWsjfModalOpen(true)}
               >
                 <TrendingUp className="h-4 w-4" />
-                Prioritize
+                <span className="hidden sm:inline">Prioritize</span>
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="gap-2 text-muted-foreground hover:text-foreground"
+                className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
                 onClick={handleExport}
               >
                 <Download className="h-4 w-4" />
-                Export
+                <span className="hidden sm:inline">Export</span>
               </Button>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">PI Progress:</span>
-                <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+              <div className="flex items-center gap-2 hidden lg:flex">
+                <span className="text-xs sm:text-sm font-medium whitespace-nowrap">PI Progress:</span>
+                <div className="w-24 sm:w-32 h-2 bg-muted rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-brand-gold transition-all" 
                     style={{ width: `${piProgress?.percentage || 0}%` }} 

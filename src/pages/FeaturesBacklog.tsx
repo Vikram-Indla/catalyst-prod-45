@@ -99,7 +99,7 @@ export default function FeaturesBacklog() {
         onExport={handleExport}
       />
 
-      <div className="flex-1 overflow-auto px-6 py-6">
+      <div className="flex-1 overflow-auto px-3 sm:px-6 py-4 sm:py-6">
         {viewMode === 'list' ? (
           <div className="border rounded-lg bg-card overflow-hidden">
             <FeaturesListView

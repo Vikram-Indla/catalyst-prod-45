@@ -27,17 +27,17 @@ export default function TeamsDirectory() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="border-b border-border bg-background px-6 py-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-semibold text-foreground">Teams</h1>
-          <Button onClick={() => setCreateDialogOpen(true)}>
+      <div className="border-b border-border bg-background px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
+          <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Teams</h1>
+          <Button onClick={() => setCreateDialogOpen(true)} size="sm">
             <Plus className="w-4 h-4 mr-2" />
             Create Team
           </Button>
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -48,50 +48,52 @@ export default function TeamsDirectory() {
             />
           </div>
 
-          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as any)}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                <SelectItem value="AGILE">Agile / Scrum</SelectItem>
-                <SelectItem value="KANBAN">Kanban</SelectItem>
-                <SelectItem value="COP">CoP</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
               </SelectContent>
-          </Select>
+            </Select>
 
-          <div className="flex items-center gap-1 border border-border rounded-md p-1">
-            <Button
-              variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-            >
-              <Grid className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-            >
-              <List className="w-4 h-4" />
-            </Button>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="AGILE">Agile / Scrum</SelectItem>
+                  <SelectItem value="KANBAN">Kanban</SelectItem>
+                  <SelectItem value="COP">CoP</SelectItem>
+                </SelectContent>
+            </Select>
+
+            <div className="flex items-center gap-1 border border-border rounded-md p-1">
+              <Button
+                variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('grid')}
+              >
+                <Grid className="w-4 h-4" />
+              </Button>
+              <Button
+                variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                size="sm"
+                onClick={() => setViewMode('list')}
+              >
+                <List className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-3 sm:p-6">
         {isLoading ? (
           <div className="text-center text-muted-foreground py-12">Loading teams...</div>
         ) : teams.length === 0 ? (
@@ -102,7 +104,7 @@ export default function TeamsDirectory() {
             </Button>
           </div>
         ) : viewMode === 'grid' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {teams.map((team) => (
               <TeamCard
                 key={team.id}

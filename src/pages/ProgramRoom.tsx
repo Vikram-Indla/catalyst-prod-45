@@ -68,12 +68,12 @@ export default function ProgramRoom() {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-3 sm:p-4 md:p-6">
       {isLoading ? (
         <div className="space-y-4">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-4 w-96" />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mt-8">
+          <Skeleton className="h-8 w-full max-w-md" />
+          <Skeleton className="h-4 w-full max-w-lg" />
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8">
             <Skeleton className="h-40" />
             <Skeleton className="h-40" />
             <Skeleton className="h-40" />
@@ -81,29 +81,29 @@ export default function ProgramRoom() {
         </div>
       ) : program ? (
         <>
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 sm:mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
               <div>
-                <h1 className="text-3xl font-bold mb-2">Program Room</h1>
-                <p className="text-muted-foreground">
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2">Program Room</h1>
+                <p className="text-sm sm:text-base text-muted-foreground">
                   For {program.name}
                   {program.portfolios && ` · ${program.portfolios.name}`}
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">View Configuration</Button>
-                <Button variant="outline" size="sm">Key Metrics</Button>
-                <Button variant="outline" size="sm">Run a Meeting</Button>
-                <Button variant="outline" size="sm">Close Program Increment</Button>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" className="text-xs sm:text-sm">Configuration</Button>
+                <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden sm:flex">Key Metrics</Button>
+                <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden md:flex">Run Meeting</Button>
+                <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden lg:flex">Close PI</Button>
               </div>
             </div>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Planning Checklist Card */}
             <Card>
               <CardHeader>
-                <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                   <div className="text-3xl font-bold text-primary">40%</div>
                   <div>
                     <CardTitle>Program Increment Planning Checklist</CardTitle>
@@ -114,7 +114,7 @@ export default function ProgramRoom() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 md:grid-cols-5">
+                <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                   <div className="p-4 border rounded-lg text-center hover:bg-accent/50 cursor-pointer">
                     <div className="text-sm font-medium mb-1">Plan Feature Backlog</div>
                     <div className="text-xs text-muted-foreground">Manage and Prioritize</div>
