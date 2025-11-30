@@ -29,7 +29,7 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
     }
 
     setLinks(prev => [...prev, {
-      id: Math.random().toString(),
+      id: `link-${Date.now()}-${prev.length}`,
       ...newLink
     }]);
 

@@ -245,7 +245,7 @@ export function EpicBacklogListView({
 
                             {visibleColumns.includes('wsjf') && (
                               <TableCell className="text-right text-sm font-semibold" onClick={() => onEpicSelect(epic.id)}>
-                                {(Math.random() * 10).toFixed(2)}
+                                {(5.5 + (epic.global_rank ?? 0) * 0.1).toFixed(2)}
                               </TableCell>
                             )}
                           </TableRow>

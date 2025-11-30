@@ -383,7 +383,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                                   </button>
                                   <span className="text-sm text-muted-foreground w-8">{index + 1}</span>
                                   <Circle className="h-3 w-3 fill-brand-gold text-brand-gold" />
-                                  <span className="text-sm text-muted-foreground w-12">{Math.floor(Math.random() * 200)}</span>
+                                  <span className="text-sm text-muted-foreground w-12">{100 + (index * 13) % 200}</span>
                                   <div
                                     className="flex items-center gap-2 flex-1 cursor-pointer"
                                     onClick={() => handleThemeClick(theme)}
@@ -394,7 +394,7 @@ export function ThemeBacklog({ portfolioId, piId }: ThemeBacklogProps) {
                                     </span>
                                   </div>
                                   <div className="flex gap-1">
-                                    {['PI7', 'PI6', 'PI5', 'PI4', 'PI3', 'PI2', 'PI1'].slice(0, Math.floor(Math.random() * 5) + 2).map((pi, i) => (
+                                    {['PI7', 'PI6', 'PI5', 'PI4', 'PI3', 'PI2', 'PI1'].slice(0, 2 + (index % 5)).map((pi, i) => (
                                       <span
                                         key={i}
                                         className={cn(
