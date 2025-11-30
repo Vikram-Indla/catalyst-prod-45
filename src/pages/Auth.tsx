@@ -187,7 +187,7 @@ export default function Auth() {
           {/* Logo */}
           <div className="flex justify-center mb-6">
             <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
-            height: "180px",
+            height: "220px",
             filter: "brightness(1.2)"
           }} />
           </div>
