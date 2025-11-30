@@ -25,7 +25,7 @@ export default function Auth() {
   };
   return <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left Panel - Brand Panel */}
-      <div className="relative w-full md:w-[45%] flex flex-col justify-center p-12 md:p-16 overflow-hidden" style={{
+      <div className="relative w-full md:w-[45%] flex flex-col justify-center p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] md:min-h-screen" style={{
       backgroundColor: "#1a1a1a"
     }}>
         {/* Decorative Gradient 1 */}
@@ -42,9 +42,9 @@ export default function Auth() {
         {/* Content */}
         <div className="relative z-10 max-w-lg">
           {/* Headline */}
-          <h1 className="mb-6 leading-tight" style={{
+          <h1 className="mb-4 sm:mb-6 leading-tight" style={{
           fontFamily: "'Playfair Display', serif",
-          fontSize: "3.2rem",
+          fontSize: "clamp(2rem, 5vw, 3.2rem)",
           fontWeight: 500,
           color: "#feffff",
           lineHeight: 1.2
@@ -56,22 +56,22 @@ export default function Auth() {
           </h1>
 
           {/* Description */}
-          <p className="mb-12 max-w-md" style={{
+          <p className="mb-8 sm:mb-12 max-w-md" style={{
           fontFamily: "'DM Sans', sans-serif",
-          fontSize: "1.1rem",
+          fontSize: "clamp(0.95rem, 2vw, 1.1rem)",
           color: "rgba(254, 255, 255, 0.65)",
           lineHeight: 1.8
         }}>Transform how your organization manages demand and delivery with intelligent workflows and real-time insights.</p>
 
           {/* Stats Section */}
-          <div className="flex justify-center gap-16 pt-12" style={{
+          <div className="grid grid-cols-3 gap-4 sm:gap-8 md:gap-16 pt-8 sm:pt-12" style={{
           borderTop: "1px solid rgba(198, 156, 109, 0.25)"
         }}>
             {/* Stat 1 */}
             <div className="text-center">
               <div style={{
               fontFamily: "'Playfair Display', serif",
-              fontSize: "2.75rem",
+              fontSize: "clamp(2rem, 4vw, 2.75rem)",
               color: "#c69c6d",
               fontWeight: 500
             }}>
@@ -79,7 +79,7 @@ export default function Auth() {
               </div>
               <div style={{
               fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.9rem",
+              fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
               color: "rgba(254, 255, 255, 0.7)",
               textTransform: "uppercase",
               letterSpacing: "0.1em",
@@ -93,7 +93,7 @@ export default function Auth() {
             <div className="text-center">
               <div style={{
               fontFamily: "'Playfair Display', serif",
-              fontSize: "2.75rem",
+              fontSize: "clamp(2rem, 4vw, 2.75rem)",
               color: "#c69c6d",
               fontWeight: 500
             }}>
@@ -101,7 +101,7 @@ export default function Auth() {
               </div>
               <div style={{
               fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.9rem",
+              fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
               color: "rgba(254, 255, 255, 0.7)",
               textTransform: "uppercase",
               letterSpacing: "0.1em",
@@ -115,7 +115,7 @@ export default function Auth() {
             <div className="text-center">
               <div style={{
               fontFamily: "'Playfair Display', serif",
-              fontSize: "2.75rem",
+              fontSize: "clamp(2rem, 4vw, 2.75rem)",
               color: "#c69c6d",
               fontWeight: 500
             }}>
@@ -123,7 +123,7 @@ export default function Auth() {
               </div>
               <div style={{
               fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.9rem",
+              fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
               color: "rgba(254, 255, 255, 0.7)",
               textTransform: "uppercase",
               letterSpacing: "0.1em",
@@ -136,7 +136,7 @@ export default function Auth() {
         </div>
 
         {/* Footer */}
-        <div className="absolute bottom-12 left-12 md:left-16 z-10">
+        <div className="absolute bottom-6 sm:bottom-8 md:bottom-12 left-6 sm:left-8 md:left-12 lg:left-16 z-10">
           {/* Decorative Lines */}
           <div className="flex flex-col gap-3 mb-4">
             <div className="rounded-sm" style={{
@@ -171,7 +171,7 @@ export default function Auth() {
       </div>
 
       {/* Right Panel - Login Panel */}
-      <div className="relative w-full md:w-[55%] p-12 md:p-16" style={{
+      <div className="relative w-full md:w-[55%] p-6 sm:p-8 md:p-12 lg:p-16" style={{
       backgroundColor: "#feffff"
     }}>
         {/* Subtle background gradients */}
@@ -183,35 +183,35 @@ export default function Auth() {
       }} />
 
         {/* Logo - absolute positioned at top, doesn't affect form flow */}
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="absolute top-2 sm:top-4 left-1/2 transform -translate-x-1/2 z-20">
           <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
-          height: "280px",
+          height: "clamp(120px, 20vw, 280px)",
           filter: "brightness(1.2)"
         }} />
         </div>
 
         {/* Login Container - positioned to align Welcome back with enterprise text */}
-        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "160px" }}>
+        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(80px, 15vw, 160px)" }}>
           {/* Login Header */}
           <h2 className="text-center mb-2" style={{
           fontFamily: "'Playfair Display', serif",
-          fontSize: "1.875rem",
+          fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
           fontWeight: 500,
           color: "#1a1a1a"
         }}>
             Welcome back
           </h2>
 
-          <p className="text-center mb-9" style={{
+          <p className="text-center mb-6 sm:mb-9" style={{
           fontFamily: "'DM Sans', sans-serif",
-          fontSize: "1rem",
+          fontSize: "clamp(0.9rem, 2vw, 1rem)",
           color: "rgba(26, 26, 26, 0.55)"
         }}>
             Enter your credentials to access your account
           </p>
 
           {/* Login Form */}
-          <form onSubmit={handleSignIn} className="space-y-5">
+          <form onSubmit={handleSignIn} className="space-y-4 sm:space-y-5">
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block mb-2" style={{
@@ -334,7 +334,7 @@ export default function Auth() {
           </form>
 
           {/* Sign Up Link */}
-          <div className="mt-8 pt-6 text-center" style={{
+          <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 text-center" style={{
           borderTop: "1px solid rgba(26, 26, 26, 0.1)"
         }}>
             <p style={{
