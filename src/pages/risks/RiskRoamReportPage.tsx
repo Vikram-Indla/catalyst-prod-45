@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Download, Settings } from "lucide-react";
 import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 import { useRisks } from "@/hooks/risks/useRisks";
+import { RisksSidebar } from "@/components/risks/RisksSidebar";
 import { Risk, RoamFilters, ChartVisibility, RoamStatus } from "@/types/risks";
 import { ROAM_COLUMN_ORDER } from "@/constants/risks";
 import { Button } from "@/components/ui/button";
@@ -135,7 +136,9 @@ export default function RiskRoamReportPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex h-full bg-background">
+      <RisksSidebar />
+      <div className="flex flex-col flex-1 overflow-hidden">
       {/* Page Header */}
       <div className="border-b bg-card px-6 py-4">
         <div className="flex items-center justify-between">
@@ -294,6 +297,7 @@ export default function RiskRoamReportPage() {
           onConfirm={handleResolutionConfirm}
         />
       )}
+      </div>
     </div>
   );
 }
