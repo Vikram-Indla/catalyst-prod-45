@@ -19,7 +19,9 @@ const adminSections = [
     items: [
       { label: 'Activity', path: '/admin/activity', icon: Activity },
       { label: 'Changes', path: '/admin/changes', icon: FileText },
+      { label: 'Changes Log', path: '/admin/changes-log', icon: FileText },
       { label: 'Use Trend', path: '/admin/use-trend', icon: TrendingUp },
+      { label: 'Usage Trends', path: '/admin/usage-trends', icon: TrendingUp },
     ],
   },
   {
