@@ -75,6 +75,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   const [moreItemsExpanded, setMoreItemsExpanded] = useState(false);
   const [reportsExpanded, setReportsExpanded] = useState(false);
   const [morePagesExpanded, setMorePagesExpanded] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
   const {
