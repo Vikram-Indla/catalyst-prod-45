@@ -62,33 +62,42 @@ export function BacklogSection({
       {isExpanded && (
         <div>
           <QuickAddRow itemType="epic" />
-          <div className="divide-y">
-            {section.items.length === 0 ? (
-              <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-                No items in this section
+          <Droppable droppableId={section.id}>
+            {(provided) => (
+              <div 
+                ref={provided.innerRef}
+                {...provided.droppableProps}
+                className="divide-y"
+              >
+                {section.items.length === 0 ? (
+                  <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+                    No items in this section
+                  </div>
+                ) : (
+                  section.items.map((item, index) => (
+                    <Draggable key={item.id} draggableId={item.id} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                        >
+                          <BacklogItemRow
+                            item={item}
+                            isSelected={selectedItems.includes(item.id)}
+                            onItemClick={onItemClick}
+                            onItemSelect={onItemSelect}
+                            dragHandleProps={provided.dragHandleProps}
+                            isDragging={snapshot.isDragging}
+                          />
+                        </div>
+                      )}
+                    </Draggable>
+                  ))
+                )}
+                {provided.placeholder}
               </div>
-            ) : (
-              section.items.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                    >
-                      <BacklogItemRow
-                        item={item}
-                        isSelected={selectedItems.includes(item.id)}
-                        onItemClick={onItemClick}
-                        onItemSelect={onItemSelect}
-                        dragHandleProps={provided.dragHandleProps}
-                        isDragging={snapshot.isDragging}
-                      />
-                    </div>
-                  )}
-                </Draggable>
-              ))
             )}
-          </div>
+          </Droppable>
         </div>
       )}
     </div>
