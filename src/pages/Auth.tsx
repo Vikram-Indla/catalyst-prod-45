@@ -33,9 +33,6 @@ export default function Auth() {
       <div className="w-full max-w-[520px]">
         {/* Enterprise Login Card */}
         <div className="bg-white rounded-2xl shadow-2xl border border-surface-gray-200 p-8 sm:p-12 relative overflow-hidden">
-          {/* Subtle accent gradient overlay */}
-          <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-gold/20 via-brand-gold to-brand-gold/20" />
-          
           {/* Logo */}
           <div className="flex justify-center">
             <img src={catalystLogo} alt="Catalyst" className="h-40 sm:h-48 w-auto" />
