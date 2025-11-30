@@ -26,17 +26,58 @@ import {
 interface StoriesToolbarProps {
   selectedCount: number;
   selectedIds: string[];
+  stories?: any[]; // For CSV export
   onRefetch: () => void;
   onClearSelection: () => void;
   onPullRank?: () => void;
 }
 
-export function StoriesToolbar({ selectedCount, selectedIds, onRefetch, onClearSelection, onPullRank }: StoriesToolbarProps) {
+export function StoriesToolbar({ selectedCount, selectedIds, stories, onRefetch, onClearSelection, onPullRank }: StoriesToolbarProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleExport = () => {
-    toast.info('Export functionality coming soon');
+    if (!stories || stories.length === 0) {
+      toast.error('No stories to export');
+      return;
+    }
+
+    // Get selected stories or all if none selected
+    const storiesToExport = selectedIds.length > 0
+      ? stories.filter(s => selectedIds.includes(s.id))
+      : stories;
+
+    // Convert to CSV
+    const headers = ['ID', 'Name', 'Status', 'Feature', 'Team', 'Sprint', 'Story Points', 'LOE', 'Created'];
+    const rows = storiesToExport.map(story => [
+      story.id,
+      story.name || '',
+      story.status || '',
+      story.features?.name || '',
+      story.teams?.name || '',
+      story.iterations?.name || '',
+      story.estimate_points || '',
+      story.points_loe || '',
+      story.created_at ? new Date(story.created_at).toLocaleDateString() : '',
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+    ].join('\n');
+
+    // Download CSV
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `stories_export_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast.success(`Exported ${storiesToExport.length} stories`);
   };
 
   const handleBulkDelete = async () => {
