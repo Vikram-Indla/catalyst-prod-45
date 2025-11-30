@@ -14,16 +14,15 @@ export default function StrategicSnapshots() {
   ];
 
   return (
-    <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
+    <div className="h-full flex flex-col p-3 sm:p-4 md:p-6">
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-6" style={{ height: 'var(--toolbar-h)' }}>
-        <div className="flex items-center gap-3">
-          <div className="relative flex-1" style={{ minWidth: '320px' }}>
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+          <div className="relative w-full sm:flex-1 sm:min-w-[320px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search snapshots..."
-              className="pl-9"
-              style={{ height: 'var(--grid-row)' }}
+              className="pl-9 h-8 sm:h-9"
             />
           </div>
         </div>
@@ -52,7 +51,7 @@ export default function StrategicSnapshots() {
 
       {/* Content */}
       {view === 'grid' ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {snapshots.map((snapshot) => (
             <Card key={snapshot.id} className="cursor-pointer hover:shadow-lg transition-shadow">
               <CardHeader>

@@ -152,18 +152,18 @@ export default function OKRTree() {
   };
 
   return (
-    <div className="h-full flex flex-col p-6">
+    <div className="h-full flex flex-col p-3 sm:p-4 md:p-6">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold mb-1">OKR Tree</h1>
-        <p className="text-sm text-muted-foreground italic">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-semibold mb-1">OKR Tree</h1>
+        <p className="text-xs sm:text-sm text-muted-foreground italic">
           Only work items tied to this Snapshot or its Program Increments are shown here
         </p>
       </div>
 
       {/* Toolbar */}
-      <Card className="mb-4">
-        <div className="flex items-center justify-between gap-4 p-4">
+      <Card className="mb-3 sm:mb-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4">
           {/* Search */}
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

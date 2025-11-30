@@ -292,9 +292,9 @@ export default function Roadmaps() {
     : null;
 
   return (
-    <div className="h-full flex bg-background">
+    <div className="h-full flex flex-col lg:flex-row bg-background">
       {/* Left PI Selector */}
-      <div className="w-64 border-r bg-card">
+      <div className="w-full lg:w-64 border-b lg:border-r lg:border-b-0 bg-card">
         <PIFilterSidebar 
           selectedPIIds={selectedPIIds}
           onSelectionChange={setSelectedPIIds}
@@ -304,13 +304,13 @@ export default function Roadmaps() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <div className="border-b bg-card px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Star className="h-5 w-5 text-muted-foreground" />
-              <h1 className="text-xl font-semibold">Live Roadmap</h1>
+              <Star className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+              <h1 className="text-lg sm:text-xl font-semibold">Live Roadmap</h1>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4 mr-2" />
                 View Configuration
@@ -340,9 +340,9 @@ export default function Roadmaps() {
         </div>
 
         {/* Secondary Controls */}
-        <div className="border-b bg-card px-6 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-2 sm:py-3">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
               <Select value={view} onValueChange={(v: any) => setView(v)}>
                 <SelectTrigger className="w-[120px]">
                   <SelectValue />
@@ -384,12 +384,12 @@ export default function Roadmaps() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <span className="text-xs sm:text-sm text-muted-foreground">
                 {features?.length || 0} items loaded
               </span>
-              <Separator orientation="vertical" className="h-6" />
-              <div className="flex items-center gap-2">
+              <Separator orientation="vertical" className="h-6 hidden sm:block" />
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant={showMilestonesObjectives ? 'secondary' : 'ghost'}
                   size="sm"
