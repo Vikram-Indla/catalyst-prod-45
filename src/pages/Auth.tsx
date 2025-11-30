@@ -109,31 +109,6 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* Stat 2 */}
-            <div>
-              <div 
-                style={{
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: '2.75rem',
-                  color: '#c69c6d',
-                  fontWeight: 500
-                }}
-              >
-                24/7
-              </div>
-              <div 
-                style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '0.9rem',
-                  color: 'rgba(254, 255, 255, 0.7)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.1em',
-                  fontWeight: 500
-                }}
-              >
-                SUPPORT
-              </div>
-            </div>
 
             {/* Stat 3 */}
             <div>
