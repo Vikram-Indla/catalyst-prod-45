@@ -122,25 +122,28 @@ export default function PortfolioRoom() {
                 <CardTitle className="text-sm font-semibold">Theme Program Increment Progress</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 pt-0">
-                {themes?.slice(0, 5).map(theme => (
-                  <div key={theme.id} className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium truncate">{theme.name}</span>
-                      <Badge 
-                        variant={theme.status === 'active' ? 'default' : 'secondary'}
-                        className="text-xs"
-                      >
-                        {theme.status}
-                      </Badge>
+                {themes?.slice(0, 5).map((theme, index) => {
+                  const progress = ((index + 1) * 15) % 100; // Deterministic progress
+                  return (
+                    <div key={theme.id} className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium truncate">{theme.name}</span>
+                        <Badge 
+                          variant={theme.status === 'active' ? 'default' : 'secondary'}
+                          className="text-xs"
+                        >
+                          {theme.status}
+                        </Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Progress value={progress} className="h-1.5 flex-1" />
+                        <span className="text-xs text-muted-foreground min-w-[3ch]">
+                          {progress}%
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Progress value={Math.random() * 100} className="h-1.5 flex-1" />
-                      <span className="text-xs text-muted-foreground min-w-[3ch]">
-                        {Math.floor(Math.random() * 100)}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </CardContent>
             </Card>
           </div>
@@ -203,7 +206,7 @@ export default function PortfolioRoom() {
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                     <input
                       type="search"
-                      placeholder="Search by It"
+                      placeholder="Search by ID"
                       className="px-3 py-1 text-xs border rounded-md w-full sm:w-40"
                     />
                     <select className="px-2 py-1 text-xs border rounded-md w-full sm:w-auto">
@@ -230,22 +233,27 @@ export default function PortfolioRoom() {
                       </tr>
                     </thead>
                     <tbody>
-                      {epics?.map((epic, index) => (
-                        <tr key={epic.id} className="border-b hover:bg-muted/30">
-                          <td className="py-2 px-3">{4356 - index * 10}</td>
-                          <td className="py-2 px-3">-</td>
-                          <td className="py-2 px-3">{epic.name}</td>
-                          <td className="py-2 px-3">
-                            <div className="flex items-center gap-2">
-                              <Progress value={Math.random() * 100} className="h-1.5 w-24" />
-                              <span className="text-muted-foreground">{Math.floor(Math.random() * 100)}%</span>
-                            </div>
-                          </td>
-                          <td className="py-2 px-3">{Math.floor(Math.random() * 20)}</td>
-                          <td className="py-2 px-3">{Math.floor(Math.random() * 1000)} Pts</td>
-                          <td className="py-2 px-3">-</td>
-                        </tr>
-                      ))}
+                      {epics?.map((epic, index) => {
+                        const progress = (index * 7) % 100; // Deterministic progress
+                        const storyPoints = epic.estimate ?? (5 + (index * 3) % 15);
+                        const piEffort = (100 + (index * 50) % 900);
+                        return (
+                          <tr key={epic.id} className="border-b hover:bg-muted/30">
+                            <td className="py-2 px-3">{4356 - index * 10}</td>
+                            <td className="py-2 px-3">-</td>
+                            <td className="py-2 px-3">{epic.name}</td>
+                            <td className="py-2 px-3">
+                              <div className="flex items-center gap-2">
+                                <Progress value={progress} className="h-1.5 w-24" />
+                                <span className="text-muted-foreground">{Math.floor(progress)}%</span>
+                              </div>
+                            </td>
+                            <td className="py-2 px-3">{Math.floor(storyPoints)}</td>
+                            <td className="py-2 px-3">{piEffort} Pts</td>
+                            <td className="py-2 px-3">-</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

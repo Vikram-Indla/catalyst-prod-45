@@ -155,19 +155,24 @@ export default function ProgramRoom() {
                 </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {[23, 24, 25, 26, 27].map((num) => (
-                    <div key={num} className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50">
-                      <div>
-                        <div className="font-medium">Sprint {num}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {Math.floor(Math.random() * 20 + 50)} out of {Math.floor(Math.random() * 20 + 60)} stories accepted
+                  {[23, 24, 25, 26, 27].map((num, index) => {
+                    const completed = 50 + (index * 7);
+                    const total = 60 + (index * 5);
+                    const progress = Math.floor((completed / total) * 100);
+                    return (
+                      <div key={num} className="flex items-center justify-between p-3 rounded-lg hover:bg-accent/50">
+                        <div>
+                          <div className="font-medium">Sprint {num}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {completed} out of {total} stories accepted
+                          </div>
+                        </div>
+                        <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-success" style={{ width: `${progress}%` }} />
                         </div>
                       </div>
-                      <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full bg-success" style={{ width: `${Math.floor(Math.random() * 30 + 60)}%` }} />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
                 <Button variant="link" className="mt-4">View Program Board</Button>
               </CardContent>
