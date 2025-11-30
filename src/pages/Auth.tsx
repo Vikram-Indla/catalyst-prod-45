@@ -80,11 +80,11 @@ export default function Auth() {
 
           {/* Stats Section */}
           <div 
-            className="flex gap-16 pt-12"
+            className="flex justify-center gap-16 pt-12"
             style={{ borderTop: '1px solid rgba(198, 156, 109, 0.25)' }}
           >
             {/* Stat 1 */}
-            <div>
+            <div className="text-center">
               <div 
                 style={{
                   fontFamily: "'Playfair Display', serif",
@@ -109,9 +109,8 @@ export default function Auth() {
               </div>
             </div>
 
-
-            {/* Stat 3 */}
-            <div>
+            {/* Stat 2 */}
+            <div className="text-center">
               <div 
                 style={{
                   fontFamily: "'Playfair Display', serif",
@@ -136,8 +135,8 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* Stat 4 */}
-            <div>
+            {/* Stat 3 */}
+            <div className="text-center">
               <div 
                 style={{
                   fontFamily: "'Playfair Display', serif",
