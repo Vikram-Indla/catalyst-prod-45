@@ -168,19 +168,14 @@ export default function DependenciesPage() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Program Room Sidebar */}
-      {activeProgramId && <ProgramRoomSidebar programId={activeProgramId} />}
-      
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
-          <div className="flex items-center justify-between mb-6" style={{ height: 'var(--toolbar-h)' }}>
-            <div>
-              <h1 className="text-2xl font-semibold">Dependencies</h1>
-              <p className="text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
-            </div>
-        <div className="flex items-center gap-2">
+    <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="h-full flex flex-col p-3 sm:p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-semibold">Dependencies</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
+          </div>
+        <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1 border rounded-lg p-1">
             <Button
               variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}
@@ -232,8 +227,8 @@ export default function DependenciesPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="relative flex-1 max-w-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-4">
+        <div className="relative sm:col-span-2">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search dependencies..."
@@ -243,7 +238,7 @@ export default function DependenciesPage() {
           />
         </div>
         <Select value={piFilter} onValueChange={setPiFilter}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="All PIs" />
           </SelectTrigger>
           <SelectContent>
@@ -254,7 +249,7 @@ export default function DependenciesPage() {
           </SelectContent>
         </Select>
         <Select value={levelFilter} onValueChange={setLevelFilter}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="All Levels" />
           </SelectTrigger>
           <SelectContent>
@@ -265,7 +260,7 @@ export default function DependenciesPage() {
           </SelectContent>
         </Select>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[140px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="All Types" />
           </SelectTrigger>
           <SelectContent>
@@ -275,7 +270,7 @@ export default function DependenciesPage() {
           </SelectContent>
         </Select>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[160px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="All Statuses" />
           </SelectTrigger>
           <SelectContent>
@@ -319,26 +314,26 @@ export default function DependenciesPage() {
           {/* Dependencies Table */}
           <Card className="flex-1 overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-muted-foreground">Loading dependencies...</p>
+          <div className="flex items-center justify-center h-full p-4">
+            <p className="text-muted-foreground text-sm">Loading dependencies...</p>
           </div>
         ) : !filteredDependencies?.length ? (
-          <div className="flex flex-col items-center justify-center h-full gap-4 p-8">
-            <AlertTriangle className="h-12 w-12 text-muted-foreground" />
+          <div className="flex flex-col items-center justify-center h-full gap-4 p-4 sm:p-8">
+            <AlertTriangle className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground" />
             <div className="text-center">
-              <h3 className="font-semibold text-lg mb-2">No Dependencies Found</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <h3 className="font-semibold text-base sm:text-lg mb-2">No Dependencies Found</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground mb-4">
                 Create your first dependency to track cross-team commitments
               </p>
-              <Button onClick={handleAddDependency}>
+              <Button onClick={handleAddDependency} size="sm">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Dependency
               </Button>
             </div>
           </div>
         ) : (
-          <div className="overflow-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
-            <Table>
+          <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
+            <Table className="min-w-[800px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Action Required</TableHead>
@@ -440,6 +435,5 @@ export default function DependenciesPage() {
       />
         </div>
       </div>
-    </div>
   );
 }

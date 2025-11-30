@@ -29,10 +29,10 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface-gray-50 via-surface-gray-100 to-surface-gray-50 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface-gray-50 via-surface-gray-100 to-surface-gray-50 p-4 sm:p-6">
       <div className="w-full max-w-[440px]">
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-surface-gray-200 p-10">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl border border-surface-gray-200 p-6 sm:p-10">
           <TabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
 
           {activeTab === "signin" ? (
