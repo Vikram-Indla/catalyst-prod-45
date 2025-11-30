@@ -265,6 +265,7 @@ const App = () => (
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/teams" element={<TeamsDirectory />} />
               <Route path="/teams/:teamId/room" element={<TeamRoomDetail />} />
+              <Route path="/teams/:teamId/work-tree" element={<WorkTreePage />} />
               <Route path="/team/:teamId/room" element={<TeamRoomDetail />} />
               
               {/* Team Routes - Placeholder Routes */}
@@ -272,6 +273,7 @@ const App = () => (
               <Route path="/team/:teamId/stories" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/roadmaps" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/objective-tree" element={<TeamOKRHub />} />
+              <Route path="/team/:teamId/work-tree" element={<WorkTreePage />} />
               <Route path="/team/:teamId/meetings" element={<TeamComingSoon />} />
               
               {/* Team More Items - Placeholder Routes */}
@@ -309,7 +311,7 @@ const App = () => (
               <Route path="/team/:teamId/reports/stories-by-state" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/reports/story-point-progress" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/reports/team-velocity-trend" element={<TeamComingSoon />} />
-              <Route path="/team/:teamId/reports/work-tree" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/reports/work-tree" element={<WorkTreePage />} />
               
               {/* Team More Pages - Placeholder Routes */}
               <Route path="/team/:teamId/pages/assessments" element={<TeamComingSoon />} />
