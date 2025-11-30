@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
-import { Logo } from '@/components/brand/Logo';
 import { TabSwitcher } from '@/components/auth/TabSwitcher';
 import { SignInForm } from '@/components/auth/SignInForm';
 import { SignUpForm } from '@/components/auth/SignUpForm';
-import catalystLogo from '@/assets/catalyst-logo.svg';
 
 export default function Auth() {
   const [activeTab, setActiveTab] = useState<"signin" | "signup">("signin");
@@ -32,10 +30,6 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface-gray-50 p-8">
       <div className="w-full max-w-[480px]">
-        <div className="text-center mb-10">
-          <Logo size="lg" className="justify-center" imageSrc={catalystLogo} />
-        </div>
-
         <div className="bg-white rounded-lg shadow-sm border border-surface-gray-200 p-8">
           <TabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
 
