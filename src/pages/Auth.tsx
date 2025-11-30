@@ -204,16 +204,6 @@ export default function Auth() {
 
         {/* Login Container */}
         <div className="w-full max-w-md relative z-10">
-          {/* Logo */}
-          <div className="flex justify-center mb-2">
-            <img 
-              src={catalystLogo} 
-              alt="Catalyst" 
-              className="w-auto"
-              style={{ height: '245px' }}
-            />
-          </div>
-
           {/* Login Header */}
           <h2 
             className="text-center mb-2"
