@@ -5,6 +5,7 @@
 import { useState, useMemo } from "react";
 import { Search, Filter, MoreVertical, Plus } from "lucide-react";
 import { useRisks } from "@/hooks/risks/useRisks";
+import { RisksSidebar } from "@/components/risks/RisksSidebar";
 import { Risk, RiskGridFilters } from "@/types/risks";
 import { RoamBadge } from "@/components/risks/RoamBadge";
 import { RiskDetailPanel } from "@/components/risks/RiskDetailPanel";
@@ -143,7 +144,9 @@ export default function RisksGridPage() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
+    <div className="flex h-full bg-background">
+      <RisksSidebar />
+      <div className="flex flex-col flex-1 overflow-hidden">
       {/* Page Header */}
       <div className="border-b bg-card px-6 py-4">
         <div className="flex items-center justify-between">
@@ -385,6 +388,7 @@ export default function RisksGridPage() {
         visibleColumns={visibleColumns}
         onColumnsChange={setVisibleColumns}
       />
+      </div>
     </div>
   );
 }

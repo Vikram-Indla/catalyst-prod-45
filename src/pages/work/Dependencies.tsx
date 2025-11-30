@@ -14,7 +14,7 @@ import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDet
 import { DependencyMatrix } from '@/components/dependencies/DependencyMatrix';
 import { DependencyWheelMap } from '@/components/dependencies/DependencyWheelMap';
 import { DependencyContextMenu } from '@/components/dependencies/DependencyContextMenu';
-import { ProgramRoomSidebar } from '@/components/program/ProgramRoomSidebar';
+import { DependenciesSidebar } from '@/components/dependencies/DependenciesSidebar';
 import { toast } from 'sonner';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -168,272 +168,275 @@ export default function DependenciesPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden">
-      <div className="h-full flex flex-col p-3 sm:p-4 md:p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-semibold">Dependencies</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
-          </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 border rounded-lg p-1">
-            <Button
-              variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setVisualizationMode('list')}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={visualizationMode === 'matrix' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setVisualizationMode('matrix')}
-            >
-              <Grid3x3 className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={visualizationMode === 'wheel' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => setVisualizationMode('wheel')}
-            >
-              <GitBranch className="h-4 w-4" />
-            </Button>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <MoreHorizontal className="h-4 w-4 mr-2" />
-                More Actions
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleExport}>
-                <Download className="h-4 w-4 mr-2" />
-                Export to CSV
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/reports/dependencies/maps')}>
-                View Dependency Maps
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate('/reports/dependencies/story-link-report')}>
-                Story Link Report
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button size="sm" onClick={handleAddDependency}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Dependency
-          </Button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-4">
-        <div className="relative sm:col-span-2">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search dependencies..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select value={piFilter} onValueChange={setPiFilter}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="All PIs" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All PIs</SelectItem>
-            {programIncrements?.map(pi => (
-              <SelectItem key={pi.id} value={pi.id}>{pi.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={levelFilter} onValueChange={setLevelFilter}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Levels" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Levels</SelectItem>
-            <SelectItem value="team">Team</SelectItem>
-            <SelectItem value="program">Program</SelectItem>
-            <SelectItem value="external">External</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Types" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="sequential">Sequential</SelectItem>
-            <SelectItem value="concurrent">Concurrent</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="All Statuses" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="pending_commit">Pending Commit</SelectItem>
-            <SelectItem value="negotiation">Negotiation</SelectItem>
-            <SelectItem value="committed">Committed</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="delivered">Delivered</SelectItem>
-            <SelectItem value="rejected">Rejected</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {/* Visualization Views */}
-      {visualizationMode === 'matrix' && (
-        <DependencyMatrix 
-          piId={piFilter} 
-          onDependencyClick={handleRowClick}
-        />
-      )}
-      
-      {visualizationMode === 'wheel' && (
-        <DependencyWheelMap 
-          piId={piFilter} 
-          onDependencyClick={handleRowClick}
-        />
-      )}
-
-      {visualizationMode === 'list' && (
-        <>
-          {/* View Mode Tabs */}
-          <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="mb-4">
-            <TabsList>
-              <TabsTrigger value="yourRequests">Your Requests</TabsTrigger>
-              <TabsTrigger value="toDo">To Do</TabsTrigger>
-              <TabsTrigger value="all">All</TabsTrigger>
-            </TabsList>
-          </Tabs>
-
-          {/* Dependencies Table */}
-          <Card className="flex-1 overflow-hidden">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full p-4">
-            <p className="text-muted-foreground text-sm">Loading dependencies...</p>
-          </div>
-        ) : !filteredDependencies?.length ? (
-          <div className="flex flex-col items-center justify-center h-full gap-4 p-4 sm:p-8">
-            <AlertTriangle className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground" />
-            <div className="text-center">
-              <h3 className="font-semibold text-base sm:text-lg mb-2">No Dependencies Found</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground mb-4">
-                Create your first dependency to track cross-team commitments
-              </p>
-              <Button onClick={handleAddDependency} size="sm">
+    <div className="flex h-full overflow-hidden">
+      <DependenciesSidebar />
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="h-full flex flex-col p-3 sm:p-4 md:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
+            <div>
+              <h1 className="text-xl sm:text-2xl font-semibold">Dependencies</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="flex items-center gap-1 border rounded-lg p-1">
+                <Button
+                  variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setVisualizationMode('list')}
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={visualizationMode === 'matrix' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setVisualizationMode('matrix')}
+                >
+                  <Grid3x3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={visualizationMode === 'wheel' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  onClick={() => setVisualizationMode('wheel')}
+                >
+                  <GitBranch className="h-4 w-4" />
+                </Button>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <MoreHorizontal className="h-4 w-4 mr-2" />
+                    More Actions
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleExport}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export to CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/reports/dependencies/maps')}>
+                    View Dependency Maps
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/reports/dependencies/story-link-report')}>
+                    Story Link Report
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button size="sm" onClick={handleAddDependency}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Dependency
               </Button>
             </div>
           </div>
-        ) : (
-          <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
-            <Table className="min-w-[800px]">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Action Required</TableHead>
-                  <TableHead>Requesting</TableHead>
-                  <TableHead>Requested For</TableHead>
-                  <TableHead>Depends On</TableHead>
-                  <TableHead>Level</TableHead>
-                  <TableHead>Need By</TableHead>
-                  <TableHead>Commit By</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Risk</TableHead>
-                  <TableHead className="w-12"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredDependencies.map((dep) => (
-                  <DependencyContextMenu
-                    key={dep.id}
-                    onEdit={() => handleRowClick(dep.id)}
-                    onDelete={async () => {
-                      if (confirm('Delete this dependency?')) {
-                        await supabase.from('dependencies').delete().eq('id', dep.id);
-                        queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
-                        toast.success('Dependency deleted');
-                      }
-                    }}
-                    onChangeStatus={async (status) => {
-                      await supabase.from('dependencies').update({ status: status as any }).eq('id', dep.id);
-                      queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
-                      toast.success('Status updated');
-                    }}
-                  >
-                    <TableRow
-                      className="cursor-pointer hover:bg-muted/50"
-                      onClick={() => handleRowClick(dep.id)}
-                    >
-                    <TableCell className="font-medium">
-                      {dep.from_feature?.name || dep.description || '-'}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {dep.requesting_team?.name || dep.requesting_program?.name || '-'}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {dep.to_feature?.name || dep.external_entity?.name || '-'}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {dep.depends_on_team?.name || dep.depends_on_program?.name || dep.external_entity?.name || '-'}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="text-xs capitalize">
-                        {dep.dependency_level || dep.type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {dep.needed_by_date || dep.needed_by_sprint?.name || '-'}
-                    </TableCell>
-                    <TableCell className="text-sm">
-                      {dep.committed_by_date || dep.committed_by_sprint?.name || '-'}
-                    </TableCell>
-                    <TableCell>
-                      {getStatusBadge(dep.status || 'open')}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={
-                          dep.risk_level === 'high' ? 'destructive' :
-                          dep.risk_level === 'med' ? 'secondary' :
-                          'outline'
-                        }
-                        className="text-xs"
-                      >
-                        {dep.risk_level?.toUpperCase()}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {(dep.blocked_requestor || dep.blocked_respondent) && (
-                        <AlertTriangle className="h-4 w-4 text-destructive" />
-                      )}
-                    </TableCell>
-                  </TableRow>
-                  </DependencyContextMenu>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-      </Card>
-        </>
-      )}
 
-      {/* Dependency Details Drawer */}
-      <DependencyDetailsDrawer
-        open={drawerOpen}
-        onClose={() => {
-          setDrawerOpen(false);
-          setSelectedDependencyId(undefined);
-        }}
-        dependencyId={selectedDependencyId}
-      />
+          {/* Filters */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-4">
+            <div className="relative sm:col-span-2">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search dependencies..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select value={piFilter} onValueChange={setPiFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All PIs" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All PIs</SelectItem>
+                {programIncrements?.map(pi => (
+                  <SelectItem key={pi.id} value={pi.id}>{pi.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={levelFilter} onValueChange={setLevelFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All Levels" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Levels</SelectItem>
+                <SelectItem value="team">Team</SelectItem>
+                <SelectItem value="program">Program</SelectItem>
+                <SelectItem value="external">External</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={typeFilter} onValueChange={setTypeFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All Types" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Types</SelectItem>
+                <SelectItem value="sequential">Sequential</SelectItem>
+                <SelectItem value="concurrent">Concurrent</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All Statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="pending_commit">Pending Commit</SelectItem>
+                <SelectItem value="negotiation">Negotiation</SelectItem>
+                <SelectItem value="committed">Committed</SelectItem>
+                <SelectItem value="in_progress">In Progress</SelectItem>
+                <SelectItem value="delivered">Delivered</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Visualization Views */}
+          {visualizationMode === 'matrix' && (
+            <DependencyMatrix 
+              piId={piFilter} 
+              onDependencyClick={handleRowClick}
+            />
+          )}
+          
+          {visualizationMode === 'wheel' && (
+            <DependencyWheelMap 
+              piId={piFilter} 
+              onDependencyClick={handleRowClick}
+            />
+          )}
+
+          {visualizationMode === 'list' && (
+            <>
+              {/* View Mode Tabs */}
+              <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as any)} className="mb-4">
+                <TabsList>
+                  <TabsTrigger value="yourRequests">Your Requests</TabsTrigger>
+                  <TabsTrigger value="toDo">To Do</TabsTrigger>
+                  <TabsTrigger value="all">All</TabsTrigger>
+                </TabsList>
+              </Tabs>
+
+              {/* Dependencies Table */}
+              <Card className="flex-1 overflow-hidden">
+                {isLoading ? (
+                  <div className="flex items-center justify-center h-full p-4">
+                    <p className="text-muted-foreground text-sm">Loading dependencies...</p>
+                  </div>
+                ) : !filteredDependencies?.length ? (
+                  <div className="flex flex-col items-center justify-center h-full gap-4 p-4 sm:p-8">
+                    <AlertTriangle className="h-8 w-8 sm:h-12 sm:w-12 text-muted-foreground" />
+                    <div className="text-center">
+                      <h3 className="font-semibold text-base sm:text-lg mb-2">No Dependencies Found</h3>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-4">
+                        Create your first dependency to track cross-team commitments
+                      </p>
+                      <Button onClick={handleAddDependency} size="sm">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Dependency
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight: 'calc(100vh - 320px)' }}>
+                    <Table className="min-w-[800px]">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Action Required</TableHead>
+                          <TableHead>Requesting</TableHead>
+                          <TableHead>Requested For</TableHead>
+                          <TableHead>Depends On</TableHead>
+                          <TableHead>Level</TableHead>
+                          <TableHead>Need By</TableHead>
+                          <TableHead>Commit By</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Risk</TableHead>
+                          <TableHead className="w-12"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredDependencies.map((dep) => (
+                          <DependencyContextMenu
+                            key={dep.id}
+                            onEdit={() => handleRowClick(dep.id)}
+                            onDelete={async () => {
+                              if (confirm('Delete this dependency?')) {
+                                await supabase.from('dependencies').delete().eq('id', dep.id);
+                                queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
+                                toast.success('Dependency deleted');
+                              }
+                            }}
+                            onChangeStatus={async (status) => {
+                              await supabase.from('dependencies').update({ status: status as any }).eq('id', dep.id);
+                              queryClient.invalidateQueries({ queryKey: ['dependencies-grid'] });
+                              toast.success('Status updated');
+                            }}
+                          >
+                            <TableRow
+                              className="cursor-pointer hover:bg-muted/50"
+                              onClick={() => handleRowClick(dep.id)}
+                            >
+                              <TableCell className="font-medium">
+                                {dep.from_feature?.name || dep.description || '-'}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {dep.requesting_team?.name || dep.requesting_program?.name || '-'}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {dep.to_feature?.name || dep.external_entity?.name || '-'}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {dep.depends_on_team?.name || dep.depends_on_program?.name || dep.external_entity?.name || '-'}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className="text-xs capitalize">
+                                  {dep.dependency_level || dep.type}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {dep.needed_by_date || dep.needed_by_sprint?.name || '-'}
+                              </TableCell>
+                              <TableCell className="text-sm">
+                                {dep.committed_by_date || dep.committed_by_sprint?.name || '-'}
+                              </TableCell>
+                              <TableCell>
+                                {getStatusBadge(dep.status || 'open')}
+                              </TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant={
+                                    dep.risk_level === 'high' ? 'destructive' :
+                                    dep.risk_level === 'med' ? 'secondary' :
+                                    'outline'
+                                  }
+                                  className="text-xs"
+                                >
+                                  {dep.risk_level?.toUpperCase()}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                {(dep.blocked_requestor || dep.blocked_respondent) && (
+                                  <AlertTriangle className="h-4 w-4 text-destructive" />
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          </DependencyContextMenu>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </Card>
+            </>
+          )}
+
+          {/* Dependency Details Drawer */}
+          <DependencyDetailsDrawer
+            open={drawerOpen}
+            onClose={() => {
+              setDrawerOpen(false);
+              setSelectedDependencyId(undefined);
+            }}
+            dependencyId={selectedDependencyId}
+          />
         </div>
       </div>
+    </div>
   );
 }
