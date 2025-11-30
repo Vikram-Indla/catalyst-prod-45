@@ -57,9 +57,10 @@ import RoadmapsWithSidebar from "./pages/program/RoadmapsWithSidebar";
 import FeaturesWithSidebar from "./pages/program/FeaturesWithSidebar";
 import ProgramIncrements from "./pages/ProgramIncrements";
 import PIObjectives from "./pages/PIObjectives";
-import ROAMBoard from "./pages/ROAMBoard";
 import CapacityPlanning from "./pages/CapacityPlanning";
 import Forecast from "./pages/Forecast";
+import RisksGridPage from "./pages/risks/RisksGridPage";
+import RiskRoamReportPage from "./pages/risks/RiskRoamReportPage";
 import TeamRoom from "./pages/TeamRoom";
 import TeamRoomDetail from "./pages/TeamRoomDetail";
 import TeamsDirectory from "./pages/TeamsDirectory";
@@ -254,8 +255,9 @@ const App = () => (
               <Route path="/programs/program-board" element={<Navigate to="/home" replace />} />
               <Route path="/programs/program-board/history" element={<ProgramBoardHistory />} />
               <Route path="/pi-objectives" element={<PIObjectives />} />
-              <Route path="/roam" element={<ROAMBoard />} />
               <Route path="/capacity" element={<CapacityPlanning />} />
+              <Route path="/risks" element={<RisksGridPage />} />
+              <Route path="/risk-roam-report" element={<RiskRoamReportPage />} />
               <Route path="/release-train-calendar" element={<div className="p-8"><h1 className="text-2xl font-bold">Release Calendar</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/teams" element={<TeamsDirectory />} />

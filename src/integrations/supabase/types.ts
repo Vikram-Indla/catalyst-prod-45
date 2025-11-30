@@ -4002,67 +4002,99 @@ export type Database = {
       }
       risks: {
         Row: {
-          created_at: string | null
-          description: string | null
-          due_iteration_id: string | null
+          consequence: string | null
+          contingency: string | null
+          created_at: string
+          created_by: string
+          critical_path: string | null
+          deleted_at: string | null
+          description: string
           id: string
-          impact: number | null
-          name: string
-          owner_id: string | null
-          pi_id: string
-          probability: number | null
+          impact: string | null
+          mitigation: string | null
+          notify: string | null
+          occurrence: string | null
+          owner_id: string
           program_id: string
-          roam_status: Database["public"]["Enums"]["roam_status"]
-          updated_at: string | null
+          program_increment_id: string
+          related_item_id: string | null
+          relationship: string
+          resolution_method: string
+          resolution_status: string | null
+          risk_number: number
+          status: string
+          tags: string | null
+          target_resolution_date: string | null
+          title: string
+          updated_at: string
         }
         Insert: {
-          created_at?: string | null
-          description?: string | null
-          due_iteration_id?: string | null
+          consequence?: string | null
+          contingency?: string | null
+          created_at?: string
+          created_by: string
+          critical_path?: string | null
+          deleted_at?: string | null
+          description: string
           id?: string
-          impact?: number | null
-          name: string
-          owner_id?: string | null
-          pi_id: string
-          probability?: number | null
+          impact?: string | null
+          mitigation?: string | null
+          notify?: string | null
+          occurrence?: string | null
+          owner_id: string
           program_id: string
-          roam_status: Database["public"]["Enums"]["roam_status"]
-          updated_at?: string | null
+          program_increment_id: string
+          related_item_id?: string | null
+          relationship: string
+          resolution_method?: string
+          resolution_status?: string | null
+          risk_number?: number
+          status?: string
+          tags?: string | null
+          target_resolution_date?: string | null
+          title: string
+          updated_at?: string
         }
         Update: {
-          created_at?: string | null
-          description?: string | null
-          due_iteration_id?: string | null
+          consequence?: string | null
+          contingency?: string | null
+          created_at?: string
+          created_by?: string
+          critical_path?: string | null
+          deleted_at?: string | null
+          description?: string
           id?: string
-          impact?: number | null
-          name?: string
-          owner_id?: string | null
-          pi_id?: string
-          probability?: number | null
+          impact?: string | null
+          mitigation?: string | null
+          notify?: string | null
+          occurrence?: string | null
+          owner_id?: string
           program_id?: string
-          roam_status?: Database["public"]["Enums"]["roam_status"]
-          updated_at?: string | null
+          program_increment_id?: string
+          related_item_id?: string | null
+          relationship?: string
+          resolution_method?: string
+          resolution_status?: string | null
+          risk_number?: number
+          status?: string
+          tags?: string | null
+          target_resolution_date?: string | null
+          title?: string
+          updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "risks_due_iteration_id_fkey"
-            columns: ["due_iteration_id"]
-            isOneToOne: false
-            referencedRelation: "iterations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "risks_pi_id_fkey"
-            columns: ["pi_id"]
-            isOneToOne: false
-            referencedRelation: "program_increments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "risks_program_id_fkey"
+            foreignKeyName: "fk_program"
             columns: ["program_id"]
             isOneToOne: false
             referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fk_program_increment"
+            columns: ["program_increment_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
             referencedColumns: ["id"]
           },
         ]
