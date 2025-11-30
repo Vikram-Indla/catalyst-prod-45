@@ -157,16 +157,16 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
   // Calculate segment angles
   const segmentAngle = (2 * Math.PI) / nodes.length;
   
-  // Catalyst theme colors - teal/blue-gray palette matching brand aesthetic
+  // Catalyst theme colors - Gold and neutral grays ONLY (NO BLUE)
   const colors = [
-    'hsl(195, 52%, 62%)', // Light teal #68bbd4
-    'hsl(195, 45%, 58%)', // Medium teal #5dadc4
-    'hsl(195, 38%, 54%)', // Muted teal #5a9fb0
-    'hsl(195, 32%, 50%)', // Deep teal #568a9b
-    'hsl(195, 48%, 60%)', // Bright teal #66b5cc
-    'hsl(195, 40%, 56%)', // Mid teal #5da4b5
-    'hsl(195, 35%, 52%)', // Steel teal #588f9f
-    'hsl(195, 42%, 58%)', // Soft teal #5faabb
+    'hsl(35, 46%, 60%)',   // Brand gold
+    'hsl(35, 41%, 55%)',   // Brand gold hover
+    'hsl(217, 13%, 35%)',  // Neutral 600 (dark gray)
+    'hsl(216, 16%, 27%)',  // Neutral 700 (darker gray)
+    'hsl(35, 38%, 50%)',   // Deeper gold
+    'hsl(217, 19%, 20%)',  // Neutral 800 (very dark gray)
+    'hsl(35, 35%, 45%)',   // Dark gold
+    'hsl(217, 19%, 16%)',  // Neutral 900 (near black)
   ];
   
   // Create segments for each node
