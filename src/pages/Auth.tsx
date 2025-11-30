@@ -185,11 +185,17 @@ export default function Auth() {
         {/* Login Container */}
         <div className="w-full max-w-md relative z-10">
           {/* Logo */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center items-start mb-6">
             <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
             height: "140px",
             filter: "brightness(1.2)"
           }} />
+            <sup className="ml-1 mt-1" style={{
+            fontFamily: "'DM Sans', sans-serif",
+            fontSize: "0.625rem",
+            color: "rgba(26, 26, 26, 0.5)",
+            fontWeight: 500
+          }}>™</sup>
           </div>
 
           {/* Login Header */}
