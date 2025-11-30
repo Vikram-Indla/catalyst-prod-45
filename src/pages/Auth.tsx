@@ -37,7 +37,7 @@ export default function Auth() {
           <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-gold/20 via-brand-gold to-brand-gold/20" />
           
           {/* Logo */}
-          <div className="flex justify-center mb-0">
+          <div className="flex justify-center">
             <img src={catalystLogo} alt="Catalyst" className="h-40 sm:h-48 w-auto" />
           </div>
           
