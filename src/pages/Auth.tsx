@@ -183,7 +183,7 @@ export default function Auth() {
       }} />
 
         {/* Login Container */}
-        <div className="w-full max-w-md relative z-10">
+        <div className="w-full max-w-md relative z-10" style={{ marginTop: "8rem" }}>
           {/* Logo */}
           <div className="flex justify-center mb-3">
             <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
