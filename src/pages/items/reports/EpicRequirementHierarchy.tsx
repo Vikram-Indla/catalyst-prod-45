@@ -323,7 +323,7 @@ export default function EpicRequirementHierarchy() {
               <div className="text-sm text-muted-foreground mt-1">Subtasks</div>
             </Card>
             <Card className="p-4 text-center">
-              <div className="text-3xl font-bold text-purple-600">
+              <div className="text-3xl font-bold text-primary">
                 {(features?.length || 0) + (stories?.length || 0) + (subtasks?.length || 0)}
               </div>
               <div className="text-sm text-muted-foreground mt-1">Total Items</div>

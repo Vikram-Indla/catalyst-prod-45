@@ -156,9 +156,9 @@ export default function Dependencies() {
             </div>
           </div>
         </Card>
-        <Card className="p-4 border-amber-500/20">
+        <Card className="p-4 border-warning/20">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="h-8 w-8 text-amber-500" />
+            <AlertTriangle className="h-8 w-8 text-warning" />
             <div>
               <div className="text-2xl font-bold">{stats.open}</div>
               <div className="text-sm text-muted-foreground">Open</div>
