@@ -1,1 +1,4 @@
 project_id = "bijeobdozhjdsdgxtmsp"
+
+[functions.jira-test-connection]
+verify_jwt = false
