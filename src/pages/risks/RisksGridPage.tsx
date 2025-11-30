@@ -274,6 +274,10 @@ export default function RisksGridPage() {
           risk={selectedRisk}
           isOpen={!!selectedRisk}
           onClose={() => setSelectedRisk(null)}
+          onUpdate={(updates) => {
+            updateRisk(updates as any);
+            setSelectedRisk(null);
+          }}
         />
       )}
 
