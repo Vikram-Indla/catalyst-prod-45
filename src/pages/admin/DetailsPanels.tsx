@@ -1,35 +1,359 @@
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 /**
- * Details Panels Settings Page - Display and require fields per work item type
- * Source: Administration guide PDF, Page 12-13
+ * Details Panels Configuration Page - Configure detail panel layouts
+ * Source: Administration guide PDF, Application Settings section, Pages 12-13
  */
 export default function DetailsPanels() {
   return (
     <AdminGuard>
       <div className="p-6 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Details Panels Settings</h1>
-          <p className="text-muted-foreground mt-2">
-            Customize field settings on work items. Specify visible/required fields per portfolio and work item type.
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Details Panels</h1>
+            <p className="text-muted-foreground mt-2">
+              Configure detail panel layouts and visible fields for work items
+            </p>
+          </div>
+          <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+            Save Changes
+          </Button>
         </div>
+
+        <Tabs defaultValue="epics" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="epics">Epics</TabsTrigger>
+            <TabsTrigger value="features">Features</TabsTrigger>
+            <TabsTrigger value="stories">Stories</TabsTrigger>
+            <TabsTrigger value="defects">Defects</TabsTrigger>
+            <TabsTrigger value="tasks">Tasks</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="epics" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Epic Details Panel Configuration</CardTitle>
+                <CardDescription>
+                  Configure which fields and tabs appear in epic detail panels
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Core Fields</h3>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Show Epic Key</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Owner</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Status</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Progress</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Dates (Start/End)</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Portfolio</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Program</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Estimation Fields</h3>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Show SWAG Estimate</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Story Points</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show WSJF Score</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Available Tabs</h3>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Details Tab</Label>
+                      <Switch defaultChecked disabled />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Children Tab</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Benefits Tab</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Value Metrics Tab</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Milestones Tab</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Spend Tab</Label>
+                      <Switch />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Forecast Tab</Label>
+                      <Switch />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Discussion Tab</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="features" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Feature Details Panel Configuration</CardTitle>
+                <CardDescription>
+                  Configure which fields and tabs appear in feature detail panels
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Core Fields</h3>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Show Feature ID</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Epic</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Status</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Team</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Sprint</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Story Points</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="stories" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Story Details Panel Configuration</CardTitle>
+                <CardDescription>
+                  Configure which fields and tabs appear in story detail panels
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Core Fields</h3>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Show Story ID</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Feature</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Status</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Assignee</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Sprint</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Story Points</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Acceptance Criteria</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="defects" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Defect Details Panel Configuration</CardTitle>
+                <CardDescription>
+                  Configure which fields and tabs appear in defect detail panels
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Core Fields</h3>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Show Defect ID</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Severity</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Priority</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Found In Release</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Fixed In Release</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="tasks" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Task Details Panel Configuration</CardTitle>
+                <CardDescription>
+                  Configure which fields and tabs appear in task detail panels
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Core Fields</h3>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between">
+                      <Label>Show Task ID</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Parent Story</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Status</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Assignee</Label>
+                      <Switch defaultChecked />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <Label>Show Effort (Hours)</Label>
+                      <Switch defaultChecked />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         <Card>
           <CardHeader>
-            <CardTitle>Field Configuration</CardTitle>
+            <CardTitle>Global Panel Settings</CardTitle>
             <CardDescription>
-              Supported work items: Themes, Capabilities, Epics, Features, Stories, Tasks, Defects, Test Cases, Objectives, Dependencies, Risks, Success Criteria
+              Settings that apply to all detail panels
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
-              TODO: Portfolio dropdown, Work Item dropdown, tabs for multiple panels, Active/Required toggles, Add Custom Field button, Restore Defaults button, Save button (needs confirmation - source: pg 12-13)
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Custom field types: Custom Text Input (up to 2), Custom Dropdown (up to 3), Custom Text Area (1), Custom Multi Dropdown (up to 2). Custom fields identified by gear icon.
-            </p>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Label>Default Panel Width</Label>
+              <Select defaultValue="medium">
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="small">Small (400px)</SelectItem>
+                  <SelectItem value="medium">Medium (600px)</SelectItem>
+                  <SelectItem value="large">Large (800px)</SelectItem>
+                  <SelectItem value="full">Full Width</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Show custom fields</Label>
+                <p className="text-sm text-muted-foreground">
+                  Display custom field sections in detail panels
+                </p>
+              </div>
+              <Switch defaultChecked />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Show audit history</Label>
+                <p className="text-sm text-muted-foreground">
+                  Display change history at bottom of panels
+                </p>
+              </div>
+              <Switch defaultChecked />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Enable inline editing</Label>
+                <p className="text-sm text-muted-foreground">
+                  Allow direct field editing in detail panels
+                </p>
+              </div>
+              <Switch defaultChecked />
+            </div>
           </CardContent>
         </Card>
       </div>
