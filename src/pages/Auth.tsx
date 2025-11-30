@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { Loader2 } from 'lucide-react';
-import catalystLogo from '@/assets/catalyst-logo.png';
+import catalystLogoFull from '@/assets/catalyst-logo-full.png';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -204,6 +204,16 @@ export default function Auth() {
 
         {/* Login Container */}
         <div className="w-full max-w-md relative z-10">
+          {/* Logo */}
+          <div className="flex justify-center mb-8">
+            <img 
+              src={catalystLogoFull} 
+              alt="Catalyst" 
+              className="w-auto"
+              style={{ height: '120px' }}
+            />
+          </div>
+
           {/* Login Header */}
           <h2 
             className="text-center mb-2"
