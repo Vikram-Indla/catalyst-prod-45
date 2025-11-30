@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { Loader2 } from "lucide-react";
-import catalystLogoFull from "@/assets/catalyst-logo-full.png";
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -188,12 +187,16 @@ export default function Auth() {
 
         {/* Logo - absolute positioned at top, doesn't affect form flow */}
         <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "16px" }}>
-          <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
-          height: "240px",
-          maxWidth: "90%",
-          objectFit: "contain",
-          filter: "brightness(1.2)"
-        }} />
+          <h1 style={{
+            fontFamily: "'Playfair Display', serif",
+            fontSize: "220px",
+            fontWeight: 600,
+            lineHeight: 1,
+            letterSpacing: "-0.02em"
+          }}>
+            <span style={{ color: "#1a1a1a" }}>Cata</span>
+            <span style={{ color: "#c69c6d" }}>lyst</span>
+          </h1>
         </div>
 
         {/* Login Container - positioned to align Welcome back with enterprise text */}
