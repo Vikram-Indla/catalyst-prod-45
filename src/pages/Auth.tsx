@@ -84,7 +84,8 @@ export default function Auth() {
               color: "rgba(254, 255, 255, 0.7)",
               textTransform: "uppercase",
               letterSpacing: "0.1em",
-              fontWeight: 500
+              fontWeight: 500,
+              whiteSpace: "nowrap"
             }}>
                 EFFICIENCY
               </div>
@@ -106,7 +107,8 @@ export default function Auth() {
               color: "rgba(254, 255, 255, 0.7)",
               textTransform: "uppercase",
               letterSpacing: "0.1em",
-              fontWeight: 500
+              fontWeight: 500,
+              whiteSpace: "nowrap"
             }}>
                 INTEGRATIONS
               </div>
@@ -128,7 +130,8 @@ export default function Auth() {
               color: "rgba(254, 255, 255, 0.7)",
               textTransform: "uppercase",
               letterSpacing: "0.1em",
-              fontWeight: 500
+              fontWeight: 500,
+              whiteSpace: "nowrap"
             }}>
                 AI INSIGHTS
               </div>
