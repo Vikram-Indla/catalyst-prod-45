@@ -272,13 +272,12 @@ export default function Stories() {
 
       {/* Details Panel */}
       {detailsOpen && selectedStory && (
-        <div className="fixed right-0 top-0 h-full w-[500px] border-l shadow-lg z-50">
-          <StoryDetailPanel
-            story={selectedStory}
-            onClose={() => setDetailsOpen(false)}
-            onUpdate={refetch}
-          />
-        </div>
+        <StoryDetailPanel
+          story={selectedStory}
+          open={detailsOpen}
+          onClose={() => setDetailsOpen(false)}
+          onUpdate={refetch}
+        />
       )}
 
       {/* Create/Edit Dialog */}
