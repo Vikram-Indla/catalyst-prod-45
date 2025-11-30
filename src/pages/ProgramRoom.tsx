@@ -68,51 +68,55 @@ export default function ProgramRoom() {
   }
 
   return (
-    <div className="p-3 sm:p-4 md:p-6">
+    <div className="h-full w-full flex flex-col bg-background overflow-hidden">
+      {/* Header */}
+      <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold">Program Room</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              For {program?.name}
+              {program?.portfolios && ` · ${program.portfolios.name}`}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm">Configuration</Button>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden sm:flex">Key Metrics</Button>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden md:flex">Run Meeting</Button>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden lg:flex">Close PI</Button>
+          </div>
+        </div>
+      </div>
+
       {isLoading ? (
-        <div className="space-y-4">
-          <Skeleton className="h-8 w-full max-w-md" />
-          <Skeleton className="h-4 w-full max-w-lg" />
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8">
-            <Skeleton className="h-40" />
-            <Skeleton className="h-40" />
-            <Skeleton className="h-40" />
+        <div className="flex-1 overflow-auto">
+          <div className="p-3 sm:p-4 md:p-6 space-y-4">
+            <Skeleton className="h-8 w-full max-w-md" />
+            <Skeleton className="h-4 w-full max-w-lg" />
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-8">
+              <Skeleton className="h-40" />
+              <Skeleton className="h-40" />
+              <Skeleton className="h-40" />
+            </div>
           </div>
         </div>
       ) : program ? (
-        <>
-          <div className="mb-4 sm:mb-6">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold mb-2">Program Room</h1>
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  For {program.name}
-                  {program.portfolios && ` · ${program.portfolios.name}`}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" className="text-xs sm:text-sm">Configuration</Button>
-                <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden sm:flex">Key Metrics</Button>
-                <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden md:flex">Run Meeting</Button>
-                <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden lg:flex">Close PI</Button>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-4 sm:space-y-6">
+        <div className="flex-1 overflow-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
             {/* Planning Checklist Card */}
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="text-3xl font-bold text-primary">40%</div>
-                  <div>
-                    <CardTitle>Program Increment Planning Checklist</CardTitle>
-                    <CardDescription>
-                      An optional quick-start guide for Program Increment planning
-                    </CardDescription>
+            <div className="lg:col-span-12">
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div className="text-3xl font-bold text-primary">40%</div>
+                    <div>
+                      <CardTitle className="text-sm font-semibold">Program Increment Planning Checklist</CardTitle>
+                      <CardDescription>
+                        An optional quick-start guide for Program Increment planning
+                      </CardDescription>
+                    </div>
                   </div>
-                </div>
-              </CardHeader>
+                </CardHeader>
               <CardContent>
                 <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                   <div className="p-4 border rounded-lg text-center hover:bg-accent/50 cursor-pointer">
@@ -137,16 +141,18 @@ export default function ProgramRoom() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+              </Card>
+            </div>
 
             {/* Iterations Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  Iterations
-                  <AlertTriangle className="h-4 w-4 text-warning" />
-                </CardTitle>
-              </CardHeader>
+            <div className="lg:col-span-6">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    Iterations
+                    <AlertTriangle className="h-4 w-4 text-warning" />
+                  </CardTitle>
+                </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {[23, 24, 25, 26, 27].map((num) => (
@@ -165,16 +171,18 @@ export default function ProgramRoom() {
                 </div>
                 <Button variant="link" className="mt-4">View Program Board</Button>
               </CardContent>
-            </Card>
+              </Card>
+            </div>
 
             {/* Runway Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  Runway
-                  <AlertTriangle className="h-4 w-4 text-warning" />
-                </CardTitle>
-              </CardHeader>
+            <div className="lg:col-span-6">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    Runway
+                    <AlertTriangle className="h-4 w-4 text-warning" />
+                  </CardTitle>
+                </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center gap-4">
@@ -215,14 +223,16 @@ export default function ProgramRoom() {
                   </div>
                 </div>
               </CardContent>
-            </Card>
+              </Card>
+            </div>
 
             {/* Recent Features */}
             {features && features.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Features</CardTitle>
-                </CardHeader>
+              <div className="lg:col-span-12">
+                <Card>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm font-semibold">Recent Features</CardTitle>
+                  </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
                     {features.map((feature) => (
@@ -258,12 +268,13 @@ export default function ProgramRoom() {
                     ))}
                   </div>
                 </CardContent>
-              </Card>
+                </Card>
+              </div>
             )}
           </div>
-        </>
+        </div>
       ) : (
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center h-full">
           <p className="text-muted-foreground">Program not found</p>
         </div>
       )}
