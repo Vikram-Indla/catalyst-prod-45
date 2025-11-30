@@ -171,7 +171,7 @@ export default function Auth() {
       </div>
 
       {/* Right Panel - Login Panel */}
-      <div className="relative w-full md:w-[55%] flex items-start justify-center p-12 md:p-16 md:pt-16" style={{
+      <div className="relative w-full md:w-[55%] flex items-start justify-center p-12 md:p-16" style={{
       backgroundColor: "#feffff"
     }}>
         {/* Subtle background gradients */}
@@ -183,9 +183,9 @@ export default function Auth() {
       }} />
 
         {/* Login Container */}
-        <div className="w-full max-w-md relative z-10" style={{ marginTop: "8rem" }}>
+        <div className="w-full max-w-md relative z-10">
           {/* Logo */}
-          <div className="flex justify-center mb-3">
+          <div className="flex justify-center mb-16">
             <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
             height: "280px",
             filter: "brightness(1.2)"
