@@ -116,10 +116,10 @@ function BacklogItemRow({
   const actions = useBacklogActions(type);
 
   const healthColor = {
-    green: 'bg-green-500',
-    yellow: 'bg-yellow-500',
-    red: 'bg-red-500',
-    gray: 'bg-gray-400',
+    green: 'bg-success',
+    yellow: 'bg-warning',
+    red: 'bg-destructive',
+    gray: 'bg-muted-foreground',
   }[item.health || 'gray'];
 
   return (

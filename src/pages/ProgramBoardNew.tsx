@@ -565,7 +565,7 @@ export default function ProgramBoard() {
                       {sprintObjectives.map((objective, idx) => (
                         <div 
                           key={objective.id}
-                          className="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[9px] sm:text-[10px] font-medium cursor-pointer hover:bg-blue-200 transition-colors"
+                          className="inline-flex items-center gap-0.5 sm:gap-1 px-1.5 sm:px-2 py-0.5 bg-primary/10 text-primary rounded-full text-[9px] sm:text-[10px] font-medium cursor-pointer hover:bg-primary/20 transition-colors"
                           onClick={() => {
                             setSelectedItem(objective);
                             setQuickViewType('objective');
@@ -647,7 +647,7 @@ export default function ProgramBoard() {
                       <div className="w-full h-full bg-gradient-to-br from-cyan-500 to-cyan-700" />
                     )}
                   </div>
-                  <span className="text-[10px] sm:text-xs text-blue-600 hover:text-blue-700 cursor-pointer font-medium truncate">{team.name}</span>
+                  <span className="text-[10px] sm:text-xs text-primary hover:text-primary/80 cursor-pointer font-medium truncate">{team.name}</span>
                 </div>
                 <div className="w-28 sm:w-44 flex-shrink-0 py-2 sm:py-2.5 px-1.5 sm:px-2 border-r border-border bg-muted/5">
                   <div className={viewMode === 'small' ? 'flex flex-wrap gap-0.5 sm:gap-1' : 'space-y-1 sm:space-y-1.5'}>

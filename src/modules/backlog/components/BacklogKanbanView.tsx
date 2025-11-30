@@ -143,10 +143,10 @@ export function BacklogKanbanView({
                                     className={cn(
                                       'h-2 w-2 rounded-full',
                                       {
-                                        green: 'bg-green-500',
-                                        yellow: 'bg-yellow-500',
-                                        red: 'bg-red-500',
-                                        gray: 'bg-gray-400',
+                                        green: 'bg-success',
+                                        yellow: 'bg-warning',
+                                        red: 'bg-destructive',
+                                        gray: 'bg-muted-foreground',
                                       }[item.health]
                                     )}
                                   />

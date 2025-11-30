@@ -684,7 +684,7 @@ export default function Roadmaps() {
                         {item.dependenciesResolved ? (
                           <Check className="w-3 h-3" />
                         ) : (
-                          <Flag className="w-3 h-3 text-red-300" />
+                          <Flag className="w-3 h-3 text-destructive/70" />
                         )}
                       </div>
                     )}
@@ -734,7 +734,7 @@ export default function Roadmaps() {
         >
           <div className="font-semibold mb-1">{hoveredMilestone.name}</div>
           <div className="opacity-70">{new Date(hoveredMilestone.date).toLocaleDateString('en-US')}</div>
-          <div className={`text-[10px] mt-1 ${hoveredMilestone.completed ? 'text-green-300' : 'text-yellow-300'}`}>
+          <div className={`text-[10px] mt-1 ${hoveredMilestone.completed ? 'text-success' : 'text-warning'}`}>
             {hoveredMilestone.completed ? '✓ Completed' : 'Pending'}
           </div>
         </div>

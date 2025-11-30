@@ -138,9 +138,9 @@ export function EpicDetailsPanel({
                       </div>
                       {child.health && (
                         <div className={`h-2 w-2 rounded-full mt-1 ${
-                          child.health === 'green' ? 'bg-green-500' :
-                          child.health === 'yellow' ? 'bg-yellow-500' :
-                          child.health === 'red' ? 'bg-red-500' : 'bg-gray-400'
+                          child.health === 'green' ? 'bg-success' :
+                          child.health === 'yellow' ? 'bg-warning' :
+                          child.health === 'red' ? 'bg-destructive' : 'bg-muted-foreground'
                         }`} />
                       )}
                     </div>
