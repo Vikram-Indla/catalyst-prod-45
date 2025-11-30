@@ -25,8 +25,9 @@ export default function Auth() {
   };
   return <div className="min-h-screen flex flex-col md:flex-row">
       {/* Left Panel - Brand Panel */}
-      <div className="relative w-full md:w-[45%] flex flex-col justify-center p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] md:min-h-screen" style={{
-      backgroundColor: "#1a1a1a"
+      <div className="relative w-full md:w-[45%] flex flex-col justify-start p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] md:min-h-screen" style={{
+      backgroundColor: "#1a1a1a",
+      paddingTop: "clamp(100px, 15vh, 160px)"
     }}>
         {/* Decorative Gradient 1 */}
         <div className="absolute -top-24 -right-24 w-[350px] h-[350px] rounded-full pointer-events-none animate-float" style={{
@@ -191,7 +192,7 @@ export default function Auth() {
         </div>
 
         {/* Login Container - positioned to align Welcome back with enterprise text */}
-        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(80px, 15vw, 160px)" }}>
+        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(100px, 15vh, 160px)" }}>
           {/* Login Header */}
           <h2 className="text-center mb-2" style={{
           fontFamily: "'Playfair Display', serif",
