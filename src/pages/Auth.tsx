@@ -185,9 +185,10 @@ export default function Auth() {
         background: "radial-gradient(circle, rgba(198, 156, 109, 0.02) 0%, transparent 70%)"
       }} />
 
-        {/* Logo - absolute positioned at top, doesn't affect form flow */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "16px" }}>
-          <h1 style={{
+        {/* Login Container - positioned to align Welcome back with enterprise text */}
+        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(100px, 15vh, 160px)" }}>
+          {/* Catalyst Logo Text */}
+          <h1 className="text-center mb-8" style={{
             fontFamily: "'Playfair Display', serif",
             fontSize: "60px",
             fontWeight: 600,
@@ -197,10 +198,7 @@ export default function Auth() {
             <span style={{ color: "#1a1a1a" }}>Cata</span>
             <span style={{ color: "#c69c6d" }}>lyst</span>
           </h1>
-        </div>
-
-        {/* Login Container - positioned to align Welcome back with enterprise text */}
-        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(100px, 15vh, 160px)" }}>
+          
           {/* Login Header */}
           <h2 className="text-center mb-2" style={{
           fontFamily: "'Playfair Display', serif",
