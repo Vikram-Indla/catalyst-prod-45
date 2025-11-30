@@ -231,12 +231,15 @@ export default function Auth() {
         {/* Login Container */}
         <div className="w-full max-w-md relative z-10">
           {/* Logo */}
-          <div className="flex justify-center mb-20">
+          <div className="flex justify-center mb-32">
             <img 
               src={catalystLogoFull} 
               alt="Catalyst" 
               className="w-auto"
-              style={{ height: '144px' }}
+              style={{ 
+                height: '180px',
+                filter: 'brightness(1.2)'
+              }}
             />
           </div>
 
