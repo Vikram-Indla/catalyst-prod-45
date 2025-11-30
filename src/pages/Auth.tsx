@@ -61,10 +61,7 @@ export default function Auth() {
           fontSize: "1.1rem",
           color: "rgba(254, 255, 255, 0.65)",
           lineHeight: 1.8
-        }}>
-            Transform how your organization manages demand and delivery with intelligent automation and real-time
-            insights.
-          </p>
+        }}>Transform how your organization manages demand and delivery with intelligent workflows and real-time insights.</p>
 
           {/* Stats Section */}
           <div className="flex justify-center gap-16 pt-12" style={{
