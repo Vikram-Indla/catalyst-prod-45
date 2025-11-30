@@ -33,22 +33,23 @@ export function FeaturesBacklogHeader({
   return (
     <div className="border-b bg-card">
       {/* Title Row */}
-      <div className="px-6 py-4">
-        <div className="flex items-center justify-between">
+      <div className="px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold">Features</h1>
-            <p className="text-sm text-muted-foreground">Mid-level work items that deliver value to end users</p>
+            <h1 className="text-xl sm:text-2xl font-bold">Features</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Mid-level work items that deliver value to end users</p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button onClick={onCreateFeature} className="gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button onClick={onCreateFeature} className="gap-2 text-xs sm:text-sm" size="sm">
               <Plus className="h-4 w-4" />
-              Create Feature
+              <span className="hidden sm:inline">Create Feature</span>
+              <span className="sm:hidden">Create</span>
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
+                <Button variant="outline" className="gap-2 text-xs sm:text-sm" size="sm">
                   <MoreVertical className="h-4 w-4" />
-                  More Actions
+                  <span className="hidden sm:inline">More Actions</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -71,7 +72,7 @@ export function FeaturesBacklogHeader({
       </div>
 
       {/* Controls Row */}
-      <div className="px-6 py-3 border-t flex items-center justify-between gap-4">
+      <div className="px-3 sm:px-6 py-3 border-t flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-2">
           <div className="flex items-center border rounded-md">
             <Button
@@ -101,32 +102,32 @@ export function FeaturesBacklogHeader({
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <Button 
             variant="ghost" 
             size="sm" 
-            className="gap-2"
+            className="gap-2 text-xs sm:text-sm"
             onClick={onColumnsClick}
           >
             <Grid3x3 className="h-4 w-4" />
-            Columns
+            <span className="hidden sm:inline">Columns</span>
           </Button>
           <Button 
             variant="ghost" 
             size="sm" 
-            className="gap-2"
+            className="gap-2 text-xs sm:text-sm"
             onClick={onFiltersClick}
           >
             <Filter className="h-4 w-4" />
-            Filters
+            <span className="hidden sm:inline">Filters</span>
           </Button>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search features..."
+              placeholder="Search..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-9 w-[200px]"
+              className="pl-9 w-[140px] sm:w-[200px]"
             />
           </div>
         </div>

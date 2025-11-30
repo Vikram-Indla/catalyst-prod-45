@@ -48,13 +48,13 @@ export default function OrgSetup() {
   });
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Organization Setup</h1>
-        <p className="text-muted-foreground">Configure portfolios, programs, and teams</p>
+        <h1 className="text-2xl sm:text-3xl font-bold">Organization Setup</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Configure portfolios, programs, and teams</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
@@ -106,7 +106,8 @@ export default function OrgSetup() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <div className="overflow-x-auto">
+            <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -141,6 +142,7 @@ export default function OrgSetup() {
               ))}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
 
@@ -158,7 +160,8 @@ export default function OrgSetup() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <div className="overflow-x-auto">
+            <Table className="min-w-[700px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -195,6 +198,7 @@ export default function OrgSetup() {
               ))}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
 
@@ -212,7 +216,8 @@ export default function OrgSetup() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
+          <div className="overflow-x-auto">
+            <Table className="min-w-[700px]">
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -247,6 +252,7 @@ export default function OrgSetup() {
               ))}
             </TableBody>
           </Table>
+          </div>
         </CardContent>
       </Card>
 

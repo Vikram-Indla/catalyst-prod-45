@@ -64,11 +64,11 @@ export default function Stories() {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Stories</h1>
-          <p className="text-muted-foreground">All user stories across teams</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Stories</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">All user stories across teams</p>
         </div>
         <PermissionGuard requiredRole="user" showMessage={false}>
           <Button onClick={handleCreate}>
@@ -78,15 +78,15 @@ export default function Stories() {
         </PermissionGuard>
       </div>
 
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         <Input
           placeholder="Search stories..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
+          className="w-full"
         />
         <Select value={statusFilter || undefined} onValueChange={(value) => setStatusFilter(value as typeof statusFilter)}>
-          <SelectTrigger className="w-[200px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>

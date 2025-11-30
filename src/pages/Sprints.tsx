@@ -72,11 +72,11 @@ export default function Sprints() {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Sprints</h1>
-          <p className="text-muted-foreground">Manage team sprints and iterations</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Sprints</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage team sprints and iterations</p>
         </div>
         <PermissionGuard requiredRole="team_lead" showMessage={false}>
           <Button onClick={handleCreate}>
@@ -86,7 +86,7 @@ export default function Sprints() {
         </PermissionGuard>
       </div>
 
-      <div className="flex gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
         <Input
           placeholder="Search sprints..."
           value={searchTerm}

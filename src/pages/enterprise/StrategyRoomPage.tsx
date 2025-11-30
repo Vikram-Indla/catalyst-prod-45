@@ -98,14 +98,16 @@ export default function StrategyRoomPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Star className="h-6 w-6 text-muted-foreground" />
-          <h1 className="text-2xl font-bold">Strategy Room</h1>
-          <span className="text-sm text-muted-foreground">for Snapshot</span>
-          <div className="w-64">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="flex items-center gap-3">
+            <Star className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
+            <h1 className="text-xl sm:text-2xl font-bold">Strategy Room</h1>
+          </div>
+          <span className="text-xs sm:text-sm text-muted-foreground">for Snapshot</span>
+          <div className="w-full sm:w-64">
             <Select value={effectiveSelectedSnapshotId} onValueChange={setSelectedSnapshotId}>
               <SelectTrigger>
                 <SelectValue placeholder="Select one" />
@@ -129,11 +131,12 @@ export default function StrategyRoomPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button 
             variant="outline" 
             size="sm"
             onClick={() => navigate('/enterprise/backlog')}
+            className="text-xs sm:text-sm"
           >
             Strategic Backlog
           </Button>
@@ -141,6 +144,7 @@ export default function StrategyRoomPage() {
             variant="outline" 
             size="sm"
             onClick={() => setExtraConfigsOpen(true)}
+            className="text-xs sm:text-sm"
           >
             <Filter className="h-4 w-4 mr-2" />
             Extra Configs
@@ -152,7 +156,7 @@ export default function StrategyRoomPage() {
       <MissionVisionValues snapshot={selectedSnapshot} />
 
       {/* Execution and Goals Widgets */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <ExecutionAgainstOutcomesWidget 
           snapshotId={effectiveSelectedSnapshotId} 
           piIds={selectedPIs} 
@@ -164,7 +168,7 @@ export default function StrategyRoomPage() {
       <StrategyPyramid onLayerClick={handlePyramidLayerClick} snapshotId={effectiveSelectedSnapshotId} />
 
       {/* Snapshot Progress and Misaligned Items */}
-      <div className="grid grid-cols-[1fr_400px] gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-4 sm:gap-6">
         <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
         <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
       </div>
