@@ -56,14 +56,21 @@ export default function Stories() {
       if (statusFilter) query = query.eq('status', statusFilter as any);
       
       // Advanced filters
-      if (advancedFilters.featureId) query = query.eq('feature_id', advancedFilters.featureId);
-      if (advancedFilters.teamId) query = query.eq('team_id', advancedFilters.teamId);
-      if (advancedFilters.sprintId) {
+      if (advancedFilters.featureId && advancedFilters.featureId !== 'all') {
+        query = query.eq('feature_id', advancedFilters.featureId);
+      }
+      if (advancedFilters.teamId && advancedFilters.teamId !== 'all') {
+        query = query.eq('team_id', advancedFilters.teamId);
+      }
+      if (advancedFilters.sprintId && advancedFilters.sprintId !== 'all') {
         if (advancedFilters.sprintId === 'backlog') {
           query = query.is('sprint_id', null);
         } else {
           query = query.eq('sprint_id', advancedFilters.sprintId);
         }
+      }
+      if (advancedFilters.status && advancedFilters.status !== 'all') {
+        query = query.eq('status', advancedFilters.status as any);
       }
       if (advancedFilters.minPoints) query = query.gte('estimate_points', parseInt(advancedFilters.minPoints));
       if (advancedFilters.maxPoints) query = query.lte('estimate_points', parseInt(advancedFilters.maxPoints));
