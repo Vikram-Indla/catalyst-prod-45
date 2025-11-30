@@ -186,7 +186,7 @@ export default function Auth() {
       }} />
 
         {/* Catalyst Logo Text - absolute positioned */}
-        <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "clamp(20px, 5vh, 40px)" }}>
+        <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "140px" }}>
           <h1 style={{
             fontFamily: "'Playfair Display', serif",
             fontSize: "60px",
