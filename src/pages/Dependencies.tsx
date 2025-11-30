@@ -123,21 +123,21 @@ export default function Dependencies() {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold">Dependencies</h1>
-          <p className="text-muted-foreground">Advanced dependency tracking with critical path analysis</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Dependencies</h1>
+          <p className="text-sm text-muted-foreground">Advanced dependency tracking with critical path analysis</p>
         </div>
         <PermissionGuard requiredRole="team_lead" showMessage={false}>
-          <Button onClick={() => { setEditingDependencyId(undefined); setDialogOpen(true); }}>
+          <Button onClick={() => { setEditingDependencyId(undefined); setDialogOpen(true); }} className="w-full sm:w-auto">
             <Plus className="h-4 w-4 mr-2" />
             Create Dependency
           </Button>
         </PermissionGuard>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
         <Card className="p-4">
           <div className="flex items-center gap-3">
             <ArrowRight className="h-8 w-8 text-muted-foreground" />
@@ -192,8 +192,8 @@ export default function Dependencies() {
           <TabsTrigger value="cross-program">Cross-Program</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="space-y-4">
-          <div className="flex gap-4">
+        <TabsContent value="all" className="space-y-3 sm:space-y-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Input
               placeholder="Search dependencies..."
               value={searchTerm}
@@ -224,7 +224,8 @@ export default function Dependencies() {
 
           <ListScreenToolbar selectedCount={selectedRows.size} />
 
-          <Table>
+          <div className="overflow-x-auto">
+            <Table className="min-w-[1000px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12"><Checkbox /></TableHead>
@@ -300,6 +301,7 @@ export default function Dependencies() {
               ))}
             </TableBody>
           </Table>
+          </div>
         </TabsContent>
 
         <TabsContent value="critical">

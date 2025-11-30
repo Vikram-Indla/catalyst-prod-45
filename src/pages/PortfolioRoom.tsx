@@ -76,22 +76,23 @@ export default function PortfolioRoom() {
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4 space-y-4 flex-shrink-0">
-        <div className="flex items-center justify-between">
+      <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold">Portfolio Room</h1>
-            <p className="text-sm text-muted-foreground">Strategic decision cockpit</p>
+            <h1 className="text-xl sm:text-2xl font-bold">Portfolio Room</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Strategic decision cockpit</p>
           </div>
           <PermissionGuard requiredRole="program_manager" showMessage={false}>
-            <Button onClick={() => setShowSnapshot(true)}>
+            <Button onClick={() => setShowSnapshot(true)} size="sm" className="w-full sm:w-auto">
               <Target className="h-4 w-4 mr-2" />
-              Strategic Snapshot
+              <span className="hidden sm:inline">Strategic Snapshot</span>
+              <span className="sm:hidden">Snapshot</span>
             </Button>
           </PermissionGuard>
         </div>
         
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
             <ScopeSelector value={selectedPortfolio} onChange={setSelectedPortfolio} />
             <PISelector 
               portfolioId={selectedPortfolio} 
@@ -101,11 +102,11 @@ export default function PortfolioRoom() {
           </div>
           
           {/* View Tabs */}
-          <Tabs defaultValue="execution" className="w-auto">
-            <TabsList>
-              <TabsTrigger value="financials">Financials</TabsTrigger>
-              <TabsTrigger value="resources">Resources</TabsTrigger>
-              <TabsTrigger value="execution">Execution</TabsTrigger>
+          <Tabs defaultValue="execution" className="w-full sm:w-auto">
+            <TabsList className="grid grid-cols-3 sm:flex">
+              <TabsTrigger value="financials" className="text-xs sm:text-sm">Financials</TabsTrigger>
+              <TabsTrigger value="resources" className="text-xs sm:text-sm">Resources</TabsTrigger>
+              <TabsTrigger value="execution" className="text-xs sm:text-sm">Execution</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
@@ -113,9 +114,9 @@ export default function PortfolioRoom() {
 
       {/* 3-Panel Layout - Per Catalyst spec: Left (Theme), Center (Epic/Timeline), Right (PI/Program) */}
       <div className="flex-1 overflow-auto">
-        <div className="grid grid-cols-12 gap-4 p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
           {/* LEFT PANEL - Theme Program Increment Progress */}
-          <div className="col-span-4">
+          <div className="lg:col-span-4">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-semibold">Theme Program Increment Progress</CardTitle>
@@ -145,7 +146,7 @@ export default function PortfolioRoom() {
           </div>
 
           {/* CENTER PANEL - Program Increment Roadmap */}
-          <div className="col-span-5">
+          <div className="lg:col-span-5">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-semibold">Program Increment Roadmap</CardTitle>
@@ -160,7 +161,7 @@ export default function PortfolioRoom() {
           </div>
 
           {/* RIGHT PANEL - PI Program Increment Progress */}
-          <div className="col-span-3">
+          <div className="lg:col-span-3">
             <Card>
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
@@ -194,29 +195,29 @@ export default function PortfolioRoom() {
           </div>
 
           {/* BOTTOM - Epic Grid */}
-          <div className="col-span-12 mt-2">
+          <div className="lg:col-span-12 mt-0 lg:mt-2">
             <Card>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                   <CardTitle className="text-sm font-semibold">Epic Backlog</CardTitle>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                     <input
                       type="search"
                       placeholder="Search by It"
-                      className="px-3 py-1 text-xs border rounded-md w-40"
+                      className="px-3 py-1 text-xs border rounded-md w-full sm:w-40"
                     />
-                    <select className="px-2 py-1 text-xs border rounded-md">
+                    <select className="px-2 py-1 text-xs border rounded-md w-full sm:w-auto">
                       <option>All work items</option>
                     </select>
-                    <Button variant="link" size="sm" className="text-xs text-primary">
+                    <Button variant="link" size="sm" className="text-xs text-primary hidden lg:flex">
                       Don't see the epic you are looking for?
                     </Button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="border rounded-md">
-                  <table className="w-full text-xs">
+                <div className="border rounded-md overflow-x-auto">
+                  <table className="w-full text-xs min-w-[800px]">
                     <thead className="bg-muted/30 border-b">
                       <tr>
                         <th className="text-left py-2 px-3 font-medium">Id</th>
