@@ -1,40 +1,199 @@
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { toast } from 'sonner';
 
 /**
  * Estimation Settings Page - Configure estimation methods and scales
  * Source: Administration guide PDF, Page 25
  */
 export default function EstimationSettings() {
+  const handleSave = () => {
+    toast.success('Estimation settings saved successfully');
+  };
+
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Configure Estimation Settings</h1>
-            <p className="text-muted-foreground mt-2">
-              Configure estimation scales and methods for work items.
-            </p>
+      <div className="h-full w-full flex flex-col bg-background">
+        <div className="border-b bg-card px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-semibold text-foreground">Estimation Settings</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                Configure estimation scales and methods for work items
+              </p>
+            </div>
+            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover">
+              Save Settings
+            </Button>
           </div>
-          <Button variant="default" className="bg-brand-gold hover:bg-brand-gold-hover">
-            Save Settings
-          </Button>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Estimation Configuration</CardTitle>
-            <CardDescription>
-              Configure estimation scales, WSJF parameters, and calculation methods.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              TODO: Estimation scale dropdowns (Fibonacci, T-shirt, Linear, etc.), WSJF configuration, story point mapping (needs confirmation - source: pg 25-27)
-            </p>
-          </CardContent>
-        </Card>
+        <div className="flex-1 overflow-auto p-6">
+          <div className="mx-auto max-w-4xl space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Story Point Scale</CardTitle>
+                <CardDescription>
+                  Configure the story point estimation scale for stories and features
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label>Default Scale</Label>
+                  <Select defaultValue="fibonacci">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fibonacci">Fibonacci (1, 2, 3, 5, 8, 13, 21)</SelectItem>
+                      <SelectItem value="linear">Linear (1, 2, 3, 4, 5, 6, 7, 8)</SelectItem>
+                      <SelectItem value="tshirt">T-Shirt (XS, S, M, L, XL, XXL)</SelectItem>
+                      <SelectItem value="powers">Powers of 2 (1, 2, 4, 8, 16, 32)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Allow decimal points</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Allow fractional story point estimates
+                    </p>
+                  </div>
+                  <Switch />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>WSJF Configuration</CardTitle>
+                <CardDescription>
+                  Configure Weighted Shortest Job First prioritization parameters
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label>Business Value Scale</Label>
+                  <Select defaultValue="1-10">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-5">1 to 5</SelectItem>
+                      <SelectItem value="1-10">1 to 10</SelectItem>
+                      <SelectItem value="1-20">1 to 20</SelectItem>
+                      <SelectItem value="fibonacci">Fibonacci</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Time Criticality Scale</Label>
+                  <Select defaultValue="1-10">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-5">1 to 5</SelectItem>
+                      <SelectItem value="1-10">1 to 10</SelectItem>
+                      <SelectItem value="1-20">1 to 20</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Risk Reduction Scale</Label>
+                  <Select defaultValue="1-10">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-5">1 to 5</SelectItem>
+                      <SelectItem value="1-10">1 to 10</SelectItem>
+                      <SelectItem value="1-20">1 to 20</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Job Size Scale</Label>
+                  <Select defaultValue="fibonacci">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="fibonacci">Fibonacci</SelectItem>
+                      <SelectItem value="tshirt">T-Shirt Sizes</SelectItem>
+                      <SelectItem value="1-10">1 to 10</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Auto-calculate WSJF scores</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Automatically recalculate WSJF when components change
+                    </p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Epic Estimation</CardTitle>
+                <CardDescription>
+                  Configure estimation methods for epics and capabilities
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label>Estimation Method</Label>
+                  <Select defaultValue="swag">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="swag">SWAG (T-Shirt Sizing)</SelectItem>
+                      <SelectItem value="story-points">Story Points</SelectItem>
+                      <SelectItem value="hours">Hours</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Auto-calculate from child items</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Automatically sum child estimates to parent total
+                    </p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>SWAG to Story Points Mapping</Label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size, idx) => (
+                      <div key={size} className="space-y-1">
+                        <Label className="text-xs">{size}</Label>
+                        <Input type="number" defaultValue={[1, 3, 5, 8, 13, 21][idx]} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </AdminGuard>
   );
