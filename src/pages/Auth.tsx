@@ -183,15 +183,17 @@ export default function Auth() {
       }} />
 
         {/* Login Container */}
-        <div className="w-full max-w-md relative z-10">
-          {/* Logo */}
-          <div className="flex justify-center mb-16">
+        <div className="w-full max-w-md relative z-10 h-full flex flex-col">
+          {/* Logo at top */}
+          <div className="flex justify-center pt-4 mb-auto">
             <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
             height: "280px",
             filter: "brightness(1.2)"
           }} />
           </div>
 
+          {/* Form content aligned with enterprise text */}
+          <div style={{ marginTop: "-12rem" }}>
           {/* Login Header */}
           <h2 className="text-center mb-2" style={{
           fontFamily: "'Playfair Display', serif",
@@ -355,6 +357,7 @@ export default function Auth() {
                 Request access
               </button>
             </p>
+          </div>
           </div>
         </div>
       </div>
