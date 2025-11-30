@@ -23,9 +23,9 @@ export default function Auth() {
       navigate("/home");
     }
   };
-  return <div className="min-h-screen flex flex-col md:flex-row">
+  return <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Panel - Brand Panel */}
-      <div className="hidden md:flex relative w-full md:w-[45%] flex-col justify-start p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] md:min-h-screen" style={{
+      <div className="hidden lg:flex relative w-full lg:w-[45%] flex-col justify-start p-6 sm:p-8 md:p-12 lg:p-16 overflow-hidden min-h-[40vh] lg:min-h-screen" style={{
       backgroundColor: "#1a1a1a",
       paddingTop: "clamp(100px, 15vh, 160px)"
     }}>
@@ -175,7 +175,7 @@ export default function Auth() {
       </div>
 
       {/* Right Panel - Login Panel */}
-      <div className="relative w-full p-6 sm:p-8 md:p-12 lg:p-16" style={{
+      <div className="relative w-full lg:w-[55%] p-6 sm:p-8 md:p-12 lg:p-16" style={{
       backgroundColor: "#feffff"
     }}>
         {/* Subtle background gradients */}
