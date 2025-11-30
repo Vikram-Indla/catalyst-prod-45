@@ -84,6 +84,8 @@ import Changes from "./pages/admin/Changes";
 import UseTrend from "./pages/admin/UseTrend";
 import UsageTrends from "./pages/admin/UsageTrends";
 import ChangesLog from "./pages/admin/ChangesLog";
+import ProgressBarsConfig from "./pages/admin/ProgressBarsConfig";
+import GeneralConfig from "./pages/admin/GeneralConfig";
 import WorkCodes from "./pages/admin/WorkCodes";
 import DetailsPanels from "./pages/admin/DetailsPanels";
 import Terminology from "./pages/admin/Terminology";
@@ -468,8 +470,10 @@ const App = () => (
                 <Route path="program-settings" element={<ProgramSettings />} />
                 <Route path="portfolio-settings" element={<PortfolioSettings />} />
                 <Route path="progress-bars" element={<ProgressBars />} />
+                <Route path="progress-bars-config" element={<ProgressBarsConfig />} />
                 <Route path="estimation-settings" element={<EstimationSettings />} />
                 <Route path="general-settings" element={<GeneralSettings />} />
+                <Route path="general-config" element={<GeneralConfig />} />
                 <Route path="security-settings" element={<SecuritySettings />} />
                 <Route path="announcements" element={<Announcements />} />
                 <Route path="users" element={<Users />} />

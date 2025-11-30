@@ -9,7 +9,8 @@ import {
   Shield,
   Database,
   FolderTree,
-  Megaphone
+  Megaphone,
+  BarChart3
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -34,8 +35,10 @@ const adminSections = [
       { label: 'Program Settings', path: '/admin/program-settings', icon: FolderTree },
       { label: 'Portfolio Settings', path: '/admin/portfolio-settings', icon: Building2 },
       { label: 'Progress Bars', path: '/admin/progress-bars', icon: TrendingUp },
+      { label: 'Progress Bars Config', path: '/admin/progress-bars-config', icon: BarChart3 },
       { label: 'Estimation', path: '/admin/estimation', icon: Settings },
       { label: 'General Settings', path: '/admin/general-settings', icon: Settings },
+      { label: 'General Config', path: '/admin/general-config', icon: Settings },
       { label: 'Security', path: '/admin/security', icon: Shield },
     ],
   },
