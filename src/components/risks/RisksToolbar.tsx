@@ -12,6 +12,8 @@ interface RisksToolbarProps {
   onFiltersClick: () => void;
   onExportClick: () => void;
   selectedCount: number;
+  onMassMoveClick?: () => void;
+  onColumnsClick?: () => void;
 }
 
 export function RisksToolbar({
@@ -21,6 +23,8 @@ export function RisksToolbar({
   onFiltersClick,
   onExportClick,
   selectedCount,
+  onMassMoveClick,
+  onColumnsClick,
 }: RisksToolbarProps) {
   return (
     <div className="flex items-center justify-between gap-4 px-6 py-3 border-b bg-card">
@@ -39,9 +43,21 @@ export function RisksToolbar({
 
       <div className="flex items-center gap-2">
         {selectedCount > 0 && (
-          <span className="text-sm text-text-muted mr-2">
-            {selectedCount} selected
-          </span>
+          <>
+            <span className="text-sm text-text-muted mr-2">
+              {selectedCount} selected
+            </span>
+            {onMassMoveClick && (
+              <Button variant="outline" size="sm" onClick={onMassMoveClick}>
+                Move to PI
+              </Button>
+            )}
+          </>
+        )}
+        {onColumnsClick && (
+          <Button variant="outline" size="sm" onClick={onColumnsClick}>
+            Columns
+          </Button>
         )}
         <Button variant="outline" size="sm" onClick={onExportClick}>
           <Download className="h-4 w-4 mr-2" />
