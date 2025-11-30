@@ -81,8 +81,8 @@ export function CatalystHeader() {
             </span>
           </div>
 
-          {/* Main Navigation - Centered on larger screens */}
-          <nav className="hidden lg:flex items-center gap-1 flex-1 justify-center max-w-4xl">
+          {/* Main Navigation - Visible on tablet and up */}
+          <nav className="hidden md:flex items-center gap-1 flex-1 justify-center max-w-4xl">
             {navItems.map((item) => (
               <div key={item.label}>
                 {item.label === "Portfolio" ? (
@@ -198,13 +198,13 @@ export function CatalystHeader() {
 
           {/* Right Side Actions - Compact on mobile, full on desktop */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Create Button - Desktop only, prominent placement */}
-            <div className="hidden lg:block">
+            {/* Create Button - Tablet and up */}
+            <div className="hidden md:block">
               <CreateDropdown />
             </div>
 
-            {/* Items Dropdown - Desktop only */}
-            <div className="hidden lg:block">
+            {/* Items Dropdown - Tablet and up */}
+            <div className="hidden md:block">
               <ItemsDropdown />
             </div>
 
