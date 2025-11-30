@@ -31,17 +31,6 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface-gray-50 via-surface-gray-100 to-surface-gray-50 p-6">
       <div className="w-full max-w-[440px]">
-        {/* Logo - Floating above card */}
-        <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-2xl shadow-md p-6 border border-surface-gray-200">
-            <img 
-              src={catalystLogo} 
-              alt="Catalyst" 
-              className="h-12 w-auto object-contain"
-            />
-          </div>
-        </div>
-
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl border border-surface-gray-200 p-10">
           <TabSwitcher activeTab={activeTab} onTabChange={setActiveTab} />
