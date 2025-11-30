@@ -13,6 +13,8 @@ import { ProjectMappingDialog } from "@/components/admin/jira/ProjectMappingDial
 import { SyncLogsViewer } from "@/components/admin/jira/SyncLogsViewer";
 import { SyncSettingsDialog } from "@/components/admin/jira/SyncSettingsDialog";
 import { WebhookSetupDialog } from "@/components/admin/jira/WebhookSetupDialog";
+import { StatusMappingDialog } from "@/components/admin/jira/StatusMappingDialog";
+import { HistoricalMigrationDialog } from "@/components/admin/jira/HistoricalMigrationDialog";
 
 interface JiraConnection {
   id: string;
@@ -35,6 +37,8 @@ export default function JiraIntegrationConfig() {
   const [showSyncLogs, setShowSyncLogs] = useState(false);
   const [showSyncSettings, setShowSyncSettings] = useState(false);
   const [showWebhookSetup, setShowWebhookSetup] = useState(false);
+  const [showStatusMapping, setShowStatusMapping] = useState(false);
+  const [showHistoricalMigration, setShowHistoricalMigration] = useState(false);
   const [editingConnection, setEditingConnection] = useState<any>(null);
   const [syncingConnection, setSyncingConnection] = useState<string | null>(null);
 
@@ -244,6 +248,30 @@ export default function JiraIntegrationConfig() {
                             size="sm"
                             onClick={(e) => {
                               e.stopPropagation();
+                              setSelectedConnection(conn.id);
+                              setShowStatusMapping(true);
+                            }}
+                            title="Status Mapping"
+                          >
+                            🔄
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedConnection(conn.id);
+                              setShowHistoricalMigration(true);
+                            }}
+                            title="Historical Migration"
+                          >
+                            📥
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
                               handleSync(conn.id);
                             }}
                             disabled={syncingConnection === conn.id}
@@ -319,6 +347,16 @@ export default function JiraIntegrationConfig() {
             <WebhookSetupDialog
               open={showWebhookSetup}
               onOpenChange={setShowWebhookSetup}
+              connectionId={selectedConnection}
+            />
+            <StatusMappingDialog
+              open={showStatusMapping}
+              onOpenChange={setShowStatusMapping}
+              connectionId={selectedConnection}
+            />
+            <HistoricalMigrationDialog
+              open={showHistoricalMigration}
+              onOpenChange={setShowHistoricalMigration}
               connectionId={selectedConnection}
             />
           </>

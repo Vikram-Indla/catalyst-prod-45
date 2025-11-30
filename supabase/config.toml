@@ -11,3 +11,9 @@ verify_jwt = false
 
 [functions.jira-webhook-handler]
 verify_jwt = false
+
+[functions.jira-fetch-statuses]
+verify_jwt = false
+
+[functions.jira-historical-migration]
+verify_jwt = false
