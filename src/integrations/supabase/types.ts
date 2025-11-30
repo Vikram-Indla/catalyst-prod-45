@@ -4499,6 +4499,57 @@ export type Database = {
           },
         ]
       }
+      story_links: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          external_title: string | null
+          external_url: string | null
+          from_story_id: string
+          id: string
+          link_type: string
+          to_story_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          external_title?: string | null
+          external_url?: string | null
+          from_story_id: string
+          id?: string
+          link_type: string
+          to_story_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          external_title?: string | null
+          external_url?: string | null
+          from_story_id?: string
+          id?: string
+          link_type?: string
+          to_story_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_links_from_story_id_fkey"
+            columns: ["from_story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "story_links_to_story_id_fkey"
+            columns: ["to_story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       strategic_goals: {
         Row: {
           created_at: string | null
@@ -5287,6 +5338,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      work_item_rankings: {
+        Row: {
+          context_id: string | null
+          context_type: string
+          created_at: string | null
+          id: string
+          pi_id: string | null
+          rank: number
+          updated_at: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          context_id?: string | null
+          context_type: string
+          created_at?: string | null
+          id?: string
+          pi_id?: string | null
+          rank: number
+          updated_at?: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          context_id?: string | null
+          context_type?: string
+          created_at?: string | null
+          id?: string
+          pi_id?: string | null
+          rank?: number
+          updated_at?: string | null
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: []
       }
       workflow_rules: {
         Row: {

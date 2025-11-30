@@ -18,9 +18,12 @@ import { StoriesToolbar } from '@/components/stories/StoriesToolbar';
 import { StoriesFiltersDialog } from '@/components/stories/StoriesFiltersDialog';
 import { StoriesColumnConfig } from '@/components/stories/StoriesColumnConfig';
 import { StoryQuickAdd } from '@/components/stories/StoryQuickAdd';
+import { StoriesListView } from '@/components/stories/StoriesListView';
+import { PullRankDialog } from '@/components/stories/PullRankDialog';
 import { Plus, List, LayoutGrid, Filter, Columns } from 'lucide-react';
 import { PermissionGuard } from '@/components/shared/PermissionGuard';
 import { STORY_STATUS_LABELS, StoryWithRelations } from '@/types/story.types';
+import { useWorkItemRanking } from '@/hooks/useWorkItemRanking';
 
 export default function Stories() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,6 +37,18 @@ export default function Stories() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [columnConfigOpen, setColumnConfigOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<any>({});
+  const [pullRankDialogOpen, setPullRankDialogOpen] = useState(false);
+
+  // Ranking context
+  const { detectRankingContext, pullRankFromParent, isRanking } = useWorkItemRanking('story', ['all-stories']);
+  const currentContext = detectRankingContext(
+    advancedFilters.teamId,
+    advancedFilters.sprintId,
+    advancedFilters.programId,
+    advancedFilters.piId,
+    advancedFilters.portfolioId
+  );
+  const hasActiveFilters = !!(searchTerm || statusFilter || Object.keys(advancedFilters).length > 0);
 
   // Check for create query parameter to auto-open dialog
   useEffect(() => {
@@ -113,6 +128,15 @@ export default function Stories() {
     }
   };
 
+  const handlePullRank = () => {
+    setPullRankDialogOpen(true);
+  };
+
+  const confirmPullRank = async () => {
+    await pullRankFromParent('feature', currentContext);
+    refetch();
+  };
+
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
@@ -182,7 +206,20 @@ export default function Stories() {
               selectedIds={Array.from(selectedRows)}
               onRefetch={refetch}
               onClearSelection={() => setSelectedRows(new Set())}
+              onPullRank={handlePullRank}
             />
+          </div>
+        )}
+        
+        {/* Ranking Context Info - Show always in list view */}
+        {viewMode === 'list' && selectedRows.size === 0 && (
+          <div className="px-4 pb-2">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>Context: {currentContext.label}</span>
+              {!hasActiveFilters && (
+                <span>Drag stories to reorder • Pull rank from Features</span>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -194,58 +231,15 @@ export default function Stories() {
             {/* Quick Add */}
             <StoryQuickAdd onSuccess={refetch} />
             
-            <div className="border rounded-lg bg-card">
-              <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">
-                    <Checkbox />
-                  </TableHead>
-                  <TableHead>Story</TableHead>
-                  <TableHead>Feature</TableHead>
-                  <TableHead>Sprint</TableHead>
-                  <TableHead>Team</TableHead>
-                  <TableHead>Points</TableHead>
-                  <TableHead>Assignee</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {stories?.map((story) => (
-                  <TableRow
-                    key={story.id}
-                    className="cursor-pointer"
-                    onClick={() => handleRowClick(story)}
-                  >
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={selectedRows.has(story.id)}
-                        onCheckedChange={() => handleRowSelect(story.id)}
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{story.name}</TableCell>
-                    <TableCell>{story.features?.name || '-'}</TableCell>
-                    <TableCell>{story.iterations?.name || 'Backlog'}</TableCell>
-                    <TableCell>{story.teams?.name || '-'}</TableCell>
-                    <TableCell>{story.estimate_points || '-'}</TableCell>
-                    <TableCell>Unassigned</TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="capitalize">
-                        {story.status ? STORY_STATUS_LABELS[story.status as keyof typeof STORY_STATUS_LABELS] : 'To Do'}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {!stories?.length && (
-                  <TableRow>
-                    <TableCell colSpan={8} className="text-center text-muted-foreground py-8">
-                      No stories found
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-            </div>
+            {/* List View with Ranking */}
+            <StoriesListView
+              stories={stories || []}
+              selectedRows={selectedRows}
+              onRowClick={handleRowClick}
+              onRowSelect={handleRowSelect}
+              context={currentContext}
+              isFilterActive={hasActiveFilters}
+            />
           </div>
         ) : (
           <StoriesKanbanView
@@ -286,6 +280,16 @@ export default function Stories() {
         open={columnConfigOpen}
         onOpenChange={setColumnConfigOpen}
         onApply={(columns) => console.log('Selected columns:', columns)}
+      />
+
+      {/* Pull Rank Dialog */}
+      <PullRankDialog
+        open={pullRankDialogOpen}
+        onOpenChange={setPullRankDialogOpen}
+        context={currentContext}
+        storyCount={stories?.length || 0}
+        onConfirm={confirmPullRank}
+        isLoading={isRanking}
       />
     </div>
   );
