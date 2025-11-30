@@ -184,7 +184,7 @@ export default function Auth() {
       }} />
 
         {/* Logo - absolute positioned at top, doesn't affect form flow */}
-        <div className="absolute top-2 sm:top-4 left-1/2 transform -translate-x-1/2 z-20">
+        <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "16px" }}>
           <img src={catalystLogoFull} alt="Catalyst" className="w-auto" style={{
           height: "clamp(120px, 20vw, 280px)",
           filter: "brightness(1.2)"
