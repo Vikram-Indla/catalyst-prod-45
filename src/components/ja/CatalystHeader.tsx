@@ -75,7 +75,7 @@ export function CatalystHeader() {
         <div className="flex h-14 items-center justify-between px-3 sm:px-6 gap-3">
           {/* Logo */}
           <div className="flex items-center gap-2 shrink-0 cursor-pointer" onClick={() => navigate('/home')}>
-            <span className="font-extrabold text-lg tracking-tight whitespace-nowrap">
+            <span className="font-extrabold text-xl tracking-tight whitespace-nowrap">
               <span className="text-foreground">Cata</span>
               <span className="text-brand-gold">lyst</span>
             </span>
