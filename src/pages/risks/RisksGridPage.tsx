@@ -11,6 +11,8 @@ import { RiskDetailPanel } from "@/components/risks/RiskDetailPanel";
 import { RiskFiltersDialog } from "@/components/risks/RiskFiltersDialog";
 import { CreateEditRiskPanel } from "@/components/risks/CreateEditRiskPanel";
 import { DeleteRiskDialog } from "@/components/risks/DeleteRiskDialog";
+import { MassMoveDialog } from "@/components/risks/MassMoveDialog";
+import { ColumnsDialog } from "@/components/risks/ColumnsDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -39,6 +41,11 @@ export default function RisksGridPage() {
   const [editingRisk, setEditingRisk] = useState<Risk | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [riskToDelete, setRiskToDelete] = useState<Risk | null>(null);
+  const [isMassMoveOpen, setIsMassMoveOpen] = useState(false);
+  const [isColumnsDialogOpen, setIsColumnsDialogOpen] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<string[]>([
+    'roam', 'title', 'pi', 'occurrence', 'impact', 'critical_path', 'status'
+  ]);
   const [filters, setFilters] = useState<RiskGridFilters>({
     program_increment_id: null,
     owner_id: null,
@@ -95,6 +102,14 @@ export default function RisksGridPage() {
       setIsDeleteDialogOpen(false);
       setRiskToDelete(null);
     }
+  };
+
+  const handleMassMove = (piId: string) => {
+    selectedRiskIds.forEach(riskId => {
+      updateRisk({ id: riskId, program_increment_id: piId });
+    });
+    setSelectedRiskIds([]);
+    setIsMassMoveOpen(false);
   };
 
   const handleExport = () => {
@@ -158,8 +173,15 @@ export default function RisksGridPage() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>Columns Shown</DropdownMenuItem>
-                <DropdownMenuItem>Mass Move</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsColumnsDialogOpen(true)}>
+                  Columns Shown
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  disabled={selectedRiskIds.length === 0}
+                  onClick={() => setIsMassMoveOpen(true)}
+                >
+                  Mass Move
+                </DropdownMenuItem>
                 <DropdownMenuItem 
                   disabled={selectedRiskIds.length === 0}
                   onClick={() => {
@@ -216,13 +238,13 @@ export default function RisksGridPage() {
               <TableRow>
                 <TableHead className="w-10">☆</TableHead>
                 <TableHead className="w-16">ID</TableHead>
-                <TableHead className="w-32">ROAM</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead className="w-32">PI</TableHead>
-                <TableHead className="w-20">Occ</TableHead>
-                <TableHead className="w-20">Imp</TableHead>
-                <TableHead className="w-24">Critical</TableHead>
-                <TableHead className="w-20">Status</TableHead>
+                {visibleColumns.includes('roam') && <TableHead className="w-32">ROAM</TableHead>}
+                {visibleColumns.includes('title') && <TableHead>Title</TableHead>}
+                {visibleColumns.includes('pi') && <TableHead className="w-32">PI</TableHead>}
+                {visibleColumns.includes('occurrence') && <TableHead className="w-20">Occ</TableHead>}
+                {visibleColumns.includes('impact') && <TableHead className="w-20">Imp</TableHead>}
+                {visibleColumns.includes('critical_path') && <TableHead className="w-24">Critical</TableHead>}
+                {visibleColumns.includes('status') && <TableHead className="w-20">Status</TableHead>}
                 <TableHead className="w-16">
                   <Checkbox />
                 </TableHead>
@@ -239,28 +261,41 @@ export default function RisksGridPage() {
                   <TableCell className="font-medium text-text-primary">
                     {risk.risk_number}
                   </TableCell>
-                  <TableCell>
-                    <RoamBadge status={risk.resolution_method} />
-                  </TableCell>
-                  <TableCell className="text-text-primary">
-                    {risk.title}
-                  </TableCell>
-                  <TableCell className="text-text-secondary">
-                    {/* PI Name would be fetched from join */}
-                    PI-{risk.program_increment_id.substring(0, 8)}
-                  </TableCell>
-                  <TableCell className="text-text-secondary">
-                    {risk.occurrence || '—'}
-                  </TableCell>
-                  <TableCell className="text-text-secondary">
-                    {risk.impact || '—'}
-                  </TableCell>
-                  <TableCell className="text-text-secondary">
-                    {risk.critical_path || '—'}
-                  </TableCell>
-                  <TableCell className="text-text-secondary">
-                    {risk.status}
-                  </TableCell>
+                  {visibleColumns.includes('roam') && (
+                    <TableCell>
+                      <RoamBadge status={risk.resolution_method} />
+                    </TableCell>
+                  )}
+                  {visibleColumns.includes('title') && (
+                    <TableCell className="text-text-primary">
+                      {risk.title}
+                    </TableCell>
+                  )}
+                  {visibleColumns.includes('pi') && (
+                    <TableCell className="text-text-secondary">
+                      PI-{risk.program_increment_id.substring(0, 8)}
+                    </TableCell>
+                  )}
+                  {visibleColumns.includes('occurrence') && (
+                    <TableCell className="text-text-secondary">
+                      {risk.occurrence || '—'}
+                    </TableCell>
+                  )}
+                  {visibleColumns.includes('impact') && (
+                    <TableCell className="text-text-secondary">
+                      {risk.impact || '—'}
+                    </TableCell>
+                  )}
+                  {visibleColumns.includes('critical_path') && (
+                    <TableCell className="text-text-secondary">
+                      {risk.critical_path || '—'}
+                    </TableCell>
+                  )}
+                  {visibleColumns.includes('status') && (
+                    <TableCell className="text-text-secondary">
+                      {risk.status}
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Checkbox
                       checked={selectedRiskIds.includes(risk.id)}
@@ -333,6 +368,22 @@ export default function RisksGridPage() {
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleDeleteConfirm}
         riskTitle={riskToDelete?.title || ''}
+      />
+
+      {/* Mass Move Dialog */}
+      <MassMoveDialog
+        isOpen={isMassMoveOpen}
+        onClose={() => setIsMassMoveOpen(false)}
+        onConfirm={handleMassMove}
+        selectedCount={selectedRiskIds.length}
+      />
+
+      {/* Columns Dialog */}
+      <ColumnsDialog
+        isOpen={isColumnsDialogOpen}
+        onClose={() => setIsColumnsDialogOpen(false)}
+        visibleColumns={visibleColumns}
+        onColumnsChange={setVisibleColumns}
       />
     </div>
   );
