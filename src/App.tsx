@@ -266,6 +266,83 @@ const App = () => (
               <Route path="/teams" element={<TeamsDirectory />} />
               <Route path="/teams/:teamId/room" element={<TeamRoomDetail />} />
               <Route path="/teams/:teamId/work-tree" element={<WorkTreePage />} />
+              <Route path="/teams/:teamId/backlog" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/board" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/objective-tree" element={<TeamOKRHub />} />
+              <Route path="/teams/:teamId/roadmaps" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/sprints" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/velocity" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/meetings" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/impediments" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/features" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/tasks" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/dependencies" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/risks" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/program-increments" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/release-vehicles" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/reports/stories-by-state" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/reports/story-point-progress" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/reports/team-velocity-trend" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/reports/work-tree" element={<WorkTreePage />} />
+              <Route path="/teams/:teamId/pages/assessments" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/pages/metrics" element={<TeamComingSoon />} />
+
+              {/* Portfolio Routes with :portfolioId */}
+              <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
+              <Route path="/portfolio/:portfolioId/objective-tree" element={<PortfolioOKRHub />} />
+              <Route path="/portfolio/:portfolioId/work-tree" element={<WorkTreePage />} />
+              <Route path="/portfolio/:portfolioId/backlog" element={<PortfolioBacklog />} />
+              <Route path="/portfolio/:portfolioId/roadmaps" element={<Roadmaps />} />
+              <Route path="/portfolio/:portfolioId/forecast" element={<Forecast />} />
+              <Route path="/portfolio/:portfolioId/capacity" element={<CapacityPlanning />} />
+              <Route path="/portfolio/:portfolioId/initiatives" element={<Initiatives />} />
+              <Route path="/portfolio/:portfolioId/features" element={<Features />} />
+              <Route path="/portfolio/:portfolioId/stories" element={<Stories />} />
+              <Route path="/portfolio/:portfolioId/defects" element={<Defects />} />
+              <Route path="/portfolio/:portfolioId/tasks" element={<Tasks />} />
+              <Route path="/portfolio/:portfolioId/dependencies" element={<DependenciesPage />} />
+              <Route path="/portfolio/:portfolioId/risks" element={<RisksGridPage />} />
+              <Route path="/portfolio/:portfolioId/impediments" element={<Impediments />} />
+              <Route path="/portfolio/:portfolioId/sprints" element={<Sprints />} />
+              <Route path="/portfolio/:portfolioId/program-increments" element={<ProgramIncrements />} />
+              <Route path="/portfolio/:portfolioId/release-vehicles" element={<ReleaseVehicles />} />
+              <Route path="/portfolio/:portfolioId/reports/epic-status" element={<EpicStatusReport />} />
+              <Route path="/portfolio/:portfolioId/reports/epic-trace" element={<EpicTraceReport />} />
+              <Route path="/portfolio/:portfolioId/reports/feature-status" element={<TeamComingSoon />} />
+              <Route path="/portfolio/:portfolioId/reports/health" element={<TeamComingSoon />} />
+              <Route path="/portfolio/:portfolioId/reports/work-tree" element={<WorkTreePage />} />
+              <Route path="/portfolio/:portfolioId/pages/assessments" element={<TeamComingSoon />} />
+              <Route path="/portfolio/:portfolioId/pages/metrics" element={<TeamComingSoon />} />
+              <Route path="/portfolio/:portfolioId/pages/meetings" element={<TeamComingSoon />} />
+
+              {/* Program Routes with :programId */}
+              <Route path="/programs/:programId/room" element={<ProgramRoom />} />
+              <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
+              <Route path="/programs/:programId/objective-tree" element={<ProgramOKRHub />} />
+              <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
+              <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
+              <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
+              <Route path="/programs/:programId/dependencies" element={<DependenciesPage />} />
+              <Route path="/programs/:programId/forecast" element={<ForecastWithSidebar />} />
+              <Route path="/programs/:programId/capacity" element={<CapacityWithSidebar />} />
+              <Route path="/programs/:programId/increments" element={<ProgramIncrements />} />
+              <Route path="/programs/:programId/epics" element={<Epics />} />
+              <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
+              <Route path="/programs/:programId/stories" element={<Stories />} />
+              <Route path="/programs/:programId/defects" element={<Defects />} />
+              <Route path="/programs/:programId/tasks" element={<Tasks />} />
+              <Route path="/programs/:programId/risks" element={<RisksGridPage />} />
+              <Route path="/programs/:programId/impediments" element={<Impediments />} />
+              <Route path="/programs/:programId/sprints" element={<Sprints />} />
+              <Route path="/programs/:programId/release-vehicles" element={<ReleaseVehicles />} />
+              <Route path="/programs/:programId/reports/feature-status" element={<TeamComingSoon />} />
+              <Route path="/programs/:programId/reports/board-history" element={<ProgramBoardHistory />} />
+              <Route path="/programs/:programId/reports/work-tree" element={<WorkTreePage />} />
+              <Route path="/programs/:programId/reports/pi-objectives" element={<PIObjectives />} />
+              <Route path="/programs/:programId/pages/assessments" element={<TeamComingSoon />} />
+              <Route path="/programs/:programId/pages/metrics" element={<TeamComingSoon />} />
+              <Route path="/programs/:programId/pages/meetings" element={<TeamComingSoon />} />
+              
               <Route path="/team/:teamId/room" element={<TeamRoomDetail />} />
               
               {/* Team Routes - Placeholder Routes */}
