@@ -3,13 +3,13 @@ import { Package } from "lucide-react";
 
 export default function ReleaseVehicles() {
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
-          <Package className="h-5 w-5 text-white" />
+    <div className="container mx-auto p-3 sm:p-4 md:p-6">
+      <div className="flex items-center gap-3 mb-4 sm:mb-6">
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded bg-muted flex items-center justify-center">
+          <Package className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
         </div>
-        <div>
-          <h1 className="text-3xl font-bold">Release Vehicles (Fix Versions)</h1>
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold">Release Vehicles (Fix Versions)</h1>
           <p className="text-muted-foreground">Manage release vehicles and fix versions</p>
         </div>
       </div>

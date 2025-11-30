@@ -139,25 +139,26 @@ export default function UserRoles() {
 
   return (
     <PermissionGuard requiredRole="admin">
-      <div className="container mx-auto py-8 space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">User Roles</h1>
+      <div className="container mx-auto p-3 sm:p-4 md:p-6 lg:p-8 space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-2">User Roles</h1>
           <p className="text-muted-foreground">Manage user roles and permissions</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button onClick={() => setBulkDialogOpen(true)} variant="outline">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button onClick={() => setBulkDialogOpen(true)} variant="outline" size="sm" className="text-xs sm:text-sm">
             <Shield className="h-4 w-4 mr-2" />
-            Bulk Assignment
+            <span className="hidden sm:inline">Bulk Assignment</span>
+            <span className="sm:hidden">Bulk</span>
           </Button>
-          <Shield className="h-8 w-8 text-primary" />
+          <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
         </div>
       </div>
 
       {/* Assign Role Section */}
-      <Card className="p-6">
-        <h2 className="text-xl font-semibold mb-4">Assign Role</h2>
-        <div className="flex gap-4">
+      <Card className="p-3 sm:p-4 md:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4">Assign Role</h2>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <Select value={selectedUserId} onValueChange={setSelectedUserId}>
             <SelectTrigger className="flex-1">
               <SelectValue placeholder="Select user..." />
