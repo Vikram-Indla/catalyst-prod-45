@@ -189,7 +189,7 @@ export default function Auth() {
         <div className="absolute left-1/2 transform -translate-x-1/2 z-20" style={{ top: "16px" }}>
           <h1 style={{
             fontFamily: "'Playfair Display', serif",
-            fontSize: "220px",
+            fontSize: "60px",
             fontWeight: 600,
             lineHeight: 1,
             letterSpacing: "-0.02em"
