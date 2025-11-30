@@ -93,6 +93,15 @@ import EstimationSettings from "./pages/admin/EstimationSettings";
 import GeneralSettings from "./pages/admin/GeneralSettings";
 import SecuritySettings from "./pages/admin/SecuritySettings";
 import Announcements from "./pages/admin/Announcements";
+import Users from "./pages/admin/Users";
+import SystemRoles from "./pages/admin/SystemRoles";
+import Cities from "./pages/admin/Cities";
+import Customers from "./pages/admin/Customers";
+import CostCenters from "./pages/admin/CostCenters";
+import Countries from "./pages/admin/Countries";
+import BusinessUnits from "./pages/admin/BusinessUnits";
+import Regions from "./pages/admin/Regions";
+import ThemeGroups from "./pages/admin/ThemeGroups";
 import ActivityLog from "./pages/admin/ActivityLog";
 import UserRoles from "./pages/admin/UserRoles";
 import ReportsDiscovery from "./pages/admin/ReportsDiscovery";
@@ -438,7 +447,6 @@ const App = () => (
               <Route path="/admin/integrations" element={<AdminGuard><Integrations /></AdminGuard>} />
               <Route path="/admin/activity-log" element={<AdminGuard><ActivityLog /></AdminGuard>} />
               
-              {/* Admin Module Routes - Jira Align parity */}
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="activity" element={<Activity />} />
                 <Route path="changes" element={<Changes />} />
@@ -454,6 +462,15 @@ const App = () => (
                 <Route path="general-settings" element={<GeneralSettings />} />
                 <Route path="security-settings" element={<SecuritySettings />} />
                 <Route path="announcements" element={<Announcements />} />
+                <Route path="users" element={<Users />} />
+                <Route path="system-roles" element={<SystemRoles />} />
+                <Route path="cities" element={<Cities />} />
+                <Route path="customers" element={<Customers />} />
+                <Route path="cost-centers" element={<CostCenters />} />
+                <Route path="countries" element={<Countries />} />
+                <Route path="business-units" element={<BusinessUnits />} />
+                <Route path="regions" element={<Regions />} />
+                <Route path="theme-groups" element={<ThemeGroups />} />
                 <Route path="jira-config" element={<JiraIntegrationConfig />} />
               </Route>
               
