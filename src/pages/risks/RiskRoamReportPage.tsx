@@ -12,6 +12,9 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { RoamColumn } from "@/components/risks/RoamColumn";
 import { ResolutionModal } from "@/components/risks/ResolutionModal";
+import { RiskDonutChart } from "@/components/risks/RiskDonutChart";
+import { ViewSettingsDialog } from "@/components/risks/ViewSettingsDialog";
+import { CHART_COLORS } from "@/constants/risks";
 
 export default function RiskRoamReportPage() {
   const { risks, isLoading, updateRisk } = useRisks();
@@ -29,6 +32,7 @@ export default function RiskRoamReportPage() {
   });
 
   const [newExperience, setNewExperience] = useState(true);
+  const [viewSettingsOpen, setViewSettingsOpen] = useState(false);
   
   const [resolutionModal, setResolutionModal] = useState<{
     isOpen: boolean;
@@ -138,7 +142,7 @@ export default function RiskRoamReportPage() {
               />
             </div>
             
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => setViewSettingsOpen(true)}>
               <Settings className="w-4 h-4 mr-2" />
               View settings
             </Button>
@@ -178,21 +182,19 @@ export default function RiskRoamReportPage() {
                 <h3 className="text-sm font-medium text-text-primary mb-4">
                   Open vs. closed
                 </h3>
-                <div className="flex items-center justify-center h-32">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-brand-gold">
-                      {openCount + closedCount}
-                    </div>
-                    <div className="text-sm text-text-muted">total</div>
-                  </div>
-                </div>
-                <div className="space-y-1 mt-4 text-sm">
+                <RiskDonutChart
+                  data={[
+                    { name: 'Open', value: openCount, color: CHART_COLORS.openVsClosed.Open },
+                    { name: 'Closed', value: closedCount, color: CHART_COLORS.openVsClosed.Closed },
+                  ]}
+                />
+                <div className="space-y-1 mt-2 text-sm">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-brand-gold"></div>
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.openVsClosed.Open }}></div>
                     <span className="text-text-secondary">Open - {openCount}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-success"></div>
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.openVsClosed.Closed }}></div>
                     <span className="text-text-secondary">Closed - {closedCount}</span>
                   </div>
                 </div>
@@ -204,18 +206,18 @@ export default function RiskRoamReportPage() {
                 <h3 className="text-sm font-medium text-text-primary mb-4">
                   Risk of occurrence
                 </h3>
-                <div className="flex items-center justify-center h-32">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-brand-gold">
-                      {Object.values(occurrenceCounts).reduce((a, b) => a + b, 0)}
-                    </div>
-                    <div className="text-sm text-text-muted">total</div>
-                  </div>
-                </div>
-                <div className="space-y-1 mt-4 text-sm">
+                <RiskDonutChart
+                  data={[
+                    { name: 'Critical', value: occurrenceCounts.Critical, color: CHART_COLORS.severity.Critical },
+                    { name: 'High', value: occurrenceCounts.High, color: CHART_COLORS.severity.High },
+                    { name: 'Medium', value: occurrenceCounts.Medium, color: CHART_COLORS.severity.Medium },
+                    { name: 'Low', value: occurrenceCounts.Low, color: CHART_COLORS.severity.Low },
+                  ]}
+                />
+                <div className="space-y-1 mt-2 text-sm">
                   {Object.entries(occurrenceCounts).map(([level, count]) => (
                     <div key={level} className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-brand-gold"></div>
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.severity[level as keyof typeof CHART_COLORS.severity] }}></div>
                       <span className="text-text-secondary">{level} - {count}</span>
                     </div>
                   ))}
@@ -228,18 +230,18 @@ export default function RiskRoamReportPage() {
                 <h3 className="text-sm font-medium text-text-primary mb-4">
                   Impact of occurrence
                 </h3>
-                <div className="flex items-center justify-center h-32">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-brand-gold">
-                      {Object.values(impactCounts).reduce((a, b) => a + b, 0)}
-                    </div>
-                    <div className="text-sm text-text-muted">total</div>
-                  </div>
-                </div>
-                <div className="space-y-1 mt-4 text-sm">
+                <RiskDonutChart
+                  data={[
+                    { name: 'Critical', value: impactCounts.Critical, color: CHART_COLORS.severity.Critical },
+                    { name: 'High', value: impactCounts.High, color: CHART_COLORS.severity.High },
+                    { name: 'Medium', value: impactCounts.Medium, color: CHART_COLORS.severity.Medium },
+                    { name: 'Low', value: impactCounts.Low, color: CHART_COLORS.severity.Low },
+                  ]}
+                />
+                <div className="space-y-1 mt-2 text-sm">
                   {Object.entries(impactCounts).map(([level, count]) => (
                     <div key={level} className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-brand-gold"></div>
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: CHART_COLORS.severity[level as keyof typeof CHART_COLORS.severity] }}></div>
                       <span className="text-text-secondary">{level} - {count}</span>
                     </div>
                   ))}
@@ -249,6 +251,14 @@ export default function RiskRoamReportPage() {
           </div>
         </div>
       </div>
+
+      {/* View Settings Dialog */}
+      <ViewSettingsDialog
+        isOpen={viewSettingsOpen}
+        onClose={() => setViewSettingsOpen(false)}
+        chartVisibility={chartVisibility}
+        onChartVisibilityChange={setChartVisibility}
+      />
 
       {/* Resolution Modal */}
       {resolutionModal.isOpen && resolutionModal.currentStatus && resolutionModal.newStatus && (

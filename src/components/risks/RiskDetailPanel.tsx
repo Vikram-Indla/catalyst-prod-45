@@ -1,8 +1,9 @@
 // Risk Detail Panel - Slide-out drawer for viewing/editing risks
 // Source: Implementation Spec Section 5.9
 
+import { useState } from "react";
 import { X } from "lucide-react";
-import { Risk } from "@/types/risks";
+import { Risk, RiskFormData } from "@/types/risks";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RoamBadge } from "./RoamBadge";
@@ -23,10 +24,52 @@ interface RiskDetailPanelProps {
   risk: Risk;
   isOpen: boolean;
   onClose: () => void;
+  onUpdate?: (updates: Partial<Risk>) => void;
 }
 
-export function RiskDetailPanel({ risk, isOpen, onClose }: RiskDetailPanelProps) {
+export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailPanelProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<Partial<RiskFormData>>({
+    title: risk.title,
+    description: risk.description,
+    status: risk.status,
+    resolution_method: risk.resolution_method,
+    occurrence: risk.occurrence,
+    impact: risk.impact,
+    critical_path: risk.critical_path,
+    target_resolution_date: risk.target_resolution_date,
+    consequence: risk.consequence,
+    mitigation: risk.mitigation,
+    contingency: risk.contingency,
+    resolution_status: risk.resolution_status,
+  });
+
   if (!isOpen) return null;
+
+  const handleSave = () => {
+    if (onUpdate) {
+      onUpdate({ id: risk.id, ...formData });
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      title: risk.title,
+      description: risk.description,
+      status: risk.status,
+      resolution_method: risk.resolution_method,
+      occurrence: risk.occurrence,
+      impact: risk.impact,
+      critical_path: risk.critical_path,
+      target_resolution_date: risk.target_resolution_date,
+      consequence: risk.consequence,
+      mitigation: risk.mitigation,
+      contingency: risk.contingency,
+      resolution_status: risk.resolution_status,
+    });
+    setIsEditing(false);
+  };
 
   return (
     <div className="fixed inset-y-0 right-0 w-full sm:w-[600px] bg-background border-l shadow-xl z-50 flex flex-col">
@@ -62,13 +105,45 @@ export function RiskDetailPanel({ risk, isOpen, onClose }: RiskDetailPanelProps)
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-xs text-text-muted mb-2">Status</Label>
-                <Badge variant={risk.status === 'Open' ? 'destructive' : 'default'}>
-                  {risk.status}
-                </Badge>
+                {isEditing ? (
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value) => setFormData({ ...formData, status: value as any })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {RISK_STATUSES.map(status => (
+                        <SelectItem key={status} value={status}>{status}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Badge variant={risk.status === 'Open' ? 'destructive' : 'default'}>
+                    {risk.status}
+                  </Badge>
+                )}
               </div>
               <div>
                 <Label className="text-xs text-text-muted mb-2">Resolution Method</Label>
-                <RoamBadge status={risk.resolution_method} />
+                {isEditing ? (
+                  <Select
+                    value={formData.resolution_method}
+                    onValueChange={(value) => setFormData({ ...formData, resolution_method: value as any })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ROAM_STATUSES.map(status => (
+                        <SelectItem key={status} value={status}>{status}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <RoamBadge status={risk.resolution_method} />
+                )}
               </div>
             </div>
 
@@ -76,8 +151,9 @@ export function RiskDetailPanel({ risk, isOpen, onClose }: RiskDetailPanelProps)
             <div>
               <Label className="text-xs text-text-muted mb-2">Description</Label>
               <Textarea
-                value={risk.description}
-                readOnly
+                value={isEditing ? formData.description : risk.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                readOnly={!isEditing}
                 className="min-h-[100px] bg-background"
               />
             </div>
@@ -86,7 +162,11 @@ export function RiskDetailPanel({ risk, isOpen, onClose }: RiskDetailPanelProps)
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <Label className="text-xs text-text-muted mb-2">Occurrence</Label>
-                <Select value={risk.occurrence || undefined} disabled>
+                <Select
+                  value={isEditing ? formData.occurrence || undefined : risk.occurrence || undefined}
+                  onValueChange={(value) => setFormData({ ...formData, occurrence: value as any })}
+                  disabled={!isEditing}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="—" />
                   </SelectTrigger>
@@ -99,7 +179,11 @@ export function RiskDetailPanel({ risk, isOpen, onClose }: RiskDetailPanelProps)
               </div>
               <div>
                 <Label className="text-xs text-text-muted mb-2">Impact</Label>
-                <Select value={risk.impact || undefined} disabled>
+                <Select
+                  value={isEditing ? formData.impact || undefined : risk.impact || undefined}
+                  onValueChange={(value) => setFormData({ ...formData, impact: value as any })}
+                  disabled={!isEditing}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="—" />
                   </SelectTrigger>
@@ -112,74 +196,84 @@ export function RiskDetailPanel({ risk, isOpen, onClose }: RiskDetailPanelProps)
               </div>
               <div>
                 <Label className="text-xs text-text-muted mb-2">Critical Path</Label>
-                <Badge variant={risk.critical_path === 'Yes' ? 'destructive' : 'secondary'}>
-                  {risk.critical_path || '—'}
-                </Badge>
+                {isEditing ? (
+                  <Select
+                    value={formData.critical_path || undefined}
+                    onValueChange={(value) => setFormData({ ...formData, critical_path: value as any })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="—" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Yes">Yes</SelectItem>
+                      <SelectItem value="No">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Badge variant={risk.critical_path === 'Yes' ? 'destructive' : 'secondary'}>
+                    {risk.critical_path || '—'}
+                  </Badge>
+                )}
               </div>
             </div>
 
             {/* Target Resolution Date */}
-            {risk.target_resolution_date && (
-              <div>
-                <Label className="text-xs text-text-muted mb-2">Target Resolution Date</Label>
-                <Input
-                  type="date"
-                  value={risk.target_resolution_date}
-                  readOnly
-                  className="bg-background"
-                />
-              </div>
-            )}
+            <div>
+              <Label className="text-xs text-text-muted mb-2">Target Resolution Date</Label>
+              <Input
+                type="date"
+                value={isEditing ? formData.target_resolution_date || '' : risk.target_resolution_date || ''}
+                onChange={(e) => setFormData({ ...formData, target_resolution_date: e.target.value })}
+                readOnly={!isEditing}
+                className="bg-background"
+              />
+            </div>
 
             {/* Consequence */}
-            {risk.consequence && (
-              <div>
-                <Label className="text-xs text-text-muted mb-2">Consequence</Label>
-                <Textarea
-                  value={risk.consequence}
-                  readOnly
-                  className="min-h-[80px] bg-background"
-                />
-              </div>
-            )}
+            <div>
+              <Label className="text-xs text-text-muted mb-2">Consequence</Label>
+              <Textarea
+                value={isEditing ? formData.consequence || '' : risk.consequence || ''}
+                onChange={(e) => setFormData({ ...formData, consequence: e.target.value })}
+                readOnly={!isEditing}
+                className="min-h-[80px] bg-background"
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="mitigation" className="px-6 py-4 space-y-4">
             {/* Mitigation Plan */}
-            {risk.mitigation && (
-              <div>
-                <Label className="text-xs text-text-muted mb-2">Mitigation Plan</Label>
-                <Textarea
-                  value={risk.mitigation}
-                  readOnly
-                  className="min-h-[100px] bg-background"
-                />
-              </div>
-            )}
+            <div>
+              <Label className="text-xs text-text-muted mb-2">Mitigation Plan</Label>
+              <Textarea
+                value={isEditing ? formData.mitigation || '' : risk.mitigation || ''}
+                onChange={(e) => setFormData({ ...formData, mitigation: e.target.value })}
+                readOnly={!isEditing}
+                className="min-h-[100px] bg-background"
+              />
+            </div>
 
             {/* Contingency Plan */}
-            {risk.contingency && (
-              <div>
-                <Label className="text-xs text-text-muted mb-2">Contingency Plan</Label>
-                <Textarea
-                  value={risk.contingency}
-                  readOnly
-                  className="min-h-[100px] bg-background"
-                />
-              </div>
-            )}
+            <div>
+              <Label className="text-xs text-text-muted mb-2">Contingency Plan</Label>
+              <Textarea
+                value={isEditing ? formData.contingency || '' : risk.contingency || ''}
+                onChange={(e) => setFormData({ ...formData, contingency: e.target.value })}
+                readOnly={!isEditing}
+                className="min-h-[100px] bg-background"
+              />
+            </div>
 
             {/* Resolution Status */}
-            {risk.resolution_status && (
-              <div>
-                <Label className="text-xs text-text-muted mb-2">Resolution Status</Label>
-                <Textarea
-                  value={risk.resolution_status}
-                  readOnly
-                  className="min-h-[80px] bg-background"
-                />
-              </div>
-            )}
+            <div>
+              <Label className="text-xs text-text-muted mb-2">Resolution Status</Label>
+              <Textarea
+                value={isEditing ? formData.resolution_status || '' : risk.resolution_status || ''}
+                onChange={(e) => setFormData({ ...formData, resolution_status: e.target.value })}
+                readOnly={!isEditing}
+                className="min-h-[80px] bg-background"
+              />
+            </div>
           </TabsContent>
 
           <TabsContent value="discussions" className="px-6 py-4">
@@ -192,12 +286,31 @@ export function RiskDetailPanel({ risk, isOpen, onClose }: RiskDetailPanelProps)
 
       {/* Footer Actions */}
       <div className="border-t px-6 py-4 bg-card flex gap-2 justify-end">
-        <Button variant="outline" onClick={onClose}>
-          Close
-        </Button>
-        <Button className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-          Edit Risk
-        </Button>
+        {isEditing ? (
+          <>
+            <Button variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button 
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              onClick={handleSave}
+            >
+              Save Changes
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button variant="outline" onClick={onClose}>
+              Close
+            </Button>
+            <Button 
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+              onClick={() => setIsEditing(true)}
+            >
+              Edit Risk
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
