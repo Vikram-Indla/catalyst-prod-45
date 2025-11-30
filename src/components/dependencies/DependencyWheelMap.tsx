@@ -157,10 +157,16 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
   // Calculate segment angles
   const segmentAngle = (2 * Math.PI) / nodes.length;
   
-  // Multiple shades of blue/teal for segments (Catalyst style)
+  // Catalyst theme colors - teal/blue-gray palette matching brand aesthetic
   const colors = [
-    '#67b7d1', '#5da9c1', '#5a9fb0', '#4d8a9d',
-    '#71b8ca', '#5f9fae', '#4a7c8a', '#608fa0',
+    'hsl(195, 52%, 62%)', // Light teal #68bbd4
+    'hsl(195, 45%, 58%)', // Medium teal #5dadc4
+    'hsl(195, 38%, 54%)', // Muted teal #5a9fb0
+    'hsl(195, 32%, 50%)', // Deep teal #568a9b
+    'hsl(195, 48%, 60%)', // Bright teal #66b5cc
+    'hsl(195, 40%, 56%)', // Mid teal #5da4b5
+    'hsl(195, 35%, 52%)', // Steel teal #588f9f
+    'hsl(195, 42%, 58%)', // Soft teal #5faabb
   ];
   
   // Create segments for each node
@@ -209,16 +215,16 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
     nodeAngles.set(seg.id, seg.midAngle);
   });
   
-  // Status color mapping
+  // Status color mapping using Catalyst theme colors
   const statusColor = (status: WheelLink['status']) => {
     switch (status) {
-      case 'NOT_COMMITTED': return '#ef4444'; // red
-      case 'COMMITTED': return '#22c55e'; // green
-      case 'DONE': return '#94a3b8'; // gray
-      case 'BLOCKED': return '#f97316'; // orange
-      case 'NO_WORK_REQUIRED': return '#a1a1aa'; // muted
-      case 'REJECTED': return '#dc2626'; // dark red
-      default: return '#64748b';
+      case 'NOT_COMMITTED': return 'hsl(0, 72%, 51%)'; // Catalyst destructive red
+      case 'COMMITTED': return 'hsl(142, 71%, 50%)'; // Catalyst success green
+      case 'DONE': return 'hsl(217, 10%, 65%)'; // Catalyst neutral gray
+      case 'BLOCKED': return 'hsl(38, 92%, 50%)'; // Catalyst warning orange
+      case 'NO_WORK_REQUIRED': return 'hsl(217, 10%, 65%)'; // Catalyst muted
+      case 'REJECTED': return 'hsl(0, 84%, 60%)'; // Catalyst red variant
+      default: return 'hsl(217, 10%, 65%)'; // Catalyst neutral
     }
   };
   
@@ -384,12 +390,12 @@ export function DependencyWheelMap({ piId, selectedProgram, onDependencyClick }:
                   <path
                     d={segment.path}
                     fill={segment.color}
-                    opacity={segment.isSelected ? 1 : segment.isHovered ? 0.9 : 0.8}
-                    stroke={segment.isSelected ? '#fbbf24' : 'white'}
-                    strokeWidth={segment.isSelected ? 5 : 2}
+                    opacity={segment.isSelected ? 1 : segment.isHovered ? 0.95 : 0.85}
+                    stroke={segment.isSelected ? 'hsl(35, 46%, 60%)' : 'white'}
+                    strokeWidth={segment.isSelected ? 4 : 2}
                     className="cursor-pointer"
                     style={{
-                      filter: segment.isSelected ? 'drop-shadow(0 0 12px rgba(251, 191, 36, 0.8))' : 'none',
+                      filter: segment.isSelected ? 'drop-shadow(0 0 12px hsla(35, 46%, 60%, 0.6))' : 'none',
                       transition: 'all 0.3s ease'
                     }}
                     onMouseEnter={() => setHoveredNodeId(segment.id)}
