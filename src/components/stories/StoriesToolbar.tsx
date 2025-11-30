@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Download, Trash2, Move, UserPlus, MoreHorizontal } from 'lucide-react';
+import { Download, Trash2, Move, UserPlus, MoreHorizontal, ArrowUpDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -28,9 +28,10 @@ interface StoriesToolbarProps {
   selectedIds: string[];
   onRefetch: () => void;
   onClearSelection: () => void;
+  onPullRank?: () => void;
 }
 
-export function StoriesToolbar({ selectedCount, selectedIds, onRefetch, onClearSelection }: StoriesToolbarProps) {
+export function StoriesToolbar({ selectedCount, selectedIds, onRefetch, onClearSelection, onPullRank }: StoriesToolbarProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -86,6 +87,18 @@ export function StoriesToolbar({ selectedCount, selectedIds, onRefetch, onClearS
         </div>
 
         <div className="flex items-center gap-2">
+          {onPullRank && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onPullRank}
+              className="h-8"
+            >
+              <ArrowUpDown className="h-4 w-4 mr-2" />
+              Pull Rank
+            </Button>
+          )}
+
           <Button
             variant="outline"
             size="sm"
