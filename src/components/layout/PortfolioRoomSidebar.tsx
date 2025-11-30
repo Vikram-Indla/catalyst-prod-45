@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,13 +47,15 @@ const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
   { id: 'themes', label: 'Themes', icon: FolderTree, path: '/portfolio/:portfolioId/backlog?type=theme' },
   { id: 'epics', label: 'Epics', icon: Diamond, path: '/portfolio/:portfolioId/backlog?type=epic' },
-  { id: 'objectives', label: 'Objectives', icon: Target, path: '/portfolio/:portfolioId/objectives' },
+  { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Target, path: '/portfolio/:portfolioId/objective-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
   { id: 'backlog', label: 'Backlog', icon: Layers3, path: '/portfolio/:portfolioId/backlog' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/portfolio/:portfolioId/roadmaps' },
   { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/portfolio/:portfolioId/forecast' },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/portfolio/:portfolioId/capacity', badge: 'NEW' },
   { id: 'more-items', label: 'More items', icon: Menu, expandable: true },
+  { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
+  { id: 'more-pages', label: 'More pages', icon: Menu, expandable: true },
 ];
 
 export function PortfolioRoomSidebar({ 
@@ -65,6 +68,37 @@ export function PortfolioRoomSidebar({
 }: PortfolioRoomSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [moreItemsExpanded, setMoreItemsExpanded] = useState(false);
+  const [reportsExpanded, setReportsExpanded] = useState(false);
+  const [morePagesExpanded, setMorePagesExpanded] = useState(false);
+
+  const moreItemsSubMenu = [
+    { id: 'initiatives', label: 'Initiatives', path: '/portfolio/:portfolioId/initiatives' },
+    { id: 'features', label: 'Features', path: '/portfolio/:portfolioId/features' },
+    { id: 'stories', label: 'Stories', path: '/portfolio/:portfolioId/stories' },
+    { id: 'defects', label: 'Defects', path: '/portfolio/:portfolioId/defects' },
+    { id: 'tasks', label: 'Tasks', path: '/portfolio/:portfolioId/tasks' },
+    { id: 'dependencies', label: 'Dependencies', path: '/portfolio/:portfolioId/dependencies' },
+    { id: 'risks', label: 'Risks', path: '/portfolio/:portfolioId/risks' },
+    { id: 'impediments', label: 'Impediments', path: '/portfolio/:portfolioId/impediments' },
+    { id: 'sprints', label: 'Sprints', path: '/portfolio/:portfolioId/sprints' },
+    { id: 'program-increments', label: 'Program Increments', path: '/portfolio/:portfolioId/program-increments' },
+    { id: 'release-vehicles', label: 'Release Vehicles', path: '/portfolio/:portfolioId/release-vehicles' },
+  ];
+
+  const reportsSubMenu = [
+    { id: 'epic-status', label: 'Epic status report', path: '/portfolio/:portfolioId/reports/epic-status' },
+    { id: 'epic-trace', label: 'Epic trace report', path: '/portfolio/:portfolioId/reports/epic-trace' },
+    { id: 'feature-status', label: 'Feature status report', path: '/portfolio/:portfolioId/reports/feature-status' },
+    { id: 'portfolio-health', label: 'Portfolio health', path: '/portfolio/:portfolioId/reports/health' },
+    { id: 'work-tree', label: 'Work tree', path: '/portfolio/:portfolioId/reports/work-tree' },
+  ];
+
+  const morePagesSubMenu = [
+    { id: 'assessments', label: 'Assessments', path: '/portfolio/:portfolioId/pages/assessments' },
+    { id: 'metrics', label: 'Metrics', path: '/portfolio/:portfolioId/pages/metrics' },
+    { id: 'meetings', label: 'Meetings', path: '/portfolio/:portfolioId/pages/meetings' },
+  ];
 
   // Fetch portfolio details
   const { data: portfolio } = useQuery({
@@ -167,34 +201,96 @@ export function PortfolioRoomSidebar({
 
             const Icon = item.icon;
             const active = isActive('path' in item ? item.path : undefined);
+            const isMoreItems = item.id === 'more-items';
+            const isReports = item.id === 'reports';
+            const isMorePages = item.id === 'more-pages';
 
             return (
-              <button
-                key={item.id}
-                onClick={() => 'path' in item && item.path && handleNavigation(item.path)}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
-                  "hover:bg-accent/50",
-                  active && "bg-accent text-primary font-medium",
-                  !expanded && "justify-center px-2"
+              <div key={item.id}>
+                <button
+                  onClick={() => {
+                    if ('expandable' in item && item.expandable) {
+                      if (isMoreItems) setMoreItemsExpanded(!moreItemsExpanded);
+                      if (isReports) setReportsExpanded(!reportsExpanded);
+                      if (isMorePages) setMorePagesExpanded(!morePagesExpanded);
+                    } else if ('path' in item && item.path) {
+                      handleNavigation(item.path);
+                    }
+                  }}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
+                    "hover:bg-accent/50",
+                    active && "bg-accent text-primary font-medium",
+                    !expanded && "justify-center px-2"
+                  )}
+                  title={!expanded ? item.label : undefined}
+                >
+                  <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                  {expanded && (
+                    <>
+                      <span className="truncate text-left flex-1">{item.label}</span>
+                      {'badge' in item && item.badge && (
+                        <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-brand-gold text-white rounded uppercase">
+                          {item.badge}
+                        </span>
+                      )}
+                      {'expandable' in item && item.expandable && (
+                        <ChevronRight 
+                          className={cn(
+                            "h-4 w-4 text-muted-foreground transition-transform",
+                            ((isMoreItems && moreItemsExpanded) || 
+                             (isReports && reportsExpanded) || 
+                             (isMorePages && morePagesExpanded)) && "rotate-90"
+                          )} 
+                        />
+                      )}
+                    </>
+                  )}
+                </button>
+
+                {/* Submenu rendering */}
+                {isMoreItems && moreItemsExpanded && expanded && (
+                  <div className="bg-accent/20">
+                    {moreItemsSubMenu.map((subItem) => (
+                      <button
+                        key={subItem.id}
+                        onClick={() => handleNavigation(subItem.path)}
+                        className="w-full flex items-center gap-3 px-8 py-2 text-sm font-normal hover:bg-accent/30 transition-colors"
+                      >
+                        <span className="truncate text-left">{subItem.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 )}
-                title={!expanded ? item.label : undefined}
-              >
-                <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
-                {expanded && (
-                  <>
-                    <span className="truncate text-left flex-1">{item.label}</span>
-                    {'badge' in item && item.badge && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-brand-gold text-white rounded uppercase">
-                        {item.badge}
-                      </span>
-                    )}
-                    {'expandable' in item && item.expandable && (
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </>
+
+                {isReports && reportsExpanded && expanded && (
+                  <div className="bg-accent/20">
+                    {reportsSubMenu.map((subItem) => (
+                      <button
+                        key={subItem.id}
+                        onClick={() => handleNavigation(subItem.path)}
+                        className="w-full flex items-center gap-3 px-8 py-2 text-sm font-normal hover:bg-accent/30 transition-colors"
+                      >
+                        <span className="truncate text-left">{subItem.label}</span>
+                      </button>
+                    ))}
+                  </div>
                 )}
-              </button>
+
+                {isMorePages && morePagesExpanded && expanded && (
+                  <div className="bg-accent/20">
+                    {morePagesSubMenu.map((subItem) => (
+                      <button
+                        key={subItem.id}
+                        onClick={() => handleNavigation(subItem.path)}
+                        className="w-full flex items-center gap-3 px-8 py-2 text-sm font-normal hover:bg-accent/30 transition-colors"
+                      >
+                        <span className="truncate text-left">{subItem.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             );
           })}
         </nav>
