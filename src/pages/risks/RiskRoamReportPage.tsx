@@ -5,12 +5,13 @@
 import { useState } from "react";
 import { Download, Settings } from "lucide-react";
 import { useRisks } from "@/hooks/risks/useRisks";
-import { Risk, RoamFilters, ChartVisibility } from "@/types/risks";
+import { Risk, RoamFilters, ChartVisibility, RoamStatus } from "@/types/risks";
 import { ROAM_COLUMN_ORDER } from "@/constants/risks";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { RoamColumn } from "@/components/risks/RoamColumn";
+import { ResolutionModal } from "@/components/risks/ResolutionModal";
 
 export default function RiskRoamReportPage() {
   const { risks, isLoading, updateRisk } = useRisks();
@@ -28,6 +29,18 @@ export default function RiskRoamReportPage() {
   });
 
   const [newExperience, setNewExperience] = useState(true);
+  
+  const [resolutionModal, setResolutionModal] = useState<{
+    isOpen: boolean;
+    riskId: string | null;
+    currentStatus: RoamStatus | null;
+    newStatus: RoamStatus | null;
+  }>({
+    isOpen: false,
+    riskId: null,
+    currentStatus: null,
+    newStatus: null,
+  });
 
   // Filter risks based on current filters
   const filteredRisks = risks?.filter((risk: Risk) => {
@@ -62,10 +75,42 @@ export default function RiskRoamReportPage() {
   };
 
   const handleRiskMove = (riskId: string, newStatus: string) => {
-    // TODO: Show resolution modal if moving to Resolved or Mitigated
+    const risk = risks?.find((r: Risk) => r.id === riskId);
+    if (!risk) return;
+
+    const newRoamStatus = newStatus as RoamStatus;
+    
+    // Show modal for Resolved or Mitigated
+    if (newRoamStatus === 'Resolved' || newRoamStatus === 'Mitigated') {
+      setResolutionModal({
+        isOpen: true,
+        riskId,
+        currentStatus: risk.resolution_method,
+        newStatus: newRoamStatus,
+      });
+    } else {
+      // Directly update for Owned/Accepted
+      updateRisk({
+        id: riskId,
+        resolution_method: newRoamStatus
+      });
+    }
+  };
+
+  const handleResolutionConfirm = (reason: string) => {
+    if (!resolutionModal.riskId || !resolutionModal.newStatus) return;
+
     updateRisk({
-      id: riskId,
-      resolution_method: newStatus as any
+      id: resolutionModal.riskId,
+      resolution_method: resolutionModal.newStatus,
+      resolution_status: reason,
+    });
+
+    setResolutionModal({
+      isOpen: false,
+      riskId: null,
+      currentStatus: null,
+      newStatus: null,
     });
   };
 
@@ -204,6 +249,17 @@ export default function RiskRoamReportPage() {
           </div>
         </div>
       </div>
+
+      {/* Resolution Modal */}
+      {resolutionModal.isOpen && resolutionModal.currentStatus && resolutionModal.newStatus && (
+        <ResolutionModal
+          isOpen={resolutionModal.isOpen}
+          onClose={() => setResolutionModal({ ...resolutionModal, isOpen: false })}
+          currentStatus={resolutionModal.currentStatus}
+          newStatus={resolutionModal.newStatus}
+          onConfirm={handleResolutionConfirm}
+        />
+      )}
     </div>
   );
 }

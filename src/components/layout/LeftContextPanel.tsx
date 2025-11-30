@@ -100,7 +100,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     { id: 'vision', label: 'Vision', path: '/enterprise/vision' },
     { id: 'personas', label: 'Personas', path: '/enterprise/personas' },
     { id: 'skills-inventory', label: 'Skills inventory', path: '/enterprise/skills-inventory' },
-    { id: 'risks', label: 'Risks', path: '/enterprise/risks' },
+    { id: 'risks', label: 'Risks', path: '/risks' },
     { id: 'impediments', label: 'Impediments', path: '/enterprise/impediments' },
     { id: 'epics', label: 'Epics', path: '/enterprise/epics' },
     { id: 'features', label: 'Features', path: '/enterprise/features' },
@@ -125,6 +125,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     { id: 'external-reports', label: 'External reports', path: '/enterprise/reports/external' },
     { id: 'organizational-hierarchy', label: 'Organizational hierarchy', path: '/enterprise/reports/organizational-hierarchy' },
     { id: 'work-tree-report', label: 'Work tree', path: '/enterprise/reports/work-tree' },
+    { id: 'risk-roam-report', label: 'Risk ROAM Report', path: '/risk-roam-report' },
   ];
 
   // More pages sub-menu for Enterprise

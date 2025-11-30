@@ -7,6 +7,8 @@ import { Search, Filter, MoreVertical, Plus } from "lucide-react";
 import { useRisks } from "@/hooks/risks/useRisks";
 import { Risk, RiskGridFilters } from "@/types/risks";
 import { RoamBadge } from "@/components/risks/RoamBadge";
+import { RiskDetailPanel } from "@/components/risks/RiskDetailPanel";
+import { RiskFiltersDialog } from "@/components/risks/RiskFiltersDialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,6 +30,8 @@ import {
 export default function RisksGridPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRiskIds, setSelectedRiskIds] = useState<string[]>([]);
+  const [selectedRisk, setSelectedRisk] = useState<Risk | null>(null);
+  const [isFiltersDialogOpen, setIsFiltersDialogOpen] = useState(false);
   const [filters, setFilters] = useState<RiskGridFilters>({
     program_increment_id: null,
     owner_id: null,
@@ -78,7 +82,7 @@ export default function RisksGridPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={() => setIsFiltersDialogOpen(true)}>
               <Filter className="w-4 h-4 mr-2" />
               Apply Filters
             </Button>
@@ -149,6 +153,7 @@ export default function RisksGridPage() {
                 <TableRow
                   key={risk.id}
                   className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => setSelectedRisk(risk)}
                 >
                   <TableCell>☆</TableCell>
                   <TableCell className="font-medium text-text-primary">
@@ -208,6 +213,23 @@ export default function RisksGridPage() {
           </div>
         </div>
       </div>
+
+      {/* Risk Detail Panel */}
+      {selectedRisk && (
+        <RiskDetailPanel
+          risk={selectedRisk}
+          isOpen={!!selectedRisk}
+          onClose={() => setSelectedRisk(null)}
+        />
+      )}
+
+      {/* Filters Dialog */}
+      <RiskFiltersDialog
+        isOpen={isFiltersDialogOpen}
+        onClose={() => setIsFiltersDialogOpen(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
     </div>
   );
 }
