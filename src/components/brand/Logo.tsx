@@ -4,26 +4,34 @@ interface LogoProps {
   variant?: "light" | "dark";
   size?: "sm" | "md" | "lg";
   className?: string;
+  imageSrc?: string;
 }
 
-export function Logo({ variant = "dark", size = "md", className }: LogoProps) {
+export function Logo({ variant = "dark", size = "md", className, imageSrc }: LogoProps) {
   const sizes = {
-    sm: "text-xl",
-    md: "text-[28px]",
-    lg: "text-[32px]",
+    sm: "h-8",
+    md: "h-10",
+    lg: "h-12",
   };
 
   return (
     <div
       className={cn(
-        "font-heading font-bold tracking-tight flex items-center",
-        sizes[size],
-        variant === "light" ? "text-white" : "text-text-primary",
+        "flex items-center justify-center",
         className
       )}
     >
-      <span className="text-brand-gold">C</span>
-      atalyst
+      {imageSrc ? (
+        <img src={imageSrc} alt="Logo" className={cn("object-contain", sizes[size])} />
+      ) : (
+        <div className={cn(
+          "bg-surface-gray-200 rounded flex items-center justify-center",
+          sizes[size],
+          "aspect-[3/1] px-4"
+        )}>
+          <span className="text-text-muted text-sm font-medium">Logo</span>
+        </div>
+      )}
     </div>
   );
 }
