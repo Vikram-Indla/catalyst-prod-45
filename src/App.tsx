@@ -82,6 +82,8 @@ import { AdminLayout } from "./pages/admin/AdminLayout";
 import Activity from "./pages/admin/Activity";
 import Changes from "./pages/admin/Changes";
 import UseTrend from "./pages/admin/UseTrend";
+import UsageTrends from "./pages/admin/UsageTrends";
+import ChangesLog from "./pages/admin/ChangesLog";
 import WorkCodes from "./pages/admin/WorkCodes";
 import DetailsPanels from "./pages/admin/DetailsPanels";
 import Terminology from "./pages/admin/Terminology";
@@ -456,7 +458,9 @@ const App = () => (
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="activity" element={<Activity />} />
                 <Route path="changes" element={<Changes />} />
+                <Route path="changes-log" element={<ChangesLog />} />
                 <Route path="use-trend" element={<UseTrend />} />
+                <Route path="usage-trends" element={<UsageTrends />} />
                 <Route path="work-codes" element={<WorkCodes />} />
                 <Route path="details-panels" element={<DetailsPanels />} />
                 <Route path="terminology" element={<Terminology />} />
