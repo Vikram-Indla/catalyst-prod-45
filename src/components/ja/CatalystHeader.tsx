@@ -81,8 +81,8 @@ export function CatalystHeader() {
             </span>
           </div>
 
-          {/* Main Navigation - Hidden on mobile, shown on tablet+ */}
-          <nav className="hidden md:flex items-center gap-1 flex-1">
+          {/* Main Navigation - Shown on all screens except small mobile */}
+          <nav className="hidden sm:flex items-center gap-1 flex-1 overflow-x-auto">
             {navItems.map((item) => (
               <div key={item.label}>
                 {item.label === "Portfolio" ? (
@@ -200,7 +200,7 @@ export function CatalystHeader() {
           </nav>
 
           {/* Create Button */}
-          <div className="hidden sm:block">
+          <div className="hidden xs:block">
             <CreateDropdown />
           </div>
 
