@@ -210,7 +210,7 @@ export default function Auth() {
               src={catalystLogoFull} 
               alt="Catalyst" 
               className="w-auto"
-              style={{ height: '240px' }}
+              style={{ height: '144px' }}
             />
           </div>
 
