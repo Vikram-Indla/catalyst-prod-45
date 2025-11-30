@@ -2362,6 +2362,356 @@ export type Database = {
           },
         ]
       }
+      jira_auth_credentials: {
+        Row: {
+          auth_data: Json
+          connection_id: string
+          created_at: string | null
+          id: string
+          refresh_token: string | null
+          token_expires_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auth_data: Json
+          connection_id: string
+          created_at?: string | null
+          id?: string
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auth_data?: Json
+          connection_id?: string
+          created_at?: string | null
+          id?: string
+          refresh_token?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_auth_credentials_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "jira_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jira_board_mappings: {
+        Row: {
+          catalyst_team_id: string | null
+          connection_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          jira_board_id: string
+          jira_board_name: string
+          jira_project_key: string
+          sync_enabled: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          catalyst_team_id?: string | null
+          connection_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_board_id: string
+          jira_board_name: string
+          jira_project_key: string
+          sync_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          catalyst_team_id?: string | null
+          connection_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_board_id?: string
+          jira_board_name?: string
+          jira_project_key?: string
+          sync_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_board_mappings_catalyst_team_id_fkey"
+            columns: ["catalyst_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_board_mappings_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "jira_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jira_connections: {
+        Row: {
+          auth_method: string
+          created_at: string | null
+          created_by: string | null
+          id: string
+          instance_type: string
+          is_active: boolean | null
+          jira_url: string
+          last_sync_at: string | null
+          last_test_message: string | null
+          last_test_status: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          auth_method: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          instance_type: string
+          is_active?: boolean | null
+          jira_url: string
+          last_sync_at?: string | null
+          last_test_message?: string | null
+          last_test_status?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          auth_method?: string
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          instance_type?: string
+          is_active?: boolean | null
+          jira_url?: string
+          last_sync_at?: string | null
+          last_test_message?: string | null
+          last_test_status?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      jira_field_mappings: {
+        Row: {
+          catalyst_entity: string
+          catalyst_field: string
+          connection_id: string
+          created_at: string | null
+          id: string
+          is_enabled: boolean | null
+          jira_field: string
+          jira_field_type: string | null
+          sync_direction: string | null
+          transformation_rules: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          catalyst_entity: string
+          catalyst_field: string
+          connection_id: string
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          jira_field: string
+          jira_field_type?: string | null
+          sync_direction?: string | null
+          transformation_rules?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          catalyst_entity?: string
+          catalyst_field?: string
+          connection_id?: string
+          created_at?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          jira_field?: string
+          jira_field_type?: string | null
+          sync_direction?: string | null
+          transformation_rules?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_field_mappings_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "jira_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jira_project_mappings: {
+        Row: {
+          catalyst_program_id: string | null
+          connection_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          jira_project_id: string
+          jira_project_key: string
+          jira_project_name: string
+          sync_enabled: boolean | null
+          updated_at: string | null
+        }
+        Insert: {
+          catalyst_program_id?: string | null
+          connection_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_project_id: string
+          jira_project_key: string
+          jira_project_name: string
+          sync_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Update: {
+          catalyst_program_id?: string | null
+          connection_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          jira_project_id?: string
+          jira_project_key?: string
+          jira_project_name?: string
+          sync_enabled?: boolean | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_project_mappings_catalyst_program_id_fkey"
+            columns: ["catalyst_program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jira_project_mappings_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "jira_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jira_sync_logs: {
+        Row: {
+          completed_at: string | null
+          connection_id: string
+          created_at: string | null
+          entity_type: string | null
+          error_details: Json | null
+          id: string
+          items_created: number | null
+          items_failed: number | null
+          items_processed: number | null
+          items_updated: number | null
+          started_at: string | null
+          status: string
+          sync_type: string
+        }
+        Insert: {
+          completed_at?: string | null
+          connection_id: string
+          created_at?: string | null
+          entity_type?: string | null
+          error_details?: Json | null
+          id?: string
+          items_created?: number | null
+          items_failed?: number | null
+          items_processed?: number | null
+          items_updated?: number | null
+          started_at?: string | null
+          status: string
+          sync_type: string
+        }
+        Update: {
+          completed_at?: string | null
+          connection_id?: string
+          created_at?: string | null
+          entity_type?: string | null
+          error_details?: Json | null
+          id?: string
+          items_created?: number | null
+          items_failed?: number | null
+          items_processed?: number | null
+          items_updated?: number | null
+          started_at?: string | null
+          status?: string
+          sync_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_sync_logs_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "jira_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      jira_work_item_links: {
+        Row: {
+          catalyst_entity_id: string
+          catalyst_entity_type: string
+          conflict_details: Json | null
+          connection_id: string
+          created_at: string | null
+          id: string
+          jira_issue_id: string
+          jira_issue_key: string
+          jira_issue_type: string
+          last_synced_at: string | null
+          sync_status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          catalyst_entity_id: string
+          catalyst_entity_type: string
+          conflict_details?: Json | null
+          connection_id: string
+          created_at?: string | null
+          id?: string
+          jira_issue_id: string
+          jira_issue_key: string
+          jira_issue_type: string
+          last_synced_at?: string | null
+          sync_status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          catalyst_entity_id?: string
+          catalyst_entity_type?: string
+          conflict_details?: Json | null
+          connection_id?: string
+          created_at?: string | null
+          id?: string
+          jira_issue_id?: string
+          jira_issue_key?: string
+          jira_issue_type?: string
+          last_synced_at?: string | null
+          sync_status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jira_work_item_links_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "jira_connections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       key_result_checkins: {
         Row: {
           checked_in_at: string

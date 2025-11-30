@@ -77,6 +77,7 @@ import CustomFields from "./pages/admin/CustomFields";
 import BoardConfig from "./pages/admin/BoardConfig";
 import Permissions from "./pages/admin/Permissions";
 import Integrations from "./pages/admin/Integrations";
+import JiraIntegrationConfig from "./pages/admin/JiraIntegrationConfig";
 import ActivityLog from "./pages/admin/ActivityLog";
 import UserRoles from "./pages/admin/UserRoles";
 import ReportsDiscovery from "./pages/admin/ReportsDiscovery";
