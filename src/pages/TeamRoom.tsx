@@ -162,25 +162,27 @@ export default function TeamRoom() {
   );
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Team Room</h1>
-          <p className="text-muted-foreground">Team delivery dashboard with real-time metrics</p>
+    <div className="h-full w-full flex flex-col bg-background overflow-hidden">
+      {/* Header */}
+      <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-xl sm:text-2xl font-bold">Team Room</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Team delivery dashboard with real-time metrics</p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate('/backlog')}>
+              <ListTodo className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Backlog</span>
+            </Button>
+            <Button size="sm" onClick={() => navigate('/sprint-board')}>
+              <LayoutGrid className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Sprint Board</span>
+            </Button>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => navigate('/backlog')}>
-            <ListTodo className="h-4 w-4 mr-2" />
-            Backlog
-          </Button>
-          <Button onClick={() => navigate('/sprint-board')}>
-            <LayoutGrid className="h-4 w-4 mr-2" />
-            Sprint Board
-          </Button>
-        </div>
-      </div>
 
-      <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-4">
         <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
           <SelectTrigger className="w-[240px]">
             <SelectValue placeholder="Select Team" />
@@ -206,11 +208,13 @@ export default function TeamRoom() {
             ))}
           </SelectContent>
         </Select>
+        </div>
       </div>
 
       {selectedTeamId && selectedSprintId && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="flex-1 overflow-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
+          <div className="lg:col-span-12 grid grid-cols-2 lg:grid-cols-5 gap-4">
             <KPIWidgetCard
               title="Sprint Progress"
               value={`${completionPct}%`}
@@ -243,10 +247,10 @@ export default function TeamRoom() {
             />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="lg:col-span-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Sprint Burndown</CardTitle>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">Sprint Burndown</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-6">
@@ -287,10 +291,12 @@ export default function TeamRoom() {
                 </div>
               </CardContent>
             </Card>
+          </div>
 
+          <div className="lg:col-span-6">
             <Card>
-              <CardHeader>
-                <CardTitle>Velocity Trend</CardTitle>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">Velocity Trend</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -318,10 +324,11 @@ export default function TeamRoom() {
             </Card>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Story Acceptance Analysis</CardTitle>
-            </CardHeader>
+          <div className="lg:col-span-12">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">Story Acceptance Analysis</CardTitle>
+              </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-6">
                 <div className="text-center p-6 border rounded-lg">
@@ -340,13 +347,15 @@ export default function TeamRoom() {
                   <Progress value={(storiesByStatus.todo / (stories?.length || 1)) * 100} className="mt-3" />
                 </div>
               </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Active Features by Status</CardTitle>
-            </CardHeader>
+          <div className="lg:col-span-12">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-semibold">Active Features by Status</CardTitle>
+              </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {features?.slice(0, 8).map((feature) => (
@@ -368,8 +377,10 @@ export default function TeamRoom() {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+          </div>
         </div>
       )}
     </div>
