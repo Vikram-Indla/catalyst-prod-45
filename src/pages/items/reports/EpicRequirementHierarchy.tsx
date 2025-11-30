@@ -213,7 +213,7 @@ export default function EpicRequirementHierarchy() {
                       )}
                       <div className="flex-1 text-left">
                         <div className="flex items-center gap-2 mb-1">
-                          <Badge className="bg-blue-600">{feature.display_id}</Badge>
+                          <Badge className="bg-primary">{feature.display_id}</Badge>
                           <h3 className="text-lg font-semibold">{feature.name}</h3>
                         </div>
                         <div className="flex gap-4 text-sm text-muted-foreground">
@@ -238,7 +238,7 @@ export default function EpicRequirementHierarchy() {
                         
                         return (
                           <Collapsible key={story.id} open={isStoryExpanded} onOpenChange={() => toggleStory(story.id)}>
-                            <div className="border-l-2 border-green-500 pl-4 py-2">
+                            <div className="border-l-2 border-success pl-4 py-2">
                               <CollapsibleTrigger className="w-full">
                                 <div className="flex items-start gap-3">
                                   {storySubtasks.length > 0 && (
@@ -250,7 +250,7 @@ export default function EpicRequirementHierarchy() {
                                   )}
                                   <div className="flex-1 text-left">
                                     <div className="flex items-center gap-2 mb-1">
-                                      <Badge variant="secondary" className="bg-green-600/10 text-green-700">
+                                      <Badge variant="secondary" className="bg-success/10 text-success">
                                         {story.id.slice(0, 8)}
                                       </Badge>
                                       <span className="font-medium">{story.name}</span>
@@ -305,21 +305,21 @@ export default function EpicRequirementHierarchy() {
           <h3 className="font-semibold mb-4">Hierarchy Statistics</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Card className="p-4 text-center">
-              <div className="text-3xl font-bold text-blue-600">{features?.length || 0}</div>
+              <div className="text-3xl font-bold text-primary">{features?.length || 0}</div>
               <div className="text-sm text-muted-foreground mt-1">Features</div>
               <div className="text-xs text-muted-foreground mt-1">
                 {features?.reduce((sum, f) => sum + (f.estimate_points || 0), 0) || 0} points
               </div>
             </Card>
             <Card className="p-4 text-center">
-              <div className="text-3xl font-bold text-green-600">{stories?.length || 0}</div>
+              <div className="text-3xl font-bold text-success">{stories?.length || 0}</div>
               <div className="text-sm text-muted-foreground mt-1">Stories</div>
               <div className="text-xs text-muted-foreground mt-1">
                 {totalStoryPoints} points
               </div>
             </Card>
             <Card className="p-4 text-center">
-              <div className="text-3xl font-bold text-orange-600">{subtasks?.length || 0}</div>
+              <div className="text-3xl font-bold text-warning">{subtasks?.length || 0}</div>
               <div className="text-sm text-muted-foreground mt-1">Subtasks</div>
             </Card>
             <Card className="p-4 text-center">

@@ -2,10 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 export const MILESTONE_STATES = {
-  0: { label: 'Pending', color: 'bg-gray-200 text-gray-700' },
-  1: { label: 'In Progress', color: 'bg-blue-100 text-blue-700' },
-  2: { label: 'Complete', color: 'bg-green-100 text-green-700' },
-  3: { label: 'Blocked', color: 'bg-red-100 text-red-700' }
+  0: { label: 'Pending', color: 'bg-muted text-muted-foreground' },
+  1: { label: 'In Progress', color: 'bg-primary/10 text-primary' },
+  2: { label: 'Complete', color: 'bg-success/10 text-success' },
+  3: { label: 'Blocked', color: 'bg-destructive/10 text-destructive' }
 } as const;
 
 export const useEpicMilestones = (epicId: string) => {

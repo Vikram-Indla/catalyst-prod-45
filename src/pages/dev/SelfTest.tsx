@@ -19,9 +19,9 @@ export default function SelfTest() {
         <CardContent className="space-y-4">
           {tests.map((test) => (
             <div key={test.name} className="flex items-start gap-3 p-4 border rounded">
-              {test.status === 'pass' && <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0" />}
-              {test.status === 'fail' && <XCircle className="h-5 w-5 text-red-600 flex-shrink-0" />}
-              {test.status === 'pending' && <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0" />}
+              {test.status === 'pass' && <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0" />}
+              {test.status === 'fail' && <XCircle className="h-5 w-5 text-destructive flex-shrink-0" />}
+              {test.status === 'pending' && <AlertCircle className="h-5 w-5 text-warning flex-shrink-0" />}
               <div className="flex-1">
                 <div className="font-medium">{test.name}</div>
                 <div className="text-sm text-muted-foreground">{test.message}</div>

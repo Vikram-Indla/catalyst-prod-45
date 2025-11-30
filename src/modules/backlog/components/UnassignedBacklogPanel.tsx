@@ -86,10 +86,10 @@ export function UnassignedBacklogPanel({
                         className={cn(
                           'mt-1 h-2 w-2 rounded-full flex-shrink-0',
                           {
-                            green: 'bg-green-500',
-                            yellow: 'bg-yellow-500',
-                            red: 'bg-red-500',
-                            gray: 'bg-gray-400',
+                            green: 'bg-success',
+                            yellow: 'bg-warning',
+                            red: 'bg-destructive',
+                            gray: 'bg-muted-foreground',
                           }[item.health]
                         )}
                       />

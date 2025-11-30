@@ -179,7 +179,7 @@ export default function TeamsSelfTest() {
           <CardTitle className="flex items-center justify-between">
             <span>Teams Module Self-Test</span>
             {allPassed ? (
-              <span className="text-sm font-normal text-green-600 flex items-center gap-2">
+              <span className="text-sm font-normal text-success flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5" />
                 All tests passing ({passCount}/{totalTests})
               </span>
@@ -198,16 +198,16 @@ export default function TeamsSelfTest() {
               className="flex items-start gap-3 p-3 border rounded-lg hover:bg-accent/50 transition-colors"
             >
               {test.status === 'pass' && (
-                <CheckCircle2 className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <CheckCircle2 className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
               )}
               {test.status === 'fail' && (
-                <XCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
               )}
               {test.status === 'pending' && (
-                <AlertCircle className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
               )}
               {test.status === 'loading' && (
-                <Loader2 className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5 animate-spin" />
+                <Loader2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5 animate-spin" />
               )}
               <div className="flex-1 min-w-0">
                 <div className="font-medium text-sm">{test.name}</div>

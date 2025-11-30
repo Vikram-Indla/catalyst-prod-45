@@ -61,7 +61,7 @@ export default function StrategicSnapshots() {
               <CardContent>
                 <div className="text-sm text-muted-foreground space-y-1">
                   <div>Created: {snapshot.date}</div>
-                  <div>Status: <span className={snapshot.status === 'Active' ? 'text-green-600' : 'text-muted-foreground'}>{snapshot.status}</span></div>
+                  <div>Status: <span className={snapshot.status === 'Active' ? 'text-success' : 'text-muted-foreground'}>{snapshot.status}</span></div>
                 </div>
               </CardContent>
             </Card>
@@ -77,7 +77,7 @@ export default function StrategicSnapshots() {
                     <div className="font-medium">{snapshot.name}</div>
                     <div className="text-sm text-muted-foreground">Created: {snapshot.date}</div>
                   </div>
-                  <div className={`text-sm ${snapshot.status === 'Active' ? 'text-green-600' : 'text-muted-foreground'}`}>
+                  <div className={`text-sm ${snapshot.status === 'Active' ? 'text-success' : 'text-muted-foreground'}`}>
                     {snapshot.status}
                   </div>
                 </div>

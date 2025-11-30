@@ -84,9 +84,9 @@ export default function RoadmapsSelfTest() {
               {section.checks.map((check, checkIdx) => (
                 <div key={checkIdx} className="flex items-center gap-3">
                   {check.status ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
                   ) : (
-                    <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                    <XCircle className="w-5 h-5 text-destructive flex-shrink-0" />
                   )}
                   <span className={check.status ? 'text-foreground' : 'text-muted-foreground'}>
                     {check.label}
