@@ -320,6 +320,7 @@ const App = () => (
               <Route path="/backlog-phase2" element={<BacklogPage />} />
               <Route path="/sprints" element={<Sprints />} />
               <Route path="/sprint-board" element={<SprintBoard />} />
+              <Route path="/stories" element={<Stories />} />
               <Route path="/work-items/stories" element={<Stories />} />
               <Route path="/work-items/subtasks" element={<Subtasks />} />
               <Route path="/releases" element={<Releases />} />

@@ -1,6 +1,6 @@
 // Stories Module - Jira Align compliant implementation
 // Citation: Catalyst_Stories_PRD_v2.pdf, Lovable-Build-Instructions-Story-Module.pdf
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -34,6 +34,16 @@ export default function Stories() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [columnConfigOpen, setColumnConfigOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<any>({});
+
+  // Check for create query parameter to auto-open dialog
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('create') === 'true') {
+      setDialogOpen(true);
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
 
   const { data: stories, refetch } = useQuery({
     queryKey: ['all-stories', searchTerm, statusFilter, advancedFilters],
