@@ -72,7 +72,7 @@ export function CatalystHeader() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center px-2 sm:px-4 gap-1 sm:gap-2">
+        <div className="flex h-14 items-center px-2 sm:px-4 gap-1 sm:gap-2 w-full">
           {/* Logo */}
           <div className="flex items-center gap-2 mr-2 sm:mr-4 cursor-pointer" onClick={() => navigate('/home')}>
             <span className="font-extrabold text-base sm:text-lg tracking-tight">
@@ -81,8 +81,8 @@ export function CatalystHeader() {
             </span>
           </div>
 
-          {/* Main Navigation - Shown on all screens except small mobile */}
-          <nav className="hidden sm:flex items-center gap-1 flex-1 overflow-x-auto">
+          {/* Main Navigation - Always visible with horizontal scroll on small screens */}
+          <nav className="flex items-center gap-1 flex-1 overflow-x-auto">
             {navItems.map((item) => (
               <div key={item.label}>
                 {item.label === "Portfolio" ? (
@@ -195,14 +195,13 @@ export function CatalystHeader() {
               </div>
             ))}
 
-            {/* Items Dropdown */}
-            <ItemsDropdown />
           </nav>
 
-          {/* Create Button */}
-          <div className="hidden xs:block">
-            <CreateDropdown />
-          </div>
+          {/* Create Button - Always visible */}
+          <CreateDropdown />
+          
+          {/* Items Dropdown - Always visible */}
+          <ItemsDropdown />
 
           {/* Right Side Icons */}
           <div className="flex items-center gap-0.5 sm:gap-1 ml-auto">
