@@ -77,18 +77,8 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
   return (
     <div className="space-y-6">
       <div className="text-sm text-muted-foreground mb-4">
-        Track value metrics for WSJF prioritization and business impact
+        Track value metrics for business impact
       </div>
-
-      <Card className="p-4 bg-primary/5">
-        <div className="text-center">
-          <div className="text-sm text-muted-foreground">WSJF Value Score</div>
-          <div className="text-3xl font-bold text-primary">{wsjfScore}</div>
-          <div className="text-xs text-muted-foreground mt-1">
-            Business Value + Time Criticality + Risk Reduction
-          </div>
-        </div>
-      </Card>
 
       <div className="space-y-6">
         <div>

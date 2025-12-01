@@ -183,7 +183,10 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
         <div className="flex items-center gap-4">
           <div className="flex-1">
             <Label className="text-sm mb-2">Estimate for</Label>
-            <Select value={selectedPiId} onValueChange={setSelectedPiId}>
+            <Select 
+              value={selectedPiId || undefined} 
+              onValueChange={(value) => setSelectedPiId(value || '')}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select Program Increment" />
               </SelectTrigger>

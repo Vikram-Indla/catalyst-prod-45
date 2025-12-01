@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink } from 'lucide-react';
 import { FeatureStatusModal } from '../modals/FeatureStatusModal';
+import { toast } from 'sonner';
 
 interface EpicDetailsTabProps {
   epic: any;
@@ -155,7 +156,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         <div>
           <Label className="flex items-center gap-2">
             Additional Programs
-            <Button variant="ghost" size="icon" className="h-6 w-6">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6"
+              onClick={() => toast('Add additional program functionality coming soon')}
+            >
               <Plus className="h-3 w-3" />
             </Button>
           </Label>
@@ -175,7 +181,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
               <span className="text-sm text-muted-foreground">No PIs assigned</span>
             )}
           </div>
-          <Button variant="outline" size="sm" className="mt-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="mt-2"
+            onClick={() => toast('Add PI functionality coming soon')}
+          >
             <Plus className="h-3 w-3 mr-1" />
             Add PI
           </Button>
