@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CatalystHeader } from '@/components/ja/CatalystHeader';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
-import { ProgramRoomSidebar } from '@/components/program/ProgramRoomSidebar';
+import { ProgramRoomSidebar } from './ProgramRoomSidebar';
 import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
@@ -83,6 +83,10 @@ function CatalystShellContent() {
               ) : tier === 'program' ? (
                 <ProgramRoomSidebar
                   programId={currentProgramId || '22222222-2222-2222-2222-222222222222'}
+                  expanded={sidebarExpanded}
+                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                  selectedPI={selectedPI || undefined}
+                  onPIChange={(pi) => setSelectedPI(pi)}
                 />
               ) : tier === 'portfolio' ? (
                 <PortfolioRoomSidebar
