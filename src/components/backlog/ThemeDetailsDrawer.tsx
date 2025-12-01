@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
+import { ThemeChildrenTab } from './tabs/ThemeChildrenTab';
 
 // Citation: (Screenshot: image-194.png, image-195.png)
 
@@ -107,6 +108,13 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                   >
                     <FileText className="h-4 w-4 mr-2" />
                     Details
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="children"
+                    className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent px-4 py-3"
+                  >
+                    <Target className="h-4 w-4 mr-2" />
+                    Children
                   </TabsTrigger>
                   <TabsTrigger
                     value="links"
@@ -344,6 +352,10 @@ export function ThemeDetailsDrawer({ theme, isOpen, onClose }: ThemeDetailsDrawe
                       <p className="text-sm">Drop files or click here to upload</p>
                     </div>
                   </div>
+                </TabsContent>
+
+                <TabsContent value="children" className="mt-0">
+                  <ThemeChildrenTab themeId={theme.id} />
                 </TabsContent>
 
                 <TabsContent value="links" className="mt-0">
