@@ -5666,6 +5666,387 @@ export type Database = {
           },
         ]
       }
+      test_cases: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string | null
+          expected_result: string | null
+          folder_id: string | null
+          id: string
+          linked_work_item_id: string | null
+          linked_work_item_type: string | null
+          preconditions: string | null
+          priority: Database["public"]["Enums"]["test_priority"]
+          status: Database["public"]["Enums"]["test_case_status"]
+          test_type: Database["public"]["Enums"]["test_type"]
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          expected_result?: string | null
+          folder_id?: string | null
+          id?: string
+          linked_work_item_id?: string | null
+          linked_work_item_type?: string | null
+          preconditions?: string | null
+          priority?: Database["public"]["Enums"]["test_priority"]
+          status?: Database["public"]["Enums"]["test_case_status"]
+          test_type?: Database["public"]["Enums"]["test_type"]
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          expected_result?: string | null
+          folder_id?: string | null
+          id?: string
+          linked_work_item_id?: string | null
+          linked_work_item_type?: string | null
+          preconditions?: string | null
+          priority?: Database["public"]["Enums"]["test_priority"]
+          status?: Database["public"]["Enums"]["test_case_status"]
+          test_type?: Database["public"]["Enums"]["test_type"]
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_cases_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_cycles: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string | null
+          end_date: string | null
+          id: string
+          name: string
+          program_increment_id: string | null
+          sprint_id: string | null
+          start_date: string | null
+          status: Database["public"]["Enums"]["test_cycle_status"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          program_increment_id?: string | null
+          sprint_id?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["test_cycle_status"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          program_increment_id?: string | null
+          sprint_id?: string | null
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["test_cycle_status"]
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_cycles_program_increment_id_fkey"
+            columns: ["program_increment_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycles_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "iterations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_execution_steps: {
+        Row: {
+          actual_result: string | null
+          created_at: string | null
+          id: string
+          screenshot_url: string | null
+          status: Database["public"]["Enums"]["test_step_status"]
+          test_execution_id: string
+          test_step_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_result?: string | null
+          created_at?: string | null
+          id?: string
+          screenshot_url?: string | null
+          status: Database["public"]["Enums"]["test_step_status"]
+          test_execution_id: string
+          test_step_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_result?: string | null
+          created_at?: string | null
+          id?: string
+          screenshot_url?: string | null
+          status?: Database["public"]["Enums"]["test_step_status"]
+          test_execution_id?: string
+          test_step_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_execution_steps_test_execution_id_fkey"
+            columns: ["test_execution_id"]
+            isOneToOne: false
+            referencedRelation: "test_executions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_execution_steps_test_step_id_fkey"
+            columns: ["test_step_id"]
+            isOneToOne: false
+            referencedRelation: "test_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_executions: {
+        Row: {
+          actual_result: string | null
+          created_at: string | null
+          defect_id: string | null
+          executed_by: string
+          execution_date: string
+          execution_time_seconds: number | null
+          id: string
+          status: Database["public"]["Enums"]["test_execution_status"]
+          test_case_id: string
+          test_cycle_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          actual_result?: string | null
+          created_at?: string | null
+          defect_id?: string | null
+          executed_by: string
+          execution_date?: string
+          execution_time_seconds?: number | null
+          id?: string
+          status?: Database["public"]["Enums"]["test_execution_status"]
+          test_case_id: string
+          test_cycle_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          actual_result?: string | null
+          created_at?: string | null
+          defect_id?: string | null
+          executed_by?: string
+          execution_date?: string
+          execution_time_seconds?: number | null
+          id?: string
+          status?: Database["public"]["Enums"]["test_execution_status"]
+          test_case_id?: string
+          test_cycle_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_executions_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_executions_test_cycle_id_fkey"
+            columns: ["test_cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_folders: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          id: string
+          name: string
+          parent_folder_id: string | null
+          team_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          id?: string
+          name: string
+          parent_folder_id?: string | null
+          team_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          name?: string
+          parent_folder_id?: string | null
+          team_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_folders_parent_folder_id_fkey"
+            columns: ["parent_folder_id"]
+            isOneToOne: false
+            referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_folders_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_set_cases: {
+        Row: {
+          case_order: number | null
+          created_at: string | null
+          id: string
+          test_case_id: string
+          test_set_id: string
+        }
+        Insert: {
+          case_order?: number | null
+          created_at?: string | null
+          id?: string
+          test_case_id: string
+          test_set_id: string
+        }
+        Update: {
+          case_order?: number | null
+          created_at?: string | null
+          id?: string
+          test_case_id?: string
+          test_set_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_set_cases_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_set_cases_test_set_id_fkey"
+            columns: ["test_set_id"]
+            isOneToOne: false
+            referencedRelation: "test_sets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_sets: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string | null
+          id: string
+          name: string
+          team_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description?: string | null
+          id?: string
+          name: string
+          team_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string | null
+          id?: string
+          name?: string
+          team_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_sets_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_steps: {
+        Row: {
+          action: string
+          created_at: string | null
+          expected_result: string | null
+          id: string
+          step_order: number
+          test_case_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          expected_result?: string | null
+          id?: string
+          step_order: number
+          test_case_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          expected_result?: string | null
+          id?: string
+          step_order?: number
+          test_case_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_steps_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_epic_backlog_preferences: {
         Row: {
           created_at: string | null
@@ -6287,7 +6668,18 @@ export type Database = {
         | "PORTFOLIO"
         | "SOLUTION"
         | "PROCESS_FLOW"
+      test_case_status: "draft" | "approved" | "deprecated"
+      test_cycle_status: "planned" | "in_progress" | "completed" | "cancelled"
+      test_execution_status:
+        | "not_run"
+        | "passed"
+        | "failed"
+        | "blocked"
+        | "skipped"
+      test_priority: "critical" | "high" | "medium" | "low"
       test_status: "never_tested" | "success" | "fail"
+      test_step_status: "passed" | "failed" | "blocked" | "skipped"
+      test_type: "manual" | "automated" | "bdd"
       theme_status: "proposed" | "active" | "done" | "cancelled"
       track_by_type: "POINTS" | "HOURS"
     }
@@ -6517,7 +6909,19 @@ export const Constants = {
         "SOLUTION",
         "PROCESS_FLOW",
       ],
+      test_case_status: ["draft", "approved", "deprecated"],
+      test_cycle_status: ["planned", "in_progress", "completed", "cancelled"],
+      test_execution_status: [
+        "not_run",
+        "passed",
+        "failed",
+        "blocked",
+        "skipped",
+      ],
+      test_priority: ["critical", "high", "medium", "low"],
       test_status: ["never_tested", "success", "fail"],
+      test_step_status: ["passed", "failed", "blocked", "skipped"],
+      test_type: ["manual", "automated", "bdd"],
       theme_status: ["proposed", "active", "done", "cancelled"],
       track_by_type: ["POINTS", "HOURS"],
     },
