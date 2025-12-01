@@ -15,3 +15,8 @@ export { PassFailChart } from './PassFailChart';
 export { ExecutionTrendChart } from './ExecutionTrendChart';
 export { TestCoverageBar } from './TestCoverageBar';
 export { RecentExecutions } from './RecentExecutions';
+export { AITestGenerator } from './AITestGenerator';
+export { AIGeneratorModal } from './AIGeneratorModal';
+export { PriorityRecommender } from './PriorityRecommender';
+export { CoverageGapAnalyzer } from './CoverageGapAnalyzer';
+export { TestSuggestions } from './TestSuggestions';

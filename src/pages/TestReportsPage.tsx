@@ -6,6 +6,8 @@ import { PassFailChart } from '@/components/test-management/PassFailChart';
 import { ExecutionTrendChart } from '@/components/test-management/ExecutionTrendChart';
 import { TestCoverageBar } from '@/components/test-management/TestCoverageBar';
 import { RecentExecutions } from '@/components/test-management/RecentExecutions';
+import { CoverageGapAnalyzer } from '@/components/test-management/CoverageGapAnalyzer';
+import { TestSuggestions } from '@/components/test-management/TestSuggestions';
 import { TestMetrics, ExecutionTrend, FeatureCoverage, RecentExecution } from '@/types/reports.types';
 import { Loader2 } from 'lucide-react';
 
@@ -191,6 +193,12 @@ export function TestReportsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <TestCoverageBar coverageData={coverageData} />
           <RecentExecutions executions={recentExecutions} />
+        </div>
+
+        {/* AI-Powered Features */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <CoverageGapAnalyzer />
+          <TestSuggestions />
         </div>
       </div>
     </div>
