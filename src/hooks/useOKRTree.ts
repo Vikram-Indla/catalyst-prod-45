@@ -33,12 +33,13 @@ export function useOKRTree(snapshotId?: string) {
       
       if (!targetSnapshotId) return [];
 
-      // Fetch all objectives for this snapshot
+      console.log('OKR Tree - Fetching for snapshot:', targetSnapshotId);
+
+      // Fetch all objectives for this snapshot with proper ordering
       const { data: objectives, error } = await supabase
         .from('objectives')
         .select('id, name, level, confidence_score, progress_pct, owner_id, parent_objective_id')
-        .eq('snapshot_id', targetSnapshotId)
-        .order('level', { ascending: true });
+        .eq('snapshot_id', targetSnapshotId);
 
       if (error) {
         console.error('Error fetching objectives:', error);
@@ -61,9 +62,13 @@ export function useOKRTree(snapshotId?: string) {
       objectives?.forEach((obj: any) => {
         const profile = profilesMap.get(obj.owner_id);
         const ownerName = profile?.full_name || profile?.email || 'Unassigned';
+        
+        // Extract numeric ID from UUID (first segment)
+        const numericId = parseInt(obj.id.split('-')[0], 16) % 100;
+        
         const item: OKRTreeItem = {
           id: obj.id,
-          numericId: parseInt(obj.id.replace(/\D/g, '').slice(0, 6)) || Math.floor(Math.random() * 100000),
+          numericId: numericId,
           title: obj.name,
           tier: obj.level === 'strategic_goal' ? 'strategic_goal' 
                : obj.level === 'portfolio' ? 'portfolio'
