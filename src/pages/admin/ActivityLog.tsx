@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { format } from 'date-fns';
 import { Activity, User } from 'lucide-react';
+import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 
 export default function ActivityLog() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -111,7 +112,8 @@ export default function ActivityLog() {
       </Card>
 
       <Card>
-        <Table>
+        <ResponsiveTableWrapper minWidth={800}>
+          <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Timestamp</TableHead>
@@ -167,12 +169,13 @@ export default function ActivityLog() {
           </TableBody>
         </Table>
 
-        {(!filteredLogs || filteredLogs.length === 0) && (
-          <div className="py-12 text-center text-muted-foreground">
-            <Activity className="h-12 w-12 mx-auto mb-4 opacity-20" />
-            <p>No activity logs found</p>
-          </div>
-        )}
+          {(!filteredLogs || filteredLogs.length === 0) && (
+            <div className="py-12 text-center text-muted-foreground">
+              <Activity className="h-12 w-12 mx-auto mb-4 opacity-20" />
+              <p>No activity logs found</p>
+            </div>
+          )}
+        </ResponsiveTableWrapper>
       </Card>
 
       <div className="text-sm text-muted-foreground">

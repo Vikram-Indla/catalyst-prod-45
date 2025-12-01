@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveGrid, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 
 /**
  * Teams Management Page - Configure team structure and settings
@@ -25,21 +26,19 @@ export default function Teams() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Teams</h1>
-            <p className="text-muted-foreground mt-2">
-              Configure team structure and membership settings
-            </p>
-          </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Team
-          </Button>
-        </div>
+      <ResponsivePageContainer>
+        <ResponsivePageHeader
+          title="Teams"
+          description="Configure team structure and membership settings"
+          actions={
+            <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Team
+            </Button>
+          }
+        />
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <ResponsiveGrid cols={3}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Teams</CardTitle>
@@ -66,7 +65,7 @@ export default function Teams() {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </ResponsiveGrid>
 
         <Card>
           <CardHeader>
@@ -76,9 +75,9 @@ export default function Teams() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-[var(--s4)] mb-[var(--s4)]">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-[var(--s3)] top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search teams..."
                   className="pl-10"
@@ -87,9 +86,9 @@ export default function Teams() {
             </div>
 
             {isLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading teams...</div>
+              <div className="text-center py-[var(--s8)] text-muted-foreground">Loading teams...</div>
             ) : (
-              <div className="border rounded-lg">
+              <ResponsiveTableWrapper minWidth={600}>
                 <table className="w-full">
                   <thead className="bg-muted/50">
                     <tr>
@@ -118,11 +117,11 @@ export default function Teams() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </ResponsiveTableWrapper>
             )}
           </CardContent>
         </Card>
-      </div>
+      </ResponsivePageContainer>
     </AdminGuard>
   );
 }
