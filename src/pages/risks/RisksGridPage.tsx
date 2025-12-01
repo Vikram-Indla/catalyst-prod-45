@@ -145,34 +145,53 @@ export default function RisksGridPage() {
 
   return (
     <div className="flex h-full w-full bg-background overflow-hidden">
-      <RisksSidebar />
+      <RisksSidebar className="hidden lg:flex" />
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
       {/* Page Header */}
-      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <span className="text-brand-gold flex-shrink-0">☆</span>
-            <h1 className="text-base sm:text-lg font-heading font-semibold text-text-primary truncate">
-              Risk Grid
-            </h1>
-            {filters.status && (
-              <span className="text-xs sm:text-sm text-text-secondary hidden md:inline">
-                Where Status = {filters.status}
-              </span>
-            )}
+      <div className="border-b bg-card px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <span className="text-brand-gold flex-shrink-0 text-sm sm:text-base">☆</span>
+              <h1 className="text-sm sm:text-base lg:text-lg font-heading font-semibold text-text-primary truncate">
+                Risk Grid
+              </h1>
+              {filters.status && (
+                <span className="text-xs text-text-secondary hidden xl:inline whitespace-nowrap">
+                  Where Status = {filters.status}
+                </span>
+              )}
+            </div>
+            
+            <Button 
+              size="sm"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white flex-shrink-0"
+              onClick={() => {
+                setEditingRisk(null);
+                setIsCreateEditOpen(true);
+              }}
+            >
+              <Plus className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Add Risk</span>
+            </Button>
           </div>
           
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setIsFiltersDialogOpen(true)}>
-              <Filter className="w-4 h-4 mr-2" />
-              Apply Filters
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setIsFiltersDialogOpen(true)}
+              className="flex-shrink-0"
+            >
+              <Filter className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Filters</span>
             </Button>
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <MoreVertical className="w-4 h-4 mr-2" />
-                  More Actions
+                <Button variant="outline" size="sm" className="flex-shrink-0">
+                  <MoreVertical className="w-4 h-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Actions</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -200,56 +219,44 @@ export default function RisksGridPage() {
                 <DropdownMenuItem>Risk ROAM Report</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <Button 
-              size="sm" 
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
-              onClick={() => {
-                setEditingRisk(null);
-                setIsCreateEditOpen(true);
-              }}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Risk
-            </Button>
           </div>
         </div>
       </div>
 
       {/* Search Bar */}
-      <div className="px-3 sm:px-6 py-2 sm:py-3 border-b">
-        <div className="relative w-full sm:max-w-md">
+      <div className="px-2 sm:px-4 lg:px-6 py-2 border-b">
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <Input
             placeholder="Search risks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-9 text-sm h-9"
           />
         </div>
       </div>
 
       {/* Data Table */}
-      <div className="flex-1 overflow-auto px-3 sm:px-6 py-3 sm:py-4">
+      <div className="flex-1 overflow-auto px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
         {isLoading ? (
-          <div className="flex items-center justify-center h-64 text-sm text-text-muted">
+          <div className="flex items-center justify-center h-64 text-xs sm:text-sm text-text-muted">
             Loading risks...
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table className="min-w-[800px]">
+          <div className="overflow-x-auto -mx-2 sm:mx-0">
+            <Table className="min-w-[600px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-10">☆</TableHead>
-                <TableHead className="w-16">ID</TableHead>
-                {visibleColumns.includes('roam') && <TableHead className="w-32">ROAM</TableHead>}
-                {visibleColumns.includes('title') && <TableHead>Title</TableHead>}
-                {visibleColumns.includes('pi') && <TableHead className="w-32">PI</TableHead>}
-                {visibleColumns.includes('occurrence') && <TableHead className="w-20">Occ</TableHead>}
-                {visibleColumns.includes('impact') && <TableHead className="w-20">Imp</TableHead>}
-                {visibleColumns.includes('critical_path') && <TableHead className="w-24">Critical</TableHead>}
-                {visibleColumns.includes('status') && <TableHead className="w-20">Status</TableHead>}
-                <TableHead className="w-16">
+                <TableHead className="w-8 sm:w-10">☆</TableHead>
+                <TableHead className="w-12 sm:w-16 text-xs sm:text-sm">ID</TableHead>
+                {visibleColumns.includes('roam') && <TableHead className="w-24 sm:w-32 text-xs sm:text-sm">ROAM</TableHead>}
+                {visibleColumns.includes('title') && <TableHead className="text-xs sm:text-sm">Title</TableHead>}
+                {visibleColumns.includes('pi') && <TableHead className="w-20 sm:w-32 text-xs sm:text-sm hidden md:table-cell">PI</TableHead>}
+                {visibleColumns.includes('occurrence') && <TableHead className="w-16 sm:w-20 text-xs sm:text-sm hidden lg:table-cell">Occ</TableHead>}
+                {visibleColumns.includes('impact') && <TableHead className="w-16 sm:w-20 text-xs sm:text-sm hidden lg:table-cell">Imp</TableHead>}
+                {visibleColumns.includes('critical_path') && <TableHead className="w-20 sm:w-24 text-xs sm:text-sm hidden xl:table-cell">Critical</TableHead>}
+                {visibleColumns.includes('status') && <TableHead className="w-16 sm:w-20 text-xs sm:text-sm">Status</TableHead>}
+                <TableHead className="w-12 sm:w-16">
                   <Checkbox />
                 </TableHead>
               </TableRow>
@@ -261,8 +268,8 @@ export default function RisksGridPage() {
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => setSelectedRisk(risk)}
                 >
-                  <TableCell>☆</TableCell>
-                  <TableCell className="font-medium text-text-primary">
+                  <TableCell className="text-xs sm:text-sm">☆</TableCell>
+                  <TableCell className="font-medium text-text-primary text-xs sm:text-sm">
                     {risk.risk_number}
                   </TableCell>
                   {visibleColumns.includes('roam') && (
@@ -271,32 +278,32 @@ export default function RisksGridPage() {
                     </TableCell>
                   )}
                   {visibleColumns.includes('title') && (
-                    <TableCell className="text-text-primary">
+                    <TableCell className="text-text-primary text-xs sm:text-sm">
                       {risk.title}
                     </TableCell>
                   )}
                   {visibleColumns.includes('pi') && (
-                    <TableCell className="text-text-secondary">
+                    <TableCell className="text-text-secondary text-xs sm:text-sm hidden md:table-cell">
                       PI-{risk.program_increment_id.substring(0, 8)}
                     </TableCell>
                   )}
                   {visibleColumns.includes('occurrence') && (
-                    <TableCell className="text-text-secondary">
+                    <TableCell className="text-text-secondary text-xs sm:text-sm hidden lg:table-cell">
                       {risk.occurrence || '—'}
                     </TableCell>
                   )}
                   {visibleColumns.includes('impact') && (
-                    <TableCell className="text-text-secondary">
+                    <TableCell className="text-text-secondary text-xs sm:text-sm hidden lg:table-cell">
                       {risk.impact || '—'}
                     </TableCell>
                   )}
                   {visibleColumns.includes('critical_path') && (
-                    <TableCell className="text-text-secondary">
+                    <TableCell className="text-text-secondary text-xs sm:text-sm hidden xl:table-cell">
                       {risk.critical_path || '—'}
                     </TableCell>
                   )}
                   {visibleColumns.includes('status') && (
-                    <TableCell className="text-text-secondary">
+                    <TableCell className="text-text-secondary text-xs sm:text-sm">
                       {risk.status}
                     </TableCell>
                   )}
@@ -315,20 +322,20 @@ export default function RisksGridPage() {
       </div>
 
       {/* Pagination Footer */}
-      <div className="border-t px-3 sm:px-6 py-2 sm:py-3 bg-card">
-        <div className="flex items-center justify-between text-sm text-text-secondary">
-          <div>
+      <div className="border-t px-2 sm:px-4 lg:px-6 py-2 bg-card">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm text-text-secondary">
+          <div className="text-center sm:text-left">
             {filteredRisks.length > 0 
-              ? `1-${Math.min(10, filteredRisks.length)} of ${filteredRisks.length} Records`
+              ? `1-${Math.min(10, filteredRisks.length)} of ${filteredRisks.length}`
               : '0 Records'}
           </div>
           <div className="flex items-center gap-2">
-            <span>1 of {Math.ceil(filteredRisks.length / 10) || 1}</span>
+            <span className="text-xs">Page 1 of {Math.ceil(filteredRisks.length / 10) || 1}</span>
             <div className="flex gap-1">
-              <Button variant="outline" size="sm">First</Button>
-              <Button variant="outline" size="sm">Prev</Button>
-              <Button variant="outline" size="sm">Next</Button>
-              <Button variant="outline" size="sm">Last</Button>
+              <Button variant="outline" size="sm" className="h-7 px-2 text-xs hidden sm:flex">First</Button>
+              <Button variant="outline" size="sm" className="h-7 px-2 text-xs">Prev</Button>
+              <Button variant="outline" size="sm" className="h-7 px-2 text-xs">Next</Button>
+              <Button variant="outline" size="sm" className="h-7 px-2 text-xs hidden sm:flex">Last</Button>
             </div>
           </div>
         </div>

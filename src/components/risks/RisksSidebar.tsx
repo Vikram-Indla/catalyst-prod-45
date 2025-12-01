@@ -27,7 +27,10 @@ const menuItems = [
 ];
 
 export function RisksSidebar({ className }: RisksSidebarProps) {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(() => {
+    // Collapse by default on mobile/tablet, expand on desktop
+    return window.innerWidth >= 1024;
+  });
   const navigate = useNavigate();
   const location = useLocation();
 
