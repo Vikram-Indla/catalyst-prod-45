@@ -33,6 +33,13 @@ export { ExportMenu } from './ExportMenu';
 export { EvidenceUploader } from './EvidenceUploader';
 export { EvidenceGallery } from './EvidenceGallery';
 export { EvidenceViewer } from './EvidenceViewer';
+
+// Work Item Linking Components
+export { AIOTestsSection } from './AIOTestsSection';
+export { LinkedTestCasesList } from './LinkedTestCasesList';
+export { CreateTestFromWorkItem } from './CreateTestFromWorkItem';
+export { LinkTestToWorkItem } from './LinkTestToWorkItem';
+export { AITestSuggestions } from './AITestSuggestions';
 export { SharedStepCard } from './SharedStepCard';
 export { CreateSharedStepModal } from './CreateSharedStepModal';
 export { EditSharedStepModal } from './EditSharedStepModal';
