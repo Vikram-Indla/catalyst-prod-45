@@ -102,8 +102,10 @@ export default function StrategyRoomPage() {
   };
 
   const handleObjectiveClick = (objective: any) => {
+    console.log('📌 StrategyRoomPage: handleObjectiveClick called', { objective });
     setSelectedObjective(objective);
     setDrawerOpen(true);
+    console.log('📌 StrategyRoomPage: State updated', { objectiveId: objective?.id, drawerOpen: true });
   };
 
   const filteredSnapshots = snapshots.filter((s) =>
