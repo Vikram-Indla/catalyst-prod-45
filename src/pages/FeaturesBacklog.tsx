@@ -9,6 +9,8 @@ import { FeaturesColumnsDialog } from '@/components/features/FeaturesColumnsDial
 import { FeaturesFiltersDialog } from '@/components/features/FeaturesFiltersDialog';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { FeatureDialog } from '@/components/forms/FeatureDialog';
+import { ApplyWSJFToRankDialog } from '@/components/prioritization/ApplyWSJFToRankDialog';
+import { PullRankDialog } from '@/components/backlog/PullRankDialog';
 import { exportToCSV } from '@/lib/exportUtils';
 import { toast } from 'sonner';
 
@@ -24,6 +26,8 @@ export default function FeaturesBacklog() {
     'id', 'name', 'epic', 'program', 'pi', 'iteration', 'status', 'health', 'progress'
   ]);
   const [filters, setFilters] = useState<any>({});
+  const [wsjfDialogOpen, setWsjfDialogOpen] = useState(false);
+  const [pullRankDialogOpen, setPullRankDialogOpen] = useState(false);
 
   // Check for create query parameter
   useEffect(() => {
@@ -97,6 +101,8 @@ export default function FeaturesBacklog() {
         onColumnsClick={() => setColumnsDialogOpen(true)}
         onFiltersClick={() => setFiltersDialogOpen(true)}
         onExport={handleExport}
+        onApplyWSJF={() => setWsjfDialogOpen(true)}
+        onPullRank={() => setPullRankDialogOpen(true)}
       />
 
       <div className="flex-1 overflow-auto px-3 sm:px-6 py-4 sm:py-6">
@@ -143,6 +149,19 @@ export default function FeaturesBacklog() {
         onOpenChange={setFiltersDialogOpen}
         filters={filters}
         onFiltersChange={setFilters}
+      />
+
+      <ApplyWSJFToRankDialog
+        open={wsjfDialogOpen}
+        onOpenChange={setWsjfDialogOpen}
+        workItemType="feature"
+      />
+
+      <PullRankDialog
+        open={pullRankDialogOpen}
+        onOpenChange={setPullRankDialogOpen}
+        workItemType="feature"
+        currentItemId={selectedFeature || undefined}
       />
     </div>
   );
