@@ -75,7 +75,20 @@ export function useObjectiveDetail(objectiveId?: string) {
             epic_key,
             name,
             estimate,
-            status
+            status,
+            progress_pct
+          )
+        `)
+        .eq('objective_id', objectiveId);
+
+      // Fetch linked themes
+      const { data: themeLinks } = await supabase
+        .from('objective_theme_links')
+        .select(`
+          strategic_themes (
+            id,
+            name,
+            description
           )
         `)
         .eq('objective_id', objectiveId);
@@ -107,6 +120,7 @@ export function useObjectiveDetail(objectiveId?: string) {
       return {
         ...objective,
         keyResults: keyResultsWithCheckins,
+        themes: themeLinks?.map(link => link.strategic_themes).filter(Boolean) || [],
         epics: epicLinks?.map(link => link.epics).filter(Boolean) || [],
         risks: risks || [],
         dependencies: dependencies || [],
