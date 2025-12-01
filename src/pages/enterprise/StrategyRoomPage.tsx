@@ -30,7 +30,7 @@ export default function StrategyRoomPage() {
         .from('program_increments')
         .select('id, name, start_date')
         .order('start_date', { ascending: false })
-        .limit(3);
+        .limit(2);
       if (error) throw error;
       return data;
     },

@@ -74,6 +74,9 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
     onCellClick(level, pi);
   };
 
+  const numPIs = heatmapData?.programIncrements?.length || 2;
+  const gridColumns = `repeat(${numPIs}, 1fr) 180px 100px`;
+
   return (
     <Card className="border rounded-lg">
       <CardHeader>
@@ -90,7 +93,7 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
         <div
           className="grid gap-2"
           style={{
-            gridTemplateColumns: 'repeat(3, 1fr) 180px 100px',
+            gridTemplateColumns: gridColumns,
             alignItems: 'stretch'
           }}
         >
@@ -111,7 +114,7 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
                   key={`${row.level}-span`}
                   className="rounded-md p-6 text-center text-white flex flex-col items-center justify-center min-h-[80px]"
                   style={{
-                    gridColumn: 'span 3',
+                    gridColumn: `span ${numPIs}`,
                     backgroundColor: getHeatmapCellColor(row.cells[0].avgScore)
                   }}
                 >
