@@ -56,16 +56,27 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
         const levelStats = levelMap[obj.level];
         if (!levelStats) return;
 
-        const objPiIds = obj.program_increment_ids || [];
+        const objPiIds = Array.isArray(obj.program_increment_ids) ? obj.program_increment_ids : [];
         
-        piIds.forEach((piId, index) => {
-          if (objPiIds.includes(piId) || obj.level === 'strategic_goal') {
+        // For strategic goals, count for all PIs (span all columns)
+        if (obj.level === 'strategic_goal') {
+          piIds.forEach((piId, index) => {
             levelStats[index].total++;
-            if (obj.confidence_score !== null) {
+            if (obj.confidence_score !== null && obj.confidence_score !== undefined) {
               levelStats[index].scores.push(obj.confidence_score);
             }
-          }
-        });
+          });
+        } else {
+          // For other levels, only count if PI is in the objective's program_increment_ids
+          piIds.forEach((piId, index) => {
+            if (objPiIds.includes(piId)) {
+              levelStats[index].total++;
+              if (obj.confidence_score !== null && obj.confidence_score !== undefined) {
+                levelStats[index].scores.push(obj.confidence_score);
+              }
+            }
+          });
+        }
       });
 
       // Build rows
