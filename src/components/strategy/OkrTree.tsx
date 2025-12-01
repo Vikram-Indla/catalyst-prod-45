@@ -66,29 +66,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
     setExpandedIds(newExpanded);
   };
 
-  const renderObjective = (item: any, depth: number = 0, parentTier?: string) => {
+  const renderObjective = (item: any, depth: number = 0) => {
     const hasChildren = item.children.length > 0;
     const isExpanded = expandedIds.has(item.id);
-    const showLevelHeader = !parentTier || parentTier !== item.tier;
-    const indentPx = depth * 32; // Increased from 24 to 32 for better visual hierarchy
+    const indentPx = depth * 32;
 
     return (
       <div key={item.id}>
-        {showLevelHeader && (
-          <div
-            className="grid items-center py-2.5 px-4 bg-muted/30 border-b font-semibold text-sm"
-            style={{
-              gridTemplateColumns: '1fr 180px 100px 100px',
-              paddingLeft: `${indentPx + 16}px`
-            }}
-          >
-            <div className="text-foreground/90">{getLevelLabel(item.tier)}</div>
-            <div className="text-center text-foreground/80">Key Results<br />Progress</div>
-            <div className="text-center text-foreground/80">Score</div>
-            <div className="text-center text-foreground/80">Owner</div>
-          </div>
-        )}
-
         <div
           className="grid items-center py-2.5 px-4 border-b hover:bg-muted/20 cursor-pointer transition-colors"
           style={{
@@ -150,7 +134,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
           </div>
         </div>
 
-        {isExpanded && item.children.map((child: any) => renderObjective(child, depth + 1, item.tier))}
+        {isExpanded && hasChildren && item.children.map((child: any) => renderObjective(child, depth + 1))}
       </div>
     );
   };
@@ -196,6 +180,21 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
       </CardHeader>
       <CardContent className="pt-0">
         <div className="border rounded-md overflow-hidden bg-card">
+          {/* Column Headers */}
+          <div
+            className="grid items-center py-2.5 px-4 bg-muted/30 border-b font-semibold text-sm sticky top-0 z-10"
+            style={{
+              gridTemplateColumns: '1fr 180px 100px 100px',
+              paddingLeft: '16px'
+            }}
+          >
+            <div className="text-foreground/90">Objective</div>
+            <div className="text-center text-foreground/80">Key Results<br />Progress</div>
+            <div className="text-center text-foreground/80">Score</div>
+            <div className="text-center text-foreground/80">Owner</div>
+          </div>
+
+          {/* Tree Content */}
           {treeData.length > 0 ? (
             treeData.map((item) => renderObjective(item, 0))
           ) : (
