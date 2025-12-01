@@ -9,6 +9,9 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/component
 import { ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
+import { useCapacityWarnings } from '@/hooks/useCapacityWarnings';
+import { AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface ForecastTabProps {
   workItemId: string;
@@ -19,6 +22,9 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
   const queryClient = useQueryClient();
   const [selectedPiId, setSelectedPiId] = useState<string>('');
   const [expandedPrograms, setExpandedPrograms] = useState<Set<string>>(new Set());
+
+  // Fetch capacity warnings
+  const { data: capacityWarnings = [] } = useCapacityWarnings(selectedPiId);
 
   // Fetch all PIs
   const { data: pis = [] } = useQuery({
@@ -199,6 +205,27 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
           </div>
         </div>
       </div>
+
+      {/* Capacity Warnings */}
+      {selectedPiId && capacityWarnings.length > 0 && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            <div className="font-semibold mb-2">Capacity Warnings</div>
+            <ul className="list-disc pl-5 space-y-1 text-sm">
+              {capacityWarnings.map(warning => (
+                <li key={warning.teamId}>
+                  <span className="font-medium">{warning.teamName}</span>: 
+                  {warning.overallocation > 0 
+                    ? ` Overallocated by ${warning.overallocation} points (${Math.round(warning.percentUsed)}% capacity used)`
+                    : ` At ${Math.round(warning.percentUsed)}% capacity`
+                  }
+                </li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Programs and Teams Section */}
       {selectedPiId && (
