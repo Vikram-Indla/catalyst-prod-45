@@ -78,8 +78,9 @@ import BoardConfig from "./pages/admin/BoardConfig";
 import Permissions from "./pages/admin/Permissions";
 import Integrations from "./pages/admin/Integrations";
 import JiraIntegrationConfig from "./pages/admin/JiraIntegrationConfig";
-import { AdminLayout } from "./pages/admin/AdminLayout";
-import AdminDashboard from "./pages/admin/AdminDashboard";
+import { AdminLayout } from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import { StoriesPage } from './pages/stories/StoriesPage';
 import Activity from "./pages/admin/Activity";
 import Changes from "./pages/admin/Changes";
 import UseTrend from "./pages/admin/UseTrend";
@@ -175,7 +176,8 @@ const App = () => (
             <BrowserRouter>
               <Routes>
               <Route path="/" element={<Navigate to="/home" replace />} />
-              <Route path="/auth" element={<Auth />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/stories" element={<StoriesPage />} />
               
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
