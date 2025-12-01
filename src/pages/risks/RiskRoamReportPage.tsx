@@ -137,7 +137,7 @@ export default function RiskRoamReportPage() {
 
   return (
     <div className="flex h-full w-full bg-background overflow-hidden">
-      <RisksSidebar className="hidden lg:flex" />
+      <RisksSidebar />
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
       {/* Page Header */}
       <div className="border-b bg-card px-2 sm:px-4 lg:px-6 py-2 sm:py-3">

@@ -59,16 +59,16 @@ export function RisksSidebar({ className }: RisksSidebarProps) {
         className
       )}
     >
-      {/* Toggle Handle */}
+      {/* Toggle Handle - Always visible */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
+        className="absolute -right-3 top-6 z-[100] w-6 h-6 rounded-full bg-card border border-border shadow-md flex items-center justify-center hover:bg-accent hover:border-brand-gold transition-all"
         aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         {expanded ? (
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-4 w-4 text-foreground" />
         ) : (
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-4 w-4 text-foreground" />
         )}
       </button>
 

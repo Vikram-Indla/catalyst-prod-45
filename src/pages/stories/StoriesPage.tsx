@@ -67,7 +67,7 @@ export function StoriesPage() {
 
   return (
     <div className="flex h-full w-full bg-background overflow-hidden">
-      <StoriesSidebar className="hidden lg:flex" />
+      <StoriesSidebar />
       <div className="h-full w-full flex flex-col bg-background overflow-hidden min-w-0">
         {/* Header */}
         <div className="border-b bg-card px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
