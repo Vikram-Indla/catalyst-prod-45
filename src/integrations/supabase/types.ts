@@ -5782,6 +5782,73 @@ export type Database = {
           },
         ]
       }
+      test_data_parameters: {
+        Row: {
+          created_at: string | null
+          id: string
+          parameter_name: string
+          parameter_type: string
+          test_case_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          parameter_name: string
+          parameter_type?: string
+          test_case_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          parameter_name?: string
+          parameter_type?: string
+          test_case_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_data_parameters_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_data_rows: {
+        Row: {
+          created_at: string | null
+          id: string
+          row_data: Json
+          test_case_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          row_data: Json
+          test_case_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          row_data?: Json
+          test_case_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_data_rows_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_execution_steps: {
         Row: {
           actual_result: string | null
