@@ -13,6 +13,11 @@ export interface HeatmapRow {
   spanAllColumns?: boolean;
 }
 
+export interface ProgramIncrementInfo {
+  id: string;
+  name: string;
+}
+
 export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
   return useQuery({
     queryKey: ['okr-heatmap', snapshotId, piIds],
@@ -101,7 +106,10 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
       ];
 
       return {
-        programIncrements: piIds.map(id => piNameMap.get(id) || id),
+        programIncrements: piIds.map(id => ({
+          id,
+          name: piNameMap.get(id) || id
+        })),
         rows,
       };
     },
