@@ -5771,6 +5771,44 @@ export type Database = {
           },
         ]
       }
+      test_case_work_items: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          id: string
+          link_type: string | null
+          test_case_id: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          id?: string
+          link_type?: string | null
+          test_case_id: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          link_type?: string | null
+          test_case_id?: string
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_work_items_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_cases: {
         Row: {
           created_at: string | null
