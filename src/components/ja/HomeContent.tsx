@@ -51,13 +51,9 @@ export function HomeContent() {
     });
   };
 
-  if (loadingRecent || loadingStarred) {
-    return (
-      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
-        <div className="text-muted-foreground">Loading...</div>
-      </div>
-    );
-  }
+  // Don't block rendering with full-screen loader - show content immediately
+  const showRecent = !loadingRecent && recentRooms.length > 0;
+  const showStarred = !loadingStarred && starredItems.length > 0;
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -66,8 +62,11 @@ export function HomeContent() {
         <section className="mb-16">
           <h2 className="text-xl font-semibold text-foreground mb-6">Recent rooms</h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            {recentRooms.slice(0, 10).map((room) => (
+          {loadingRecent ? (
+            <div className="text-sm text-muted-foreground">Loading recent rooms...</div>
+          ) : showRecent ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              {recentRooms.slice(0, 10).map((room) => (
               <div
                 key={room.id}
                 onClick={() => handleRoomClick(room)}
@@ -100,8 +99,11 @@ export function HomeContent() {
                   )}
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">No recent rooms yet</div>
+          )}
         </section>
 
         {/* Starred Section */}
@@ -117,8 +119,11 @@ export function HomeContent() {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            {starredItems.slice(0, 10).map((item) => (
+          {loadingStarred ? (
+            <div className="text-sm text-muted-foreground">Loading starred items...</div>
+          ) : showStarred ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+              {starredItems.slice(0, 10).map((item) => (
               <div
                 key={item.id}
                 onClick={() => handleRoomClick(item)}
@@ -155,8 +160,11 @@ export function HomeContent() {
                   )}
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">No starred items yet</div>
+          )}
         </section>
       </div>
     </div>
