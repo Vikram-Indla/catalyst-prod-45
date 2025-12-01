@@ -157,12 +157,12 @@ export function PortfolioRoomSidebar({
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Portfolio Context Header */}
-        <div className={cn("px-4 pt-4 pb-3 border-b", !expanded && "px-2")}>
+        <div className={cn("border-b", !expanded && "px-[var(--s2)]")} style={{ padding: expanded ? 'var(--s4)' : undefined, paddingTop: 'var(--s4)', paddingBottom: 'var(--s3)' }}>
           {expanded && (
             <>
               {/* Portfolio Display (read-only, controlled by header) */}
-              <div className="py-2 px-3 mb-3 bg-accent/30 border border-border/50 rounded-lg">
-                <div className="flex items-center gap-3 w-full">
+              <div className="bg-accent/30 border border-border/50 rounded-lg" style={{ padding: 'var(--s2) var(--s3)', marginBottom: 'var(--s3)' }}>
+                <div className="flex items-center w-full" style={{ gap: 'var(--s3)' }}>
                   <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold flex-shrink-0">
                     {portfolio?.name?.substring(0, 2).toUpperCase() || 'PF'}
                   </div>

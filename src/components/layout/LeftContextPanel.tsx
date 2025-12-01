@@ -229,14 +229,14 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Context Header */}
-        <div className={cn("px-4 pt-4 pb-3 border-b", !expanded && "px-2")}>
+        <div className={cn("border-b", !expanded && "px-[var(--s2)]")} style={{ padding: expanded ? 'var(--s4)' : undefined, paddingTop: 'var(--s4)', paddingBottom: 'var(--s3)' }}>
           {expanded ? (
             <>
               {/* Portfolio/Program Selector */}
               {(tier === 'portfolio' || tier === 'program') && currentPortfolio && (
                 <Select value={portfolioId || undefined} onValueChange={setPortfolioId}>
-                  <SelectTrigger className="h-auto py-2 px-3 mb-3 bg-background border-border hover:bg-accent/50">
-                    <div className="flex items-center gap-3 w-full">
+                  <SelectTrigger className="h-auto bg-background border-border hover:bg-accent/50" style={{ padding: 'var(--s2) var(--s3)', marginBottom: 'var(--s3)' }}>
+                    <div className="flex items-center w-full" style={{ gap: 'var(--s3)' }}>
                       <div className={cn("w-8 h-8 rounded flex items-center justify-center text-white text-xs font-semibold flex-shrink-0", currentPortfolio.color)}>
                         {currentPortfolio.abbr}
                       </div>

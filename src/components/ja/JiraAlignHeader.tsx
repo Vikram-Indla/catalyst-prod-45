@@ -47,10 +47,10 @@ export function CatalystHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center px-4 gap-2">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60" style={{ height: 'var(--topnav-h)' }}>
+        <div className="flex items-center gap-[var(--s2)]" style={{ height: 'var(--topnav-h)', paddingLeft: 'var(--s4)', paddingRight: 'var(--s4)' }}>
           {/* Logo */}
-          <div className="flex items-center gap-2 mr-4">
+          <div className="flex items-center gap-[var(--s2)]" style={{ marginRight: 'var(--s4)' }}>
             <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
               <span className="text-xs font-bold text-primary-foreground">JA</span>
             </div>
@@ -58,7 +58,7 @@ export function CatalystHeader() {
           </div>
 
           {/* Main Navigation */}
-          <nav className="flex items-center gap-1 flex-1">
+          <nav className="flex items-center flex-1" style={{ gap: 'var(--s1)' }}>
             {navItems.map((item) => (
               <div key={item.label}>
                 {item.label === "Portfolio" ? (
@@ -179,7 +179,7 @@ export function CatalystHeader() {
           <CreateDropdown />
 
           {/* Right Side Icons */}
-          <div className="flex items-center gap-1 ml-2">
+          <div className="flex items-center" style={{ gap: 'var(--s1)', marginLeft: 'var(--s2)' }}>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
