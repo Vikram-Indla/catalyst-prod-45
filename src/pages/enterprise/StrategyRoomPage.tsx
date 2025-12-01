@@ -121,7 +121,7 @@ export default function StrategyRoomPage() {
   }
 
   return (
-    <div style={{ padding: 'var(--s3) var(--s4)' }} className="space-y-[var(--s4)] sm:space-y-[var(--s6)]">
+    <div className="px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s3)] sm:py-[var(--s4)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
       {/* Header */}
       <div className="flex flex-col" style={{ gap: 'var(--s4)' }}>
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
