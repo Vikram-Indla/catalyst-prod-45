@@ -163,6 +163,8 @@ import NotificationsSelfTest from "./pages/dev/NotificationsSelfTest";
 import PortfolioThemeSelfTest from "./pages/dev/PortfolioThemeSelfTest";
 import ProgramBoardSelfTest from "./pages/dev/ProgramBoardSelfTest";
 import SourcesReference from "./pages/dev/SourcesReference";
+import { TestCasesPage } from "./pages/TestCasesPage";
+import { TestCaseDetailPage } from "./pages/TestCaseDetailPage";
 
 const queryClient = new QueryClient();
 
@@ -448,6 +450,11 @@ const App = () => (
               <Route path="/work-items/stories" element={<Stories />} />
               <Route path="/work-items/subtasks" element={<Subtasks />} />
               <Route path="/releases" element={<Releases />} />
+              
+              {/* Test Management Routes */}
+              <Route path="/tests/cases" element={<TestCasesPage />} />
+              <Route path="/tests/cases/:id" element={<TestCaseDetailPage />} />
+              
               <Route path="/insights/portfolio" element={<PortfolioInsights />} />
               <Route path="/insights/program" element={<ProgramInsights />} />
               <Route path="/insights/team" element={<TeamInsights />} />
