@@ -31,17 +31,19 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
   return useQuery({
     queryKey: ['okr-heatmap', snapshotId, piIds],
     queryFn: async () => {
-      console.log('🔥 useOKRHeatmap called with:', { snapshotId, piIds });
+      console.log('🔥 useOKRHeatmap queryFn executing:', { snapshotId, piIds, piIdsLength: piIds.length });
       
       if (!snapshotId) {
-        console.log('❌ No snapshotId provided');
+        console.log('❌ No snapshotId provided, returning empty');
         return { programIncrements: [], rows: [] };
       }
       
-      if (piIds.length === 0) {
-        console.log('❌ No piIds provided');
+      if (!piIds || piIds.length === 0) {
+        console.log('❌ No piIds provided or empty array, returning empty');
         return { programIncrements: [], rows: [] };
       }
+      
+      console.log('✅ Proceeding with data fetch...');
 
       // Fetch PI names
       const { data: piNames } = await supabase
@@ -52,12 +54,16 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
       const piNameMap = new Map(piNames?.map(pi => [pi.id, pi.name]) || []);
 
       // Fetch objectives with their key results for this snapshot
-      const { data: objectives } = await supabase
+      const { data: objectives, error: objectivesError } = await supabase
         .from('objectives')
         .select('id, level, program_increment_ids')
         .eq('snapshot_id', snapshotId);
 
-      console.log('📊 Fetched objectives:', objectives?.length);
+      console.log('📊 Fetched objectives:', {
+        count: objectives?.length,
+        error: objectivesError?.message,
+        sample: objectives?.slice(0, 3)
+      });
       
       if (!objectives || objectives.length === 0) {
         console.log('❌ No objectives found');
@@ -66,12 +72,17 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
 
       // Fetch ALL key results for these objectives
       const objectiveIds = objectives.map(o => o.id);
-      const { data: keyResults } = await supabase
+      const { data: keyResults, error: keyResultsError } = await supabase
         .from('key_results')
         .select('id, objective_id, current_value, target_value')
         .in('objective_id', objectiveIds);
       
-      console.log('🎯 Fetched key results:', keyResults?.length, 'for', objectiveIds.length, 'objectives');
+      console.log('🎯 Fetched key results:', {
+        count: keyResults?.length,
+        error: keyResultsError?.message,
+        objectiveIdsCount: objectiveIds.length,
+        sample: keyResults?.slice(0, 3)
+      });
 
       // Create a map of objective_id to key results
       const keyResultsByObjective = new Map<string, Array<{ current_value: number; target_value: number }>>();
@@ -98,7 +109,10 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
         if (!levelStats) return;
 
         const objKeyResults = keyResultsByObjective.get(obj.id) || [];
-        const objPiIds = Array.isArray(obj.program_increment_ids) ? obj.program_increment_ids : [];
+        // Handle JSONB array - Supabase returns program_increment_ids as Json[] but they're actually strings
+        const objPiIds: string[] = Array.isArray(obj.program_increment_ids) 
+          ? obj.program_increment_ids.map(id => String(id)) 
+          : [];
 
         // Calculate key result scores for this objective
         const krScores = objKeyResults.map(kr => {
@@ -121,6 +135,13 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
             }
           });
         }
+      });
+      
+      console.log('📈 Level statistics:', {
+        strategic_goal: levelMap.strategic_goal.map(s => ({ totalObjectives: s.totalObjectives, keyResultsCount: s.keyResultScores.length })),
+        portfolio: levelMap.portfolio.map(s => ({ totalObjectives: s.totalObjectives, keyResultsCount: s.keyResultScores.length })),
+        program: levelMap.program.map(s => ({ totalObjectives: s.totalObjectives, keyResultsCount: s.keyResultScores.length })),
+        team: levelMap.team.map(s => ({ totalObjectives: s.totalObjectives, keyResultsCount: s.keyResultScores.length })),
       });
 
       // Calculate cells for each level

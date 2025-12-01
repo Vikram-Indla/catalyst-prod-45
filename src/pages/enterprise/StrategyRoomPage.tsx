@@ -60,8 +60,16 @@ export default function StrategyRoomPage() {
   // Use only real database snapshots - never use mock data
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
 
-  // Set the first snapshot when data loads
-  const effectiveSelectedSnapshotId = selectedSnapshotId || snapshots[0]?.id || '';
+  // Set the first snapshot when data loads - ensure we have a valid snapshot ID
+  const effectiveSelectedSnapshotId = selectedSnapshotId || snapshots.find(s => s.name === 'Corporate Strategy 2025')?.id || snapshots[0]?.id || '';
+  
+  console.log('📌 StrategyRoomPage state:', {
+    selectedSnapshotId,
+    effectiveSelectedSnapshotId,
+    snapshotsCount: snapshots.length,
+    selectedPIsCount: selectedPIs.length,
+    selectedPIs
+  });
 
   const selectedSnapshot = snapshots.find((s) => s.id === effectiveSelectedSnapshotId);
 
