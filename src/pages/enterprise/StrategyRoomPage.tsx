@@ -100,16 +100,16 @@ export default function StrategyRoomPage() {
   return (
     <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-          <div className="flex items-center gap-3">
-            <Star className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
-            <h1 className="text-xl sm:text-2xl font-bold">Strategy Room</h1>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Star className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Strategy Room</h1>
           </div>
-          <span className="text-xs sm:text-sm text-muted-foreground">for Snapshot</span>
+          <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">for Snapshot</span>
           <div className="w-full sm:w-64">
             <Select value={effectiveSelectedSnapshotId} onValueChange={setSelectedSnapshotId}>
-              <SelectTrigger>
+              <SelectTrigger className="text-xs sm:text-sm">
                 <SelectValue placeholder="Select one" />
               </SelectTrigger>
               <SelectContent>
@@ -118,11 +118,11 @@ export default function StrategyRoomPage() {
                     placeholder="Search to filter snapshots"
                     value={snapshotSearchQuery}
                     onChange={(e) => setSnapshotSearchQuery(e.target.value)}
-                    className="mb-2 h-8"
+                    className="mb-2 h-8 text-xs sm:text-sm"
                   />
                 </div>
                 {filteredSnapshots.map((snapshot) => (
-                  <SelectItem key={snapshot.id} value={snapshot.id}>
+                  <SelectItem key={snapshot.id} value={snapshot.id} className="text-xs sm:text-sm">
                     {snapshot.name}
                   </SelectItem>
                 ))}
@@ -136,7 +136,7 @@ export default function StrategyRoomPage() {
             variant="outline" 
             size="sm"
             onClick={() => navigate('/enterprise/backlog')}
-            className="text-xs sm:text-sm"
+            className="text-xs sm:text-sm flex-1 sm:flex-none"
           >
             Strategic Backlog
           </Button>
@@ -144,10 +144,11 @@ export default function StrategyRoomPage() {
             variant="outline" 
             size="sm"
             onClick={() => setExtraConfigsOpen(true)}
-            className="text-xs sm:text-sm"
+            className="text-xs sm:text-sm flex-1 sm:flex-none"
           >
-            <Filter className="h-4 w-4 mr-2" />
-            Extra Configs
+            <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden sm:inline">Extra Configs</span>
+            <span className="sm:hidden">Configs</span>
           </Button>
         </div>
       </div>
@@ -164,8 +165,12 @@ export default function StrategyRoomPage() {
         <StrategicGoalsWidget snapshotId={effectiveSelectedSnapshotId} />
       </div>
 
-      {/* Strategy Pyramid */}
-      <StrategyPyramid onLayerClick={handlePyramidLayerClick} snapshotId={effectiveSelectedSnapshotId} />
+      {/* Strategy Pyramid - Full width on mobile */}
+      <div className="overflow-x-auto -mx-3 sm:mx-0">
+        <div className="min-w-[600px] px-3 sm:px-0">
+          <StrategyPyramid onLayerClick={handlePyramidLayerClick} snapshotId={effectiveSelectedSnapshotId} />
+        </div>
+      </div>
 
       {/* Snapshot Progress and Misaligned Items */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-4 sm:gap-6">
