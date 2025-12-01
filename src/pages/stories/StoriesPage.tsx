@@ -66,7 +66,7 @@ export function StoriesPage() {
   const selectedStory = stories.find(s => s.id === selectedStoryId);
 
   return (
-    <div className="flex h-full w-full bg-background overflow-hidden">
+    <div className="flex h-full w-full bg-background">
       <StoriesSidebar />
       <div className="h-full w-full flex flex-col bg-background overflow-hidden min-w-0">
         {/* Header */}
