@@ -136,7 +136,7 @@ export default function RiskRoamReportPage() {
   };
 
   return (
-    <div className="flex h-full w-full bg-background overflow-hidden">
+    <div className="flex h-full w-full bg-background">
       <RisksSidebar />
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
       {/* Page Header */}
