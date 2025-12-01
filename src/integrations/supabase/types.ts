@@ -2173,6 +2173,39 @@ export type Database = {
         }
         Relationships: []
       }
+      import_history: {
+        Row: {
+          created_at: string | null
+          failed_records: number
+          file_name: string
+          file_type: string
+          id: string
+          imported_by: string
+          imported_records: number
+          total_records: number
+        }
+        Insert: {
+          created_at?: string | null
+          failed_records?: number
+          file_name: string
+          file_type: string
+          id?: string
+          imported_by: string
+          imported_records?: number
+          total_records?: number
+        }
+        Update: {
+          created_at?: string | null
+          failed_records?: number
+          file_name?: string
+          file_type?: string
+          id?: string
+          imported_by?: string
+          imported_records?: number
+          total_records?: number
+        }
+        Relationships: []
+      }
       initiatives: {
         Row: {
           benefit_score: number | null
@@ -5845,6 +5878,50 @@ export type Database = {
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_evidence: {
+        Row: {
+          created_at: string | null
+          execution_step_id: string
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          id: string
+          mime_type: string
+          uploaded_by: string
+        }
+        Insert: {
+          created_at?: string | null
+          execution_step_id: string
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          id?: string
+          mime_type: string
+          uploaded_by: string
+        }
+        Update: {
+          created_at?: string | null
+          execution_step_id?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          mime_type?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_evidence_execution_step_id_fkey"
+            columns: ["execution_step_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_steps"
             referencedColumns: ["id"]
           },
         ]

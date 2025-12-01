@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import {
   useTestSteps,
   useTestCycles,
@@ -19,6 +20,8 @@ import {
 } from '@/hooks/useTestManagement';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { EvidenceUploader } from './EvidenceUploader';
+import { EvidenceGallery } from './EvidenceGallery';
 import type { TestCase } from '@/types/test-management';
 
 interface TestExecutionModalProps {
@@ -263,6 +266,14 @@ export const TestExecutionModal: React.FC<TestExecutionModalProps> = ({
                     Skip
                   </Button>
                 </div>
+              </div>
+
+              <Separator className="my-4" />
+
+              <div className="space-y-3">
+                <Label>Evidence Attached</Label>
+                <EvidenceGallery stepId={currentStep.id} />
+                <EvidenceUploader stepId={currentStep.id} />
               </div>
 
               <div className="flex items-center justify-between pt-4">

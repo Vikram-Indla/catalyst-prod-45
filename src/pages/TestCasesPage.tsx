@@ -50,6 +50,7 @@ export const TestCasesPage: React.FC = () => {
           onCreateTestCase={() => setIsCreateModalOpen(true)}
           filters={filters}
           onFilterChange={setFilters}
+          testCases={filteredTestCases}
         />
 
         <div className="flex-1 overflow-auto">
