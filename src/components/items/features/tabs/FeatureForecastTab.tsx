@@ -1,4 +1,4 @@
-import { ForecastTab } from '@/features/estimation/components/ForecastTab';
+import { ForecastTab } from '@/components/forecast/ForecastTab';
 
 interface FeatureForecastTabProps {
   feature: any;

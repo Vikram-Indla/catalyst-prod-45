@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 
 interface ForecastTabProps {
   workItemId: string;
-  workItemType: 'epic' | 'capability' | 'feature';
+  workItemType: 'epic' | 'feature';
 }
 
 export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
