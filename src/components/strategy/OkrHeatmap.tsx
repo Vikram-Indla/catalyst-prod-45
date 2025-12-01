@@ -68,6 +68,15 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
   const { data: heatmapData, isLoading } = useOKRHeatmap(selectedSnapshot, programIncrements);
   const [activeCell, setActiveCell] = useState<string | null>(null);
 
+  console.log('📊 OkrHeatmap render:', { 
+    selectedSnapshot, 
+    programIncrements, 
+    hasData: !!heatmapData, 
+    isLoading,
+    rows: heatmapData?.rows?.length,
+    pis: heatmapData?.programIncrements?.length
+  });
+
   const handleCellClick = (level: string, pi: string) => {
     const cellKey = `${level}-${pi}`;
     setActiveCell(cellKey);
@@ -76,6 +85,36 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
 
   const numPIs = heatmapData?.programIncrements?.length || 2;
   const gridColumns = `repeat(${numPIs}, 1fr) 180px 100px`;
+
+  if (isLoading) {
+    return (
+      <Card className="border rounded-lg">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-12 text-muted-foreground">
+            Loading heatmap data...
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!heatmapData || !heatmapData.rows || heatmapData.rows.length === 0) {
+    return (
+      <Card className="border rounded-lg">
+        <CardHeader>
+          <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-12 text-muted-foreground">
+            No heatmap data available. Please select a snapshot and program increments.
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border rounded-lg">
