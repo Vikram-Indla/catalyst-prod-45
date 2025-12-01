@@ -30,6 +30,8 @@ export function ObjectiveDrawer({ objectiveId, open, onClose }: ObjectiveDrawerP
   
   const { data: objective, isLoading } = useObjectiveDetail(objectiveId || undefined);
 
+  console.log('🎨 ObjectiveDrawer render:', { objectiveId, open, isLoading, hasObjective: !!objective });
+
   if (!open) return null;
 
   if (isLoading) {

@@ -8,13 +8,20 @@ export function useObjectiveDetail(objectiveId?: string) {
     queryFn: async () => {
       if (!objectiveId) return null;
 
+      console.log('🔍 useObjectiveDetail: Fetching objective', { objectiveId });
+
       const { data: objective, error } = await supabase
         .from('objectives')
         .select('*')
         .eq('id', objectiveId)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ useObjectiveDetail: Error fetching objective', error);
+        throw error;
+      }
+
+      console.log('✅ useObjectiveDetail: Objective fetched', { objective });
 
       // Fetch owner profile separately
       let ownerProfile = null;

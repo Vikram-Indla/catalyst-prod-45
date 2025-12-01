@@ -77,7 +77,10 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
             gridTemplateColumns: '1fr 180px 100px 100px',
             paddingLeft: `${indentPx + 16}px`
           }}
-          onClick={() => onObjectiveClick(item)}
+          onClick={() => {
+            console.log('🎯 OkrTree: Objective clicked:', { id: item.id, title: item.title, item });
+            onObjectiveClick(item);
+          }}
         >
           <div className="flex items-center gap-3">
             {hasChildren ? (
