@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
+import { TeamDetailsDrawer } from '@/components/teams/TeamDetailsDrawer';
 
 interface FeatureChildrenTabProps {
   feature: any;
@@ -13,6 +14,7 @@ interface FeatureChildrenTabProps {
 export function FeatureChildrenTab({ feature }: FeatureChildrenTabProps) {
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [selectedStory, setSelectedStory] = useState<any>(null);
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
 
   const { data: stories, isLoading } = useQuery({
     queryKey: ['feature-children', feature?.id],
@@ -39,6 +41,11 @@ export function FeatureChildrenTab({ feature }: FeatureChildrenTabProps) {
   const handleStoryClick = (story: any) => {
     setSelectedStory(story);
     setSelectedStoryId(story.id);
+  };
+
+  const handleTeamClick = (teamId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedTeamId(teamId);
   };
 
   if (!feature) {
@@ -135,6 +142,12 @@ export function FeatureChildrenTab({ feature }: FeatureChildrenTabProps) {
           }}
         />
       )}
+
+      <TeamDetailsDrawer
+        teamId={selectedTeamId}
+        open={!!selectedTeamId}
+        onOpenChange={(open) => !open && setSelectedTeamId(null)}
+      />
     </>
   );
 }

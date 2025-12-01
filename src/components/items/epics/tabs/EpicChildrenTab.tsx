@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
+import { TeamDetailsDrawer } from '@/components/teams/TeamDetailsDrawer';
 
 interface EpicChildrenTabProps {
   epic: any;
@@ -13,6 +14,7 @@ interface EpicChildrenTabProps {
 export function EpicChildrenTab({ epic }: EpicChildrenTabProps) {
   const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
   const [selectedFeature, setSelectedFeature] = useState<any>(null);
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
 
   const { data: features, isLoading } = useQuery({
     queryKey: ['epic-children', epic?.id],
@@ -34,6 +36,11 @@ export function EpicChildrenTab({ epic }: EpicChildrenTabProps) {
   const handleFeatureClick = (feature: any) => {
     setSelectedFeature(feature);
     setSelectedFeatureId(feature.id);
+  };
+
+  const handleTeamClick = (teamId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedTeamId(teamId);
   };
 
   if (!epic) {
@@ -98,7 +105,11 @@ export function EpicChildrenTab({ epic }: EpicChildrenTabProps) {
                   </div>
                   <div className="flex flex-col items-end gap-2 flex-shrink-0">
                     {feature.teams?.name && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge 
+                        variant="secondary" 
+                        className="text-xs cursor-pointer hover:bg-secondary/80"
+                        onClick={(e) => handleTeamClick(feature.team_id, e)}
+                      >
                         {feature.teams.name}
                       </Badge>
                     )}
@@ -122,6 +133,12 @@ export function EpicChildrenTab({ epic }: EpicChildrenTabProps) {
           setSelectedFeatureId(null);
           setSelectedFeature(null);
         }}
+      />
+
+      <TeamDetailsDrawer
+        teamId={selectedTeamId}
+        open={!!selectedTeamId}
+        onOpenChange={(open) => !open && setSelectedTeamId(null)}
       />
     </>
   );

@@ -14,6 +14,7 @@ import { Progress } from '@/components/ui/progress';
 import { Search, ChevronRight } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 
 interface FeatureStatusModalProps {
   epicId: string;
@@ -24,6 +25,8 @@ interface FeatureStatusModalProps {
 export function FeatureStatusModal({ epicId, open, onOpenChange }: FeatureStatusModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedFeatures, setExpandedFeatures] = useState<Set<string>>(new Set());
+  const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
+  const [selectedFeature, setSelectedFeature] = useState<any>(null);
 
   const { data: features } = useQuery({
     queryKey: ['epic-features', epicId],
@@ -54,6 +57,12 @@ export function FeatureStatusModal({ epicId, open, onOpenChange }: FeatureStatus
       newExpanded.add(featureId);
     }
     setExpandedFeatures(newExpanded);
+  };
+
+  const handleFeatureClick = (feature: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setSelectedFeature(feature);
+    setSelectedFeatureId(feature.id);
   };
 
   const getFeatureProgress = (feature: any) => {
@@ -105,7 +114,10 @@ export function FeatureStatusModal({ epicId, open, onOpenChange }: FeatureStatus
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <ChevronRight className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                          <div className="text-left">
+                          <div 
+                            className="text-left cursor-pointer hover:text-primary transition-colors"
+                            onClick={(e) => handleFeatureClick(feature, e)}
+                          >
                             <div className="font-medium">{feature.name}</div>
                             <div className="text-sm text-muted-foreground">
                               {feature.display_id || feature.id.slice(0, 8)}
@@ -155,6 +167,15 @@ export function FeatureStatusModal({ epicId, open, onOpenChange }: FeatureStatus
             )}
           </div>
         </ScrollArea>
+
+        <FeatureDetailsPanel
+          feature={selectedFeature}
+          open={!!selectedFeatureId}
+          onClose={() => {
+            setSelectedFeatureId(null);
+            setSelectedFeature(null);
+          }}
+        />
       </DialogContent>
     </Dialog>
   );
