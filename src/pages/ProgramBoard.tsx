@@ -166,27 +166,27 @@ export default function ProgramBoard() {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Program Board</h1>
-          <p className="text-muted-foreground">Plan features across iterations</p>
+    <div className="px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] lg:px-[var(--s8)] py-[var(--s3)] sm:py-[var(--s4)] md:py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[var(--s3)] sm:gap-[var(--s4)]">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">Program Board</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Plan features across iterations</p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center gap-[var(--s2)] sm:gap-[var(--s4)] flex-shrink-0">
+          <div className="flex items-center gap-[var(--s2)]">
             <Switch
               id="swimlane-mode"
               checked={swimlaneByTeam}
               onCheckedChange={setSwimlaneByTeam}
             />
-            <Label htmlFor="swimlane-mode">Team Swimlanes</Label>
+            <Label htmlFor="swimlane-mode" className="text-xs sm:text-sm whitespace-nowrap">Team Swimlanes</Label>
           </div>
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-[var(--s3)] sm:gap-[var(--s4)]">
         <Select value={selectedProgramId} onValueChange={setSelectedProgramId}>
-          <SelectTrigger className="w-[240px]">
+          <SelectTrigger className="w-full sm:w-[240px]">
             <SelectValue placeholder="Select Program" />
           </SelectTrigger>
           <SelectContent>
@@ -200,35 +200,37 @@ export default function ProgramBoard() {
 
         <PISelector value={selectedPIIds} onChange={setSelectedPIIds} />
         
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
           <Switch
             id="show-unassigned"
             checked={showUnassigned}
             onCheckedChange={setShowUnassigned}
           />
-          <Label htmlFor="show-unassigned">Show Unassigned</Label>
+          <Label htmlFor="show-unassigned" className="text-xs sm:text-sm whitespace-nowrap">Show Unassigned</Label>
         </div>
       </div>
 
       {selectedProgramId && selectedPIIds.length > 0 && (
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div id="program-board-container" className="space-y-6 relative">
+          <div id="program-board-container" className="space-y-[var(--s4)] sm:space-y-[var(--s6)] relative">
+            <div className="overflow-x-auto -mx-[var(--s3)] sm:mx-0 px-[var(--s3)] sm:px-0">
             {swimlaneByTeam ? (
-              teams?.map((team) => (
-                <div key={team.id} className="space-y-2">
-                  <h3 className="text-lg font-semibold">{team.name}</h3>
-                  <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${iterations?.length || 1}, 1fr)` }}>
+              <div className="min-w-[800px]">
+              {teams?.map((team) => (
+                <div key={team.id} className="space-y-[var(--s2)] mb-[var(--s6)]">
+                  <h3 className="text-base sm:text-lg font-semibold">{team.name}</h3>
+                  <div className="grid gap-[var(--s3)] sm:gap-[var(--s4)]" style={{ gridTemplateColumns: `repeat(${iterations?.length || 1}, minmax(240px, 1fr))` }}>
                     {iterations?.map((iteration) => (
                       <Droppable key={iteration.id} droppableId={iteration.id}>
                         {(provided) => (
                           <Card
                             ref={provided.innerRef}
                             {...provided.droppableProps}
-                            className="p-4 min-h-[200px] border-2"
+                            className="p-[var(--s3)] sm:p-[var(--s4)] min-h-[200px] border-2"
                           >
-                            <div className="space-y-2 mb-3">
-                              <div className="flex items-center justify-between">
-                                <h4 className="font-medium">{iteration.name}</h4>
+                            <div className="space-y-[var(--s2)] mb-[var(--s3)]">
+                              <div className="flex items-center justify-between gap-[var(--s2)]">
+                                <h4 className="text-sm sm:text-base font-medium truncate">{iteration.name}</h4>
                                 {iteration.start_date && (
                                   <Badge variant="outline" className="text-xs">
                                     <Calendar className="h-3 w-3 mr-1" />
@@ -239,7 +241,7 @@ export default function ProgramBoard() {
                               {(() => {
                                 const metrics = getIterationMetrics(iteration.id);
                                 return (
-                                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                                  <div className="flex items-center gap-[var(--s2)] text-xs text-muted-foreground flex-wrap">
                                     <span>{metrics.count} features</span>
                                     <span>•</span>
                                     <span>{metrics.totalPoints} pts</span>
@@ -263,7 +265,7 @@ export default function ProgramBoard() {
                                 );
                               })()}
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-[var(--s2)]">
                               {getFeaturesByIteration(iteration.id, team.id).map((feature, index) => (
                                 <Draggable key={feature.id} draggableId={feature.id} index={index}>
                                   {(provided) => (
@@ -272,20 +274,20 @@ export default function ProgramBoard() {
                                        {...provided.draggableProps}
                                        {...provided.dragHandleProps}
                                        data-feature-id={feature.id}
-                                       className={`p-3 bg-card border rounded-lg space-y-2 hover:shadow-md transition-shadow cursor-move ${
+                                       className={`p-[var(--s2)] sm:p-[var(--s3)] bg-card border rounded-lg space-y-[var(--s2)] hover:shadow-md transition-shadow cursor-move ${
                                          feature.blocked ? 'border-destructive border-2' : ''
                                        }`}
                                      >
-                                       <div className="flex items-start justify-between gap-2">
-                                         <span className="text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
-                                         <div className="flex items-center gap-1">
+                                       <div className="flex items-start justify-between gap-[var(--s2)]">
+                                         <span className="text-xs sm:text-sm font-medium line-clamp-2 flex-1">{feature.name}</span>
+                                         <div className="flex items-center gap-1 flex-shrink-0">
                                            {feature.blocked && (
                                              <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
                                            )}
                                            <HealthBadge health={feature.health} />
                                          </div>
                                        </div>
-                                       <div className="flex items-center gap-2 flex-wrap">
+                                       <div className="flex items-center gap-[var(--s2)] flex-wrap">
                                          <Badge variant="outline" className="text-xs">
                                            {feature.epics?.name}
                                          </Badge>
@@ -325,10 +327,11 @@ export default function ProgramBoard() {
                           </Card>
                         )}
                       </Droppable>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-              ))
+              </div>
+              ))}
+              </div>
             ) : (
               <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${iterations?.length || 1}, 1fr)` }}>
                 {iterations?.map((iteration) => (
@@ -427,6 +430,7 @@ export default function ProgramBoard() {
                 ))}
               </div>
             )}
+            </div>
             
             {/* Unassigned Features Column */}
             {showUnassigned && (
