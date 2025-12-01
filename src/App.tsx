@@ -169,6 +169,7 @@ import { TestCaseDetailPage } from "./pages/TestCaseDetailPage";
 import { TestCyclesPage } from "./pages/TestCyclesPage";
 import { TestReportsPage } from "./pages/TestReportsPage";
 import CycleDetailPage from "./pages/CycleDetailPage";
+import TestStepLibraryPage from "./pages/TestStepLibraryPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 
 const queryClient = new QueryClient();
@@ -458,6 +459,7 @@ const App = () => (
               
               <Route path="/tests/cases" element={<TestCasesPage />} />
               <Route path="/tests/cases/:id" element={<TestCaseDetailPage />} />
+              <Route path="/tests/library" element={<TestStepLibraryPage />} />
               <Route path="/tests/cycles" element={<TestCyclesPage />} />
               <Route path="/tests/cycles/:id" element={<CycleDetailPage />} />
               <Route path="/tests/reports" element={<TestReportsPage />} />
