@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
 import { usePIProgress } from '@/hooks/usePIProgress';
-import { EpicDetailsPanel } from '@/components/items/epics/EpicDetailsPanel';
 
 interface EpicBacklogViewProps {
   portfolioId?: string;
@@ -18,7 +17,6 @@ interface EpicBacklogViewProps {
 export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
   const [epicsExpanded, setEpicsExpanded] = useState(true);
   const [unassignedExpanded, setUnassignedExpanded] = useState(false);
-  const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   
   const { data: piProgress } = usePIProgress(piId || 'pi-5');
 
@@ -35,22 +33,6 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
       if (error) throw error;
       return data || [];
     },
-  });
-
-  // Fetch selected epic details
-  const { data: selectedEpic } = useQuery({
-    queryKey: ['epic', selectedEpicId],
-    queryFn: async () => {
-      if (!selectedEpicId) return null;
-      const { data, error } = await supabase
-        .from('epics')
-        .select('*')
-        .eq('id', selectedEpicId)
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    enabled: !!selectedEpicId,
   });
 
   const getStatusColor = (state?: string) => {
@@ -171,14 +153,7 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
               ].map((epic) => (
                 <div
                   key={epic.id}
-                  onClick={() => {
-                    // Find real epic from database
-                    const realEpic = epics?.find(e => e.id === epic.id.toString());
-                    if (realEpic) {
-                      setSelectedEpicId(realEpic.id);
-                    }
-                  }}
-                  className="grid grid-cols-[40px,60px,80px,1fr,120px] gap-4 px-4 py-3 border-b hover:bg-accent/10 transition-colors group cursor-pointer"
+                  className="grid grid-cols-[40px,60px,80px,1fr,120px] gap-4 px-4 py-3 border-b hover:bg-accent/10 transition-colors group"
                 >
                   <div className="flex items-center">
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
@@ -283,15 +258,6 @@ export function EpicBacklogView({ portfolioId, piId }: EpicBacklogViewProps) {
           </div>
         )}
       </div>
-
-      {/* Epic Details Panel */}
-      {selectedEpic && (
-        <EpicDetailsPanel
-          epic={selectedEpic}
-          open={!!selectedEpicId}
-          onClose={() => setSelectedEpicId(null)}
-        />
-      )}
     </div>
   );
 }

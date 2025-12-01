@@ -80,7 +80,7 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
           </CardHeader>
           <CardContent>
             <Select
-              value={feature.business_value?.toString()}
+              value={feature.business_value?.toString() || ''}
               onValueChange={(v) => handleValueChange('business_value', parseInt(v))}
             >
               <SelectTrigger>
@@ -104,7 +104,7 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
           </CardHeader>
           <CardContent>
             <Select
-              value={feature.time_criticality?.toString()}
+              value={feature.time_criticality?.toString() || ''}
               onValueChange={(v) => handleValueChange('time_criticality', parseInt(v))}
             >
               <SelectTrigger>
@@ -128,7 +128,7 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
           </CardHeader>
           <CardContent>
             <Select
-              value={feature.risk_reduction?.toString()}
+              value={feature.risk_reduction?.toString() || ''}
               onValueChange={(v) => handleValueChange('risk_reduction', parseInt(v))}
             >
               <SelectTrigger>
@@ -152,7 +152,7 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
           </CardHeader>
           <CardContent>
             <Select
-              value={feature.job_size?.toString()}
+              value={feature.job_size?.toString() || ''}
               onValueChange={(v) => handleValueChange('job_size', parseInt(v))}
             >
               <SelectTrigger>

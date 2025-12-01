@@ -123,10 +123,6 @@ export function PortfolioRoomSidebar({
       ? path.replace(':portfolioId', portfolioId)
       : path;
     navigate(resolvedPath + (selectedPI ? `?pi=${selectedPI}` : ''));
-    // Close sidebar on mobile after navigation
-    if (window.innerWidth < 768 && expanded) {
-      onToggle();
-    }
   };
 
   const isActive = (path?: string) => {
@@ -139,36 +135,17 @@ export function PortfolioRoomSidebar({
   };
 
   return (
-    <>
-      {/* Mobile backdrop overlay */}
-      {expanded && (
-        <div 
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
-          onClick={onToggle}
-          aria-hidden="true"
-        />
+    <aside 
+      className={cn(
+        "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
+        expanded ? "w-[280px]" : "w-16",
+        className
       )}
-      
-      <aside 
-        className={cn(
-          "h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col",
-          // Desktop: full width or collapsed
-          expanded ? "w-[280px]" : "w-16",
-          // Mobile: hidden when collapsed, full width overlay when expanded
-          "md:relative",
-          !expanded && "max-md:hidden",
-          expanded && "max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-[280px] max-md:shadow-xl",
-          className
-        )}
-      >
+    >
       {/* Toggle Handle */}
       <button
         onClick={onToggle}
-        className={cn(
-          "absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform",
-          // Mobile: show as hamburger icon when collapsed
-          !expanded && "max-md:fixed max-md:left-4 max-md:top-4 max-md:right-auto"
-        )}
+        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
         aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
       >
         {expanded ? (
@@ -330,6 +307,5 @@ export function PortfolioRoomSidebar({
         )}
       </div>
     </aside>
-    </>
   );
 }
