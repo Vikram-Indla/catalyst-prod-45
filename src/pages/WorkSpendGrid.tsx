@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search, Download } from 'lucide-react';
+import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveGrid, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 
 export default function WorkSpendGrid() {
   const [selectedPiId, setSelectedPiId] = useState<string>('');
@@ -129,23 +130,20 @@ export default function WorkSpendGrid() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <div className="border-b bg-card px-6 py-4">
-        <h1 className="text-2xl font-semibold text-foreground">Work Spend Grid</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          View forecasted, estimated, and accepted spend across work items
-        </p>
-      </div>
+    <ResponsivePageContainer className="flex flex-col h-full">
+      <ResponsivePageHeader
+        title="Work Spend Grid"
+        description="View forecasted, estimated, and accepted spend across work items"
+      />
 
-      <div className="flex-1 overflow-auto p-6">
-        <div className="space-y-6">
-          {/* Filters */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Filters</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="space-y-4 sm:space-y-6">
+        {/* Filters */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Filters</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <ResponsiveGrid cols={3}>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Program Increment</label>
                   <Select value={selectedPiId} onValueChange={setSelectedPiId}>
@@ -192,7 +190,7 @@ export default function WorkSpendGrid() {
                     />
                   </div>
                 </div>
-              </div>
+              </ResponsiveGrid>
 
               <div className="flex justify-end">
                 <Button onClick={handleExport} variant="outline" size="sm">
@@ -203,9 +201,9 @@ export default function WorkSpendGrid() {
             </CardContent>
           </Card>
 
-          {/* Summary Cards */}
-          {selectedPiId && (workItemType === 'epic' || workItemType === 'all') && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Summary Cards */}
+        {selectedPiId && (workItemType === 'epic' || workItemType === 'all') && (
+          <ResponsiveGrid cols={3}>
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -244,11 +242,11 @@ export default function WorkSpendGrid() {
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </ResponsiveGrid>
           )}
 
-          {/* Data Grid */}
-          <Card>
+        {/* Data Grid */}
+        <Card>
             <CardHeader>
               <CardTitle>Work Items</CardTitle>
             </CardHeader>
@@ -264,7 +262,7 @@ export default function WorkSpendGrid() {
                   ))}
                 </div>
               ) : (
-                <div className="overflow-x-auto">
+                <ResponsiveTableWrapper minWidth={800}>
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="border-b bg-muted/50">
@@ -314,12 +312,11 @@ export default function WorkSpendGrid() {
                       )}
                     </tbody>
                   </table>
-                </div>
+                </ResponsiveTableWrapper>
               )}
             </CardContent>
           </Card>
-        </div>
       </div>
-    </div>
+    </ResponsivePageContainer>
   );
 }

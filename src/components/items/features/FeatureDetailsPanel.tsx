@@ -66,20 +66,20 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent className="sm:max-w-3xl w-full p-0 flex flex-col">
-        <div className="border-b flex-shrink-0" style={{ padding: 'var(--s6) var(--s4)' }}>
-          <div className="flex items-start justify-between" style={{ gap: 'var(--s4)' }}>
+      <SheetContent className="w-full sm:w-[600px] md:w-[700px] lg:w-[900px] sm:max-w-[90vw] p-0 flex flex-col">
+        <div className="border-b flex-shrink-0 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s4)]">
+          <div className="flex items-start justify-between gap-[var(--s2)] sm:gap-[var(--s4)]">
             <div className="flex-1 min-w-0">
-              <h2 className="text-xl font-semibold truncate">
+              <h2 className="text-base sm:text-lg md:text-xl font-semibold truncate">
                 {feature ? `Feature: ${feature.name}` : 'New Feature'}
               </h2>
               {feature?.display_id && (
-                <div className="text-sm text-muted-foreground font-mono mt-1">
+                <div className="text-xs sm:text-sm text-muted-foreground font-mono mt-1">
                   {feature.display_id}
                 </div>
               )}
             </div>
-            <div className="flex items-center flex-shrink-0" style={{ gap: 'var(--s2)' }}>
+            <div className="flex items-center flex-shrink-0 gap-[var(--s2)]">
               <Button variant="outline" size="sm">
                 Save
               </Button>
@@ -125,8 +125,8 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div className="border-b overflow-x-auto flex-shrink-0" style={{ paddingLeft: 'var(--s6)', paddingRight: 'var(--s6)' }}>
-            <TabsList className="inline-flex bg-transparent w-auto min-w-full justify-start" style={{ height: 'var(--toolbar-h)' }}>
+          <div className="border-b overflow-x-auto flex-shrink-0 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)]">
+            <TabsList className="inline-flex bg-transparent w-auto min-w-full justify-start flex-nowrap" style={{ height: 'var(--toolbar-h)' }}>
               <TabsTrigger value="details" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 Details
               </TabsTrigger>
@@ -167,51 +167,51 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
           </div>
 
           <div className="flex-1 overflow-y-auto">
-            <TabsContent value="details" className="mt-0 p-6">
+            <TabsContent value="details" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureDetailsTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="children" className="mt-0 p-6">
+            <TabsContent value="children" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureChildrenTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="planning" className="mt-0 p-6">
+            <TabsContent value="planning" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeaturePlanningTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="financials" className="mt-0 p-6">
+            <TabsContent value="financials" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureFinancialsTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="forecast" className="mt-0 p-6">
+            <TabsContent value="forecast" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureForecastTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="wsjf" className="mt-0 p-6">
+            <TabsContent value="wsjf" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureWSJFTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="trace" className="mt-0 p-6">
+            <TabsContent value="trace" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureTraceTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="attachments" className="mt-0 p-6">
+            <TabsContent value="attachments" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureAttachmentsTab featureId={feature?.id} />
             </TabsContent>
 
-            <TabsContent value="discussions" className="mt-0 p-6">
+            <TabsContent value="discussions" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureDiscussionsTab featureId={feature?.id} />
             </TabsContent>
 
-            <TabsContent value="links" className="mt-0 p-6">
+            <TabsContent value="links" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureLinksTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="audit" className="mt-0 p-6">
+            <TabsContent value="audit" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureAuditTab featureId={feature?.id} />
             </TabsContent>
 
-            <TabsContent value="options" className="mt-0 p-6">
+            <TabsContent value="options" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureAdditionalOptionsTab 
                 feature={feature}
                 onAction={handleAdditionalOption}

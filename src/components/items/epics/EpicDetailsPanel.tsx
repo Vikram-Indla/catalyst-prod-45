@@ -108,15 +108,15 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
 
   return (
     <Sheet open={open} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent side="right" className="w-[800px] sm:max-w-[800px] p-0 flex flex-col overflow-hidden">
-        <SheetHeader className="border-b flex-row items-start justify-between space-y-0 shrink-0" style={{ padding: 'var(--s6) var(--s4)' }}>
-          <div className="flex-1 pr-4">
-            <SheetTitle className="text-xl">{epic.name}</SheetTitle>
-            <SheetDescription className="text-sm mt-1">
+      <SheetContent side="right" className="w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
+        <SheetHeader className="border-b flex-row items-start justify-between space-y-0 shrink-0 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s4)]">
+          <div className="flex-1 pr-2 sm:pr-4 min-w-0">
+            <SheetTitle className="text-base sm:text-lg md:text-xl truncate">{epic.name}</SheetTitle>
+            <SheetDescription className="text-xs sm:text-sm mt-1 truncate">
               Epic {epic.epic_key || epic.id?.slice(0, 8)}
             </SheetDescription>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -201,7 +201,7 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
         </SheetHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="w-full justify-start rounded-none border-b px-6 shrink-0 overflow-x-auto">
+          <TabsList className="w-full justify-start rounded-none border-b px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] shrink-0 overflow-x-auto flex-nowrap">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="children">Children</TabsTrigger>
             <TabsTrigger value="design">Design</TabsTrigger>
@@ -216,37 +216,37 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
           </TabsList>
 
           <div className="flex-1 overflow-y-auto">
-            <TabsContent value="details" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="details" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicDetailsTab epic={epic} />
             </TabsContent>
-            <TabsContent value="children" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="children" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicChildrenTab epic={epic} />
             </TabsContent>
-            <TabsContent value="design" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="design" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicDesignTab epic={epic} />
             </TabsContent>
-            <TabsContent value="intake" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="intake" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicIntakeTab epic={epic} />
             </TabsContent>
-            <TabsContent value="benefits" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="benefits" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicBenefitsTab epic={epic} />
             </TabsContent>
-            <TabsContent value="value" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="value" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicValueTab epic={epic} />
             </TabsContent>
-            <TabsContent value="milestones" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="milestones" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicMilestonesTab epic={epic} />
             </TabsContent>
-            <TabsContent value="spend" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="spend" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicSpendTab epic={epic} />
             </TabsContent>
-            <TabsContent value="forecast" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="forecast" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicForecastTab epic={epic} />
             </TabsContent>
-            <TabsContent value="wsjf" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="wsjf" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicWSJFTab epic={epic} />
             </TabsContent>
-            <TabsContent value="links" className="m-0 p-6 focus-visible:outline-none">
+            <TabsContent value="links" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicLinksTab epic={epic} />
             </TabsContent>
           </div>
