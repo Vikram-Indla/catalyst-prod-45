@@ -8,22 +8,35 @@ interface SnapshotProgressProps {
   snapshotId?: string;
 }
 
+interface StatusRecord {
+  status: string | null;
+}
+
+interface ObjectiveRecord {
+  level: string;
+  status: string | null;
+}
+
 export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
   const { data: progressData, isLoading } = useQuery({
     queryKey: ['snapshot-progress', snapshotId],
     queryFn: async () => {
       if (!snapshotId) return null;
 
-      // Fetch all data
-      const themesRes = await supabase.from('strategic_themes').select('status').eq('is_active', true);
-      const epicsRes = await supabase.from('epics').select('status').is('deleted_at', null);
-      const featuresRes = await supabase.from('features').select('status').is('deleted_at', null);
-      const objectivesRes = await supabase.from('objectives').select('level, status').eq('snapshot_id', snapshotId);
+      // Fetch all data - using @ts-ignore to bypass deep type inference issues
+      // @ts-ignore
+      const themesQuery = await supabase.from('strategic_themes').select('status').eq('is_active', true);
+      // @ts-ignore
+      const epicsQuery = await supabase.from('epics').select('status').is('deleted_at', null);
+      // @ts-ignore
+      const featuresQuery = await supabase.from('features').select('status').is('deleted_at', null);
+      // @ts-ignore
+      const objectivesQuery = await supabase.from('objectives').select('level, status').eq('snapshot_id', snapshotId);
 
-      const themes = themesRes.data as any[] || [];
-      const epics = epicsRes.data as any[] || [];
-      const features = featuresRes.data as any[] || [];
-      const objectives = objectivesRes.data as any[] || [];
+      const themes = (themesQuery.data as StatusRecord[]) || [];
+      const epics = (epicsQuery.data as StatusRecord[]) || [];
+      const features = (featuresQuery.data as StatusRecord[]) || [];
+      const objectives = (objectivesQuery.data as ObjectiveRecord[]) || [];
 
       // Calculate stats
       const totalThemes = themes.length;
