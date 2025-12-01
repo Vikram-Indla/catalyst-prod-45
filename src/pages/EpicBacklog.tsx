@@ -173,10 +173,10 @@ export default function EpicBacklog() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full overflow-hidden">
       {/* Top Action Bar - First Row */}
-      <div className="border-b bg-card px-3 sm:px-6 py-3 flex-shrink-0">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4">
+      <div className="border-b bg-card px-3 sm:px-6 py-2 sm:py-3 flex-shrink-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           {/* Left: Star and Viewing dropdown */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 overflow-x-auto">
             <Star className="h-5 w-5 text-muted-foreground flex-shrink-0" />
@@ -258,8 +258,8 @@ export default function EpicBacklog() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto px-3 sm:px-6 py-4 sm:py-6">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-6 sm:mb-8">All Programs for Digital Services</h1>
+      <div className="flex-1 overflow-auto px-3 sm:px-6 py-3 sm:py-6">
+        <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-4 sm:mb-6">All Programs for Digital Services</h1>
 
         {/* Epics for PI-5 Section */}
         <div className="space-y-4">

@@ -317,19 +317,19 @@ export default function Roadmaps() {
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-full w-full bg-background overflow-hidden">
       {/* PI Selector Panel */}
       <PISelectorPanel />
       
       {/* Main Content */}
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 text-muted-foreground" />
-            <h1 className="text-xl font-semibold text-foreground">Live Roadmap</h1>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-3 sm:px-6 py-3 sm:py-4 border-b border-border">
+          <div className="flex items-center gap-2 min-w-0">
+            <Star className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+            <h1 className="text-lg sm:text-xl font-semibold text-foreground truncate">Live Roadmap</h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <Button variant="ghost" size="sm" className="gap-2">
               <Settings className="w-4 h-4" />
               View Configuration
@@ -346,9 +346,9 @@ export default function Roadmaps() {
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center gap-3 px-6 py-3 border-b border-border">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 border-b border-border overflow-x-auto">
           {/* Undo/Redo */}
-          <div className="flex border border-border rounded overflow-hidden">
+          <div className="flex border border-border rounded overflow-hidden flex-shrink-0">
             <Button
               variant="ghost"
               size="icon"

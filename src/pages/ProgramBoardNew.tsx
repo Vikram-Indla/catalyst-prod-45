@@ -442,13 +442,13 @@ export default function ProgramBoard() {
   const selectedPI = programIncrements?.find(pi => pi.id === piId);
   
   return (
-    <div className={`min-h-screen bg-background ${isFullscreen ? 'p-0' : 'p-2 sm:p-4 lg:p-6'}`}>
+    <div className={`min-h-screen w-full bg-background overflow-hidden ${isFullscreen ? 'p-0' : 'p-2 sm:p-4 lg:p-6'}`}>
       {/* Header */}
       <div className="mb-2 sm:mb-4 space-y-2 sm:space-y-3">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-4 w-full lg:w-auto">
+          <div className="flex items-center gap-2 sm:gap-4 w-full lg:w-auto min-w-0">
             <Grid3x3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
-            <h1 className="text-lg sm:text-xl font-semibold">Program Board</h1>
+            <h1 className="text-lg sm:text-xl font-semibold truncate">Program Board</h1>
             <div className="relative hidden xl:block">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 

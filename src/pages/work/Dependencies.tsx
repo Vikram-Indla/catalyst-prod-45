@@ -168,13 +168,13 @@ export default function DependenciesPage() {
   };
 
   return (
-    <div className="flex h-full overflow-hidden">
+    <div className="flex h-full overflow-hidden w-full">
       <DependenciesSidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="h-full flex flex-col p-3 sm:p-4 md:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 sm:mb-6">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-semibold">Dependencies</h1>
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <div className="h-full flex flex-col p-3 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold truncate">Dependencies</h1>
               <p className="text-xs sm:text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -229,14 +229,14 @@ export default function DependenciesPage() {
           </div>
 
           {/* Filters */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 mb-4">
-            <div className="relative sm:col-span-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-2 sm:gap-3 mb-4">
+            <div className="relative sm:col-span-2 lg:col-span-3 xl:col-span-2">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Search dependencies..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9"
+                className="pl-9 w-full"
               />
             </div>
             <Select value={piFilter} onValueChange={setPiFilter}>
