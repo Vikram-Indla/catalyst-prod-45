@@ -38,7 +38,7 @@ export function useOKRTree(snapshotId?: string) {
       // Fetch all objectives for this snapshot with proper ordering
       const { data: objectives, error } = await supabase
         .from('objectives')
-        .select('id, name, level, confidence_score, progress_pct, owner_id, parent_objective_id')
+        .select('id, summary, tier, confidence_score, score, work_progress, key_result_progress, owner_id, parent_objective_id')
         .eq('snapshot_id', targetSnapshotId);
 
       if (error) {
@@ -69,13 +69,13 @@ export function useOKRTree(snapshotId?: string) {
         const item: OKRTreeItem = {
           id: obj.id,
           numericId: numericId,
-          title: obj.name,
-          tier: obj.level === 'strategic_goal' ? 'strategic_goal' 
-               : obj.level === 'portfolio' ? 'portfolio'
-               : obj.level === 'program' ? 'program' 
+          title: obj.summary,
+          tier: obj.tier === 'strategic_goal' ? 'strategic_goal' 
+               : obj.tier === 'portfolio' || obj.tier === 'portfolio_objective' ? 'portfolio'
+               : obj.tier === 'program' || obj.tier === 'program_objective' ? 'program' 
                : 'team',
-          score: obj.confidence_score,
-          keyResultsProgress: (obj.progress_pct || 0) * 100,
+          score: obj.score || obj.confidence_score,
+          keyResultsProgress: ((obj.key_result_progress || obj.work_progress || 0) * 100),
           owner: {
             id: obj.owner_id || 'system',
             name: ownerName,
