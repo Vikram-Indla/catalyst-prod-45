@@ -1688,6 +1688,36 @@ export type Database = {
           },
         ]
       }
+      estimation_conversions: {
+        Row: {
+          created_at: string | null
+          id: string
+          member_weeks: number
+          sort_order: number
+          tshirt_size: string
+          updated_at: string | null
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          member_weeks: number
+          sort_order: number
+          tshirt_size: string
+          updated_at?: string | null
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          member_weeks?: number
+          sort_order?: number
+          tshirt_size?: string
+          updated_at?: string | null
+          work_item_type?: string
+        }
+        Relationships: []
+      }
       external_entities: {
         Row: {
           contact_info: Json | null
@@ -3731,6 +3761,44 @@ export type Database = {
           },
         ]
       }
+      portfolio_estimation_settings: {
+        Row: {
+          created_at: string | null
+          display_weeks_in: string | null
+          estimation_system: string
+          id: string
+          member_weeks_per_point: number | null
+          portfolio_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_weeks_in?: string | null
+          estimation_system?: string
+          id?: string
+          member_weeks_per_point?: number | null
+          portfolio_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_weeks_in?: string | null
+          estimation_system?: string
+          id?: string
+          member_weeks_per_point?: number | null
+          portfolio_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_estimation_settings_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: true
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_members: {
         Row: {
           created_at: string | null
@@ -4033,6 +4101,44 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      program_spend_per_point: {
+        Row: {
+          created_at: string | null
+          id: string
+          program_id: string | null
+          spend_per_point: number
+          sprint_end_date: string
+          sprint_start_date: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          program_id?: string | null
+          spend_per_point: number
+          sprint_end_date: string
+          sprint_start_date: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          program_id?: string | null
+          spend_per_point?: number
+          sprint_end_date?: string
+          sprint_start_date?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_spend_per_point_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
@@ -5344,6 +5450,86 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "team_metrics_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_point_systems: {
+        Row: {
+          created_at: string | null
+          id: string
+          point_system: string
+          team_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          point_system?: string
+          team_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          point_system?: string
+          team_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_point_systems_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: true
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_spend_per_sprint: {
+        Row: {
+          created_at: string | null
+          id: string
+          points_accepted: number
+          spend_per_point: number | null
+          sprint_id: string | null
+          team_id: string | null
+          team_spend: number
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          points_accepted?: number
+          spend_per_point?: number | null
+          sprint_id?: string | null
+          team_id?: string | null
+          team_spend: number
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          points_accepted?: number
+          spend_per_point?: number | null
+          sprint_id?: string | null
+          team_id?: string | null
+          team_spend?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_spend_per_sprint_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "iterations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_spend_per_sprint_team_id_fkey"
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
