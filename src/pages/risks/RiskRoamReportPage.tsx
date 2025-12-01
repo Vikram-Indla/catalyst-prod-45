@@ -136,20 +136,20 @@ export default function RiskRoamReportPage() {
   };
 
   return (
-    <div className="flex h-full bg-background">
+    <div className="flex h-full w-full bg-background overflow-hidden">
       <RisksSidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden min-w-0">
       {/* Page Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-brand-gold">☆</span>
-            <h1 className="text-lg font-heading font-semibold text-text-primary">
+      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <span className="text-brand-gold flex-shrink-0">☆</span>
+            <h1 className="text-base sm:text-lg font-heading font-semibold text-text-primary truncate">
               Risk ROAM
             </h1>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
               <Label htmlFor="new-exp" className="text-sm text-text-secondary">
                 New experience
@@ -176,14 +176,14 @@ export default function RiskRoamReportPage() {
 
       {/* ROAM Kanban Board */}
       <div className="flex-1 overflow-auto">
-        <div className="p-6">
+        <div className="p-3 sm:p-6">
           {isLoading ? (
-            <div className="flex items-center justify-center h-64 text-text-muted">
+            <div className="flex items-center justify-center h-64 text-sm text-text-muted">
               Loading risks...
             </div>
           ) : (
             <DragDropContext onDragEnd={handleDragEnd}>
-              <div className="grid grid-cols-4 gap-4 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
                 {ROAM_COLUMN_ORDER.map(status => (
                   <Droppable key={status} droppableId={status}>
                     {(provided) => (
@@ -203,7 +203,7 @@ export default function RiskRoamReportPage() {
           )}
 
           {/* Charts Section */}
-          <div className="grid grid-cols-3 gap-6 mt-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6 sm:mt-8">
             {chartVisibility.openVsClosed && (
               <div className="bg-card border rounded-lg p-6">
                 <h3 className="text-sm font-medium text-text-primary mb-4">

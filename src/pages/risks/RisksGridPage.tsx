@@ -144,25 +144,25 @@ export default function RisksGridPage() {
   };
 
   return (
-    <div className="flex h-full bg-background">
+    <div className="flex h-full w-full bg-background overflow-hidden">
       <RisksSidebar />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden min-w-0">
       {/* Page Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <span className="text-brand-gold">☆</span>
-            <h1 className="text-lg font-heading font-semibold text-text-primary">
+      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <span className="text-brand-gold flex-shrink-0">☆</span>
+            <h1 className="text-base sm:text-lg font-heading font-semibold text-text-primary truncate">
               Risk Grid
             </h1>
             {filters.status && (
-              <span className="text-sm text-text-secondary">
+              <span className="text-xs sm:text-sm text-text-secondary hidden md:inline">
                 Where Status = {filters.status}
               </span>
             )}
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setIsFiltersDialogOpen(true)}>
               <Filter className="w-4 h-4 mr-2" />
               Apply Filters
@@ -217,8 +217,8 @@ export default function RisksGridPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="px-6 py-3 border-b">
-        <div className="relative max-w-md">
+      <div className="px-3 sm:px-6 py-2 sm:py-3 border-b">
+        <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <Input
             placeholder="Search risks..."
@@ -230,13 +230,14 @@ export default function RisksGridPage() {
       </div>
 
       {/* Data Table */}
-      <div className="flex-1 overflow-auto px-6 py-4">
+      <div className="flex-1 overflow-auto px-3 sm:px-6 py-3 sm:py-4">
         {isLoading ? (
-          <div className="flex items-center justify-center h-64 text-text-muted">
+          <div className="flex items-center justify-center h-64 text-sm text-text-muted">
             Loading risks...
           </div>
         ) : (
-          <Table>
+          <div className="overflow-x-auto">
+            <Table className="min-w-[800px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10">☆</TableHead>
@@ -308,12 +309,13 @@ export default function RisksGridPage() {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         )}
       </div>
 
       {/* Pagination Footer */}
-      <div className="border-t px-6 py-3 bg-card">
+      <div className="border-t px-3 sm:px-6 py-2 sm:py-3 bg-card">
         <div className="flex items-center justify-between text-sm text-text-secondary">
           <div>
             {filteredRisks.length > 0 
