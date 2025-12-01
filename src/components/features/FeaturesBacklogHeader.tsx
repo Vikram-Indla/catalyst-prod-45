@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { LayoutList, LayoutGrid, Plus, MoreVertical, Search, Grid3x3, Filter } from 'lucide-react';
+import { LayoutList, LayoutGrid, Plus, MoreVertical, Search, Grid3x3, Filter, TrendingUp, ArrowUpDown } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +18,8 @@ interface FeaturesBacklogHeaderProps {
   onColumnsClick: () => void;
   onFiltersClick: () => void;
   onExport: () => void;
+  onApplyWSJF?: () => void;
+  onPullRank?: () => void;
 }
 
 export function FeaturesBacklogHeader({
@@ -29,6 +31,8 @@ export function FeaturesBacklogHeader({
   onColumnsClick,
   onFiltersClick,
   onExport,
+  onApplyWSJF,
+  onPullRank,
 }: FeaturesBacklogHeaderProps) {
   return (
     <div className="border-b bg-card">
@@ -103,6 +107,28 @@ export function FeaturesBacklogHeader({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          {onApplyWSJF && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2 text-xs sm:text-sm"
+              onClick={onApplyWSJF}
+            >
+              <TrendingUp className="h-4 w-4" />
+              <span className="hidden sm:inline">Apply WSJF</span>
+            </Button>
+          )}
+          {onPullRank && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="gap-2 text-xs sm:text-sm"
+              onClick={onPullRank}
+            >
+              <ArrowUpDown className="h-4 w-4" />
+              <span className="hidden sm:inline">Pull Rank</span>
+            </Button>
+          )}
           <Button 
             variant="ghost" 
             size="sm" 
