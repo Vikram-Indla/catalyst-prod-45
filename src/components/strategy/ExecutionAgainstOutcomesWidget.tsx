@@ -17,28 +17,63 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId, piIds }: ExecutionA
     queryFn: async () => {
       if (!snapshotId) return null;
 
-      // Fetch objectives with their work progress and key result progress
+      // Fetch objectives with their key results
       const { data: objectives, error } = await supabase
         .from('objectives')
-        .select('id, summary, work_progress, key_result_progress, tier, program_increment_ids')
+        .select(`
+          id, 
+          summary,
+          level,
+          program_increment_ids
+        `)
         .eq('snapshot_id', snapshotId);
 
       if (error) throw error;
 
+      // Fetch key results for these objectives
+      const objectiveIds = objectives?.map((obj: any) => obj.id) || [];
+      const { data: keyResults } = await supabase
+        .from('key_results')
+        .select('objective_id, current_value, target_value')
+        .in('objective_id', objectiveIds);
+
       // Filter objectives relevant to selected PIs
       const relevantObjectives = objectives?.filter((obj: any) => {
-        if (obj.tier === 'strategic') return true; // Strategic always included
-        const objPiIds = obj.program_increment_ids || [];
+        if (obj.level === 'strategic_goal') return true; // Strategic always included
+        const objPiIds = Array.isArray(obj.program_increment_ids) 
+          ? obj.program_increment_ids.map((id: any) => String(id)) 
+          : [];
         return piIds.some((piId) => objPiIds.includes(piId));
       }) || [];
 
+      // Calculate work progress and key result progress for each objective
+      const objectivesWithProgress = relevantObjectives.map((obj: any) => {
+        const objKeyResults = keyResults?.filter((kr: any) => kr.objective_id === obj.id) || [];
+        
+        // Calculate key result progress
+        const krProgress = objKeyResults.length > 0
+          ? objKeyResults.reduce((sum: number, kr: any) => {
+              const progress = kr.target_value > 0 
+                ? Math.min(1, kr.current_value / kr.target_value) 
+                : 0;
+              return sum + progress;
+            }, 0) / objKeyResults.length
+          : 0;
+
+        return {
+          ...obj,
+          key_result_progress: krProgress,
+          work_progress: krProgress, // For now, work progress = key result progress
+        };
+      });
+
       // Calculate aggregate metrics
-      const totalObjectives = relevantObjectives.length;
+      const totalObjectives = objectivesWithProgress.length;
       const avgWorkProgress = totalObjectives > 0
-        ? relevantObjectives.reduce((sum: number, obj: any) => sum + (obj.work_progress || 0), 0) / totalObjectives
+        ? objectivesWithProgress.reduce((sum: number, obj: any) => sum + (obj.work_progress || 0), 0) / totalObjectives
         : 0;
       const avgKRProgress = totalObjectives > 0
-        ? relevantObjectives.reduce((sum: number, obj: any) => sum + (obj.key_result_progress || 0), 0) / totalObjectives
+        ? objectivesWithProgress.reduce((sum: number, obj: any) => sum + (obj.key_result_progress || 0), 0) / totalObjectives
         : 0;
 
       // Calculate gap (execution vs outcomes)
@@ -49,7 +84,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId, piIds }: ExecutionA
         avgWorkProgress: Math.round(avgWorkProgress * 100),
         avgKRProgress: Math.round(avgKRProgress * 100),
         gap: Math.round(gap),
-        topObjectives: relevantObjectives
+        topObjectives: objectivesWithProgress
           .sort((a: any, b: any) => (b.key_result_progress || 0) - (a.key_result_progress || 0))
           .slice(0, 5),
       };
