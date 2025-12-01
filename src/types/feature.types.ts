@@ -30,6 +30,7 @@ export interface Feature {
   estimate_points?: number | null;
   progress_pct?: number | null;
   rank_within_epic?: number | null;
+  mmf?: boolean | null; // Minimum Marketable Feature flag
 
   // WSJF scoring
   business_value?: number | null;
