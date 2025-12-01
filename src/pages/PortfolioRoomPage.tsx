@@ -52,16 +52,16 @@ export default function PortfolioRoomPage() {
       </div>
 
       {/* View Tabs */}
-      <div className="border-b px-3 sm:px-4 py-2">
+      <div className="border-b px-3 sm:px-6 py-2">
         <Tabs value={selectedView} onValueChange={(v) => setSelectedView(v as any)}>
-          <TabsList className="h-9 tabs-mobile">
-            <TabsTrigger value="financials" className="text-sm tap-target">
+          <TabsList className="h-9 w-full sm:w-auto">
+            <TabsTrigger value="financials" className="text-xs sm:text-sm flex-1 sm:flex-none">
               Financials
             </TabsTrigger>
-            <TabsTrigger value="resources" className="text-sm tap-target">
+            <TabsTrigger value="resources" className="text-xs sm:text-sm flex-1 sm:flex-none">
               Resources
             </TabsTrigger>
-            <TabsTrigger value="execution" className="text-sm tap-target">
+            <TabsTrigger value="execution" className="text-xs sm:text-sm flex-1 sm:flex-none">
               Execution
             </TabsTrigger>
           </TabsList>
@@ -69,10 +69,10 @@ export default function PortfolioRoomPage() {
       </div>
 
       {/* Content */}
-      <main className="flex-1 overflow-auto p-3 sm:p-4 md:p-6">
-        <div className="space-y-3 sm:space-y-4">
+      <main className="flex-1 overflow-auto p-3 sm:p-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Three Column Layout - Stack on mobile, 3 columns on desktop */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Left: Theme Program Increment Progress */}
             <div className="min-w-0">
               <ThemeProgressCard themes={mockThemes} />
@@ -99,12 +99,14 @@ export default function PortfolioRoomPage() {
             </div>
           </div>
 
-          {/* Bottom Epic Table - Horizontal scroll on mobile */}
-          <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
-            <PortfolioEpicGrid
-              epics={mockEpics}
-              onEpicClick={(epicId) => console.log('Epic clicked:', epicId)}
-            />
+          {/* Bottom Epic Table - Full width with horizontal scroll on mobile */}
+          <div className="overflow-x-auto -mx-3 sm:mx-0">
+            <div className="min-w-[800px] px-3 sm:px-0">
+              <PortfolioEpicGrid
+                epics={mockEpics}
+                onEpicClick={(epicId) => console.log('Epic clicked:', epicId)}
+              />
+            </div>
           </div>
         </div>
       </main>

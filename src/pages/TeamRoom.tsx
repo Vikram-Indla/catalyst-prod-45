@@ -164,27 +164,27 @@ export default function TeamRoom() {
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 flex-shrink-0">
+      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4 space-y-3 flex-shrink-0">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold">Team Room</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">Team delivery dashboard with real-time metrics</p>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Team Room</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground truncate">Team delivery dashboard with real-time metrics</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate('/backlog')}>
-              <ListTodo className="h-4 w-4 mr-2" />
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" onClick={() => navigate('/backlog')} className="flex-1 sm:flex-none">
+              <ListTodo className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Backlog</span>
             </Button>
-            <Button size="sm" onClick={() => navigate('/sprint-board')}>
-              <LayoutGrid className="h-4 w-4 mr-2" />
+            <Button size="sm" onClick={() => navigate('/sprint-board')} className="flex-1 sm:flex-none">
+              <LayoutGrid className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Sprint Board</span>
             </Button>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3">
         <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
-          <SelectTrigger className="w-[240px]">
+          <SelectTrigger className="w-full sm:w-[240px]">
             <SelectValue placeholder="Select Team" />
           </SelectTrigger>
           <SelectContent>
@@ -197,7 +197,7 @@ export default function TeamRoom() {
         </Select>
 
         <Select value={selectedSprintId} onValueChange={setSelectedSprintId} disabled={!selectedTeamId}>
-          <SelectTrigger className="w-[240px]">
+          <SelectTrigger className="w-full sm:w-[240px]">
             <SelectValue placeholder="Select Sprint" />
           </SelectTrigger>
           <SelectContent>
@@ -213,8 +213,8 @@ export default function TeamRoom() {
 
       {selectedTeamId && selectedSprintId && (
         <div className="flex-1 overflow-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
-          <div className="lg:col-span-12 grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 p-3 sm:p-6">
+          <div className="lg:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
             <KPIWidgetCard
               title="Sprint Progress"
               value={`${completionPct}%`}

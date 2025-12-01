@@ -70,20 +70,20 @@ export default function ProgramRoom() {
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 flex-shrink-0">
+      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4 space-y-3 flex-shrink-0">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold">Program Room</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">Program Room</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground truncate">
               For {program?.name}
               {program?.portfolios && ` · ${program.portfolios.name}`}
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" className="text-xs sm:text-sm">Configuration</Button>
-            <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden sm:flex">Key Metrics</Button>
-            <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden md:flex">Run Meeting</Button>
-            <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden lg:flex">Close PI</Button>
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm flex-1 sm:flex-none">Configuration</Button>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm flex-1 sm:flex-none">Key Metrics</Button>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden md:inline-flex">Run Meeting</Button>
+            <Button variant="outline" size="sm" className="text-xs sm:text-sm hidden lg:inline-flex">Close PI</Button>
           </div>
         </div>
       </div>
