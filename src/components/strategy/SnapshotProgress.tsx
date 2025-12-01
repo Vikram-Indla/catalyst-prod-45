@@ -9,20 +9,31 @@ interface SnapshotProgressProps {
 }
 
 export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
-  const { data: progressData = [] } = useQuery({
+  const { data: progressData, isLoading } = useQuery({
     queryKey: ['snapshot-progress', snapshotId],
     queryFn: async () => {
-      if (!snapshotId) return [];
+      if (!snapshotId) return null;
 
-      // Fetch objectives grouped by level
-      const { data: objectives, error } = await supabase
-        .from('objectives')
-        .select('level, status')
-        .eq('snapshot_id', snapshotId);
+      // Fetch all data
+      const themesRes = await supabase.from('strategic_themes').select('status').eq('is_active', true);
+      const epicsRes = await supabase.from('epics').select('status').is('deleted_at', null);
+      const featuresRes = await supabase.from('features').select('status').is('deleted_at', null);
+      const objectivesRes = await supabase.from('objectives').select('level, status').eq('snapshot_id', snapshotId);
 
-      if (error) throw error;
+      const themes = themesRes.data as any[] || [];
+      const epics = epicsRes.data as any[] || [];
+      const features = featuresRes.data as any[] || [];
+      const objectives = objectivesRes.data as any[] || [];
 
-      // Group by level and calculate completion
+      // Calculate stats
+      const totalThemes = themes.length;
+      const acceptedThemes = themes.filter(t => t.status === 'done').length;
+      const totalEpics = epics.length;
+      const acceptedEpics = epics.filter(e => e.status === 'done').length;
+      const totalFeatures = features.length;
+      const acceptedFeatures = features.filter(f => f.status === 'done').length;
+
+      // Group objectives
       const levels = ['strategic_goal', 'portfolio', 'program', 'team'];
       const levelLabels: Record<string, string> = {
         strategic_goal: 'Strategic Goals',
@@ -31,35 +42,33 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
         team: 'Team Objectives',
       };
 
-      return levels.map((level) => {
-        const levelObjs = objectives?.filter((o: any) => o.level === level) || [];
+      const objectivesByLevel = levels.map(level => {
+        const levelObjs = objectives.filter(o => o.level === level);
         const total = levelObjs.length;
-        const completed = levelObjs.filter((o: any) => o.status === 'completed').length;
-        const acceptedPercent = total > 0 ? completed / total : 0;
-
+        const completed = levelObjs.filter(o => o.status === 'on_track').length;
         return {
           label: levelLabels[level],
           total,
           completed,
-          acceptedPercent,
+          acceptedPercent: total > 0 ? completed / total : 0,
         };
       });
+
+      return {
+        themes: { total: totalThemes, accepted: acceptedThemes },
+        epics: { total: totalEpics, accepted: acceptedEpics },
+        features: { total: totalFeatures, accepted: acceptedFeatures },
+        objectives: objectivesByLevel,
+      };
     },
     enabled: !!snapshotId,
   });
-  const getDonutColor = (percent: number) => {
-    if (percent >= 0.7) return 'stroke-green-500';
-    if (percent >= 0.4) return 'stroke-orange-500';
-    return 'stroke-red-500';
-  };
 
-  // Calculate summary statistics
-  const totalThemes = 1; // From documentation
-  const totalEpics = progressData.find(p => p.label === 'Portfolio Objectives')?.total || 0;
-  const totalFeatures = progressData.find(p => p.label === 'Program Objectives')?.total || 0;
-  
-  const acceptedEpics = progressData.find(p => p.label === 'Portfolio Objectives')?.completed || 0;
-  const acceptedFeatures = progressData.find(p => p.label === 'Program Objectives')?.completed || 0;
+  const getDonutColor = (percent: number) => {
+    if (percent >= 0.7) return 'hsl(var(--success))';
+    if (percent >= 0.4) return 'hsl(var(--warning))';
+    return 'hsl(var(--destructive))';
+  };
 
   return (
     <Card>
@@ -70,13 +79,12 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {progressData.length === 0 ? (
-          <div className="text-center py-6 text-sm text-muted-foreground">
-            No progress data available
-          </div>
+        {isLoading ? (
+          <div className="text-center py-6 text-sm text-muted-foreground">Loading progress data...</div>
+        ) : !progressData ? (
+          <div className="text-center py-6 text-sm text-muted-foreground">No progress data available</div>
         ) : (
           <>
-            {/* Summary Statistics Table */}
             <div className="border rounded-md overflow-hidden">
               <table className="w-full text-sm">
                 <thead>
@@ -90,27 +98,27 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
                 <tbody>
                   <tr className="border-b">
                     <td className="p-3 font-medium text-muted-foreground">Total Count</td>
-                    <td className="text-center p-3">{totalThemes}</td>
-                    <td className="text-center p-3">{totalEpics}</td>
-                    <td className="text-center p-3">{totalFeatures}</td>
+                    <td className="text-center p-3">{progressData.themes.total}</td>
+                    <td className="text-center p-3">{progressData.epics.total}</td>
+                    <td className="text-center p-3">{progressData.features.total}</td>
                   </tr>
                   <tr className="border-b">
                     <td className="p-3 font-medium text-muted-foreground">Accepted</td>
                     <td className="text-center p-3">—</td>
-                    <td className="text-center p-3 font-semibold">{acceptedEpics}/{totalEpics}</td>
-                    <td className="text-center p-3 font-semibold">{acceptedFeatures}/{totalFeatures}</td>
+                    <td className="text-center p-3 font-semibold">{progressData.epics.accepted}/{progressData.epics.total}</td>
+                    <td className="text-center p-3 font-semibold">{progressData.features.accepted}/{progressData.features.total}</td>
                   </tr>
                   <tr>
                     <td className="p-3 font-medium text-muted-foreground">Acceptance %</td>
                     <td className="text-center p-3">—</td>
                     <td className="text-center p-3">
-                      <span className="font-bold text-success">
-                        {totalEpics > 0 ? Math.round((acceptedEpics / totalEpics) * 100) : 0}%
+                      <span className="font-bold" style={{ color: 'hsl(var(--success))' }}>
+                        {progressData.epics.total > 0 ? Math.round((progressData.epics.accepted / progressData.epics.total) * 100) : 0}%
                       </span>
                     </td>
                     <td className="text-center p-3">
-                      <span className="font-bold text-warning">
-                        {totalFeatures > 0 ? Math.round((acceptedFeatures / totalFeatures) * 100) : 0}%
+                      <span className="font-bold" style={{ color: 'hsl(var(--warning))' }}>
+                        {progressData.features.total > 0 ? Math.round((progressData.features.accepted / progressData.features.total) * 100) : 0}%
                       </span>
                     </td>
                   </tr>
@@ -118,60 +126,38 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
               </table>
             </div>
 
-            {/* Donut Charts Row */}
             <div className="grid grid-cols-3 gap-4">
-              {progressData.slice(0, 3).map((item, index) => {
-            const percent = Math.round(item.acceptedPercent * 100);
-            const circumference = 2 * Math.PI * 40;
-            const dashoffset = circumference - (item.acceptedPercent * circumference);
-
-            return (
-              <div key={index} className="flex flex-col items-center">
-                <div className="text-xs font-medium text-muted-foreground mb-2">{item.label}</div>
-                <div className="relative w-24 h-24">
-                  <svg className="transform -rotate-90 w-24 h-24">
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      stroke="hsl(var(--muted))"
-                      strokeWidth="8"
-                      fill="none"
-                    />
-                    <circle
-                      cx="48"
-                      cy="48"
-                      r="40"
-                      className={getDonutColor(item.acceptedPercent)}
-                      strokeWidth="8"
-                      fill="none"
-                      strokeDasharray={circumference}
-                      strokeDashoffset={dashoffset}
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                  <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className="text-xl font-bold">{percent}%</span>
-                    <span className="text-xs text-muted-foreground">Accepted</span>
+              {progressData.objectives.slice(0, 3).map((item, index) => {
+                const percent = Math.round(item.acceptedPercent * 100);
+                const circumference = 2 * Math.PI * 40;
+                const dashoffset = circumference - (item.acceptedPercent * circumference);
+                return (
+                  <div key={index} className="flex flex-col items-center">
+                    <div className="text-xs font-medium text-muted-foreground mb-2">{item.label}</div>
+                    <div className="relative w-24 h-24">
+                      <svg className="transform -rotate-90 w-24 h-24">
+                        <circle cx="48" cy="48" r="40" stroke="hsl(var(--muted))" strokeWidth="8" fill="none" />
+                        <circle cx="48" cy="48" r="40" stroke={getDonutColor(item.acceptedPercent)} strokeWidth="8" fill="none" strokeDasharray={circumference} strokeDashoffset={dashoffset} strokeLinecap="round" />
+                      </svg>
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <span className="text-xl font-bold">{percent}%</span>
+                        <span className="text-xs text-muted-foreground">Accepted</span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-            {/* Progress Bars */}
-            <div className="space-y-3">
-              {progressData.map((item, index) => (
-            <div key={index} className="space-y-1">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{item.label}</span>
-                <span className="font-medium">
-                  {item.completed} / {item.total}
-                </span>
-              </div>
-              <Progress value={item.acceptedPercent * 100} className="h-2" />
+                );
+              })}
             </div>
+
+            <div className="space-y-3">
+              {progressData.objectives.map((item, index) => (
+                <div key={index} className="space-y-1">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">{item.label}</span>
+                    <span className="font-medium">{item.completed} / {item.total}</span>
+                  </div>
+                  <Progress value={item.acceptedPercent * 100} className="h-2" />
+                </div>
               ))}
             </div>
           </>
