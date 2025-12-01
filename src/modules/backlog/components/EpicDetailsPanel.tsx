@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface EpicDetailsPanelProps {
   itemId: string;
@@ -16,6 +17,8 @@ export function EpicDetailsPanel({
   itemType,
   onClose,
 }: EpicDetailsPanelProps) {
+  const navigate = useNavigate();
+  
   const { data: item } = useQuery({
     queryKey: ['backlog-item', itemId, itemType],
     queryFn: async () => {
@@ -118,7 +121,11 @@ export function EpicDetailsPanel({
                 {children.map((child: any) => (
                   <div
                     key={child.id}
-                    className="p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                    onClick={() => {
+                      // Navigate to features filtered by this epic
+                      navigate(`/features?epic=${itemId}`);
+                    }}
+                    className="p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
