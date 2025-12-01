@@ -204,10 +204,8 @@ export function CatalystHeader() {
 
           {/* Right Side Actions - Compact on mobile, full on desktop */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            {/* Create Button - Tablet and up */}
-            <div className="hidden md:block">
-              <CreateDropdown />
-            </div>
+            {/* Create Button - Always visible */}
+            <CreateDropdown />
 
             {/* Items Dropdown - Tablet and up */}
             <div className="hidden md:block">
