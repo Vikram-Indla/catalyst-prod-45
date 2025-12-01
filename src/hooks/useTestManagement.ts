@@ -292,10 +292,10 @@ export function useCreateTestCase() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (testCase: Partial<TestCase>) => {
+    mutationFn: async (testCase: Omit<TestCase, 'id' | 'created_at' | 'updated_at'>) => {
       const { data, error } = await supabase
         .from('test_cases')
-        .insert(testCase)
+        .insert([testCase])
         .select()
         .single();
       
