@@ -16,6 +16,7 @@ import { PortfolioSelectorDropdown } from "./PortfolioSelectorDropdown";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { TeamSelectorDropdown } from "./TeamSelectorDropdown";
 import { StarredDropdown } from "./StarredDropdown";
+import { MobileNavigationMenu } from "./MobileNavigationMenu";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -75,12 +76,15 @@ export function CatalystHeader() {
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-14 items-center justify-between px-3 sm:px-6 gap-3">
-          {/* Logo */}
-          <div className="flex items-center gap-2 shrink-0 cursor-pointer" onClick={() => navigate('/home')}>
-            <span className="font-extrabold text-xl tracking-tight whitespace-nowrap">
-              <span className="text-foreground">Cata</span>
-              <span className="text-brand-gold">lyst</span>
-            </span>
+          {/* Mobile Menu and Logo */}
+          <div className="flex items-center gap-2 shrink-0">
+            <MobileNavigationMenu />
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/home')}>
+              <span className="font-extrabold text-xl tracking-tight whitespace-nowrap">
+                <span className="text-foreground">Cata</span>
+                <span className="text-brand-gold">lyst</span>
+              </span>
+            </div>
           </div>
 
           {/* Main Navigation - Visible on tablet and up */}
