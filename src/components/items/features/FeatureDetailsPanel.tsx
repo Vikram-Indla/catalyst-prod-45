@@ -15,6 +15,7 @@ import {
 import { FeatureDetailsTab } from './tabs/FeatureDetailsTab';
 import { FeaturePlanningTab } from './tabs/FeaturePlanningTab';
 import { FeatureFinancialsTab } from './tabs/FeatureFinancialsTab';
+import { FeatureForecastTab } from './tabs/FeatureForecastTab';
 import { FeatureTraceTab } from './tabs/FeatureTraceTab';
 import { FeatureAttachmentsTab } from './tabs/FeatureAttachmentsTab';
 import { FeatureDiscussionsTab } from './tabs/FeatureDiscussionsTab';
@@ -133,6 +134,9 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               <TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 Financials
               </TabsTrigger>
+              <TabsTrigger value="forecast" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Forecast
+              </TabsTrigger>
               <TabsTrigger value="trace" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 Trace
               </TabsTrigger>
@@ -165,6 +169,10 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
             <TabsContent value="financials" className="mt-0 p-6">
               <FeatureFinancialsTab feature={feature} />
+            </TabsContent>
+
+            <TabsContent value="forecast" className="mt-0 p-6">
+              <FeatureForecastTab feature={feature} />
             </TabsContent>
 
             <TabsContent value="trace" className="mt-0 p-6">

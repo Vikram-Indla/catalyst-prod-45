@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
+import { EstimationConversionsModal } from '@/features/estimation/components/EstimationConversionsModal';
 import { toast } from 'sonner';
 
 /**
@@ -12,6 +14,8 @@ import { toast } from 'sonner';
  * Source: Administration guide PDF, Page 25
  */
 export default function EstimationSettings() {
+  const [conversionsModalOpen, setConversionsModalOpen] = useState(false);
+
   const handleSave = () => {
     toast.success('Estimation settings saved successfully');
   };
@@ -149,6 +153,32 @@ export default function EstimationSettings() {
 
             <Card>
               <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Estimation Conversions</CardTitle>
+                    <CardDescription>
+                      Configure T-shirt size to member weeks conversions for Epics and Features
+                    </CardDescription>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setConversionsModalOpen(true)}
+                  >
+                    Configure Conversions
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Set up conversion rates between T-shirt sizes (XS, S, M, L, XL, XXL) and member weeks. 
+                  These conversions are used to calculate team weeks, FTE/month, and story points for 
+                  capacity planning and forecasting.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>Epic Estimation</CardTitle>
                 <CardDescription>
                   Configure estimation methods for epics and capabilities
@@ -178,22 +208,15 @@ export default function EstimationSettings() {
                   </div>
                   <Switch defaultChecked />
                 </div>
-
-                <div className="space-y-2">
-                  <Label>SWAG to Story Points Mapping</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size, idx) => (
-                      <div key={size} className="space-y-1">
-                        <Label className="text-xs">{size}</Label>
-                        <Input type="number" defaultValue={[1, 3, 5, 8, 13, 21][idx]} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </div>
         </div>
+
+        <EstimationConversionsModal 
+          open={conversionsModalOpen}
+          onOpenChange={setConversionsModalOpen}
+        />
       </div>
     </AdminGuard>
   );
