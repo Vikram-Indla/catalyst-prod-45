@@ -130,7 +130,6 @@ export default function Forecast() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="epics">Epics</SelectItem>
-                  <SelectItem value="capabilities">Capabilities</SelectItem>
                   <SelectItem value="features">Features</SelectItem>
                 </SelectContent>
               </Select>
