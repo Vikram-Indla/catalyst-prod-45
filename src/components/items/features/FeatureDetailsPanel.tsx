@@ -23,6 +23,7 @@ import { FeatureDiscussionsTab } from './tabs/FeatureDiscussionsTab';
 import { FeatureLinksTab } from './tabs/FeatureLinksTab';
 import { FeatureAuditTab } from './tabs/FeatureAuditTab';
 import { FeatureAdditionalOptionsTab } from './tabs/FeatureAdditionalOptionsTab';
+import { FeatureChildrenTab } from './tabs/FeatureChildrenTab';
 import { toast } from 'sonner';
 import type { Feature } from '@/types/feature.types';
 
@@ -129,6 +130,9 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               <TabsTrigger value="details" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 Details
               </TabsTrigger>
+              <TabsTrigger value="children" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Children
+              </TabsTrigger>
               <TabsTrigger value="planning" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 Planning
               </TabsTrigger>
@@ -165,6 +169,10 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
           <div className="flex-1 overflow-y-auto">
             <TabsContent value="details" className="mt-0 p-6">
               <FeatureDetailsTab feature={feature} />
+            </TabsContent>
+
+            <TabsContent value="children" className="mt-0 p-6">
+              <FeatureChildrenTab feature={feature} />
             </TabsContent>
 
             <TabsContent value="planning" className="mt-0 p-6">

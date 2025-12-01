@@ -38,6 +38,7 @@ import { EpicSpendTab } from './tabs/EpicSpendTab';
 import { EpicForecastTab } from './tabs/EpicForecastTab';
 import { EpicWSJFTab } from './tabs/EpicWSJFTab';
 import { EpicLinksTab } from './tabs/EpicLinksTab';
+import { EpicChildrenTab } from './tabs/EpicChildrenTab';
 import { toast } from 'sonner';
 
 interface EpicDetailsPanelProps {
@@ -202,6 +203,7 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
           <TabsList className="w-full justify-start rounded-none border-b px-6 shrink-0 overflow-x-auto">
             <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="children">Children</TabsTrigger>
             <TabsTrigger value="design">Design</TabsTrigger>
             <TabsTrigger value="intake">Intake</TabsTrigger>
             <TabsTrigger value="benefits">Benefits</TabsTrigger>
@@ -216,6 +218,9 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
           <div className="flex-1 overflow-y-auto">
             <TabsContent value="details" className="m-0 p-6 focus-visible:outline-none">
               <EpicDetailsTab epic={epic} />
+            </TabsContent>
+            <TabsContent value="children" className="m-0 p-6 focus-visible:outline-none">
+              <EpicChildrenTab epic={epic} />
             </TabsContent>
             <TabsContent value="design" className="m-0 p-6 focus-visible:outline-none">
               <EpicDesignTab epic={epic} />
