@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Bell, HelpCircle, User, ChevronDown, LogOut } from "lucide-react";
+import { Search, Bell, HelpCircle, User, ChevronDown, LogOut, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
+import { useUserRole } from "@/hooks/useUserRole";
 import { Button } from "@/components/ui/button";
 import { ItemsDropdown } from "./ItemsDropdown";
 import { CreateDropdown } from "./CreateDropdown";
@@ -37,6 +38,7 @@ export function CatalystHeader() {
   const navigate = useNavigate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const { isAdmin } = useUserRole();
 
   // Get current user
   const { data: user } = useQuery({
@@ -252,6 +254,15 @@ export function CatalystHeader() {
                     <p className="text-sm font-medium truncate">{user?.email}</p>
                     <p className="text-xs text-muted-foreground">User Account</p>
                   </div>
+                  {isAdmin && (
+                    <DropdownMenuItem 
+                      onClick={() => navigate('/admin/activity')} 
+                      className="cursor-pointer"
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Administration</span>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
                     <span>Sign out</span>

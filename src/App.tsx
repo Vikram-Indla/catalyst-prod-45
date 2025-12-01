@@ -79,6 +79,7 @@ import Permissions from "./pages/admin/Permissions";
 import Integrations from "./pages/admin/Integrations";
 import JiraIntegrationConfig from "./pages/admin/JiraIntegrationConfig";
 import { AdminLayout } from "./pages/admin/AdminLayout";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import Activity from "./pages/admin/Activity";
 import Changes from "./pages/admin/Changes";
 import UseTrend from "./pages/admin/UseTrend";
@@ -458,6 +459,7 @@ const App = () => (
               <Route path="/admin/activity-log" element={<AdminGuard><ActivityLog /></AdminGuard>} />
               
               <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<AdminDashboard />} />
                 <Route path="activity" element={<Activity />} />
                 <Route path="changes" element={<Changes />} />
                 <Route path="changes-log" element={<ChangesLog />} />
