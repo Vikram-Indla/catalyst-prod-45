@@ -59,9 +59,10 @@ function CatalystShellContent() {
       path === '/risk-roam-report' ||
       path.startsWith('/insights/') ||
       path === '/stories' ||
-      path === '/work-items/stories'
+      path === '/work-items/stories' ||
+      path.startsWith('/tests/')
     ) {
-      // Program-level features: Dependencies, Program Board, Risks, Stories, Insights
+      // Program-level features: Dependencies, Program Board, Risks, Stories, Insights, Tests
       if (tier !== 'program') setTier('program');
     } else if (path.startsWith('/team')) {
       if (tier !== 'team') setTier('team');

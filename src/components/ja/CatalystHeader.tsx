@@ -67,6 +67,7 @@ export function CatalystHeader() {
     { label: "Portfolio", hasDropdown: true },
     { label: "Program", hasDropdown: true },
     { label: "Team", hasDropdown: true, path: "/teams" },
+    { label: "Tests", hasDropdown: true },
     { label: "Product", hasDropdown: true },
     { label: "Custom Rooms", hasDropdown: true },
     { label: "Starred", hasDropdown: true },
@@ -167,6 +168,33 @@ export function CatalystHeader() {
                       <StarredDropdown onClose={() => setActiveDropdown(null)} />
                     </PopoverContent>
                   </Popover>
+                ) : item.label === "Tests" ? (
+                  <DropdownMenu
+                    open={activeDropdown === item.label}
+                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                  >
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50 whitespace-nowrap"
+                      >
+                        {item.label}
+                        <ChevronDown className="ml-1 h-3 w-3" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-48 bg-popover z-[60]">
+                      <DropdownMenuItem onClick={() => navigate('/tests/cases')} className="cursor-pointer">
+                        Test Cases
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/tests/cycles')} className="cursor-pointer">
+                        Test Cycles
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate('/tests/reports')} className="cursor-pointer">
+                        Test Reports
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 ) : item.hasDropdown ? (
                   <DropdownMenu
                     open={activeDropdown === item.label}

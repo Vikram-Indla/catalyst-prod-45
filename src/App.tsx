@@ -165,6 +165,9 @@ import ProgramBoardSelfTest from "./pages/dev/ProgramBoardSelfTest";
 import SourcesReference from "./pages/dev/SourcesReference";
 import { TestCasesPage } from "./pages/TestCasesPage";
 import { TestCaseDetailPage } from "./pages/TestCaseDetailPage";
+import { TestCyclesPage } from "./pages/TestCyclesPage";
+import { TestReportsPage } from "./pages/TestReportsPage";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
 
 const queryClient = new QueryClient();
 
@@ -454,6 +457,9 @@ const App = () => (
               {/* Test Management Routes */}
               <Route path="/tests/cases" element={<TestCasesPage />} />
               <Route path="/tests/cases/:id" element={<TestCaseDetailPage />} />
+              <Route path="/tests/cycles" element={<TestCyclesPage />} />
+              <Route path="/tests/reports" element={<TestReportsPage />} />
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
               <Route path="/insights/portfolio" element={<PortfolioInsights />} />
               <Route path="/insights/program" element={<ProgramInsights />} />
