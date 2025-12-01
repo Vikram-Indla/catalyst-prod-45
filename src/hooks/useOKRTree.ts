@@ -36,18 +36,19 @@ export function useOKRTree(snapshotId?: string) {
 
       console.log('🌲 OKR Tree - Fetching for snapshot:', targetSnapshotId);
 
-      // HIERARCHY 1: Fetch Strategic Goals
-      const { data: strategicGoals, error: goalsError } = await supabase
+      // STEP 1: Fetch ONLY Yearly Goals as ROOT nodes for OKR Tree
+      const { data: yearlyGoals, error: goalsError } = await supabase
         .from('strategic_goals')
         .select('id, title, description, tier, parent_goal_id, snapshot_id, score, complete_percent, owner_id, status')
-        .eq('snapshot_id', targetSnapshotId);
+        .eq('snapshot_id', targetSnapshotId)
+        .eq('tier', 'yearly_goal'); // Only fetch yearly goals as root
 
       if (goalsError) {
-        console.error('❌ Error fetching strategic goals:', goalsError);
+        console.error('❌ Error fetching yearly goals:', goalsError);
         throw goalsError;
       }
 
-      // HIERARCHY 2: Fetch Objectives (portfolio, program, team)
+      // STEP 2: Fetch ALL objectives (they will be linked to yearly goals)
       const { data: objectives, error: objError } = await supabase
         .from('objectives')
         .select('id, summary, tier, confidence_score, score, work_progress, key_result_progress, owner_id, parent_objective_id, parent_goal_id')
@@ -60,7 +61,7 @@ export function useOKRTree(snapshotId?: string) {
 
       // Fetch profiles separately
       const allOwnerIds = [
-        ...(strategicGoals?.map(g => g.owner_id).filter(Boolean) || []),
+        ...(yearlyGoals?.map(g => g.owner_id).filter(Boolean) || []),
         ...(objectives?.map(o => o.owner_id).filter(Boolean) || [])
       ];
       const ownerIds = [...new Set(allOwnerIds)];
@@ -76,8 +77,8 @@ export function useOKRTree(snapshotId?: string) {
       const itemsMap = new Map<string, OKRTreeItem>();
       const rootItems: OKRTreeItem[] = [];
 
-      // Process Strategic Goals first
-      strategicGoals?.forEach((goal: any) => {
+      // STEP 3: Process Yearly Goals (these are ROOT nodes)
+      yearlyGoals?.forEach((goal: any) => {
         const profile = profilesMap.get(goal.owner_id);
         const ownerName = profile?.full_name || profile?.email || 'Unassigned';
         const numericId = parseInt(goal.id.split('-')[0], 16) % 100;
@@ -86,7 +87,7 @@ export function useOKRTree(snapshotId?: string) {
           id: goal.id,
           numericId,
           title: goal.title,
-          tier: goal.tier as any,
+          tier: 'yearly_goal',
           entityType: 'strategic_goal',
           score: goal.score,
           keyResultsProgress: goal.complete_percent || 0,
@@ -101,9 +102,10 @@ export function useOKRTree(snapshotId?: string) {
         };
 
         itemsMap.set(goal.id, item);
+        rootItems.push(item); // Add all yearly goals to root
       });
 
-      // Process Objectives
+      // STEP 4: Process Objectives and add to itemsMap
       objectives?.forEach((obj: any) => {
         const profile = profilesMap.get(obj.owner_id);
         const ownerName = profile?.full_name || profile?.email || 'Unassigned';
@@ -130,38 +132,23 @@ export function useOKRTree(snapshotId?: string) {
         itemsMap.set(obj.id, item);
       });
 
-      // Build Strategic Goals hierarchy (only internal parent-child within strategic_goals)
-      strategicGoals?.forEach((goal: any) => {
-        const item = itemsMap.get(goal.id);
-        if (!item) return;
-
-        if (goal.parent_goal_id) {
-          const parent = itemsMap.get(goal.parent_goal_id);
-          if (parent) {
-            parent.children.push(item);
-          }
-        } else {
-          // Only add strategic goals without parents to root
-          rootItems.push(item);
-        }
-      });
-
-      // Build Objectives hierarchy
+      // STEP 5: Build hierarchy relationships
       objectives?.forEach((obj: any) => {
         const item = itemsMap.get(obj.id);
         if (!item) return;
 
-        // Portfolio objectives link to yearly goals via parent_goal_id
+        // CRITICAL: Portfolio objectives link to Yearly Goals via parent_goal_id
         if (obj.tier === 'portfolio') {
           if (obj.parent_goal_id) {
             const parentGoal = itemsMap.get(obj.parent_goal_id);
             if (parentGoal) {
               parentGoal.children.push(item);
+              console.log(`✅ Linked Portfolio "${obj.summary}" to Yearly Goal "${parentGoal.title}"`);
             } else {
-              console.warn(`Portfolio objective ${obj.id} has parent_goal_id ${obj.parent_goal_id} but parent not found`);
+              console.warn(`⚠️ Portfolio objective "${obj.summary}" has parent_goal_id ${obj.parent_goal_id} but parent not found`);
             }
           } else {
-            console.warn(`Portfolio objective ${obj.id} has no parent_goal_id - this should not happen`);
+            console.warn(`⚠️ Portfolio objective "${obj.summary}" has no parent_goal_id`);
           }
         }
         // Program and Team objectives link via parent_objective_id
@@ -169,17 +156,18 @@ export function useOKRTree(snapshotId?: string) {
           const parent = itemsMap.get(obj.parent_objective_id);
           if (parent) {
             parent.children.push(item);
+            console.log(`✅ Linked ${obj.tier} "${obj.summary}" to parent "${parent.title}"`);
           } else {
-            console.warn(`Objective ${obj.id} has parent_objective_id ${obj.parent_objective_id} but parent not found`);
+            console.warn(`⚠️ ${obj.tier} objective "${obj.summary}" has parent_objective_id ${obj.parent_objective_id} but parent not found`);
           }
         } else if (obj.tier !== 'portfolio') {
-          console.warn(`${obj.tier} objective ${obj.id} has no parent - this might be incorrect`);
+          console.warn(`⚠️ ${obj.tier} objective "${obj.summary}" has no parent`);
         }
       });
 
-      console.log('✅ OKR Tree - Strategic Goals:', strategicGoals?.length);
-      console.log('✅ OKR Tree - Objectives:', objectives?.length);
-      console.log('✅ OKR Tree - Root items:', rootItems.length);
+      console.log('✅ OKR Tree - Yearly Goals (root):', yearlyGoals?.length);
+      console.log('✅ OKR Tree - Total Objectives:', objectives?.length);
+      console.log('✅ OKR Tree - Root items with children:', rootItems.filter(r => r.children.length > 0).length);
 
       return rootItems;
     },
