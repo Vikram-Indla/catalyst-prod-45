@@ -17,14 +17,26 @@ import { ObjectiveDrawer } from '@/components/strategy/ObjectiveDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
-  mockStrategySnapshots,
-  mockProgramIncrements,
   ObjectiveLevel,
 } from '@/data/strategyMockData';
 
 export default function StrategyRoomPage() {
   const navigate = useNavigate();
-  const [selectedPIs] = useState(['PI-5', 'PI-6', 'PI-7']);
+  // Fetch program increments and use actual PI IDs  
+  const { data: programIncrements = [] } = useQuery({
+    queryKey: ['program-increments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('program_increments')
+        .select('id, name, start_date')
+        .order('start_date', { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const selectedPIs = programIncrements.map(pi => pi.id);
   const [filterLevel, setFilterLevel] = useState<ObjectiveLevel | undefined>(undefined);
   const [filterPI, setFilterPI] = useState<string | undefined>(undefined);
   const [selectedObjective, setSelectedObjective] = useState<any>(null);

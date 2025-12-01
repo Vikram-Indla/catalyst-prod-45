@@ -8,16 +8,35 @@ import { useOKRHeatmap } from '@/hooks/useOKRHeatmap';
 import { useSearchParams } from 'react-router-dom';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HeatmapCell } from '@/components/okr/HeatmapCell';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function OKRHeatmap() {
   const [searchParams] = useSearchParams();
   const snapshotId = searchParams.get('snapshotId') || undefined;
-  const piIds = searchParams.get('piIds')?.split(',').filter(Boolean) || [];
+  const piIdsParam = searchParams.get('piIds');
+  const piIds = piIdsParam?.split(',').filter(Boolean) || [];
   const [statusFilter, setStatusFilter] = useState('all-status');
   const [ownerFilter, setOwnerFilter] = useState('all-owners');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { data: heatmapData, isLoading } = useOKRHeatmap(snapshotId, piIds);
+  // If no piIds in URL, fetch top 3 PIs from database
+  const { data: defaultPIs } = useQuery({
+    queryKey: ['default-pis'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('program_increments')
+        .select('id')
+        .order('start_date', { ascending: false })
+        .limit(3);
+      if (error) throw error;
+      return data?.map(pi => pi.id) || [];
+    },
+    enabled: piIds.length === 0,
+  });
+
+  const effectivePiIds = piIds.length > 0 ? piIds : (defaultPIs || []);
+  const { data: heatmapData, isLoading } = useOKRHeatmap(snapshotId, effectivePiIds);
   return (
     <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
       {/* Toolbar */}

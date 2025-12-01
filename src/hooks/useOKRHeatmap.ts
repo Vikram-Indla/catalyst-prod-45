@@ -19,11 +19,23 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
     queryFn: async () => {
       if (!snapshotId) return { programIncrements: [], rows: [] };
 
-      // Fetch objectives for this snapshot grouped by level
-      const { data: objectives, error } = await supabase
-        .from('objectives')
-        .select('id, level, confidence_score, program_increment_ids')
-        .eq('snapshot_id', snapshotId);
+      // Fetch objectives for this snapshot and program increments with names
+      const [objectivesResult, piNamesResult] = await Promise.all([
+        supabase
+          .from('objectives')
+          .select('id, level, confidence_score, program_increment_ids')
+          .eq('snapshot_id', snapshotId),
+        supabase
+          .from('program_increments')
+          .select('id, name')
+          .in('id', piIds)
+      ]);
+
+      const { data: objectives, error } = objectivesResult;
+      const { data: piNames } = piNamesResult;
+      
+      // Create a map of PI IDs to names
+      const piNameMap = new Map(piNames?.map(pi => [pi.id, pi.name]) || []);
 
       if (error) throw error;
 
@@ -89,7 +101,7 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
       ];
 
       return {
-        programIncrements: piIds,
+        programIncrements: piIds.map(id => piNameMap.get(id) || id),
         rows,
       };
     },
