@@ -4882,6 +4882,39 @@ export type Database = {
           },
         ]
       }
+      shared_test_steps: {
+        Row: {
+          created_at: string | null
+          created_by: string
+          description: string
+          expected_result: string | null
+          id: string
+          title: string
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by: string
+          description: string
+          expected_result?: string | null
+          id?: string
+          title: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string
+          description?: string
+          expected_result?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
+      }
       starred_items: {
         Row: {
           created_at: string
@@ -5699,6 +5732,45 @@ export type Database = {
           },
         ]
       }
+      test_case_shared_steps: {
+        Row: {
+          created_at: string | null
+          id: string
+          shared_step_id: string
+          step_order: number
+          test_case_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          shared_step_id: string
+          step_order?: number
+          test_case_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          shared_step_id?: string
+          step_order?: number
+          test_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_shared_steps_shared_step_id_fkey"
+            columns: ["shared_step_id"]
+            isOneToOne: false
+            referencedRelation: "shared_test_steps"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_shared_steps_test_case_id_fkey"
+            columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_cases: {
         Row: {
           created_at: string | null
@@ -6192,6 +6264,8 @@ export type Database = {
           created_at: string | null
           expected_result: string | null
           id: string
+          is_shared: boolean | null
+          library_step_id: string | null
           step_order: number
           test_case_id: string
           updated_at: string | null
@@ -6201,6 +6275,8 @@ export type Database = {
           created_at?: string | null
           expected_result?: string | null
           id?: string
+          is_shared?: boolean | null
+          library_step_id?: string | null
           step_order: number
           test_case_id: string
           updated_at?: string | null
@@ -6210,11 +6286,20 @@ export type Database = {
           created_at?: string | null
           expected_result?: string | null
           id?: string
+          is_shared?: boolean | null
+          library_step_id?: string | null
           step_order?: number
           test_case_id?: string
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_steps_library_step_id_fkey"
+            columns: ["library_step_id"]
+            isOneToOne: false
+            referencedRelation: "shared_test_steps"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_steps_test_case_id_fkey"
             columns: ["test_case_id"]

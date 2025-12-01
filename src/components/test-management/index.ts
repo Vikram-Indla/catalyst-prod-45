@@ -33,3 +33,8 @@ export { ExportMenu } from './ExportMenu';
 export { EvidenceUploader } from './EvidenceUploader';
 export { EvidenceGallery } from './EvidenceGallery';
 export { EvidenceViewer } from './EvidenceViewer';
+export { SharedStepCard } from './SharedStepCard';
+export { CreateSharedStepModal } from './CreateSharedStepModal';
+export { EditSharedStepModal } from './EditSharedStepModal';
+export { AddSharedStepModal } from './AddSharedStepModal';
+export { SharedStepUsage } from './SharedStepUsage';
