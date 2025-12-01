@@ -103,6 +103,7 @@ export default function StrategyRoomPage() {
 
   const handleObjectiveClick = (objective: any) => {
     setSelectedObjective(objective);
+    setDrawerOpen(true);
   };
 
   const filteredSnapshots = snapshots.filter((s) =>
@@ -214,8 +215,11 @@ export default function StrategyRoomPage() {
       {/* Objective Drawer */}
       <ObjectiveDrawer
         objectiveId={selectedObjective?.id || null}
-        open={!!selectedObjective}
-        onClose={() => setSelectedObjective(null)}
+        open={drawerOpen}
+        onClose={() => {
+          setSelectedObjective(null);
+          setDrawerOpen(false);
+        }}
       />
 
       {/* Extra Configs Dialog */}

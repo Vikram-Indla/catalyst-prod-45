@@ -10,100 +10,62 @@ export function useObjectiveDetail(objectiveId?: string) {
 
       const { data: objective, error } = await supabase
         .from('objectives')
-        .select(`
-          id,
-          summary,
-          description,
-          tier,
-          status,
-          health,
-          confidence_score,
-          score,
-          work_progress,
-          key_result_progress,
-          start_date,
-          due_date,
-          blocked,
-          anchor_sprint_id,
-          target_anchor_sprint_id,
-          program_increment_ids,
-          portfolio_id,
-          program_id,
-          team_id,
-          owner_id,
-          contributors,
-          category,
-          objective_type,
-          theme_id,
-          tags,
-          profiles:owner_id (
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('id', objectiveId)
         .single();
 
       if (error) throw error;
 
+      // Fetch owner profile separately
+      let ownerProfile = null;
+      if (objective?.owner_id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('id, full_name, avatar_url')
+          .eq('id', objective.owner_id)
+          .single();
+        ownerProfile = profile;
+      }
+
       // Fetch key results
       const { data: keyResults } = await supabase
         .from('key_results_v2')
-        .select(`
-          id,
-          summary,
-          metric_type,
-          baseline_value,
-          goal_value,
-          current_value,
-          owner_user_id,
-          profiles:owner_user_id (
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
+        .select('*')
         .eq('objective_id', objectiveId);
 
-      // Fetch key result check-ins for each key result
-      const keyResultsWithCheckins = await Promise.all(
+      // Fetch profiles for key results
+      const keyResultsWithProfiles = await Promise.all(
         (keyResults || []).map(async (kr) => {
+          let krProfile = null;
+          if (kr.owner_user_id) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('id, full_name, avatar_url')
+              .eq('id', kr.owner_user_id)
+              .single();
+            krProfile = profile;
+          }
+
           const { data: checkins } = await supabase
             .from('key_result_checkins')
             .select('id, checked_in_at, value, note_richtext, created_by_user_id')
             .eq('key_result_id', kr.id)
             .order('checked_in_at', { ascending: false });
-          
-          return { ...kr, checkins: checkins || [] };
+
+          return { ...kr, profiles: krProfile, checkins: checkins || [] };
         })
       );
 
       // Fetch linked epics
       const { data: epicLinks } = await supabase
         .from('objective_epic_links')
-        .select(`
-          epics (
-            id,
-            epic_key,
-            name,
-            estimate,
-            status,
-            progress_pct
-          )
-        `)
+        .select('epics(id, epic_key, name, estimate, status, progress_pct)')
         .eq('objective_id', objectiveId);
 
       // Fetch linked themes
       const { data: themeLinks } = await supabase
         .from('objective_theme_links')
-        .select(`
-          strategic_themes (
-            id,
-            name,
-            description
-          )
-        `)
+        .select('strategic_themes(id, name, description)')
         .eq('objective_id', objectiveId);
 
       // Fetch risks
@@ -132,7 +94,8 @@ export function useObjectiveDetail(objectiveId?: string) {
 
       return {
         ...objective,
-        keyResults: keyResultsWithCheckins,
+        profiles: ownerProfile,
+        keyResults: keyResultsWithProfiles,
         themes: themeLinks?.map(link => link.strategic_themes).filter(Boolean) || [],
         epics: epicLinks?.map(link => link.epics).filter(Boolean) || [],
         risks: risks || [],
