@@ -32,10 +32,36 @@ export function ObjectiveDrawer({ objectiveId, open, onClose }: ObjectiveDrawerP
 
   if (!open) return null;
 
+  if (isLoading) {
+    return (
+      <Sheet open={open} onOpenChange={onClose}>
+        <SheetContent side="right" className="w-full sm:max-w-[1100px] flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <p className="text-sm text-muted-foreground">Loading objective...</p>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
+  if (!objective) {
+    return (
+      <Sheet open={open} onOpenChange={onClose}>
+        <SheetContent side="right" className="w-full sm:max-w-[1100px] flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg text-muted-foreground">Objective not found</p>
+            <p className="text-sm text-muted-foreground mt-2">The requested objective could not be loaded.</p>
+          </div>
+        </SheetContent>
+      </Sheet>
+    );
+  }
+
   const score = objective?.confidence_score || 0.7;
   const scoreColor = score >= 0.7 ? '#22c55e' : score >= 0.4 ? '#eab308' : '#ef4444';
   
-  const numericId = '567';
+  const numericId = objective.id.substring(0, 8);
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
@@ -71,7 +97,7 @@ export function ObjectiveDrawer({ objectiveId, open, onClose }: ObjectiveDrawerP
                 <div>
                   <div className="flex items-start justify-between gap-4 mb-2">
                     <h2 className="text-2xl font-semibold leading-tight flex-1">
-                      {objective.name || 'Outcome for all call-in customers'}
+                      {objective.summary || 'Untitled Objective'}
                     </h2>
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <Button size="icon" variant="ghost" className="h-8 w-8">
@@ -206,13 +232,13 @@ export function ObjectiveDrawer({ objectiveId, open, onClose }: ObjectiveDrawerP
                     <div className="space-y-1.5">
                       <div className="text-xs font-medium">Key results progress</div>
                       <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-white/60" style={{ width: `${objective.progress_pct || 70}%` }} />
+                        <div className="h-full bg-white/60" style={{ width: `${(objective.key_result_progress || 0) * 100}%` }} />
                       </div>
                     </div>
                     <div className="space-y-1.5">
                       <div className="text-xs font-medium">Aligned work progress</div>
                       <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-white/60" style={{ width: '0%' }} />
+                        <div className="h-full bg-white/60" style={{ width: `${(objective.work_progress || 0) * 100}%` }} />
                       </div>
                     </div>
                     <Button 
