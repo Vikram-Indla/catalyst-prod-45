@@ -10,3 +10,8 @@ export { ExecutionResults } from './ExecutionResults';
 export { CreateCycleModal } from './CreateCycleModal';
 export { AddTestsToCycleModal } from './AddTestsToCycleModal';
 export { CycleProgress } from './CycleProgress';
+export { SummaryCards } from './SummaryCards';
+export { PassFailChart } from './PassFailChart';
+export { ExecutionTrendChart } from './ExecutionTrendChart';
+export { TestCoverageBar } from './TestCoverageBar';
+export { RecentExecutions } from './RecentExecutions';
