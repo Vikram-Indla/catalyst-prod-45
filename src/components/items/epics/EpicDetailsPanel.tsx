@@ -109,7 +109,7 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
   return (
     <Sheet open={open} onOpenChange={(open) => !open && onClose()}>
       <SheetContent side="right" className="w-[800px] sm:max-w-[800px] p-0 flex flex-col overflow-hidden">
-        <SheetHeader className="px-6 py-4 border-b flex-row items-start justify-between space-y-0 shrink-0">
+        <SheetHeader className="border-b flex-row items-start justify-between space-y-0 shrink-0" style={{ padding: 'var(--s6) var(--s4)' }}>
           <div className="flex-1 pr-4">
             <SheetTitle className="text-xl">{epic.name}</SheetTitle>
             <SheetDescription className="text-sm mt-1">

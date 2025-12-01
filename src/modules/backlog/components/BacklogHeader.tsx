@@ -75,7 +75,7 @@ export function BacklogHeader({ onOpenFilters, onOpenColumns }: BacklogHeaderPro
   const allowedTypes = getAllowedTypes(scope);
 
   return (
-    <div className="flex items-center gap-3 border-b bg-card px-4 py-3">
+    <div className="flex items-center border-b bg-card" style={{ gap: 'var(--s3)', padding: 'var(--s3) var(--s4)' }}>
       {/* Scope Selector */}
       <Select value={scope} onValueChange={(val) => setScope(val as BacklogScope)}>
         <SelectTrigger className="w-[140px]">

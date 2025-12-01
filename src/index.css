@@ -144,13 +144,28 @@
   --neutral-800: 217 19% 20%;                 /* #1F2937 */
   --neutral-900: 217 19% 16%;                 /* #111827 */
   
-  /* Layout spacing */
-  --spacing-unit: 8px;
-  --spacing-xs: calc(var(--spacing-unit) * 0.5);
-  --spacing-sm: var(--spacing-unit);
-  --spacing-md: calc(var(--spacing-unit) * 2);
-  --spacing-lg: calc(var(--spacing-unit) * 3);
-  --spacing-xl: calc(var(--spacing-unit) * 4);
+  /* === JIRA ALIGN DESIGN SYSTEM TOKENS === */
+  
+  /* Spacing Scale (8px base) */
+  --s1: 4px;      /* 0.5 unit */
+  --s2: 8px;      /* 1 unit */
+  --s3: 12px;     /* 1.5 units */
+  --s4: 16px;     /* 2 units */
+  --s5: 20px;     /* 2.5 units */
+  --s6: 24px;     /* 3 units */
+  --s7: 32px;     /* 4 units */
+  --s8: 40px;     /* 5 units */
+  --s9: 48px;     /* 6 units */
+  
+  /* Layout Measurements */
+  --topnav-h: 56px;
+  --pagehdr-h: 56px;
+  --sidebar-w: 280px;
+  --toolbar-h: 48px;
+  --grid-row: 32px;
+  --grid-hdr: 40px;
+  --timeline-hdr: 32px;
+  --bar-h: 20px;
   
   /* Typography */
   --font-size-xs: 11px;
@@ -164,6 +179,15 @@
   --transition-fast: 150ms;
   --transition-normal: 200ms;
   --transition-slow: 300ms;
+  
+  /* Shadow Tokens */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-elegant: 0 10px 30px -10px rgba(198, 156, 109, 0.3);
+  --shadow-glow: 0 0 40px rgba(198, 156, 109, 0.4);
 }
 
 .dark {
