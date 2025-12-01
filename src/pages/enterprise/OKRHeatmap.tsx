@@ -20,7 +20,7 @@ export default function OKRHeatmap() {
   const [ownerFilter, setOwnerFilter] = useState('all-owners');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // If no piIds in URL, fetch top 3 PIs from database
+  // If no piIds in URL, fetch top 2 PIs from database
   const { data: defaultPIs } = useQuery({
     queryKey: ['default-pis'],
     queryFn: async () => {
@@ -28,7 +28,7 @@ export default function OKRHeatmap() {
         .from('program_increments')
         .select('id')
         .order('start_date', { ascending: false })
-        .limit(3);
+        .limit(2);
       if (error) throw error;
       return data?.map(pi => pi.id) || [];
     },
@@ -37,6 +37,10 @@ export default function OKRHeatmap() {
 
   const effectivePiIds = piIds.length > 0 ? piIds : (defaultPIs || []);
   const { data: heatmapData, isLoading } = useOKRHeatmap(snapshotId, effectivePiIds);
+  
+  const numPIs = heatmapData?.programIncrements?.length || 2;
+  const gridColumns = `repeat(${numPIs}, 1fr) 200px 100px`;
+  
   return (
     <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
       {/* Toolbar */}
@@ -96,14 +100,15 @@ export default function OKRHeatmap() {
             <div className="space-y-4">
               {/* Header Row */}
               <div className="grid gap-2" style={{ 
-                gridTemplateColumns: `200px repeat(${heatmapData.programIncrements.length}, 1fr)` 
+                gridTemplateColumns: gridColumns
               }}>
-                <div className="font-medium text-sm">Level</div>
                 {heatmapData.programIncrements.map((pi) => (
                   <div key={pi.id} className="font-medium text-sm text-center">
                     {pi.name}
                   </div>
                 ))}
+                <div className="font-medium text-sm">Level</div>
+                <div className="font-medium text-sm text-center">Item Count</div>
               </div>
 
               {/* Data Rows */}
@@ -111,29 +116,44 @@ export default function OKRHeatmap() {
                 <div key={row.level}>
                   <div className="grid gap-2" style={{ 
                     gridTemplateColumns: row.spanAllColumns 
-                      ? '200px 1fr' 
-                      : `200px repeat(${heatmapData.programIncrements.length}, 1fr)` 
+                      ? `repeat(${numPIs}, 1fr) 200px 100px` 
+                      : gridColumns
                   }}>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{row.level}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {row.itemCount}
-                      </Badge>
-                    </div>
-                    
                     {row.spanAllColumns ? (
-                      <HeatmapCell 
-                        percentage={row.cells[0]?.percentage} 
-                        avgScore={row.cells[0]?.avgScore}
-                      />
+                      <>
+                        <div style={{ gridColumn: `span ${numPIs}` }}>
+                          <HeatmapCell 
+                            percentage={row.cells[0]?.percentage} 
+                            avgScore={row.cells[0]?.avgScore}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{row.level}</span>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <Badge variant="outline" className="text-xs">
+                            {row.itemCount}
+                          </Badge>
+                        </div>
+                      </>
                     ) : (
-                      row.cells.map((cell, idx) => (
-                        <HeatmapCell 
-                          key={idx} 
-                          percentage={cell.percentage} 
-                          avgScore={cell.avgScore}
-                        />
-                      ))
+                      <>
+                        {row.cells.map((cell, idx) => (
+                          <HeatmapCell 
+                            key={idx} 
+                            percentage={cell.percentage} 
+                            avgScore={cell.avgScore}
+                          />
+                        ))}
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{row.level}</span>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          <Badge variant="outline" className="text-xs">
+                            {row.itemCount}
+                          </Badge>
+                        </div>
+                      </>
                     )}
                   </div>
                 </div>
