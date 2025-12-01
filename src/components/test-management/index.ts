@@ -20,3 +20,5 @@ export { AIGeneratorModal } from './AIGeneratorModal';
 export { PriorityRecommender } from './PriorityRecommender';
 export { CoverageGapAnalyzer } from './CoverageGapAnalyzer';
 export { TestSuggestions } from './TestSuggestions';
+export { NotificationPreferences } from './NotificationPreferences';
+export { ExportDropdown } from './ExportDropdown';

@@ -8,7 +8,11 @@ import { TestCoverageBar } from '@/components/test-management/TestCoverageBar';
 import { RecentExecutions } from '@/components/test-management/RecentExecutions';
 import { CoverageGapAnalyzer } from '@/components/test-management/CoverageGapAnalyzer';
 import { TestSuggestions } from '@/components/test-management/TestSuggestions';
+import { ExportDropdown } from '@/components/test-management/ExportDropdown';
 import { TestMetrics, ExecutionTrend, FeatureCoverage, RecentExecution } from '@/types/reports.types';
+import { generateReportPDF, downloadPDF } from '@/utils/pdfGenerator';
+import { generateReportExcel, downloadExcel } from '@/utils/excelGenerator';
+import { exportToCSV } from '@/lib/exportUtils';
 import { Loader2 } from 'lucide-react';
 
 export function TestReportsPage() {
@@ -148,6 +152,32 @@ export function TestReportsPage() {
     },
   });
 
+  const handleExportPDF = async () => {
+    if (!metrics) return;
+    const chartElement = document.querySelector('.recharts-wrapper') as HTMLElement;
+    const pdf = await generateReportPDF(metrics, chartElement);
+    downloadPDF(pdf, `test-report-${new Date().toISOString().split('T')[0]}`);
+  };
+
+  const handleExportExcel = async () => {
+    if (!metrics) return;
+    const { data: testCases } = await supabase.from('test_cases').select('*');
+    const { data: executions } = await supabase.from('test_executions').select('*');
+    const wb = generateReportExcel(metrics, testCases || [], executions || []);
+    downloadExcel(wb, `test-report-${new Date().toISOString().split('T')[0]}`);
+  };
+
+  const handleExportCSV = async () => {
+    const { data: testCases } = await supabase.from('test_cases').select('*');
+    if (testCases) {
+      exportToCSV(
+        testCases,
+        `test-cases-${new Date().toISOString().split('T')[0]}`,
+        ['id', 'title', 'status', 'priority', 'test_type', 'created_at']
+      );
+    }
+  };
+
   if (loadingMetrics) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -160,11 +190,18 @@ export function TestReportsPage() {
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Test Reports</h1>
-          <p className="text-muted-foreground mt-1">
-            Overview of test execution metrics and trends
-          </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Test Reports</h1>
+            <p className="text-muted-foreground mt-1">
+              Overview of test execution metrics and trends
+            </p>
+          </div>
+          <ExportDropdown
+            onExportPDF={handleExportPDF}
+            onExportExcel={handleExportExcel}
+            onExportCSV={handleExportCSV}
+          />
         </div>
 
         {/* Summary Cards */}
