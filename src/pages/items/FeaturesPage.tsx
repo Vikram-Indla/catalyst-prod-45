@@ -91,28 +91,29 @@ export default function FeaturesPage() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Features</h1>
-            <p className="text-sm text-muted-foreground">
+      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold truncate">Features</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Mid-level work items that deliver value to end users
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button onClick={() => setSelectedFeatureId('new')}>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Button onClick={() => setSelectedFeatureId('new')} size="sm">
               <Plus className="w-4 h-4 mr-2" />
-              Create Feature
+              <span className="hidden sm:inline">Create Feature</span>
+              <span className="sm:hidden">Create</span>
             </Button>
           </div>
         </div>
       </div>
 
       {/* Search Bar */}
-      <div className="border-b bg-card px-6 py-3">
-        <div className="relative max-w-sm">
+      <div className="border-b bg-card px-3 sm:px-6 py-2 sm:py-3">
+        <div className="relative w-full sm:max-w-sm">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             placeholder="Search features..."
@@ -139,13 +140,14 @@ export default function FeaturesPage() {
       />
 
       {/* Features Table */}
-      <div className="flex-1 overflow-auto px-6 py-4">
+      <div className="flex-1 overflow-auto px-3 sm:px-6 py-3 sm:py-4">
         {isLoading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="text-muted-foreground">Loading features...</div>
+            <div className="text-sm text-muted-foreground">Loading features...</div>
           </div>
         ) : features && features.length > 0 ? (
-          <FeatureTable
+          <div className="overflow-x-auto">
+            <FeatureTable
             features={features}
             selectedIds={selectedRows}
             onSelectionChange={setSelectedRows}
@@ -155,10 +157,11 @@ export default function FeaturesPage() {
             onSortChange={(column, direction) => {
               toast.info(`Sorting by ${column} ${direction}`);
             }}
-          />
+            />
+          </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 text-center">
-            <div className="text-muted-foreground mb-4">No features found</div>
+          <div className="flex flex-col items-center justify-center h-64 text-center px-4">
+            <div className="text-sm text-muted-foreground mb-4">No features found</div>
           </div>
         )}
       </div>
