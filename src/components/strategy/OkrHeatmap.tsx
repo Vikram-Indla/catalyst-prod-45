@@ -20,43 +20,6 @@ interface OkrHeatmapProps {
   onCellClick: (level: string, pi: string) => void;
 }
 
-// Mock data matching the specification
-const mockHeatmapData: HeatmapRow[] = [
-  {
-    level: 'Strategic Goals',
-    itemCount: 4,
-    spanAllColumns: true,
-    cells: [{ percentage: 66, avgScore: 0.7 }]
-  },
-  {
-    level: 'Portfolio Objectives',
-    itemCount: 9,
-    cells: [
-      { percentage: 41, avgScore: 0.4 },
-      { percentage: 21, avgScore: 0.2 },
-      { percentage: 36, avgScore: 0.4 }
-    ]
-  },
-  {
-    level: 'Program Objectives',
-    itemCount: 113,
-    cells: [
-      { percentage: 4, avgScore: 0.1 },
-      { percentage: 7, avgScore: 0.1 },
-      { percentage: null, avgScore: null }
-    ]
-  },
-  {
-    level: 'Team Objectives',
-    itemCount: 73,
-    cells: [
-      { percentage: 7, avgScore: 0.1 },
-      { percentage: 8, avgScore: 0.2 },
-      { percentage: null, avgScore: null }
-    ]
-  }
-];
-
 function getHeatmapCellColor(avgScore: number | null): string {
   if (avgScore === null) return 'hsl(var(--okr-heatmap-gray))';
   if (avgScore >= 0.7) return 'hsl(var(--okr-heatmap-green))';
@@ -65,7 +28,7 @@ function getHeatmapCellColor(avgScore: number | null): string {
 }
 
 export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }: OkrHeatmapProps) {
-  const { data: heatmapData, isLoading } = useOKRHeatmap(selectedSnapshot, programIncrements);
+  const { data: heatmapData, isLoading, error } = useOKRHeatmap(selectedSnapshot, programIncrements);
   const [activeCell, setActiveCell] = useState<string | null>(null);
 
   console.log('📊 OkrHeatmap render:', { 
@@ -73,8 +36,14 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
     programIncrements, 
     hasData: !!heatmapData, 
     isLoading,
+    error: error?.message,
     rows: heatmapData?.rows?.length,
-    pis: heatmapData?.programIncrements?.length
+    pis: heatmapData?.programIncrements?.length,
+    rowDetails: heatmapData?.rows?.map(r => ({
+      level: r.level,
+      itemCount: r.itemCount,
+      cellsWithData: r.cells.filter(c => c.percentage !== null).length
+    }))
   });
 
   const handleCellClick = (level: string, pi: string) => {
