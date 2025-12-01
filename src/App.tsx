@@ -59,6 +59,7 @@ import ProgramIncrements from "./pages/ProgramIncrements";
 import PIObjectives from "./pages/PIObjectives";
 import CapacityPlanning from "./pages/CapacityPlanning";
 import Forecast from "./pages/Forecast";
+import WorkSpendGrid from "./pages/WorkSpendGrid";
 import RisksGridPage from "./pages/risks/RisksGridPage";
 import RiskRoamReportPage from "./pages/risks/RiskRoamReportPage";
 import TeamRoom from "./pages/TeamRoom";
@@ -280,6 +281,7 @@ const App = () => (
           <Route path="/portfolio-roadmap" element={<PortfolioRoadmap />} />
           <Route path="/roadmaps" element={<Roadmaps />} />
               <Route path="/dependencies" element={<DependenciesPage />} />
+              <Route path="/work-spend-grid" element={<WorkSpendGrid />} />
               <Route path="/portfolio-insights" element={<PortfolioInsights />} />
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
               <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
