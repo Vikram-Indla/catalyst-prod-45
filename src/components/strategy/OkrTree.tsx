@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useOKRTree } from '@/hooks/useOKRTree';
+import { OKRTreeColumnsDialog, ColumnConfig } from './OKRTreeColumnsDialog';
 
 interface OkrTreeProps {
   selectedSnapshot: string;
@@ -55,6 +56,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
   const { data: treeData = [], isLoading } = useOKRTree(selectedSnapshot);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
+  const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<ColumnConfig>({
+    objective: true,
+    keyResultsProgress: true,
+    score: true,
+    owner: true,
+  });
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedIds);
@@ -169,7 +177,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
             />
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-9 w-9"
+              onClick={() => setColumnsDialogOpen(true)}
+              title="Configure columns"
+            >
               <Settings className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="icon" className="h-9 w-9">
@@ -204,6 +218,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
           )}
         </div>
       </CardContent>
+
+      <OKRTreeColumnsDialog
+        open={columnsDialogOpen}
+        onOpenChange={setColumnsDialogOpen}
+        visibleColumns={visibleColumns}
+        onColumnsChange={setVisibleColumns}
+      />
     </Card>
   );
 }
