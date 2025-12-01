@@ -144,7 +144,7 @@ export default function RisksGridPage() {
   };
 
   return (
-    <div className="flex h-full w-full bg-background overflow-hidden">
+    <div className="flex h-full w-full bg-background">
       <RisksSidebar className="hidden lg:flex" />
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
       {/* Page Header */}
