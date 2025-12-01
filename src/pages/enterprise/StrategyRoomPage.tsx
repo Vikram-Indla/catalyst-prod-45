@@ -121,11 +121,11 @@ export default function StrategyRoomPage() {
   }
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div style={{ padding: 'var(--s3) var(--s4)' }} className="space-y-[var(--s4)] sm:space-y-[var(--s6)]">
       {/* Header */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col" style={{ gap: 'var(--s4)' }}>
         <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center" style={{ gap: 'var(--s2)' }}>
             <Star className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Strategy Room</h1>
           </div>
@@ -154,7 +154,7 @@ export default function StrategyRoomPage() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center" style={{ gap: 'var(--s2)' }}>
           <Button 
             variant="outline" 
             size="sm"
@@ -180,7 +180,7 @@ export default function StrategyRoomPage() {
       <MissionVisionValues snapshot={selectedSnapshot} />
 
       {/* Execution and Goals Widgets */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2" style={{ gap: 'var(--s4)' }}>
         <ExecutionAgainstOutcomesWidget 
           snapshotId={effectiveSelectedSnapshotId} 
           piIds={selectedPIs} 
@@ -196,7 +196,7 @@ export default function StrategyRoomPage() {
       </div>
 
       {/* Snapshot Progress and Misaligned Items */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px]" style={{ gap: 'var(--s4)' }}>
         <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
         <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
       </div>

@@ -171,13 +171,13 @@ export default function DependenciesPage() {
     <div className="flex h-full overflow-hidden w-full">
       <DependenciesSidebar />
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-        <div className="h-full flex flex-col p-3 sm:p-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="h-full flex flex-col" style={{ padding: 'var(--s3) var(--s6)' }}>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between" style={{ gap: 'var(--s3)', marginBottom: 'var(--s6)' }}>
             <div className="min-w-0">
               <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold truncate">Dependencies</h1>
               <p className="text-xs sm:text-sm text-muted-foreground">Manage cross-team and cross-program dependencies</p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center" style={{ gap: 'var(--s2)' }}>
               <div className="flex items-center gap-1 border rounded-lg p-1">
                 <Button
                   variant={visualizationMode === 'list' ? 'secondary' : 'ghost'}

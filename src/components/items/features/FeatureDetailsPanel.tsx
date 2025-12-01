@@ -67,8 +67,8 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent className="sm:max-w-3xl w-full p-0 flex flex-col">
-        <div className="px-6 py-4 border-b flex-shrink-0">
-          <div className="flex items-start justify-between gap-4">
+        <div className="border-b flex-shrink-0" style={{ padding: 'var(--s6) var(--s4)' }}>
+          <div className="flex items-start justify-between" style={{ gap: 'var(--s4)' }}>
             <div className="flex-1 min-w-0">
               <h2 className="text-xl font-semibold truncate">
                 {feature ? `Feature: ${feature.name}` : 'New Feature'}
@@ -79,7 +79,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
                 </div>
               )}
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center flex-shrink-0" style={{ gap: 'var(--s2)' }}>
               <Button variant="outline" size="sm">
                 Save
               </Button>
@@ -125,8 +125,8 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div className="px-6 border-b overflow-x-auto flex-shrink-0">
-            <TabsList className="inline-flex h-12 bg-transparent w-auto min-w-full justify-start">
+          <div className="border-b overflow-x-auto flex-shrink-0" style={{ paddingLeft: 'var(--s6)', paddingRight: 'var(--s6)' }}>
+            <TabsList className="inline-flex bg-transparent w-auto min-w-full justify-start" style={{ height: 'var(--toolbar-h)' }}>
               <TabsTrigger value="details" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 Details
               </TabsTrigger>
