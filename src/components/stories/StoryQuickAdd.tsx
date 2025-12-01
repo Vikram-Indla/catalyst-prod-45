@@ -43,6 +43,7 @@ export function StoryQuickAdd({ onSuccess }: StoryQuickAddProps) {
         .from('stories')
         .insert({
           name,
+          title: name, // Sync title with name
           feature_id: featureId,
           status: 'todo',
         });

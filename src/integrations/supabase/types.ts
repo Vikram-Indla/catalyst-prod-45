@@ -4784,48 +4784,90 @@ export type Database = {
           acceptance_criteria: string | null
           accepted_at: string | null
           assignee_id: string | null
+          blocked: boolean | null
+          blocked_reason: string | null
           created_at: string | null
+          deleted_at: string | null
           description: string | null
           estimate_points: number | null
           feature_id: string
+          health: string | null
           id: string
           name: string
+          owner_id: string | null
+          parked_at: string | null
           points_loe: number | null
+          priority: string | null
+          progress_pct: number | null
+          rank_order: number | null
           sprint_id: string | null
+          state: string | null
           status: Database["public"]["Enums"]["story_status"] | null
+          story_key: string | null
+          story_points: number | null
+          tags: string[] | null
           team_id: string | null
+          title: string
           updated_at: string | null
         }
         Insert: {
           acceptance_criteria?: string | null
           accepted_at?: string | null
           assignee_id?: string | null
+          blocked?: boolean | null
+          blocked_reason?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           estimate_points?: number | null
           feature_id: string
+          health?: string | null
           id?: string
           name: string
+          owner_id?: string | null
+          parked_at?: string | null
           points_loe?: number | null
+          priority?: string | null
+          progress_pct?: number | null
+          rank_order?: number | null
           sprint_id?: string | null
+          state?: string | null
           status?: Database["public"]["Enums"]["story_status"] | null
+          story_key?: string | null
+          story_points?: number | null
+          tags?: string[] | null
           team_id?: string | null
+          title: string
           updated_at?: string | null
         }
         Update: {
           acceptance_criteria?: string | null
           accepted_at?: string | null
           assignee_id?: string | null
+          blocked?: boolean | null
+          blocked_reason?: string | null
           created_at?: string | null
+          deleted_at?: string | null
           description?: string | null
           estimate_points?: number | null
           feature_id?: string
+          health?: string | null
           id?: string
           name?: string
+          owner_id?: string | null
+          parked_at?: string | null
           points_loe?: number | null
+          priority?: string | null
+          progress_pct?: number | null
+          rank_order?: number | null
           sprint_id?: string | null
+          state?: string | null
           status?: Database["public"]["Enums"]["story_status"] | null
+          story_key?: string | null
+          story_points?: number | null
+          tags?: string[] | null
           team_id?: string | null
+          title?: string
           updated_at?: string | null
         }
         Relationships: [
@@ -4848,6 +4890,41 @@ export type Database = {
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      story_comments: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          story_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          story_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          story_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "story_comments_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
             referencedColumns: ["id"]
           },
         ]
