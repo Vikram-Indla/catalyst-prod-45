@@ -12,17 +12,30 @@ export function useObjectiveDetail(objectiveId?: string) {
         .from('objectives')
         .select(`
           id,
-          name,
-          level,
+          summary,
+          description,
+          tier,
           status,
+          health,
           confidence_score,
-          progress_pct,
+          score,
+          work_progress,
+          key_result_progress,
           start_date,
-          end_date,
+          due_date,
           blocked,
           anchor_sprint_id,
+          target_anchor_sprint_id,
           program_increment_ids,
+          portfolio_id,
+          program_id,
+          team_id,
           owner_id,
+          contributors,
+          category,
+          objective_type,
+          theme_id,
+          tags,
           profiles:owner_id (
             id,
             full_name,
@@ -114,7 +127,7 @@ export function useObjectiveDetail(objectiveId?: string) {
       // Fetch child objectives
       const { data: childObjectives } = await supabase
         .from('objectives')
-        .select('id, name, confidence_score, progress_pct')
+        .select('id, summary, confidence_score, work_progress, tier, status')
         .eq('parent_objective_id', objectiveId);
 
       return {
