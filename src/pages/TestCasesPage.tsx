@@ -23,9 +23,9 @@ export const TestCasesPage: React.FC = () => {
     if (!testCasesData) return [];
     
     return testCasesData.filter(testCase => {
-      if (filters.status && testCase.status !== filters.status) return false;
-      if (filters.priority && testCase.priority !== filters.priority) return false;
-      if (filters.testType && testCase.test_type !== filters.testType) return false;
+      if (filters.status && filters.status !== 'all' && testCase.status !== filters.status) return false;
+      if (filters.priority && filters.priority !== 'all' && testCase.priority !== filters.priority) return false;
+      if (filters.testType && filters.testType !== 'all' && testCase.test_type !== filters.testType) return false;
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
         return testCase.title.toLowerCase().includes(searchLower) ||
