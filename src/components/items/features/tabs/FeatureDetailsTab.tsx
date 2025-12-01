@@ -91,6 +91,15 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
         <Label htmlFor="blocked">Feature is blocked</Label>
       </div>
 
+      {/* MMF (Minimum Marketable Feature) */}
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="mmf"
+          defaultChecked={feature?.mmf || false}
+        />
+        <Label htmlFor="mmf">MMF (Minimum Marketable Feature)</Label>
+      </div>
+
       {feature?.blocked && (
         <div className="space-y-2">
           <Label htmlFor="blocked-reason">Blocked Reason</Label>
