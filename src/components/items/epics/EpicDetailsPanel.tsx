@@ -36,6 +36,7 @@ import { EpicValueTab } from './tabs/EpicValueTab';
 import { EpicMilestonesTab } from './tabs/EpicMilestonesTab';
 import { EpicSpendTab } from './tabs/EpicSpendTab';
 import { EpicForecastTab } from './tabs/EpicForecastTab';
+import { EpicWSJFTab } from './tabs/EpicWSJFTab';
 import { EpicLinksTab } from './tabs/EpicLinksTab';
 import { toast } from 'sonner';
 
@@ -208,6 +209,7 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
             <TabsTrigger value="milestones">Milestones</TabsTrigger>
             <TabsTrigger value="spend">Spend</TabsTrigger>
             <TabsTrigger value="forecast">Forecast</TabsTrigger>
+            <TabsTrigger value="wsjf">WSJF</TabsTrigger>
             <TabsTrigger value="links">Links</TabsTrigger>
           </TabsList>
 
@@ -235,6 +237,9 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
             </TabsContent>
             <TabsContent value="forecast" className="m-0 p-6 focus-visible:outline-none">
               <EpicForecastTab epic={epic} />
+            </TabsContent>
+            <TabsContent value="wsjf" className="m-0 p-6 focus-visible:outline-none">
+              <EpicWSJFTab epic={epic} />
             </TabsContent>
             <TabsContent value="links" className="m-0 p-6 focus-visible:outline-none">
               <EpicLinksTab epic={epic} />
