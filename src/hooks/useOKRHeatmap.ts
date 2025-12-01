@@ -31,7 +31,17 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
   return useQuery({
     queryKey: ['okr-heatmap', snapshotId, piIds],
     queryFn: async () => {
-      if (!snapshotId) return { programIncrements: [], rows: [] };
+      console.log('🔥 useOKRHeatmap called with:', { snapshotId, piIds });
+      
+      if (!snapshotId) {
+        console.log('❌ No snapshotId provided');
+        return { programIncrements: [], rows: [] };
+      }
+      
+      if (piIds.length === 0) {
+        console.log('❌ No piIds provided');
+        return { programIncrements: [], rows: [] };
+      }
 
       // Fetch PI names
       const { data: piNames } = await supabase
@@ -47,7 +57,12 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
         .select('id, level, program_increment_ids')
         .eq('snapshot_id', snapshotId);
 
-      if (!objectives) return { programIncrements: [], rows: [] };
+      console.log('📊 Fetched objectives:', objectives?.length);
+      
+      if (!objectives || objectives.length === 0) {
+        console.log('❌ No objectives found');
+        return { programIncrements: [], rows: [] };
+      }
 
       // Fetch ALL key results for these objectives
       const objectiveIds = objectives.map(o => o.id);
@@ -55,6 +70,8 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
         .from('key_results')
         .select('id, objective_id, current_value, target_value')
         .in('objective_id', objectiveIds);
+      
+      console.log('🎯 Fetched key results:', keyResults?.length, 'for', objectiveIds.length, 'objectives');
 
       // Create a map of objective_id to key results
       const keyResultsByObjective = new Map<string, Array<{ current_value: number; target_value: number }>>();
@@ -147,6 +164,11 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
           cells: levelMap.team.map(stats => calculateCell(stats)),
         },
       ];
+
+      console.log('✅ Final heatmap data:', { 
+        programIncrements: piIds.length,
+        rows: rows.map(r => ({ level: r.level, itemCount: r.itemCount, cellCount: r.cells.length }))
+      });
 
       return {
         programIncrements: piIds.map(id => ({
