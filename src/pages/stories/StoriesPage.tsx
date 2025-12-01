@@ -7,6 +7,7 @@ import { Plus, Filter, Download, Settings2 } from 'lucide-react';
 import { StoriesGrid } from '@/components/stories/StoriesGrid';
 import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { CreateEditStoryPanel } from '@/components/stories/CreateEditStoryPanel';
+import { StoriesSidebar } from '@/components/stories/StoriesSidebar';
 import { useToast } from '@/hooks/use-toast';
 
 export function StoriesPage() {
@@ -65,50 +66,54 @@ export function StoriesPage() {
   const selectedStory = stories.find(s => s.id === selectedStoryId);
 
   return (
-    <div className="h-full w-full flex flex-col bg-background overflow-hidden">
-      {/* Header */}
-      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground truncate">Stories</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-              Manage user stories across features and teams
-            </p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setFilterState(filterState === 'all' ? 'backlog' : 'all')}>
-              <Filter className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">{filterState === 'all' ? 'All' : 'Filtered'}</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleExport}>
-              <Download className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Export</span>
-            </Button>
-            <Button variant="outline" size="sm" className="hidden md:flex">
-              <Settings2 className="h-4 w-4 mr-2" />
-              Columns
-            </Button>
-            <Button size="sm" onClick={() => setIsCreateOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover">
-              <Plus className="h-4 w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Create Story</span>
-              <span className="sm:hidden">Create</span>
-            </Button>
+    <div className="flex h-full w-full bg-background overflow-hidden">
+      <StoriesSidebar className="hidden lg:flex" />
+      <div className="h-full w-full flex flex-col bg-background overflow-hidden min-w-0">
+        {/* Header */}
+        <div className="border-b bg-card px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2 min-w-0">
+              <div className="min-w-0 flex-1">
+                <h1 className="text-sm sm:text-base lg:text-lg font-semibold text-foreground truncate">Stories</h1>
+                <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">
+                  Manage user stories across features and teams
+                </p>
+              </div>
+              <Button size="sm" onClick={() => setIsCreateOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
+                <Plus className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Create Story</span>
+              </Button>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => setFilterState(filterState === 'all' ? 'backlog' : 'all')}>
+                <Filter className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{filterState === 'all' ? 'All' : 'Filtered'}</span>
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleExport}>
+                <Download className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Export</span>
+              </Button>
+              <Button variant="outline" size="sm" className="hidden md:flex">
+                <Settings2 className="h-4 w-4 mr-2" />
+                Columns
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-3 sm:p-6">
-        <Card>
-          <CardContent className="p-0 overflow-x-auto">
-            <StoriesGrid
-              stories={stories}
-              isLoading={isLoading}
-              onStoryClick={(storyId) => setSelectedStoryId(storyId)}
-              onRefetch={refetch}
-            />
-          </CardContent>
-        </Card>
+        {/* Content */}
+        <div className="flex-1 overflow-auto p-2 sm:p-4 lg:p-6">
+          <Card>
+            <CardContent className="p-0 overflow-x-auto">
+              <StoriesGrid
+                stories={stories}
+                isLoading={isLoading}
+                onStoryClick={(storyId) => setSelectedStoryId(storyId)}
+                onRefetch={refetch}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Detail Panel */}

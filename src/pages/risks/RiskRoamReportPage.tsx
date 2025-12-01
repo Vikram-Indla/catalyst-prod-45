@@ -137,16 +137,18 @@ export default function RiskRoamReportPage() {
 
   return (
     <div className="flex h-full w-full bg-background overflow-hidden">
-      <RisksSidebar />
+      <RisksSidebar className="hidden lg:flex" />
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
       {/* Page Header */}
-      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <span className="text-brand-gold flex-shrink-0">☆</span>
-            <h1 className="text-base sm:text-lg font-heading font-semibold text-text-primary truncate">
-              Risk ROAM
-            </h1>
+      <div className="border-b bg-card px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center justify-between gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0 flex-1">
+              <span className="text-brand-gold flex-shrink-0 text-sm sm:text-base">☆</span>
+              <h1 className="text-sm sm:text-base lg:text-lg font-heading font-semibold text-text-primary truncate">
+                Risk ROAM
+              </h1>
+            </div>
           </div>
           
           <div className="flex flex-wrap items-center gap-2 sm:gap-4">
