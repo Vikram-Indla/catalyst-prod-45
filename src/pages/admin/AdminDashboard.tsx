@@ -70,20 +70,20 @@ export default function AdminDashboard() {
 
   return (
     <AdminGuard>
-      <div className="h-full w-full flex flex-col bg-background">
-        <div className="border-b bg-card px-6 py-4">
+      <div className="h-full w-full flex flex-col bg-background overflow-hidden">
+        <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
           <div>
-            <h1 className="text-2xl font-semibold text-foreground">Administration Dashboard</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground">Administration Dashboard</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Manage system configuration, users, and integrations
             </p>
           </div>
         </div>
 
-        <div className="flex-1 overflow-auto p-6">
-          <div className="mx-auto max-w-7xl space-y-6">
+        <div className="flex-1 overflow-auto p-3 sm:p-6">
+          <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
             {/* Quick Links Grid */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               {quickLinks.map((link) => {
                 const Icon = link.icon;
                 return (
@@ -116,7 +116,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* System Status */}
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
               <Card>
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">

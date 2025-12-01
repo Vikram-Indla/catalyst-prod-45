@@ -67,39 +67,40 @@ export function StoriesPage() {
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Stories</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground truncate">Stories</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">
               Manage user stories across features and teams
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => setFilterState(filterState === 'all' ? 'backlog' : 'all')}>
-              <Filter className="h-4 w-4 mr-2" />
-              {filterState === 'all' ? 'All' : 'Filtered'}
+              <Filter className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{filterState === 'all' ? 'All' : 'Filtered'}</span>
             </Button>
             <Button variant="outline" size="sm" onClick={handleExport}>
-              <Download className="h-4 w-4 mr-2" />
-              Export
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Export</span>
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="hidden md:flex">
               <Settings2 className="h-4 w-4 mr-2" />
               Columns
             </Button>
             <Button size="sm" onClick={() => setIsCreateOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Story
+              <Plus className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Create Story</span>
+              <span className="sm:hidden">Create</span>
             </Button>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-3 sm:p-6">
         <Card>
-          <CardContent className="p-0">
+          <CardContent className="p-0 overflow-x-auto">
             <StoriesGrid
               stories={stories}
               isLoading={isLoading}
