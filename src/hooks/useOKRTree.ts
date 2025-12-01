@@ -130,7 +130,7 @@ export function useOKRTree(snapshotId?: string) {
         itemsMap.set(obj.id, item);
       });
 
-      // Build Strategic Goals hierarchy
+      // Build Strategic Goals hierarchy (only internal parent-child within strategic_goals)
       strategicGoals?.forEach((goal: any) => {
         const item = itemsMap.get(goal.id);
         if (!item) return;
@@ -141,32 +141,39 @@ export function useOKRTree(snapshotId?: string) {
             parent.children.push(item);
           }
         } else {
+          // Only add strategic goals without parents to root
           rootItems.push(item);
         }
       });
 
-      // Build Objectives hierarchy and link to Strategic Goals
+      // Build Objectives hierarchy
       objectives?.forEach((obj: any) => {
         const item = itemsMap.get(obj.id);
         if (!item) return;
 
-        // Link portfolio objectives to yearly goals
-        if (obj.tier === 'portfolio' && obj.parent_goal_id) {
-          const parentGoal = itemsMap.get(obj.parent_goal_id);
-          if (parentGoal) {
-            parentGoal.children.push(item);
+        // Portfolio objectives link to yearly goals via parent_goal_id
+        if (obj.tier === 'portfolio') {
+          if (obj.parent_goal_id) {
+            const parentGoal = itemsMap.get(obj.parent_goal_id);
+            if (parentGoal) {
+              parentGoal.children.push(item);
+            } else {
+              console.warn(`Portfolio objective ${obj.id} has parent_goal_id ${obj.parent_goal_id} but parent not found`);
+            }
+          } else {
+            console.warn(`Portfolio objective ${obj.id} has no parent_goal_id - this should not happen`);
           }
         }
-        // Regular objective parent-child relationships
+        // Program and Team objectives link via parent_objective_id
         else if (obj.parent_objective_id) {
           const parent = itemsMap.get(obj.parent_objective_id);
           if (parent) {
             parent.children.push(item);
+          } else {
+            console.warn(`Objective ${obj.id} has parent_objective_id ${obj.parent_objective_id} but parent not found`);
           }
-        } 
-        // Orphan portfolio objectives (no parent goal)
-        else if (obj.tier === 'portfolio' && !obj.parent_goal_id) {
-          rootItems.push(item);
+        } else if (obj.tier !== 'portfolio') {
+          console.warn(`${obj.tier} objective ${obj.id} has no parent - this might be incorrect`);
         }
       });
 
