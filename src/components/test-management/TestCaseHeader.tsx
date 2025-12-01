@@ -53,16 +53,16 @@ export const TestCaseHeader: React.FC<TestCaseHeaderProps> = ({
         </div>
 
         <Select
-          value={filters.status}
+          value={filters.status || undefined}
           onValueChange={(value) =>
-            onFilterChange({ ...filters, status: value })
+            onFilterChange({ ...filters, status: value || '' })
           }
         >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Statuses</SelectItem>
+            <SelectItem value="all">All Statuses</SelectItem>
             <SelectItem value="draft">Draft</SelectItem>
             <SelectItem value="approved">Approved</SelectItem>
             <SelectItem value="deprecated">Deprecated</SelectItem>
@@ -70,16 +70,16 @@ export const TestCaseHeader: React.FC<TestCaseHeaderProps> = ({
         </Select>
 
         <Select
-          value={filters.priority}
+          value={filters.priority || undefined}
           onValueChange={(value) =>
-            onFilterChange({ ...filters, priority: value })
+            onFilterChange({ ...filters, priority: value || '' })
           }
         >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Priorities</SelectItem>
+            <SelectItem value="all">All Priorities</SelectItem>
             <SelectItem value="critical">Critical</SelectItem>
             <SelectItem value="high">High</SelectItem>
             <SelectItem value="medium">Medium</SelectItem>
@@ -88,16 +88,16 @@ export const TestCaseHeader: React.FC<TestCaseHeaderProps> = ({
         </Select>
 
         <Select
-          value={filters.testType}
+          value={filters.testType || undefined}
           onValueChange={(value) =>
-            onFilterChange({ ...filters, testType: value })
+            onFilterChange({ ...filters, testType: value || '' })
           }
         >
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Types</SelectItem>
+            <SelectItem value="all">All Types</SelectItem>
             <SelectItem value="manual">Manual</SelectItem>
             <SelectItem value="automated">Automated</SelectItem>
             <SelectItem value="bdd">BDD</SelectItem>

@@ -267,14 +267,13 @@ export const TestCaseDetailPage: React.FC = () => {
             <div className="space-y-2">
               <Label htmlFor="folder">Folder</Label>
               <Select
-                value={formData.folder_id}
+                value={formData.folder_id || undefined}
                 onValueChange={(value) => setFormData({ ...formData, folder_id: value })}
               >
                 <SelectTrigger id="folder">
                   <SelectValue placeholder="Select folder" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No folder</SelectItem>
                   {folders?.map((folder) => (
                     <SelectItem key={folder.id} value={folder.id}>
                       {folder.name}

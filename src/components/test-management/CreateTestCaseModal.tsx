@@ -205,7 +205,7 @@ export const CreateTestCaseModal: React.FC<CreateTestCaseModalProps> = ({
           <div className="space-y-2">
             <Label htmlFor="folder">Folder</Label>
             <Select
-              value={formData.folder_id}
+              value={formData.folder_id || undefined}
               onValueChange={(value) =>
                 setFormData({ ...formData, folder_id: value })
               }
@@ -214,7 +214,6 @@ export const CreateTestCaseModal: React.FC<CreateTestCaseModalProps> = ({
                 <SelectValue placeholder="Select a folder (optional)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No folder</SelectItem>
                 {folders.map((folder) => (
                   <SelectItem key={folder.id} value={folder.id}>
                     {folder.name}
