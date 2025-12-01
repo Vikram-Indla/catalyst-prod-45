@@ -3414,7 +3414,7 @@ export type Database = {
           key_result_progress: number | null
           level: string | null
           name: string
-          objective_level_id: string
+          objective_level_id: string | null
           objective_type: string | null
           owner_id: string | null
           parent_goal_id: string | null
@@ -3458,7 +3458,7 @@ export type Database = {
           key_result_progress?: number | null
           level?: string | null
           name: string
-          objective_level_id: string
+          objective_level_id?: string | null
           objective_type?: string | null
           owner_id?: string | null
           parent_goal_id?: string | null
@@ -3502,7 +3502,7 @@ export type Database = {
           key_result_progress?: number | null
           level?: string | null
           name?: string
-          objective_level_id?: string
+          objective_level_id?: string | null
           objective_type?: string | null
           owner_id?: string | null
           parent_goal_id?: string | null
@@ -4980,35 +4980,104 @@ export type Database = {
           },
         ]
       }
+      strategic_goal_key_results: {
+        Row: {
+          baseline_value: number | null
+          created_at: string | null
+          current_value: number | null
+          id: string
+          measurement_type: string
+          name: string
+          score: number | null
+          strategic_goal_id: string
+          target_value: number
+        }
+        Insert: {
+          baseline_value?: number | null
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          measurement_type: string
+          name: string
+          score?: number | null
+          strategic_goal_id: string
+          target_value: number
+        }
+        Update: {
+          baseline_value?: number | null
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          measurement_type?: string
+          name?: string
+          score?: number | null
+          strategic_goal_id?: string
+          target_value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "strategic_goal_key_results_strategic_goal_id_fkey"
+            columns: ["strategic_goal_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       strategic_goals: {
         Row: {
+          complete_percent: number | null
           created_at: string | null
           description: string | null
           health_status: string | null
           id: string
+          owner_id: string | null
+          parent_goal_id: string | null
+          score: number | null
           snapshot_id: string | null
+          status: string | null
+          tier: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
+          complete_percent?: number | null
           created_at?: string | null
           description?: string | null
           health_status?: string | null
           id?: string
+          owner_id?: string | null
+          parent_goal_id?: string | null
+          score?: number | null
           snapshot_id?: string | null
+          status?: string | null
+          tier?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
+          complete_percent?: number | null
           created_at?: string | null
           description?: string | null
           health_status?: string | null
           id?: string
+          owner_id?: string | null
+          parent_goal_id?: string | null
+          score?: number | null
           snapshot_id?: string | null
+          status?: string | null
+          tier?: string | null
           title?: string
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "strategic_goals_parent_goal_id_fkey"
+            columns: ["parent_goal_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_goals"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "strategic_goals_snapshot_id_fkey"
             columns: ["snapshot_id"]
