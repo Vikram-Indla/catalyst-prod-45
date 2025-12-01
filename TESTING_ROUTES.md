@@ -1,10 +1,12 @@
-# Forecast & WSJF Testing Routes
+# Forecast & WSJF Testing Routes - COMPLETE ✅
 
 ## Current Data Status
-✅ **Forecast Entries**: 20+ entries across PIs  
-✅ **Epic WSJF**: Populated with scores (8.67, 7.60, 7.20, etc.)  
-✅ **Feature WSJF**: 116 features with scores (88, 85, 80, etc.)  
-✅ **Program Increments**: 11 PIs available  
+✅ **Forecast Entries**: 160+ entries seeded across PIs, teams, epics, and features
+✅ **Epic WSJF**: Auto-calculated with trigger, 50+ entries across 3 PIs  
+✅ **Feature WSJF**: Auto-calculated on update, 116+ features with scores
+✅ **Program Increments**: 11 PIs available
+✅ **Capacity Warnings**: Integrated with overallocation alerts
+✅ **WSJF Ranking**: Syncs global_rank based on WSJF scores
 
 ---
 
