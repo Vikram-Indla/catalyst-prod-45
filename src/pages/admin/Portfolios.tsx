@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveGrid, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 
 /**
  * Portfolios Management Page - Configure portfolio structure and settings
@@ -25,21 +26,19 @@ export default function Portfolios() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Portfolios</h1>
-            <p className="text-muted-foreground mt-2">
-              Configure portfolio structure and enterprise associations
-            </p>
-          </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Portfolio
-          </Button>
-        </div>
+      <ResponsivePageContainer>
+        <ResponsivePageHeader
+          title="Portfolios"
+          description="Configure portfolio structure and enterprise associations"
+          actions={
+            <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Portfolio
+            </Button>
+          }
+        />
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <ResponsiveGrid cols={3}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Portfolios</CardTitle>
@@ -64,7 +63,7 @@ export default function Portfolios() {
               <div className="text-2xl font-bold">-</div>
             </CardContent>
           </Card>
-        </div>
+        </ResponsiveGrid>
 
         <Card>
           <CardHeader>
@@ -74,9 +73,9 @@ export default function Portfolios() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-[var(--s4)] mb-[var(--s4)]">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-[var(--s3)] top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search portfolios..."
                   className="pl-10"
@@ -85,9 +84,9 @@ export default function Portfolios() {
             </div>
 
             {isLoading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading portfolios...</div>
+              <div className="text-center py-[var(--s8)] text-muted-foreground">Loading portfolios...</div>
             ) : (
-              <div className="border rounded-lg">
+              <ResponsiveTableWrapper minWidth={600}>
                 <table className="w-full">
                   <thead className="bg-muted/50">
                     <tr>
@@ -116,11 +115,11 @@ export default function Portfolios() {
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </ResponsiveTableWrapper>
             )}
           </CardContent>
         </Card>
-      </div>
+      </ResponsivePageContainer>
     </AdminGuard>
   );
 }

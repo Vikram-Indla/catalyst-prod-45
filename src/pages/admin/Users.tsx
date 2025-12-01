@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Plus, Search } from 'lucide-react';
+import { ResponsivePageContainer, ResponsivePageHeader } from '@/components/layout/ResponsivePageContainer';
 
 /**
  * Users Management Page - Manage user profiles and system access
@@ -11,19 +12,17 @@ import { Plus, Search } from 'lucide-react';
 export default function Users() {
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-            <p className="text-muted-foreground mt-2">
-              Manage user profiles, roles, and system access
-            </p>
-          </div>
-          <Button className="bg-brand-gold hover:bg-brand-gold-hover">
-            <Plus className="h-4 w-4 mr-2" />
-            Add User
-          </Button>
-        </div>
+      <ResponsivePageContainer>
+        <ResponsivePageHeader
+          title="Users"
+          description="Manage user profiles, roles, and system access"
+          actions={
+            <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+              <Plus className="h-4 w-4 mr-2" />
+              Add User
+            </Button>
+          }
+        />
 
         <Card>
           <CardHeader>
@@ -33,9 +32,9 @@ export default function Users() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4 mb-4">
+            <div className="flex items-center gap-[var(--s4)] mb-[var(--s4)]">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-[var(--s3)] top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search users..."
                   className="pl-10"
@@ -47,7 +46,7 @@ export default function Users() {
             </p>
           </CardContent>
         </Card>
-      </div>
+      </ResponsivePageContainer>
     </AdminGuard>
   );
 }
