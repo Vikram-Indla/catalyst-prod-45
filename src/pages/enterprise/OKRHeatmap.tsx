@@ -99,9 +99,9 @@ export default function OKRHeatmap() {
                 gridTemplateColumns: `200px repeat(${heatmapData.programIncrements.length}, 1fr)` 
               }}>
                 <div className="font-medium text-sm">Level</div>
-                {heatmapData.programIncrements.map((piId) => (
-                  <div key={piId} className="font-medium text-sm text-center">
-                    {piId}
+                {heatmapData.programIncrements.map((pi) => (
+                  <div key={pi.id} className="font-medium text-sm text-center">
+                    {pi.name}
                   </div>
                 ))}
               </div>

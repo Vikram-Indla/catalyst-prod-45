@@ -95,16 +95,16 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
           }}
         >
           {/* Headers */}
-          {programIncrements.map((pi) => (
-            <div key={pi} className="text-center py-3 px-4 font-semibold text-sm">
-              {pi}
+          {heatmapData?.programIncrements?.map((pi) => (
+            <div key={pi.id} className="text-center py-3 px-4 font-semibold text-sm">
+              {pi.name}
             </div>
           ))}
           <div className="text-left py-3 px-4 font-semibold text-sm">Level</div>
           <div className="text-center py-3 px-4 font-semibold text-sm">Item Count</div>
 
           {/* Rows */}
-          {mockHeatmapData.map((row) => (
+          {heatmapData?.rows.map((row) => (
             <Fragment key={row.level}>
               {row.spanAllColumns ? (
                 <div
@@ -130,7 +130,7 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
                     style={{
                       backgroundColor: getHeatmapCellColor(cell.avgScore)
                     }}
-                    onClick={() => handleCellClick(row.level, programIncrements[idx])}
+                    onClick={() => handleCellClick(row.level, heatmapData?.programIncrements?.[idx]?.id || '')}
                   >
                     {cell.percentage !== null ? (
                       <>
