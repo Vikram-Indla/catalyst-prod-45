@@ -18,101 +18,133 @@ export interface ProgramIncrementInfo {
   name: string;
 }
 
+interface KeyResultWithObjective {
+  id: string;
+  objective_id: string;
+  current_value: number;
+  target_value: number;
+  objective_level: string;
+  objective_pi_ids: string[];
+}
+
 export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
   return useQuery({
     queryKey: ['okr-heatmap', snapshotId, piIds],
     queryFn: async () => {
       if (!snapshotId) return { programIncrements: [], rows: [] };
 
-      // Fetch objectives for this snapshot and program increments with names
-      const [objectivesResult, piNamesResult] = await Promise.all([
-        supabase
-          .from('objectives')
-          .select('id, level, confidence_score, program_increment_ids')
-          .eq('snapshot_id', snapshotId),
-        supabase
-          .from('program_increments')
-          .select('id, name')
-          .in('id', piIds)
-      ]);
-
-      const { data: objectives, error } = objectivesResult;
-      const { data: piNames } = piNamesResult;
+      // Fetch PI names
+      const { data: piNames } = await supabase
+        .from('program_increments')
+        .select('id, name')
+        .in('id', piIds);
       
-      // Create a map of PI IDs to names
       const piNameMap = new Map(piNames?.map(pi => [pi.id, pi.name]) || []);
 
-      if (error) throw error;
+      // Fetch objectives with their key results for this snapshot
+      const { data: objectives } = await supabase
+        .from('objectives')
+        .select('id, level, program_increment_ids')
+        .eq('snapshot_id', snapshotId);
 
-      // Calculate stats per level per PI
-      const levelMap: Record<string, { total: number; scores: number[] }[]> = {
-        strategic_goal: piIds.map(() => ({ total: 0, scores: [] })),
-        portfolio: piIds.map(() => ({ total: 0, scores: [] })),
-        program: piIds.map(() => ({ total: 0, scores: [] })),
-        team: piIds.map(() => ({ total: 0, scores: [] })),
+      if (!objectives) return { programIncrements: [], rows: [] };
+
+      // Fetch ALL key results for these objectives
+      const objectiveIds = objectives.map(o => o.id);
+      const { data: keyResults } = await supabase
+        .from('key_results')
+        .select('id, objective_id, current_value, target_value')
+        .in('objective_id', objectiveIds);
+
+      // Create a map of objective_id to key results
+      const keyResultsByObjective = new Map<string, Array<{ current_value: number; target_value: number }>>();
+      keyResults?.forEach(kr => {
+        if (!keyResultsByObjective.has(kr.objective_id)) {
+          keyResultsByObjective.set(kr.objective_id, []);
+        }
+        keyResultsByObjective.get(kr.objective_id)!.push({
+          current_value: kr.current_value || 0,
+          target_value: kr.target_value || 1
+        });
+      });
+
+      // Build statistics per level per PI
+      const levelMap: Record<string, { totalObjectives: number; keyResultScores: number[] }[]> = {
+        strategic_goal: piIds.map(() => ({ totalObjectives: 0, keyResultScores: [] })),
+        portfolio: piIds.map(() => ({ totalObjectives: 0, keyResultScores: [] })),
+        program: piIds.map(() => ({ totalObjectives: 0, keyResultScores: [] })),
+        team: piIds.map(() => ({ totalObjectives: 0, keyResultScores: [] })),
       };
 
-      objectives?.forEach((obj: any) => {
+      objectives.forEach(obj => {
         const levelStats = levelMap[obj.level];
         if (!levelStats) return;
 
+        const objKeyResults = keyResultsByObjective.get(obj.id) || [];
         const objPiIds = Array.isArray(obj.program_increment_ids) ? obj.program_increment_ids : [];
-        
-        // For strategic goals, count for all PIs (span all columns)
+
+        // Calculate key result scores for this objective
+        const krScores = objKeyResults.map(kr => {
+          if (kr.target_value === 0) return 0;
+          return Math.min(1, kr.current_value / kr.target_value);
+        });
+
+        // Strategic goals span all PIs
         if (obj.level === 'strategic_goal') {
-          piIds.forEach((piId, index) => {
-            levelStats[index].total++;
-            if (obj.confidence_score !== null && obj.confidence_score !== undefined) {
-              levelStats[index].scores.push(obj.confidence_score);
-            }
+          piIds.forEach((_, index) => {
+            levelStats[index].totalObjectives++;
+            levelStats[index].keyResultScores.push(...krScores);
           });
         } else {
           // For other levels, only count if PI is in the objective's program_increment_ids
           piIds.forEach((piId, index) => {
             if (objPiIds.includes(piId)) {
-              levelStats[index].total++;
-              if (obj.confidence_score !== null && obj.confidence_score !== undefined) {
-                levelStats[index].scores.push(obj.confidence_score);
-              }
+              levelStats[index].totalObjectives++;
+              levelStats[index].keyResultScores.push(...krScores);
             }
           });
         }
       });
 
+      // Calculate cells for each level
+      const calculateCell = (stats: { totalObjectives: number; keyResultScores: number[] }): HeatmapCell => {
+        if (stats.keyResultScores.length === 0) {
+          return { percentage: null, avgScore: null };
+        }
+        
+        const avgScore = stats.keyResultScores.reduce((sum, score) => sum + score, 0) / stats.keyResultScores.length;
+        const percentage = Math.round(avgScore * 100);
+        
+        return { percentage, avgScore };
+      };
+
       // Build rows
       const rows: HeatmapRow[] = [
         {
           level: 'Strategic Goals',
-          itemCount: objectives?.filter((o: any) => o.level === 'strategic_goal').length || 0,
+          itemCount: objectives.filter(o => o.level === 'strategic_goal').length,
           spanAllColumns: true,
           cells: [{
-            percentage: calculatePercentage(levelMap.strategic_goal),
-            avgScore: calculateAvgScore(levelMap.strategic_goal),
+            ...calculateCell({
+              totalObjectives: levelMap.strategic_goal[0].totalObjectives,
+              keyResultScores: levelMap.strategic_goal.flatMap(s => s.keyResultScores)
+            })
           }],
         },
         {
           level: 'Portfolio Objectives',
-          itemCount: objectives?.filter((o: any) => o.level === 'portfolio').length || 0,
-          cells: levelMap.portfolio.map(stats => ({
-            percentage: stats.total > 0 ? calculateCellPercentage(stats) : null,
-            avgScore: stats.scores.length > 0 ? calculateCellAvgScore(stats) : null,
-          })),
+          itemCount: objectives.filter(o => o.level === 'portfolio').length,
+          cells: levelMap.portfolio.map(stats => calculateCell(stats)),
         },
         {
           level: 'Program Objectives',
-          itemCount: objectives?.filter((o: any) => o.level === 'program').length || 0,
-          cells: levelMap.program.map(stats => ({
-            percentage: stats.total > 0 ? calculateCellPercentage(stats) : null,
-            avgScore: stats.scores.length > 0 ? calculateCellAvgScore(stats) : null,
-          })),
+          itemCount: objectives.filter(o => o.level === 'program').length,
+          cells: levelMap.program.map(stats => calculateCell(stats)),
         },
         {
           level: 'Team Objectives',
-          itemCount: objectives?.filter((o: any) => o.level === 'team').length || 0,
-          cells: levelMap.team.map(stats => ({
-            percentage: stats.total > 0 ? calculateCellPercentage(stats) : null,
-            avgScore: stats.scores.length > 0 ? calculateCellAvgScore(stats) : null,
-          })),
+          itemCount: objectives.filter(o => o.level === 'team').length,
+          cells: levelMap.team.map(stats => calculateCell(stats)),
         },
       ];
 
@@ -126,27 +158,4 @@ export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
     },
     enabled: !!snapshotId && piIds.length > 0,
   });
-}
-
-function calculatePercentage(stats: { total: number; scores: number[] }[]): number {
-  const allScores = stats.flatMap(s => s.scores);
-  if (allScores.length === 0) return 0;
-  const avg = allScores.reduce((sum, s) => sum + s, 0) / allScores.length;
-  return Math.round(avg * 100);
-}
-
-function calculateAvgScore(stats: { total: number; scores: number[] }[]): number | null {
-  const allScores = stats.flatMap(s => s.scores);
-  if (allScores.length === 0) return null;
-  return allScores.reduce((sum, s) => sum + s, 0) / allScores.length;
-}
-
-function calculateCellPercentage(stats: { total: number; scores: number[] }): number {
-  if (stats.scores.length === 0) return 0;
-  const avg = stats.scores.reduce((sum, s) => sum + s, 0) / stats.scores.length;
-  return Math.round(avg * 100);
-}
-
-function calculateCellAvgScore(stats: { total: number; scores: number[] }): number {
-  return stats.scores.reduce((sum, s) => sum + s, 0) / stats.scores.length;
 }
