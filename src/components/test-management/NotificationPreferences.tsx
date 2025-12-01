@@ -3,12 +3,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
+import { useTestNotificationPreferences } from '@/hooks/useTestNotificationPreferences';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
 export function NotificationPreferences() {
-  const { preferences, isLoading, updatePreferences, isUpdating } = useNotificationPreferences();
+  const { preferences, isLoading, updatePreferences, isUpdating } = useTestNotificationPreferences();
   const [localPrefs, setLocalPrefs] = React.useState({
     notify_on_test_failure: true,
     notify_on_cycle_complete: true,
