@@ -167,14 +167,13 @@ export function CreateCycleModal({ open, onOpenChange, cycleToEdit }: CreateCycl
               <div>
                 <Label htmlFor="sprint_id" className="text-foreground">Sprint</Label>
                 <Select
-                  value={watch('sprint_id')}
+                  value={watch('sprint_id') || undefined}
                   onValueChange={(value) => setValue('sprint_id', value)}
                 >
                   <SelectTrigger className="mt-1.5">
                     <SelectValue placeholder="Select sprint (optional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
                     {sprints?.map((sprint) => (
                       <SelectItem key={sprint.id} value={sprint.id}>
                         {sprint.name}
@@ -189,14 +188,13 @@ export function CreateCycleModal({ open, onOpenChange, cycleToEdit }: CreateCycl
                   Program Increment
                 </Label>
                 <Select
-                  value={watch('program_increment_id')}
+                  value={watch('program_increment_id') || undefined}
                   onValueChange={(value) => setValue('program_increment_id', value)}
                 >
                   <SelectTrigger className="mt-1.5">
                     <SelectValue placeholder="Select PI (optional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">None</SelectItem>
                     {programIncrements?.map((pi) => (
                       <SelectItem key={pi.id} value={pi.id}>
                         {pi.name}
