@@ -92,6 +92,7 @@ export function PortfolioRoomSidebar({
     { id: 'feature-status', label: 'Feature status report', path: '/portfolio/:portfolioId/reports/feature-status' },
     { id: 'portfolio-health', label: 'Portfolio health', path: '/portfolio/:portfolioId/reports/health' },
     { id: 'work-tree', label: 'Work tree', path: '/portfolio/:portfolioId/reports/work-tree' },
+    { id: 'work-spend-grid', label: 'Work spend grid', path: '/work-spend-grid' },
   ];
 
   const morePagesSubMenu = [

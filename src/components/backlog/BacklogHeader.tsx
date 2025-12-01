@@ -1,8 +1,9 @@
-import { Eye, Filter, Search, List, LayoutGrid, Circle } from 'lucide-react';
+import { Eye, Filter, Search, List, LayoutGrid, Circle, TrendingUp, ArrowUpDown } from 'lucide-react';
 import { ViewingDropdown } from './ViewingDropdown';
 import { ColumnsDropdown, ColumnConfig } from './ColumnsDropdown';
 import { LabelsDropdown, LabelConfig } from './LabelsDropdown';
 import { ViewingOption } from '@/types/backlog.types';
+import { Button } from '@/components/ui/button';
 
 interface BacklogHeaderProps {
   viewingOptions: ViewingOption[];
@@ -16,6 +17,8 @@ interface BacklogHeaderProps {
   onColumnConfigChange: (config: ColumnConfig[]) => void;
   labelConfig: LabelConfig;
   onLabelConfigChange: (config: LabelConfig) => void;
+  onApplyWSJF?: () => void;
+  onPullRank?: () => void;
 }
 
 export function BacklogHeader({
@@ -29,7 +32,9 @@ export function BacklogHeader({
   columnConfig,
   onColumnConfigChange,
   labelConfig,
-  onLabelConfigChange
+  onLabelConfigChange,
+  onApplyWSJF,
+  onPullRank
 }: BacklogHeaderProps) {
   return (
     <div className="flex items-center justify-between px-6 py-4 border-b bg-card">
@@ -42,7 +47,31 @@ export function BacklogHeader({
         />
       </div>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3">
+        {onApplyWSJF && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onApplyWSJF}
+            className="flex items-center gap-1.5"
+          >
+            <TrendingUp className="w-4 h-4" />
+            Apply WSJF to Rank
+          </Button>
+        )}
+        
+        {onPullRank && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onPullRank}
+            className="flex items-center gap-1.5"
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            Pull Rank
+          </Button>
+        )}
+
         <button className="flex items-center gap-1.5 px-2 py-1.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground rounded transition-colors">
           <Eye className="w-4 h-4" />
           Orphan Objects

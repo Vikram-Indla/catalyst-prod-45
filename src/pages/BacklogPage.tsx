@@ -7,6 +7,8 @@ import { MoveToPositionModal } from '@/components/backlog/MoveToPositionModal';
 import { DetailPanel } from '@/components/backlog/DetailPanel/DetailPanel';
 import { ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { LabelConfig } from '@/components/backlog/LabelsDropdown';
+import { ApplyWSJFToRankDialog } from '@/components/prioritization/ApplyWSJFToRankDialog';
+import { PullRankDialog } from '@/components/backlog/PullRankDialog';
 import { VIEWING_OPTIONS, BACKLOG_SECTIONS, PROGRAMS } from '@/data/backlogSeedData';
 import { EPIC_DETAILS } from '@/data/epicDetailData';
 import { BacklogSection as BacklogSectionType, Epic } from '@/types/backlog.types';
@@ -80,6 +82,11 @@ export default function BacklogPage() {
     activeTab: string;
     hasChanges: boolean;
   }>({ isOpen: false, epicId: null, activeTab: 'details', hasChanges: false });
+
+  // WSJF and Pull Rank dialogs
+  const [wsjfDialogOpen, setWsjfDialogOpen] = useState(false);
+  const [pullRankDialogOpen, setPullRankDialogOpen] = useState(false);
+
 
   // Keyboard navigation
   useEffect(() => {
@@ -282,6 +289,8 @@ export default function BacklogPage() {
         onColumnConfigChange={setColumnConfig}
         labelConfig={labelConfig}
         onLabelConfigChange={setLabelConfig}
+        onApplyWSJF={() => setWsjfDialogOpen(true)}
+        onPullRank={() => setPullRankDialogOpen(true)}
       />
 
       <div className="px-6 py-6">
@@ -360,6 +369,20 @@ export default function BacklogPage() {
           setDetailPanelState({ ...detailPanelState, hasChanges: false });
         }}
         hasChanges={detailPanelState.hasChanges}
+      />
+
+      {/* WSJF and Pull Rank Dialogs */}
+      <ApplyWSJFToRankDialog
+        open={wsjfDialogOpen}
+        onOpenChange={setWsjfDialogOpen}
+        workItemType="epic"
+      />
+
+      <PullRankDialog
+        open={pullRankDialogOpen}
+        onOpenChange={setPullRankDialogOpen}
+        workItemType="epic"
+        currentItemId={selectedEpicId || undefined}
       />
     </div>
   );

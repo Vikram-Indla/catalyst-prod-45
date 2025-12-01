@@ -89,6 +89,7 @@ export function ProgramRoomSidebar({
     { id: 'program-board-history', label: 'Program board history', path: '/programs/:programId/reports/board-history' },
     { id: 'work-tree', label: 'Work tree', path: '/programs/:programId/reports/work-tree' },
     { id: 'pi-objectives', label: 'PI objectives report', path: '/programs/:programId/reports/pi-objectives' },
+    { id: 'work-spend-grid', label: 'Work spend grid', path: '/work-spend-grid' },
   ];
 
   const morePagesSubMenu = [
