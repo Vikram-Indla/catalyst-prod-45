@@ -5932,6 +5932,39 @@ export type Database = {
           },
         ]
       }
+      test_notification_preferences: {
+        Row: {
+          created_at: string | null
+          daily_test_summary: boolean | null
+          id: string
+          notify_on_cycle_complete: boolean | null
+          notify_on_test_failure: boolean | null
+          updated_at: string | null
+          user_id: string
+          weekly_test_report: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          daily_test_summary?: boolean | null
+          id?: string
+          notify_on_cycle_complete?: boolean | null
+          notify_on_test_failure?: boolean | null
+          updated_at?: string | null
+          user_id: string
+          weekly_test_report?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          daily_test_summary?: boolean | null
+          id?: string
+          notify_on_cycle_complete?: boolean | null
+          notify_on_test_failure?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+          weekly_test_report?: boolean | null
+        }
+        Relationships: []
+      }
       test_set_cases: {
         Row: {
           case_order: number | null
