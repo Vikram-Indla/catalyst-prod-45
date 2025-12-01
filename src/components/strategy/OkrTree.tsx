@@ -25,12 +25,30 @@ function formatScore(score: number | null): string {
 
 function getLevelLabel(tier: string): string {
   const labels = {
-    'strategic_goal': 'North Stars',
-    'portfolio': 'Long Term Goals',
-    'program': 'Long Term Strategies',
-    'team': 'Yearly Goals'
+    // Strategic Goals Hierarchy
+    'north_star': 'North Star',
+    'long_term_goal': 'Long Term Goal',
+    'long_term_strategy': 'Long Term Strategy',
+    'yearly_goal': 'Yearly Goal',
+    // Objectives Hierarchy
+    'portfolio': 'Portfolio Objective',
+    'program': 'Program Objective',
+    'team': 'Team Objective'
   };
   return labels[tier as keyof typeof labels] || tier;
+}
+
+function getTierColor(tier: string): string {
+  // Strategic Goals - Purple shades
+  if (tier === 'north_star') return 'bg-purple-600 text-white';
+  if (tier === 'long_term_goal') return 'bg-purple-500 text-white';
+  if (tier === 'long_term_strategy') return 'bg-purple-400 text-white';
+  if (tier === 'yearly_goal') return 'bg-purple-300 text-gray-900';
+  // Objectives - Blue shades
+  if (tier === 'portfolio') return 'bg-blue-600 text-white';
+  if (tier === 'program') return 'bg-blue-400 text-gray-900';
+  if (tier === 'team') return 'bg-blue-300 text-gray-900';
+  return 'bg-gray-500 text-white';
 }
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
@@ -97,7 +115,10 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
             ) : (
               <div className="w-4 flex-shrink-0" />
             )}
-            <span className="text-sm text-muted-foreground font-medium min-w-[32px] flex-shrink-0">{item.numericId}</span>
+            <span className={`px-2 py-0.5 rounded text-xs font-semibold ${getTierColor(item.tier)}`}>
+              {getLevelLabel(item.tier)}
+            </span>
+            <span className="text-sm text-muted-foreground font-medium min-w-[32px] flex-shrink-0">#{item.numericId}</span>
             <span className="text-sm text-blue-600 hover:underline font-normal">{item.title}</span>
           </div>
 
