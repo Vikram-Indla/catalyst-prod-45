@@ -41,7 +41,7 @@ export default function PortfolioRoomPage() {
   const [selectedView, setSelectedView] = useState<'financials' | 'resources' | 'execution'>('execution');
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div className="flex flex-col">
       {/* Header Bar */}
       <div className="border-b">
         <PortfolioRoomHeader
@@ -69,7 +69,7 @@ export default function PortfolioRoomPage() {
       </div>
 
       {/* Content */}
-      <main className="flex-1 overflow-auto p-3 sm:p-6">
+      <main className="p-3 sm:p-6">
         <div className="space-y-4 sm:space-y-6">
           {/* Three Column Layout - Stack on mobile, 3 columns on desktop */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
