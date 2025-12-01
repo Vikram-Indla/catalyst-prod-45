@@ -22,3 +22,7 @@ export { CoverageGapAnalyzer } from './CoverageGapAnalyzer';
 export { TestSuggestions } from './TestSuggestions';
 export { NotificationPreferences } from './NotificationPreferences';
 export { ExportDropdown } from './ExportDropdown';
+export { TestDataTable } from './TestDataTable';
+export { DataRowEditor } from './DataRowEditor';
+export { CSVImportModal } from './CSVImportModal';
+export { ParameterizedExecutionResults } from './ParameterizedExecutionResults';

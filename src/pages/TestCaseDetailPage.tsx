@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import {
   Select,
   SelectContent,
@@ -16,7 +18,9 @@ import { TestStepsEditor } from '@/components/test-management/TestStepsEditor';
 import { WorkItemLink } from '@/components/test-management/WorkItemLink';
 import { ExecutionResults } from '@/components/test-management/ExecutionResults';
 import { TestExecutionModal } from '@/components/test-management/TestExecutionModal';
+import { TestDataTable } from '@/components/test-management/TestDataTable';
 import { useTestCase, useUpdateTestCase, useDeleteTestCase, useTestFolders } from '@/hooks/useTestManagement';
+import { useTestDataRows } from '@/hooks/useTestData';
 import { useToast } from '@/hooks/use-toast';
 import type { TestStep } from '@/types/test-management';
 
@@ -27,10 +31,12 @@ export const TestCaseDetailPage: React.FC = () => {
   
   const { data: testCase, isLoading } = useTestCase(id!);
   const { data: folders } = useTestFolders();
+  const { data: dataRows = [] } = useTestDataRows(id!);
   const updateMutation = useUpdateTestCase();
   const deleteMutation = useDeleteTestCase();
 
   const [isExecutionModalOpen, setIsExecutionModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -164,140 +170,168 @@ export const TestCaseDetailPage: React.FC = () => {
       </div>
 
       <div className="max-w-6xl mx-auto p-6">
-        <div className="bg-card rounded-lg border border-border p-6 space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Enter test case title"
-              maxLength={500}
-            />
-          </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <TabsList className="bg-muted">
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="steps">Steps</TabsTrigger>
+            <TabsTrigger value="data">
+              Data
+              {dataRows.length > 0 && (
+                <Badge variant="secondary" className="ml-2 bg-brand-gold text-brand-dark">
+                  {dataRows.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="executions">Execution History</TabsTrigger>
+          </TabsList>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
-            <Textarea
-              id="description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Enter test case description"
-              rows={4}
-            />
-          </div>
+          <TabsContent value="details" className="space-y-0">
+            <div className="bg-card rounded-lg border border-border p-6 space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="title">Title *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="Enter test case title"
+                  maxLength={500}
+                />
+              </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="preconditions">Preconditions</Label>
-              <Textarea
-                id="preconditions"
-                value={formData.preconditions}
-                onChange={(e) => setFormData({ ...formData, preconditions: e.target.value })}
-                placeholder="What needs to be set up before testing?"
-                rows={3}
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Enter test case description"
+                  rows={4}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="preconditions">Preconditions</Label>
+                  <Textarea
+                    id="preconditions"
+                    value={formData.preconditions}
+                    onChange={(e) => setFormData({ ...formData, preconditions: e.target.value })}
+                    placeholder="What needs to be set up before testing?"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="expected_result">Expected Result</Label>
+                  <Textarea
+                    id="expected_result"
+                    value={formData.expected_result}
+                    onChange={(e) => setFormData({ ...formData, expected_result: e.target.value })}
+                    placeholder="What should happen after the test?"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="test_type">Test Type</Label>
+                  <Select
+                    value={formData.test_type}
+                    onValueChange={(value: any) => setFormData({ ...formData, test_type: value })}
+                  >
+                    <SelectTrigger id="test_type">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="manual">Manual</SelectItem>
+                      <SelectItem value="automated">Automated</SelectItem>
+                      <SelectItem value="bdd">BDD</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="priority">Priority</Label>
+                  <Select
+                    value={formData.priority}
+                    onValueChange={(value: any) => setFormData({ ...formData, priority: value })}
+                  >
+                    <SelectTrigger id="priority">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="critical">Critical</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="status">Status</Label>
+                  <Select
+                    value={formData.status}
+                    onValueChange={(value: any) => setFormData({ ...formData, status: value })}
+                  >
+                    <SelectTrigger id="status">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="approved">Approved</SelectItem>
+                      <SelectItem value="deprecated">Deprecated</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="folder">Folder</Label>
+                  <Select
+                    value={formData.folder_id || undefined}
+                    onValueChange={(value) => setFormData({ ...formData, folder_id: value })}
+                  >
+                    <SelectTrigger id="folder">
+                      <SelectValue placeholder="Select folder" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {folders?.map((folder) => (
+                        <SelectItem key={folder.id} value={folder.id}>
+                          {folder.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <WorkItemLink
+                linkedWorkItemId={testCase.linked_work_item_id}
+                linkedWorkItemType={testCase.linked_work_item_type}
+                testCaseId={testCase.id}
               />
             </div>
+          </TabsContent>
 
-            <div className="space-y-2">
-              <Label htmlFor="expected_result">Expected Result</Label>
-              <Textarea
-                id="expected_result"
-                value={formData.expected_result}
-                onChange={(e) => setFormData({ ...formData, expected_result: e.target.value })}
-                placeholder="What should happen after the test?"
-                rows={3}
-              />
+          <TabsContent value="steps" className="space-y-0">
+            <div className="bg-card rounded-lg border border-border p-6">
+              <TestStepsEditor testCaseId={testCase.id} />
             </div>
-          </div>
+          </TabsContent>
 
-          <div className="grid grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="test_type">Test Type</Label>
-              <Select
-                value={formData.test_type}
-                onValueChange={(value: any) => setFormData({ ...formData, test_type: value })}
-              >
-                <SelectTrigger id="test_type">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="manual">Manual</SelectItem>
-                  <SelectItem value="automated">Automated</SelectItem>
-                  <SelectItem value="bdd">BDD</SelectItem>
-                </SelectContent>
-              </Select>
+          <TabsContent value="data" className="space-y-0">
+            <div className="bg-card rounded-lg border border-border p-6">
+              <TestDataTable testCaseId={testCase.id} />
             </div>
+          </TabsContent>
 
-            <div className="space-y-2">
-              <Label htmlFor="priority">Priority</Label>
-              <Select
-                value={formData.priority}
-                onValueChange={(value: any) => setFormData({ ...formData, priority: value })}
-              >
-                <SelectTrigger id="priority">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="critical">Critical</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="low">Low</SelectItem>
-                </SelectContent>
-              </Select>
+          <TabsContent value="executions" className="space-y-0">
+            <div className="bg-card rounded-lg border border-border p-6">
+              <ExecutionResults testCaseId={testCase.id} />
             </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="status">Status</Label>
-              <Select
-                value={formData.status}
-                onValueChange={(value: any) => setFormData({ ...formData, status: value })}
-              >
-                <SelectTrigger id="status">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="approved">Approved</SelectItem>
-                  <SelectItem value="deprecated">Deprecated</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="folder">Folder</Label>
-              <Select
-                value={formData.folder_id || undefined}
-                onValueChange={(value) => setFormData({ ...formData, folder_id: value })}
-              >
-                <SelectTrigger id="folder">
-                  <SelectValue placeholder="Select folder" />
-                </SelectTrigger>
-                <SelectContent>
-                  {folders?.map((folder) => (
-                    <SelectItem key={folder.id} value={folder.id}>
-                      {folder.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <WorkItemLink
-            linkedWorkItemId={testCase.linked_work_item_id}
-            linkedWorkItemType={testCase.linked_work_item_type}
-            testCaseId={testCase.id}
-          />
-
-          <div className="border-t border-border pt-6">
-            <TestStepsEditor testCaseId={testCase.id} />
-          </div>
-
-          <div className="border-t border-border pt-6">
-            <ExecutionResults testCaseId={testCase.id} />
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {isExecutionModalOpen && (
