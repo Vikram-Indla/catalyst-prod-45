@@ -770,3 +770,21 @@ export function useDeleteAttachment() {
     },
   });
 }
+
+// ==============================================
+// USERS HOOK (for Owner dropdown)
+// ==============================================
+
+export function useIdeationUsers() {
+  return useQuery({
+    queryKey: ['ideation-users'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email, full_name, avatar_url')
+        .order('full_name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+}
