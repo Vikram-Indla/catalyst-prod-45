@@ -23,9 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { X } from 'lucide-react';
 import { useUpdateIdeaGroup } from '@/hooks/useIdeation';
 import { useIdeationForms } from '@/hooks/useIdeationForms';
+import { useIdeaGroupMembers, useRemoveGroupMember } from '@/hooks/useIdeaGroupMembers';
 import { ManageFormsDialog } from './ManageFormsDialog';
+import { AddPeopleDialog } from './AddPeopleDialog';
 import { toast } from 'sonner';
 import type { IdeaGroup, IdeaCategory, VotingType } from '@/types/ideation';
 
@@ -42,6 +46,8 @@ export function IdeaGroupSetupDialog({
 }: IdeaGroupSetupDialogProps) {
   const [activeTab, setActiveTab] = useState('general');
   const [showManageForms, setShowManageForms] = useState(false);
+  const [showAddAdmins, setShowAddAdmins] = useState(false);
+  const [showAddContributors, setShowAddContributors] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     category: 'Enhancement' as IdeaCategory,
@@ -59,6 +65,17 @@ export function IdeaGroupSetupDialog({
 
   const updateGroup = useUpdateIdeaGroup();
   const { data: forms } = useIdeationForms();
+  const { data: members } = useIdeaGroupMembers(group?.id);
+  const removeMember = useRemoveGroupMember();
+
+  const admins = members?.filter(m => m.role === 'admin') || [];
+  const contributors = members?.filter(m => m.role === 'contributor') || [];
+
+  const getInitials = (name: string | null | undefined, email: string | null | undefined) => {
+    if (name) return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    if (email) return email[0].toUpperCase();
+    return 'U';
+  };
 
   useEffect(() => {
     if (group) {
@@ -164,10 +181,36 @@ export function IdeaGroupSetupDialog({
                 <div className="mt-6">
                   <div className="flex items-center gap-3">
                     <Label className="text-sm font-medium">3. Admins</Label>
-                    <Button variant="outline" size="sm" className="text-muted-foreground h-8">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-muted-foreground h-8"
+                      onClick={() => setShowAddAdmins(true)}
+                    >
                       + Add People
                     </Button>
                   </div>
+                  {admins.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {admins.map(admin => (
+                        <div key={admin.id} className="flex items-center gap-1 bg-muted rounded-full pl-1 pr-2 py-1">
+                          <Avatar className="h-5 w-5">
+                            <AvatarImage src={admin.profile?.avatar_url || undefined} />
+                            <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-[10px]">
+                              {getInitials(admin.profile?.full_name, admin.profile?.email)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs">{admin.profile?.full_name || admin.profile?.email || 'User'}</span>
+                          <button
+                            onClick={() => removeMember.mutate({ memberId: admin.id, groupId: group!.id })}
+                            className="ml-1 text-muted-foreground hover:text-foreground"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <p className="text-xs text-muted-foreground mt-3">
                     Users who can manage this campaign
                   </p>
@@ -177,10 +220,36 @@ export function IdeaGroupSetupDialog({
                 <div className="mt-6">
                   <div className="flex items-center gap-3">
                     <Label className="text-sm font-medium">4. Contributors</Label>
-                    <Button variant="outline" size="sm" className="text-muted-foreground h-8">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-muted-foreground h-8"
+                      onClick={() => setShowAddContributors(true)}
+                    >
                       + Add People
                     </Button>
                   </div>
+                  {contributors.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {contributors.map(contributor => (
+                        <div key={contributor.id} className="flex items-center gap-1 bg-muted rounded-full pl-1 pr-2 py-1">
+                          <Avatar className="h-5 w-5">
+                            <AvatarImage src={contributor.profile?.avatar_url || undefined} />
+                            <AvatarFallback className="bg-brand-gold/20 text-brand-gold text-[10px]">
+                              {getInitials(contributor.profile?.full_name, contributor.profile?.email)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="text-xs">{contributor.profile?.full_name || contributor.profile?.email || 'User'}</span>
+                          <button
+                            onClick={() => removeMember.mutate({ memberId: contributor.id, groupId: group!.id })}
+                            className="ml-1 text-muted-foreground hover:text-foreground"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <p className="text-xs text-muted-foreground mt-3">
                     Users who can submit ideas to this campaign
                   </p>
@@ -424,6 +493,28 @@ export function IdeaGroupSetupDialog({
         onOpenChange={setShowManageForms}
         onSelectForm={handleFormSelect}
       />
+
+      {/* Add Admins Dialog */}
+      {group && (
+        <AddPeopleDialog
+          open={showAddAdmins}
+          onOpenChange={setShowAddAdmins}
+          groupId={group.id}
+          role="admin"
+          title="Add Campaign Admins"
+        />
+      )}
+
+      {/* Add Contributors Dialog */}
+      {group && (
+        <AddPeopleDialog
+          open={showAddContributors}
+          onOpenChange={setShowAddContributors}
+          groupId={group.id}
+          role="contributor"
+          title="Add Campaign Contributors"
+        />
+      )}
     </>
   );
 }
