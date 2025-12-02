@@ -11,3 +11,4 @@ export { CopyMoveModal } from './CopyMoveModal';
 export { ArchiveModal } from './ArchiveModal';
 export { ScopeLockIndicator } from './ScopeLockIndicator';
 export { CycleCard } from './CycleCard';
+export { ExecutionGrid } from './ExecutionGrid';
