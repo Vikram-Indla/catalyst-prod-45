@@ -16,7 +16,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
 import {
   Select,
   SelectContent,
@@ -80,7 +79,7 @@ export function IdeaGroupSetupDialog({
     }
   }, [group]);
 
-  const handleSave = async () => {
+  const handleSave = async (closeAfter: boolean = false) => {
     if (!group) return;
 
     try {
@@ -90,7 +89,9 @@ export function IdeaGroupSetupDialog({
         external_link: formData.external_link || null,
       });
       toast.success('Campaign settings saved');
-      onOpenChange(false);
+      if (closeAfter) {
+        onOpenChange(false);
+      }
     } catch {
       toast.error('Failed to save settings');
     }
@@ -107,41 +108,45 @@ export function IdeaGroupSetupDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-hidden flex flex-col">
-          <DialogHeader>
+        <DialogContent className="w-[90%] min-w-[500px] sm:max-w-[700px] max-h-[85vh] p-0 flex flex-col overflow-hidden">
+          {/* Fixed Header */}
+          <DialogHeader className="px-6 pt-6 pb-0 flex-shrink-0">
             <DialogTitle>Campaign Administration</DialogTitle>
           </DialogHeader>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 overflow-hidden">
-            <TabsList className="w-full justify-start">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+            {/* Fixed Tab List */}
+            <TabsList className="w-full justify-start px-6 pt-4 flex-shrink-0 bg-transparent">
               <TabsTrigger value="general">General</TabsTrigger>
               <TabsTrigger value="visibility">Visibility</TabsTrigger>
               <TabsTrigger value="voting">Voting</TabsTrigger>
               <TabsTrigger value="external">External Access</TabsTrigger>
             </TabsList>
 
-            <div className="overflow-auto flex-1 py-4">
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto px-6 py-6 min-h-0">
               {/* General Tab */}
-              <TabsContent value="general" className="space-y-4 mt-0">
+              <TabsContent value="general" className="mt-0 space-y-0">
                 {/* 1. Edit Group (Name) */}
                 <div className="space-y-2">
-                  <Label htmlFor="name">1. Edit Group</Label>
+                  <Label htmlFor="name" className="text-sm font-medium">1. Edit Group</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     placeholder="Type your campaign name here..."
+                    className="mt-2"
                   />
                 </div>
 
                 {/* 2. Category */}
-                <div className="space-y-2">
-                  <Label htmlFor="category">2. Category</Label>
+                <div className="space-y-2 mt-6">
+                  <Label htmlFor="category" className="text-sm font-medium">2. Category</Label>
                   <Select
                     value={formData.category}
                     onValueChange={(v) => setFormData({ ...formData, category: v as IdeaCategory })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -150,39 +155,41 @@ export function IdeaGroupSetupDialog({
                       <SelectItem value="Ticket">Ticket</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground mt-3 pb-1">
                     Enhancement: For product improvements. Question: For customer feedback. Ticket: For support requests.
                   </p>
                 </div>
 
-                {/* 3. Admins - TODO: Implement user picker */}
-                <div className="space-y-2">
-                  <Label>3. Admins</Label>
-                  <Button variant="outline" size="sm" className="text-muted-foreground">
-                    + Add People
-                  </Button>
-                  <p className="text-xs text-muted-foreground">
+                {/* 3. Admins */}
+                <div className="mt-6">
+                  <div className="flex items-center gap-3">
+                    <Label className="text-sm font-medium">3. Admins</Label>
+                    <Button variant="outline" size="sm" className="text-muted-foreground h-8">
+                      + Add People
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
                     Users who can manage this campaign
                   </p>
                 </div>
 
-                {/* 4. Contributors - TODO: Implement user picker */}
-                <div className="space-y-2">
-                  <Label>4. Contributors</Label>
-                  <Button variant="outline" size="sm" className="text-muted-foreground">
-                    + Add People
-                  </Button>
-                  <p className="text-xs text-muted-foreground">
+                {/* 4. Contributors */}
+                <div className="mt-6">
+                  <div className="flex items-center gap-3">
+                    <Label className="text-sm font-medium">4. Contributors</Label>
+                    <Button variant="outline" size="sm" className="text-muted-foreground h-8">
+                      + Add People
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
                     Users who can submit ideas to this campaign
                   </p>
                 </div>
 
-                <Separator />
-
                 {/* 5. Form Builder */}
-                <div className="space-y-2">
-                  <Label>5. Form Builder</Label>
-                  <div className="flex items-center gap-3">
+                <div className="mt-6">
+                  <Label className="text-sm font-medium">5. Form Builder</Label>
+                  <div className="flex items-center gap-3 mt-2">
                     <Select
                       value={formData.form_id || 'none'}
                       onValueChange={(v) => setFormData({ ...formData, form_id: v === 'none' ? null : v })}
@@ -194,7 +201,7 @@ export function IdeaGroupSetupDialog({
                         <SelectItem value="none">No Form</SelectItem>
                         {forms?.map(form => (
                           <SelectItem key={form.id} value={form.id}>
-                            {form.name}
+                            {form.name.replace(/\.$/, '')}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -208,19 +215,17 @@ export function IdeaGroupSetupDialog({
                     </Button>
                   </div>
                   {selectedForm && (
-                    <p className="text-xs text-muted-foreground">
-                      Selected: {selectedForm.name} ({selectedForm.fields?.length || 0} fields)
+                    <p className="text-xs text-muted-foreground mt-3">
+                      Selected: {selectedForm.name.replace(/\.$/, '')} ({selectedForm.fields?.length || 0} fields)
                     </p>
                   )}
                 </div>
 
-                <Separator />
-
-                {/* Enabled Toggle */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>Enable Group</Label>
-                    <p className="text-sm text-muted-foreground">
+                {/* 6. Enable Group Toggle */}
+                <div className="flex items-center justify-between mt-6 pr-2">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium">6. Enable Group</Label>
+                    <p className="text-xs text-muted-foreground">
                       Allow new ideas to be submitted
                     </p>
                   </div>
@@ -232,12 +237,12 @@ export function IdeaGroupSetupDialog({
               </TabsContent>
 
               {/* Visibility Tab */}
-              <TabsContent value="visibility" className="space-y-4 mt-0">
-                {/* 6. Make Public */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>6. Make Public</Label>
-                    <p className="text-sm text-muted-foreground">
+              <TabsContent value="visibility" className="mt-0 space-y-6">
+                {/* 7. Make Public */}
+                <div className="flex items-center justify-between pr-2">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium">7. Make Public</Label>
+                    <p className="text-xs text-muted-foreground">
                       Make this campaign visible to all users
                     </p>
                   </div>
@@ -247,11 +252,11 @@ export function IdeaGroupSetupDialog({
                   />
                 </div>
 
-                {/* 9. Make States Public */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>9. Make States Public</Label>
-                    <p className="text-sm text-muted-foreground">
+                {/* 8. Make States Public */}
+                <div className="flex items-center justify-between pr-2">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium">8. Make States Public</Label>
+                    <p className="text-xs text-muted-foreground">
                       Display idea status (New, Open, Planned, etc.) publicly
                     </p>
                   </div>
@@ -263,12 +268,12 @@ export function IdeaGroupSetupDialog({
               </TabsContent>
 
               {/* Voting Tab */}
-              <TabsContent value="voting" className="space-y-4 mt-0">
-                {/* 10. Allow Voting */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>10. Allow Voting</Label>
-                    <p className="text-sm text-muted-foreground">
+              <TabsContent value="voting" className="mt-0 space-y-6">
+                {/* 9. Allow Voting */}
+                <div className="flex items-center justify-between pr-2">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium">9. Allow Voting</Label>
+                    <p className="text-xs text-muted-foreground">
                       Enable users to vote on ideas
                     </p>
                   </div>
@@ -280,14 +285,14 @@ export function IdeaGroupSetupDialog({
 
                 {formData.allow_voting && (
                   <>
-                    {/* 11. Token Voting */}
+                    {/* 10. Token Voting */}
                     <div className="space-y-2">
-                      <Label>11. Token Voting</Label>
+                      <Label className="text-sm font-medium">10. Token Voting</Label>
                       <Select
                         value={formData.voting_type}
                         onValueChange={(v) => setFormData({ ...formData, voting_type: v as VotingType })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="mt-2">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -295,14 +300,14 @@ export function IdeaGroupSetupDialog({
                           <SelectItem value="Token">Yes (Token Voting)</SelectItem>
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-muted-foreground mt-3">
                         For/Against: Simple up/down voting. Token: Users allocate tokens across ideas.
                       </p>
                     </div>
 
-                    {/* 12. Max Votes per Idea */}
+                    {/* 11. Max Votes per Idea */}
                     <div className="space-y-2">
-                      <Label htmlFor="maxVotes">12. Max Votes per Idea</Label>
+                      <Label htmlFor="maxVotes" className="text-sm font-medium">11. Max Votes per Idea</Label>
                       <Input
                         id="maxVotes"
                         type="number"
@@ -313,21 +318,23 @@ export function IdeaGroupSetupDialog({
                           ...formData, 
                           max_votes_per_idea: e.target.value ? parseInt(e.target.value) : null 
                         })}
+                        className="mt-2"
                       />
                     </div>
 
-                    {/* 13. Total User Tokens */}
+                    {/* 12. Total User Tokens */}
                     {formData.voting_type === 'Token' && (
                       <div className="space-y-2">
-                        <Label htmlFor="tokens">13. Total User Tokens</Label>
+                        <Label htmlFor="tokens" className="text-sm font-medium">12. Total User Tokens</Label>
                         <Input
                           id="tokens"
                           type="number"
                           min={1}
                           value={formData.total_user_tokens}
                           onChange={(e) => setFormData({ ...formData, total_user_tokens: parseInt(e.target.value) || 100 })}
+                          className="mt-2"
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground mt-3">
                           Number of tokens each user can distribute across ideas
                         </p>
                       </div>
@@ -337,12 +344,12 @@ export function IdeaGroupSetupDialog({
               </TabsContent>
 
               {/* External Access Tab */}
-              <TabsContent value="external" className="space-y-4 mt-0">
-                {/* 7. Approve External Users */}
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label>7. Approve External Users</Label>
-                    <p className="text-sm text-muted-foreground">
+              <TabsContent value="external" className="mt-0 space-y-6">
+                {/* 13. Approve External Users */}
+                <div className="flex items-center justify-between pr-2">
+                  <div className="space-y-1">
+                    <Label className="text-sm font-medium">13. Approve External Users</Label>
+                    <p className="text-xs text-muted-foreground">
                       Automatically approve external users who register
                     </p>
                   </div>
@@ -352,16 +359,16 @@ export function IdeaGroupSetupDialog({
                   />
                 </div>
 
-                {/* 8. External Link */}
+                {/* 14. External Link */}
                 <div className="space-y-2">
-                  <Label htmlFor="externalLink">8. External Link</Label>
+                  <Label htmlFor="externalLink" className="text-sm font-medium">14. External Link</Label>
                   <Input
                     id="externalLink"
                     readOnly
                     value={formData.external_link || 'Auto-generated when external access is enabled'}
-                    className="bg-muted/50"
+                    className="bg-muted/50 mt-2"
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground mt-3">
                     Read-only link for external users to access this campaign
                   </p>
                 </div>
@@ -369,18 +376,19 @@ export function IdeaGroupSetupDialog({
             </div>
           </Tabs>
 
-          {/* Action Buttons */}
-          <div className="flex justify-between items-center pt-4 border-t">
+          {/* Fixed Footer */}
+          <div className="flex justify-between items-center px-6 py-4 border-t bg-background flex-shrink-0">
             <div className="flex gap-2">
               <Button
-                variant={formData.is_enabled ? 'outline' : 'default'}
+                variant="outline"
                 onClick={() => setFormData({ ...formData, is_enabled: true })}
                 disabled={formData.is_enabled}
+                className="border-border"
               >
                 Enable Group
               </Button>
               <Button
-                variant={!formData.is_enabled ? 'outline' : 'destructive'}
+                variant="destructive"
                 onClick={() => setFormData({ ...formData, is_enabled: false })}
                 disabled={!formData.is_enabled}
               >
@@ -388,13 +396,21 @@ export function IdeaGroupSetupDialog({
               </Button>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)}>
+              <Button variant="ghost" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSave} disabled={updateGroup.isPending}>
+              <Button 
+                onClick={() => handleSave(false)} 
+                disabled={updateGroup.isPending}
+                className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              >
                 Save
               </Button>
-              <Button onClick={handleSave} disabled={updateGroup.isPending}>
+              <Button 
+                onClick={() => handleSave(true)} 
+                disabled={updateGroup.isPending}
+                className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              >
                 Save & Close
               </Button>
             </div>
