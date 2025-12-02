@@ -13,7 +13,7 @@ interface WorkTreeHierarchyProps {
 
 interface TreeNode {
   id: string;
-  type: 'goal' | 'theme-group' | 'theme' | 'epic' | 'feature' | 'story' | 'task';
+  type: 'goal' | 'theme-group' | 'theme' | 'epic' | 'feature' | 'story' | 'task' | 'section';
   title: string;
   health?: 'green' | 'yellow' | 'red' | 'gray';
   points?: number;
