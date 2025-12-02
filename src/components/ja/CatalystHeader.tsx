@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Search, Bell, HelpCircle, User, ChevronDown, LogOut, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { TeamSelectorDropdown } from "./TeamSelectorDropdown";
 import { StarredDropdown } from "./StarredDropdown";
 import { MobileNavigationMenu } from "./MobileNavigationMenu";
+import { TestsDropdown } from "./TestsDropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,9 +38,15 @@ import {
 
 export function CatalystHeader() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const { isAdmin } = useUserRole();
+
+  // Show Tests dropdown only when in program context with tests visible
+  const isProgramRoute = location.pathname.startsWith('/programs/');
+  const isTestsRoute = location.pathname.includes('/tests');
+  const showTestsDropdown = isProgramRoute && isTestsRoute;
 
   // Get current user
   const { data: user } = useQuery({
@@ -67,7 +74,6 @@ export function CatalystHeader() {
     { label: "Portfolio", hasDropdown: true },
     { label: "Program", hasDropdown: true },
     { label: "Team", hasDropdown: true, path: "/teams" },
-    { label: "Tests", hasDropdown: true },
     { label: "Product", hasDropdown: true },
     { label: "Custom Rooms", hasDropdown: true },
     { label: "Starred", hasDropdown: true },
@@ -168,33 +174,6 @@ export function CatalystHeader() {
                       <StarredDropdown onClose={() => setActiveDropdown(null)} />
                     </PopoverContent>
                   </Popover>
-                ) : item.label === "Tests" ? (
-                  <DropdownMenu
-                    open={activeDropdown === item.label}
-                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                  >
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50 whitespace-nowrap"
-                      >
-                        {item.label}
-                        <ChevronDown className="ml-1 h-3 w-3" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-48 bg-popover z-[60]">
-                      <DropdownMenuItem onClick={() => navigate('/tests/cases')} className="cursor-pointer">
-                        Test Cases
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate('/tests/cycles')} className="cursor-pointer">
-                        Test Cycles
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate('/tests/reports')} className="cursor-pointer">
-                        Test Reports
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                 ) : item.hasDropdown ? (
                   <DropdownMenu
                     open={activeDropdown === item.label}
@@ -239,6 +218,13 @@ export function CatalystHeader() {
             <div className="hidden md:block">
               <ItemsDropdown />
             </div>
+
+            {/* Tests Dropdown - Only visible in program context */}
+            {showTestsDropdown && (
+              <div className="hidden md:block">
+                <TestsDropdown isActive />
+              </div>
+            )}
 
             <TooltipProvider>
               {/* Notifications - Always visible */}
