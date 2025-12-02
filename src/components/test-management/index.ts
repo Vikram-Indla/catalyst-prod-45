@@ -60,3 +60,9 @@ export { AdvancedImportWizard } from './AdvancedImportWizard';
 
 // Dashboard Gadgets
 export * from './dashboard';
+
+// Reports
+export * from './reports';
+
+// Jira Integration
+export { JiraTestPanel } from './JiraTestPanel';
