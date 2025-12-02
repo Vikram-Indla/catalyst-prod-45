@@ -156,6 +156,7 @@ import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
 import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
 import TeamComingSoon from "./pages/team/ComingSoon";
+import TeamStoriesPage from "./pages/team/TeamStoriesPage";
 import SelfTest from "./pages/dev/SelfTest";
 import EpicBacklogTests from "./pages/dev/EpicBacklogTests";
 import ForecastSelfTest from "./pages/dev/ForecastSelfTest";
@@ -402,7 +403,7 @@ const App = () => (
               
               {/* Team Routes - Placeholder Routes */}
               <Route path="/team/:teamId/backlog" element={<TeamComingSoon />} />
-              <Route path="/team/:teamId/stories" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/stories" element={<TeamStoriesPage />} />
               <Route path="/team/:teamId/roadmaps" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/objective-tree" element={<TeamOKRHub />} />
               <Route path="/team/:teamId/work-tree" element={<WorkTreePage />} />

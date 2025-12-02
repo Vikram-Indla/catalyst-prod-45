@@ -16,7 +16,7 @@ const workItems = [
   { label: "Themes", icon: Circle, color: "text-workitem-theme", path: "/themes" },
   { label: "Epics", icon: Square, color: "text-workitem-epic", path: "/items/epics" },
   { label: "Features", icon: Box, color: "text-workitem-feature", path: "/features" },
-  { label: "Stories", icon: FileText, color: "text-workitem-story", path: "/work-items/stories" },
+  { label: "Stories", icon: FileText, color: "text-workitem-story", path: "/stories" },
   { label: "Defects", icon: Bug, color: "text-workitem-defect", path: "/items/defects" },
   { label: "Tasks", icon: CheckSquare, color: "text-workitem-subtask", path: "/items/tasks" },
 ];

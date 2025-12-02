@@ -28,6 +28,8 @@ import { useWorkItemRanking } from '@/hooks/useWorkItemRanking';
 export default function Stories() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
+  const [programFilter, setProgramFilter] = useState<string>('all');
+  const [teamFilter, setTeamFilter] = useState<string>('all');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [selectedStory, setSelectedStory] = useState<StoryWithRelations | null>(null);
@@ -39,19 +41,45 @@ export default function Stories() {
   const [advancedFilters, setAdvancedFilters] = useState<any>({});
   const [pullRankDialogOpen, setPullRankDialogOpen] = useState(false);
 
+  // Fetch programs for filter
+  const { data: programs = [] } = useQuery({
+    queryKey: ['programs-list'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch teams for filter
+  const { data: teams = [] } = useQuery({
+    queryKey: ['teams-list'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('teams')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   // Ranking context - Program Rank is DEFAULT per Jira Align spec
   const { detectRankingContext, pullRankFromParent, isRanking } = useWorkItemRanking('story', ['all-stories']);
   const currentContext = detectRankingContext(
-    advancedFilters.teamId,
+    teamFilter !== 'all' ? teamFilter : advancedFilters.teamId,
     advancedFilters.sprintId,
-    advancedFilters.programId,
+    programFilter !== 'all' ? programFilter : advancedFilters.programId,
     advancedFilters.piId,
     advancedFilters.portfolioId
   );
-  const hasActiveFilters = !!(searchTerm || statusFilter || Object.keys(advancedFilters).length > 0);
+  const hasActiveFilters = !!(searchTerm || statusFilter || programFilter !== 'all' || teamFilter !== 'all' || Object.keys(advancedFilters).length > 0);
   
-  // Jira Align Requirement: "To view the story backlog, select a program as your scope"
-  const requiresProgramSelection = !advancedFilters.programId && currentContext.type === 'global';
+  // No program requirement - show all stories with filters for All/Program/Team
+  const requiresProgramSelection = false;
 
   // Check for create query parameter to auto-open dialog
   useEffect(() => {
@@ -64,17 +92,38 @@ export default function Stories() {
   }, []);
 
   const { data: stories, refetch } = useQuery({
-    queryKey: ['all-stories', searchTerm, statusFilter, advancedFilters],
+    queryKey: ['all-stories', searchTerm, statusFilter, programFilter, teamFilter, advancedFilters],
     queryFn: async () => {
       let query = supabase
         .from('stories')
-        .select('*, features(name, epic_id), iterations(name), teams(name)');
+        .select('*, features(name, epic_id, program_id), iterations(name), teams(name)');
 
       if (searchTerm) query = query.ilike('name', `%${searchTerm}%`);
       if (statusFilter) query = query.eq('status', statusFilter as any);
       
-      // Advanced filters - programId is required per Jira Align
-      if (advancedFilters.programId) {
+      // Team filter
+      if (teamFilter && teamFilter !== 'all') {
+        query = query.eq('team_id', teamFilter);
+      }
+      
+      // Program filter - filter stories by features that belong to the program
+      if (programFilter && programFilter !== 'all') {
+        const { data: programFeatures } = await supabase
+          .from('features')
+          .select('id')
+          .eq('program_id', programFilter);
+        
+        if (programFeatures && programFeatures.length > 0) {
+          const featureIds = programFeatures.map(f => f.id);
+          query = query.in('feature_id', featureIds);
+        } else {
+          // No features in this program, return empty
+          return [];
+        }
+      }
+      
+      // Advanced filters
+      if (advancedFilters.programId && programFilter === 'all') {
         // Filter stories by features that belong to the program
         const { data: programFeatures } = await supabase
           .from('features')
@@ -188,15 +237,41 @@ export default function Stories() {
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-3 px-4 pb-4">
+        <div className="flex items-center gap-3 px-4 pb-4 flex-wrap">
           <Input
             placeholder="Search stories..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-sm"
           />
-          <Select value={statusFilter || undefined} onValueChange={(value) => setStatusFilter(value === 'all' ? '' : value)}>
+          <Select value={programFilter} onValueChange={setProgramFilter}>
             <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Programs" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Programs</SelectItem>
+              {programs.map((program) => (
+                <SelectItem key={program.id} value={program.id}>
+                  {program.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={teamFilter} onValueChange={setTeamFilter}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All Teams" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Teams</SelectItem>
+              {teams.map((team) => (
+                <SelectItem key={team.id} value={team.id}>
+                  {team.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={statusFilter || 'all'} onValueChange={(value) => setStatusFilter(value === 'all' ? '' : value)}>
+            <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent>
@@ -210,7 +285,7 @@ export default function Stories() {
           </Select>
           <Button variant="outline" onClick={() => setFiltersOpen(true)}>
             <Filter className="h-4 w-4 mr-2" />
-            Filters
+            More
           </Button>
           <Button variant="outline" onClick={() => setColumnConfigOpen(true)}>
             <Columns className="h-4 w-4 mr-2" />
