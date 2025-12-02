@@ -666,3 +666,107 @@ export function useIdeationMetrics(groupId: string | null) {
     enabled: !!groupId,
   });
 }
+
+// ==============================================
+// ATTACHMENTS HOOKS
+// ==============================================
+
+export function useIdeaAttachments(ideaId: string | null) {
+  return useQuery({
+    queryKey: ['ideation-attachments', ideaId],
+    queryFn: async () => {
+      if (!ideaId) return [];
+      const { data, error } = await supabase
+        .from('ideation_attachments')
+        .select('*')
+        .eq('idea_id', ideaId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return (data || []) as IdeationAttachment[];
+    },
+    enabled: !!ideaId,
+  });
+}
+
+export function useUploadAttachment() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  
+  return useMutation({
+    mutationFn: async ({ ideaId, file }: { ideaId: string; file: File }) => {
+      // Upload file to storage
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${ideaId}/${Date.now()}.${fileExt}`;
+      
+      const { error: uploadError } = await supabase.storage
+        .from('ideation-attachments')
+        .upload(fileName, file);
+      
+      if (uploadError) throw uploadError;
+      
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('ideation-attachments')
+        .getPublicUrl(fileName);
+      
+      // Create attachment record
+      const { data, error } = await supabase
+        .from('ideation_attachments')
+        .insert({
+          idea_id: ideaId,
+          file_name: file.name,
+          file_type: file.type,
+          file_size: file.size,
+          file_url: urlData.publicUrl,
+          uploaded_by_id: user?.id,
+        })
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data as IdeationAttachment;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['ideation-attachments', variables.ideaId] });
+      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      queryClient.invalidateQueries({ queryKey: ['idea', variables.ideaId] });
+      toast.success('Attachment uploaded');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to upload: ${error.message}`);
+    },
+  });
+}
+
+export function useDeleteAttachment() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ attachmentId, ideaId, fileUrl }: { attachmentId: string; ideaId: string; fileUrl: string }) => {
+      // Extract file path from URL
+      const urlParts = fileUrl.split('/ideation-attachments/');
+      if (urlParts.length > 1) {
+        const filePath = urlParts[1];
+        await supabase.storage
+          .from('ideation-attachments')
+          .remove([filePath]);
+      }
+      
+      // Delete attachment record
+      const { error } = await supabase
+        .from('ideation_attachments')
+        .delete()
+        .eq('id', attachmentId);
+      if (error) throw error;
+      return { ideaId };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['ideation-attachments', data.ideaId] });
+      queryClient.invalidateQueries({ queryKey: ['ideas'] });
+      toast.success('Attachment deleted');
+    },
+    onError: (error: any) => {
+      toast.error(`Failed to delete: ${error.message}`);
+    },
+  });
+}

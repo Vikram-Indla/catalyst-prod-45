@@ -3,9 +3,9 @@
 // Based on EpicDetailsPanel pattern
 // ==============================================
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { formatDistanceToNow, format } from 'date-fns';
-import { X, MoreVertical, MessageSquare, Paperclip, Bell, BellOff } from 'lucide-react';
+import { X, MoreVertical, MessageSquare, Paperclip, Bell, BellOff, Upload, Trash2, FileText, Image, File } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { useUpdateIdea, useIdeaComments, useCreateComment } from '@/hooks/useIdeation';
+import { useUpdateIdea, useIdeaComments, useCreateComment, useIdeaAttachments, useUploadAttachment, useDeleteAttachment } from '@/hooks/useIdeation';
 import { toast } from 'sonner';
 import type { Idea, IdeaStatus, TShirtSize } from '@/types/ideation';
 import { IDEA_STATUS_COLORS, T_SHIRT_SIZE_ORDER } from '@/types/ideation';
@@ -55,14 +55,30 @@ export function IdeaDetailPanel({
 }: IdeaDetailPanelProps) {
   const [activeTab, setActiveTab] = useState('details');
   const [newComment, setNewComment] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const updateIdea = useUpdateIdea();
   const { data: comments = [], isLoading: commentsLoading } = useIdeaComments(idea?.id || '');
   const createComment = useCreateComment();
+  const { data: attachments = [], isLoading: attachmentsLoading } = useIdeaAttachments(idea?.id || '');
+  const uploadAttachment = useUploadAttachment();
+  const deleteAttachment = useDeleteAttachment();
 
   const getInitials = (name?: string) => {
     if (!name) return '?';
     return name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const getFileIcon = (fileType: string) => {
+    if (fileType.startsWith('image/')) return <Image className="h-4 w-4" />;
+    if (fileType.includes('pdf') || fileType.includes('document')) return <FileText className="h-4 w-4" />;
+    return <File className="h-4 w-4" />;
   };
 
   const handleStatusChange = async (status: IdeaStatus) => {
@@ -93,9 +109,37 @@ export function IdeaDetailPanel({
         content: newComment.trim(),
       });
       setNewComment('');
-      toast.success('Comment added');
     } catch {
       toast.error('Failed to add comment');
+    }
+  };
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files || !idea) return;
+
+    for (const file of Array.from(files)) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`File ${file.name} is too large (max 10MB)`);
+        continue;
+      }
+      try {
+        await uploadAttachment.mutateAsync({ ideaId: idea.id, file });
+      } catch {
+        // Error handled in hook
+      }
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDeleteAttachment = async (attachmentId: string, fileUrl: string) => {
+    if (!idea) return;
+    try {
+      await deleteAttachment.mutateAsync({ attachmentId, ideaId: idea.id, fileUrl });
+    } catch {
+      // Error handled in hook
     }
   };
 
@@ -160,7 +204,7 @@ export function IdeaDetailPanel({
             </TabsTrigger>
             <TabsTrigger value="attachments" className="flex items-center gap-1">
               <Paperclip className="h-3 w-3" />
-              Attachments ({idea.attachment_count})
+              Attachments ({attachments.length})
             </TabsTrigger>
           </TabsList>
 
@@ -311,9 +355,72 @@ export function IdeaDetailPanel({
 
           {/* Attachments Tab */}
           <TabsContent value="attachments" className="flex-1 overflow-auto p-4">
-            <div className="text-center text-muted-foreground py-8">
-              <Paperclip className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>Attachments feature coming soon.</p>
+            <div className="space-y-4">
+              {/* Upload Button */}
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileSelect}
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadAttachment.isPending}
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  {uploadAttachment.isPending ? 'Uploading...' : 'Upload File'}
+                </Button>
+                <p className="text-xs text-muted-foreground mt-1">Max file size: 10MB</p>
+              </div>
+
+              {/* Attachments List */}
+              {attachmentsLoading ? (
+                <div className="text-center text-muted-foreground py-4">Loading attachments...</div>
+              ) : attachments.length === 0 ? (
+                <div className="text-center text-muted-foreground py-8">
+                  <Paperclip className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p>No attachments yet.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {attachments.map((attachment) => (
+                    <div
+                      key={attachment.id}
+                      className="flex items-center gap-3 p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex-shrink-0 text-muted-foreground">
+                        {getFileIcon(attachment.file_type)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <a
+                          href={attachment.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm font-medium hover:underline truncate block"
+                        >
+                          {attachment.file_name}
+                        </a>
+                        <p className="text-xs text-muted-foreground">
+                          {formatFileSize(attachment.file_size)} • {format(new Date(attachment.created_at), 'MMM d, yyyy')}
+                        </p>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="flex-shrink-0 h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => handleDeleteAttachment(attachment.id, attachment.file_url)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </TabsContent>
         </Tabs>
