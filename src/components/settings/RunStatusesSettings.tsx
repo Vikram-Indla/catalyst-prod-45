@@ -231,7 +231,7 @@ export function RunStatusesSettings() {
             </thead>
             <tbody>
               {statuses.sort((a, b) => a.order - b.order).map((status) => (
-                <tr key={status.id} className={`border-b last:border-0 ${status.markedForDeletion ? 'opacity-50 bg-muted/50' : ''}`}>
+                <tr key={status.id} className="border-b last:border-0">
                   {isReordering && (
                     <td className="p-3">
                       <GripVertical className="h-4 w-4 text-muted-foreground cursor-move" />
@@ -240,9 +240,6 @@ export function RunStatusesSettings() {
                   <td className="p-3 font-medium">
                     <div className="flex items-center gap-2">
                       {status.name}
-                      {status.markedForDeletion && (
-                        <Badge variant="destructive">Pending Deletion</Badge>
-                      )}
                     </div>
                   </td>
                   <td className="p-3 text-center">
@@ -276,7 +273,6 @@ export function RunStatusesSettings() {
                         variant="ghost"
                         size="icon"
                         onClick={() => setEditingStatus(status)}
-                        disabled={status.markedForDeletion}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -284,7 +280,6 @@ export function RunStatusesSettings() {
                         variant="ghost"
                         size="icon"
                         onClick={() => setDeleteDialogStatus(status)}
-                        disabled={status.markedForDeletion}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
