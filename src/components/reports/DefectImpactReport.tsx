@@ -18,6 +18,19 @@ export function DefectImpactReport({ programId, dateRange }: DefectImpactReportP
 
   const { overview, statusDistribution, priorityDistribution, impactRows } = data;
 
+  // Transform data for Recharts
+  const statusChartData = statusDistribution.map(s => ({
+    name: s.status,
+    value: s.count,
+    fill: s.color,
+  }));
+
+  const priorityChartData = priorityDistribution.map(p => ({
+    name: p.priority,
+    value: p.count,
+    fill: p.color,
+  }));
+
   return (
     <div className="space-y-6">
       {/* Overview Cards */}
@@ -68,9 +81,9 @@ export function DefectImpactReport({ programId, dateRange }: DefectImpactReportP
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
-                <Pie data={statusDistribution} dataKey="count" nameKey="status" cx="50%" cy="50%" outerRadius={80} label>
-                  {statusDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                <Pie data={statusChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                  {statusChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                 </Pie>
                 <Tooltip />
@@ -84,9 +97,9 @@ export function DefectImpactReport({ programId, dateRange }: DefectImpactReportP
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
               <PieChart>
-                <Pie data={priorityDistribution} dataKey="count" nameKey="priority" cx="50%" cy="50%" outerRadius={80} label>
-                  {priorityDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                <Pie data={priorityChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
+                  {priorityChartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
                 </Pie>
                 <Tooltip />
