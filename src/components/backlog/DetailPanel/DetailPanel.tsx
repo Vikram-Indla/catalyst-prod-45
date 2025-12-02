@@ -88,7 +88,7 @@ export function DetailPanel({
 
       {/* Panel */}
       <div
-        className={`fixed top-0 right-0 bottom-0 w-[720px] bg-background shadow-[-4px_0_24px_rgba(0,0,0,0.15)] z-[1000] flex flex-col transition-transform duration-300 ${
+        className={`fixed top-0 right-0 bottom-0 w-full sm:w-[720px] bg-background shadow-[-4px_0_24px_rgba(0,0,0,0.15)] z-[1000] flex flex-col transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -159,7 +159,7 @@ export function DetailPanel({
           {activeTab === 'forecast' && <EpicForecastTab epicId={epic.id} />}
           {activeTab === 'links' && <LinksTab />}
           {activeTab === 'wsjf' && (
-            <div className="p-6">
+            <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
               <Button 
                 onClick={() => setShowWSJFModal(true)}
                 variant="outline"

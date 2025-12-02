@@ -83,13 +83,13 @@ export default function Backlog() {
   };
 
   return (
-    <div className="p-8 space-y-6">
+    <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
       <div>
         <h1 className="text-3xl font-bold">Product Backlog</h1>
         <p className="text-muted-foreground">Unassigned stories ready for sprint planning</p>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-[var(--s4)]">
         <Input
           placeholder="Search stories..."
           value={searchTerm}
@@ -169,7 +169,7 @@ export default function Backlog() {
             id: 'details',
             label: 'Details',
             content: selectedStory && (
-              <div className="space-y-4">
+              <div className="space-y-[var(--s4)]">
                 <div>
                   <label className="text-sm font-medium">Description</label>
                   <p className="text-sm text-muted-foreground mt-1">

@@ -183,19 +183,19 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
     <Sheet open={!!epicId} onOpenChange={onClose}>
       <SheetContent side="right" className="w-full sm:max-w-4xl p-0 flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b bg-card">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
+        <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)] border-b bg-card">
+          <div className="flex items-start justify-between mb-[var(--s4)]">
+            <div className="flex items-center gap-[var(--s3)]">
               <CheckSquare className="h-5 w-5 text-primary" />
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-[var(--s2)]">
                   <span className="text-sm text-muted-foreground">Epic 1168</span>
                   <LinkIcon className="h-4 w-4 text-muted-foreground" />
                 </div>
                 <h2 className="text-xl font-semibold mt-1">AI for Improved Call Center Interactions</h2>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-[var(--s2)]">
               <Button variant="ghost" size="sm">Why?</Button>
               <Button variant="default" size="sm">Save</Button>
             </div>
@@ -204,9 +204,9 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
 
         {/* Tabs */}
         <Tabs defaultValue="details" className="flex-1 flex flex-col overflow-hidden">
-          <div className="border-b px-6 bg-card overflow-x-auto flex-shrink-0">
-            <TabsList className="h-12 bg-transparent justify-start gap-1 inline-flex w-auto min-w-full">
-              <TabsTrigger value="details" className="gap-2 whitespace-nowrap flex-shrink-0">
+          <div className="border-b px-[var(--s4)] sm:px-[var(--s6)] bg-card overflow-x-auto flex-shrink-0">
+            <TabsList className="h-12 bg-transparent justify-start gap-[var(--s1)] inline-flex w-auto min-w-full">
+              <TabsTrigger value="details" className="gap-[var(--s2)] whitespace-nowrap flex-shrink-0">
                 <FileText className="h-4 w-4" />
                 Details
               </TabsTrigger>
@@ -214,31 +214,31 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
                 <Gem className="h-4 w-4" />
                 Design
               </TabsTrigger>
-              <TabsTrigger value="intake" className="gap-2 whitespace-nowrap flex-shrink-0">
+              <TabsTrigger value="intake" className="gap-[var(--s2)] whitespace-nowrap flex-shrink-0">
                 <ClipboardList className="h-4 w-4" />
                 Intake
               </TabsTrigger>
-              <TabsTrigger value="benefits" className="gap-2 whitespace-nowrap flex-shrink-0">
+              <TabsTrigger value="benefits" className="gap-[var(--s2)] whitespace-nowrap flex-shrink-0">
                 <TrendingUp className="h-4 w-4" />
                 Benefits
               </TabsTrigger>
-              <TabsTrigger value="value" className="gap-2 whitespace-nowrap flex-shrink-0">
+              <TabsTrigger value="value" className="gap-[var(--s2)] whitespace-nowrap flex-shrink-0">
                 <ThumbsUp className="h-4 w-4" />
                 Value
               </TabsTrigger>
-              <TabsTrigger value="milestones" className="gap-2 whitespace-nowrap flex-shrink-0">
+              <TabsTrigger value="milestones" className="gap-[var(--s2)] whitespace-nowrap flex-shrink-0">
                 <Milestone className="h-4 w-4" />
                 Milestones
               </TabsTrigger>
-              <TabsTrigger value="spend" className="gap-2 whitespace-nowrap flex-shrink-0">
+              <TabsTrigger value="spend" className="gap-[var(--s2)] whitespace-nowrap flex-shrink-0">
                 <DollarSign className="h-4 w-4" />
                 Spend
               </TabsTrigger>
-              <TabsTrigger value="forecast" className="gap-2 whitespace-nowrap flex-shrink-0">
+              <TabsTrigger value="forecast" className="gap-[var(--s2)] whitespace-nowrap flex-shrink-0">
                 <BarChart3 className="h-4 w-4" />
                 Forecast
               </TabsTrigger>
-              <TabsTrigger value="links" className="gap-2 whitespace-nowrap flex-shrink-0">
+              <TabsTrigger value="links" className="gap-[var(--s2)] whitespace-nowrap flex-shrink-0">
                 <LinkIcon className="h-4 w-4" />
                 Links
               </TabsTrigger>

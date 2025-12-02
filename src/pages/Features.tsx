@@ -113,8 +113,8 @@ export default function Features() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
+      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[var(--s3)]">
           <div>
             <h1 className="text-2xl font-bold">Features</h1>
             <p className="text-sm text-muted-foreground">Program-level features driving epic delivery</p>
@@ -125,9 +125,9 @@ export default function Features() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-6 space-y-4 overflow-hidden">
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
+      <div className="flex-1 flex flex-col px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)] overflow-hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s4)]">
+          <div className="relative flex-1 max-w-sm w-full sm:w-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search features..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
           </div>
@@ -184,9 +184,9 @@ export default function Features() {
         <RightDetailsPanel open={!!selectedItem} onClose={() => setSelectedItem(null)} title={selectedData.name}
           tabs={[
             { id: 'overview', label: 'Overview', content: (
-              <div className="space-y-4">
+              <div className="space-y-[var(--s4)]">
                 <PermissionGuard requiredRole="team_lead" showMessage={false}>
-                  <Button onClick={() => handleEdit(selectedData)} className="w-full mb-4">
+                  <Button onClick={() => handleEdit(selectedData)} className="w-full mb-[var(--s4)]">
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Feature
                   </Button>
@@ -198,9 +198,9 @@ export default function Features() {
                 <div><label className="text-sm font-medium text-muted-foreground">Progress</label>
                   <div className="mt-2 space-y-1">
                     <Progress value={selectedData.progress_pct || 0} className="h-2" />
-                    <p className="text-sm text-muted-foreground">{selectedData.progress_pct || 0}%</p>
+                     <p className="text-sm text-muted-foreground">{selectedData.progress_pct || 0}%</p>
                   </div></div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-[var(--s4)]">
                   <div><label className="text-sm font-medium text-muted-foreground">Estimate</label>
                     <p className="mt-1 text-sm">{selectedData.estimate_points || 0} pts</p></div>
                   <div><label className="text-sm font-medium text-muted-foreground">WSJF</label>
