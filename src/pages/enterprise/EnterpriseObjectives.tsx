@@ -2,15 +2,17 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Plus, Filter, Download } from 'lucide-react';
+import { Search, Plus, Filter, Download, GitBranch } from 'lucide-react';
 import { useObjectives } from '@/hooks/useObjectives';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ObjectiveStatusBadge } from '@/modules/objectives/components/shared/ObjectiveStatusBadge';
 import { ObjectiveScoreBadge } from '@/modules/objectives/components/shared/ObjectiveScoreBadge';
 import { ObjectiveTierIcon } from '@/modules/objectives/components/shared/ObjectiveTierIcon';
+import { ObjectiveTierBadge } from '@/modules/objectives/components/shared/ObjectiveTierBadge';
 import { ProgressBar } from '@/modules/objectives/components/shared/ProgressBar';
 import { CreateObjectiveDialog } from '@/modules/objectives/components/ObjectivePanel';
 import { ObjectiveDetailsPanelNew } from '@/components/okr/ObjectiveDetailsPanelNew';
+import { ObjectiveHierarchyDialog } from '@/modules/objectives/components/ObjectiveHierarchyDialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { ObjectiveTier, ObjectiveStatus } from '@/modules/objectives/types/objective.types';
 
@@ -20,6 +22,7 @@ export default function EnterpriseObjectives() {
   const [statusFilter, setStatusFilter] = useState<ObjectiveStatus | 'all'>('all');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
+  const [hierarchyObjectiveId, setHierarchyObjectiveId] = useState<string | null>(null);
 
   const filters: any = {};
   if (tierFilter !== 'all') filters.tier = [tierFilter];
@@ -130,6 +133,7 @@ export default function EnterpriseObjectives() {
                   <th className="text-left px-[var(--s4)] text-sm font-medium text-muted-foreground">Score</th>
                   <th className="text-left px-[var(--s4)] text-sm font-medium text-muted-foreground">KR Progress</th>
                   <th className="text-left px-[var(--s4)] text-sm font-medium text-muted-foreground">Work Progress</th>
+                  <th className="text-left px-[var(--s4)] text-sm font-medium text-muted-foreground">View Tree</th>
                 </tr>
               </thead>
               <tbody>
@@ -147,7 +151,7 @@ export default function EnterpriseObjectives() {
                       {objective.summary}
                     </td>
                     <td className="px-[var(--s4)]">
-                      <ObjectiveTierIcon tier={objective.tier} showLabel />
+                      <ObjectiveTierBadge tier={objective.tier} size="sm" />
                     </td>
                     <td className="px-[var(--s4)]">
                       <ObjectiveStatusBadge status={objective.status} size="sm" />
@@ -173,6 +177,18 @@ export default function EnterpriseObjectives() {
                         />
                       </div>
                     </td>
+                    <td className="px-[var(--s4)]">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setHierarchyObjectiveId(objective.id);
+                        }}
+                      >
+                        <GitBranch className="h-4 w-4" />
+                      </Button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -194,6 +210,15 @@ export default function EnterpriseObjectives() {
           objectiveId={selectedObjectiveId}
           open={!!selectedObjectiveId}
           onClose={() => setSelectedObjectiveId(null)}
+        />
+      )}
+
+      {/* Hierarchy Dialog */}
+      {hierarchyObjectiveId && (
+        <ObjectiveHierarchyDialog
+          objectiveId={hierarchyObjectiveId}
+          open={!!hierarchyObjectiveId}
+          onOpenChange={(open) => !open && setHierarchyObjectiveId(null)}
         />
       )}
     </div>

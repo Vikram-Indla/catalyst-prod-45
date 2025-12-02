@@ -72,6 +72,9 @@ export interface ObjectiveFilters {
   search?: string;
   myObjectives?: boolean;
   blockedOnly?: boolean;
+  includeParentHierarchy?: boolean;
+  includeChildTeams?: boolean;
+  includeAllChildren?: boolean;
 }
 
 // Fetch objectives with filters
@@ -79,6 +82,19 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
   return useQuery({
     queryKey: ['objectives', filters],
     queryFn: async () => {
+      // Fetch key results data separately for all objectives using key_results_v2
+      const { data: allKeyResults } = await supabase
+        .from('key_results_v2')
+        .select('id, objective_id, baseline_value, current_value, goal_value, summary, metric_type');
+
+      const keyResultsByObjective = new Map<string, any[]>();
+      allKeyResults?.forEach(kr => {
+        if (!keyResultsByObjective.has(kr.objective_id)) {
+          keyResultsByObjective.set(kr.objective_id, []);
+        }
+        keyResultsByObjective.get(kr.objective_id)!.push(kr);
+      });
+
       let query = supabase
         .from('objectives')
         .select('*')
@@ -118,7 +134,15 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as Objective[];
+
+      // Attach key results count to each objective
+      const objectivesWithKRData = (data as Objective[]).map(obj => ({
+        ...obj,
+        keyResults: keyResultsByObjective.get(obj.id) || [],
+        keyResultsCount: (keyResultsByObjective.get(obj.id) || []).length,
+      }));
+
+      return objectivesWithKRData;
     },
   });
 };

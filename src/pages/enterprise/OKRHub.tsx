@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Search, Filter, Settings, Download, Plus, ArrowRight, GitBranch, MessageSquare, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,7 +26,10 @@ import { useObjectives } from '@/hooks/useObjectives';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { exportOKRsToCSV } from '@/lib/okrExportUtils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigation } from '@/contexts/NavigationContext';
+import { ObjectiveTierBadge } from '@/modules/objectives/components/shared/ObjectiveTierBadge';
+import { ObjectiveHierarchyDialog } from '@/modules/objectives/components/ObjectiveHierarchyDialog';
 
 interface Column {
   key: string;
@@ -36,6 +39,7 @@ interface Column {
 
 const defaultColumns: Column[] = [
   { key: 'id', label: 'ID and Summary', enabled: true },
+  { key: 'tier', label: 'Tier', enabled: true },
   { key: 'status', label: 'Status', enabled: true },
   { key: 'work_progress', label: 'Work progress', enabled: true },
   { key: 'kr_progress', label: 'Key results progress', enabled: true },
@@ -54,6 +58,8 @@ interface OKRHubProps {
 
 export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) {
   const navigate = useNavigate();
+  const params = useParams();
+  const navigationContext = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
   const [tierFilter, setTierFilter] = useState<string>('');
   const [portfolioFilter, setPortfolioFilter] = useState<string>('');
@@ -62,6 +68,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
   const [ownerFilter, setOwnerFilter] = useState<string>('');
   const [myObjectivesOnly, setMyObjectivesOnly] = useState(false);
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
+  const [hierarchyObjectiveId, setHierarchyObjectiveId] = useState<string | null>(null);
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [columns, setColumns] = useState<Column[]>(defaultColumns);
@@ -86,17 +93,65 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
   const effectiveSnapshotId = selectedSnapshotId || snapshots[0]?.id || '';
 
-  // Build filters object
-  const filters: any = {
-    tier: tierFilter ? [tierFilter] : undefined,
-    portfolioIds: portfolioFilter ? [portfolioFilter] : undefined,
-    piIds: piFilter ? [piFilter] : undefined,
-    statuses: quickStatusFilter || statusFilter ? [quickStatusFilter || statusFilter] : undefined,
-    ownerIds: ownerFilter ? [ownerFilter] : undefined,
-    search: searchQuery || undefined,
-    myObjectives: myObjectivesOnly,
-    blockedOnly: showBlockedOnly,
-  };
+  // Build filters object with context-aware filtering
+  const filters: any = useMemo(() => {
+    const baseFilters: any = {
+      tier: tierFilter ? [tierFilter] : undefined,
+      portfolioIds: portfolioFilter ? [portfolioFilter] : undefined,
+      piIds: piFilter ? [piFilter] : undefined,
+      statuses: quickStatusFilter || statusFilter ? [quickStatusFilter || statusFilter] : undefined,
+      ownerIds: ownerFilter ? [ownerFilter] : undefined,
+      search: searchQuery || undefined,
+      myObjectives: myObjectivesOnly,
+      blockedOnly: showBlockedOnly,
+    };
+
+    // Context-sensitive filtering based on scope
+    if (scopeType === 'team' && scopeId) {
+      baseFilters.teamIds = [scopeId];
+      baseFilters.includeParentHierarchy = true;
+    } else if (scopeType === 'program' && scopeId) {
+      baseFilters.programIds = [scopeId];
+      baseFilters.includeChildTeams = true;
+      baseFilters.includeParentHierarchy = true;
+    } else if (scopeType === 'portfolio' && scopeId) {
+      baseFilters.portfolioIds = [scopeId];
+      baseFilters.includeAllChildren = true;
+    }
+
+    // Also check navigation context from URL params
+    const teamId = params.teamId || navigationContext.selectedTeamId;
+    const programId = params.programId || navigationContext.selectedProgramId;
+    const portfolioId = params.portfolioId || navigationContext.selectedPortfolioId;
+
+    if (teamId && !baseFilters.teamIds) {
+      baseFilters.teamIds = [teamId];
+      baseFilters.includeParentHierarchy = true;
+    } else if (programId && !baseFilters.programIds) {
+      baseFilters.programIds = [programId];
+      baseFilters.includeChildTeams = true;
+      baseFilters.includeParentHierarchy = true;
+    } else if (portfolioId && !baseFilters.portfolioIds) {
+      baseFilters.portfolioIds = [portfolioId];
+      baseFilters.includeAllChildren = true;
+    }
+
+    return baseFilters;
+  }, [
+    tierFilter,
+    portfolioFilter,
+    piFilter,
+    statusFilter,
+    quickStatusFilter,
+    ownerFilter,
+    searchQuery,
+    myObjectivesOnly,
+    showBlockedOnly,
+    scopeType,
+    scopeId,
+    params,
+    navigationContext,
+  ]);
 
   // Fetch objectives with filters
   const { data: objectives = [], isLoading } = useObjectives(filters);
@@ -405,6 +460,13 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                         </TableCell>
                       );
                     }
+                    if (col.key === 'tier') {
+                      return (
+                        <TableCell key={col.key}>
+                          <ObjectiveTierBadge tier={objective.tier} size="sm" />
+                        </TableCell>
+                      );
+                    }
                     if (col.key === 'status') {
                       return (
                         <TableCell key={col.key}>
@@ -422,8 +484,8 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                         <TableCell key={col.key}>
                           <div className="w-full bg-muted rounded-full h-2">
                             <div
-                              className="bg-foreground h-2 rounded-full"
-                              style={{ width: `${objective.work_progress || 0}%` }}
+                              className="bg-brand-gold h-2 rounded-full"
+                              style={{ width: `${(objective.work_progress || 0) * 100}%` }}
                             />
                           </div>
                         </TableCell>
@@ -434,26 +496,30 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                         <TableCell key={col.key}>
                           <div className="w-full bg-muted rounded-full h-2">
                             <div
-                              className="bg-foreground h-2 rounded-full"
-                              style={{ width: `${objective.key_result_progress || 0}%` }}
+                              className="bg-brand-gold h-2 rounded-full"
+                              style={{ width: `${(objective.key_result_progress || 0) * 100}%` }}
                             />
                           </div>
                         </TableCell>
                       );
                     }
                     if (col.key === 'kr_count') {
+                      const krCount = (objective as any).keyResultsCount || 0;
                       return (
                         <TableCell key={col.key}>
-                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-semibold">
-                            2
+                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-brand-gold text-brand-dark text-xs font-semibold">
+                            {krCount}
                           </div>
                         </TableCell>
                       );
                     }
                     if (col.key === 'pi') {
+                      const piNames = objective.program_increment_ids?.length > 0 
+                        ? objective.program_increment_ids.map(id => id.slice(0, 6)).join(', ')
+                        : '—';
                       return (
                         <TableCell key={col.key} className="text-sm text-foreground">
-                          {objective.program_increment_ids?.join(', ') || 'PI-5'}
+                          {piNames}
                         </TableCell>
                       );
                     }
@@ -461,8 +527,8 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                       return (
                         <TableCell key={col.key}>
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-semibold">
-                              JD
+                            <div className="w-7 h-7 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark text-xs font-semibold">
+                              {objective.owner_id ? objective.owner_id.slice(0, 2).toUpperCase() : 'UN'}
                             </div>
                           </div>
                         </TableCell>
@@ -471,7 +537,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                     if (col.key === 'team') {
                       return (
                         <TableCell key={col.key} className="text-sm text-foreground">
-                          Digital Services
+                          {objective.team_id ? objective.team_id.slice(0, 8) : '—'}
                         </TableCell>
                       );
                     }
@@ -485,7 +551,15 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                     if (col.key === 'view_tree') {
                       return (
                         <TableCell key={col.key}>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setHierarchyObjectiveId(objective.id);
+                            }}
+                          >
                             <GitBranch className="h-4 w-4" />
                           </Button>
                         </TableCell>
@@ -524,6 +598,14 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
           objectiveId={selectedObjectiveId}
           open={!!selectedObjectiveId}
           onClose={() => setSelectedObjectiveId(null)}
+        />
+      )}
+
+      {hierarchyObjectiveId && (
+        <ObjectiveHierarchyDialog
+          objectiveId={hierarchyObjectiveId}
+          open={!!hierarchyObjectiveId}
+          onOpenChange={(open) => !open && setHierarchyObjectiveId(null)}
         />
       )}
 

@@ -61,18 +61,21 @@ export function OKRColumnsDialog({
           <DialogTitle>Configure Columns</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-[var(--s4)] py-[var(--s4)]">
           <p className="text-sm text-muted-foreground">
             Select which columns to display in the objectives table
           </p>
 
-          <div className="space-y-3">
+          <div className="space-y-[var(--s3)]">
             {localColumns.map((column) => (
               <div key={column.key} className="flex items-center space-x-2">
                 <Checkbox
                   id={column.key}
                   checked={column.enabled}
                   onCheckedChange={() => handleToggle(column.key)}
+                  style={{
+                    accentColor: 'hsl(var(--brand-gold))',
+                  }}
                 />
                 <Label
                   htmlFor={column.key}
@@ -89,11 +92,13 @@ export function OKRColumnsDialog({
           <Button variant="outline" onClick={handleReset}>
             Reset to Default
           </Button>
-          <div className="flex gap-2">
+          <div className="flex gap-[var(--s2)]">
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>Save</Button>
+            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark">
+              Save
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>
