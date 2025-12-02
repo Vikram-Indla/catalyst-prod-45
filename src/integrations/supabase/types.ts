@@ -7055,6 +7055,151 @@ export type Database = {
           },
         ]
       }
+      test_dashboard_gadgets: {
+        Row: {
+          config: Json
+          created_at: string | null
+          dashboard_id: string | null
+          gadget_type: string
+          id: string
+          position: Json
+        }
+        Insert: {
+          config?: Json
+          created_at?: string | null
+          dashboard_id?: string | null
+          gadget_type: string
+          id?: string
+          position?: Json
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          dashboard_id?: string | null
+          gadget_type?: string
+          id?: string
+          position?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_dashboard_gadgets_dashboard_id_fkey"
+            columns: ["dashboard_id"]
+            isOneToOne: false
+            referencedRelation: "test_dashboards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_dashboard_shares: {
+        Row: {
+          can_edit: boolean | null
+          created_at: string | null
+          dashboard_id: string | null
+          expires_at: string | null
+          id: string
+          shared_with_user_id: string | null
+        }
+        Insert: {
+          can_edit?: boolean | null
+          created_at?: string | null
+          dashboard_id?: string | null
+          expires_at?: string | null
+          id?: string
+          shared_with_user_id?: string | null
+        }
+        Update: {
+          can_edit?: boolean | null
+          created_at?: string | null
+          dashboard_id?: string | null
+          expires_at?: string | null
+          id?: string
+          shared_with_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_dashboard_shares_dashboard_id_fkey"
+            columns: ["dashboard_id"]
+            isOneToOne: false
+            referencedRelation: "test_dashboards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_dashboard_templates: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          is_system: boolean | null
+          layout: Json
+          name: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          layout?: Json
+          name: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          layout?: Json
+          name?: string
+        }
+        Relationships: []
+      }
+      test_dashboards: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          layout: Json
+          name: string
+          program_id: string | null
+          template_id: string | null
+          updated_at: string | null
+          user_id: string | null
+          visibility: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          layout?: Json
+          name: string
+          program_id?: string | null
+          template_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          visibility?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          layout?: Json
+          name?: string
+          program_id?: string | null
+          template_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          visibility?: string | null
+        }
+        Relationships: []
+      }
       test_data_parameters: {
         Row: {
           created_at: string | null
@@ -7817,6 +7962,168 @@ export type Database = {
           },
         ]
       }
+      user_app_preferences: {
+        Row: {
+          auto_save_enabled: boolean | null
+          auto_save_interval: number | null
+          date_format: string | null
+          default_folder_view: string | null
+          default_project_id: string | null
+          focus_indicators: string | null
+          grid_cell_size: string | null
+          grid_default_columns: Json | null
+          grid_highlight_failed: boolean | null
+          grid_show_defects: boolean | null
+          grid_show_evidence: boolean | null
+          high_contrast: boolean | null
+          id: string
+          keyboard_navigation: string | null
+          keyboard_shortcuts_enabled: boolean | null
+          language: string | null
+          screen_reader_optimized: boolean | null
+          table_default_sort: string | null
+          table_rows_per_page: number | null
+          table_show_row_numbers: boolean | null
+          table_sticky_headers: boolean | null
+          table_zebra_striping: boolean | null
+          time_format: string | null
+          time_zone: string | null
+          updated_at: string | null
+          user_id: string | null
+          warn_unsaved: boolean | null
+        }
+        Insert: {
+          auto_save_enabled?: boolean | null
+          auto_save_interval?: number | null
+          date_format?: string | null
+          default_folder_view?: string | null
+          default_project_id?: string | null
+          focus_indicators?: string | null
+          grid_cell_size?: string | null
+          grid_default_columns?: Json | null
+          grid_highlight_failed?: boolean | null
+          grid_show_defects?: boolean | null
+          grid_show_evidence?: boolean | null
+          high_contrast?: boolean | null
+          id?: string
+          keyboard_navigation?: string | null
+          keyboard_shortcuts_enabled?: boolean | null
+          language?: string | null
+          screen_reader_optimized?: boolean | null
+          table_default_sort?: string | null
+          table_rows_per_page?: number | null
+          table_show_row_numbers?: boolean | null
+          table_sticky_headers?: boolean | null
+          table_zebra_striping?: boolean | null
+          time_format?: string | null
+          time_zone?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          warn_unsaved?: boolean | null
+        }
+        Update: {
+          auto_save_enabled?: boolean | null
+          auto_save_interval?: number | null
+          date_format?: string | null
+          default_folder_view?: string | null
+          default_project_id?: string | null
+          focus_indicators?: string | null
+          grid_cell_size?: string | null
+          grid_default_columns?: Json | null
+          grid_highlight_failed?: boolean | null
+          grid_show_defects?: boolean | null
+          grid_show_evidence?: boolean | null
+          high_contrast?: boolean | null
+          id?: string
+          keyboard_navigation?: string | null
+          keyboard_shortcuts_enabled?: boolean | null
+          language?: string | null
+          screen_reader_optimized?: boolean | null
+          table_default_sort?: string | null
+          table_rows_per_page?: number | null
+          table_show_row_numbers?: boolean | null
+          table_sticky_headers?: boolean | null
+          table_zebra_striping?: boolean | null
+          time_format?: string | null
+          time_zone?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          warn_unsaved?: boolean | null
+        }
+        Relationships: []
+      }
+      user_email_preferences: {
+        Row: {
+          digest_day: string | null
+          digest_mode: string | null
+          digest_time: string | null
+          dnd_auto_reply: string | null
+          dnd_enabled: boolean | null
+          dnd_end_date: string | null
+          dnd_start_date: string | null
+          email_template: string | null
+          id: string
+          include_links: boolean | null
+          include_logo: boolean | null
+          include_summary: boolean | null
+          limit_action: string | null
+          max_emails_per_day: number | null
+          quiet_hours_enabled: boolean | null
+          quiet_hours_end: string | null
+          quiet_hours_start: string | null
+          signature: string | null
+          unsubscribed_all: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          digest_day?: string | null
+          digest_mode?: string | null
+          digest_time?: string | null
+          dnd_auto_reply?: string | null
+          dnd_enabled?: boolean | null
+          dnd_end_date?: string | null
+          dnd_start_date?: string | null
+          email_template?: string | null
+          id?: string
+          include_links?: boolean | null
+          include_logo?: boolean | null
+          include_summary?: boolean | null
+          limit_action?: string | null
+          max_emails_per_day?: number | null
+          quiet_hours_enabled?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          signature?: string | null
+          unsubscribed_all?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          digest_day?: string | null
+          digest_mode?: string | null
+          digest_time?: string | null
+          dnd_auto_reply?: string | null
+          dnd_enabled?: boolean | null
+          dnd_end_date?: string | null
+          dnd_start_date?: string | null
+          email_template?: string | null
+          id?: string
+          include_links?: boolean | null
+          include_logo?: boolean | null
+          include_summary?: boolean | null
+          limit_action?: string | null
+          max_emails_per_day?: number | null
+          quiet_hours_enabled?: boolean | null
+          quiet_hours_end?: string | null
+          quiet_hours_start?: string | null
+          signature?: string | null
+          unsubscribed_all?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_epic_backlog_preferences: {
         Row: {
           created_at: string | null
@@ -7940,6 +8247,81 @@ export type Database = {
         }
         Relationships: []
       }
+      user_notification_settings: {
+        Row: {
+          assignment_notifications: Json | null
+          automation_notifications: Json | null
+          cycle_notifications: Json | null
+          defect_notifications: Json | null
+          email_notifications_enabled: boolean | null
+          id: string
+          mention_notifications: Json | null
+          report_notifications: Json | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          assignment_notifications?: Json | null
+          automation_notifications?: Json | null
+          cycle_notifications?: Json | null
+          defect_notifications?: Json | null
+          email_notifications_enabled?: boolean | null
+          id?: string
+          mention_notifications?: Json | null
+          report_notifications?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          assignment_notifications?: Json | null
+          automation_notifications?: Json | null
+          cycle_notifications?: Json | null
+          defect_notifications?: Json | null
+          email_notifications_enabled?: boolean | null
+          id?: string
+          mention_notifications?: Json | null
+          report_notifications?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_notifications: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          link: string | null
+          message: string
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message: string
+          read_at?: string | null
+          title: string
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          link?: string | null
+          message?: string
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_role_history: {
         Row: {
           action: string
@@ -7988,6 +8370,54 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_theme_preferences: {
+        Row: {
+          accent_color: string | null
+          animation_speed: string | null
+          animations_enabled: boolean | null
+          density: string | null
+          font_size: string | null
+          id: string
+          reduce_motion: boolean | null
+          sidebar_auto_collapse: boolean | null
+          sidebar_default: string | null
+          sidebar_width: string | null
+          theme_mode: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          animation_speed?: string | null
+          animations_enabled?: boolean | null
+          density?: string | null
+          font_size?: string | null
+          id?: string
+          reduce_motion?: boolean | null
+          sidebar_auto_collapse?: boolean | null
+          sidebar_default?: string | null
+          sidebar_width?: string | null
+          theme_mode?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          animation_speed?: string | null
+          animations_enabled?: boolean | null
+          density?: string | null
+          font_size?: string | null
+          id?: string
+          reduce_motion?: boolean | null
+          sidebar_auto_collapse?: boolean | null
+          sidebar_default?: string | null
+          sidebar_width?: string | null
+          theme_mode?: string | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
