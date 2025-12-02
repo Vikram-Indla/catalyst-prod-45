@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Settings, Maximize2, RotateCcw, Info } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Settings, Maximize2, RotateCcw, Info, AlertCircle } from 'lucide-react';
 import { WorkTreeDashboard } from './components/WorkTreeDashboard';
 import { WorkTreeHierarchy } from './components/WorkTreeHierarchy';
 import { WorkTreeExtraConfigs } from './components/WorkTreeExtraConfigs';
@@ -14,12 +15,16 @@ type WorkTreeView = 'top-down' | 'bottom-up' | 'team' | 'strategy' | 'theme-grou
 
 export function WorkTreePage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const view = (searchParams.get('view') || 'top-down') as WorkTreeView;
+  const { teamId, programId } = useParams<{ teamId?: string; programId?: string }>();
+  
+  // Default to 'team' view when accessed from team context
+  const defaultView = teamId ? 'team' : 'top-down';
+  const view = (searchParams.get('view') || defaultView) as WorkTreeView;
   const [configsOpen, setConfigsOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   const [narrowToProgram, setNarrowToProgram] = useState(false);
 
-  const { data, isLoading } = useWorkTreeData(view);
+  const { data, isLoading } = useWorkTreeData(view, { teamId, programId });
 
   const handleViewChange = (newView: string) => {
     setSearchParams({ view: newView });
@@ -94,6 +99,16 @@ export function WorkTreePage() {
 
       {/* Content */}
       <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
+        {/* Team View Info Banner */}
+        {view === 'team' && teamId && (
+          <Alert className="bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900">
+            <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <AlertDescription className="text-blue-800 dark:text-blue-200">
+              Team view: Showing your work filtered by selected teams in Configuration bar. This report starts with stories, then builds the hierarchy up.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{getViewTitle()}</CardTitle>
@@ -101,7 +116,7 @@ export function WorkTreePage() {
           <CardContent className="space-y-[var(--s6)]">
             {/* Dashboard - only for top-down, bottom-up, and team views */}
             {hasDashboard && (
-              <WorkTreeDashboard view={view} data={data} isLoading={isLoading} />
+              <WorkTreeDashboard view={view} data={data} isLoading={isLoading} teamId={teamId} />
             )}
 
             {/* Tree Hierarchy */}
