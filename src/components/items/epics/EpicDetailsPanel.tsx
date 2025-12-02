@@ -54,55 +54,55 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
   const handleAdditionalOption = (action: string) => {
     switch (action) {
       case 'discussions':
-        toast.info('Opening discussions');
+        setActiveTab('discussions');
         break;
       case 'subscribe':
         toast.success('Subscribed to epic notifications');
         break;
       case 'update-child-steps':
-        toast.info('Opening Update Child Process Steps dialog');
+        toast.info('Update Child Process Steps - Coming soon');
         break;
       case 'responsibility-matrix':
-        toast.info('Opening Responsibility Matrix');
+        toast.info('Responsibility Matrix - Coming soon');
         break;
       case 'trace':
-        window.open(`/items/epics/${epic.id}/trace`, '_blank');
+        toast.info('Trace This Epic - Coming soon');
         break;
       case 'status-report':
-        window.open(`/items/epics/${epic.id}/status-report`, '_blank');
+        toast.info('Status Report - Coming soon');
         break;
       case 'requirement-hierarchy':
-        window.open(`/items/epics/${epic.id}/requirement-hierarchy`, '_blank');
+        toast.info('Requirement Hierarchy - Coming soon');
         break;
       case 'audit-log':
-        toast.info('Opening Audit Log');
+        toast.info('Audit Log - Coming soon');
         break;
       case 'links':
         setActiveTab('links');
         break;
       case 'drop':
-        toast.info('Drop epic to backlog');
+        toast.info('Drop - Coming soon');
         break;
       case 'split':
-        toast.info('Opening Split Epic dialog');
+        toast.info('Split Epic - Coming soon');
         break;
       case 'delete':
-        toast.info('Move epic to recycle bin');
+        toast.info('Delete - Coming soon');
         break;
       case 'cancel':
-        toast.info('Cancel epic and move to canceled items');
+        toast.info('Cancel Item - Coming soon');
         break;
       case 'copy':
-        toast.info('Opening Copy Epic dialog');
+        toast.info('Copy Epic - Coming soon');
         break;
       case 'add-to-kanban':
-        toast.info('Opening Add to Kanban Board dialog');
+        toast.info('Add to Kanban Board - Coming soon');
         break;
       case 'epic-planning':
-        window.open(`/items/epics/${epic.id}/epic-planning`, '_blank');
+        toast.info('Epic Planning - Coming soon');
         break;
       case 'work-tree':
-        window.open(`/items/epics/${epic.id}/work-tree`, '_blank');
+        toast.info('Work Tree - Coming soon');
         break;
     }
   };
@@ -124,75 +124,75 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64">
-                <DropdownMenuItem onClick={() => handleAdditionalOption('discussions')}>
+              <DropdownMenuContent align="end" className="w-64 bg-popover">
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('discussions')}>
                   <MessageSquare className="h-4 w-4 mr-2" />
                   Discussions
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('subscribe')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('subscribe')}>
                   <Bell className="h-4 w-4 mr-2" />
                   Subscribe
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleAdditionalOption('update-child-steps')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('update-child-steps')}>
                   <RefreshCw className="h-4 w-4 mr-2" />
                   Update Child Process Steps
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('responsibility-matrix')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('responsibility-matrix')}>
                   <Users className="h-4 w-4 mr-2" />
                   Responsibility Matrix
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('trace')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('trace')}>
                   <GitBranch className="h-4 w-4 mr-2" />
                   Trace This Epic
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('status-report')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('status-report')}>
                   <FileText className="h-4 w-4 mr-2" />
                   Status Report
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('requirement-hierarchy')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('requirement-hierarchy')}>
                   <ListTree className="h-4 w-4 mr-2" />
                   Requirement Hierarchy
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('audit-log')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('audit-log')}>
                   <History className="h-4 w-4 mr-2" />
                   Audit Log
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('links')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('links')}>
                   <LinkIcon className="h-4 w-4 mr-2" />
                   Links
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleAdditionalOption('drop')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('drop')}>
                   <ArrowDown className="h-4 w-4 mr-2" />
                   Drop
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('split')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('split')}>
                   <Split className="h-4 w-4 mr-2" />
                   Split
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('delete')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('delete')}>
                   <Trash2 className="h-4 w-4 mr-2" />
                   Delete
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('cancel')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('cancel')}>
                   <XCircle className="h-4 w-4 mr-2" />
                   Cancel Item
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleAdditionalOption('copy')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('copy')}>
                   <Copy className="h-4 w-4 mr-2" />
                   Copy
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('add-to-kanban')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('add-to-kanban')}>
                   <Kanban className="h-4 w-4 mr-2" />
                   Add To Kanban Board
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('epic-planning')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('epic-planning')}>
                   <LayoutGrid className="h-4 w-4 mr-2" />
                   Epic Planning
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAdditionalOption('work-tree')}>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('work-tree')}>
                   <ListTree className="h-4 w-4 mr-2" />
                   Work Tree
                 </DropdownMenuItem>
