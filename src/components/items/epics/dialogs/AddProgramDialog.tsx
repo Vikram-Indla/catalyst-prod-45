@@ -43,12 +43,26 @@ export function AddProgramDialog({ epicId, primaryProgramId, open, onOpenChange 
 
   const saveMutation = useMutation({
     mutationFn: async () => {
-      const additionalPrograms = selectedPrograms.filter(id => id !== primaryProgramId);
-      toast.success(`${additionalPrograms.length} additional program(s) assigned`);
+      // For now, update the primary program if one is selected
+      // Note: Additional programs would require a junction table (epic_programs)
+      if (selectedPrograms.length > 0) {
+        const newPrimaryProgramId = selectedPrograms[0];
+        const { error } = await supabase
+          .from('epics')
+          .update({ primary_program_id: newPrimaryProgramId })
+          .eq('id', epicId);
+        
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic', epicId] });
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      toast.success('Program updated successfully');
       onOpenChange(false);
+    },
+    onError: () => {
+      toast.error('Failed to update program');
     },
   });
 
