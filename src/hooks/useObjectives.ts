@@ -2,44 +2,72 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+// Objectives Module - Proper Types per Technical Specification
+export type ObjectiveTier = 'portfolio' | 'program' | 'team';
+
+export type ObjectiveStatus = 
+  | 'pending'
+  | 'in_progress'
+  | 'on_track'
+  | 'at_risk'
+  | 'off_track'
+  | 'paused'
+  | 'completed'
+  | 'canceled'
+  | 'missed';
+
+export type ObjectiveHealth = 'good' | 'fair' | 'poor' | 'at_risk';
+
+export type ObjectiveCategory = 'critical_path' | 'stretch_goal';
+
+export type ObjectiveType = 
+  | 'feature_finisher'
+  | 'non_code'
+  | 'incremental_delivery'
+  | 'event';
+
 export interface Objective {
   id: string;
   summary: string;
   description?: string;
-  tier: 'portfolio' | 'solution' | 'program' | 'team';
+  tier: ObjectiveTier;
+  status: ObjectiveStatus;
+  health?: ObjectiveHealth;
+  category?: ObjectiveCategory;
+  type?: ObjectiveType;
+  owner_id?: string;
   portfolio_id?: string;
   program_id?: string;
   team_id?: string;
-  parent_goal_id?: string;
   parent_objective_id?: string;
   parent_key_result_id?: string;
-  status: string;
-  health: string;
-  blocked: boolean;
+  theme_id?: string;
+  anchor_sprint_id?: string;
   start_date?: string;
   due_date?: string;
   program_increment_ids: string[];
-  owner_id?: string;
   contributors: string[];
+  planned_value?: number;
+  delivered_value?: number;
+  is_blocked: boolean;
+  notes?: string;
+  tags: string[];
   score?: number;
   confidence_score?: number;
   work_progress: number;
   key_result_progress: number;
-  category?: string;
-  objective_type?: string;
-  theme_id?: string;
-  tags: string[];
   created_at: string;
   updated_at: string;
+  created_by?: string;
 }
 
 export interface ObjectiveFilters {
-  tier?: string[];
+  tier?: ObjectiveTier[];
   portfolioIds?: string[];
   programIds?: string[];
   teamIds?: string[];
   piIds?: string[];
-  statuses?: string[];
+  statuses?: ObjectiveStatus[];
   ownerIds?: string[];
   search?: string;
   myObjectives?: boolean;
@@ -81,7 +109,7 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
       }
 
       if (filters?.blockedOnly) {
-        query = query.eq('blocked', true);
+        query = query.eq('is_blocked', true);
       }
 
       if (filters?.search) {

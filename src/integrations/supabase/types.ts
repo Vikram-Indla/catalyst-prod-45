@@ -3112,6 +3112,35 @@ export type Database = {
           },
         ]
       }
+      objective_contributors: {
+        Row: {
+          created_at: string | null
+          id: string
+          objective_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          objective_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          objective_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_contributors_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       objective_dependencies: {
         Row: {
           created_at: string | null
@@ -3352,6 +3381,42 @@ export type Database = {
           },
         ]
       }
+      objective_program_increments: {
+        Row: {
+          created_at: string | null
+          id: string
+          objective_id: string
+          program_increment_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          objective_id: string
+          program_increment_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          objective_id?: string
+          program_increment_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_program_increments_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objective_program_increments_program_increment_id_fkey"
+            columns: ["program_increment_id"]
+            isOneToOne: false
+            referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       objective_risks: {
         Row: {
           created_at: string | null
@@ -3420,6 +3485,44 @@ export type Database = {
           },
         ]
       }
+      objective_work_item_alignments: {
+        Row: {
+          alignment_type: Database["public"]["Enums"]["alignment_type"] | null
+          created_at: string | null
+          created_by_user_id: string | null
+          id: string
+          objective_id: string
+          work_item_id: string
+          work_item_type: Database["public"]["Enums"]["work_item_type_enum"]
+        }
+        Insert: {
+          alignment_type?: Database["public"]["Enums"]["alignment_type"] | null
+          created_at?: string | null
+          created_by_user_id?: string | null
+          id?: string
+          objective_id: string
+          work_item_id: string
+          work_item_type: Database["public"]["Enums"]["work_item_type_enum"]
+        }
+        Update: {
+          alignment_type?: Database["public"]["Enums"]["alignment_type"] | null
+          created_at?: string | null
+          created_by_user_id?: string | null
+          id?: string
+          objective_id?: string
+          work_item_id?: string
+          work_item_type?: Database["public"]["Enums"]["work_item_type_enum"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "objective_work_item_alignments_objective_id_fkey"
+            columns: ["objective_id"]
+            isOneToOne: false
+            referencedRelation: "objectives"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       objective_work_items: {
         Row: {
           created_at: string | null
@@ -3460,7 +3563,7 @@ export type Database = {
         Row: {
           anchor_sprint_id: string | null
           blocked: boolean | null
-          category: string | null
+          category: Database["public"]["Enums"]["objective_category"] | null
           confidence: Database["public"]["Enums"]["confidence_level"] | null
           confidence_note: string | null
           confidence_score: number | null
@@ -3468,21 +3571,25 @@ export type Database = {
           contributors: string[] | null
           created_at: string | null
           created_by: string | null
+          delivered_value: number | null
           description: string | null
           due_date: string | null
           end_date: string | null
           goal_id: string | null
-          health: string | null
+          health: Database["public"]["Enums"]["objective_health"] | null
           id: string
+          is_blocked: boolean | null
           key_result_progress: number | null
           level: string | null
           name: string
+          notes: string | null
           objective_level_id: string | null
           objective_type: string | null
           owner_id: string | null
           parent_goal_id: string | null
           parent_key_result_id: string | null
           parent_objective_id: string | null
+          planned_value: number | null
           portfolio_id: string | null
           program_id: string | null
           program_increment_ids: Json | null
@@ -3490,13 +3597,14 @@ export type Database = {
           score: number | null
           snapshot_id: string | null
           start_date: string | null
-          status: string | null
+          status: Database["public"]["Enums"]["objective_status"] | null
           summary: string | null
           tags: string[] | null
           target_anchor_sprint_id: string | null
           team_id: string | null
           theme_id: string | null
           tier: string | null
+          type: Database["public"]["Enums"]["objective_type"] | null
           updated_at: string | null
           updated_by: string | null
           work_progress: number | null
@@ -3504,7 +3612,7 @@ export type Database = {
         Insert: {
           anchor_sprint_id?: string | null
           blocked?: boolean | null
-          category?: string | null
+          category?: Database["public"]["Enums"]["objective_category"] | null
           confidence?: Database["public"]["Enums"]["confidence_level"] | null
           confidence_note?: string | null
           confidence_score?: number | null
@@ -3512,21 +3620,25 @@ export type Database = {
           contributors?: string[] | null
           created_at?: string | null
           created_by?: string | null
+          delivered_value?: number | null
           description?: string | null
           due_date?: string | null
           end_date?: string | null
           goal_id?: string | null
-          health?: string | null
+          health?: Database["public"]["Enums"]["objective_health"] | null
           id?: string
+          is_blocked?: boolean | null
           key_result_progress?: number | null
           level?: string | null
           name: string
+          notes?: string | null
           objective_level_id?: string | null
           objective_type?: string | null
           owner_id?: string | null
           parent_goal_id?: string | null
           parent_key_result_id?: string | null
           parent_objective_id?: string | null
+          planned_value?: number | null
           portfolio_id?: string | null
           program_id?: string | null
           program_increment_ids?: Json | null
@@ -3534,13 +3646,14 @@ export type Database = {
           score?: number | null
           snapshot_id?: string | null
           start_date?: string | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["objective_status"] | null
           summary?: string | null
           tags?: string[] | null
           target_anchor_sprint_id?: string | null
           team_id?: string | null
           theme_id?: string | null
           tier?: string | null
+          type?: Database["public"]["Enums"]["objective_type"] | null
           updated_at?: string | null
           updated_by?: string | null
           work_progress?: number | null
@@ -3548,7 +3661,7 @@ export type Database = {
         Update: {
           anchor_sprint_id?: string | null
           blocked?: boolean | null
-          category?: string | null
+          category?: Database["public"]["Enums"]["objective_category"] | null
           confidence?: Database["public"]["Enums"]["confidence_level"] | null
           confidence_note?: string | null
           confidence_score?: number | null
@@ -3556,21 +3669,25 @@ export type Database = {
           contributors?: string[] | null
           created_at?: string | null
           created_by?: string | null
+          delivered_value?: number | null
           description?: string | null
           due_date?: string | null
           end_date?: string | null
           goal_id?: string | null
-          health?: string | null
+          health?: Database["public"]["Enums"]["objective_health"] | null
           id?: string
+          is_blocked?: boolean | null
           key_result_progress?: number | null
           level?: string | null
           name?: string
+          notes?: string | null
           objective_level_id?: string | null
           objective_type?: string | null
           owner_id?: string | null
           parent_goal_id?: string | null
           parent_key_result_id?: string | null
           parent_objective_id?: string | null
+          planned_value?: number | null
           portfolio_id?: string | null
           program_id?: string | null
           program_increment_ids?: Json | null
@@ -3578,13 +3695,14 @@ export type Database = {
           score?: number | null
           snapshot_id?: string | null
           start_date?: string | null
-          status?: string | null
+          status?: Database["public"]["Enums"]["objective_status"] | null
           summary?: string | null
           tags?: string[] | null
           target_anchor_sprint_id?: string | null
           team_id?: string | null
           theme_id?: string | null
           tier?: string | null
+          type?: Database["public"]["Enums"]["objective_type"] | null
           updated_at?: string | null
           updated_by?: string | null
           work_progress?: number | null
@@ -7595,6 +7713,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      calculate_objective_score: {
+        Args: { objective_uuid: string }
+        Returns: number
+      }
       check_permission: {
         Args: {
           _action: Database["public"]["Enums"]["permission_action"]
@@ -7655,6 +7777,7 @@ export type Database = {
       }
     }
     Enums: {
+      alignment_type: "direct" | "inherited"
       app_role: "admin" | "program_manager" | "team_lead" | "user"
       auth_method: "token" | "oauth"
       board_scope_type: "portfolio" | "program" | "team"
@@ -7708,7 +7831,26 @@ export type Database = {
         | "jira"
         | "teams"
         | "webhook"
+      metric_type: "count" | "currency" | "percentage" | "decimal_score" | "nps"
+      objective_category: "critical_path" | "stretch_goal"
+      objective_health: "good" | "fair" | "poor" | "at_risk"
       objective_scope_type: "company" | "portfolio" | "program"
+      objective_status:
+        | "pending"
+        | "in_progress"
+        | "on_track"
+        | "at_risk"
+        | "off_track"
+        | "paused"
+        | "completed"
+        | "canceled"
+        | "missed"
+      objective_tier: "portfolio" | "program" | "team"
+      objective_type:
+        | "feature_finisher"
+        | "non_code"
+        | "incremental_delivery"
+        | "event"
       permission_action:
         | "view"
         | "create"
@@ -7765,6 +7907,7 @@ export type Database = {
       test_type: "manual" | "automated" | "bdd"
       theme_status: "proposed" | "active" | "done" | "cancelled"
       track_by_type: "POINTS" | "HOURS"
+      work_item_type_enum: "epic" | "feature" | "story" | "task" | "defect"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -7892,6 +8035,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      alignment_type: ["direct", "inherited"],
       app_role: ["admin", "program_manager", "team_lead", "user"],
       auth_method: ["token", "oauth"],
       board_scope_type: ["portfolio", "program", "team"],
@@ -7951,7 +8095,28 @@ export const Constants = {
         "teams",
         "webhook",
       ],
+      metric_type: ["count", "currency", "percentage", "decimal_score", "nps"],
+      objective_category: ["critical_path", "stretch_goal"],
+      objective_health: ["good", "fair", "poor", "at_risk"],
       objective_scope_type: ["company", "portfolio", "program"],
+      objective_status: [
+        "pending",
+        "in_progress",
+        "on_track",
+        "at_risk",
+        "off_track",
+        "paused",
+        "completed",
+        "canceled",
+        "missed",
+      ],
+      objective_tier: ["portfolio", "program", "team"],
+      objective_type: [
+        "feature_finisher",
+        "non_code",
+        "incremental_delivery",
+        "event",
+      ],
       permission_action: [
         "view",
         "create",
@@ -8013,6 +8178,7 @@ export const Constants = {
       test_type: ["manual", "automated", "bdd"],
       theme_status: ["proposed", "active", "done", "cancelled"],
       track_by_type: ["POINTS", "HOURS"],
+      work_item_type_enum: ["epic", "feature", "story", "task", "defect"],
     },
   },
 } as const
