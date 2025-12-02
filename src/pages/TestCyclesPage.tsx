@@ -48,7 +48,7 @@ export function TestCyclesPage() {
   if (isLoading) {
     return (
       <div className="flex h-screen">
-        <div className="animate-pulse space-y-4 p-8 flex-1">
+        <div className="animate-pulse space-y-[var(--s4)] p-[var(--s8)] flex-1">
           <div className="h-8 bg-muted rounded w-1/4"></div>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -63,12 +63,12 @@ export function TestCyclesPage() {
   return (
     <>
       <div className="flex h-screen overflow-hidden">
-        {/* Folder Panel */}
+        {/* Folder Panel with design tokens */}
         <div 
           className="transition-all duration-300 border-r border-border bg-background"
           style={{ 
-            width: isSidebarCollapsed ? '64px' : '300px',
-            minWidth: isSidebarCollapsed ? '64px' : '300px'
+            width: isSidebarCollapsed ? '64px' : 'var(--sidebar-w)',
+            minWidth: isSidebarCollapsed ? '64px' : 'var(--sidebar-w)'
           }}
         >
           <FolderPanel
@@ -82,10 +82,10 @@ export function TestCyclesPage() {
           />
         </div>
 
-        {/* Main Content */}
+        {/* Main Content with responsive container */}
         <div className="flex-1 overflow-auto">
-          <div className="container mx-auto p-8">
-            <div className="flex items-center justify-between mb-6">
+          <div className="container mx-auto px-[var(--s4)] sm:px-[var(--s8)] py-[var(--s8)]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-[var(--s6)] gap-[var(--s4)]">
               <div>
                 <h1 className="text-3xl font-bold text-foreground">Test Cycles</h1>
                 <p className="text-muted-foreground mt-1">
@@ -103,14 +103,14 @@ export function TestCyclesPage() {
 
         {filteredCycles.length === 0 ? (
           <Card className="border-border">
-            <CardContent className="flex flex-col items-center justify-center py-16">
-              <div className="p-4 rounded-full bg-brand-gold/10 mb-4">
+            <CardContent className="flex flex-col items-center justify-center py-[var(--s9)] px-[var(--s4)]">
+              <div className="p-[var(--s4)] rounded-full bg-brand-gold/10 mb-[var(--s4)]">
                 <Clock className="h-12 w-12 text-brand-gold" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">
+              <h3 className="text-xl font-semibold text-foreground mb-[var(--s2)]">
                 {selectedFolderId ? 'No test cycles in this folder' : 'No test cycles yet'}
               </h3>
-              <p className="text-muted-foreground text-center max-w-md mb-6">
+              <p className="text-muted-foreground text-center max-w-md mb-[var(--s6)] px-[var(--s4)]">
                 {selectedFolderId 
                   ? 'Create a test cycle in this folder or select a different folder'
                   : 'Create your first test cycle to organize test execution and track progress'
@@ -126,15 +126,15 @@ export function TestCyclesPage() {
             </CardContent>
           </Card>
             ) : (
-              <div className="grid gap-4">
+              <div className="grid gap-[var(--s4)]">
                 {filteredCycles.map((cycle: any) => {
               const progress = calculateProgress(cycle);
               return (
-                <Card key={cycle.id} className="border-border hover:border-brand-gold/50 transition-colors">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
+                 <Card key={cycle.id} className="border-border hover:border-brand-gold/50 transition-colors">
+                  <CardHeader className="pb-[var(--s3)]">
+                    <div className="flex flex-col sm:flex-row items-start justify-between gap-[var(--s2)]">
                       <div className="flex-1">
-                        <CardTitle className="text-xl text-foreground mb-2">{cycle.name}</CardTitle>
+                        <CardTitle className="text-xl text-foreground mb-[var(--s2)]">{cycle.name}</CardTitle>
                         {cycle.description && (
                           <CardDescription className="text-sm">{cycle.description}</CardDescription>
                         )}
@@ -142,8 +142,8 @@ export function TestCyclesPage() {
                       {getStatusBadge(cycle.status)}
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                  <CardContent className="space-y-[var(--s4)]">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s3)] sm:gap-[var(--s6)] text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
                         <span>
@@ -156,7 +156,7 @@ export function TestCyclesPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-[var(--s2)]">
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">Progress</span>
                         <span className="font-semibold text-foreground">

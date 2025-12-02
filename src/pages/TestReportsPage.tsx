@@ -187,10 +187,10 @@ export function TestReportsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-background px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
+      <div className="max-w-7xl mx-auto space-y-[var(--s6)]">
+        {/* Header with responsive layout */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s4)]">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Test Reports</h1>
             <p className="text-muted-foreground mt-1">
@@ -214,8 +214,8 @@ export function TestReportsPage() {
           />
         )}
 
-        {/* Charts Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Charts Row with responsive grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--s6)]">
           {metrics && (
             <PassFailChart
               passed={metrics.passedTests}
@@ -226,14 +226,14 @@ export function TestReportsPage() {
           <ExecutionTrendChart data={trendData} />
         </div>
 
-        {/* Coverage and Recent Executions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Coverage and Recent Executions with responsive grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--s6)]">
           <TestCoverageBar coverageData={coverageData} />
           <RecentExecutions executions={recentExecutions} />
         </div>
 
-        {/* AI-Powered Features */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* AI-Powered Features with responsive grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--s6)]">
           <CoverageGapAnalyzer />
           <TestSuggestions />
         </div>

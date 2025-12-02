@@ -50,7 +50,8 @@ export const TestCasesPage: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-background">
-      <div className={`${isSidebarCollapsed ? 'w-16' : 'w-[300px]'} transition-all duration-300`}>
+      {/* Folder sidebar with design tokens */}
+      <div className={`${isSidebarCollapsed ? 'w-16' : 'w-[var(--sidebar-w)]'} transition-all duration-300 border-r border-border`}>
         <FolderPanel
           entityType="test_cases"
           folders={foldersData || []}
