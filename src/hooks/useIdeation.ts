@@ -509,6 +509,59 @@ export function useToggleSubscription() {
 }
 
 // ==============================================
+// BULK VOTES/SUBSCRIPTIONS HOOKS (for lists)
+// ==============================================
+
+export function useUserVotesForGroup(groupId: string | null) {
+  const { user } = useAuth();
+  
+  return useQuery({
+    queryKey: ['user-votes-for-group', groupId, user?.id],
+    queryFn: async () => {
+      if (!groupId || !user?.id) return [];
+      
+      const { data: ideas } = await supabase
+        .from('ideas')
+        .select('id')
+        .eq('idea_group_id', groupId);
+      
+      if (!ideas || ideas.length === 0) return [];
+      
+      const ideaIds = ideas.map(i => i.id);
+      const { data, error } = await supabase
+        .from('ideation_votes')
+        .select('*')
+        .eq('user_id', user.id)
+        .in('idea_id', ideaIds);
+      
+      if (error) throw error;
+      return (data || []) as IdeationVote[];
+    },
+    enabled: !!groupId && !!user?.id,
+  });
+}
+
+export function useUserSubscriptionsForGroup() {
+  const { user } = useAuth();
+  
+  return useQuery({
+    queryKey: ['user-subscriptions', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('ideation_subscriptions')
+        .select('*')
+        .eq('user_id', user.id);
+      
+      if (error) throw error;
+      return (data || []) as IdeationSubscription[];
+    },
+    enabled: !!user?.id,
+  });
+}
+
+// ==============================================
 // FORMS HOOKS
 // ==============================================
 
