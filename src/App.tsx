@@ -458,14 +458,14 @@ const App = () => (
               <Route path="/work-items/subtasks" element={<Subtasks />} />
               <Route path="/releases" element={<Releases />} />
               
-              {/* Test Management Routes */}
-              <Route path="/tests" element={<TestOverviewPage />} />
-              <Route path="/tests/cases" element={<TestCasesPage />} />
-              <Route path="/tests/cases/:id" element={<TestCaseDetailPage />} />
-              <Route path="/tests/library" element={<TestStepLibraryPage />} />
-              <Route path="/tests/cycles" element={<TestCyclesPage />} />
-              <Route path="/tests/cycles/:id" element={<CycleDetailPage />} />
-              <Route path="/tests/reports" element={<TestReportsPage />} />
+              {/* Test Management Routes - Program Scoped */}
+              <Route path="/programs/:programId/tests" element={<TestOverviewPage />} />
+              <Route path="/programs/:programId/tests/cases" element={<TestCasesPage />} />
+              <Route path="/programs/:programId/tests/cases/:id" element={<TestCaseDetailPage />} />
+              <Route path="/programs/:programId/tests/library" element={<TestStepLibraryPage />} />
+              <Route path="/programs/:programId/tests/cycles" element={<TestCyclesPage />} />
+              <Route path="/programs/:programId/tests/cycles/:id" element={<CycleDetailPage />} />
+              <Route path="/programs/:programId/tests/reports" element={<TestReportsPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
               <Route path="/insights/portfolio" element={<PortfolioInsights />} />

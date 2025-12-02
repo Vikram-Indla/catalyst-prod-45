@@ -32,6 +32,7 @@ export interface TestFolder {
   id: string;
   name: string;
   parent_folder_id?: string;
+  program_id?: string;
   team_id?: string;
   created_by: string;
   created_at: string;
@@ -52,6 +53,7 @@ export interface TestCase {
   priority: TestPriority;
   status: TestCaseStatus;
   folder_id?: string;
+  program_id?: string;
   linked_work_item_type?: LinkedWorkItemType;
   linked_work_item_id?: string;
   created_by: string;
@@ -81,6 +83,7 @@ export interface TestSet {
   id: string;
   name: string;
   description?: string;
+  program_id?: string;
   team_id?: string;
   created_by: string;
   created_at: string;
@@ -107,6 +110,7 @@ export interface TestCycle {
   id: string;
   name: string;
   description?: string;
+  program_id?: string;
   sprint_id?: string;
   program_increment_id?: string;
   status: TestCycleStatus;
@@ -125,6 +129,7 @@ export interface TestExecution {
   id: string;
   test_case_id: string;
   test_cycle_id: string;
+  program_id?: string;
   executed_by: string;
   execution_date: string;
   status: TestExecutionStatus;

@@ -5741,6 +5741,7 @@ export type Database = {
           entity_title: string | null
           entity_type: string
           id: string
+          program_id: string | null
           user_id: string | null
         }
         Insert: {
@@ -5751,6 +5752,7 @@ export type Database = {
           entity_title?: string | null
           entity_type: string
           id?: string
+          program_id?: string | null
           user_id?: string | null
         }
         Update: {
@@ -5761,9 +5763,17 @@ export type Database = {
           entity_title?: string | null
           entity_type?: string
           id?: string
+          program_id?: string | null
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_activity_log_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_activity_log_user_id_fkey"
             columns: ["user_id"]
@@ -5862,6 +5872,7 @@ export type Database = {
           linked_work_item_type: string | null
           preconditions: string | null
           priority: Database["public"]["Enums"]["test_priority"]
+          program_id: string | null
           status: Database["public"]["Enums"]["test_case_status"]
           test_type: Database["public"]["Enums"]["test_type"]
           title: string
@@ -5878,6 +5889,7 @@ export type Database = {
           linked_work_item_type?: string | null
           preconditions?: string | null
           priority?: Database["public"]["Enums"]["test_priority"]
+          program_id?: string | null
           status?: Database["public"]["Enums"]["test_case_status"]
           test_type?: Database["public"]["Enums"]["test_type"]
           title: string
@@ -5894,6 +5906,7 @@ export type Database = {
           linked_work_item_type?: string | null
           preconditions?: string | null
           priority?: Database["public"]["Enums"]["test_priority"]
+          program_id?: string | null
           status?: Database["public"]["Enums"]["test_case_status"]
           test_type?: Database["public"]["Enums"]["test_type"]
           title?: string
@@ -5907,6 +5920,13 @@ export type Database = {
             referencedRelation: "test_folders"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "test_cases_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
         ]
       }
       test_cycles: {
@@ -5918,6 +5938,7 @@ export type Database = {
           id: string
           is_adhoc: boolean | null
           name: string
+          program_id: string | null
           program_increment_id: string | null
           sprint_id: string | null
           start_date: string | null
@@ -5932,6 +5953,7 @@ export type Database = {
           id?: string
           is_adhoc?: boolean | null
           name: string
+          program_id?: string | null
           program_increment_id?: string | null
           sprint_id?: string | null
           start_date?: string | null
@@ -5946,6 +5968,7 @@ export type Database = {
           id?: string
           is_adhoc?: boolean | null
           name?: string
+          program_id?: string | null
           program_increment_id?: string | null
           sprint_id?: string | null
           start_date?: string | null
@@ -5953,6 +5976,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_cycles_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_cycles_program_increment_id_fkey"
             columns: ["program_increment_id"]
@@ -6137,6 +6167,7 @@ export type Database = {
           execution_date: string
           execution_time_seconds: number | null
           id: string
+          program_id: string | null
           status: Database["public"]["Enums"]["test_execution_status"]
           test_case_id: string
           test_cycle_id: string
@@ -6150,6 +6181,7 @@ export type Database = {
           execution_date?: string
           execution_time_seconds?: number | null
           id?: string
+          program_id?: string | null
           status?: Database["public"]["Enums"]["test_execution_status"]
           test_case_id: string
           test_cycle_id: string
@@ -6163,12 +6195,20 @@ export type Database = {
           execution_date?: string
           execution_time_seconds?: number | null
           id?: string
+          program_id?: string | null
           status?: Database["public"]["Enums"]["test_execution_status"]
           test_case_id?: string
           test_cycle_id?: string
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_executions_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_executions_test_case_id_fkey"
             columns: ["test_case_id"]
@@ -6192,6 +6232,7 @@ export type Database = {
           id: string
           name: string
           parent_folder_id: string | null
+          program_id: string | null
           team_id: string | null
           updated_at: string | null
         }
@@ -6201,6 +6242,7 @@ export type Database = {
           id?: string
           name: string
           parent_folder_id?: string | null
+          program_id?: string | null
           team_id?: string | null
           updated_at?: string | null
         }
@@ -6210,6 +6252,7 @@ export type Database = {
           id?: string
           name?: string
           parent_folder_id?: string | null
+          program_id?: string | null
           team_id?: string | null
           updated_at?: string | null
         }
@@ -6219,6 +6262,13 @@ export type Database = {
             columns: ["parent_folder_id"]
             isOneToOne: false
             referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_folders_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
           {
@@ -6309,6 +6359,7 @@ export type Database = {
           description: string | null
           id: string
           name: string
+          program_id: string | null
           team_id: string | null
           updated_at: string | null
         }
@@ -6318,6 +6369,7 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
+          program_id?: string | null
           team_id?: string | null
           updated_at?: string | null
         }
@@ -6327,10 +6379,18 @@ export type Database = {
           description?: string | null
           id?: string
           name?: string
+          program_id?: string | null
           team_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_sets_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_sets_team_id_fkey"
             columns: ["team_id"]
