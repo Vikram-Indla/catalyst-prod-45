@@ -115,8 +115,8 @@ export function WorkTreePage() {
               </SelectContent>
             </Select>
             
-            {/* PI Selector - Only show in Team View */}
-            {view === 'team' && programIncrements && programIncrements.length > 0 && (
+            {/* PI Selector - Available for all views */}
+            {programIncrements && programIncrements.length > 0 && (
               <Select 
                 value={selectedPIId || currentPI?.id || ''} 
                 onValueChange={setSelectedPIId}
@@ -135,8 +135,8 @@ export function WorkTreePage() {
             )}
           </div>
           <div className="flex items-center gap-[var(--s2)]">
-            {/* Card Visibility Selector - Only show in Team View */}
-            {view === 'team' && hasDashboard && (
+            {/* Card Visibility Selector - Available for views with dashboard */}
+            {hasDashboard && (
               <Popover>
                 <PopoverTrigger asChild>
                   <Button variant="ghost" size="sm">
