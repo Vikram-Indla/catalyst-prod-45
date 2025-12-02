@@ -73,6 +73,7 @@ import Sprints from "./pages/Sprints";
 import Stories from "./pages/Stories";
 import Subtasks from "./pages/Subtasks";
 import Releases from "./pages/Releases";
+import TeamBacklog from "./pages/team/TeamBacklog";
 import OrgSetup from "./pages/admin/OrgSetup";
 import HierarchyConfig from "./pages/admin/HierarchyConfig";
 import CustomFields from "./pages/admin/CustomFields";
@@ -321,7 +322,7 @@ const App = () => (
               <Route path="/teams" element={<TeamsDirectory />} />
               <Route path="/teams/:teamId/room" element={<TeamRoomDetail />} />
               <Route path="/teams/:teamId/work-tree" element={<WorkTreePage />} />
-              <Route path="/teams/:teamId/backlog" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/backlog" element={<TeamBacklog />} />
               <Route path="/teams/:teamId/board" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/objective-tree" element={<TeamOKRHub />} />
               <Route path="/teams/:teamId/roadmaps" element={<TeamComingSoon />} />
@@ -401,7 +402,7 @@ const App = () => (
               <Route path="/team/:teamId/room" element={<TeamRoomDetail />} />
               
               {/* Team Routes - Placeholder Routes */}
-              <Route path="/team/:teamId/backlog" element={<TeamComingSoon />} />
+              <Route path="/team/:teamId/backlog" element={<TeamBacklog />} />
               <Route path="/team/:teamId/stories" element={<TeamStoriesPage />} />
               <Route path="/team/:teamId/roadmaps" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/objective-tree" element={<TeamOKRHub />} />

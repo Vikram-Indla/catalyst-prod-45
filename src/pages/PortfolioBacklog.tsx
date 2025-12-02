@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Star, Grid3x3, Filter, Search, ListIcon, LayoutGrid, Eye } from 'lucide-react';
+import { Star, Grid3x3, Filter, Search, ListIcon, LayoutGrid, Eye, Plus, ChevronDown } from 'lucide-react';
 import { BacklogViewSelector, BacklogView } from '@/components/portfolio/BacklogViewSelector';
 import { ThemeBacklog } from '@/components/backlog/ThemeBacklog';
 import { EpicBacklogView } from '@/components/backlog/EpicBacklogView';
@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 
 // Citation: (Doc: Navigate to the backlog - PDF provided)
 // Citation: (Doc: Backlog for themes - PDF provided)
@@ -42,6 +43,22 @@ export default function PortfolioBacklog() {
               value={viewingOption} 
               onChange={setViewingOption}
             />
+            {/* Add Item Dropdown - changes based on viewing option */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add {viewingOption === 'theme' ? 'Theme' : viewingOption === 'epic' ? 'Epic' : 'Feature'}
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onClick={() => toast.info(`Create ${viewingOption === 'theme' ? 'Theme' : viewingOption === 'epic' ? 'Epic' : 'Feature'} dialog coming soon`)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create New {viewingOption === 'theme' ? 'Theme' : viewingOption === 'epic' ? 'Epic' : 'Feature'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           
           <div className="flex items-center gap-2">
