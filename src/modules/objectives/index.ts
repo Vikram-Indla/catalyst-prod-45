@@ -25,3 +25,8 @@ export * from './utils/scoreCalculations';
 
 // Components
 export * from './components';
+export { ObjectiveTierBadge } from './components/shared/ObjectiveTierBadge';
+export { ObjectiveHierarchyDialog } from './components/ObjectiveHierarchyDialog';
+
+// Hooks
+export { useObjectiveHierarchy } from './hooks/useObjectiveHierarchy';
