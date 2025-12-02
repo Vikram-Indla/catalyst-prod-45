@@ -29,5 +29,11 @@ export default function TeamRoomDetail() {
     );
   }
 
+  // Conditional rendering based on team type
+  if (team.team_type === 'KANBAN') {
+    const { KanbanTeamRoom } = require('@/components/teams/KanbanTeamRoom');
+    return <KanbanTeamRoom team={team} />;
+  }
+
   return <JiraAlignTeamRoom team={team} />;
 }
