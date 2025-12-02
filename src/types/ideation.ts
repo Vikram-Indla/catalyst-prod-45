@@ -168,12 +168,12 @@ export interface UpdateIdeaRequest {
   description?: string;
   status?: IdeaStatus;
   t_shirt_size?: TShirtSize;
-  owner_id?: string;
+  owner_id?: string | null;
   is_public?: boolean;
-  product_id?: string;
-  customer_id?: string;
-  work_item_id?: string;
-  work_item_type?: WorkItemType;
+  product_id?: string | null;
+  customer_id?: string | null;
+  work_item_id?: string | null;
+  work_item_type?: WorkItemType | null;
   custom_fields?: Record<string, any>;
 }
 
