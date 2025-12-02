@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FolderTree } from '@/components/test-management/FolderTree';
+import { FolderPanel } from '@/components/test-management/FolderPanel';
+import { CreateFolderModal } from '@/components/test-management/CreateFolderModal';
 import { TestCaseHeader } from '@/components/test-management/TestCaseHeader';
 import { TestCaseList } from '@/components/test-management/TestCaseList';
 import { CreateTestCaseModal } from '@/components/test-management/CreateTestCaseModal';
@@ -8,6 +9,7 @@ import { useTestCases, useTestFolders } from '@/hooks/useTestManagement';
 export const TestCasesPage: React.FC = () => {
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [filters, setFilters] = useState({
     status: '',
@@ -39,10 +41,12 @@ export const TestCasesPage: React.FC = () => {
   return (
     <div className="flex h-screen bg-background">
       <div className={`${isSidebarCollapsed ? 'w-16' : 'w-[300px]'} transition-all duration-300`}>
-        <FolderTree
+        <FolderPanel
+          entityType="test_cases"
           folders={foldersData || []}
-          selectedFolder={selectedFolder}
-          onSelectFolder={setSelectedFolder}
+          selectedFolderId={selectedFolder}
+          onFolderSelect={setSelectedFolder}
+          onCreateFolder={() => setIsCreateFolderModalOpen(true)}
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         />
@@ -69,6 +73,15 @@ export const TestCasesPage: React.FC = () => {
           isOpen={isCreateModalOpen}
           onClose={() => setIsCreateModalOpen(false)}
           folders={foldersData || []}
+        />
+      )}
+
+      {isCreateFolderModalOpen && (
+        <CreateFolderModal
+          isOpen={isCreateFolderModalOpen}
+          onClose={() => setIsCreateFolderModalOpen(false)}
+          folders={foldersData || []}
+          entityType="test_cases"
         />
       )}
     </div>
