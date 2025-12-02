@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronRight, ChevronDown, Folder, Plus } from 'lucide-react';
+import { ChevronRight, ChevronDown, Folder, Plus, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FolderActionMenu } from './FolderActionMenu';
@@ -13,12 +13,16 @@ interface FolderTreeProps {
   folders: TestFolder[];
   selectedFolder: string | null;
   onSelectFolder: (folderId: string | null) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export const FolderTree: React.FC<FolderTreeProps> = ({
   folders,
   selectedFolder,
-  onSelectFolder
+  onSelectFolder,
+  isCollapsed = false,
+  onToggleCollapse
 }) => {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
   const [actionModalState, setActionModalState] = useState<{
@@ -92,10 +96,40 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
     );
   };
 
+  if (isCollapsed) {
+    return (
+      <div className="flex flex-col h-full w-16 border-r border-border">
+        <div className="p-4 border-b border-border flex items-center justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleCollapse}
+            className="h-8 w-8"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <Folder className="h-5 w-5 text-muted-foreground" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-border flex items-center justify-between">
         <h2 className="text-lg font-semibold text-foreground">Folders</h2>
+        {onToggleCollapse && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleCollapse}
+            className="h-8 w-8"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       <ScrollArea className="flex-1 p-2">

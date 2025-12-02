@@ -8,6 +8,7 @@ import { useTestCases, useTestFolders } from '@/hooks/useTestManagement';
 export const TestCasesPage: React.FC = () => {
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [filters, setFilters] = useState({
     status: '',
     priority: '',
@@ -37,11 +38,13 @@ export const TestCasesPage: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-background">
-      <div className="w-[300px] border-r border-border flex flex-col">
+      <div className={`${isSidebarCollapsed ? 'w-16' : 'w-[300px]'} transition-all duration-300`}>
         <FolderTree
           folders={foldersData || []}
           selectedFolder={selectedFolder}
           onSelectFolder={setSelectedFolder}
+          isCollapsed={isSidebarCollapsed}
+          onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
         />
       </div>
 
