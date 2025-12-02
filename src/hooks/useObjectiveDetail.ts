@@ -36,19 +36,19 @@ export function useObjectiveDetail(objectiveId?: string) {
 
       // Fetch key results
       const { data: keyResults } = await supabase
-        .from('key_results_v2')
+        .from('key_results')
         .select('*')
         .eq('objective_id', objectiveId);
 
-      // Fetch profiles for key results
+      // Fetch key results with profiles (using type assertion due to pending types.ts regeneration)
       const keyResultsWithProfiles = await Promise.all(
-        (keyResults || []).map(async (kr) => {
+        (keyResults || []).map(async (kr: any) => {
           let krProfile = null;
-          if (kr.owner_user_id) {
+          if (kr.owner_id) {
             const { data: profile } = await supabase
               .from('profiles')
               .select('id, full_name, avatar_url')
-              .eq('id', kr.owner_user_id)
+              .eq('id', kr.owner_id)
               .single();
             krProfile = profile;
           }
@@ -149,7 +149,7 @@ export function useUpdateKeyResult() {
   return useMutation({
     mutationFn: async ({ id, current_value }: { id: string; current_value: number }) => {
       const { data, error } = await supabase
-        .from('key_results_v2')
+        .from('key_results')
         .update({ current_value })
         .eq('id', id)
         .select()
@@ -189,7 +189,7 @@ export function useCreateCheckIn() {
       
       // Update current value on key result
       await supabase
-        .from('key_results_v2')
+        .from('key_results')
         .update({ current_value: value })
         .eq('id', keyResultId);
       
