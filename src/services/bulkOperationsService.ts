@@ -247,8 +247,8 @@ export async function bulkAddToSet(request: BulkAddToSetRequest): Promise<BulkOp
       const { error } = await supabase
         .from('test_set_cases')
         .insert({
-          test_set_id: request.set_id,
-          test_case_id: caseId
+          set_id: request.set_id,
+          case_id: caseId
         });
 
       if (error) throw error;

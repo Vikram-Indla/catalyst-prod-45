@@ -124,8 +124,8 @@ export const AddFolderToSetModal: React.FC<AddFolderToSetModalProps> = ({
                   />
                   <div className="flex-1">
                     <p className="font-medium text-foreground">{set.name}</p>
-                    {set.description && (
-                      <p className="text-sm text-muted-foreground">{set.description}</p>
+                    {set.objective && (
+                      <p className="text-sm text-muted-foreground">{set.objective}</p>
                     )}
                   </div>
                 </div>

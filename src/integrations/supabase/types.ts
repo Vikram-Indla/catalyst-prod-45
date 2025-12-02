@@ -6704,37 +6704,43 @@ export type Database = {
       }
       test_set_cases: {
         Row: {
-          case_order: number | null
-          created_at: string | null
+          added_at: string | null
+          added_by: string | null
+          case_id: string
+          case_version: number | null
           id: string
-          test_case_id: string
-          test_set_id: string
+          set_id: string
+          sort_order: number | null
         }
         Insert: {
-          case_order?: number | null
-          created_at?: string | null
+          added_at?: string | null
+          added_by?: string | null
+          case_id: string
+          case_version?: number | null
           id?: string
-          test_case_id: string
-          test_set_id: string
+          set_id: string
+          sort_order?: number | null
         }
         Update: {
-          case_order?: number | null
-          created_at?: string | null
+          added_at?: string | null
+          added_by?: string | null
+          case_id?: string
+          case_version?: number | null
           id?: string
-          test_case_id?: string
-          test_set_id?: string
+          set_id?: string
+          sort_order?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "test_set_cases_test_case_id_fkey"
-            columns: ["test_case_id"]
+            foreignKeyName: "test_set_cases_case_id_fkey"
+            columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "test_cases"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "test_set_cases_test_set_id_fkey"
-            columns: ["test_set_id"]
+            foreignKeyName: "test_set_cases_set_id_fkey"
+            columns: ["set_id"]
             isOneToOne: false
             referencedRelation: "test_sets"
             referencedColumns: ["id"]
@@ -6744,36 +6750,48 @@ export type Database = {
       test_sets: {
         Row: {
           created_at: string | null
-          created_by: string
-          description: string | null
+          created_by: string | null
           folder_id: string | null
           id: string
+          key: string
           name: string
-          program_id: string | null
-          team_id: string | null
+          objective: string | null
+          owner_id: string | null
+          parent_version_id: string | null
+          program_id: string
+          status: string | null
           updated_at: string | null
+          version: number | null
         }
         Insert: {
           created_at?: string | null
-          created_by: string
-          description?: string | null
+          created_by?: string | null
           folder_id?: string | null
           id?: string
+          key: string
           name: string
-          program_id?: string | null
-          team_id?: string | null
+          objective?: string | null
+          owner_id?: string | null
+          parent_version_id?: string | null
+          program_id: string
+          status?: string | null
           updated_at?: string | null
+          version?: number | null
         }
         Update: {
           created_at?: string | null
-          created_by?: string
-          description?: string | null
+          created_by?: string | null
           folder_id?: string | null
           id?: string
+          key?: string
           name?: string
-          program_id?: string | null
-          team_id?: string | null
+          objective?: string | null
+          owner_id?: string | null
+          parent_version_id?: string | null
+          program_id?: string
+          status?: string | null
           updated_at?: string | null
+          version?: number | null
         }
         Relationships: [
           {
@@ -6784,17 +6802,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "test_sets_program_id_fkey"
-            columns: ["program_id"]
+            foreignKeyName: "test_sets_parent_version_id_fkey"
+            columns: ["parent_version_id"]
             isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_sets_team_id_fkey"
-            columns: ["team_id"]
-            isOneToOne: false
-            referencedRelation: "teams"
+            referencedRelation: "test_sets"
             referencedColumns: ["id"]
           },
         ]

@@ -81,11 +81,17 @@ export interface TestStep {
 
 export interface TestSet {
   id: string;
+  key: string; // SET-001, SET-002, etc.
   name: string;
-  description?: string;
-  program_id?: string;
-  team_id?: string;
-  created_by: string;
+  objective?: string;
+  folder_id?: string;
+  program_id: string;
+  owner_id?: string;
+  status: 'active' | 'archived';
+  version: number;
+  parent_version_id?: string;
+  case_count?: number; // calculated
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }
@@ -96,10 +102,12 @@ export interface TestSet {
 
 export interface TestSetCase {
   id: string;
-  test_set_id: string;
-  test_case_id: string;
-  case_order?: number;
-  created_at: string;
+  set_id: string;
+  case_id: string;
+  case_version: number;
+  sort_order: number;
+  added_at: string;
+  added_by?: string;
 }
 
 // ============================================

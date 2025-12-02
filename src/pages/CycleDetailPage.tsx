@@ -83,7 +83,7 @@ export default function CycleDetailPage() {
       const { data, error } = await supabase
         .from('test_set_cases')
         .select(`
-          test_case_id,
+          case_id,
           test_cases (
             id,
             title,
@@ -91,7 +91,7 @@ export default function CycleDetailPage() {
             priority
           )
         `)
-        .eq('test_set_id', id);
+        .eq('set_id', id) as any;
       if (error) throw error;
       return data;
     },
@@ -161,8 +161,8 @@ export default function CycleDetailPage() {
       const { error } = await supabase
         .from('test_set_cases')
         .delete()
-        .eq('test_set_id', id)
-        .eq('test_case_id', testCaseId);
+        .eq('set_id', id)
+        .eq('case_id', testCaseId);
       
       if (error) throw error;
       toast.success('Test case removed from cycle');

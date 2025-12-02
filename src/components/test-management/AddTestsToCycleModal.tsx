@@ -56,8 +56,8 @@ export function AddTestsToCycleModal({
     setIsAdding(true);
     try {
       const records = selectedIds.map((testCaseId) => ({
-        test_set_id: cycleId,
-        test_case_id: testCaseId,
+        set_id: cycleId,
+        case_id: testCaseId,
       }));
 
       const { error } = await supabase
