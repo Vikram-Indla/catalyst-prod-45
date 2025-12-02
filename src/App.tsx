@@ -172,6 +172,10 @@ import CycleDetailPage from "./pages/CycleDetailPage";
 import TestStepLibraryPage from "./pages/TestStepLibraryPage";
 import TestOverviewPage from "./pages/TestOverviewPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
+import KanbanBoardsPage from "./pages/KanbanBoardsPage";
+import KanbanBoardView from "./pages/KanbanBoardView";
+import KanbanBoardSetup from "./pages/KanbanBoardSetup";
+import KanbanBoardAnalytics from "./pages/KanbanBoardAnalytics";
 
 const queryClient = new QueryClient();
 
@@ -468,6 +472,12 @@ const App = () => (
               <Route path="/programs/:programId/tests/cycles/:id" element={<CycleDetailPage />} />
               <Route path="/programs/:programId/tests/reports" element={<TestReportsPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
+              
+              {/* Kanban Boards Routes */}
+              <Route path="/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/kanban-boards/:boardId" element={<KanbanBoardView />} />
+              <Route path="/kanban-boards/:boardId/setup" element={<KanbanBoardSetup />} />
+              <Route path="/kanban-boards/:boardId/analytics" element={<KanbanBoardAnalytics />} />
               
               <Route path="/insights/portfolio" element={<PortfolioInsights />} />
               <Route path="/insights/program" element={<ProgramInsights />} />

@@ -104,6 +104,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     { id: 'skills-inventory', label: 'Skills inventory', path: '/enterprise/skills-inventory' },
     { id: 'risks', label: 'Risks', path: '/risks' },
     { id: 'impediments', label: 'Impediments', path: '/enterprise/impediments' },
+    { id: 'kanban-boards', label: 'Kanban Boards', path: '/kanban-boards' },
     { id: 'epics', label: 'Epics', path: '/enterprise/epics' },
     { id: 'features', label: 'Features', path: '/enterprise/features' },
     { id: 'stories', label: 'Stories', path: '/enterprise/stories' },
