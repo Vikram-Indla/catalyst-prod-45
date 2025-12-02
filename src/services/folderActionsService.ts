@@ -49,12 +49,21 @@ export async function getFolderCaseSummary(
 export async function createSetFromFolder(
   request: CreateSetFromFolderRequest
 ) {
+  // Auto-generate key
+  const { count } = await supabase
+    .from('test_sets')
+    .select('*', { count: 'exact', head: true })
+    .eq('program_id', request.program_id);
+  
+  const key = `SET-${String((count || 0) + 1).padStart(3, '0')}`;
+  
   // Create the test set
   const { data: newSet, error: setError } = await supabase
     .from('test_sets')
     .insert({
+      key,
       name: request.set_name,
-      description: request.set_description,
+      objective: request.set_description,
       program_id: request.program_id,
       created_by: (await supabase.auth.getUser()).data.user?.id,
     })
@@ -81,9 +90,9 @@ export async function createSetFromFolder(
   // Add cases to set
   if (casesToAdd && casesToAdd.length > 0) {
     const setCases = casesToAdd.map((c, index) => ({
-      test_set_id: newSet.id,
-      test_case_id: c.id,
-      case_order: index + 1,
+      set_id: newSet.id,
+      case_id: c.id,
+      sort_order: index + 1,
     }));
 
     const { error: linkError } = await supabase
@@ -123,9 +132,9 @@ export async function addFolderToSet(
   // Add cases to each selected set
   for (const setId of request.set_ids) {
     const setCases = casesToAdd.map((c, index) => ({
-      test_set_id: setId,
-      test_case_id: c.id,
-      case_order: index + 1,
+      set_id: setId,
+      case_id: c.id,
+      sort_order: index + 1,
     }));
 
     const { error: linkError } = await supabase

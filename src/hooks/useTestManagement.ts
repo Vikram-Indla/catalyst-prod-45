@@ -159,18 +159,17 @@ export function useTestSets(teamId?: string) {
   return useQuery({
     queryKey: teamId ? [...testSetKeys.all, teamId] : testSetKeys.all,
     queryFn: async () => {
-      let query = supabase
+      const baseQuery: any = supabase
         .from('test_sets')
         .select('*')
         .order('created_at', { ascending: false });
       
-      if (teamId) {
-        query = query.eq('team_id', teamId);
-      }
+      const result = teamId 
+        ? await baseQuery.eq('team_id', teamId)
+        : await baseQuery;
       
-      const { data, error } = await query;
-      if (error) throw error;
-      return data as TestSet[];
+      if (result.error) throw result.error;
+      return (result.data || []) as TestSet[];
     },
   });
 }
@@ -598,10 +597,18 @@ export function useCreateTestSet() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (testSet: Omit<TestSet, 'id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (testSet: Omit<TestSet, 'id' | 'created_at' | 'updated_at' | 'case_count'>) => {
+      // Auto-generate key
+      const { count } = await supabase
+        .from('test_sets')
+        .select('*', { count: 'exact', head: true })
+        .eq('program_id', testSet.program_id);
+      
+      const key = `SET-${String((count || 0) + 1).padStart(3, '0')}`;
+      
       const { data, error } = await supabase
         .from('test_sets')
-        .insert([testSet])
+        .insert([{ ...testSet, key }])
         .select()
         .single();
       
@@ -666,8 +673,8 @@ export function useAddTestCasesToSet() {
       testCaseIds: string[];
     }) => {
       const associations = testCaseIds.map(testCaseId => ({
-        test_set_id: testSetId,
-        test_case_id: testCaseId,
+        set_id: testSetId,
+        case_id: testCaseId,
       }));
       
       const { data, error } = await supabase
@@ -698,8 +705,8 @@ export function useRemoveTestCaseFromSet() {
       const { error } = await supabase
         .from('test_set_cases')
         .delete()
-        .eq('test_set_id', testSetId)
-        .eq('test_case_id', testCaseId);
+        .eq('set_id', testSetId)
+        .eq('case_id', testCaseId);
       
       if (error) throw error;
     },
