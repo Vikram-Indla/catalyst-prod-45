@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useKanbanBoards } from '@/hooks/useKanbanBoards';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,12 +17,23 @@ import { CreateBoardDialog } from '@/components/kanban/CreateBoardDialog';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function KanbanBoardsPage() {
+  const { teamId, programId } = useParams<{ teamId?: string; programId?: string }>();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [teamFilter, setTeamFilter] = useState<string>('all');
   const [createBoardOpen, setCreateBoardOpen] = useState(false);
   
-  const { data: boards = [], isLoading } = useKanbanBoards();
+  // Determine base path based on context
+  const basePath = teamId 
+    ? `/team/${teamId}/kanban-boards` 
+    : programId 
+    ? `/programs/${programId}/kanban-boards` 
+    : '/kanban-boards';
+  
+  const { data: boards = [], isLoading } = useKanbanBoards({
+    teamId,
+    programId,
+  });
 
   const filteredBoards = boards.filter(board => {
     const matchesSearch = board.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -31,7 +42,7 @@ export default function KanbanBoardsPage() {
   });
 
   const handleLaunchBoard = (boardId: string) => {
-    navigate(`/kanban-boards/${boardId}`);
+    navigate(`${basePath}/${boardId}`);
   };
 
   return (

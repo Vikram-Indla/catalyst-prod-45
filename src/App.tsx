@@ -219,7 +219,7 @@ const App = () => (
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
-              <Route path="/enterprise/kanban-boards" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/kanban-boards" element={<KanbanBoardsPage />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
