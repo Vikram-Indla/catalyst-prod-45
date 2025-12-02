@@ -6727,6 +6727,106 @@ export type Database = {
           },
         ]
       }
+      test_cycle_case_assignments: {
+        Row: {
+          assigned_at: string | null
+          assigned_by: string | null
+          assigned_to: string | null
+          case_id: string
+          cycle_id: string
+          estimated_effort: number | null
+          id: string
+          milestone: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_to?: string | null
+          case_id: string
+          cycle_id: string
+          estimated_effort?: number | null
+          id?: string
+          milestone?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          assigned_at?: string | null
+          assigned_by?: string | null
+          assigned_to?: string | null
+          case_id?: string
+          cycle_id?: string
+          estimated_effort?: number | null
+          id?: string
+          milestone?: string | null
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_cycle_case_assignments_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycle_case_assignments_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_cycle_dependencies: {
+        Row: {
+          created_at: string | null
+          cycle_id: string
+          dependency_type: string | null
+          id: string
+          predecessor_case_id: string
+          successor_case_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          cycle_id: string
+          dependency_type?: string | null
+          id?: string
+          predecessor_case_id: string
+          successor_case_id: string
+        }
+        Update: {
+          created_at?: string | null
+          cycle_id?: string
+          dependency_type?: string | null
+          id?: string
+          predecessor_case_id?: string
+          successor_case_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_cycle_dependencies_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycle_dependencies_predecessor_case_id_fkey"
+            columns: ["predecessor_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycle_dependencies_successor_case_id_fkey"
+            columns: ["successor_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_cycle_executions: {
         Row: {
           assigned_to: string | null
@@ -6808,10 +6908,54 @@ export type Database = {
           },
         ]
       }
-      test_cycles: {
+      test_cycle_templates: {
         Row: {
+          config: Json
           created_at: string | null
           created_by: string | null
+          description: string | null
+          id: string
+          is_global: boolean | null
+          name: string
+          project_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          config?: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_global?: boolean | null
+          name: string
+          project_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_global?: boolean | null
+          name?: string
+          project_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      test_cycles: {
+        Row: {
+          archive_reason: string | null
+          archived: boolean | null
+          archived_at: string | null
+          archived_by: string | null
+          auto_close_on_completion: boolean | null
+          build_version: string | null
+          created_at: string | null
+          created_by: string | null
+          custom_fields: Json | null
+          email_notifications: boolean | null
           end_date: string | null
           environment: string | null
           folder_id: string | null
@@ -6822,13 +6966,27 @@ export type Database = {
           objective: string | null
           owner_id: string | null
           program_id: string | null
+          scope_locked: boolean | null
+          scope_locked_at: string | null
+          scope_locked_by: string | null
+          source_set_id: string | null
           start_date: string | null
           status: string | null
+          sync_with_set: boolean | null
+          template_id: string | null
           updated_at: string | null
         }
         Insert: {
+          archive_reason?: string | null
+          archived?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
+          auto_close_on_completion?: boolean | null
+          build_version?: string | null
           created_at?: string | null
           created_by?: string | null
+          custom_fields?: Json | null
+          email_notifications?: boolean | null
           end_date?: string | null
           environment?: string | null
           folder_id?: string | null
@@ -6839,13 +6997,27 @@ export type Database = {
           objective?: string | null
           owner_id?: string | null
           program_id?: string | null
+          scope_locked?: boolean | null
+          scope_locked_at?: string | null
+          scope_locked_by?: string | null
+          source_set_id?: string | null
           start_date?: string | null
           status?: string | null
+          sync_with_set?: boolean | null
+          template_id?: string | null
           updated_at?: string | null
         }
         Update: {
+          archive_reason?: string | null
+          archived?: boolean | null
+          archived_at?: string | null
+          archived_by?: string | null
+          auto_close_on_completion?: boolean | null
+          build_version?: string | null
           created_at?: string | null
           created_by?: string | null
+          custom_fields?: Json | null
+          email_notifications?: boolean | null
           end_date?: string | null
           environment?: string | null
           folder_id?: string | null
@@ -6856,8 +7028,14 @@ export type Database = {
           objective?: string | null
           owner_id?: string | null
           program_id?: string | null
+          scope_locked?: boolean | null
+          scope_locked_at?: string | null
+          scope_locked_by?: string | null
+          source_set_id?: string | null
           start_date?: string | null
           status?: string | null
+          sync_with_set?: boolean | null
+          template_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -6866,6 +7044,13 @@ export type Database = {
             columns: ["folder_id"]
             isOneToOne: false
             referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycles_source_set_id_fkey"
+            columns: ["source_set_id"]
+            isOneToOne: false
+            referencedRelation: "test_sets"
             referencedColumns: ["id"]
           },
         ]
