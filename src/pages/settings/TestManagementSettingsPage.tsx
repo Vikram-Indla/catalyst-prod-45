@@ -3,9 +3,10 @@ import {
   CaseStatusesSettings, 
   CasePrioritiesSettings, 
   RunStatusesSettings,
-  EmailPreferencesPanel 
+  EmailPreferencesPanel,
+  FieldConfigurationsSettings
 } from '@/components/settings';
-import { Settings, FileText, Tag, Play, Mail } from 'lucide-react';
+import { Settings, FileText, Tag, Play, Mail, Settings2 } from 'lucide-react';
 
 // Source documents:
 // - Customize_Case_Statuses.doc
@@ -26,15 +27,19 @@ export default function TestManagementSettingsPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="case-statuses" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+      <Tabs defaultValue="field-config" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
+          <TabsTrigger value="field-config" className="flex items-center gap-2">
+            <Settings2 className="h-4 w-4" />
+            <span className="hidden sm:inline">Field Config</span>
+          </TabsTrigger>
           <TabsTrigger value="case-statuses" className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
             <span className="hidden sm:inline">Case Statuses</span>
           </TabsTrigger>
           <TabsTrigger value="case-priorities" className="flex items-center gap-2">
             <Tag className="h-4 w-4" />
-            <span className="hidden sm:inline">Case Priorities</span>
+            <span className="hidden sm:inline">Priorities</span>
           </TabsTrigger>
           <TabsTrigger value="run-statuses" className="flex items-center gap-2">
             <Play className="h-4 w-4" />
@@ -42,9 +47,13 @@ export default function TestManagementSettingsPage() {
           </TabsTrigger>
           <TabsTrigger value="email-preferences" className="flex items-center gap-2">
             <Mail className="h-4 w-4" />
-            <span className="hidden sm:inline">Email Preferences</span>
+            <span className="hidden sm:inline">Email</span>
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="field-config">
+          <FieldConfigurationsSettings />
+        </TabsContent>
 
         <TabsContent value="case-statuses">
           <CaseStatusesSettings />

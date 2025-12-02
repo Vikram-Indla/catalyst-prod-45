@@ -6,3 +6,4 @@ export * from './NotificationCenter';
 export * from './CaseStatusesSettings';
 export * from './CasePrioritiesSettings';
 export * from './RunStatusesSettings';
+export * from './FieldConfigurationsSettings';
