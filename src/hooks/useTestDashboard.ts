@@ -3,33 +3,49 @@ import { supabase } from '@/integrations/supabase/client';
 import { ProjectMetrics, ActivityTrendData, MyWorkItem, ActivityFeedItem } from '@/types/dashboard.types';
 import { format, subDays } from 'date-fns';
 
-// Fetch project metrics
-export const useProjectMetrics = () => {
+// Fetch project metrics (program-scoped)
+export const useProjectMetrics = (programId?: string) => {
   return useQuery({
-    queryKey: ['test-metrics'],
+    queryKey: ['test-metrics', programId],
     queryFn: async (): Promise<ProjectMetrics> => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      let casesQuery = supabase.from('test_cases').select('id', { count: 'exact', head: true });
+      let setsQuery = supabase.from('test_sets').select('id', { count: 'exact', head: true });
+      let cyclesQuery = supabase.from('test_cycles').select('id', { count: 'exact', head: true });
+      let draftCasesQuery = supabase.from('test_cases').select('id', { count: 'exact', head: true }).eq('status', 'draft').eq('created_by', user.id);
+      let activeCyclesQuery = supabase.from('test_cycles').select('id', { count: 'exact', head: true }).in('status', ['planned', 'in_progress']);
+
+      // Apply program filter if programId provided
+      if (programId) {
+        casesQuery = casesQuery.eq('program_id', programId);
+        setsQuery = setsQuery.eq('program_id', programId);
+        cyclesQuery = cyclesQuery.eq('program_id', programId);
+        draftCasesQuery = draftCasesQuery.eq('program_id', programId);
+        activeCyclesQuery = activeCyclesQuery.eq('program_id', programId);
+      }
+
       // Get all counts in parallel
       const [casesResult, setsResult, cyclesResult, draftCasesResult, activeCyclesResult] = await Promise.all([
-        supabase.from('test_cases').select('id', { count: 'exact', head: true }),
-        supabase.from('test_sets').select('id', { count: 'exact', head: true }),
-        supabase.from('test_cycles').select('id', { count: 'exact', head: true }),
-        supabase.from('test_cases').select('id', { count: 'exact', head: true }).eq('status', 'draft').eq('created_by', user.id),
-        supabase.from('test_cycles').select('id', { count: 'exact', head: true }).in('status', ['planned', 'in_progress']),
+        casesQuery,
+        setsQuery,
+        cyclesQuery,
+        draftCasesQuery,
+        activeCyclesQuery,
       ]);
 
       return {
         total_cases: casesResult.count || 0,
         total_sets: setsResult.count || 0,
         total_cycles: cyclesResult.count || 0,
-        total_defects: 0, // Defects are tracked separately, not as test case status
+        total_defects: 0, // Defects are tracked separately
         draft_cases: draftCasesResult.count || 0,
         active_cycles: activeCyclesResult.count || 0,
         open_defects: 0, // Defects are tracked separately
       };
     },
+    enabled: !!programId,
   });
 };
 
@@ -175,10 +191,10 @@ export const useMyWork = (filter: 'all' | 'cases' | 'executions' | 'cycles' = 'a
   });
 };
 
-// Fetch activity feed
-export const useActivityFeed = (filter: 'everyone' | 'me' | 'all' = 'everyone', limit: number = 20, offset: number = 0) => {
+// Fetch activity feed (program-scoped)
+export const useActivityFeed = (filter: 'everyone' | 'me' | 'all' = 'everyone', limit: number = 20, offset: number = 0, programId?: string) => {
   return useQuery({
-    queryKey: ['test-activity-feed', filter, limit, offset],
+    queryKey: ['test-activity-feed', filter, limit, offset, programId],
     queryFn: async (): Promise<ActivityFeedItem[]> => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
@@ -189,7 +205,12 @@ export const useActivityFeed = (filter: 'everyone' | 'me' | 'all' = 'everyone', 
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
-      // Apply filter
+      // Apply program filter if provided
+      if (programId) {
+        query = query.eq('program_id', programId);
+      }
+
+      // Apply user filter
       if (filter === 'me') {
         query = query.eq('user_id', user.id);
       }
@@ -210,15 +231,45 @@ export const useActivityFeed = (filter: 'everyone' | 'me' | 'all' = 'everyone', 
   });
 };
 
-// Create/ensure Adhoc cycle exists
-export const useCreateAdhocCycle = () => {
+// Create/ensure Adhoc cycle exists (program-scoped)
+export const useCreateAdhocCycle = (programId?: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async () => {
-      const { data, error } = await supabase.rpc('create_adhoc_cycle');
+      if (!programId) throw new Error('Program ID required');
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Check if Adhoc cycle already exists for this program
+      const { data: existing } = await supabase
+        .from('test_cycles')
+        .select('id')
+        .eq('program_id', programId)
+        .eq('is_adhoc', true)
+        .maybeSingle();
+
+      if (existing) {
+        return existing.id;
+      }
+
+      // Create Adhoc cycle
+      const { data, error } = await supabase
+        .from('test_cycles')
+        .insert({
+          name: 'Adhoc Cycle',
+          description: 'Default cycle for unplanned testing. Created automatically.',
+          program_id: programId,
+          status: 'planned',
+          is_adhoc: true,
+          created_by: user.id,
+        })
+        .select()
+        .single();
+
       if (error) throw error;
-      return data;
+      return data.id;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['test-metrics'] });
