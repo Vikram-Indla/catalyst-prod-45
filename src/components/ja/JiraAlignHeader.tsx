@@ -36,8 +36,9 @@ export function CatalystHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  // Show Tests dropdown only when in program context (where sidebar shows Tests)
-  const isProgramRoute = location.pathname.includes('/programs/');
+  // Show Tests dropdown only when in program context with tests visible
+  // Tests menu item only exists in ProgramRoomSidebar, not in Portfolio/Enterprise/Team sidebars
+  const isProgramRoute = location.pathname.startsWith('/programs/');
   const isTestsRoute = location.pathname.includes('/tests');
   const showTestsDropdown = isProgramRoute && isTestsRoute;
 
