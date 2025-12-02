@@ -163,7 +163,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
 
   // Count objectives by status
   const statusCounts = {
-    blocked: objectives.filter(o => o.blocked).length,
+    blocked: objectives.filter(o => o.is_blocked).length,
     off_track: objectives.filter(o => o.status === 'off_track').length,
     at_risk: objectives.filter(o => o.status === 'at_risk').length,
     on_track: objectives.filter(o => o.status === 'on_track').length,
@@ -398,7 +398,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                               ◎ {objective.id.slice(0, 4)}
                             </span>
                             <span className="text-sm text-foreground">{objective.summary}</span>
-                            {objective.blocked && (
+                            {objective.is_blocked && (
                               <GitBranch className="h-4 w-4 text-warning" />
                             )}
                           </div>

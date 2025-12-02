@@ -19,7 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Search, Download, Settings2, Eye, EyeOff } from 'lucide-react';
-import { useObjectives, type ObjectiveFilters } from '@/hooks/useObjectives';
+import { useObjectives, type ObjectiveFilters, type ObjectiveStatus, type ObjectiveTier } from '@/hooks/useObjectives';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { ObjectiveDetailsPanelNew } from '@/components/okr/ObjectiveDetailsPanelNew';
 import { OKRColumnsDialog } from '@/components/okr/OKRColumnsDialog';
@@ -59,12 +59,12 @@ export default function OKRHub() {
     search,
     myObjectives: showMyObjectives,
     blockedOnly: quickFilters.blockedOnly,
-    statuses: [
-      ...(quickFilters.onTrack ? ['on_track'] : []),
-      ...(quickFilters.atRisk ? ['at_risk'] : []),
-      ...(quickFilters.offTrack ? ['off_track'] : []),
-      ...(quickFilters.completed ? ['completed'] : []),
-    ],
+    statuses: ([ 
+      ...(quickFilters.onTrack ? ['on_track' as const] : []),
+      ...(quickFilters.atRisk ? ['at_risk' as const] : []),
+      ...(quickFilters.offTrack ? ['off_track' as const] : []),
+      ...(quickFilters.completed ? ['completed' as const] : []),
+    ] as ObjectiveStatus[]),
   };
 
   const { data: objectives = [], isLoading } = useObjectives(activeFilters);
@@ -142,7 +142,7 @@ export default function OKRHub() {
             <Select
               value={filters.tier?.[0] || ''}
               onValueChange={(value) =>
-                setFilters({ ...filters, tier: value ? [value] : undefined })
+                setFilters({ ...filters, tier: value ? [value as ObjectiveTier] : undefined })
               }
             >
               <SelectTrigger className="w-[180px]">
