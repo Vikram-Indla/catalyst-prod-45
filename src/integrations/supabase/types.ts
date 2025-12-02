@@ -7122,6 +7122,41 @@ export type Database = {
           },
         ]
       }
+      test_datasets: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          cycle_id: string | null
+          id: string
+          name: string
+          parameters: Json
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          cycle_id?: string | null
+          id?: string
+          name: string
+          parameters?: Json
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          cycle_id?: string | null
+          id?: string
+          name?: string
+          parameters?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_datasets_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_evidence: {
         Row: {
           created_at: string | null
@@ -7238,6 +7273,51 @@ export type Database = {
             columns: ["execution_id"]
             isOneToOne: false
             referencedRelation: "test_cycle_executions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_execution_runs: {
+        Row: {
+          copied_from_run_id: string | null
+          created_at: string | null
+          created_by: string | null
+          cycle_id: string | null
+          id: string
+          run_name: string | null
+          run_number: number
+        }
+        Insert: {
+          copied_from_run_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          cycle_id?: string | null
+          id?: string
+          run_name?: string | null
+          run_number: number
+        }
+        Update: {
+          copied_from_run_id?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          cycle_id?: string | null
+          id?: string
+          run_name?: string | null
+          run_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_execution_runs_copied_from_run_id_fkey"
+            columns: ["copied_from_run_id"]
+            isOneToOne: false
+            referencedRelation: "test_execution_runs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_execution_runs_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
             referencedColumns: ["id"]
           },
         ]
