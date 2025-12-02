@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Settings, Maximize2, RotateCcw, Info, AlertCircle, Eye } from 'lucide-react';
+import { Settings, Maximize2, Minimize2, RotateCcw, Info, AlertCircle, Eye } from 'lucide-react';
 import { WorkTreeDashboard, METRIC_IDS, MetricId } from './components/WorkTreeDashboard';
 import { WorkTreeHierarchy } from './components/WorkTreeHierarchy';
 import { WorkTreeExtraConfigs } from './components/WorkTreeExtraConfigs';
@@ -36,6 +36,7 @@ export function WorkTreePage() {
   const [narrowToProgram, setNarrowToProgram] = useState(false);
   const [hiddenCards, setHiddenCards] = useState<string[]>([]);
   const [selectedPIId, setSelectedPIId] = useState<string | undefined>(undefined);
+  const [isMaximized, setIsMaximized] = useState(false);
 
   // Fetch available PIs
   const { data: programIncrements } = useQuery({
@@ -95,7 +96,7 @@ export function WorkTreePage() {
   const hasDashboard = view === 'top-down' || view === 'bottom-up' || view === 'team';
 
   return (
-    <div className="h-full w-full flex flex-col bg-background overflow-hidden">
+    <div className={`flex flex-col bg-background overflow-hidden ${isMaximized ? 'fixed inset-0 z-50' : 'h-full w-full'}`}>
       {/* Header */}
       <div className="border-b bg-card">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-[var(--s4)] sm:px-[var(--s6)] h-14 gap-[var(--s3)]">
@@ -185,8 +186,13 @@ export function WorkTreePage() {
             >
               <Info className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="sm">
-              <Maximize2 className="h-4 w-4" />
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => setIsMaximized(!isMaximized)}
+              aria-label={isMaximized ? 'Minimize' : 'Maximize'}
+            >
+              {isMaximized ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
             </Button>
           </div>
         </div>
