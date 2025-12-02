@@ -2173,6 +2173,425 @@ export type Database = {
         }
         Relationships: []
       }
+      idea_groups: {
+        Row: {
+          admin_user_ids: string[] | null
+          allow_voting: boolean
+          approve_external_users: boolean
+          category: string
+          contributor_user_ids: string[] | null
+          created_at: string
+          external_link: string | null
+          form_id: string | null
+          id: string
+          is_enabled: boolean
+          is_public: boolean
+          make_states_public: boolean
+          max_votes_per_idea: number | null
+          name: string
+          product_id: string | null
+          total_user_tokens: number
+          updated_at: string
+          voting_type: string
+        }
+        Insert: {
+          admin_user_ids?: string[] | null
+          allow_voting?: boolean
+          approve_external_users?: boolean
+          category?: string
+          contributor_user_ids?: string[] | null
+          created_at?: string
+          external_link?: string | null
+          form_id?: string | null
+          id?: string
+          is_enabled?: boolean
+          is_public?: boolean
+          make_states_public?: boolean
+          max_votes_per_idea?: number | null
+          name: string
+          product_id?: string | null
+          total_user_tokens?: number
+          updated_at?: string
+          voting_type?: string
+        }
+        Update: {
+          admin_user_ids?: string[] | null
+          allow_voting?: boolean
+          approve_external_users?: boolean
+          category?: string
+          contributor_user_ids?: string[] | null
+          created_at?: string
+          external_link?: string | null
+          form_id?: string | null
+          id?: string
+          is_enabled?: boolean
+          is_public?: boolean
+          make_states_public?: boolean
+          max_votes_per_idea?: number | null
+          name?: string
+          product_id?: string | null
+          total_user_tokens?: number
+          updated_at?: string
+          voting_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "idea_groups_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "ideation_forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideas: {
+        Row: {
+          against_votes: number
+          attachment_count: number
+          comment_count: number
+          created_at: string
+          created_by_id: string
+          custom_fields: Json | null
+          customer_id: string | null
+          description: string
+          for_votes: number
+          id: string
+          idea_group_id: string
+          is_public: boolean
+          owner_id: string
+          product_id: string | null
+          status: string
+          t_shirt_size: string | null
+          title: string
+          token_votes: number
+          updated_at: string
+          vote_score: number
+          work_item_id: string | null
+          work_item_type: string | null
+        }
+        Insert: {
+          against_votes?: number
+          attachment_count?: number
+          comment_count?: number
+          created_at?: string
+          created_by_id: string
+          custom_fields?: Json | null
+          customer_id?: string | null
+          description: string
+          for_votes?: number
+          id?: string
+          idea_group_id: string
+          is_public?: boolean
+          owner_id: string
+          product_id?: string | null
+          status?: string
+          t_shirt_size?: string | null
+          title: string
+          token_votes?: number
+          updated_at?: string
+          vote_score?: number
+          work_item_id?: string | null
+          work_item_type?: string | null
+        }
+        Update: {
+          against_votes?: number
+          attachment_count?: number
+          comment_count?: number
+          created_at?: string
+          created_by_id?: string
+          custom_fields?: Json | null
+          customer_id?: string | null
+          description?: string
+          for_votes?: number
+          id?: string
+          idea_group_id?: string
+          is_public?: boolean
+          owner_id?: string
+          product_id?: string | null
+          status?: string
+          t_shirt_size?: string | null
+          title?: string
+          token_votes?: number
+          updated_at?: string
+          vote_score?: number
+          work_item_id?: string | null
+          work_item_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideas_idea_group_id_fkey"
+            columns: ["idea_group_id"]
+            isOneToOne: false
+            referencedRelation: "idea_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideation_attachments: {
+        Row: {
+          created_at: string
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id: string
+          idea_id: string
+          is_external: boolean
+          uploaded_by_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name: string
+          file_size: number
+          file_type: string
+          file_url: string
+          id?: string
+          idea_id: string
+          is_external?: boolean
+          uploaded_by_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          file_url?: string
+          id?: string
+          idea_id?: string
+          is_external?: boolean
+          uploaded_by_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideation_attachments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideation_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          idea_id: string
+          is_external: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          idea_id: string
+          is_external?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          idea_id?: string
+          is_external?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideation_comments_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideation_external_users: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          is_approved: boolean
+          is_enabled: boolean
+          last_login_at: string | null
+          last_name: string
+          password_hash: string
+          registered_group_ids: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          is_approved?: boolean
+          is_enabled?: boolean
+          last_login_at?: string | null
+          last_name: string
+          password_hash: string
+          registered_group_ids?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          is_approved?: boolean
+          is_enabled?: boolean
+          last_login_at?: string | null
+          last_name?: string
+          password_hash?: string
+          registered_group_ids?: string[] | null
+        }
+        Relationships: []
+      }
+      ideation_form_fields: {
+        Row: {
+          created_at: string
+          field_type: string
+          form_id: string
+          help_text: string | null
+          id: string
+          is_active: boolean
+          is_external: boolean
+          is_required: boolean
+          label: string
+          options: Json | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          field_type: string
+          form_id: string
+          help_text?: string | null
+          id?: string
+          is_active?: boolean
+          is_external?: boolean
+          is_required?: boolean
+          label: string
+          options?: Json | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          field_type?: string
+          form_id?: string
+          help_text?: string | null
+          id?: string
+          is_active?: boolean
+          is_external?: boolean
+          is_required?: boolean
+          label?: string
+          options?: Json | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideation_form_fields_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "ideation_forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideation_forms: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      ideation_subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          idea_id: string
+          is_external: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_id: string
+          is_external?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_id?: string
+          is_external?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideation_subscriptions_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ideation_votes: {
+        Row: {
+          created_at: string
+          id: string
+          idea_id: string
+          token_count: number
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          idea_id: string
+          token_count?: number
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          idea_id?: string
+          token_count?: number
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideation_votes_idea_id_fkey"
+            columns: ["idea_id"]
+            isOneToOne: false
+            referencedRelation: "ideas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       import_history: {
         Row: {
           created_at: string | null
