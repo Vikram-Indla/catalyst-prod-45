@@ -6,6 +6,8 @@ import { useTeamSprints, useSprintStories, useTeamDependencies } from '@/hooks/u
 import { CreateDependencyDialog } from '@/components/dependencies/CreateDependencyDialog';
 import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
+import { AddTeamMemberDialog } from '@/components/teams/AddTeamMemberDialog';
+import { CreateEditStoryPanel } from '@/components/stories/CreateEditStoryPanel';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -13,12 +15,12 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Settings, BarChart3, Video, Search, ChevronDown, 
   MessageSquare, Target, AlertTriangle, Link2, 
-  MessageCircle, Lock, ChevronRight
+  MessageCircle, Lock, ChevronRight, Plus, UserPlus
 } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface JiraAlignTeamRoomProps {
   team: Team;
@@ -37,6 +39,8 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
   const [createDependencyOpen, setCreateDependencyOpen] = useState(false);
   const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
   const [selectedDependencyId, setSelectedDependencyId] = useState<string | null>(null);
+  const [createStoryOpen, setCreateStoryOpen] = useState(false);
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
 
   // Auto-select first sprint if available
   const currentSprint = selectedSprintId 
@@ -199,6 +203,15 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                 </Avatar>
               ))}
             </div>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-xs"
+              onClick={() => setAddMemberOpen(true)}
+            >
+              <UserPlus className="w-3.5 h-3.5 mr-1" />
+              Add Member
+            </Button>
 
             <div className="flex items-center gap-1 ml-4">
               <Button
@@ -524,6 +537,15 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
               </div>
 
               <div className="flex items-center gap-2">
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="text-xs"
+                  onClick={() => setCreateStoryOpen(true)}
+                >
+                  <Plus className="w-3.5 h-3.5 mr-1" />
+                  Quick Add Story
+                </Button>
                 <div className="flex items-center gap-1">
                   <div className="w-24 h-6 bg-gradient-to-r from-primary via-success to-success" />
                 </div>
@@ -718,6 +740,26 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
         <CreateDependencyDialog 
           open={createDependencyOpen}
           onOpenChange={setCreateDependencyOpen}
+          teamId={team?.id}
+        />
+
+        {/* Create Story Panel */}
+        <CreateEditStoryPanel
+          open={createStoryOpen}
+          onClose={() => setCreateStoryOpen(false)}
+          onSuccess={() => {
+            setCreateStoryOpen(false);
+            // Stories will auto-refresh via query
+          }}
+          initialTeamId={team?.id}
+          initialSprintId={selectedSprintId || sprints[0]?.id}
+        />
+
+        {/* Add Team Member Dialog */}
+        <AddTeamMemberDialog
+          teamId={team?.id || ''}
+          open={addMemberOpen}
+          onOpenChange={setAddMemberOpen}
         />
       </div>
     );
