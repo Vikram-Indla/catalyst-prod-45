@@ -8,10 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Progress } from '@/components/ui/progress';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink } from 'lucide-react';
 import { FeatureStatusModal } from '../modals/FeatureStatusModal';
-import { toast } from 'sonner';
+import { AddPIDialog } from '../dialogs/AddPIDialog';
+import { AddProgramDialog } from '../dialogs/AddProgramDialog';
 
 interface EpicDetailsTabProps {
   epic: any;
@@ -19,6 +21,8 @@ interface EpicDetailsTabProps {
 
 export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const [featureStatusOpen, setFeatureStatusOpen] = useState(false);
+  const [addPIOpen, setAddPIOpen] = useState(false);
+  const [addProgramOpen, setAddProgramOpen] = useState(false);
   
   const { data: themes } = useQuery({
     queryKey: ['themes'],
@@ -41,6 +45,42 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     queryFn: async () => {
       const { data } = await supabase.from('program_increments').select('*').order('name');
       return data || [];
+    },
+  });
+
+  // Fetch assigned PIs for this epic
+  const { data: epicPIs } = useQuery({
+    queryKey: ['epic-pis', epic.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('epic_program_increments')
+        .select('pi_id, program_increments(id, name, code)')
+        .eq('epic_id', epic.id);
+      return data || [];
+    },
+  });
+
+  // Fetch child features and their progress
+  const { data: childProgress } = useQuery({
+    queryKey: ['epic-child-progress', epic.id],
+    queryFn: async () => {
+      const { data: features } = await supabase
+        .from('features')
+        .select('id, status, progress_pct')
+        .eq('epic_id', epic.id);
+
+      if (!features || features.length === 0) {
+        return { totalFeatures: 0, completedFeatures: 0, progressPct: 0 };
+      }
+
+      const completedFeatures = features.filter(f => f.status === 'done').length;
+      const avgProgress = features.reduce((sum, f) => sum + (f.progress_pct || 0), 0) / features.length;
+
+      return {
+        totalFeatures: features.length,
+        completedFeatures,
+        progressPct: Math.round(avgProgress),
+      };
     },
   });
 
@@ -160,7 +200,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
               variant="ghost" 
               size="icon" 
               className="h-6 w-6"
-              onClick={() => toast('Add additional program functionality coming soon')}
+              onClick={() => setAddProgramOpen(true)}
             >
               <Plus className="h-3 w-3" />
             </Button>
@@ -173,9 +213,11 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         <div>
           <Label>Program Increments</Label>
           <div className="flex flex-wrap gap-2 mt-2">
-            {epic.program_increments?.length > 0 ? (
-              epic.program_increments.map((pi: string) => (
-                <Badge key={pi} variant="secondary">{pi}</Badge>
+            {epicPIs && epicPIs.length > 0 ? (
+              epicPIs.map((epi: any) => (
+                <Badge key={epi.pi_id} variant="secondary">
+                  {epi.program_increments?.name || epi.pi_id}
+                </Badge>
               ))
             ) : (
               <span className="text-sm text-muted-foreground">No PIs assigned</span>
@@ -185,7 +227,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             variant="outline" 
             size="sm" 
             className="mt-2"
-            onClick={() => toast('Add PI functionality coming soon')}
+            onClick={() => setAddPIOpen(true)}
           >
             <Plus className="h-3 w-3 mr-1" />
             Add PI
@@ -389,10 +431,22 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         
         <div className="border rounded-lg p-4">
           <div className="text-sm text-muted-foreground mb-2">Child Items Progress</div>
-          <div className="text-center py-8">
-            <div className="text-4xl font-bold text-muted-foreground mb-2">0%</div>
-            <div className="text-sm text-muted-foreground">No child items</div>
-          </div>
+          {childProgress && childProgress.totalFeatures > 0 ? (
+            <div className="space-y-3">
+              <div className="text-center">
+                <div className="text-4xl font-bold text-primary mb-1">{childProgress.progressPct}%</div>
+                <div className="text-sm text-muted-foreground">
+                  {childProgress.completedFeatures} of {childProgress.totalFeatures} features complete
+                </div>
+              </div>
+              <Progress value={childProgress.progressPct} className="h-2" />
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-4xl font-bold text-muted-foreground mb-2">0%</div>
+              <div className="text-sm text-muted-foreground">No child items</div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -411,6 +465,20 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         epicId={epic.id}
         open={featureStatusOpen}
         onOpenChange={setFeatureStatusOpen}
+      />
+
+      <AddPIDialog
+        epicId={epic.id}
+        currentPIs={epicPIs?.map((epi: any) => epi.pi_id) || []}
+        open={addPIOpen}
+        onOpenChange={setAddPIOpen}
+      />
+
+      <AddProgramDialog
+        epicId={epic.id}
+        primaryProgramId={epic.primary_program_id}
+        open={addProgramOpen}
+        onOpenChange={setAddProgramOpen}
       />
     </div>
   );
