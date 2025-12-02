@@ -6,9 +6,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Download, RefreshCw, TrendingUp, Clock, BarChart3 } from 'lucide-react';
 
 export default function KanbanBoardAnalytics() {
-  const { boardId } = useParams<{ boardId: string }>();
+  const { boardId, teamId, programId } = useParams<{ boardId: string; teamId?: string; programId?: string }>();
   const navigate = useNavigate();
   const { data: board, isLoading } = useKanbanBoard(boardId);
+
+  // Determine base path based on context
+  const basePath = teamId 
+    ? `/team/${teamId}/kanban-boards` 
+    : programId 
+    ? `/programs/${programId}/kanban-boards` 
+    : '/kanban-boards';
 
   if (isLoading) {
     return (
@@ -22,7 +29,7 @@ export default function KanbanBoardAnalytics() {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4">
         <div className="text-muted-foreground">Board not found</div>
-        <Button onClick={() => navigate('/kanban-boards')}>
+        <Button onClick={() => navigate(basePath)}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Boards
         </Button>
@@ -39,7 +46,7 @@ export default function KanbanBoardAnalytics() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(`/kanban-boards/${boardId}`)}
+              onClick={() => navigate(`${basePath}/${boardId}`)}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Board

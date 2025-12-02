@@ -10,9 +10,16 @@ import { ManageCardsTab } from '@/components/kanban/setup/ManageCardsTab';
 import { ManageUsersTab } from '@/components/kanban/setup/ManageUsersTab';
 
 export default function KanbanBoardSetup() {
-  const { boardId } = useParams<{ boardId: string }>();
+  const { boardId, teamId, programId } = useParams<{ boardId: string; teamId?: string; programId?: string }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('columns');
+
+  // Determine base path based on context
+  const basePath = teamId 
+    ? `/team/${teamId}/kanban-boards` 
+    : programId 
+    ? `/programs/${programId}/kanban-boards` 
+    : '/kanban-boards';
 
   const { data: board, isLoading } = useKanbanBoard(boardId);
   const { data: columns = [] } = useKanbanColumns(boardId);
@@ -30,7 +37,7 @@ export default function KanbanBoardSetup() {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4">
         <div className="text-muted-foreground">Board not found</div>
-        <Button onClick={() => navigate('/kanban-boards')}>
+        <Button onClick={() => navigate(basePath)}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Boards
         </Button>
@@ -39,7 +46,7 @@ export default function KanbanBoardSetup() {
   }
 
   const handleExitSetup = () => {
-    navigate(`/kanban-boards/${boardId}`);
+    navigate(`${basePath}/${boardId}`);
   };
 
   return (
@@ -51,7 +58,7 @@ export default function KanbanBoardSetup() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate('/kanban-boards')}
+              onClick={() => navigate(basePath)}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back

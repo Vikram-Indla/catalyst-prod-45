@@ -14,9 +14,16 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export default function KanbanBoardView() {
-  const { boardId } = useParams<{ boardId: string }>();
+  const { boardId, teamId, programId } = useParams<{ boardId: string; teamId?: string; programId?: string }>();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Determine base path based on context
+  const basePath = teamId 
+    ? `/team/${teamId}/kanban-boards` 
+    : programId 
+    ? `/programs/${programId}/kanban-boards` 
+    : '/kanban-boards';
 
   const { data: board, isLoading: boardLoading } = useKanbanBoard(boardId);
   const { data: columns = [] } = useKanbanColumns(boardId);
@@ -35,7 +42,7 @@ export default function KanbanBoardView() {
     return (
       <div className="flex flex-col items-center justify-center h-full gap-4">
         <div className="text-muted-foreground">Board not found</div>
-        <Button onClick={() => navigate('/kanban-boards')}>
+        <Button onClick={() => navigate(basePath)}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Boards
         </Button>
@@ -58,7 +65,7 @@ export default function KanbanBoardView() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate('/kanban-boards')}
+              onClick={() => navigate(basePath)}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
@@ -75,7 +82,7 @@ export default function KanbanBoardView() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => navigate(`/kanban-boards/${boardId}/setup`)}
+              onClick={() => navigate(`${basePath}/${boardId}/setup`)}
             >
               <Settings className="w-4 h-4 mr-2" />
               Board Setup
@@ -88,7 +95,7 @@ export default function KanbanBoardView() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => navigate(`/kanban-boards/${boardId}/analytics`)}>
+                <DropdownMenuItem onClick={() => navigate(`${basePath}/${boardId}/analytics`)}>
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Lean Analytics
                 </DropdownMenuItem>
@@ -131,7 +138,7 @@ export default function KanbanBoardView() {
               No columns configured. Set up your board to get started.
             </div>
             <Button
-              onClick={() => navigate(`/kanban-boards/${boardId}/setup`)}
+              onClick={() => navigate(`${basePath}/${boardId}/setup`)}
               className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               <Settings className="w-4 h-4 mr-2" />
