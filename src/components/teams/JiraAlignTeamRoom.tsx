@@ -244,6 +244,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
       </div>
 
       {/* Main Content - Three Column Layout */}
+      {activeTab === 'dashboard' && (
       <div className="flex flex-1 overflow-hidden">
         {/* Left Sidebar - Progress & Metrics */}
         <div className="w-64 border-r border-border bg-background p-4 overflow-y-auto">
@@ -786,6 +787,203 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Sprint Board Tab Content */}
+      {activeTab === 'sprint-board' && (
+        <div className="flex-1 overflow-auto p-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* To Do Column */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between px-4 py-3 bg-muted rounded-lg">
+                  <h3 className="font-semibold text-foreground">To Do</h3>
+                  <Badge variant="secondary" className="rounded-full">
+                    {stories.filter(s => s.status === 'todo').length}
+                  </Badge>
+                </div>
+                <div className="space-y-3">
+                  {stories
+                    .filter(s => s.status === 'todo')
+                    .map(story => (
+                      <Card 
+                        key={story.id} 
+                        className="p-4 cursor-pointer hover:shadow-md transition-all border-l-4 border-l-muted"
+                        onClick={() => setSelectedStoryId(story.id)}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <h4 className="text-sm font-medium text-foreground line-clamp-2 flex-1">
+                            {story.name}
+                          </h4>
+                          {story.estimate_points && (
+                            <Badge variant="outline" className="text-xs shrink-0">
+                              {story.estimate_points} pts
+                            </Badge>
+                          )}
+                        </div>
+                        {story.assignee_id && (
+                          <div className="flex items-center gap-2 mt-2">
+                            <Avatar className="w-5 h-5">
+                              <AvatarFallback className="bg-brand-gold text-primary-foreground text-[10px]">
+                                {story.assignee_id.substring(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-xs text-muted-foreground">Assigned</span>
+                          </div>
+                        )}
+                      </Card>
+                    ))}
+                  {stories.filter(s => s.status === 'todo').length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      No stories to do
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* In Progress Column */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between px-4 py-3 bg-info/10 rounded-lg border border-info/20">
+                  <h3 className="font-semibold text-info">In Progress</h3>
+                  <Badge variant="secondary" className="rounded-full bg-info text-primary-foreground">
+                    {stories.filter(s => s.status === 'in_progress').length}
+                  </Badge>
+                </div>
+                <div className="space-y-3">
+                  {stories
+                    .filter(s => s.status === 'in_progress')
+                    .map(story => (
+                      <Card 
+                        key={story.id} 
+                        className="p-4 cursor-pointer hover:shadow-md transition-all border-l-4 border-l-info"
+                        onClick={() => setSelectedStoryId(story.id)}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <h4 className="text-sm font-medium text-foreground line-clamp-2 flex-1">
+                            {story.name}
+                          </h4>
+                          {story.estimate_points && (
+                            <Badge variant="outline" className="text-xs shrink-0">
+                              {story.estimate_points} pts
+                            </Badge>
+                          )}
+                        </div>
+                        {story.progress_pct !== null && story.progress_pct !== undefined && (
+                          <div className="mt-2">
+                            <Progress value={story.progress_pct} className="h-1.5" />
+                            <span className="text-xs text-muted-foreground mt-1 block">
+                              {story.progress_pct}% complete
+                            </span>
+                          </div>
+                        )}
+                        {story.assignee_id && (
+                          <div className="flex items-center gap-2 mt-2">
+                            <Avatar className="w-5 h-5">
+                              <AvatarFallback className="bg-brand-gold text-primary-foreground text-[10px]">
+                                {story.assignee_id.substring(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-xs text-muted-foreground">Assigned</span>
+                          </div>
+                        )}
+                      </Card>
+                    ))}
+                  {stories.filter(s => s.status === 'in_progress').length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      No stories in progress
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Done Column */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between px-4 py-3 bg-success/10 rounded-lg border border-success/20">
+                  <h3 className="font-semibold text-success">Done</h3>
+                  <Badge variant="secondary" className="rounded-full bg-success text-success-foreground">
+                    {stories.filter(s => s.status === 'done').length}
+                  </Badge>
+                </div>
+                <div className="space-y-3">
+                  {stories
+                    .filter(s => s.status === 'done')
+                    .map(story => (
+                      <Card 
+                        key={story.id} 
+                        className="p-4 cursor-pointer hover:shadow-md transition-all border-l-4 border-l-success"
+                        onClick={() => setSelectedStoryId(story.id)}
+                      >
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <h4 className="text-sm font-medium text-foreground line-clamp-2 flex-1">
+                            {story.name}
+                          </h4>
+                          {story.estimate_points && (
+                            <Badge variant="outline" className="text-xs shrink-0">
+                              {story.estimate_points} pts
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-success mt-2">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span>Completed</span>
+                        </div>
+                        {story.assignee_id && (
+                          <div className="flex items-center gap-2 mt-2">
+                            <Avatar className="w-5 h-5">
+                              <AvatarFallback className="bg-brand-gold text-primary-foreground text-[10px]">
+                                {story.assignee_id.substring(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="text-xs text-muted-foreground">Assigned</span>
+                          </div>
+                        )}
+                      </Card>
+                    ))}
+                  {stories.filter(s => s.status === 'done').length === 0 && (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                      No completed stories
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Board Summary */}
+            <Card className="mt-6 p-4 bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div>
+                    <div className="text-sm text-muted-foreground">Total Stories</div>
+                    <div className="text-2xl font-bold text-foreground">{stories.length}</div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Total Points</div>
+                    <div className="text-2xl font-bold text-foreground">
+                      {stories.reduce((sum, s) => sum + (Number(s.estimate_points) || 0), 0)}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Completion</div>
+                    <div className="text-2xl font-bold text-success">
+                      {metrics.accepted}%
+                    </div>
+                  </div>
+                </div>
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  onClick={() => setCreateStoryOpen(true)}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Story
+                </Button>
+              </div>
+            </Card>
+          </div>
+        </div>
+      )}
 
         {/* Story Detail Panel */}
         {selectedStoryId && stories.find(s => s.id === selectedStoryId) && (
