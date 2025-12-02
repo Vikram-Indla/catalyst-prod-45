@@ -180,7 +180,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
             <h1 className="text-xl sm:text-2xl font-semibold text-foreground">OKR Hub</h1>
             <Badge variant="secondary" className="text-xs font-medium">NEW</Badge>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-[var(--s2)]">
             <Button variant="ghost" size="sm" className="text-xs sm:text-sm hidden lg:flex" onClick={() => navigate('/enterprise/objectives')}>
               <ArrowRight className="h-4 w-4 mr-2" />
               All objectives
@@ -200,8 +200,8 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
           </div>
         </div>
 
-        {/* Filter Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+        {/* Filter Row with responsive grid and design tokens */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-[var(--s3)] mb-[var(--s4)]">
           <div className="relative w-full sm:col-span-2">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -284,11 +284,11 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
           </div>
         </div>
 
-        {/* Quick Filters */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+        {/* Quick Filters with responsive layout */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-[var(--s2)] sm:gap-[var(--s3)]">
           <div className="text-xs font-semibold text-muted-foreground uppercase">Quick filters</div>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-[var(--s2)]">
+            <div className="flex items-center gap-[var(--s2)]">
               <Checkbox
                 id="blocked"
                 checked={showBlockedOnly}
@@ -334,18 +334,18 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
         </div>
       </div>
 
-      {/* Table Header Actions */}
-      <div className="border-b bg-card px-3 sm:px-6 py-3">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      {/* Table Header Actions with responsive padding */}
+      <div className="border-b bg-card px-[var(--s3)] sm:px-[var(--s6)] py-[var(--s3)]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[var(--s3)]">
           <h2 className="text-base sm:text-lg font-semibold text-foreground">Objectives</h2>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-[var(--s2)]">
             <Button variant="ghost" size="sm" onClick={handleExportCSV} className="text-xs sm:text-sm">
               Export
             </Button>
             <Button variant="ghost" size="sm" onClick={() => setColumnsDialogOpen(true)} className="text-xs sm:text-sm">
               Columns
             </Button>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-[var(--s2)]">
               <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Show only my objectives</span>
               <span className="text-xs sm:text-sm text-muted-foreground sm:hidden">My only</span>
               <Checkbox

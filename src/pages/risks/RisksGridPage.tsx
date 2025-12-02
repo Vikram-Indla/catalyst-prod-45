@@ -147,11 +147,11 @@ export default function RisksGridPage() {
     <div className="flex h-full w-full bg-background">
       <RisksSidebar className="hidden lg:flex" />
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
-      {/* Page Header */}
-      <div className="border-b bg-card px-2 sm:px-4 lg:px-6 py-2 sm:py-3">
-        <div className="flex flex-col gap-2">
+      {/* Page Header with design tokens */}
+      <div className="border-b bg-card px-[var(--s2)] sm:px-[var(--s4)] lg:px-[var(--s6)] py-[var(--s2)] sm:py-[var(--s3)]">
+        <div className="flex flex-col gap-[var(--s2)]">
           <div className="flex items-center justify-between gap-2 min-w-0">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
+            <div className="flex items-center gap-[var(--s2)] min-w-0 flex-1">
               <span className="text-brand-gold flex-shrink-0 text-sm sm:text-base">☆</span>
               <h1 className="text-sm sm:text-base lg:text-lg font-heading font-semibold text-text-primary truncate">
                 Risk Grid
@@ -176,7 +176,7 @@ export default function RisksGridPage() {
             </Button>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-[var(--s2)]">
             <Button 
               variant="outline" 
               size="sm" 
@@ -223,8 +223,8 @@ export default function RisksGridPage() {
         </div>
       </div>
 
-      {/* Search Bar */}
-      <div className="px-2 sm:px-4 lg:px-6 py-2 border-b">
+      {/* Search Bar with design tokens */}
+      <div className="px-[var(--s2)] sm:px-[var(--s4)] lg:px-[var(--s6)] py-[var(--s2)] border-b">
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <Input

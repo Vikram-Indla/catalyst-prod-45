@@ -207,9 +207,9 @@ export default function CapacityPlanning() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      {/* Header with responsive padding and design tokens */}
+      <div className="border-b bg-card px-[var(--s3)] sm:px-[var(--s6)] py-[var(--s3)] sm:py-[var(--s4)]">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[var(--s3)]">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold">Capacity Planning</h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
@@ -226,8 +226,8 @@ export default function CapacityPlanning() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
+      {/* Content with responsive padding and design tokens */}
+      <div className="flex-1 overflow-auto px-[var(--s3)] sm:px-[var(--s6)] py-[var(--s3)] sm:py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
         <PISelector value={selectedPIId} onChange={setSelectedPIId} />
 
         {selectedPIId.length > 0 && iterations && teams ? (

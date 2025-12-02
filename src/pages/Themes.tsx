@@ -122,9 +122,9 @@ export default function Themes() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
+      {/* Header with responsive padding and design tokens */}
+      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)]">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
           <div>
             <h1 className="text-2xl font-bold">Strategic Themes</h1>
             <p className="text-sm text-muted-foreground">High-level strategic investment areas</p>
@@ -138,9 +138,9 @@ export default function Themes() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-6 space-y-4 overflow-hidden">
-        {/* Filter Bar */}
-        <div className="flex items-center gap-4">
+      <div className="flex-1 flex flex-col px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)] overflow-hidden">
+        {/* Filter Bar with responsive layout */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s4)]">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
