@@ -5783,6 +5783,76 @@ export type Database = {
           },
         ]
       }
+      test_case_datasets: {
+        Row: {
+          case_id: string
+          created_at: string | null
+          dataset_name: string
+          id: string
+          is_active: boolean | null
+          parameter_values: Json
+        }
+        Insert: {
+          case_id: string
+          created_at?: string | null
+          dataset_name: string
+          id?: string
+          is_active?: boolean | null
+          parameter_values: Json
+        }
+        Update: {
+          case_id?: string
+          created_at?: string | null
+          dataset_name?: string
+          id?: string
+          is_active?: boolean | null
+          parameter_values?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_datasets_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_case_parameters: {
+        Row: {
+          case_id: string
+          created_at: string | null
+          description: string | null
+          id: string
+          parameter_name: string
+          parameter_type: string | null
+        }
+        Insert: {
+          case_id: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          parameter_name: string
+          parameter_type?: string | null
+        }
+        Update: {
+          case_id?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          parameter_name?: string
+          parameter_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_parameters_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_shared_steps: {
         Row: {
           created_at: string | null
@@ -5816,6 +5886,141 @@ export type Database = {
           {
             foreignKeyName: "test_case_shared_steps_test_case_id_fkey"
             columns: ["test_case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_case_steps: {
+        Row: {
+          attachment_urls: string[] | null
+          bdd_keyword: string | null
+          case_id: string
+          case_version: number | null
+          created_at: string | null
+          description: string
+          expected_result: string | null
+          id: string
+          is_bdd: boolean | null
+          step_number: number
+          step_type: string | null
+          test_data: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          attachment_urls?: string[] | null
+          bdd_keyword?: string | null
+          case_id: string
+          case_version?: number | null
+          created_at?: string | null
+          description: string
+          expected_result?: string | null
+          id?: string
+          is_bdd?: boolean | null
+          step_number: number
+          step_type?: string | null
+          test_data?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          attachment_urls?: string[] | null
+          bdd_keyword?: string | null
+          case_id?: string
+          case_version?: number | null
+          created_at?: string | null
+          description?: string
+          expected_result?: string | null
+          id?: string
+          is_bdd?: boolean | null
+          step_number?: number
+          step_type?: string | null
+          test_data?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_steps_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_case_versions: {
+        Row: {
+          case_id: string
+          change_summary: string | null
+          created_at: string | null
+          created_by: string | null
+          id: string
+          objective: string | null
+          preconditions: string | null
+          title: string
+          version: number
+        }
+        Insert: {
+          case_id: string
+          change_summary?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          objective?: string | null
+          preconditions?: string | null
+          title: string
+          version: number
+        }
+        Update: {
+          case_id?: string
+          change_summary?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          objective?: string | null
+          preconditions?: string | null
+          title?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_versions_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_case_work_item_links: {
+        Row: {
+          case_id: string
+          id: string
+          linked_at: string | null
+          linked_by: string | null
+          work_item_id: string
+          work_item_type: string | null
+        }
+        Insert: {
+          case_id: string
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          work_item_id: string
+          work_item_type?: string | null
+        }
+        Update: {
+          case_id?: string
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+          work_item_id?: string
+          work_item_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_work_item_links_case_id_fkey"
+            columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "test_cases"
             referencedColumns: ["id"]
@@ -5862,55 +6067,88 @@ export type Database = {
       }
       test_cases: {
         Row: {
+          automation_key: string | null
+          automation_owner_id: string | null
+          automation_status: string | null
+          case_type: string | null
+          component: string | null
           created_at: string | null
           created_by: string
           description: string | null
+          estimated_effort: number | null
           expected_result: string | null
           folder_id: string | null
           id: string
+          labels: string[] | null
           linked_work_item_id: string | null
           linked_work_item_type: string | null
+          objective: string | null
+          owner_id: string | null
           preconditions: string | null
           priority: Database["public"]["Enums"]["test_priority"]
           program_id: string | null
+          release: string | null
           status: Database["public"]["Enums"]["test_case_status"]
           test_type: Database["public"]["Enums"]["test_type"]
           title: string
           updated_at: string | null
+          version: number | null
         }
         Insert: {
+          automation_key?: string | null
+          automation_owner_id?: string | null
+          automation_status?: string | null
+          case_type?: string | null
+          component?: string | null
           created_at?: string | null
           created_by: string
           description?: string | null
+          estimated_effort?: number | null
           expected_result?: string | null
           folder_id?: string | null
           id?: string
+          labels?: string[] | null
           linked_work_item_id?: string | null
           linked_work_item_type?: string | null
+          objective?: string | null
+          owner_id?: string | null
           preconditions?: string | null
           priority?: Database["public"]["Enums"]["test_priority"]
           program_id?: string | null
+          release?: string | null
           status?: Database["public"]["Enums"]["test_case_status"]
           test_type?: Database["public"]["Enums"]["test_type"]
           title: string
           updated_at?: string | null
+          version?: number | null
         }
         Update: {
+          automation_key?: string | null
+          automation_owner_id?: string | null
+          automation_status?: string | null
+          case_type?: string | null
+          component?: string | null
           created_at?: string | null
           created_by?: string
           description?: string | null
+          estimated_effort?: number | null
           expected_result?: string | null
           folder_id?: string | null
           id?: string
+          labels?: string[] | null
           linked_work_item_id?: string | null
           linked_work_item_type?: string | null
+          objective?: string | null
+          owner_id?: string | null
           preconditions?: string | null
           priority?: Database["public"]["Enums"]["test_priority"]
           program_id?: string | null
+          release?: string | null
           status?: Database["public"]["Enums"]["test_case_status"]
           test_type?: Database["public"]["Enums"]["test_type"]
           title?: string
           updated_at?: string | null
+          version?: number | null
         }
         Relationships: [
           {
@@ -7102,7 +7340,12 @@ export type Database = {
         | "PORTFOLIO"
         | "SOLUTION"
         | "PROCESS_FLOW"
-      test_case_status: "draft" | "approved" | "deprecated"
+      test_case_status:
+        | "draft"
+        | "approved"
+        | "deprecated"
+        | "under_review"
+        | "published"
       test_cycle_status: "planned" | "in_progress" | "completed" | "cancelled"
       test_execution_status:
         | "not_run"
@@ -7343,7 +7586,13 @@ export const Constants = {
         "SOLUTION",
         "PROCESS_FLOW",
       ],
-      test_case_status: ["draft", "approved", "deprecated"],
+      test_case_status: [
+        "draft",
+        "approved",
+        "deprecated",
+        "under_review",
+        "published",
+      ],
       test_cycle_status: ["planned", "in_progress", "completed", "cancelled"],
       test_execution_status: [
         "not_run",
