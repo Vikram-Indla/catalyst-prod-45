@@ -46,7 +46,8 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
       objective_id: objectiveId,
       summary: newKrName,
       metric_type: newKrType,
-      goal_value: 100,
+      baseline_value: 0,
+      goal_value: newKrType === 'percentage' ? 100 : 1,
       current_value: 0,
     });
 

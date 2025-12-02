@@ -224,11 +224,39 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
       if (error) throw error;
 
       // Attach key results count to each objective
-      const objectivesWithKRData = (data as Objective[]).map(obj => ({
-        ...obj,
-        keyResults: keyResultsByObjective.get(obj.id) || [],
-        keyResultsCount: (keyResultsByObjective.get(obj.id) || []).length,
-      }));
+      // Calculate progress values for each objective
+      const objectivesWithKRData = (data as Objective[]).map(obj => {
+        const keyResults = keyResultsByObjective.get(obj.id) || [];
+        
+        // Calculate Key Results Progress (average of all KR progress)
+        let krProgress = 0;
+        if (keyResults.length > 0) {
+          let totalProgress = 0;
+          keyResults.forEach(kr => {
+            const baseline = kr.baseline_value || 0;
+            const current = kr.current_value || baseline;
+            const goal = kr.goal_value;
+            
+            if (goal !== baseline) {
+              const progress = (current - baseline) / (goal - baseline);
+              totalProgress += Math.max(0, Math.min(1, progress));
+            }
+          });
+          krProgress = totalProgress / keyResults.length;
+        }
+        
+        // Work Progress would need work item alignments data
+        // For now, use the stored value or default to krProgress as fallback
+        const workProgress = obj.work_progress ?? krProgress;
+        
+        return {
+          ...obj,
+          keyResults,
+          keyResultsCount: keyResults.length,
+          work_progress: workProgress,
+          key_result_progress: krProgress,
+        };
+      });
 
       return objectivesWithKRData;
     },

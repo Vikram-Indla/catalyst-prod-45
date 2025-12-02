@@ -84,9 +84,42 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
       const { data, error } = await supabase
         .from('strategy_snapshots')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false});
       if (error) throw error;
       return data;
+    },
+  });
+
+  // Fetch context-aware portfolios
+  const { data: portfolios = [] } = useQuery({
+    queryKey: ['portfolios-for-filter', scopeType, scopeId],
+    queryFn: async () => {
+      if (scopeType === 'portfolio' && scopeId) {
+        // If in portfolio context, only show current portfolio
+        const { data } = await supabase
+          .from('portfolios')
+          .select('id, name')
+          .eq('id', scopeId);
+        return data || [];
+      }
+      // Otherwise show all portfolios
+      const { data } = await supabase
+        .from('portfolios')
+        .select('id, name')
+        .order('name');
+      return data || [];
+    },
+  });
+
+  // Fetch context-aware program increments
+  const { data: programIncrements = [] } = useQuery({
+    queryKey: ['pis-for-filter', scopeType, scopeId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('program_increments')
+        .select('id, name')
+        .order('created_at', { ascending: false });
+      return data || [];
     },
   });
 
@@ -286,11 +319,15 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
             <div className="text-xs font-semibold text-muted-foreground uppercase">Portfolios</div>
             <Select value={portfolioFilter || "all"} onValueChange={(val) => setPortfolioFilter(val === "all" ? "" : val)}>
               <SelectTrigger className="w-full h-9 text-sm bg-background">
-                <SelectValue placeholder="Digital Services" />
+                <SelectValue placeholder="All Portfolios" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Portfolios</SelectItem>
-                <SelectItem value="portfolio-1">Digital Services</SelectItem>
+                {portfolios.map((portfolio) => (
+                  <SelectItem key={portfolio.id} value={portfolio.id}>
+                    {portfolio.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -299,13 +336,15 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
             <div className="text-xs font-semibold text-muted-foreground uppercase">PI</div>
             <Select value={piFilter || "all"} onValueChange={(val) => setPiFilter(val === "all" ? "" : val)}>
               <SelectTrigger className="w-full h-9 text-sm bg-background">
-                <SelectValue placeholder="Select" />
+                <SelectValue placeholder="All PIs" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All PIs</SelectItem>
-                <SelectItem value="pi-5">PI-5</SelectItem>
-                <SelectItem value="pi-6">PI-6</SelectItem>
-                <SelectItem value="pi-7">PI-7</SelectItem>
+                {programIncrements.map((pi) => (
+                  <SelectItem key={pi.id} value={pi.id}>
+                    {pi.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
