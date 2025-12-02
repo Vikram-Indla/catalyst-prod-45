@@ -4,7 +4,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
+import { useTestNotificationPreferences } from '@/hooks/useTestNotificationPreferences';
 import { toast } from 'sonner';
 import { Mail, MessageSquare, Users, Cog, FileText, AlertCircle } from 'lucide-react';
 
@@ -17,7 +17,7 @@ import { Mail, MessageSquare, Users, Cog, FileText, AlertCircle } from 'lucide-r
 // 5. When a step in a case is updated where the user is the automation owner
 
 export function EmailPreferencesPanel() {
-  const { preferences, isLoading, updatePreferences, isUpdating } = useNotificationPreferences();
+  const { preferences, isLoading, updatePreferences, isUpdating } = useTestNotificationPreferences();
   
   const [localPrefs, setLocalPrefs] = useState({
     email_notifications_enabled: true,
@@ -40,17 +40,17 @@ export function EmailPreferencesPanel() {
     if (preferences) {
       setLocalPrefs({
         email_notifications_enabled: preferences.email_notifications_enabled ?? true,
-        notify_tagged_in_comment: preferences.notify_mentions ?? true,
-        notify_same_comment_edited: false,
-        notify_case_assigned_cycle: true,
-        notify_automation_owner_assigned: true,
-        notify_run_step_assigned: true,
-        notify_step_updated_as_owner: false,
-        notify_work_item_assigned: preferences.notify_work_item_assigned ?? true,
-        notify_work_item_state_change: preferences.notify_work_item_state_change ?? true,
-        notify_subscriptions: preferences.notify_subscriptions ?? true,
-        notify_dependencies: preferences.notify_dependencies ?? true,
-        notify_objectives: preferences.notify_objectives ?? true
+        notify_tagged_in_comment: preferences.notify_tagged_in_comment ?? true,
+        notify_same_comment_edited: preferences.notify_same_comment_edited ?? false,
+        notify_case_assigned_cycle: preferences.notify_case_assigned_cycle ?? true,
+        notify_automation_owner_assigned: preferences.notify_automation_owner_assigned ?? true,
+        notify_run_step_assigned: preferences.notify_run_step_assigned ?? true,
+        notify_step_updated_as_owner: preferences.notify_step_updated_as_owner ?? false,
+        notify_work_item_assigned: true,
+        notify_work_item_state_change: true,
+        notify_subscriptions: true,
+        notify_dependencies: true,
+        notify_objectives: true
       });
     }
   }, [preferences]);
@@ -58,12 +58,12 @@ export function EmailPreferencesPanel() {
   const handleSave = () => {
     updatePreferences({
       email_notifications_enabled: localPrefs.email_notifications_enabled,
-      notify_mentions: localPrefs.notify_tagged_in_comment,
-      notify_work_item_assigned: localPrefs.notify_work_item_assigned,
-      notify_work_item_state_change: localPrefs.notify_work_item_state_change,
-      notify_subscriptions: localPrefs.notify_subscriptions,
-      notify_dependencies: localPrefs.notify_dependencies,
-      notify_objectives: localPrefs.notify_objectives
+      notify_tagged_in_comment: localPrefs.notify_tagged_in_comment,
+      notify_same_comment_edited: localPrefs.notify_same_comment_edited,
+      notify_case_assigned_cycle: localPrefs.notify_case_assigned_cycle,
+      notify_automation_owner_assigned: localPrefs.notify_automation_owner_assigned,
+      notify_run_step_assigned: localPrefs.notify_run_step_assigned,
+      notify_step_updated_as_owner: localPrefs.notify_step_updated_as_owner,
     });
     toast.success('Email preferences saved');
   };

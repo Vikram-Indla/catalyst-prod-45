@@ -27,6 +27,7 @@ import { StoryActivityLog } from './StoryActivityLog';
 import { StoryLinks } from './StoryLinks';
 import { SubtasksList } from './SubtasksList';
 import { StoryAttachments } from './StoryAttachments';
+import { AIOTestsSection } from '@/components/test-management/AIOTestsSection';
 
 interface StoryDetailPanelProps {
   story: StoryWithRelations;
@@ -180,6 +181,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
           <TabsList className="w-full justify-start rounded-none border-b px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] shrink-0 overflow-x-auto flex-nowrap">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="children">Children</TabsTrigger>
+            <TabsTrigger value="tests">Tests</TabsTrigger>
             <TabsTrigger value="links">Links</TabsTrigger>
             <TabsTrigger value="attachments">Attachments</TabsTrigger>
             <TabsTrigger value="discussions">Discussions</TabsTrigger>
@@ -401,6 +403,15 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
 
             <TabsContent value="children" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <SubtasksList storyId={story.id} />
+            </TabsContent>
+
+            <TabsContent value="tests" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
+              <AIOTestsSection
+                workItemId={story.id}
+                workItemType="story"
+                workItemTitle={story.name}
+                workItemDescription={story.description || undefined}
+              />
             </TabsContent>
 
             <TabsContent value="links" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">

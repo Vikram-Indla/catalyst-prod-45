@@ -7687,9 +7687,16 @@ export type Database = {
         Row: {
           created_at: string | null
           daily_test_summary: boolean | null
+          email_notifications_enabled: boolean | null
           id: string
+          notify_automation_owner_assigned: boolean | null
+          notify_case_assigned_cycle: boolean | null
           notify_on_cycle_complete: boolean | null
           notify_on_test_failure: boolean | null
+          notify_run_step_assigned: boolean | null
+          notify_same_comment_edited: boolean | null
+          notify_step_updated_as_owner: boolean | null
+          notify_tagged_in_comment: boolean | null
           updated_at: string | null
           user_id: string
           weekly_test_report: boolean | null
@@ -7697,9 +7704,16 @@ export type Database = {
         Insert: {
           created_at?: string | null
           daily_test_summary?: boolean | null
+          email_notifications_enabled?: boolean | null
           id?: string
+          notify_automation_owner_assigned?: boolean | null
+          notify_case_assigned_cycle?: boolean | null
           notify_on_cycle_complete?: boolean | null
           notify_on_test_failure?: boolean | null
+          notify_run_step_assigned?: boolean | null
+          notify_same_comment_edited?: boolean | null
+          notify_step_updated_as_owner?: boolean | null
+          notify_tagged_in_comment?: boolean | null
           updated_at?: string | null
           user_id: string
           weekly_test_report?: boolean | null
@@ -7707,9 +7721,16 @@ export type Database = {
         Update: {
           created_at?: string | null
           daily_test_summary?: boolean | null
+          email_notifications_enabled?: boolean | null
           id?: string
+          notify_automation_owner_assigned?: boolean | null
+          notify_case_assigned_cycle?: boolean | null
           notify_on_cycle_complete?: boolean | null
           notify_on_test_failure?: boolean | null
+          notify_run_step_assigned?: boolean | null
+          notify_same_comment_edited?: boolean | null
+          notify_step_updated_as_owner?: boolean | null
+          notify_tagged_in_comment?: boolean | null
           updated_at?: string | null
           user_id?: string
           weekly_test_report?: boolean | null

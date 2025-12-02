@@ -24,6 +24,7 @@ import { FeatureLinksTab } from './tabs/FeatureLinksTab';
 import { FeatureAuditTab } from './tabs/FeatureAuditTab';
 import { FeatureAdditionalOptionsTab } from './tabs/FeatureAdditionalOptionsTab';
 import { FeatureChildrenTab } from './tabs/FeatureChildrenTab';
+import { AIOTestsSection } from '@/components/test-management/AIOTestsSection';
 import { toast } from 'sonner';
 import type { Feature } from '@/types/feature.types';
 
@@ -160,6 +161,9 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               <TabsTrigger value="audit" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 Audit
               </TabsTrigger>
+              <TabsTrigger value="tests" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+                Tests
+              </TabsTrigger>
               <TabsTrigger value="options" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
                 Options
               </TabsTrigger>
@@ -209,6 +213,17 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
             <TabsContent value="audit" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
               <FeatureAuditTab featureId={feature?.id} />
+            </TabsContent>
+
+            <TabsContent value="tests" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+              {feature && (
+                <AIOTestsSection
+                  workItemId={feature.id}
+                  workItemType="feature"
+                  workItemTitle={feature.name}
+                  workItemDescription={feature.description || undefined}
+                />
+              )}
             </TabsContent>
 
             <TabsContent value="options" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">

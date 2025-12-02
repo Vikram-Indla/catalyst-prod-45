@@ -173,6 +173,7 @@ import { TestReportsPage } from "./pages/TestReportsPage";
 import CycleDetailPage from "./pages/CycleDetailPage";
 import TestStepLibraryPage from "./pages/TestStepLibraryPage";
 import TestOverviewPage from "./pages/TestOverviewPage";
+import TestManagementSettingsPage from "./pages/settings/TestManagementSettingsPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import KanbanBoardsPage from "./pages/KanbanBoardsPage";
 import KanbanBoardView from "./pages/KanbanBoardView";
@@ -472,6 +473,7 @@ const App = () => (
               <Route path="/programs/:programId/tests/cycles" element={<TestCyclesPage />} />
               <Route path="/programs/:programId/tests/cycles/:id" element={<CycleDetailPage />} />
               <Route path="/programs/:programId/tests/reports" element={<TestReportsPage />} />
+              <Route path="/programs/:programId/tests/settings" element={<TestManagementSettingsPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
               {/* Kanban Boards Routes - Team Scoped */}
