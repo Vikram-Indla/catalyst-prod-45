@@ -14,7 +14,8 @@ import {
   Calendar,
   TrendingUp,
   Menu,
-  ChevronDown
+  ChevronDown,
+  Network
 } from 'lucide-react';
 import {
   Select,
@@ -47,6 +48,7 @@ const menuItems: MenuItem[] = [
   { id: 'stories', label: 'Stories', icon: List, path: '/team/:teamId/stories' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/team/:teamId/roadmaps' },
   { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Target, path: '/team/:teamId/objective-tree' },
+  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/team/:teamId/work-tree' },
   { id: 'team-meetings', label: 'Team meetings', icon: Calendar, path: '/team/:teamId/meetings' },
   { id: 'more-items', label: 'More items', icon: Menu, path: '#', expandable: true },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '#', expandable: true },
