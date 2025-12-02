@@ -10,6 +10,11 @@ import NotificationsSelfTest from '@/pages/dev/NotificationsSelfTest';
 // Backlog module
 import EpicBacklogWithSidebar from '@/pages/EpicBacklogWithSidebar';
 
+// Test Management pages
+import TestOverviewPage from '@/pages/TestOverviewPage';
+import { TestCasesPage } from '@/pages/TestCasesPage';
+import { TestCyclesPage } from '@/pages/TestCyclesPage';
+
 // Stub components
 const Home = () => <div>Home</div>;
 const Login = () => <div>Login</div>;
@@ -64,6 +69,11 @@ export const router = createBrowserRouter([
       { path: 'programs/:programId/roadmaps', element: <Roadmap /> },
       { path: 'programs/:programId/forecast', element: <div>Program Forecast</div> },
       { path: 'programs/:programId/capacity', element: <div>Program Capacity</div> },
+      
+      // Test Management routes (program-scoped)
+      { path: 'programs/:programId/tests/overview', element: <TestOverviewPage /> },
+      { path: 'programs/:programId/tests/cases', element: <TestCasesPage /> },
+      { path: 'programs/:programId/tests/cycles', element: <TestCyclesPage /> },
       
       // Team routes
       { path: 'teams', element: <Teams /> },
