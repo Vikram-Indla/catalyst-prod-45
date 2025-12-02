@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { FlaskConical, Calendar, FolderKanban, FileText, BookOpen, LayoutDashboard } from 'lucide-react';
+import { FlaskConical, Calendar, FolderKanban, Layers, FileText, BookOpen, LayoutDashboard } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +26,11 @@ export function TestsDropdown({ isActive }: TestsDropdownProps) {
       label: 'Cases', 
       icon: FolderKanban,
       path: `/programs/${programId}/tests/cases`
+    },
+    { 
+      label: 'Sets', 
+      icon: Layers,
+      path: `/programs/${programId}/tests/sets`
     },
     { 
       label: 'Cycles', 

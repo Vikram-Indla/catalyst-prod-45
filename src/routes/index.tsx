@@ -15,6 +15,8 @@ import TestOverviewPage from '@/pages/TestOverviewPage';
 import { TestCasesPage } from '@/pages/TestCasesPage';
 import { TestCyclesPage } from '@/pages/TestCyclesPage';
 import { TestSetsPage } from '@/pages/TestSetsPage';
+import TestStepLibraryPage from '@/pages/TestStepLibraryPage';
+import { TestReportsPage } from '@/pages/TestReportsPage';
 
 // Stub components
 const Home = () => <div>Home</div>;
@@ -77,6 +79,8 @@ export const router = createBrowserRouter([
       { path: 'programs/:programId/tests/cases', element: <TestCasesPage /> },
       { path: 'programs/:programId/tests/sets', element: <TestSetsPage /> },
       { path: 'programs/:programId/tests/cycles', element: <TestCyclesPage /> },
+      { path: 'programs/:programId/tests/library', element: <TestStepLibraryPage /> },
+      { path: 'programs/:programId/tests/reports', element: <TestReportsPage /> },
       
       // Team routes
       { path: 'teams', element: <Teams /> },
