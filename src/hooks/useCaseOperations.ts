@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { caseManagementService } from '@/services/caseManagementService';
+import { bulkOperationsService } from '@/services/bulkOperationsService';
 import { toast } from 'sonner';
 import type {
   CopyTestCaseRequest,
@@ -14,6 +15,11 @@ import type {
   DeleteTestCaseRequest,
   RestoreTestCaseRequest,
 } from '@/types/caseManagement';
+import type {
+  BulkEditRequest,
+  BulkDeleteRequest,
+  BulkOperationResult,
+} from '@/types/bulkOperations';
 
 export function useCaseOperations() {
   const queryClient = useQueryClient();
@@ -84,6 +90,32 @@ export function useCaseOperations() {
     },
   });
 
+  // Bulk edit mutation
+  const bulkEditMutation = useMutation<BulkOperationResult, Error, BulkEditRequest>({
+    mutationFn: (request: BulkEditRequest) =>
+      bulkOperationsService.bulkEditCases(request),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['test-cases'] });
+      toast.success(`${data.success_count} of ${data.total_count} case(s) updated successfully`);
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to bulk edit cases: ${error.message}`);
+    },
+  });
+
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation<BulkOperationResult, Error, BulkDeleteRequest>({
+    mutationFn: (request: BulkDeleteRequest) =>
+      bulkOperationsService.bulkDeleteCases(request),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['test-cases'] });
+      toast.success(`${data.success_count} of ${data.total_count} case(s) deleted successfully`);
+    },
+    onError: (error: Error) => {
+      toast.error(`Failed to bulk delete cases: ${error.message}`);
+    },
+  });
+
   return {
     // Operations
     copyCase: copyMutation.mutate,
@@ -91,6 +123,8 @@ export function useCaseOperations() {
     archiveCases: archiveMutation.mutate,
     restoreCases: restoreMutation.mutate,
     deleteCases: deleteMutation.mutate,
+    bulkEdit: bulkEditMutation.mutate,
+    bulkDelete: bulkDeleteMutation.mutate,
 
     // Loading states
     isCopying: copyMutation.isPending,
@@ -98,6 +132,8 @@ export function useCaseOperations() {
     isArchiving: archiveMutation.isPending,
     isRestoring: restoreMutation.isPending,
     isDeleting: deleteMutation.isPending,
+    isBulkEditing: bulkEditMutation.isPending,
+    isBulkDeleting: bulkDeleteMutation.isPending,
     isLoading,
   };
 }

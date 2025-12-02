@@ -23,6 +23,7 @@ interface TestCaseHeaderProps {
   };
   onFilterChange: (filters: any) => void;
   testCases?: TestCase[];
+  children?: React.ReactNode;
 }
 
 export const TestCaseHeader: React.FC<TestCaseHeaderProps> = ({
@@ -30,6 +31,7 @@ export const TestCaseHeader: React.FC<TestCaseHeaderProps> = ({
   filters,
   onFilterChange,
   testCases = [],
+  children,
 }) => {
   const [isImportOpen, setIsImportOpen] = useState(false);
 
@@ -39,6 +41,7 @@ export const TestCaseHeader: React.FC<TestCaseHeaderProps> = ({
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold text-foreground">Test Cases</h1>
           <div className="flex items-center gap-2">
+            {children}
             <Button
               variant="outline"
               onClick={() => setIsImportOpen(true)}
