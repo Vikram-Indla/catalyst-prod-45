@@ -5935,6 +5935,7 @@ export type Database = {
           created_by: string
           description: string | null
           end_date: string | null
+          folder_id: string | null
           id: string
           is_adhoc: boolean | null
           name: string
@@ -5950,6 +5951,7 @@ export type Database = {
           created_by: string
           description?: string | null
           end_date?: string | null
+          folder_id?: string | null
           id?: string
           is_adhoc?: boolean | null
           name: string
@@ -5965,6 +5967,7 @@ export type Database = {
           created_by?: string
           description?: string | null
           end_date?: string | null
+          folder_id?: string | null
           id?: string
           is_adhoc?: boolean | null
           name?: string
@@ -5976,6 +5979,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_cycles_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_cycles_program_id_fkey"
             columns: ["program_id"]
@@ -6229,30 +6239,39 @@ export type Database = {
         Row: {
           created_at: string | null
           created_by: string
+          entity_type: string | null
           id: string
+          is_system: boolean | null
           name: string
           parent_folder_id: string | null
           program_id: string | null
+          sort_order: number | null
           team_id: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           created_by: string
+          entity_type?: string | null
           id?: string
+          is_system?: boolean | null
           name: string
           parent_folder_id?: string | null
           program_id?: string | null
+          sort_order?: number | null
           team_id?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           created_by?: string
+          entity_type?: string | null
           id?: string
+          is_system?: boolean | null
           name?: string
           parent_folder_id?: string | null
           program_id?: string | null
+          sort_order?: number | null
           team_id?: string | null
           updated_at?: string | null
         }
@@ -6357,6 +6376,7 @@ export type Database = {
           created_at: string | null
           created_by: string
           description: string | null
+          folder_id: string | null
           id: string
           name: string
           program_id: string | null
@@ -6367,6 +6387,7 @@ export type Database = {
           created_at?: string | null
           created_by: string
           description?: string | null
+          folder_id?: string | null
           id?: string
           name: string
           program_id?: string | null
@@ -6377,6 +6398,7 @@ export type Database = {
           created_at?: string | null
           created_by?: string
           description?: string | null
+          folder_id?: string | null
           id?: string
           name?: string
           program_id?: string | null
@@ -6384,6 +6406,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "test_sets_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "test_folders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "test_sets_program_id_fkey"
             columns: ["program_id"]
