@@ -224,6 +224,13 @@ export function IdeaCard({
               {idea.status}
             </Badge>
             
+            {/* T-Shirt Size Badge */}
+            {idea.t_shirt_size && (
+              <Badge variant="secondary" className="text-xs">
+                {idea.t_shirt_size}
+              </Badge>
+            )}
+            
             {idea.created_by?.full_name && (
               <span className="text-xs text-muted-foreground">
                 {idea.created_by.full_name}

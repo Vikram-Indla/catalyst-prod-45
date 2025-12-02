@@ -26,7 +26,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useUpdateIdea, useIdeaGroups } from '@/hooks/useIdeation';
+import { ConvertToWorkItemDialog } from './ConvertToWorkItemDialog';
+import { MapToExistingDialog } from './MapToExistingDialog';
 import { toast } from 'sonner';
 import type { Idea, IdeaStatus, IdeaCategory, TShirtSize } from '@/types/ideation';
 import { T_SHIRT_SIZE_ORDER } from '@/types/ideation';
@@ -56,6 +59,18 @@ export function ManageBacklogBoard({ ideas, onIdeaClick }: ManageBacklogBoardPro
   const [selectedGroup, setSelectedGroup] = useState<string>('all');
   const [selectedProduct, setSelectedProduct] = useState<string>('all');
   const [selectedType, setSelectedType] = useState<string>('all');
+  
+  // Dialog state for convert/map
+  const [convertDialog, setConvertDialog] = useState<{ open: boolean; idea: Idea | null; type: 'Epic' | 'Feature' | 'Story' }>({
+    open: false,
+    idea: null,
+    type: 'Epic',
+  });
+  const [mapDialog, setMapDialog] = useState<{ open: boolean; idea: Idea | null; type: 'Epic' | 'Feature' | 'Story' }>({
+    open: false,
+    idea: null,
+    type: 'Feature',
+  });
 
   // Get unique products from ideas (placeholder - would come from products table)
   const products = useMemo(() => {
@@ -141,15 +156,13 @@ export function ManageBacklogBoard({ ideas, onIdeaClick }: ManageBacklogBoardPro
     }
   };
 
-  // Convert handlers
-  const handleConvertTo = (idea: Idea, workItemType: string) => {
-    toast.info(`Converting "${idea.title}" to ${workItemType}...`);
-    // TODO: Implementation would open conversion dialog
+  // Convert handlers - open actual dialogs
+  const handleConvertTo = (idea: Idea, workItemType: 'Epic' | 'Feature' | 'Story') => {
+    setConvertDialog({ open: true, idea, type: workItemType });
   };
 
-  const handleMapToExisting = (idea: Idea, workItemType: string) => {
-    toast.info(`Mapping "${idea.title}" to existing ${workItemType}...`);
-    // TODO: Implementation would open mapping dialog
+  const handleMapToExisting = (idea: Idea, workItemType: 'Epic' | 'Feature' | 'Story') => {
+    setMapDialog({ open: true, idea, type: workItemType });
   };
 
   return (
@@ -317,17 +330,14 @@ export function ManageBacklogBoard({ ideas, onIdeaClick }: ManageBacklogBoardPro
                                     
                                     <DropdownMenuSeparator />
                                     
-                                    {/* Convert options per Jira Align spec */}
+                                    {/* Convert options per Jira Align spec - Epic/Feature/Story only (no Initiative/Capability) */}
                                     <DropdownMenuSub>
                                       <DropdownMenuSubTrigger>
                                         <span>Convert to...</span>
                                       </DropdownMenuSubTrigger>
                                       <DropdownMenuSubContent>
-                                        <DropdownMenuItem onClick={() => handleConvertTo(idea, 'Initiative')}>
-                                          Initiative
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem onClick={() => handleConvertTo(idea, 'Capability')}>
-                                          Capability
+                                        <DropdownMenuItem onClick={() => handleConvertTo(idea, 'Epic')}>
+                                          Epic
                                         </DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => handleConvertTo(idea, 'Feature')}>
                                           Feature
@@ -344,6 +354,9 @@ export function ManageBacklogBoard({ ideas, onIdeaClick }: ManageBacklogBoardPro
                                         <span>Map to Existing...</span>
                                       </DropdownMenuSubTrigger>
                                       <DropdownMenuSubContent>
+                                        <DropdownMenuItem onClick={() => handleMapToExisting(idea, 'Epic')}>
+                                          Epic
+                                        </DropdownMenuItem>
                                         <DropdownMenuItem onClick={() => handleMapToExisting(idea, 'Feature')}>
                                           Feature
                                         </DropdownMenuItem>
@@ -360,6 +373,13 @@ export function ManageBacklogBoard({ ideas, onIdeaClick }: ManageBacklogBoardPro
                                     </DropdownMenuItem>
                                   </DropdownMenuContent>
                                 </DropdownMenu>
+                                
+                                {/* T-Shirt Size badge */}
+                                {idea.t_shirt_size && (
+                                  <Badge variant="outline" className="text-[10px] px-1 py-0 h-4 flex-shrink-0">
+                                    {idea.t_shirt_size}
+                                  </Badge>
+                                )}
                                 
                                 {/* Title - truncated */}
                                 <span 
@@ -389,6 +409,22 @@ export function ManageBacklogBoard({ ideas, onIdeaClick }: ManageBacklogBoardPro
           </div>
         </DragDropContext>
       </div>
+      
+      {/* Convert to Work Item Dialog */}
+      <ConvertToWorkItemDialog
+        open={convertDialog.open}
+        onOpenChange={(open) => setConvertDialog({ ...convertDialog, open })}
+        idea={convertDialog.idea}
+        workItemType={convertDialog.type}
+      />
+      
+      {/* Map to Existing Dialog */}
+      <MapToExistingDialog
+        open={mapDialog.open}
+        onOpenChange={(open) => setMapDialog({ ...mapDialog, open })}
+        idea={mapDialog.idea}
+        workItemType={mapDialog.type}
+      />
     </div>
   );
 }
