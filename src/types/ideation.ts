@@ -217,6 +217,8 @@ export interface IdeaFilters {
   created_by_id?: string;
   has_votes?: boolean;
   has_comments?: boolean;
+  date_from?: string;
+  date_to?: string;
 }
 
 export type IdeaSortField = 'created_at' | 'vote_score' | 'title' | 'status' | 'updated_at';

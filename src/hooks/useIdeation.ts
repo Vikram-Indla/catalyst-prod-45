@@ -166,6 +166,13 @@ export function useIdeas(
       if (filters?.created_by_id) {
         query = query.eq('created_by_id', filters.created_by_id);
       }
+      // Date range filters
+      if (filters?.date_from) {
+        query = query.gte('created_at', filters.date_from);
+      }
+      if (filters?.date_to) {
+        query = query.lte('created_at', filters.date_to + 'T23:59:59');
+      }
       
       // Apply sort
       const sortField = sort?.field || 'created_at';

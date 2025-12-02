@@ -5,7 +5,7 @@
 
 import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { MessageSquare, Bell, BellOff, ChevronUp, ChevronDown, Plus, Minus } from 'lucide-react';
+import { MessageSquare, Bell, BellOff, ChevronUp, ChevronDown, Plus, Minus, Paperclip } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -229,6 +229,14 @@ export function IdeaCard({
               <Badge variant="secondary" className="text-xs">
                 {idea.t_shirt_size}
               </Badge>
+            )}
+            
+            {/* Attachment Indicator - per spec */}
+            {idea.attachment_count > 0 && (
+              <span className="flex items-center gap-1 text-muted-foreground text-xs">
+                <Paperclip className="h-3 w-3" />
+                {idea.attachment_count}
+              </span>
             )}
             
             {idea.created_by?.full_name && (
