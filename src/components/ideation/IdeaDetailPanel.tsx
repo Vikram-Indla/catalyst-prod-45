@@ -5,7 +5,7 @@
 
 import { useState, useRef } from 'react';
 import { formatDistanceToNow, format } from 'date-fns';
-import { X, MoreVertical, MessageSquare, Paperclip, Bell, BellOff, Upload, Trash2, FileText, Image, File } from 'lucide-react';
+import { MoreVertical, MessageSquare, Paperclip, Bell, BellOff, Upload, Trash2, FileText, Image, File } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -31,7 +31,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { useUpdateIdea, useIdeaComments, useCreateComment, useIdeaAttachments, useUploadAttachment, useDeleteAttachment } from '@/hooks/useIdeation';
+import { useUpdateIdea, useIdeaComments, useCreateComment, useIdeaAttachments, useUploadAttachment, useDeleteAttachment, useIdeationUsers } from '@/hooks/useIdeation';
 import { toast } from 'sonner';
 import type { Idea, IdeaStatus, TShirtSize } from '@/types/ideation';
 import { IDEA_STATUS_COLORS, T_SHIRT_SIZE_ORDER } from '@/types/ideation';
@@ -63,6 +63,7 @@ export function IdeaDetailPanel({
   const { data: attachments = [], isLoading: attachmentsLoading } = useIdeaAttachments(idea?.id || '');
   const uploadAttachment = useUploadAttachment();
   const deleteAttachment = useDeleteAttachment();
+  const { data: users = [] } = useIdeationUsers();
 
   const getInitials = (name?: string) => {
     if (!name) return '?';
@@ -98,6 +99,16 @@ export function IdeaDetailPanel({
       toast.success('Size updated');
     } catch {
       toast.error('Failed to update size');
+    }
+  };
+
+  const handleOwnerChange = async (ownerId: string) => {
+    if (!idea) return;
+    try {
+      await updateIdea.mutateAsync({ id: idea.id, owner_id: ownerId === 'unassigned' ? null : ownerId });
+      toast.success('Owner updated');
+    } catch {
+      toast.error('Failed to update owner');
     }
   };
 
@@ -186,9 +197,6 @@ export function IdeaDetailPanel({
                   <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)}>
-                <X className="h-4 w-4" />
-              </Button>
             </div>
           </div>
           <SheetTitle className="text-left mt-2">{idea.title}</SheetTitle>
@@ -268,18 +276,50 @@ export function IdeaDetailPanel({
               </div>
             </div>
 
-            {/* Owner */}
+            {/* Owner - Editable */}
             <div>
               <h4 className="text-sm font-medium mb-2">Owner</h4>
-              <div className="flex items-center gap-2">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={idea.owner?.avatar_url} />
-                  <AvatarFallback className="text-xs">
-                    {getInitials(idea.owner?.full_name)}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm">{idea.owner?.full_name || 'Unassigned'}</span>
-              </div>
+              <Select
+                value={idea.owner_id || 'unassigned'}
+                onValueChange={handleOwnerChange}
+              >
+                <SelectTrigger className="w-[220px]">
+                  <SelectValue placeholder="Select owner">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-5 w-5">
+                        <AvatarImage src={idea.owner?.avatar_url} />
+                        <AvatarFallback className="text-xs">
+                          {getInitials(idea.owner?.full_name)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span>{idea.owner?.full_name || 'Unassigned'}</span>
+                    </div>
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="unassigned">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-5 w-5">
+                        <AvatarFallback className="text-xs">?</AvatarFallback>
+                      </Avatar>
+                      <span>Unassigned</span>
+                    </div>
+                  </SelectItem>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      <div className="flex items-center gap-2">
+                        <Avatar className="h-5 w-5">
+                          <AvatarImage src={user.avatar_url || undefined} />
+                          <AvatarFallback className="text-xs">
+                            {getInitials(user.full_name || user.email)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span>{user.full_name || user.email}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             {/* Created By */}
