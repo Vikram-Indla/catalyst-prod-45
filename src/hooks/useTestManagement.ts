@@ -205,7 +205,7 @@ export function useTestCycles(sprintId?: string) {
         .order('created_at', { ascending: false });
       
       if (sprintId) {
-        query = query.eq('sprint_id', sprintId);
+        // sprint_id column doesn't exist in new schema - filter removed
       }
       
       const { data, error } = await query;
@@ -724,10 +724,17 @@ export function useCreateTestCycle() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (cycle: Omit<TestCycle, 'id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (cycle: Omit<TestCycle, 'id' | 'created_at' | 'updated_at' | 'key'>) => {
+      // Generate cycle key
+      const { count } = await supabase
+        .from('test_cycles')
+        .select('*', { count: 'exact', head: true });
+      
+      const cycleKey = `CYC-${String((count || 0) + 1).padStart(3, '0')}`;
+      
       const { data, error } = await supabase
         .from('test_cycles')
-        .insert([cycle])
+        .insert([{ ...cycle, key: cycleKey }])
         .select()
         .single();
       

@@ -158,14 +158,22 @@ export async function createCycleFromFolder(
 ) {
   const userId = (await supabase.auth.getUser()).data.user?.id;
 
+  // Generate cycle key
+  const { count: cycleCount } = await supabase
+    .from('test_cycles')
+    .select('*', { count: 'exact', head: true });
+  
+  const cycleKey = `CYC-${String((cycleCount || 0) + 1).padStart(3, '0')}`;
+  
   // Create the test cycle
   const { data: newCycle, error: cycleError } = await supabase
     .from('test_cycles')
     .insert({
+      key: cycleKey,
       name: request.cycle_name,
-      description: request.cycle_description,
+      objective: request.cycle_description,
       program_id: request.program_id,
-      status: 'planned',
+      status: 'not_started',
       start_date: request.start_date,
       end_date: request.end_date,
       created_by: userId,

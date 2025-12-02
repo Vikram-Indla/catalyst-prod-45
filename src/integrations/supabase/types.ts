@@ -6299,53 +6299,113 @@ export type Database = {
           },
         ]
       }
+      test_cycle_executions: {
+        Row: {
+          assigned_to: string | null
+          case_id: string
+          case_version: number | null
+          comments: string | null
+          created_at: string | null
+          cycle_id: string
+          effort_minutes: number | null
+          executed_at: string | null
+          executed_by: string | null
+          id: string
+          status: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          case_id: string
+          case_version?: number | null
+          comments?: string | null
+          created_at?: string | null
+          cycle_id: string
+          effort_minutes?: number | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          status?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          case_id?: string
+          case_version?: number | null
+          comments?: string | null
+          created_at?: string | null
+          cycle_id?: string
+          effort_minutes?: number | null
+          executed_at?: string | null
+          executed_by?: string | null
+          id?: string
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_cycle_executions_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_cycle_executions_cycle_id_fkey"
+            columns: ["cycle_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_cycles: {
         Row: {
           created_at: string | null
-          created_by: string
-          description: string | null
+          created_by: string | null
           end_date: string | null
+          environment: string | null
           folder_id: string | null
           id: string
           is_adhoc: boolean | null
+          key: string
           name: string
+          objective: string | null
+          owner_id: string | null
           program_id: string | null
-          program_increment_id: string | null
-          sprint_id: string | null
           start_date: string | null
-          status: Database["public"]["Enums"]["test_cycle_status"]
+          status: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
-          created_by: string
-          description?: string | null
+          created_by?: string | null
           end_date?: string | null
+          environment?: string | null
           folder_id?: string | null
           id?: string
           is_adhoc?: boolean | null
+          key: string
           name: string
+          objective?: string | null
+          owner_id?: string | null
           program_id?: string | null
-          program_increment_id?: string | null
-          sprint_id?: string | null
           start_date?: string | null
-          status?: Database["public"]["Enums"]["test_cycle_status"]
+          status?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
-          created_by?: string
-          description?: string | null
+          created_by?: string | null
           end_date?: string | null
+          environment?: string | null
           folder_id?: string | null
           id?: string
           is_adhoc?: boolean | null
+          key?: string
           name?: string
+          objective?: string | null
+          owner_id?: string | null
           program_id?: string | null
-          program_increment_id?: string | null
-          sprint_id?: string | null
           start_date?: string | null
-          status?: Database["public"]["Enums"]["test_cycle_status"]
+          status?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -6354,27 +6414,6 @@ export type Database = {
             columns: ["folder_id"]
             isOneToOne: false
             referencedRelation: "test_folders"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycles_program_id_fkey"
-            columns: ["program_id"]
-            isOneToOne: false
-            referencedRelation: "programs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycles_program_increment_id_fkey"
-            columns: ["program_increment_id"]
-            isOneToOne: false
-            referencedRelation: "program_increments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_cycles_sprint_id_fkey"
-            columns: ["sprint_id"]
-            isOneToOne: false
-            referencedRelation: "iterations"
             referencedColumns: ["id"]
           },
         ]
@@ -6490,6 +6529,38 @@ export type Database = {
           },
         ]
       }
+      test_execution_defects: {
+        Row: {
+          defect_work_item_id: string
+          execution_id: string
+          id: string
+          linked_at: string | null
+          linked_by: string | null
+        }
+        Insert: {
+          defect_work_item_id: string
+          execution_id: string
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+        }
+        Update: {
+          defect_work_item_id?: string
+          execution_id?: string
+          id?: string
+          linked_at?: string | null
+          linked_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_execution_defects_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycle_executions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_execution_steps: {
         Row: {
           actual_result: string | null
@@ -6594,13 +6665,6 @@ export type Database = {
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "test_cases"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "test_executions_test_cycle_id_fkey"
-            columns: ["test_cycle_id"]
-            isOneToOne: false
-            referencedRelation: "test_cycles"
             referencedColumns: ["id"]
           },
         ]
