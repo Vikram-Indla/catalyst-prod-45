@@ -18,7 +18,8 @@ import {
   GitBranch,
   Link2,
   Calendar,
-  FileText
+  FileText,
+  FlaskConical
 } from 'lucide-react';
 import {
   Select,
@@ -51,6 +52,7 @@ const menuItems: MenuItem[] = [
   { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Target, path: '/programs/:programId/objective-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/programs/:programId/work-tree' },
   { id: 'dependencies', label: 'Dependencies', icon: Link2, path: '/programs/:programId/dependencies' },
+  { id: 'tests', label: 'Tests', icon: FlaskConical, path: '/programs/:programId/tests' },
   { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/programs/:programId/forecast' },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/programs/:programId/capacity', badge: 'NEW' },
   { id: 'increments', label: 'Program Increments', icon: Calendar, path: '/programs/:programId/increments' },
@@ -114,11 +116,14 @@ export function ProgramRoomSidebar({
     enabled: !!programId,
   });
 
-  const handleNavigation = (path: string) => {
+  const handleNavigation = (path: string, autoCollapse = false) => {
     const resolvedPath = path.includes(':programId') 
       ? path.replace(':programId', programId)
       : path;
     navigate(resolvedPath + (selectedPI ? `?pi=${selectedPI}` : ''));
+    if (autoCollapse) {
+      onToggle();
+    }
   };
 
   const isActive = (path?: string) => {
@@ -208,7 +213,9 @@ export function ProgramRoomSidebar({
                       if (isReports) setReportsExpanded(!reportsExpanded);
                       if (isMorePages) setMorePagesExpanded(!morePagesExpanded);
                     } else if ('path' in item && item.path) {
-                      handleNavigation(item.path);
+                      // Auto-collapse sidebar when Tests is clicked
+                      const autoCollapse = item.id === 'tests';
+                      handleNavigation(item.path, autoCollapse);
                     }
                   }}
                   className={cn(
