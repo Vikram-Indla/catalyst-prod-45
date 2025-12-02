@@ -8,13 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ChevronDown, Plus, List, LayoutGrid } from 'lucide-react';
+import { Plus, List, LayoutGrid } from 'lucide-react';
 import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { StoryDialog } from '@/components/forms/StoryDialog';
 import { cn } from '@/lib/utils';
@@ -100,22 +94,11 @@ export default function TeamBacklog() {
             </p>
           </div>
           <div className="flex items-center gap-[var(--s2)]">
-            {/* Add Story Dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover">
-                  <Plus className="h-4 w-4 mr-1" />
-                  Add Story
-                  <ChevronDown className="h-4 w-4 ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setIsCreateStoryOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Create New Story
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {/* Create Story Button */}
+            <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover" onClick={() => setIsCreateStoryOpen(true)}>
+              <Plus className="h-4 w-4 mr-1" />
+              Create Story
+            </Button>
             <Button
               variant={viewMode === 'list' ? 'default' : 'outline'}
               size="sm"
