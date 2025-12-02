@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { ChevronRight, ChevronDown, Folder, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { FolderActionMenu } from './FolderActionMenu';
+import { CreateSetFromFolderModal } from './CreateSetFromFolderModal';
+import { AddFolderToSetModal } from './AddFolderToSetModal';
+import { CreateCycleFromFolderModal } from './CreateCycleFromFolderModal';
+import { AddFolderToCycleModal } from './AddFolderToCycleModal';
 import type { TestFolder } from '@/types/test-management';
 
 interface FolderTreeProps {
@@ -16,6 +21,10 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
   onSelectFolder
 }) => {
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set());
+  const [actionModalState, setActionModalState] = useState<{
+    type: 'createSet' | 'addToSet' | 'createCycle' | 'addToCycle' | null;
+    folder: TestFolder | null;
+  }>({ type: null, folder: null });
 
   const toggleFolder = (folderId: string) => {
     const newExpanded = new Set(expandedFolders);
@@ -64,7 +73,14 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
           )}
           {!hasChildren && <span className="w-4" />}
           <Folder className="h-4 w-4" />
-          <span className="text-sm font-medium">{folder.name}</span>
+          <span className="text-sm font-medium flex-1">{folder.name}</span>
+          <FolderActionMenu
+            folder={folder}
+            onCreateSet={() => setActionModalState({ type: 'createSet', folder })}
+            onAddToSet={() => setActionModalState({ type: 'addToSet', folder })}
+            onCreateCycle={() => setActionModalState({ type: 'createCycle', folder })}
+            onAddToCycle={() => setActionModalState({ type: 'addToCycle', folder })}
+          />
         </div>
 
         {isExpanded &&
@@ -106,6 +122,32 @@ export const FolderTree: React.FC<FolderTreeProps> = ({
           New Folder
         </Button>
       </div>
+
+      {/* Action Modals */}
+      {actionModalState.folder && (
+        <>
+          <CreateSetFromFolderModal
+            isOpen={actionModalState.type === 'createSet'}
+            onClose={() => setActionModalState({ type: null, folder: null })}
+            folder={{ id: actionModalState.folder.id, name: actionModalState.folder.name }}
+          />
+          <AddFolderToSetModal
+            isOpen={actionModalState.type === 'addToSet'}
+            onClose={() => setActionModalState({ type: null, folder: null })}
+            folder={{ id: actionModalState.folder.id, name: actionModalState.folder.name }}
+          />
+          <CreateCycleFromFolderModal
+            isOpen={actionModalState.type === 'createCycle'}
+            onClose={() => setActionModalState({ type: null, folder: null })}
+            folder={{ id: actionModalState.folder.id, name: actionModalState.folder.name }}
+          />
+          <AddFolderToCycleModal
+            isOpen={actionModalState.type === 'addToCycle'}
+            onClose={() => setActionModalState({ type: null, folder: null })}
+            folder={{ id: actionModalState.folder.id, name: actionModalState.folder.name }}
+          />
+        </>
+      )}
     </div>
   );
 };
