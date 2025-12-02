@@ -324,12 +324,12 @@ export default function Roadmaps() {
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-3 sm:px-6 py-3 sm:py-4 border-b border-border">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[var(--s3)] px-[var(--s3)] sm:px-[var(--s6)] py-[var(--s3)] sm:py-[var(--s4)] border-b border-border">
+          <div className="flex items-center gap-[var(--s2)] min-w-0">
             <Star className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             <h1 className="text-lg sm:text-xl font-semibold text-foreground truncate">Live Roadmap</h1>
           </div>
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+          <div className="flex flex-wrap items-center gap-[var(--s2)] sm:gap-[var(--s4)]">
             <Button variant="ghost" size="sm" className="gap-2">
               <Settings className="w-4 h-4" />
               View Configuration
@@ -346,7 +346,7 @@ export default function Roadmaps() {
         </div>
 
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 border-b border-border overflow-x-auto">
+        <div className="flex flex-wrap items-center gap-[var(--s2)] sm:gap-[var(--s3)] px-[var(--s3)] sm:px-[var(--s6)] py-[var(--s2)] sm:py-[var(--s3)] border-b border-border overflow-x-auto">
           {/* Undo/Redo */}
           <div className="flex border border-border rounded overflow-hidden flex-shrink-0">
             <Button
@@ -422,7 +422,7 @@ export default function Roadmaps() {
             </Button>
           </div>
           
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-[var(--s2)] ml-auto">
             {/* Pending Changes Indicator */}
             {pendingChanges.length > 0 && (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-[hsl(var(--modified-dot))]/10 border border-[hsl(var(--modified-dot))] rounded text-[hsl(var(--modified-dot))] text-sm">
@@ -452,7 +452,7 @@ export default function Roadmaps() {
         </div>
 
       {/* Zoom Controls */}
-      <div className="flex items-center gap-3 px-6 py-3 bg-muted/30 border-b border-border">
+      <div className="flex items-center gap-[var(--s3)] px-[var(--s6)] py-[var(--s3)] bg-muted/30 border-b border-border">
         <Button
           variant="outline"
           size="icon"

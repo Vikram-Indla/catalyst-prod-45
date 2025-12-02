@@ -203,14 +203,14 @@ export default function SprintBoard() {
   };
 
   return (
-    <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="px-[var(--s4)] sm:px-[var(--s6)] lg:px-[var(--s8)] py-[var(--s6)] lg:py-[var(--s8)] space-y-[var(--s6)]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s4)]">
         <div>
           <h1 className="text-3xl font-bold">Sprint Board</h1>
           <p className="text-muted-foreground">Manage sprint work items with WIP limits</p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s4)]">
+          <div className="flex items-center gap-[var(--s2)]">
             <Switch
               id="swimlane-mode"
               checked={swimlaneByAssignee}
@@ -225,7 +225,7 @@ export default function SprintBoard() {
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-[var(--s4)]">
         <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
           <SelectTrigger className="w-[240px]">
             <SelectValue placeholder="Select Team" />
@@ -256,10 +256,10 @@ export default function SprintBoard() {
       {selectedSprintId && (
         <DragDropContext onDragEnd={handleDragEnd}>
           {swimlaneByAssignee ? (
-            <div className="space-y-6">
+            <div className="space-y-[var(--s6)]">
               {getUniqueAssignees().map((assignee) => (
-                <div key={assignee.id} className="space-y-2">
-                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                <div key={assignee.id} className="space-y-[var(--s2)]">
+                  <h3 className="text-lg font-semibold flex items-center gap-[var(--s2)]">
                     <Avatar className="h-6 w-6">
                       <AvatarFallback className="text-xs">
                         {assignee.name.slice(0, 2).toUpperCase()}
@@ -267,14 +267,14 @@ export default function SprintBoard() {
                     </Avatar>
                     {assignee.name}
                   </h3>
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--s4)]">
                     {columns.map((column) => renderColumn(column, assignee.id))}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--s4)]">
               {columns.map((column) => renderColumn(column))}
             </div>
           )}
@@ -286,11 +286,11 @@ export default function SprintBoard() {
           <DialogHeader>
             <DialogTitle>Board Configuration</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-[var(--s4)]">
             {columns.map((column, index) => (
-              <div key={column.status} className="space-y-2">
+              <div key={column.status} className="space-y-[var(--s2)]">
                 <Label>{column.title}</Label>
-                <div className="flex gap-2">
+                <div className="flex gap-[var(--s2)]">
                   <Input
                     value={column.title}
                     onChange={(e) => {

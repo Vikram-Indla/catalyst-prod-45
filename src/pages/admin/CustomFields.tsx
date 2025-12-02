@@ -47,15 +47,15 @@ export default function CustomFields() {
   }, {} as Record<string, typeof customFields>);
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+    <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[var(--s3)] sm:gap-[var(--s4)]">
         <div className="min-w-0">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-2">Custom Fields</h1>
           <p className="text-muted-foreground">Extend work items with custom attributes</p>
         </div>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-[var(--s4)]">
         <Select value={entityFilter || undefined} onValueChange={setEntityFilter}>
           <SelectTrigger className="w-[240px]">
             <SelectValue placeholder="All Entity Types" />

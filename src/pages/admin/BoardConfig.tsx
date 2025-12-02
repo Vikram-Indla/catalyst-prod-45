@@ -34,13 +34,13 @@ export default function BoardConfig() {
   };
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
       <div>
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-2">Board Configuration</h1>
         <p className="text-muted-foreground">Configure kanban boards and columns</p>
       </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-[var(--s4)]">
         <Select value={boardTypeFilter || undefined} onValueChange={(value) => setboardTypeFilter(value as typeof boardTypeFilter)}>
           <SelectTrigger className="w-[240px]">
             <SelectValue placeholder="All Board Types" />
@@ -107,8 +107,8 @@ export default function BoardConfig() {
           <CardTitle>Default Board Types</CardTitle>
           <CardDescription>Standard SAFe board configurations</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center justify-between p-3 border rounded-lg">
+        <CardContent className="space-y-[var(--s3)]">
+          <div className="flex items-center justify-between p-[var(--s3)] border rounded-lg">
             <div>
               <div className="font-medium">Portfolio Kanban</div>
               <div className="text-sm text-muted-foreground">

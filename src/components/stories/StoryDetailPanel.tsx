@@ -103,13 +103,13 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <SheetContent className="sm:max-w-3xl w-full p-0 flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b flex-shrink-0">
+        <div className="px-[var(--s6)] py-[var(--s4)] border-b flex-shrink-0">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1 min-w-0">
               <h2 className="text-xl font-semibold truncate">
                 {story.name}
               </h2>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex items-center gap-[var(--s2)] mt-[var(--s2)]">
                 <Badge variant="outline" className="capitalize">
                   {story.status ? STORY_STATUS_LABELS[story.status] : 'To Do'}
                 </Badge>
@@ -120,7 +120,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
               {isEditing ? (
                 <>
                   <Button size="sm" onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
@@ -159,7 +159,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
         {/* Content */}
         <div className="flex-1 overflow-auto">
           <Tabs defaultValue="details" className="h-full">
-            <div className="border-b px-6 sticky top-0 bg-background z-10">
+            <div className="border-b px-[var(--s6)] sticky top-0 bg-background z-10">
               <TabsList className="w-full justify-start">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="children">Children</TabsTrigger>
@@ -170,7 +170,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
               </TabsList>
             </div>
 
-            <TabsContent value="details" className="p-6 space-y-4">
+            <TabsContent value="details" className="px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)]">
               {/* Name */}
               <div>
                 <label className="text-sm font-medium flex items-center gap-2 mb-2">
@@ -242,9 +242,9 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
               )}
             </div>
 
-            <div className="border-t pt-4 mt-4">
-              <h3 className="text-sm font-semibold mb-4 text-brand-gold">Hierarchy & Assignment</h3>
-              <div className="space-y-4">
+            <div className="border-t pt-[var(--s4)] mt-[var(--s4)]">
+              <h3 className="text-sm font-semibold mb-[var(--s4)] text-brand-gold">Hierarchy & Assignment</h3>
+              <div className="space-y-[var(--s4)]">
 
             {/* Feature */}
             <div>
@@ -326,9 +326,9 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
               </div>
             </div>
 
-            <div className="border-t pt-4 mt-4">
-              <h3 className="text-sm font-semibold mb-4 text-brand-gold">Estimation</h3>
-              <div className="space-y-4">
+            <div className="border-t pt-[var(--s4)] mt-[var(--s4)]">
+              <h3 className="text-sm font-semibold mb-[var(--s4)] text-brand-gold">Estimation</h3>
+              <div className="space-y-[var(--s4)]">
 
             {/* Estimate Points */}
             <div>
@@ -381,7 +381,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
             </div>
           </TabsContent>
 
-            <TabsContent value="children" className="p-6">
+            <TabsContent value="children" className="px-[var(--s6)] py-[var(--s6)]">
               <SubtasksList storyId={story.id} />
             </TabsContent>
 
