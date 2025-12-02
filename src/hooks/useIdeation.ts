@@ -500,6 +500,7 @@ export function useToggleSubscription() {
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['ideation-subscription', variables.ideaId] });
+      queryClient.invalidateQueries({ queryKey: ['user-subscriptions'] });
       toast.success(variables.isSubscribed ? 'Unsubscribed' : 'Subscribed');
     },
     onError: (error: any) => {
