@@ -27,3 +27,4 @@ export { BacklogContextMenu } from './components/BacklogContextMenu';
 export { BacklogQuickAdd } from './components/BacklogQuickAdd';
 export { BacklogImportDialog } from './components/BacklogImportDialog';
 export { QuickAddRow } from './components/QuickAddRow';
+export { BulkMoveDialog } from './components/BulkMoveDialog';
