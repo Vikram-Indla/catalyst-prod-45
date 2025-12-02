@@ -61,6 +61,21 @@ export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId, initia
     enabled: open,
   });
 
+  const { data: sprints = [] } = useQuery({
+    queryKey: ['sprints-list', formData.team_id],
+    queryFn: async () => {
+      if (!formData.team_id) return [];
+      const { data, error } = await supabase
+        .from('iterations')
+        .select('id, name')
+        .eq('team_id', formData.team_id)
+        .order('start_date', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: open && !!formData.team_id,
+  });
+
   const { data: existingStory } = useQuery({
     queryKey: ['story-edit', storyId],
     queryFn: async () => {
@@ -194,7 +209,10 @@ export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId, initia
 
             <div className="space-y-2">
               <Label htmlFor="team">Team</Label>
-              <Select value={formData.team_id} onValueChange={(value) => setFormData({ ...formData, team_id: value })}>
+              <Select 
+                value={formData.team_id} 
+                onValueChange={(value) => setFormData({ ...formData, team_id: value, sprint_id: '' })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select team" />
                 </SelectTrigger>
@@ -205,6 +223,24 @@ export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId, initia
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="sprint">Sprint</Label>
+            <Select 
+              value={formData.sprint_id} 
+              onValueChange={(value) => setFormData({ ...formData, sprint_id: value })}
+              disabled={!formData.team_id}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={formData.team_id ? "Select sprint" : "Select team first"} />
+              </SelectTrigger>
+              <SelectContent>
+                {sprints.map((s) => (
+                  <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid grid-cols-3 gap-4">
