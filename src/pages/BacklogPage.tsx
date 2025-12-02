@@ -293,8 +293,8 @@ export default function BacklogPage() {
         onPullRank={() => setPullRankDialogOpen(true)}
       />
 
-      <div className="px-6 py-6">
-        <h2 className="text-2xl font-semibold text-[#172B4D] mb-6">
+      <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
+        <h2 className="text-2xl font-semibold text-[#172B4D] mb-[var(--s6)]">
           All Programs for Digital Services
         </h2>
 

@@ -193,8 +193,8 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
 
   return (
     <>
-      <div className="space-y-2 p-4 border-t">
-        <h3 className="text-sm font-medium mb-3">Quick Actions</h3>
+      <div className="space-y-[var(--s2)] px-[var(--s4)] py-[var(--s4)] border-t">
+        <h3 className="text-sm font-medium mb-[var(--s3)]">Quick Actions</h3>
         
         <Button
           variant="outline"
@@ -255,7 +255,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
           <DialogHeader>
             <DialogTitle>Fast Edit Epic Name</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-[var(--s4)]">
             <div>
               <Label>Epic Name</Label>
               <Input
@@ -264,7 +264,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
                 placeholder="Enter epic name"
               />
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-[var(--s2)]">
               <Button variant="outline" onClick={() => setIsFastEditOpen(false)}>
                 Cancel
               </Button>
@@ -285,7 +285,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
           <DialogHeader>
             <DialogTitle>Attachments</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-[var(--s4)]">
             <div>
               <Label htmlFor="file-upload" className="cursor-pointer">
                 <div className="border-2 border-dashed rounded-lg p-6 text-center hover:border-primary transition-colors">
@@ -307,7 +307,7 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
                 {attachments?.map((attachment) => (
                   <div
                     key={attachment.id}
-                    className="flex items-center gap-2 p-2 border rounded-lg"
+                     className="flex items-center gap-[var(--s2)] px-[var(--s2)] py-[var(--s2)] border rounded-lg"
                   >
                     <Paperclip className="h-4 w-4 text-muted-foreground" />
                     <div className="flex-1 min-w-0">
@@ -356,12 +356,12 @@ export function QuickActionsPanel({ epicId, epicName, onUpdate }: QuickActionsPa
             <ScrollArea className="h-96">
               <div className="space-y-4">
                 {comments?.map((comment) => (
-                  <div key={comment.id} className="flex gap-3 p-3 border rounded-lg">
+                  <div key={comment.id} className="flex gap-[var(--s3)] px-[var(--s3)] py-[var(--s3)] border rounded-lg">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback>U</AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-[var(--s2)] mb-1">
                         <p className="text-sm font-medium">User</p>
                         <p className="text-xs text-muted-foreground">
                           {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}

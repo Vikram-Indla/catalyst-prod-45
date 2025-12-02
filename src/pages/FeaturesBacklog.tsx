@@ -105,7 +105,7 @@ export default function FeaturesBacklog() {
         onPullRank={() => setPullRankDialogOpen(true)}
       />
 
-      <div className="flex-1 overflow-auto px-3 sm:px-[var(--s6)]" style={{ padding: 'var(--s4) var(--s6)' }}>
+      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
         {viewMode === 'list' ? (
           <div className="border rounded-lg bg-card overflow-hidden">
             <FeaturesListView
