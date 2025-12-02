@@ -45,7 +45,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
   const queryClient = useQueryClient();
   
   const [name, setName] = useState('');
-  const [parentFolderId, setParentFolderId] = useState<string>('');
+  const [parentFolderId, setParentFolderId] = useState<string>('none');
 
   const createMutation = useMutation({
     mutationFn: async () => {
@@ -59,7 +59,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
         .from('test_folders')
         .insert({
           name: name.trim(),
-          parent_folder_id: parentFolderId || null,
+          parent_folder_id: parentFolderId === 'none' ? null : parentFolderId,
           program_id: programId,
           created_by: user.id,
         })
@@ -81,7 +81,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
 
   const handleClose = () => {
     setName('');
-    setParentFolderId('');
+    setParentFolderId('none');
     onClose();
   };
 
@@ -121,7 +121,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
                   <SelectValue placeholder="Select parent folder (optional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">None (Root level)</SelectItem>
+                  <SelectItem value="none">None (Root level)</SelectItem>
                   {folders.map((folder) => (
                     <SelectItem key={folder.id} value={folder.id}>
                       {folder.name}
