@@ -1,15 +1,19 @@
 // ==============================================
 // MANAGE IDEATION USERS PAGE
 // Per Jira Align "Manage External Users" spec
+// Purpose: View/enable/disable external users who self-register
+// Reference: ideation-complete-user-guide.md page 38
 // ==============================================
 
 import { useState } from 'react';
-import { Users, Search, Filter, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Search, Filter, X, ArrowLeft, Info } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Table,
   TableBody,
@@ -45,6 +49,7 @@ import { format } from 'date-fns';
 import type { IdeationExternalUser } from '@/types/ideation';
 
 export default function ManageIdeationUsersPage() {
+  const navigate = useNavigate();
   const [filters, setFilters] = useState<ExternalUserFilters>({});
   const [searchInput, setSearchInput] = useState('');
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
@@ -100,6 +105,17 @@ export default function ManageIdeationUsersPage() {
 
   return (
     <div className="container mx-auto p-3 sm:p-4 md:p-6">
+      {/* Back Navigation */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => navigate('/items/ideation')}
+        className="mb-4 -ml-2"
+      >
+        <ArrowLeft className="h-4 w-4 mr-2" />
+        Back to Ideation
+      </Button>
+
       {/* Page Header */}
       <div className="flex items-center gap-3 mb-4 sm:mb-6">
         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded bg-muted flex items-center justify-center">
@@ -114,6 +130,16 @@ export default function ManageIdeationUsersPage() {
           </p>
         </div>
       </div>
+
+      {/* Info Alert */}
+      <Alert className="mb-6">
+        <Info className="h-4 w-4" />
+        <AlertDescription>
+          External users self-register through the external ideation portal. 
+          Here you can view their registrations, enable or disable their access, 
+          and see which campaigns they've joined.
+        </AlertDescription>
+      </Alert>
 
       {/* Search and Filter Bar */}
       <div className="flex flex-col sm:flex-row gap-3 mb-6">
@@ -194,7 +220,7 @@ export default function ManageIdeationUsersPage() {
             ) : users.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  No external users found
+                  No external users found. External users will appear here after they register through the ideation portal.
                 </TableCell>
               </TableRow>
             ) : (
@@ -242,7 +268,7 @@ export default function ManageIdeationUsersPage() {
                   <SelectValue placeholder="All groups" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All groups</SelectItem>
+                  <SelectItem value="all">All groups</SelectItem>
                   {groups.map((group) => (
                     <SelectItem key={group.id} value={group.id}>
                       {group.name}
