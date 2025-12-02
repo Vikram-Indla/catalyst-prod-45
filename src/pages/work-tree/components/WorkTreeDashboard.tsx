@@ -1,33 +1,25 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2, X } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 
 interface WorkTreeDashboardProps {
   view: 'top-down' | 'bottom-up' | 'team';
   data: any;
   isLoading: boolean;
   teamId?: string;
+  currentPI?: { id: string; name: string; end_date: string } | null;
+  hiddenCards: string[];
+  onHideCard: (cardId: string) => void;
 }
 
-export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDashboardProps) {
-  // Fetch current PI for "Days Left" calculation
-  const { data: currentPI } = useQuery({
-    queryKey: ['current-pi-for-work-tree'],
-    queryFn: async () => {
-      const today = new Date().toISOString().split('T')[0];
-      const { data } = await supabase
-        .from('program_increments')
-        .select('id, name, start_date, end_date')
-        .lte('start_date', today)
-        .gte('end_date', today)
-        .order('start_date', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      return data;
-    },
-  });
-
+export function WorkTreeDashboard({ 
+  view, 
+  data, 
+  isLoading, 
+  teamId, 
+  currentPI,
+  hiddenCards,
+  onHideCard
+}: WorkTreeDashboardProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -51,6 +43,7 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
   // 4 progress donuts: Epic, Feature, Story, Task (NO Capability per hard guardrail)
   const metrics = [
     {
+      id: 'epic',
       label: 'Epic Progress',
       total: data?.epicTotal || 0,
       completed: data?.epicCompleted || 0,
@@ -58,6 +51,7 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
       subtext: `${data?.epicCompleted || 0} out of ${data?.epicTotal || 0} Epics accepted.`
     },
     {
+      id: 'feature',
       label: 'Feature Progress',
       total: data?.featureTotal || 0,
       completed: data?.featureCompleted || 0,
@@ -65,6 +59,7 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
       subtext: `${data?.featureCompleted || 0} out of ${data?.featureTotal || 0} Features accepted.`
     },
     {
+      id: 'story',
       label: 'Story Progress',
       total: data?.storyTotal || 0,
       completed: data?.storyCompleted || 0,
@@ -72,6 +67,7 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
       subtext: `${data?.storyCompleted || 0} out of ${data?.storyTotal || 0} Stories accepted`
     },
     {
+      id: 'task',
       label: 'Task Progress',
       total: data?.taskTotal || 0,
       completed: data?.taskCompleted || 0,
@@ -80,48 +76,53 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
     }
   ];
 
+  // Filter out hidden metrics
+  const visibleMetrics = metrics.filter(m => !hiddenCards.includes(m.id));
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+    <div className="flex flex-wrap gap-4">
       {/* PI Days Left Card - Only show in Team View */}
       {view === 'team' && (
-        <Card className="border-r-4 border-r-brand-gold">
+        <Card className="border-l-4 border-l-brand-gold min-w-[200px] flex-shrink-0">
           <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-brand-gold uppercase">
-                PROGRAM INCREMENT: {currentPI?.name || 'N/A'}
+            <div className="mb-3">
+              <span className="text-xs font-semibold text-brand-gold uppercase tracking-wide">
+                PROGRAM INCREMENT:
               </span>
+              <div className="text-sm font-medium text-brand-gold mt-0.5">
+                {currentPI?.name || 'N/A'}
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-center">
-                <div className="text-xs text-muted-foreground">Days Left</div>
-                <div className="text-4xl font-bold">{daysLeft}</div>
+                <div className="text-xs text-muted-foreground">Days</div>
+                <div className="text-xs text-muted-foreground">Left</div>
+                <div className="text-4xl font-bold mt-1">{daysLeft}</div>
               </div>
-              <div className="flex-1">
+              <div className="flex-1 flex flex-col items-center">
                 {/* Mini gauge for story points */}
-                <div className="relative h-16 flex items-center justify-center">
-                  <div className="relative w-14 h-14">
-                    <svg className="w-full h-full" viewBox="0 0 100 100">
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        fill="none"
-                        stroke="hsl(var(--muted))"
-                        strokeWidth="8"
-                      />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        fill="none"
-                        stroke="hsl(var(--brand-gold))"
-                        strokeWidth="8"
-                        strokeDasharray={`${storyPointsAcceptedPct * 2.51} 251`}
-                        strokeLinecap="round"
-                        transform="rotate(-90 50 50)"
-                      />
-                    </svg>
-                  </div>
+                <div className="relative w-16 h-16">
+                  <svg className="w-full h-full" viewBox="0 0 100 100">
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="none"
+                      stroke="hsl(var(--muted))"
+                      strokeWidth="8"
+                    />
+                    <circle
+                      cx="50"
+                      cy="50"
+                      r="40"
+                      fill="none"
+                      stroke="hsl(var(--brand-gold))"
+                      strokeWidth="8"
+                      strokeDasharray={`${storyPointsAcceptedPct * 2.51} 251`}
+                      strokeLinecap="round"
+                      transform="rotate(-90 50 50)"
+                    />
+                  </svg>
                 </div>
                 <div className="text-xs text-center text-muted-foreground mt-1">
                   % Story points accepted
@@ -133,17 +134,24 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
       )}
 
       {/* Progress Metrics */}
-      {metrics.map((metric) => (
-        <Card key={metric.label}>
-          <CardContent className="p-4 space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">{metric.label}</span>
-              <button className="text-muted-foreground hover:text-foreground">
-                <X className="h-3 w-3" />
+      {visibleMetrics.map((metric) => (
+        <Card key={metric.id} className="min-w-[180px] flex-shrink-0">
+          <CardContent className="p-4">
+            <div className="flex items-start justify-between mb-2">
+              <span className="text-sm font-semibold leading-tight">
+                {metric.label.split(' ')[0]}<br />
+                {metric.label.split(' ')[1]}
+              </span>
+              <button 
+                className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
+                onClick={() => onHideCard(metric.id)}
+                aria-label={`Hide ${metric.label}`}
+              >
+                <X className="h-4 w-4" />
               </button>
             </div>
-            <div className="relative h-20 flex items-center justify-center">
-              <div className="relative w-16 h-16">
+            <div className="relative h-24 flex items-center justify-center">
+              <div className="relative w-20 h-20">
                 <svg className="w-full h-full" viewBox="0 0 100 100">
                   <circle
                     cx="50"
@@ -166,11 +174,11 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
                   />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-semibold">{metric.progress}%</span>
+                  <span className="text-xl font-bold">{metric.progress}%</span>
                 </div>
               </div>
             </div>
-            <div className="text-xs text-center text-muted-foreground">
+            <div className="text-xs text-center text-muted-foreground mt-2">
               {metric.subtext}
             </div>
           </CardContent>
@@ -179,3 +187,7 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
     </div>
   );
 }
+
+// Export metric IDs for use in parent component
+export const METRIC_IDS = ['epic', 'feature', 'story', 'task'] as const;
+export type MetricId = typeof METRIC_IDS[number];
