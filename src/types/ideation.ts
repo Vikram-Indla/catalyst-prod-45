@@ -199,11 +199,12 @@ export interface UpdateIdeaGroupRequest {
   make_states_public?: boolean;
   allow_voting?: boolean;
   voting_type?: VotingType;
-  max_votes_per_idea?: number;
+  max_votes_per_idea?: number | null;
   total_user_tokens?: number;
   approve_external_users?: boolean;
-  form_id?: string;
-  product_id?: string;
+  external_link?: string | null;
+  form_id?: string | null;
+  product_id?: string | null;
   admin_user_ids?: string[];
   contributor_user_ids?: string[];
 }

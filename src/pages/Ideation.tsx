@@ -13,6 +13,7 @@ import { IdeaDetailPanel } from '@/components/ideation/IdeaDetailPanel';
 import { CreateIdeaDialog } from '@/components/ideation/CreateIdeaDialog';
 import { FilterDialog } from '@/components/ideation/FilterDialog';
 import { KeyMetricsDialog } from '@/components/ideation/KeyMetricsDialog';
+import { IdeaGroupSetupDialog } from '@/components/ideation/IdeaGroupSetupDialog';
 import {
   useIdeaGroups,
   useIdeas,
@@ -42,6 +43,7 @@ export default function Ideation() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [metricsDialogOpen, setMetricsDialogOpen] = useState(false);
+  const [setupDialogOpen, setSetupDialogOpen] = useState(false);
 
   // Data fetching
   const { data: groups = [], isLoading: groupsLoading } = useIdeaGroups();
@@ -187,10 +189,8 @@ export default function Ideation() {
   };
 
   const handleRemoveVote = async (ideaId: string) => {
-    const vote = userVotes.find((v) => v.idea_id === ideaId);
-    if (!vote) return;
     try {
-      await removeVote.mutateAsync(vote.id);
+      await removeVote.mutateAsync(ideaId);
     } catch {
       toast.error('Failed to remove vote');
     }
@@ -267,7 +267,7 @@ export default function Ideation() {
             filteredCount={filteredIdeas.length}
             onOpenFilters={() => setFilterDialogOpen(true)}
             onOpenMetrics={() => setMetricsDialogOpen(true)}
-            onOpenSetup={() => toast.info('Setup dialog coming soon')}
+            onOpenSetup={() => setSetupDialogOpen(true)}
             onOpenManageBacklog={() => setActiveView('board')}
             onAddIdea={() => setCreateDialogOpen(true)}
           />
@@ -330,6 +330,12 @@ export default function Ideation() {
         onOpenChange={setMetricsDialogOpen}
         metrics={metrics}
         isLoading={ideasLoading}
+      />
+
+      <IdeaGroupSetupDialog
+        open={setupDialogOpen}
+        onOpenChange={setSetupDialogOpen}
+        group={selectedGroup || null}
       />
 
       <IdeaDetailPanel
