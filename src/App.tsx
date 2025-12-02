@@ -39,6 +39,7 @@ import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
 import Ideation from "./pages/Ideation";
 import ManageIdeationUsersPage from "./components/ideation/ManageIdeationUsersPage";
+import FormBuilderPage from "./components/ideation/FormBuilderPage";
 import Impediments from "./pages/Impediments";
 import ReleaseVehicles from "./pages/ReleaseVehicles";
 import SuccessCriteria from "./pages/SuccessCriteria";
@@ -293,6 +294,7 @@ const App = () => (
               <Route path="/items/tasks" element={<Tasks />} />
               <Route path="/items/ideation" element={<Ideation />} />
               <Route path="/items/ideation/manage-users" element={<ManageIdeationUsersPage />} />
+              <Route path="/items/ideation/form-builder" element={<FormBuilderPage />} />
               <Route path="/items/impediments" element={<Impediments />} />
               <Route path="/items/release-vehicles" element={<ReleaseVehicles />} />
               <Route path="/items/success-criteria" element={<SuccessCriteria />} />
