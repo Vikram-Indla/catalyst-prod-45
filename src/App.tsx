@@ -170,6 +170,7 @@ import { TestCyclesPage } from "./pages/TestCyclesPage";
 import { TestReportsPage } from "./pages/TestReportsPage";
 import CycleDetailPage from "./pages/CycleDetailPage";
 import TestStepLibraryPage from "./pages/TestStepLibraryPage";
+import TestOverviewPage from "./pages/TestOverviewPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 
 const queryClient = new QueryClient();
@@ -457,6 +458,8 @@ const App = () => (
               <Route path="/work-items/subtasks" element={<Subtasks />} />
               <Route path="/releases" element={<Releases />} />
               
+              {/* Test Management Routes */}
+              <Route path="/tests" element={<TestOverviewPage />} />
               <Route path="/tests/cases" element={<TestCasesPage />} />
               <Route path="/tests/cases/:id" element={<TestCaseDetailPage />} />
               <Route path="/tests/library" element={<TestStepLibraryPage />} />
