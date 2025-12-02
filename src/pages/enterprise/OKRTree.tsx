@@ -35,13 +35,23 @@ export default function OKRTree() {
     return 'text-destructive';
   };
 
-  const getLevelLabel = (tier: string) => {
+  const getTierLabel = (tier: string) => {
     switch (tier) {
-      case 'strategic_goal': return 'Strategic Goals';
-      case 'portfolio': return 'Portfolio Objectives';
-      case 'program': return 'Program Objectives';
-      case 'team': return 'Team Objectives';
+      case 'yearly_goal': return 'Yearly Goal';
+      case 'portfolio': return 'Portfolio Objective';
+      case 'program': return 'Program Objective';
+      case 'team': return 'Team Objective';
       default: return tier;
+    }
+  };
+
+  const getTierColor = (tier: string) => {
+    switch (tier) {
+      case 'yearly_goal': return 'bg-purple-200 text-purple-900';
+      case 'portfolio': return 'bg-blue-500 text-white';
+      case 'program': return 'bg-blue-400 text-white';
+      case 'team': return 'bg-blue-300 text-blue-900';
+      default: return 'bg-gray-200 text-gray-900';
     }
   };
 
@@ -66,9 +76,12 @@ export default function OKRTree() {
             )}
           </div>
 
-          {/* ID + Title */}
+          {/* Tier Badge + ID + Title */}
           <div className="flex-1 flex items-center gap-2 min-w-0">
-            <span className="text-sm text-muted-foreground font-normal">{item.numericId}</span>
+            <span className={`px-3 py-1 rounded text-xs font-medium whitespace-nowrap ${getTierColor(item.tier)}`}>
+              {getTierLabel(item.tier)}
+            </span>
+            <span className="text-sm text-muted-foreground font-normal">#{item.numericId}</span>
             <span className="text-sm text-primary font-normal truncate">{item.title}</span>
           </div>
 
@@ -110,45 +123,16 @@ export default function OKRTree() {
     );
   };
 
-  const renderLevel = (items: OKRTreeItem[], tier: string, indentLevel: number) => {
-    const levelItems = items.filter(item => item.tier === tier);
-    if (levelItems.length === 0) return null;
-
-    const paddingLeft = 16 + (indentLevel * 32);
-    const bgColor = indentLevel % 2 === 0 ? 'bg-muted/20' : 'bg-background';
-
-    return (
-      <div key={tier} className={bgColor}>
-        {/* Level Header Row */}
-        <div 
-          className="flex items-center gap-3 py-3 px-4 border-b border-border font-semibold"
-          style={{ paddingLeft: `${paddingLeft}px` }}
-        >
-          <div className="w-5 flex-shrink-0" />
-          <div className="flex-1 text-sm">{getLevelLabel(tier)}</div>
-          <div className="w-48 text-xs text-muted-foreground text-center flex-shrink-0">
-            Key Results<br/>Progress
-          </div>
-          <div className="w-20 text-xs text-muted-foreground text-right flex-shrink-0">Score</div>
-          <div className="w-16 text-xs text-muted-foreground text-center flex-shrink-0">Owner</div>
-        </div>
-
-        {/* Level Items */}
-        {levelItems.map((item) => (
-          <div key={item.id}>
-            {renderObjective(item, indentLevel)}
-            {/* Render child levels recursively if item is expanded */}
-            {expandedItems.has(item.id) && item.children.length > 0 && (
-              <>
-                {['portfolio', 'program', 'team'].map((childTier) => 
-                  renderLevel(item.children, childTier, indentLevel + 1)
-                )}
-              </>
-            )}
-          </div>
-        ))}
+  const renderAllObjectives = (items: OKRTreeItem[], indentLevel: number = 0): JSX.Element[] => {
+    return items.map((item) => (
+      <div key={item.id}>
+        {renderObjective(item, indentLevel)}
+        {/* Render children if expanded */}
+        {expandedItems.has(item.id) && item.children.length > 0 && (
+          <>{renderAllObjectives(item.children, indentLevel + 1)}</>
+        )}
       </div>
-    );
+    ));
   };
 
   return (
@@ -189,14 +173,25 @@ export default function OKRTree() {
       {/* Tree Content */}
       <Card className="flex-1 overflow-auto">
         {isLoading ? (
-          <div className="px-[var(--s4)] space-y-[var(--s3)]">
+          <div className="px-[var(--s4)] py-[var(--s4)] space-y-[var(--s3)]">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <Skeleton key={i} className="h-12 w-full" />
             ))}
           </div>
         ) : okrTree && okrTree.length > 0 ? (
-          <div className="border-b border-border">
-            {renderLevel(okrTree, 'strategic_goal', 0)}
+          <div>
+            {/* Header Row */}
+            <div className="flex items-center gap-3 py-3 px-4 border-b border-border bg-muted/20 font-medium sticky top-0 z-10">
+              <div className="w-5 flex-shrink-0" />
+              <div className="flex-1 text-sm">Objective</div>
+              <div className="w-48 text-xs text-muted-foreground text-center flex-shrink-0">
+                Key Results<br/>Progress
+              </div>
+              <div className="w-20 text-xs text-muted-foreground text-right flex-shrink-0">Score</div>
+              <div className="w-16 text-xs text-muted-foreground text-center flex-shrink-0">Owner</div>
+            </div>
+            {/* Tree Items */}
+            {renderAllObjectives(okrTree, 0)}
           </div>
         ) : (
           <div className="flex items-center justify-center h-64">
