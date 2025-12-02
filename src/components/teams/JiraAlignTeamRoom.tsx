@@ -4,6 +4,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Team } from '@/types/team.types';
 import { useTeams } from '@/hooks/useTeams';
 import { useTeamSprints, useSprintStories, useTeamDependencies } from '@/hooks/useTeamRoom';
+import { useTeamMembers } from '@/hooks/useTeamMembers';
+import { useObjectives } from '@/hooks/useObjectives';
+import { ObjectiveStatusBadge } from '@/modules/objectives/components/shared/ObjectiveStatusBadge';
+import { ObjectiveScoreBadge } from '@/modules/objectives/components/shared/ObjectiveScoreBadge';
 import { CreateDependencyDialog } from '@/components/dependencies/CreateDependencyDialog';
 import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
@@ -35,6 +39,11 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
   const [selectedSprintId, setSelectedSprintId] = useState<string>('');
   const { data: stories = [] } = useSprintStories(selectedSprintId || sprints[0]?.id);
   const { data: dependencies = [] } = useTeamDependencies(team?.id);
+  const { data: teamMembers = [] } = useTeamMembers(team?.id);
+  const { data: objectives = [] } = useObjectives({ 
+    teamIds: team?.id ? [team.id] : [],
+    includeParentHierarchy: true
+  });
   const [activeView, setActiveView] = useState<'team' | 'my'>('team');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'sprint-board'>('dashboard');
   const [workItemFilter, setWorkItemFilter] = useState('stories');
@@ -89,23 +98,20 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
     navigate(`/teams/${teamId}/room`);
   };
 
-
-  const teamMembers = [
-    { id: '1', initials: 'JT', color: 'bg-warning' },
-    { id: '2', initials: 'DF', color: 'bg-info' },
-    { id: '3', initials: 'IH', color: 'bg-info' },
-    { id: '4', initials: 'BL', color: 'bg-workitem-story' },
-    { id: '5', initials: 'JM', color: 'bg-info' },
-    { id: '6', initials: 'NM', color: 'bg-destructive' },
-    { id: '7', initials: 'CM', color: 'bg-destructive' },
-    { id: '8', initials: 'MJ', color: 'bg-warning' },
-    { id: '9', initials: 'RG', color: 'bg-warning' },
-    { id: '10', initials: 'DL', color: 'bg-success' },
-    { id: '11', initials: 'SB', color: 'bg-warning' },
-    { id: '12', initials: 'SS', color: 'bg-warning' },
-    { id: '13', initials: 'SH', color: 'bg-workitem-story' },
-    { id: '14', initials: 'BS', color: 'bg-info' },
-  ];
+  // Generate avatar colors dynamically
+  const avatarColors = ['bg-warning', 'bg-info', 'bg-workitem-story', 'bg-destructive', 'bg-success'];
+  const getAvatarColor = (index: number) => avatarColors[index % avatarColors.length];
+  
+  // Get initials from full name or email
+  const getInitials = (member: typeof teamMembers[0]) => {
+    if (member.profiles?.full_name) {
+      return member.profiles.full_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    if (member.profiles?.email) {
+      return member.profiles.email.slice(0, 2).toUpperCase();
+    }
+    return 'UN';
+  };
 
   // Map stories to display format
   const displayStories = stories.map((story, index) => ({
@@ -197,10 +203,10 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
           <div className="flex items-center gap-2">
             {/* Team Member Avatars */}
             <div className="flex -space-x-2">
-              {teamMembers.map((member) => (
+              {teamMembers.slice(0, 14).map((member, index) => (
                 <Avatar key={member.id} className="w-8 h-8 border-2 border-background">
-                  <AvatarFallback className={`${member.color} text-white text-xs`}>
-                    {member.initials}
+                  <AvatarFallback className={`${getAvatarColor(index)} text-white text-xs`}>
+                    {getInitials(member)}
                   </AvatarFallback>
                 </Avatar>
               ))}
@@ -673,7 +679,11 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
             <div>
               <h3 className="text-xs font-semibold text-muted-foreground mb-3">Sprint Goal:</h3>
               <Card className="p-4">
-                <p className="text-sm text-muted-foreground">Not Populated</p>
+                {currentSprint?.goal ? (
+                  <p className="text-sm text-foreground">{currentSprint.goal}</p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Not Populated</p>
+                )}
               </Card>
             </div>
 
@@ -692,29 +702,87 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
             {/* Objectives */}
             <div>
               <h3 className="text-xs font-semibold text-muted-foreground mb-3">Objectives:</h3>
-              <Card className="p-4">
-                <div className="flex items-start gap-3">
-                  <div className="text-2xl">🎯</div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground mb-1">No Objectives</p>
-                    <p className="text-xs text-muted-foreground mb-4">
-                      There are no Objectives for the team in this sprint, create one!
-                    </p>
-                    <div className="flex gap-2">
-                      <Button variant="link" size="sm" className="text-xs h-auto p-0">
-                        View More
-                      </Button>
-                      <Button variant="link" size="sm" className="text-xs h-auto p-0">
-                        Status by Objective
-                      </Button>
-                      <Button variant="link" size="sm" className="text-xs h-auto p-0">
-                        Add New
-                      </Button>
-                    </div>
+              {objectives.length === 0 ? (
+                <Card className="p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl">🎯</div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-foreground mb-1">No Objectives</p>
+                      <p className="text-xs text-muted-foreground mb-4">
+                        There are no Objectives for the team in this sprint, create one!
+                      </p>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="link" 
+                          size="sm" 
+                          className="text-xs h-auto p-0"
+                          onClick={() => navigate(`/teams/${team.id}/objectives`)}
+                        >
+                          View More
+                        </Button>
+                        <Button 
+                          variant="link" 
+                          size="sm" 
+                          className="text-xs h-auto p-0"
+                          onClick={() => navigate(`/teams/${team.id}/objectives?create=true`)}
+                        >
+                          Add New
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </Card>
-              </div>
+              ) : (
+                <div className="space-y-2">
+                  {objectives.slice(0, 3).map((objective) => (
+                    <Card 
+                      key={objective.id} 
+                      className="p-3 bg-background hover:bg-muted/50 cursor-pointer transition-colors"
+                      onClick={() => navigate(`/teams/${team.id}/objectives/${objective.id}`)}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex items-center gap-2 flex-1 min-w-0">
+                          <ObjectiveStatusBadge status={objective.status} size="sm" />
+                          {objective.score !== null && objective.score !== undefined && (
+                            <ObjectiveScoreBadge score={objective.score} size="sm" />
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-sm text-foreground font-medium mb-1 line-clamp-2">
+                        {objective.summary}
+                      </p>
+                      {objective.keyResultsCount > 0 && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Target className="w-3 h-3" />
+                          <span>{objective.keyResultsCount} Key Results</span>
+                          <span className="ml-auto">
+                            {Math.round((objective.key_result_progress || 0) * 100)}% Complete
+                          </span>
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                  <div className="flex gap-2 mt-3">
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-xs h-auto p-0"
+                      onClick={() => navigate(`/teams/${team.id}/objectives`)}
+                    >
+                      View All ({objectives.length})
+                    </Button>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-xs h-auto p-0"
+                      onClick={() => navigate(`/teams/${team.id}/objectives?create=true`)}
+                    >
+                      Add New
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
             </div>
           </div>
         </div>
