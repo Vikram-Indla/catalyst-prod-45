@@ -76,6 +76,7 @@ export function ProgramRoomSidebar({
   const [morePagesExpanded, setMorePagesExpanded] = useState(false);
 
   const moreItemsSubMenu = [
+    { id: 'kanban-boards', label: 'Kanban Boards', path: '/kanban-boards' },
     { id: 'epics', label: 'Epics', path: '/programs/:programId/epics' },
     { id: 'stories', label: 'Stories', path: '/programs/:programId/stories' },
     { id: 'defects', label: 'Defects', path: '/programs/:programId/defects' },
