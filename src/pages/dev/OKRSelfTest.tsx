@@ -28,7 +28,7 @@ export default function OKRSelfTest() {
     queryKey: ['test-key-results'],
     queryFn: async () => {
       const { count } = await supabase
-        .from('key_results_v2')
+        .from('key_results')
         .select('*', { count: 'exact', head: true });
       return count || 0;
     },
