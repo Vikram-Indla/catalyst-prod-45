@@ -4,11 +4,9 @@
 // ==============================================
 
 import { useState, useMemo, useEffect } from 'react';
-import { Lightbulb, Kanban, List } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Lightbulb } from 'lucide-react';
 import { IdeationHeader } from '@/components/ideation/IdeationHeader';
 import { IdeaList } from '@/components/ideation/IdeaList';
-import { ManageBacklogBoard } from '@/components/ideation/ManageBacklogBoard';
 import { IdeaDetailPanel } from '@/components/ideation/IdeaDetailPanel';
 import { CreateIdeaDialog } from '@/components/ideation/CreateIdeaDialog';
 import { FilterDialog } from '@/components/ideation/FilterDialog';
@@ -33,7 +31,6 @@ export default function Ideation() {
 
   // State
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<'list' | 'board'>('list');
   const [sortField, setSortField] = useState<IdeaSortField>('created_at');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [statusFilter, setStatusFilter] = useState<IdeaStatus[]>([]);
@@ -268,45 +265,24 @@ export default function Ideation() {
             onOpenFilters={() => setFilterDialogOpen(true)}
             onOpenMetrics={() => setMetricsDialogOpen(true)}
             onOpenSetup={() => setSetupDialogOpen(true)}
-            onOpenManageBacklog={() => setActiveView('board')}
             onAddIdea={() => setCreateDialogOpen(true)}
           />
 
-          {/* View Tabs */}
-          <Tabs value={activeView} onValueChange={(v) => setActiveView(v as 'list' | 'board')} className="mt-6">
-            <TabsList>
-              <TabsTrigger value="list" className="flex items-center gap-2">
-                <List className="h-4 w-4" />
-                List View
-              </TabsTrigger>
-              <TabsTrigger value="board" className="flex items-center gap-2">
-                <Kanban className="h-4 w-4" />
-                Manage Backlog
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="list" className="mt-4">
-              <IdeaList
-                ideas={filteredIdeas}
-                isLoading={ideasLoading}
-                votingType={selectedGroup?.voting_type || 'ForAgainst'}
-                userVotes={userVotes}
-                userSubscriptions={userSubscriptions}
-                userTokensRemaining={userTokensRemaining}
-                onVote={handleVote}
-                onRemoveVote={handleRemoveVote}
-                onToggleSubscribe={handleToggleSubscribe}
-                onIdeaClick={handleIdeaClick}
-              />
-            </TabsContent>
-
-            <TabsContent value="board" className="mt-4">
-              <ManageBacklogBoard
-                ideas={filteredIdeas}
-                onIdeaClick={handleIdeaClick}
-              />
-            </TabsContent>
-          </Tabs>
+          {/* Idea List */}
+          <div className="mt-6">
+            <IdeaList
+              ideas={filteredIdeas}
+              isLoading={ideasLoading}
+              votingType={selectedGroup?.voting_type || 'ForAgainst'}
+              userVotes={userVotes}
+              userSubscriptions={userSubscriptions}
+              userTokensRemaining={userTokensRemaining}
+              onVote={handleVote}
+              onRemoveVote={handleRemoveVote}
+              onToggleSubscribe={handleToggleSubscribe}
+              onIdeaClick={handleIdeaClick}
+            />
+          </div>
         </>
       )}
 
