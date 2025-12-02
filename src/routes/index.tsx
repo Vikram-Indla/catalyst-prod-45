@@ -14,6 +14,7 @@ import EpicBacklogWithSidebar from '@/pages/EpicBacklogWithSidebar';
 import TestOverviewPage from '@/pages/TestOverviewPage';
 import { TestCasesPage } from '@/pages/TestCasesPage';
 import { TestCyclesPage } from '@/pages/TestCyclesPage';
+import { TestSetsPage } from '@/pages/TestSetsPage';
 
 // Stub components
 const Home = () => <div>Home</div>;
@@ -71,8 +72,10 @@ export const router = createBrowserRouter([
       { path: 'programs/:programId/capacity', element: <div>Program Capacity</div> },
       
       // Test Management routes (program-scoped)
+      { path: 'programs/:programId/tests', element: <Navigate to="overview" replace /> },
       { path: 'programs/:programId/tests/overview', element: <TestOverviewPage /> },
       { path: 'programs/:programId/tests/cases', element: <TestCasesPage /> },
+      { path: 'programs/:programId/tests/sets', element: <TestSetsPage /> },
       { path: 'programs/:programId/tests/cycles', element: <TestCyclesPage /> },
       
       // Team routes
