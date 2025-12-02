@@ -169,8 +169,10 @@ import SourcesReference from "./pages/dev/SourcesReference";
 import { TestCasesPage } from "./pages/TestCasesPage";
 import { TestCaseDetailPage } from "./pages/TestCaseDetailPage";
 import { TestCyclesPage } from "./pages/TestCyclesPage";
+import { TestSetsPage } from "./pages/TestSetsPage";
 import { TestReportsPage } from "./pages/TestReportsPage";
 import CycleDetailPage from "./pages/CycleDetailPage";
+import ExecutionGridPage from "./pages/ExecutionGridPage";
 import TestStepLibraryPage from "./pages/TestStepLibraryPage";
 import TestOverviewPage from "./pages/TestOverviewPage";
 import TestManagementSettingsPage from "./pages/settings/TestManagementSettingsPage";
@@ -469,9 +471,11 @@ const App = () => (
               <Route path="/programs/:programId/tests/overview" element={<TestOverviewPage />} />
               <Route path="/programs/:programId/tests/cases" element={<TestCasesPage />} />
               <Route path="/programs/:programId/tests/cases/:id" element={<TestCaseDetailPage />} />
+              <Route path="/programs/:programId/tests/sets" element={<TestSetsPage />} />
               <Route path="/programs/:programId/tests/library" element={<TestStepLibraryPage />} />
               <Route path="/programs/:programId/tests/cycles" element={<TestCyclesPage />} />
-              <Route path="/programs/:programId/tests/cycles/:id" element={<CycleDetailPage />} />
+              <Route path="/programs/:programId/tests/cycles/:cycleId" element={<CycleDetailPage />} />
+              <Route path="/programs/:programId/tests/cycles/:cycleId/grid" element={<ExecutionGridPage />} />
               <Route path="/programs/:programId/tests/reports" element={<TestReportsPage />} />
               <Route path="/programs/:programId/tests/settings" element={<TestManagementSettingsPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
