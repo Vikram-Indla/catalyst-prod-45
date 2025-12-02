@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -10,10 +10,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { HealthBadge } from '@/components/shared/HealthBadge';
-import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink } from 'lucide-react';
+import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink, Loader2 } from 'lucide-react';
 import { FeatureStatusModal } from '../modals/FeatureStatusModal';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
+import { toast } from 'sonner';
 
 interface EpicDetailsTabProps {
   epic: any;
@@ -23,6 +24,63 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const [featureStatusOpen, setFeatureStatusOpen] = useState(false);
   const [addPIOpen, setAddPIOpen] = useState(false);
   const [addProgramOpen, setAddProgramOpen] = useState(false);
+  const queryClient = useQueryClient();
+
+  // Local state for all editable fields
+  const [formData, setFormData] = useState({
+    state: epic.state || 'funnel',
+    process_step_id: epic.process_step_id || '',
+    epic_type: epic.epic_type || 'business',
+    mvp: epic.mvp || false,
+    primary_program_id: epic.primary_program_id || '',
+    owner_id: epic.owner_id || '',
+    report_color: epic.report_color || 'blue',
+    description: epic.description || '',
+    portfolio_ask_date: epic.portfolio_ask_date || '',
+    initiation_date: epic.initiation_date || '',
+    target_completion_date: epic.target_completion_date || '',
+    date_locked: epic.date_locked || false,
+    capitalized: epic.capitalized || false,
+    budget: epic.budget || '',
+    estimation_system: epic.estimation_system || 'points',
+    strategic_value_score: epic.strategic_value_score || '',
+    effort_swag: epic.effort_swag || '',
+    strategic_driver: epic.strategic_driver || '',
+    ability_to_execute: epic.ability_to_execute || '',
+    quadrant: epic.quadrant || '',
+    investment_type: epic.investment_type || '',
+    tags: epic.tags?.join(', ') || '',
+    customers: epic.customers?.join('\n') || '',
+  });
+
+  // Update local state when epic prop changes
+  useEffect(() => {
+    setFormData({
+      state: epic.state || 'funnel',
+      process_step_id: epic.process_step_id || '',
+      epic_type: epic.epic_type || 'business',
+      mvp: epic.mvp || false,
+      primary_program_id: epic.primary_program_id || '',
+      owner_id: epic.owner_id || '',
+      report_color: epic.report_color || 'blue',
+      description: epic.description || '',
+      portfolio_ask_date: epic.portfolio_ask_date || '',
+      initiation_date: epic.initiation_date || '',
+      target_completion_date: epic.target_completion_date || '',
+      date_locked: epic.date_locked || false,
+      capitalized: epic.capitalized || false,
+      budget: epic.budget || '',
+      estimation_system: epic.estimation_system || 'points',
+      strategic_value_score: epic.strategic_value_score || '',
+      effort_swag: epic.effort_swag || '',
+      strategic_driver: epic.strategic_driver || '',
+      ability_to_execute: epic.ability_to_execute || '',
+      quadrant: epic.quadrant || '',
+      investment_type: epic.investment_type || '',
+      tags: epic.tags?.join(', ') || '',
+      customers: epic.customers?.join('\n') || '',
+    });
+  }, [epic]);
   
   const { data: themes } = useQuery({
     queryKey: ['themes'],
@@ -40,10 +98,10 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     },
   });
 
-  const { data: programIncrements } = useQuery({
-    queryKey: ['program-increments'],
+  const { data: users } = useQuery({
+    queryKey: ['users-for-dropdown'],
     queryFn: async () => {
-      const { data } = await supabase.from('program_increments').select('*').order('name');
+      const { data } = await supabase.from('profiles').select('id, full_name, email').order('full_name');
       return data || [];
     },
   });
@@ -84,8 +142,70 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     },
   });
 
+  // Mutation to update epic
+  const updateMutation = useMutation({
+    mutationFn: async (updates: Partial<typeof formData>) => {
+      // Transform data for database
+      const dbUpdates: any = { ...updates };
+      
+      // Handle tags array
+      if (updates.tags !== undefined) {
+        dbUpdates.tags = updates.tags 
+          ? updates.tags.split(',').map(t => t.trim()).filter(Boolean)
+          : null;
+      }
+      
+      // Handle customers array
+      if (updates.customers !== undefined) {
+        dbUpdates.customers = updates.customers
+          ? updates.customers.split('\n').map(c => c.trim()).filter(Boolean)
+          : null;
+      }
+
+      // Handle empty strings as null
+      Object.keys(dbUpdates).forEach(key => {
+        if (dbUpdates[key] === '') {
+          dbUpdates[key] = null;
+        }
+      });
+
+      const { error } = await supabase
+        .from('epics')
+        .update(dbUpdates)
+        .eq('id', epic.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      toast.success('Epic updated');
+    },
+    onError: () => {
+      toast.error('Failed to update epic');
+    }
+  });
+
+  // Handle field change with auto-save
+  const handleFieldChange = (field: keyof typeof formData, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    updateMutation.mutate({ [field]: value });
+  };
+
+  // Handle text field blur (for text inputs that shouldn't save on every keystroke)
+  const handleTextBlur = (field: keyof typeof formData) => {
+    updateMutation.mutate({ [field]: formData[field] });
+  };
+
   return (
     <div className="space-y-6">
+      {/* Saving indicator */}
+      {updateMutation.isPending && (
+        <div className="fixed top-4 right-4 bg-background border rounded-lg px-3 py-2 flex items-center gap-2 shadow-lg z-50">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span className="text-sm">Saving...</span>
+        </div>
+      )}
+
       {/* Classification Section */}
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase">Classification</h3>
@@ -93,7 +213,10 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>State</Label>
-            <Select defaultValue={epic.state || 'funnel'}>
+            <Select 
+              value={formData.state} 
+              onValueChange={(value) => handleFieldChange('state', value)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -110,11 +233,15 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
           <div>
             <Label>Process Step</Label>
-            <Select defaultValue={epic.process_step_id}>
+            <Select 
+              value={formData.process_step_id || 'none'} 
+              onValueChange={(value) => handleFieldChange('process_step_id', value === 'none' ? null : value)}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select process step" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">None</SelectItem>
                 <SelectItem value="ideation">Ideation</SelectItem>
                 <SelectItem value="discovery">Discovery</SelectItem>
                 <SelectItem value="analysis">Analysis</SelectItem>
@@ -130,7 +257,10 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Type</Label>
-            <Select defaultValue={epic.epic_type || 'business'}>
+            <Select 
+              value={formData.epic_type} 
+              onValueChange={(value) => handleFieldChange('epic_type', value)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -146,7 +276,10 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
           <div>
             <Label>MVP</Label>
-            <Select defaultValue={epic.mvp ? 'yes' : 'no'}>
+            <Select 
+              value={formData.mvp ? 'yes' : 'no'} 
+              onValueChange={(value) => handleFieldChange('mvp', value === 'yes')}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -179,11 +312,15 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         
         <div>
           <Label>Primary Program *</Label>
-          <Select defaultValue={epic.primary_program_id}>
+          <Select 
+            value={formData.primary_program_id || 'none'} 
+            onValueChange={(value) => handleFieldChange('primary_program_id', value === 'none' ? null : value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select primary program" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="none">None</SelectItem>
               {programs?.map(program => (
                 <SelectItem key={program.id} value={program.id}>
                   {program.name}
@@ -236,20 +373,30 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
         <div>
           <Label>Owner</Label>
-          <Select defaultValue={epic.owner_id}>
+          <Select 
+            value={formData.owner_id || 'none'} 
+            onValueChange={(value) => handleFieldChange('owner_id', value === 'none' ? null : value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select owner" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="user-1">John Doe</SelectItem>
-              <SelectItem value="user-2">Jane Smith</SelectItem>
+              <SelectItem value="none">Unassigned</SelectItem>
+              {users?.map(user => (
+                <SelectItem key={user.id} value={user.id}>
+                  {user.full_name || user.email}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
 
         <div>
           <Label>Report Color</Label>
-          <Select defaultValue={epic.report_color || 'blue'}>
+          <Select 
+            value={formData.report_color} 
+            onValueChange={(value) => handleFieldChange('report_color', value)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -271,7 +418,9 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         <div>
           <Label>Description</Label>
           <Textarea
-            defaultValue={epic.description}
+            value={formData.description}
+            onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+            onBlur={() => handleTextBlur('description')}
             rows={4}
             placeholder="Enter epic description"
           />
@@ -280,18 +429,34 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         <div className="grid grid-cols-3 gap-4">
           <div>
             <Label>Portfolio Ask Date</Label>
-            <Input type="date" defaultValue={epic.portfolio_ask_date} />
+            <Input 
+              type="date" 
+              value={formData.portfolio_ask_date} 
+              onChange={(e) => handleFieldChange('portfolio_ask_date', e.target.value)}
+            />
           </div>
           <div>
             <Label>Initiation Date</Label>
-            <Input type="date" defaultValue={epic.initiation_date} />
+            <Input 
+              type="date" 
+              value={formData.initiation_date}
+              onChange={(e) => handleFieldChange('initiation_date', e.target.value)}
+            />
           </div>
           <div>
             <Label>Target Completion Date</Label>
             <div className="flex gap-2">
-              <Input type="date" defaultValue={epic.target_completion_date} />
-              <Button variant="outline" size="icon">
-                {epic.date_locked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
+              <Input 
+                type="date" 
+                value={formData.target_completion_date}
+                onChange={(e) => handleFieldChange('target_completion_date', e.target.value)}
+              />
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={() => handleFieldChange('date_locked', !formData.date_locked)}
+              >
+                {formData.date_locked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
               </Button>
             </div>
           </div>
@@ -310,18 +475,31 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         <h3 className="text-sm font-semibold text-muted-foreground uppercase">Financial & Estimation</h3>
         
         <div className="flex items-center gap-2">
-          <Checkbox id="capitalized" defaultChecked={epic.capitalized} />
+          <Checkbox 
+            id="capitalized" 
+            checked={formData.capitalized}
+            onCheckedChange={(checked) => handleFieldChange('capitalized', checked)}
+          />
           <Label htmlFor="capitalized">Capitalized</Label>
         </div>
 
         <div>
           <Label>Budget</Label>
-          <Input type="number" defaultValue={epic.budget} placeholder="Enter budget" />
+          <Input 
+            type="number" 
+            value={formData.budget}
+            onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
+            onBlur={() => handleTextBlur('budget')}
+            placeholder="Enter budget" 
+          />
         </div>
 
         <div>
           <Label>Estimation System</Label>
-          <Select defaultValue={epic.estimation_system || 'points'}>
+          <Select 
+            value={formData.estimation_system} 
+            onValueChange={(value) => handleFieldChange('estimation_system', value)}
+          >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
@@ -347,7 +525,9 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
               type="number"
               min="1"
               max="100"
-              defaultValue={epic.strategic_value_score}
+              value={formData.strategic_value_score}
+              onChange={(e) => setFormData(prev => ({ ...prev, strategic_value_score: e.target.value }))}
+              onBlur={() => handleTextBlur('strategic_value_score')}
             />
           </div>
           <div>
@@ -356,23 +536,33 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
               type="number"
               min="1"
               max="100"
-              defaultValue={epic.effort_swag}
+              value={formData.effort_swag}
+              onChange={(e) => setFormData(prev => ({ ...prev, effort_swag: e.target.value }))}
+              onBlur={() => handleTextBlur('effort_swag')}
             />
           </div>
         </div>
 
         <div>
           <Label>Strategic Driver</Label>
-          <Input defaultValue={epic.strategic_driver} />
+          <Input 
+            value={formData.strategic_driver}
+            onChange={(e) => setFormData(prev => ({ ...prev, strategic_driver: e.target.value }))}
+            onBlur={() => handleTextBlur('strategic_driver')}
+          />
         </div>
 
         <div>
           <Label>Ability to Execute</Label>
-          <Select defaultValue={epic.ability_to_execute}>
+          <Select 
+            value={formData.ability_to_execute || 'none'} 
+            onValueChange={(value) => handleFieldChange('ability_to_execute', value === 'none' ? null : value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select ability" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="none">Not Set</SelectItem>
               <SelectItem value="high">High</SelectItem>
               <SelectItem value="medium">Medium</SelectItem>
               <SelectItem value="low">Low</SelectItem>
@@ -382,11 +572,15 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
         <div>
           <Label>Quadrant</Label>
-          <Select defaultValue={epic.quadrant}>
+          <Select 
+            value={formData.quadrant || 'none'} 
+            onValueChange={(value) => handleFieldChange('quadrant', value === 'none' ? null : value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select quadrant" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="none">Not Set</SelectItem>
               <SelectItem value="core">Core</SelectItem>
               <SelectItem value="strategic">Strategic</SelectItem>
               <SelectItem value="competitive">Competitive</SelectItem>
@@ -397,11 +591,15 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
         <div>
           <Label>Investment Type</Label>
-          <Select defaultValue={epic.investment_type}>
+          <Select 
+            value={formData.investment_type || 'none'} 
+            onValueChange={(value) => handleFieldChange('investment_type', value === 'none' ? null : value)}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="none">Not Set</SelectItem>
               <SelectItem value="new_product">New Product</SelectItem>
               <SelectItem value="product_enhancement">Product Enhancement</SelectItem>
               <SelectItem value="maintenance">Maintenance</SelectItem>
@@ -412,13 +610,20 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
         <div>
           <Label>Tags</Label>
-          <Input defaultValue={epic.tags?.join(', ')} placeholder="Enter tags separated by commas" />
+          <Input 
+            value={formData.tags}
+            onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+            onBlur={() => handleTextBlur('tags')}
+            placeholder="Enter tags separated by commas" 
+          />
         </div>
 
         <div>
           <Label>Customers</Label>
           <Textarea
-            defaultValue={epic.customers?.join('\n')}
+            value={formData.customers}
+            onChange={(e) => setFormData(prev => ({ ...prev, customers: e.target.value }))}
+            onBlur={() => handleTextBlur('customers')}
             rows={3}
             placeholder="Enter customer names (one per line)"
           />

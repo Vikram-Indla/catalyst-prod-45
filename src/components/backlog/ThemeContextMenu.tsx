@@ -36,31 +36,31 @@ export function ThemeContextMenu({
         {children}
       </ContextMenuTrigger>
       <ContextMenuContent className="w-56 bg-popover">
-        <ContextMenuItem onClick={onOpen}>
+        <ContextMenuItem onSelect={onOpen}>
           Open
         </ContextMenuItem>
-        <ContextMenuItem onClick={onDuplicate}>
+        <ContextMenuItem onSelect={onDuplicate}>
           Duplicate
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem onClick={onMoveToTop}>
+        <ContextMenuItem onSelect={onMoveToTop}>
           Move To Top
         </ContextMenuItem>
-        <ContextMenuItem onClick={onMoveToBottom}>
+        <ContextMenuItem onSelect={onMoveToBottom}>
           Move To Bottom
         </ContextMenuItem>
-        <ContextMenuItem onClick={onMoveToPosition}>
+        <ContextMenuItem onSelect={onMoveToPosition}>
           Move To Position...
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem onClick={onMoveToPI}>
+        <ContextMenuItem onSelect={onMoveToPI}>
           Move To PI...
         </ContextMenuItem>
-        <ContextMenuItem onClick={onMoveToUnassigned}>
+        <ContextMenuItem onSelect={onMoveToUnassigned}>
           Move To Unassigned Backlog
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem onClick={onDelete} className="text-destructive">
+        <ContextMenuItem onSelect={onDelete} className="text-destructive">
           Delete
         </ContextMenuItem>
       </ContextMenuContent>

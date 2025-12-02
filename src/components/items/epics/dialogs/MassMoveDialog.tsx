@@ -1,27 +1,30 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 interface MassMoveDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedEpics: string[];
-  onConfirm: (programId: string, piId: string) => void;
+  onSuccess?: () => void;
 }
 
 export function MassMoveDialog({
   open,
   onOpenChange,
   selectedEpics,
-  onConfirm,
+  onSuccess,
 }: MassMoveDialogProps) {
   const [targetProgram, setTargetProgram] = useState('');
   const [targetPI, setTargetPI] = useState('');
+  const queryClient = useQueryClient();
 
   const { data: programs } = useQuery({
     queryKey: ['programs'],
@@ -29,6 +32,7 @@ export function MassMoveDialog({
       const { data } = await supabase.from('programs').select('*').order('name');
       return data || [];
     },
+    enabled: open,
   });
 
   const { data: programIncrements } = useQuery({
@@ -37,12 +41,51 @@ export function MassMoveDialog({
       const { data } = await supabase.from('program_increments').select('*').order('name');
       return data || [];
     },
+    enabled: open,
+  });
+
+  const massMoveMutation = useMutation({
+    mutationFn: async ({ epicIds, programId, piId }: { epicIds: string[]; programId: string; piId: string }) => {
+      // Update epics with new program
+      const { error: epicError } = await supabase
+        .from('epics')
+        .update({ primary_program_id: programId })
+        .in('id', epicIds);
+
+      if (epicError) throw epicError;
+
+      // Update PI assignments - first delete existing, then insert new
+      for (const epicId of epicIds) {
+        // Delete existing PI assignments
+        await supabase
+          .from('epic_program_increments')
+          .delete()
+          .eq('epic_id', epicId);
+
+        // Insert new PI assignment
+        await supabase
+          .from('epic_program_increments')
+          .insert({ epic_id: epicId, pi_id: piId });
+      }
+
+      return epicIds.length;
+    },
+    onSuccess: (count) => {
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      toast.success(`Successfully moved ${count} epic(s) to new program and PI`);
+      setTargetProgram('');
+      setTargetPI('');
+      onOpenChange(false);
+      onSuccess?.();
+    },
+    onError: () => {
+      toast.error('Failed to move epics');
+    }
   });
 
   const handleConfirm = () => {
-    if (targetProgram && targetPI) {
-      onConfirm(targetProgram, targetPI);
-      onOpenChange(false);
+    if (targetProgram && targetPI && selectedEpics.length > 0) {
+      massMoveMutation.mutate({ epicIds: selectedEpics, programId: targetProgram, piId: targetPI });
     }
   };
 
@@ -103,9 +146,16 @@ export function MassMoveDialog({
           </Button>
           <Button
             onClick={handleConfirm}
-            disabled={!targetProgram || !targetPI}
+            disabled={!targetProgram || !targetPI || massMoveMutation.isPending}
           >
-            Move Epics
+            {massMoveMutation.isPending ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Moving...
+              </>
+            ) : (
+              'Move Epics'
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>
