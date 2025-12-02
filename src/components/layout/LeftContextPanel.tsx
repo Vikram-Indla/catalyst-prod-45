@@ -230,9 +230,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
       <div className="h-full flex flex-col overflow-hidden">
         {/* Context Header */}
-        <div className={cn("border-b", !expanded && "px-[var(--s2)]")} style={{ padding: expanded ? 'var(--s4)' : undefined, paddingTop: 'var(--s4)', paddingBottom: 'var(--s3)' }}>
-          {expanded ? (
-            <>
+        {expanded && (
+          <div className="border-b" style={{ padding: 'var(--s4)', paddingTop: 'var(--s4)', paddingBottom: 'var(--s3)' }}>
               {/* Portfolio/Program Selector */}
               {(tier === 'portfolio' || tier === 'program') && currentPortfolio && (
                 <Select value={portfolioId || undefined} onValueChange={setPortfolioId}>
@@ -319,11 +318,10 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                       ))}
                     </SelectContent>
                   </Select>
-                </div>
-              )}
-            </>
-          ) : null}
-        </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto py-1">
@@ -346,14 +344,17 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     }
                   }}
                   className={cn(
-                    "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal transition-colors",
+                    "w-full flex items-center gap-3 text-sm font-normal transition-colors",
                     "hover:bg-accent/50",
                     active && "bg-accent text-primary font-medium",
-                    !expanded && "justify-center px-2"
+                    expanded ? "px-4 py-2.5" : "justify-center px-0 py-3"
                   )}
                   title={!expanded ? item.label : undefined}
                 >
-                  <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                  <Icon className={cn(
+                    "flex-shrink-0",
+                    expanded ? "h-5 w-5 text-muted-foreground" : "h-5 w-5 text-muted-foreground mx-auto"
+                  )} />
                   {expanded && <span className="truncate text-left flex-1">{item.label}</span>}
                   {expanded && item.expandable && (
                     <ChevronRight 
