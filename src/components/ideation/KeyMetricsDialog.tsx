@@ -40,24 +40,24 @@ export function KeyMetricsDialog({
           <div className="space-y-6">
             {/* Campaign Statistics */}
             <div>
-              <h3 className="font-medium mb-4">Campaign Statistics</h3>
-              <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span>Total Percent Managed</span>
-                    <span>{metrics.percent_managed}%</span>
-                  </div>
-                  <Progress value={metrics.percent_managed} className="h-2" />
+              <h3 className="text-xl font-semibold mb-4">Campaign Statistics</h3>
+              <div className="space-y-5">
+                {/* Total Percent Managed - no progress bar per Jira Align spec */}
+                <div className="flex justify-between text-sm">
+                  <span>Total Percent Managed</span>
+                  <span>{metrics.percent_managed}%</span>
                 </div>
+                {/* Total Percent with Votes - with progress bar */}
                 <div>
-                  <div className="flex justify-between text-sm mb-1">
+                  <div className="flex justify-between text-sm mb-2">
                     <span>Total Percent with Votes</span>
                     <span>{metrics.percent_with_votes}%</span>
                   </div>
                   <Progress value={metrics.percent_with_votes} className="h-2" />
                 </div>
+                {/* Total Percent with Comments - with progress bar */}
                 <div>
-                  <div className="flex justify-between text-sm mb-1">
+                  <div className="flex justify-between text-sm mb-2">
                     <span>Total Percent with Comments</span>
                     <span>{metrics.percent_with_comments}%</span>
                   </div>
