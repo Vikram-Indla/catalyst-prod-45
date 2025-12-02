@@ -4,14 +4,25 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Settings, Maximize2, RotateCcw, Info, AlertCircle } from 'lucide-react';
-import { WorkTreeDashboard } from './components/WorkTreeDashboard';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Settings, Maximize2, RotateCcw, Info, AlertCircle, Eye } from 'lucide-react';
+import { WorkTreeDashboard, METRIC_IDS, MetricId } from './components/WorkTreeDashboard';
 import { WorkTreeHierarchy } from './components/WorkTreeHierarchy';
 import { WorkTreeExtraConfigs } from './components/WorkTreeExtraConfigs';
 import { WorkTreeLegend } from './components/WorkTreeLegend';
 import { useWorkTreeData } from './hooks/useWorkTreeData';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 type WorkTreeView = 'top-down' | 'bottom-up' | 'team' | 'strategy' | 'theme-group';
+
+const METRIC_LABELS: Record<MetricId, string> = {
+  epic: 'Epic Progress',
+  feature: 'Feature Progress',
+  story: 'Story Progress',
+  task: 'Task Progress',
+};
 
 export function WorkTreePage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -23,6 +34,28 @@ export function WorkTreePage() {
   const [configsOpen, setConfigsOpen] = useState(false);
   const [legendOpen, setLegendOpen] = useState(false);
   const [narrowToProgram, setNarrowToProgram] = useState(false);
+  const [hiddenCards, setHiddenCards] = useState<string[]>([]);
+  const [selectedPIId, setSelectedPIId] = useState<string | undefined>(undefined);
+
+  // Fetch available PIs
+  const { data: programIncrements } = useQuery({
+    queryKey: ['program-increments-for-work-tree'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('program_increments')
+        .select('id, name, start_date, end_date')
+        .order('start_date', { ascending: false });
+      return data || [];
+    },
+  });
+
+  // Determine current/selected PI
+  const currentPI = selectedPIId 
+    ? programIncrements?.find(pi => pi.id === selectedPIId)
+    : programIncrements?.find(pi => {
+        const today = new Date().toISOString().split('T')[0];
+        return pi.start_date <= today && pi.end_date >= today;
+      }) || programIncrements?.[0];
 
   const { data, isLoading } = useWorkTreeData(view, { teamId, programId });
 
@@ -32,7 +65,20 @@ export function WorkTreePage() {
 
   const handleReset = () => {
     setNarrowToProgram(false);
-    // Reset filters and configs
+    setHiddenCards([]);
+    setSelectedPIId(undefined);
+  };
+
+  const handleHideCard = (cardId: string) => {
+    setHiddenCards(prev => [...prev, cardId]);
+  };
+
+  const handleToggleCard = (cardId: string, checked: boolean) => {
+    if (checked) {
+      setHiddenCards(prev => prev.filter(id => id !== cardId));
+    } else {
+      setHiddenCards(prev => [...prev, cardId]);
+    }
   };
 
   const getViewTitle = () => {
@@ -67,8 +113,57 @@ export function WorkTreePage() {
                 <SelectItem value="theme-group">Theme Group View</SelectItem>
               </SelectContent>
             </Select>
+            
+            {/* PI Selector - Only show in Team View */}
+            {view === 'team' && programIncrements && programIncrements.length > 0 && (
+              <Select 
+                value={selectedPIId || currentPI?.id || ''} 
+                onValueChange={setSelectedPIId}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select PI" />
+                </SelectTrigger>
+                <SelectContent>
+                  {programIncrements.map(pi => (
+                    <SelectItem key={pi.id} value={pi.id}>
+                      {pi.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
           <div className="flex items-center gap-[var(--s2)]">
+            {/* Card Visibility Selector - Only show in Team View */}
+            {view === 'team' && hasDashboard && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-56" align="end">
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-sm">Show Progress Cards</h4>
+                    {METRIC_IDS.map(id => (
+                      <div key={id} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`show-${id}`}
+                          checked={!hiddenCards.includes(id)}
+                          onCheckedChange={(checked) => handleToggleCard(id, !!checked)}
+                        />
+                        <label
+                          htmlFor={`show-${id}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {METRIC_LABELS[id]}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -116,7 +211,15 @@ export function WorkTreePage() {
           <CardContent className="space-y-[var(--s6)]">
             {/* Dashboard - only for top-down, bottom-up, and team views */}
             {hasDashboard && (
-              <WorkTreeDashboard view={view} data={data} isLoading={isLoading} teamId={teamId} />
+              <WorkTreeDashboard 
+                view={view} 
+                data={data} 
+                isLoading={isLoading} 
+                teamId={teamId}
+                currentPI={currentPI}
+                hiddenCards={hiddenCards}
+                onHideCard={handleHideCard}
+              />
             )}
 
             {/* Tree Hierarchy */}
