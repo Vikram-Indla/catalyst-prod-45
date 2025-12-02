@@ -45,3 +45,12 @@ export { CreateSharedStepModal } from './CreateSharedStepModal';
 export { EditSharedStepModal } from './EditSharedStepModal';
 export { AddSharedStepModal } from './AddSharedStepModal';
 export { SharedStepUsage } from './SharedStepUsage';
+
+// Overview Dashboard Components
+export { ProjectMetricsCards } from './ProjectMetricsCards';
+export { MetricCard } from './MetricCard';
+export { ActivityTrendChart } from './ActivityTrendChart';
+export { MyWorkSection } from './MyWorkSection';
+export { ActivityFeed } from './ActivityFeed';
+export { EmptyStateOverview } from './EmptyStateOverview';
+export { AdhocCycleIndicator } from './AdhocCycleIndicator';

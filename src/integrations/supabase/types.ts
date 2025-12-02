@@ -5732,6 +5732,47 @@ export type Database = {
           },
         ]
       }
+      test_activity_log: {
+        Row: {
+          activity_type: string
+          created_at: string | null
+          description: string | null
+          entity_id: string
+          entity_title: string | null
+          entity_type: string
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string | null
+          description?: string | null
+          entity_id: string
+          entity_title?: string | null
+          entity_type: string
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string | null
+          description?: string | null
+          entity_id?: string
+          entity_title?: string | null
+          entity_type?: string
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_activity_log_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_shared_steps: {
         Row: {
           created_at: string | null
@@ -5875,6 +5916,7 @@ export type Database = {
           description: string | null
           end_date: string | null
           id: string
+          is_adhoc: boolean | null
           name: string
           program_increment_id: string | null
           sprint_id: string | null
@@ -5888,6 +5930,7 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           id?: string
+          is_adhoc?: boolean | null
           name: string
           program_increment_id?: string | null
           sprint_id?: string | null
@@ -5901,6 +5944,7 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           id?: string
+          is_adhoc?: boolean | null
           name?: string
           program_increment_id?: string | null
           sprint_id?: string | null
@@ -6828,6 +6872,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      create_adhoc_cycle: { Args: never; Returns: string }
       create_notification: {
         Args: {
           p_entity_id?: string
