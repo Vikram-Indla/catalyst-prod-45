@@ -45,7 +45,7 @@ type MenuItem =
 
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Program Room', icon: LayoutDashboard, path: '/programs/:programId/room' },
-  { id: 'features', label: 'Features', icon: Layers3, path: '/programs/:programId/backlog?type=feature' },
+  { id: 'features', label: 'Features', icon: Layers3, path: '/programs/:programId/features' },
   { id: 'backlog', label: 'Backlog', icon: Diamond, path: '/programs/:programId/backlog' },
   { id: 'program-board', label: 'Program board', icon: GitBranch, path: '/programs/:programId/program-board' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/programs/:programId/roadmaps' },
