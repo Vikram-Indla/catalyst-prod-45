@@ -84,10 +84,10 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
       {/* PI Days Left Card - Only show in Team View */}
       {view === 'team' && (
-        <Card className="border-r-4 border-r-blue-500">
+        <Card className="border-r-4 border-r-brand-gold">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-blue-600 uppercase">
+              <span className="text-xs font-medium text-brand-gold uppercase">
                 PROGRAM INCREMENT: {currentPI?.name || 'N/A'}
               </span>
             </div>
@@ -114,7 +114,7 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
                         cy="50"
                         r="40"
                         fill="none"
-                        stroke="hsl(217.2 91.2% 59.8%)"
+                        stroke="hsl(var(--brand-gold))"
                         strokeWidth="8"
                         strokeDasharray={`${storyPointsAcceptedPct * 2.51} 251`}
                         strokeLinecap="round"
@@ -158,7 +158,7 @@ export function WorkTreeDashboard({ view, data, isLoading, teamId }: WorkTreeDas
                     cy="50"
                     r="40"
                     fill="none"
-                    stroke="hsl(217.2 91.2% 59.8%)"
+                    stroke="hsl(var(--brand-gold))"
                     strokeWidth="10"
                     strokeDasharray={`${metric.progress * 2.51} 251`}
                     strokeLinecap="round"
