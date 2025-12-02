@@ -6307,11 +6307,19 @@ export type Database = {
           comments: string | null
           created_at: string | null
           cycle_id: string
+          effort_actual: number | null
+          effort_estimated: number | null
           effort_minutes: number | null
+          evidence_count: number | null
           executed_at: string | null
           executed_by: string | null
           id: string
+          manual_status: string | null
+          overall_status_override: boolean | null
           status: string | null
+          timer_accumulated_seconds: number | null
+          timer_paused_at: string | null
+          timer_start_at: string | null
         }
         Insert: {
           assigned_to?: string | null
@@ -6320,11 +6328,19 @@ export type Database = {
           comments?: string | null
           created_at?: string | null
           cycle_id: string
+          effort_actual?: number | null
+          effort_estimated?: number | null
           effort_minutes?: number | null
+          evidence_count?: number | null
           executed_at?: string | null
           executed_by?: string | null
           id?: string
+          manual_status?: string | null
+          overall_status_override?: boolean | null
           status?: string | null
+          timer_accumulated_seconds?: number | null
+          timer_paused_at?: string | null
+          timer_start_at?: string | null
         }
         Update: {
           assigned_to?: string | null
@@ -6333,11 +6349,19 @@ export type Database = {
           comments?: string | null
           created_at?: string | null
           cycle_id?: string
+          effort_actual?: number | null
+          effort_estimated?: number | null
           effort_minutes?: number | null
+          evidence_count?: number | null
           executed_at?: string | null
           executed_by?: string | null
           id?: string
+          manual_status?: string | null
+          overall_status_override?: boolean | null
           status?: string | null
+          timer_accumulated_seconds?: number | null
+          timer_paused_at?: string | null
+          timer_start_at?: string | null
         }
         Relationships: [
           {
@@ -6554,6 +6578,94 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "test_execution_defects_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycle_executions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_execution_evidence: {
+        Row: {
+          execution_id: string
+          file_name: string
+          file_size_bytes: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          step_order: number | null
+          uploaded_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          execution_id: string
+          file_name: string
+          file_size_bytes?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          step_order?: number | null
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          execution_id?: string
+          file_name?: string
+          file_size_bytes?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          step_order?: number | null
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_execution_evidence_execution_id_fkey"
+            columns: ["execution_id"]
+            isOneToOne: false
+            referencedRelation: "test_cycle_executions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_execution_step_results: {
+        Row: {
+          actual_result: string | null
+          comments: string | null
+          executed_at: string | null
+          execution_id: string
+          expected_result: string | null
+          id: string
+          status: string
+          step_description: string
+          step_order: number
+        }
+        Insert: {
+          actual_result?: string | null
+          comments?: string | null
+          executed_at?: string | null
+          execution_id: string
+          expected_result?: string | null
+          id?: string
+          status?: string
+          step_description: string
+          step_order: number
+        }
+        Update: {
+          actual_result?: string | null
+          comments?: string | null
+          executed_at?: string | null
+          execution_id?: string
+          expected_result?: string | null
+          id?: string
+          status?: string
+          step_description?: string
+          step_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_execution_step_results_execution_id_fkey"
             columns: ["execution_id"]
             isOneToOne: false
             referencedRelation: "test_cycle_executions"
