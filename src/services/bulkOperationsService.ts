@@ -290,13 +290,13 @@ export async function bulkAddToCycle(request: BulkAddToCycleRequest): Promise<Bu
     try {
       const { error } = await supabase
         .from('test_executions')
-        .insert({
+        .insert([{
           test_case_id: caseId,
           test_cycle_id: request.cycle_id,
           executed_by: request.assign_to_user_id || (await supabase.auth.getUser()).data.user!.id,
           execution_date: new Date().toISOString(),
-          status: 'not_executed'
-        });
+          status: 'not_run'
+        }]);
 
       if (error) throw error;
       results.success_count++;
@@ -322,3 +322,13 @@ export async function bulkAddToCycle(request: BulkAddToCycleRequest): Promise<Bu
 
   return results;
 }
+
+// Export service object
+export const bulkOperationsService = {
+  bulkEditCases,
+  bulkMoveCases,
+  bulkDeleteCases,
+  bulkArchiveCases,
+  bulkAddToSet,
+  bulkAddToCycle,
+};
