@@ -21,6 +21,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -112,6 +116,20 @@ export function IdeaDetailPanel({
     }
   };
 
+  // Convert idea to work item (per Jira Align documentation)
+  const handleConvertTo = (workItemType: string) => {
+    if (!idea) return;
+    toast.info(`Converting "${idea.title}" to ${workItemType}...`);
+    // TODO: Implementation would open conversion dialog and create the work item
+  };
+
+  // Map idea to existing work item (per Jira Align documentation)
+  const handleMapToExisting = () => {
+    if (!idea) return;
+    toast.info(`Opening mapping dialog for "${idea.title}"...`);
+    // TODO: Implementation would open dialog to search and link existing work items
+  };
+
   const handleAddComment = async () => {
     if (!idea || !newComment.trim()) return;
     try {
@@ -191,10 +209,54 @@ export function IdeaDetailPanel({
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                  <DropdownMenuItem>Move to Backlog</DropdownMenuItem>
-                  <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                <DropdownMenuContent align="end" className="w-48">
+                  {/* Move to status options per Jira Align doc */}
+                  <DropdownMenuItem onClick={() => handleStatusChange('Open')}>
+                    Move to Open
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStatusChange('Planned')}>
+                    Move to Planned
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleStatusChange('Shelved')}>
+                    Move to Shelved
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  {/* Set Size submenu */}
+                  <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Set Size</DropdownMenuSubTrigger>
+                    <DropdownMenuSubContent>
+                      {(['XS', 'S', 'M', 'L', 'XL'] as TShirtSize[]).map((size) => (
+                        <DropdownMenuItem
+                          key={size}
+                          onClick={() => handleSizeChange(size)}
+                        >
+                          {size} {idea.t_shirt_size === size && '✓'}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuSub>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  {/* Convert options per Jira Align doc */}
+                  <DropdownMenuItem onClick={() => handleConvertTo('Epic')}>
+                    Convert to Epic
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleConvertTo('Feature')}>
+                    Convert to Feature
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleConvertTo('Story')}>
+                    Convert to Story
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
+                  
+                  {/* Map to existing */}
+                  <DropdownMenuItem onClick={() => handleMapToExisting()}>
+                    Map to Existing...
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
