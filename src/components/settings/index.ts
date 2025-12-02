@@ -3,3 +3,6 @@ export * from './ThemeAppearancePanel';
 export * from './EmailPreferencesPanel';
 export * from './UserPreferencesPanel';
 export * from './NotificationCenter';
+export * from './CaseStatusesSettings';
+export * from './CasePrioritiesSettings';
+export * from './RunStatusesSettings';
