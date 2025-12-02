@@ -12,12 +12,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Edit2, Save, Calendar, User, Flag, MoreVertical } from 'lucide-react';
+import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, History, Link as LinkIcon, Copy, ArrowDown, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
 import { STORY_STATUS_LABELS } from '@/types/story.types';
 import type { StoryWithRelations } from '@/types/story.types';
@@ -37,6 +38,7 @@ interface StoryDetailPanelProps {
 export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetailPanelProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedStory, setEditedStory] = useState(story);
+  const [activeTab, setActiveTab] = useState('details');
   const queryClient = useQueryClient();
 
   const { data: features } = useQuery({
@@ -101,76 +103,92 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent className="sm:max-w-3xl w-full p-0 flex flex-col">
-        {/* Header */}
-        <div className="px-[var(--s6)] py-[var(--s4)] border-b flex-shrink-0">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1 min-w-0">
-              <h2 className="text-xl font-semibold truncate">
-                {story.name}
-              </h2>
-              <div className="flex items-center gap-[var(--s2)] mt-[var(--s2)]">
-                <Badge variant="outline" className="capitalize">
-                  {story.status ? STORY_STATUS_LABELS[story.status] : 'To Do'}
+      <SheetContent side="right" className="w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
+        <SheetHeader className="border-b flex-row items-start justify-between space-y-0 shrink-0 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s4)]">
+          <div className="flex-1 pr-2 sm:pr-4 min-w-0">
+            <SheetTitle className="text-base sm:text-lg md:text-xl truncate">{story.name}</SheetTitle>
+            <div className="flex items-center gap-[var(--s2)] mt-1">
+              <Badge variant="outline" className="capitalize text-xs">
+                {story.status ? STORY_STATUS_LABELS[story.status] : 'To Do'}
+              </Badge>
+              {story.estimate_points && (
+                <Badge variant="secondary" className="bg-brand-gold/10 text-brand-gold border-brand-gold/20 text-xs">
+                  {story.estimate_points} pts
                 </Badge>
-                {story.estimate_points && (
-                  <Badge variant="secondary" className="bg-brand-gold/10 text-brand-gold border-brand-gold/20">
-                    {story.estimate_points} pts
-                  </Badge>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
-              {isEditing ? (
-                <>
-                  <Button size="sm" onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
-                    <Save className="h-4 w-4 mr-2" />
-                    Save
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
-                    Cancel
-                  </Button>
-                </>
-              ) : (
-                <Button size="sm" variant="outline" onClick={() => setIsEditing(true)}>
-                  <Edit2 className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
               )}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => toast.info('Duplicate story')}>
-                    Duplicate
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => toast.info('Delete story')}>
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
           </div>
-        </div>
+          <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
+            {isEditing && (
+              <>
+                <Button size="sm" onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+                  <Save className="h-4 w-4 mr-2" />
+                  Save
+                </Button>
+                <Button size="sm" variant="outline" onClick={() => setIsEditing(false)}>
+                  Cancel
+                </Button>
+              </>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-64">
+                <DropdownMenuItem onClick={() => setIsEditing(true)}>
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  Edit Story
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => toast.info('Subscribe to story')}>
+                  <Bell className="h-4 w-4 mr-2" />
+                  Subscribe
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveTab('discussions')}>
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Discussions
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveTab('history')}>
+                  <History className="h-4 w-4 mr-2" />
+                  Audit Log
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setActiveTab('links')}>
+                  <LinkIcon className="h-4 w-4 mr-2" />
+                  Links
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => toast.info('Copy story')}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copy
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => toast.info('Move story')}>
+                  <ArrowDown className="h-4 w-4 mr-2" />
+                  Move
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => toast.info('Delete story')}>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </SheetHeader>
 
-        {/* Content */}
-        <div className="flex-1 overflow-auto">
-          <Tabs defaultValue="details" className="h-full">
-            <div className="border-b px-[var(--s6)] sticky top-0 bg-background z-10">
-              <TabsList className="w-full justify-start">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="children">Children</TabsTrigger>
-                <TabsTrigger value="links">Links</TabsTrigger>
-                <TabsTrigger value="attachments">Attachments</TabsTrigger>
-                <TabsTrigger value="discussions">Discussions</TabsTrigger>
-                <TabsTrigger value="history">History</TabsTrigger>
-              </TabsList>
-            </div>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+          <TabsList className="w-full justify-start rounded-none border-b px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] shrink-0 overflow-x-auto flex-nowrap">
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="children">Children</TabsTrigger>
+            <TabsTrigger value="links">Links</TabsTrigger>
+            <TabsTrigger value="attachments">Attachments</TabsTrigger>
+            <TabsTrigger value="discussions">Discussions</TabsTrigger>
+            <TabsTrigger value="history">History</TabsTrigger>
+          </TabsList>
 
-            <TabsContent value="details" className="px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)]">
+          <div className="flex-1 overflow-y-auto">
+
+            <TabsContent value="details" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none space-y-[var(--s4)]">
               {/* Name */}
               <div>
                 <label className="text-sm font-medium flex items-center gap-2 mb-2">
@@ -381,27 +399,27 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
             </div>
           </TabsContent>
 
-            <TabsContent value="children" className="px-[var(--s6)] py-[var(--s6)]">
+            <TabsContent value="children" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <SubtasksList storyId={story.id} />
             </TabsContent>
 
-            <TabsContent value="links" className="p-6">
+            <TabsContent value="links" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <StoryLinks storyId={story.id} />
             </TabsContent>
 
-            <TabsContent value="attachments" className="p-6">
+            <TabsContent value="attachments" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <StoryAttachments storyId={story.id} />
             </TabsContent>
 
-            <TabsContent value="discussions" className="p-6">
+            <TabsContent value="discussions" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <StoryDiscussions storyId={story.id} />
             </TabsContent>
 
-            <TabsContent value="history" className="p-6">
+            <TabsContent value="history" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <StoryActivityLog storyId={story.id} />
             </TabsContent>
-          </Tabs>
-        </div>
+          </div>
+        </Tabs>
       </SheetContent>
     </Sheet>
   );

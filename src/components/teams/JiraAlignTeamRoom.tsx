@@ -4,6 +4,8 @@ import { Team } from '@/types/team.types';
 import { useTeams } from '@/hooks/useTeams';
 import { useTeamSprints, useSprintStories, useTeamDependencies } from '@/hooks/useTeamRoom';
 import { CreateDependencyDialog } from '@/components/dependencies/CreateDependencyDialog';
+import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
+import { DependencyDetailsDrawer } from '@/components/dependencies/DependencyDetailsDrawer';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -33,6 +35,8 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'sprint-board'>('dashboard');
   const [workItemFilter, setWorkItemFilter] = useState('stories');
   const [createDependencyOpen, setCreateDependencyOpen] = useState(false);
+  const [selectedStoryId, setSelectedStoryId] = useState<string | null>(null);
+  const [selectedDependencyId, setSelectedDependencyId] = useState<string | null>(null);
 
   // Auto-select first sprint if available
   const currentSprint = selectedSprintId 
@@ -391,7 +395,11 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
               ) : (
                 <div className="space-y-2">
                   {dependencies.slice(0, 3).map((dep) => (
-                    <Card key={dep.id} className="p-3 bg-background">
+                    <Card 
+                      key={dep.id} 
+                      className="p-3 bg-background hover:bg-muted/50 cursor-pointer transition-colors"
+                      onClick={() => setSelectedDependencyId(dep.id)}
+                    >
                       <div className="flex items-start gap-2 mb-1.5">
                         <span 
                           className={`px-3 py-1 rounded-full text-[11px] font-medium whitespace-nowrap ${
@@ -451,12 +459,6 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                   </div>
                 </div>
               )}
-              
-              <CreateDependencyDialog
-                open={createDependencyOpen}
-                onOpenChange={setCreateDependencyOpen}
-                teamId={team.id}
-              />
             </div>
 
             {/* Impediments Section */}
@@ -561,7 +563,11 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                     </td>
                   </tr>
                 ) : displayStories.map((story) => (
-                  <tr key={story.id} className="border-b border-border hover:bg-muted/30">
+                  <tr 
+                    key={story.id} 
+                    className="border-b border-border hover:bg-muted/30 cursor-pointer"
+                    onClick={() => setSelectedStoryId(story.id)}
+                  >
                     <td className="py-2 px-3">
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </td>
@@ -681,13 +687,38 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
                         Add New
                       </Button>
                     </div>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Story Detail Panel */}
+        {selectedStoryId && stories.find(s => s.id === selectedStoryId) && (
+          <StoryDetailPanel
+            story={stories.find(s => s.id === selectedStoryId)!}
+            open={!!selectedStoryId}
+            onClose={() => setSelectedStoryId(null)}
+            onUpdate={() => {
+              // Refetch stories when updated
+            }}
+          />
+        )}
+
+        {/* Dependency Details Drawer */}
+        <DependencyDetailsDrawer
+          open={!!selectedDependencyId}
+          onClose={() => setSelectedDependencyId(null)}
+          dependencyId={selectedDependencyId || undefined}
+        />
+
+        {/* Create Dependency Dialog */}
+        <CreateDependencyDialog 
+          open={createDependencyOpen}
+          onOpenChange={setCreateDependencyOpen}
+        />
       </div>
-    </div>
-  );
-}
+    );
+  }
