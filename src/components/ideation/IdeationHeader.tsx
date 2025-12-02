@@ -3,7 +3,8 @@
 // Based on Jira Align Ideation screenshots
 // ==============================================
 
-import { Filter, BarChart3, Settings, Kanban, Plus } from 'lucide-react';
+import { Filter, BarChart3, Settings, Kanban, Plus, Users } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -68,6 +69,8 @@ export function IdeationHeader({
   onOpenManageBacklog,
   onAddIdea,
 }: IdeationHeaderProps) {
+  const navigate = useNavigate();
+
   const handleSortChange = (value: string) => {
     const [field, direction] = value.split('-') as [IdeaSortField, SortDirection];
     onSortChange(field, direction);
@@ -147,6 +150,10 @@ export function IdeationHeader({
           <Button variant="ghost" size="sm" onClick={onOpenSetup}>
             <Settings className="h-4 w-4 mr-2" />
             Setup
+          </Button>
+          <Button variant="ghost" size="sm" onClick={() => navigate('/items/ideation/manage-users')}>
+            <Users className="h-4 w-4 mr-2" />
+            Manage Users
           </Button>
           <Button variant="outline" size="sm" onClick={onOpenManageBacklog}>
             <Kanban className="h-4 w-4 mr-2" />

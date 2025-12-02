@@ -38,6 +38,7 @@ import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
 import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
 import Ideation from "./pages/Ideation";
+import ManageIdeationUsersPage from "./components/ideation/ManageIdeationUsersPage";
 import Impediments from "./pages/Impediments";
 import ReleaseVehicles from "./pages/ReleaseVehicles";
 import SuccessCriteria from "./pages/SuccessCriteria";
@@ -291,6 +292,7 @@ const App = () => (
               <Route path="/items/defects" element={<Defects />} />
               <Route path="/items/tasks" element={<Tasks />} />
               <Route path="/items/ideation" element={<Ideation />} />
+              <Route path="/items/ideation/manage-users" element={<ManageIdeationUsersPage />} />
               <Route path="/items/impediments" element={<Impediments />} />
               <Route path="/items/release-vehicles" element={<ReleaseVehicles />} />
               <Route path="/items/success-criteria" element={<SuccessCriteria />} />
