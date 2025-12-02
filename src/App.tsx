@@ -460,6 +460,7 @@ const App = () => (
               
               {/* Test Management Routes - Program Scoped */}
               <Route path="/programs/:programId/tests" element={<TestOverviewPage />} />
+              <Route path="/programs/:programId/tests/overview" element={<TestOverviewPage />} />
               <Route path="/programs/:programId/tests/cases" element={<TestCasesPage />} />
               <Route path="/programs/:programId/tests/cases/:id" element={<TestCaseDetailPage />} />
               <Route path="/programs/:programId/tests/library" element={<TestStepLibraryPage />} />
