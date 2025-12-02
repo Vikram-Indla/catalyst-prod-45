@@ -95,44 +95,127 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         keyResultsByObjective.get(kr.objective_id)!.push(kr);
       });
 
+  // Handle hierarchical filtering by fetching related entity IDs
+  let portfolioIdsToQuery: string[] = [];
+  let programIdsToQuery: string[] = [];
+  let teamIdsToQuery: string[] = [];
+
+  // Portfolio context - include all children (portfolio + programs + teams in portfolio)
+  if (filters?.portfolioIds && filters.portfolioIds.length > 0) {
+    portfolioIdsToQuery = filters.portfolioIds;
+    
+    if (filters.includeAllChildren) {
+      // Fetch programs in this portfolio
+      const { data: programs } = await supabase
+        .from('programs')
+        .select('id')
+        .in('portfolio_id', filters.portfolioIds);
+      
+      if (programs && programs.length > 0) {
+        programIdsToQuery = programs.map(p => p.id);
+        
+        // Fetch teams in these programs
+        const { data: teams } = await supabase
+          .from('teams')
+          .select('id')
+          .in('program_id', programIdsToQuery);
+        
+        if (teams && teams.length > 0) {
+          teamIdsToQuery = teams.map(t => t.id);
+        }
+      }
+    }
+  }
+
+  // Program context - include program objectives and child team objectives
+  if (filters?.programIds && filters.programIds.length > 0) {
+    programIdsToQuery = [...programIdsToQuery, ...filters.programIds];
+    
+    if (filters.includeChildTeams) {
+      // Fetch teams in this program
+      const { data: teams } = await supabase
+        .from('teams')
+        .select('id')
+        .in('program_id', filters.programIds);
+      
+      if (teams && teams.length > 0) {
+        teamIdsToQuery = [...teamIdsToQuery, ...teams.map(t => t.id)];
+      }
+    }
+  }
+
+  // Team context - include team objectives and optionally parent hierarchy
+  if (filters?.teamIds && filters.teamIds.length > 0) {
+    teamIdsToQuery = [...teamIdsToQuery, ...filters.teamIds];
+    
+    if (filters.includeParentHierarchy) {
+      // Fetch parent program for this team
+      const { data: teams } = await supabase
+        .from('teams')
+        .select('program_id')
+        .in('id', filters.teamIds);
+      
+      if (teams && teams.length > 0) {
+        const parentProgramIds = teams.map(t => t.program_id).filter(Boolean) as string[];
+        programIdsToQuery = [...programIdsToQuery, ...parentProgramIds];
+        
+        // Fetch parent portfolio for these programs
+        const { data: programs } = await supabase
+          .from('programs')
+          .select('portfolio_id')
+          .in('id', parentProgramIds);
+        
+        if (programs && programs.length > 0) {
+          const parentPortfolioIds = programs.map(p => p.portfolio_id).filter(Boolean) as string[];
+          portfolioIdsToQuery = [...portfolioIdsToQuery, ...parentPortfolioIds];
+        }
+      }
+    }
+  }
+
+  // Build the query with collected IDs
   let query = supabase
     .from('objectives')
     .select('*')
     .order('created_at', { ascending: false });
 
-  // Apply tier filter first if specified
+  // Apply hierarchical filters using OR conditions
+  const hierarchyFilters: string[] = [];
+  if (portfolioIdsToQuery.length > 0) {
+    hierarchyFilters.push(`portfolio_id.in.(${portfolioIdsToQuery.join(',')})`);
+  }
+  if (programIdsToQuery.length > 0) {
+    hierarchyFilters.push(`program_id.in.(${programIdsToQuery.join(',')})`);
+  }
+  if (teamIdsToQuery.length > 0) {
+    hierarchyFilters.push(`team_id.in.(${teamIdsToQuery.join(',')})`);
+  }
+
+  if (hierarchyFilters.length > 0) {
+    query = query.or(hierarchyFilters.join(','));
+  }
+
+  // Apply tier filter
   if (filters?.tier && filters.tier.length > 0) {
     query = query.in('tier', filters.tier);
   }
 
-  // Portfolio context filtering
-  if (filters?.portfolioIds && filters.portfolioIds.length > 0) {
-    query = query.in('portfolio_id', filters.portfolioIds);
-  }
-
-  // Program context filtering
-  if (filters?.programIds && filters.programIds.length > 0) {
-    query = query.in('program_id', filters.programIds);
-  }
-
-  // Team context filtering
-  if (filters?.teamIds && filters.teamIds.length > 0) {
-    query = query.in('team_id', filters.teamIds);
-  }
-
-  // Additional filters
+  // Apply status filter
   if (filters?.statuses && filters.statuses.length > 0) {
     query = query.in('status', filters.statuses);
   }
 
+  // Apply owner filter
   if (filters?.ownerIds && filters.ownerIds.length > 0) {
     query = query.in('owner_id', filters.ownerIds);
   }
 
+  // Apply blocked filter
   if (filters?.blockedOnly) {
     query = query.eq('is_blocked', true);
   }
 
+  // Apply search filter
   if (filters?.search) {
     query = query.or(`summary.ilike.%${filters.search}%,id.ilike.%${filters.search}%`);
   }
