@@ -54,3 +54,9 @@ export { MyWorkSection } from './MyWorkSection';
 export { ActivityFeed } from './ActivityFeed';
 export { EmptyStateOverview } from './EmptyStateOverview';
 export { AdhocCycleIndicator } from './AdhocCycleIndicator';
+
+// Advanced Import/Export
+export { AdvancedImportWizard } from './AdvancedImportWizard';
+
+// Dashboard Gadgets
+export * from './dashboard';
