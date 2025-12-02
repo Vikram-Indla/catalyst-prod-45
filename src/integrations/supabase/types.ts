@@ -6878,6 +6878,93 @@ export type Database = {
         }
         Relationships: []
       }
+      test_report_schedules: {
+        Row: {
+          config: Json
+          created_at: string | null
+          created_by: string | null
+          format: string | null
+          id: string
+          is_active: boolean | null
+          last_run_at: string | null
+          next_run_at: string | null
+          program_id: string
+          recipients: string[] | null
+          report_type: string
+          schedule_cron: string
+          updated_at: string | null
+        }
+        Insert: {
+          config: Json
+          created_at?: string | null
+          created_by?: string | null
+          format?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          program_id: string
+          recipients?: string[] | null
+          report_type: string
+          schedule_cron: string
+          updated_at?: string | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          created_by?: string | null
+          format?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          program_id?: string
+          recipients?: string[] | null
+          report_type?: string
+          schedule_cron?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      test_reports: {
+        Row: {
+          config: Json
+          created_at: string | null
+          file_url: string | null
+          generated_at: string | null
+          generated_by: string | null
+          id: string
+          program_id: string
+          report_type: string
+          share_expires_at: string | null
+          share_token: string | null
+        }
+        Insert: {
+          config: Json
+          created_at?: string | null
+          file_url?: string | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          program_id: string
+          report_type: string
+          share_expires_at?: string | null
+          share_token?: string | null
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          file_url?: string | null
+          generated_at?: string | null
+          generated_by?: string | null
+          id?: string
+          program_id?: string
+          report_type?: string
+          share_expires_at?: string | null
+          share_token?: string | null
+        }
+        Relationships: []
+      }
       test_set_cases: {
         Row: {
           added_at: string | null
