@@ -36,8 +36,10 @@ export function CatalystHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  // Check if current route is a tests route
+  // Show Tests dropdown only when in program context (where sidebar shows Tests)
+  const isProgramRoute = location.pathname.includes('/programs/');
   const isTestsRoute = location.pathname.includes('/tests');
+  const showTestsDropdown = isProgramRoute && isTestsRoute;
 
   const navItems = [
     { label: "Home", path: "/home" },
@@ -179,8 +181,8 @@ export function CatalystHeader() {
             {/* Items Dropdown */}
             <ItemsDropdown />
 
-            {/* Tests Dropdown - Conditional */}
-            {isTestsRoute && <TestsDropdown isActive={isTestsRoute} />}
+            {/* Tests Dropdown - Only visible in program context */}
+            {showTestsDropdown && <TestsDropdown isActive />}
           </nav>
 
           {/* Create Button */}
