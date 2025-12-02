@@ -1,26 +1,10 @@
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Search, Plus, Lightbulb } from 'lucide-react';
+// ==============================================
+// ENTERPRISE IDEATION PAGE
+// Full Ideation module for Enterprise context
+// ==============================================
+
+import Ideation from '@/pages/Ideation';
 
 export default function EnterpriseIdeation() {
-  return (
-    <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
-      <div className="flex items-center gap-3 mb-6" style={{ height: 'var(--toolbar-h)' }}>
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search ideas..." className="pl-9" style={{ height: 'var(--grid-row)' }} />
-        </div>
-        <Button size="sm"><Plus className="h-4 w-4 mr-2" />New Idea</Button>
-      </div>
-
-      <Card className="p-8 text-center">
-        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-          <Lightbulb className="h-8 w-8 text-primary" />
-        </div>
-        <h2 className="text-xl font-semibold mb-2">Enterprise Ideation</h2>
-        <p className="text-muted-foreground">Capture and evaluate innovative ideas from across the organization</p>
-      </Card>
-    </div>
-  );
+  return <Ideation />;
 }
