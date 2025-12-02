@@ -97,31 +97,29 @@ export function WorkTreeHierarchy({ view, data, isLoading, narrowToProgram }: Wo
             <span className="text-sm font-medium truncate">{node.title}</span>
           </div>
 
-          {/* Health Indicator */}
-          {node.health && (
-            <div className={cn("w-3 h-3 rounded-full", getHealthColor(node.health))} />
-          )}
+          {/* Health Indicator - always render container for alignment */}
+          <div className="w-12 flex items-center justify-center">
+            {node.health ? (
+              <div className={cn("w-3 h-3 rounded-full", getHealthColor(node.health))} />
+            ) : (
+              <div className="w-3 h-3 rounded-full bg-gray-300" />
+            )}
+          </div>
 
-          {/* Points */}
-          {node.points !== undefined && (
-            <div className="text-sm text-muted-foreground w-16 text-right">
-              {node.points}
-            </div>
-          )}
+          {/* Points - always render for alignment */}
+          <div className="text-sm text-muted-foreground w-16 text-right">
+            {node.points ?? '-'}
+          </div>
 
-          {/* Item Count */}
-          {node.itemCount !== undefined && (
-            <div className="text-sm text-muted-foreground w-16 text-right">
-              {node.itemCount}
-            </div>
-          )}
+          {/* Item Count - always render for alignment */}
+          <div className="text-sm text-muted-foreground w-16 text-right">
+            {node.itemCount ?? '-'}
+          </div>
 
-          {/* Progress */}
-          {node.progress !== undefined && (
-            <div className="w-24">
-              <Progress value={node.progress} className="h-2" />
-            </div>
-          )}
+          {/* Progress - always render for alignment */}
+          <div className="w-24">
+            <Progress value={node.progress ?? 0} className="h-2" />
+          </div>
 
           {/* Indicators */}
           <div className="flex items-center gap-1">
