@@ -4,7 +4,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from '@/components/ui/dropdown-menu';
+import { MoreVertical, MessageSquare, Bell, History, Copy, Trash2, Edit, RefreshCw } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -250,20 +258,68 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>{isEdit ? 'Edit' : 'Create'} Dependency</SheetTitle>
+      <SheetContent side="right" className="w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
+        <SheetHeader className="border-b flex-row items-start justify-between space-y-0 shrink-0 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s4)]">
+          <div className="flex-1 pr-2 sm:pr-4 min-w-0">
+            <SheetTitle className="text-base sm:text-lg md:text-xl truncate">
+              {isEdit ? 'Edit Dependency' : 'Create Dependency'}
+            </SheetTitle>
+            <SheetDescription className="text-xs sm:text-sm mt-1 truncate">
+              {isEdit && existingDependency ? (
+                `${existingDependency.from_feature?.name || 'Unknown'} → ${existingDependency.to_feature?.name || 'Unknown'}`
+              ) : (
+                'Define a new dependency relationship'
+              )}
+            </SheetDescription>
+          </div>
+          {isEdit && (
+            <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-64">
+                  <DropdownMenuItem onClick={() => toast.info('Subscribe to dependency updates')}>
+                    <Bell className="h-4 w-4 mr-2" />
+                    Subscribe
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setActiveTab('audit')}>
+                    <History className="h-4 w-4 mr-2" />
+                    Audit Log
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => toast.info('Refresh dependency status')}>
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Refresh Status
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => toast.info('Copy dependency')}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => toast.info('Delete dependency')}>
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
         </SheetHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="details">Details</TabsTrigger>
-                <TabsTrigger value="negotiation">Negotiation</TabsTrigger>
-                <TabsTrigger value="stories">Stories</TabsTrigger>
-                <TabsTrigger value="audit">Audit</TabsTrigger>
-              </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+          <TabsList className="w-full justify-start rounded-none border-b px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] shrink-0 overflow-x-auto flex-nowrap">
+            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="negotiation">Negotiation</TabsTrigger>
+            <TabsTrigger value="stories">Stories</TabsTrigger>
+            <TabsTrigger value="audit">Audit</TabsTrigger>
+          </TabsList>
+
+          <div className="flex-1 overflow-y-auto">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col">
 
               <TabsContent value="details" className="space-y-4 mt-4">
                 {/* Core Fields Section */}
@@ -767,18 +823,19 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
                   Audit log will appear here
                 </div>
               </TabsContent>
-            </Tabs>
 
-            <div className="flex justify-end gap-3 pt-4 border-t">
-              <Button type="button" variant="outline" onClick={onClose}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={mutation.isPending}>
-                {mutation.isPending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
-              </Button>
-            </div>
-          </form>
-        </Form>
+                <div className="flex justify-end gap-3 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s4)] mt-auto border-t sticky bottom-0 bg-background">
+                  <Button type="button" variant="outline" onClick={onClose}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" disabled={mutation.isPending} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+                    {mutation.isPending ? 'Saving...' : isEdit ? 'Update' : 'Create'}
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </div>
+        </Tabs>
       </SheetContent>
     </Sheet>
   );
