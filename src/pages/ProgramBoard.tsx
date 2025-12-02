@@ -166,7 +166,7 @@ export default function ProgramBoard() {
   };
 
   return (
-    <div className="px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] lg:px-[var(--s8)] py-[var(--s3)] sm:py-[var(--s4)] md:py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
+    <div className="px-[var(--s4)] sm:px-[var(--s6)] lg:px-[var(--s8)] py-[var(--s4)] sm:py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[var(--s3)] sm:gap-[var(--s4)]">
         <div className="min-w-0">
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">Program Board</h1>

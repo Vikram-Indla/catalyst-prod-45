@@ -96,7 +96,7 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-[var(--s4)]">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium">Key Results ({keyResults.length})</h3>
         <Button variant="outline" size="sm" onClick={handleCreate}>
@@ -106,14 +106,14 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
       </div>
 
       {isAdding && (
-        <div className="p-4 border rounded-lg space-y-3">
+        <div className="px-[var(--s4)] py-[var(--s4)] border rounded-lg space-y-[var(--s3)]">
           <Input
             placeholder="Key result summary"
             value={newKrName}
             onChange={(e) => setNewKrName(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAddKeyResult()}
           />
-          <div className="flex gap-2">
+          <div className="flex gap-[var(--s2)]">
             <Select
               value={newKrType}
               onValueChange={(value: any) => setNewKrType(value)}
@@ -135,7 +135,7 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-[var(--s2)]">
         {keyResults.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground text-sm">
             No key results yet. Add your first key result to track progress.
@@ -144,7 +144,7 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
           keyResults.map((kr) => (
             <div key={kr.id} className="border rounded-lg">
               <div
-                className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/50"
+                className="flex items-center gap-[var(--s3)] px-[var(--s3)] py-[var(--s3)] cursor-pointer hover:bg-muted/50"
                 onClick={() => toggleExpanded(kr.id)}
               >
                 <Button variant="ghost" size="icon" className="h-6 w-6">
@@ -161,8 +161,8 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
               </div>
 
               {expandedKrs.has(kr.id) && (
-                <div className="p-4 border-t space-y-4 bg-muted/20">
-                  <div className="grid grid-cols-3 gap-4">
+                <div className="px-[var(--s4)] py-[var(--s4)] border-t space-y-[var(--s4)] bg-muted/20">
+                  <div className="grid grid-cols-3 gap-[var(--s4)]">
                     <div>
                       <div className="text-xs text-muted-foreground mb-1">Current</div>
                       <div className="font-medium">{kr.current_value}</div>
@@ -177,7 +177,7 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-[var(--s2)]">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Progress</span>
                       <span className="font-medium">
@@ -192,7 +192,7 @@ export function KeyResultsList({ objectiveId, keyResults: propKeyResults }: KeyR
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-[var(--s2)]">
                     <Button 
                       variant="outline" 
                       size="sm"
@@ -279,9 +279,9 @@ function CheckInsHistory({ keyResultId }: { keyResultId: string }) {
   }
 
   return (
-    <div className="mt-4 pt-4 border-t">
-      <h4 className="text-xs font-medium mb-2 text-muted-foreground">Recent Check-ins</h4>
-      <div className="space-y-2">
+    <div className="mt-[var(--s4)] pt-[var(--s4)] border-t">
+      <h4 className="text-xs font-medium mb-[var(--s2)] text-muted-foreground">Recent Check-ins</h4>
+      <div className="space-y-[var(--s2)]">
         {checkIns.map((checkIn: any) => (
           <div
             key={checkIn.id}

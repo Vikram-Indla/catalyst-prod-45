@@ -80,7 +80,7 @@ export default function PortfolioForecast() {
     <div className="h-screen flex flex-col bg-background">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="px-6 py-4 flex items-center justify-between">
+        <div className="px-[var(--s6)] py-[var(--s4)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
           <div>
             <h1 className="text-2xl font-semibold text-foreground">Portfolio Forecast</h1>
             {portfolio && <p className="text-sm text-muted-foreground mt-1">{portfolio.name}</p>}
@@ -96,9 +96,9 @@ export default function PortfolioForecast() {
         </div>
         
         {/* Filters Bar */}
-        <div className="px-6 py-3 border-t flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
+        <div className="px-[var(--s6)] py-[var(--s3)] border-t flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s4)]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s3)] w-full sm:w-auto">
+            <div className="flex items-center gap-[var(--s2)] w-full sm:w-auto">
               <span className="text-sm text-muted-foreground">View:</span>
               <Select value={viewLevel} onValueChange={(val) => setViewLevel(val as 'team' | 'program')}>
                 <SelectTrigger className="w-32">
@@ -111,7 +111,7 @@ export default function PortfolioForecast() {
               </Select>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-[var(--s2)] w-full sm:w-auto">
               <span className="text-sm text-muted-foreground">Level:</span>
               <Select value={workItemLevel} onValueChange={(val) => setWorkItemLevel(val as any)}>
                 <SelectTrigger className="w-40">
@@ -125,7 +125,7 @@ export default function PortfolioForecast() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-[var(--s2)] w-full sm:w-auto">
             <Button variant="outline" size="sm" onClick={() => setFiltersOpen(true)}>
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -149,10 +149,10 @@ export default function PortfolioForecast() {
       {/* PI Selector Panel */}
       {piSelectorOpen && (
         <div className="border-b bg-card">
-          <Card className="m-4">
-            <div className="p-4 space-y-4">
+          <Card className="m-[var(--s4)]">
+            <div className="px-[var(--s4)] py-[var(--s4)] space-y-[var(--s4)]">
               <h3 className="font-semibold">Select Program Increments</h3>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-[var(--s4)]">
                 {pis.map(pi => (
                   <div key={pi.id} className="flex items-center space-x-2">
                     <Checkbox
@@ -166,7 +166,7 @@ export default function PortfolioForecast() {
                   </div>
                 ))}
               </div>
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-[var(--s2)]">
                 <Button variant="outline" onClick={() => setSelectedPIs([])}>Clear</Button>
                 <Button onClick={applyPISelection}>Apply</Button>
               </div>
@@ -185,7 +185,7 @@ export default function PortfolioForecast() {
             </div>
           </div>
         ) : (
-          <div className="p-6 space-y-4">
+          <div className="px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)]">
             {selectedPIs.map(piId => {
               const pi = pis.find(p => p.id === piId);
               if (!pi) return null;
@@ -198,8 +198,8 @@ export default function PortfolioForecast() {
                 >
                   <Card>
                     <CollapsibleTrigger className="w-full">
-                      <div className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-between px-[var(--s4)] py-[var(--s4)] hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center gap-[var(--s3)]">
                           <ChevronDown className={`h-5 w-5 transition-transform ${expandedPIs.has(piId) ? '' : '-rotate-90'}`} />
                           <h3 className="text-lg font-semibold">{pi.name}</h3>
                         </div>

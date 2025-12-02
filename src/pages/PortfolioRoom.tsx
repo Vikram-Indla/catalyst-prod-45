@@ -76,8 +76,8 @@ export default function PortfolioRoom() {
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
-      <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 flex-shrink-0">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)] space-y-[var(--s3)] sm:space-y-[var(--s4)] flex-shrink-0">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold">Portfolio Room</h1>
             <p className="text-xs sm:text-sm text-muted-foreground">Strategic decision cockpit</p>
@@ -91,8 +91,8 @@ export default function PortfolioRoom() {
           </PermissionGuard>
         </div>
         
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-4 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s2)] sm:gap-[var(--s4)] w-full sm:w-auto">
             <ScopeSelector value={selectedPortfolio} onChange={setSelectedPortfolio} />
             <PISelector 
               portfolioId={selectedPortfolio} 
@@ -114,14 +114,14 @@ export default function PortfolioRoom() {
 
       {/* 3-Panel Layout - Per Catalyst spec: Left (Theme), Center (Epic/Timeline), Right (PI/Program) */}
       <div className="flex-1 overflow-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 p-3 sm:p-4 md:p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-[var(--s3)] sm:gap-[var(--s4)] p-[var(--s4)] sm:p-[var(--s6)]">
           {/* LEFT PANEL - Theme Program Increment Progress */}
           <div className="lg:col-span-4">
             <Card>
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-[var(--s3)]">
                 <CardTitle className="text-sm font-semibold">Theme Program Increment Progress</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 pt-0">
+              <CardContent className="space-y-[var(--s3)] pt-0">
                 {themes?.slice(0, 5).map((theme, index) => {
                   const progress = ((index + 1) * 15) % 100; // Deterministic progress
                   return (
@@ -151,7 +151,7 @@ export default function PortfolioRoom() {
           {/* CENTER PANEL - Program Increment Roadmap */}
           <div className="lg:col-span-5">
             <Card>
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-[var(--s3)]">
                 <CardTitle className="text-sm font-semibold">Program Increment Roadmap</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
@@ -166,14 +166,14 @@ export default function PortfolioRoom() {
           {/* RIGHT PANEL - PI Program Increment Progress */}
           <div className="lg:col-span-3">
             <Card>
-              <CardHeader className="pb-3">
+              <CardHeader className="pb-[var(--s3)]">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">PI-5</span>
                   <Badge className="bg-info text-info-foreground text-xs">In Progress</Badge>
                 </div>
                 <div className="text-xs text-muted-foreground mt-1">83% Complete</div>
               </CardHeader>
-              <CardContent className="space-y-3 pt-0">
+              <CardContent className="space-y-[var(--s3)] pt-0">
                 <div>
                   <div className="text-xs font-medium mb-2">Program Increment Progress</div>
                   <Progress value={83} className="h-2 mb-1" />
@@ -198,12 +198,12 @@ export default function PortfolioRoom() {
           </div>
 
           {/* BOTTOM - Epic Grid */}
-          <div className="lg:col-span-12 mt-0 lg:mt-2">
+          <div className="lg:col-span-12 mt-0 lg:mt-[var(--s2)]">
             <Card>
-              <CardHeader className="pb-3">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <CardHeader className="pb-[var(--s3)]">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
                   <CardTitle className="text-sm font-semibold">Epic Backlog</CardTitle>
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-[var(--s2)] w-full sm:w-auto">
                     <input
                       type="search"
                       placeholder="Search by ID"
@@ -273,17 +273,17 @@ export default function PortfolioRoom() {
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="h-[60vh] pr-4">
-            <div className="space-y-6">
+            <div className="space-y-[var(--s6)]">
               {/* Themes Summary */}
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
+                  <CardTitle className="text-base flex items-center gap-[var(--s2)]">
                     <Layers className="h-4 w-4" />
                     Strategic Themes
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-3 gap-4 mb-4">
+                  <div className="grid grid-cols-3 gap-[var(--s4)] mb-[var(--s4)]">
                     <div className="text-center p-3 bg-muted rounded-lg">
                       <div className="text-2xl font-bold">{totalThemes}</div>
                       <div className="text-xs text-muted-foreground">Total Themes</div>

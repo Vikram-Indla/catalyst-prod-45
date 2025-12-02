@@ -123,8 +123,8 @@ export default function Dependencies() {
   };
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+    <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold">Dependencies</h1>
           <p className="text-sm text-muted-foreground">Advanced dependency tracking with critical path analysis</p>
@@ -137,9 +137,9 @@ export default function Dependencies() {
         </PermissionGuard>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-        <Card className="p-4">
-          <div className="flex items-center gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-[var(--s3)] sm:gap-[var(--s4)]">
+        <Card className="px-[var(--s4)] py-[var(--s4)]">
+          <div className="flex items-center gap-[var(--s3)]">
             <ArrowRight className="h-8 w-8 text-muted-foreground" />
             <div>
               <div className="text-2xl font-bold">{stats.total}</div>
@@ -192,8 +192,8 @@ export default function Dependencies() {
           <TabsTrigger value="cross-program">Cross-Program</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="space-y-3 sm:space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <TabsContent value="all" className="space-y-[var(--s3)] sm:space-y-[var(--s4)]">
+          <div className="flex flex-col sm:flex-row gap-[var(--s3)] sm:gap-[var(--s4)]">
             <Input
               placeholder="Search dependencies..."
               value={searchTerm}
@@ -305,9 +305,9 @@ export default function Dependencies() {
         </TabsContent>
 
         <TabsContent value="critical">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Critical Path Dependencies</h3>
-            <div className="space-y-3">
+          <Card className="px-[var(--s6)] py-[var(--s6)]">
+            <h3 className="text-lg font-semibold mb-[var(--s4)]">Critical Path Dependencies</h3>
+            <div className="space-y-[var(--s3)]">
               {calculateCriticalPath().map((dep) => (
                 <div key={dep.id} className="p-4 border-l-4 border-destructive bg-destructive/5 rounded">
                   <div className="flex items-center justify-between">
@@ -333,9 +333,9 @@ export default function Dependencies() {
         </TabsContent>
 
         <TabsContent value="cross-program">
-          <Card className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Cross-Program Dependencies</h3>
-            <div className="space-y-3">
+          <Card className="px-[var(--s6)] py-[var(--s6)]">
+            <h3 className="text-lg font-semibold mb-[var(--s4)]">Cross-Program Dependencies</h3>
+            <div className="space-y-[var(--s3)]">
               {getCrossGramDependencies().map((dep) => (
                 <div key={dep.id} className="p-4 border rounded-lg hover:bg-muted/50">
                   <div className="flex items-center justify-between">
@@ -365,7 +365,7 @@ export default function Dependencies() {
             id: 'details',
             label: 'Details',
             content: selectedDependency && (
-              <div className="space-y-4">
+              <div className="space-y-[var(--s4)]">
                 <div>
                   <label className="text-sm font-medium">From Feature</label>
                   <p className="text-sm text-muted-foreground mt-1">
