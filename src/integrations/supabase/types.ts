@@ -6320,6 +6320,50 @@ export type Database = {
           },
         ]
       }
+      test_case_priorities: {
+        Row: {
+          color: string | null
+          created_at: string | null
+          display_order: number
+          id: string
+          is_archived: boolean | null
+          is_default: boolean | null
+          name: string
+          program_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          is_archived?: boolean | null
+          is_default?: boolean | null
+          name: string
+          program_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          color?: string | null
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          is_archived?: boolean | null
+          is_default?: boolean | null
+          name?: string
+          program_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_priorities_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_shared_steps: {
         Row: {
           created_at: string | null
@@ -6355,6 +6399,56 @@ export type Database = {
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      test_case_statuses: {
+        Row: {
+          created_at: string | null
+          display_order: number
+          eligible_for_cycle_set: boolean | null
+          eligible_for_linked_step: boolean | null
+          id: string
+          is_default: boolean | null
+          is_system: boolean | null
+          name: string
+          program_id: string | null
+          updated_at: string | null
+          viewable_by_owner_only: boolean | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number
+          eligible_for_cycle_set?: boolean | null
+          eligible_for_linked_step?: boolean | null
+          id?: string
+          is_default?: boolean | null
+          is_system?: boolean | null
+          name: string
+          program_id?: string | null
+          updated_at?: string | null
+          viewable_by_owner_only?: boolean | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number
+          eligible_for_cycle_set?: boolean | null
+          eligible_for_linked_step?: boolean | null
+          id?: string
+          is_default?: boolean | null
+          is_system?: boolean | null
+          name?: string
+          program_id?: string | null
+          updated_at?: string | null
+          viewable_by_owner_only?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_statuses_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
@@ -7619,6 +7713,53 @@ export type Database = {
           },
         ]
       }
+      test_field_configurations: {
+        Row: {
+          created_at: string | null
+          display_order: number
+          entity_type: string
+          field_label: string
+          field_name: string
+          id: string
+          is_enabled: boolean | null
+          is_required: boolean | null
+          program_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number
+          entity_type: string
+          field_label: string
+          field_name: string
+          id?: string
+          is_enabled?: boolean | null
+          is_required?: boolean | null
+          program_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number
+          entity_type?: string
+          field_label?: string
+          field_name?: string
+          id?: string
+          is_enabled?: boolean | null
+          is_required?: boolean | null
+          program_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_field_configurations_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_folders: {
         Row: {
           created_at: string | null
@@ -7823,6 +7964,53 @@ export type Database = {
           share_token?: string | null
         }
         Relationships: []
+      }
+      test_run_statuses: {
+        Row: {
+          created_at: string | null
+          display_order: number
+          execution_completed: boolean | null
+          highlight_color: string | null
+          id: string
+          is_system: boolean | null
+          name: string
+          program_id: string | null
+          status_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number
+          execution_completed?: boolean | null
+          highlight_color?: string | null
+          id?: string
+          is_system?: boolean | null
+          name: string
+          program_id?: string | null
+          status_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number
+          execution_completed?: boolean | null
+          highlight_color?: string | null
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          program_id?: string | null
+          status_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_run_statuses_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       test_set_cases: {
         Row: {
