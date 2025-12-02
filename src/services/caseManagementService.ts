@@ -278,7 +278,7 @@ export const caseManagementService = {
 
     if (versionError) throw versionError;
 
-    const snapshotData: any = version.snapshot_data;
+    const snapshotData: any = (version as any)?.snapshot_data || {};
 
     // Update current case with old version data
     const { data: updatedCase, error: updateError } = await supabase
@@ -316,7 +316,7 @@ export const caseManagementService = {
     const { data: executions, error } = await supabase
       .from('test_executions')
       .select('id')
-      .in('case_id', caseIds);
+      .in('test_case_id', caseIds);
 
     if (error) throw error;
 

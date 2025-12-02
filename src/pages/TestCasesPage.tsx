@@ -5,12 +5,20 @@ import { TestCaseHeader } from '@/components/test-management/TestCaseHeader';
 import { TestCaseList } from '@/components/test-management/TestCaseList';
 import { CreateTestCaseModal } from '@/components/test-management/CreateTestCaseModal';
 import { useTestCases, useTestFolders } from '@/hooks/useTestManagement';
+import { useBulkSelection } from '@/hooks/useBulkSelection';
+import { BulkSelectToolbar } from '@/components/test-management/BulkSelectToolbar';
+import { BulkEditModal } from '@/components/test-management/BulkEditModal';
+import { BulkDeleteModal } from '@/components/test-management/BulkDeleteModal';
+import { EditModeToggle } from '@/components/test-management/EditModeToggle';
+import { useCaseOperations } from '@/hooks/useCaseOperations';
 
 export const TestCasesPage: React.FC = () => {
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isBulkEditOpen, setIsBulkEditOpen] = useState(false);
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
   const [filters, setFilters] = useState({
     status: '',
     priority: '',
@@ -20,6 +28,8 @@ export const TestCasesPage: React.FC = () => {
 
   const { data: testCasesData, isLoading: loadingTestCases } = useTestCases(selectedFolder || undefined);
   const { data: foldersData } = useTestFolders();
+  const bulkSelection = useBulkSelection();
+  const caseOperations = useCaseOperations();
 
   // Client-side filtering
   const filteredTestCases = React.useMemo(() => {
@@ -58,7 +68,25 @@ export const TestCasesPage: React.FC = () => {
           filters={filters}
           onFilterChange={setFilters}
           testCases={filteredTestCases}
-        />
+        >
+          <EditModeToggle 
+            isActive={bulkSelection.isEditMode} 
+            onToggle={bulkSelection.toggleEditMode}
+          />
+        </TestCaseHeader>
+
+        {bulkSelection.isEditMode && bulkSelection.selectedCount > 0 && (
+          <BulkSelectToolbar
+            selectedCount={bulkSelection.selectedCount}
+            onCancel={bulkSelection.toggleEditMode}
+            onEdit={() => setIsBulkEditOpen(true)}
+            onMove={() => {}}
+            onDelete={() => setIsBulkDeleteOpen(true)}
+            onArchive={() => {}}
+            onAddToSet={() => {}}
+            onAddToCycle={() => {}}
+          />
+        )}
 
         <div className="flex-1 overflow-auto">
           <TestCaseList
@@ -84,6 +112,30 @@ export const TestCasesPage: React.FC = () => {
           entityType="test_cases"
         />
       )}
+
+      <BulkEditModal
+        isOpen={isBulkEditOpen}
+        onClose={() => setIsBulkEditOpen(false)}
+        selectedCount={bulkSelection.selectedCount}
+        onSubmit={async (request) => {
+          await caseOperations.bulkEdit({ ...request, case_ids: bulkSelection.getSelectedIds() });
+          bulkSelection.deselectAll();
+        }}
+      />
+
+      <BulkDeleteModal
+        isOpen={isBulkDeleteOpen}
+        onClose={() => setIsBulkDeleteOpen(false)}
+        selectedCount={bulkSelection.selectedCount}
+        onConfirm={async (cascadeDelete) => {
+          await caseOperations.bulkDelete({
+            case_ids: bulkSelection.getSelectedIds(),
+            confirmation_text: 'DELETE',
+            cascade_delete_executions: cascadeDelete
+          });
+          bulkSelection.deselectAll();
+        }}
+      />
     </div>
   );
 };

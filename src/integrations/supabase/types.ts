@@ -5783,6 +5783,45 @@ export type Database = {
           },
         ]
       }
+      test_case_bulk_operations: {
+        Row: {
+          case_ids: string[]
+          error_messages: string[] | null
+          executed_at: string | null
+          executed_by: string | null
+          failure_count: number | null
+          id: string
+          operation_data: Json | null
+          operation_type: string
+          status: string | null
+          success_count: number | null
+        }
+        Insert: {
+          case_ids: string[]
+          error_messages?: string[] | null
+          executed_at?: string | null
+          executed_by?: string | null
+          failure_count?: number | null
+          id?: string
+          operation_data?: Json | null
+          operation_type: string
+          status?: string | null
+          success_count?: number | null
+        }
+        Update: {
+          case_ids?: string[]
+          error_messages?: string[] | null
+          executed_at?: string | null
+          executed_by?: string | null
+          failure_count?: number | null
+          id?: string
+          operation_data?: Json | null
+          operation_type?: string
+          status?: string | null
+          success_count?: number | null
+        }
+        Relationships: []
+      }
       test_case_datasets: {
         Row: {
           case_id: string
@@ -5948,37 +5987,108 @@ export type Database = {
           },
         ]
       }
+      test_case_version_changes: {
+        Row: {
+          case_id: string
+          change_type: string | null
+          changed_at: string | null
+          changed_by: string | null
+          field_name: string
+          from_version: number | null
+          id: string
+          new_value: string | null
+          old_value: string | null
+          to_version: number
+        }
+        Insert: {
+          case_id: string
+          change_type?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          field_name: string
+          from_version?: number | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          to_version: number
+        }
+        Update: {
+          case_id?: string
+          change_type?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          field_name?: string
+          from_version?: number | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          to_version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "test_case_version_changes_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       test_case_versions: {
         Row: {
           case_id: string
           change_summary: string | null
+          component: string | null
           created_at: string | null
           created_by: string | null
+          folder_id: string | null
           id: string
+          labels: string[] | null
           objective: string | null
+          owner_id: string | null
           preconditions: string | null
+          priority: string | null
+          release: string | null
+          snapshot_data: Json | null
+          status: string | null
           title: string
           version: number
         }
         Insert: {
           case_id: string
           change_summary?: string | null
+          component?: string | null
           created_at?: string | null
           created_by?: string | null
+          folder_id?: string | null
           id?: string
+          labels?: string[] | null
           objective?: string | null
+          owner_id?: string | null
           preconditions?: string | null
+          priority?: string | null
+          release?: string | null
+          snapshot_data?: Json | null
+          status?: string | null
           title: string
           version: number
         }
         Update: {
           case_id?: string
           change_summary?: string | null
+          component?: string | null
           created_at?: string | null
           created_by?: string | null
+          folder_id?: string | null
           id?: string
+          labels?: string[] | null
           objective?: string | null
+          owner_id?: string | null
           preconditions?: string | null
+          priority?: string | null
+          release?: string | null
+          snapshot_data?: Json | null
+          status?: string | null
           title?: string
           version?: number
         }
@@ -5988,6 +6098,13 @@ export type Database = {
             columns: ["case_id"]
             isOneToOne: false
             referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "test_case_versions_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "test_folders"
             referencedColumns: ["id"]
           },
         ]
@@ -6067,6 +6184,8 @@ export type Database = {
       }
       test_cases: {
         Row: {
+          archived_at: string | null
+          archived_by: string | null
           automation_key: string | null
           automation_owner_id: string | null
           automation_status: string | null
@@ -6074,11 +6193,14 @@ export type Database = {
           component: string | null
           created_at: string | null
           created_by: string
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           estimated_effort: number | null
           expected_result: string | null
           folder_id: string | null
           id: string
+          is_archived: boolean | null
           labels: string[] | null
           linked_work_item_id: string | null
           linked_work_item_type: string | null
@@ -6095,6 +6217,8 @@ export type Database = {
           version: number | null
         }
         Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
           automation_key?: string | null
           automation_owner_id?: string | null
           automation_status?: string | null
@@ -6102,11 +6226,14 @@ export type Database = {
           component?: string | null
           created_at?: string | null
           created_by: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           estimated_effort?: number | null
           expected_result?: string | null
           folder_id?: string | null
           id?: string
+          is_archived?: boolean | null
           labels?: string[] | null
           linked_work_item_id?: string | null
           linked_work_item_type?: string | null
@@ -6123,6 +6250,8 @@ export type Database = {
           version?: number | null
         }
         Update: {
+          archived_at?: string | null
+          archived_by?: string | null
           automation_key?: string | null
           automation_owner_id?: string | null
           automation_status?: string | null
@@ -6130,11 +6259,14 @@ export type Database = {
           component?: string | null
           created_at?: string | null
           created_by?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           estimated_effort?: number | null
           expected_result?: string | null
           folder_id?: string | null
           id?: string
+          is_archived?: boolean | null
           labels?: string[] | null
           linked_work_item_id?: string | null
           linked_work_item_type?: string | null
