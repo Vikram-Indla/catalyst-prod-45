@@ -2250,7 +2250,7 @@ export type Database = {
           attachment_count: number
           comment_count: number
           created_at: string
-          created_by_id: string
+          created_by_id: string | null
           custom_fields: Json | null
           customer_id: string | null
           description: string
@@ -2258,7 +2258,7 @@ export type Database = {
           id: string
           idea_group_id: string
           is_public: boolean
-          owner_id: string
+          owner_id: string | null
           product_id: string | null
           status: string
           t_shirt_size: string | null
@@ -2274,7 +2274,7 @@ export type Database = {
           attachment_count?: number
           comment_count?: number
           created_at?: string
-          created_by_id: string
+          created_by_id?: string | null
           custom_fields?: Json | null
           customer_id?: string | null
           description: string
@@ -2282,7 +2282,7 @@ export type Database = {
           id?: string
           idea_group_id: string
           is_public?: boolean
-          owner_id: string
+          owner_id?: string | null
           product_id?: string | null
           status?: string
           t_shirt_size?: string | null
@@ -2298,7 +2298,7 @@ export type Database = {
           attachment_count?: number
           comment_count?: number
           created_at?: string
-          created_by_id?: string
+          created_by_id?: string | null
           custom_fields?: Json | null
           customer_id?: string | null
           description?: string
@@ -2306,7 +2306,7 @@ export type Database = {
           id?: string
           idea_group_id?: string
           is_public?: boolean
-          owner_id?: string
+          owner_id?: string | null
           product_id?: string | null
           status?: string
           t_shirt_size?: string | null
