@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { Team } from '@/types/team.types';
 import { useTeams } from '@/hooks/useTeams';
 import { useTeamSprints, useSprintStories, useTeamDependencies } from '@/hooks/useTeamRoom';
@@ -28,6 +29,7 @@ interface JiraAlignTeamRoomProps {
 
 export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: allTeams = [] } = useTeams();
   const { data: sprints = [] } = useTeamSprints(team?.id);
   const [selectedSprintId, setSelectedSprintId] = useState<string>('');
@@ -724,7 +726,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
             open={!!selectedStoryId}
             onClose={() => setSelectedStoryId(null)}
             onUpdate={() => {
-              // Refetch stories when updated
+              queryClient.invalidateQueries({ queryKey: ['sprint-stories', selectedSprintId || sprints[0]?.id] });
             }}
           />
         )}
@@ -749,7 +751,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
           onClose={() => setCreateStoryOpen(false)}
           onSuccess={() => {
             setCreateStoryOpen(false);
-            // Stories will auto-refresh via query
+            queryClient.invalidateQueries({ queryKey: ['sprint-stories', selectedSprintId || sprints[0]?.id] });
           }}
           initialTeamId={team?.id}
           initialSprintId={selectedSprintId || sprints[0]?.id}
