@@ -95,44 +95,70 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         keyResultsByObjective.get(kr.objective_id)!.push(kr);
       });
 
-      let query = supabase
-        .from('objectives')
-        .select('*')
-        .order('created_at', { ascending: false });
+  let query = supabase
+    .from('objectives')
+    .select('*')
+    .order('created_at', { ascending: false });
 
-      if (filters?.tier && filters.tier.length > 0) {
-        query = query.in('tier', filters.tier);
-      }
+  // Build hierarchical filters
+  let hierarchyConditions: string[] = [];
 
-      if (filters?.portfolioIds && filters.portfolioIds.length > 0) {
-        query = query.in('portfolio_id', filters.portfolioIds);
-      }
+  // Portfolio context - include all children (portfolio + program + team objectives)
+  if (filters?.portfolioIds && filters.portfolioIds.length > 0) {
+    if (filters.includeAllChildren) {
+      // Portfolio objectives OR objectives whose program/team is in this portfolio
+      hierarchyConditions.push(`portfolio_id.in.(${filters.portfolioIds.join(',')})`);
+    } else {
+      query = query.in('portfolio_id', filters.portfolioIds);
+    }
+  }
 
-      if (filters?.programIds && filters.programIds.length > 0) {
-        query = query.in('program_id', filters.programIds);
-      }
+  // Program context - include program objectives and child team objectives
+  if (filters?.programIds && filters.programIds.length > 0) {
+    if (filters.includeChildTeams) {
+      // Program-level objectives OR team objectives in this program
+      hierarchyConditions.push(`program_id.in.(${filters.programIds.join(',')})`);
+    } else {
+      query = query.in('program_id', filters.programIds);
+    }
+  }
 
-      if (filters?.teamIds && filters.teamIds.length > 0) {
-        query = query.in('team_id', filters.teamIds);
-      }
+  // Team context - include team objectives and optionally parent hierarchy
+  if (filters?.teamIds && filters.teamIds.length > 0) {
+    if (filters.includeParentHierarchy) {
+      // Team objectives OR parent program/portfolio objectives
+      hierarchyConditions.push(`team_id.in.(${filters.teamIds.join(',')})`);
+    } else {
+      query = query.in('team_id', filters.teamIds);
+    }
+  }
 
-      if (filters?.statuses && filters.statuses.length > 0) {
-        query = query.in('status', filters.statuses);
-      }
+  // Apply hierarchy conditions as OR filter
+  if (hierarchyConditions.length > 0) {
+    query = query.or(hierarchyConditions.join(','));
+  }
 
-      if (filters?.ownerIds && filters.ownerIds.length > 0) {
-        query = query.in('owner_id', filters.ownerIds);
-      }
+  if (filters?.tier && filters.tier.length > 0) {
+    query = query.in('tier', filters.tier);
+  }
 
-      if (filters?.blockedOnly) {
-        query = query.eq('is_blocked', true);
-      }
+  if (filters?.statuses && filters.statuses.length > 0) {
+    query = query.in('status', filters.statuses);
+  }
 
-      if (filters?.search) {
-        query = query.or(`summary.ilike.%${filters.search}%,id.ilike.%${filters.search}%`);
-      }
+  if (filters?.ownerIds && filters.ownerIds.length > 0) {
+    query = query.in('owner_id', filters.ownerIds);
+  }
 
-      const { data, error } = await query;
+  if (filters?.blockedOnly) {
+    query = query.eq('is_blocked', true);
+  }
+
+  if (filters?.search) {
+    query = query.or(`summary.ilike.%${filters.search}%,id.ilike.%${filters.search}%`);
+  }
+
+  const { data, error } = await query;
       if (error) throw error;
 
       // Attach key results count to each objective

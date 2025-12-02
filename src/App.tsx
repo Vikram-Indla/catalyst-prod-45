@@ -197,7 +197,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/epics" element={<EpicsPage />} />
               <Route path="/portfolio/:portfolioId/backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
-              <Route path="/portfolio/:portfolioId/objective-tree" element={<PlaceholderPage />} />
+              <Route path="/portfolio/:portfolioId/objective-tree" element={<PortfolioOKRHub />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<WorkTreePage />} />
               <Route path="/portfolio/:portfolioId/forecast" element={<Forecast />} />
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
