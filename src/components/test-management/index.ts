@@ -66,3 +66,13 @@ export * from './reports';
 
 // Jira Integration
 export { JiraTestPanel } from './JiraTestPanel';
+
+// Bulk Operations
+export { BulkOperationsToolbar } from './BulkOperationsToolbar';
+
+// Execution History
+export { ExecutionHistory } from './ExecutionHistory';
+
+// Traceability & Comparison
+export { TraceabilityMatrix } from './TraceabilityMatrix';
+export { TestRunComparison } from './TestRunComparison';
