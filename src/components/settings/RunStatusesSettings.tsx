@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,38 +28,15 @@ import {
   Trash2, 
   ArrowUpDown,
   AlertCircle,
-  Palette
+  Palette,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTestRunStatuses, type TestRunStatus } from '@/hooks/useTestSettings';
 
 // Source: Run_Statuses.doc
-// Run status types: NOT RUN, IN PROGRESS, PASSED, FAILED, BLOCKED
-// Features:
-// - Highlight color
-// - Type
-// - Execution Completed flag
-// - Add/Edit/Reorder/Delete
 
 type RunStatusType = 'NOT_RUN' | 'IN_PROGRESS' | 'PASSED' | 'FAILED' | 'BLOCKED';
-
-interface RunStatus {
-  id: string;
-  name: string;
-  type: RunStatusType;
-  highlightColor: string;
-  executionCompleted: boolean;
-  order: number;
-  markedForDeletion?: boolean;
-  alternativeStatusId?: string;
-}
-
-const defaultRunStatuses: RunStatus[] = [
-  { id: '1', name: 'Not Run', type: 'NOT_RUN', highlightColor: '#6b7280', executionCompleted: false, order: 0 },
-  { id: '2', name: 'In Progress', type: 'IN_PROGRESS', highlightColor: '#3b82f6', executionCompleted: false, order: 1 },
-  { id: '3', name: 'Passed', type: 'PASSED', highlightColor: '#10b981', executionCompleted: true, order: 2 },
-  { id: '4', name: 'Failed', type: 'FAILED', highlightColor: '#ef4444', executionCompleted: true, order: 3 },
-  { id: '5', name: 'Blocked', type: 'BLOCKED', highlightColor: '#f59e0b', executionCompleted: false, order: 4 },
-];
 
 const typeColors: Record<RunStatusType, string> = {
   NOT_RUN: 'bg-gray-500',
@@ -69,11 +47,26 @@ const typeColors: Record<RunStatusType, string> = {
 };
 
 export function RunStatusesSettings() {
-  const [statuses, setStatuses] = useState<RunStatus[]>(defaultRunStatuses);
+  const { programId } = useParams();
+  const { statuses: dbStatuses, isLoading, createStatus, updateStatus, deleteStatus } = useTestRunStatuses(programId);
+  
+  // Map DB format to local format
+  const statuses = dbStatuses.map(s => ({
+    id: s.id,
+    name: s.name,
+    type: s.status_type as RunStatusType,
+    highlightColor: s.highlight_color,
+    executionCompleted: s.execution_completed,
+    order: s.display_order,
+    isSystem: s.is_system,
+  }));
+  
+  type LocalRunStatus = typeof statuses[0] & { markedForDeletion?: boolean; alternativeStatusId?: string };
+  
   const [isReordering, setIsReordering] = useState(false);
-  const [editingStatus, setEditingStatus] = useState<RunStatus | null>(null);
+  const [editingStatus, setEditingStatus] = useState<LocalRunStatus | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [deleteDialogStatus, setDeleteDialogStatus] = useState<RunStatus | null>(null);
+  const [deleteDialogStatus, setDeleteDialogStatus] = useState<LocalRunStatus | null>(null);
   const [alternativeStatusId, setAlternativeStatusId] = useState<string>('');
   const [newStatus, setNewStatus] = useState({
     name: '',
@@ -88,42 +81,59 @@ export function RunStatusesSettings() {
       return;
     }
 
-    // Per docs: A new status cannot have a name that already exists
     if (statuses.some(s => s.name.toLowerCase() === newStatus.name.toLowerCase())) {
       toast.error('A status with this name already exists');
       return;
     }
 
-    const status: RunStatus = {
-      id: Date.now().toString(),
+    createStatus({
       name: newStatus.name,
-      type: newStatus.type,
-      highlightColor: newStatus.highlightColor,
-      executionCompleted: newStatus.executionCompleted,
-      order: statuses.length,
-    };
-
-    setStatuses([...statuses, status]);
-    setNewStatus({ name: '', type: 'NOT_RUN', highlightColor: '#6b7280', executionCompleted: false });
-    setIsAddDialogOpen(false);
-    toast.success('Run status added');
+      status_type: newStatus.type,
+      highlight_color: newStatus.highlightColor,
+      execution_completed: newStatus.executionCompleted,
+      display_order: statuses.length,
+      program_id: programId || null,
+    }, {
+      onSuccess: () => {
+        setNewStatus({ name: '', type: 'NOT_RUN', highlightColor: '#6b7280', executionCompleted: false });
+        setIsAddDialogOpen(false);
+        toast.success('Run status added');
+      },
+      onError: () => toast.error('Failed to add status'),
+    });
   };
 
   const handleUpdateStatus = () => {
     if (!editingStatus) return;
 
-    // Per docs: Updated status cannot have a name that already exists
     if (statuses.some(s => s.id !== editingStatus.id && s.name.toLowerCase() === editingStatus.name.toLowerCase())) {
       toast.error('A status with this name already exists');
       return;
     }
 
-    setStatuses(statuses.map(s => 
-      s.id === editingStatus.id ? editingStatus : s
-    ));
-    setEditingStatus(null);
-    toast.success('Run status updated');
+    updateStatus({
+      id: editingStatus.id,
+      name: editingStatus.name,
+      highlight_color: editingStatus.highlightColor,
+      execution_completed: editingStatus.executionCompleted,
+    }, {
+      onSuccess: () => {
+        setEditingStatus(null);
+        toast.success('Run status updated');
+      },
+      onError: () => toast.error('Failed to update status'),
+    });
   };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-gold" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   const validateDelete = (id: string): { valid: boolean; message?: string } => {
     const status = statuses.find(s => s.id === id);
@@ -149,19 +159,17 @@ export function RunStatusesSettings() {
     return { valid: true };
   };
 
-  const getAlternativeStatuses = (status: RunStatus): RunStatus[] => {
-    // Per docs: Alternative status rules based on type
+  const getAlternativeStatuses = (status: LocalRunStatus): LocalRunStatus[] => {
     if (status.type === 'PASSED') {
-      return statuses.filter(s => s.id !== status.id && s.type === 'PASSED');
+      return statuses.filter(s => s.id !== status.id && s.type === 'PASSED') as LocalRunStatus[];
     }
     if (status.type === 'FAILED') {
-      return statuses.filter(s => s.id !== status.id && s.type === 'FAILED');
+      return statuses.filter(s => s.id !== status.id && s.type === 'FAILED') as LocalRunStatus[];
     }
-    // NOT_RUN, IN_PROGRESS, BLOCKED can move to any of these types
     return statuses.filter(s => 
       s.id !== status.id && 
       ['NOT_RUN', 'IN_PROGRESS', 'BLOCKED'].includes(s.type)
-    );
+    ) as LocalRunStatus[];
   };
 
   const handleDeleteStatus = () => {
@@ -173,16 +181,14 @@ export function RunStatusesSettings() {
       return;
     }
 
-    // Mark for deletion (per docs: batch job runs every 5 minutes)
-    setStatuses(statuses.map(s => 
-      s.id === deleteDialogStatus.id 
-        ? { ...s, markedForDeletion: true, alternativeStatusId }
-        : s
-    ));
-
-    setDeleteDialogStatus(null);
-    setAlternativeStatusId('');
-    toast.success('Status marked for deletion. Runs will be moved to the alternative status.');
+    deleteStatus(deleteDialogStatus.id, {
+      onSuccess: () => {
+        setDeleteDialogStatus(null);
+        setAlternativeStatusId('');
+        toast.success('Status deleted');
+      },
+      onError: () => toast.error('Failed to delete status'),
+    });
   };
 
   return (

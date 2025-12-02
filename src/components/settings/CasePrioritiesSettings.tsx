@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,38 +20,28 @@ import {
   Trash2, 
   ArrowUpDown,
   Archive,
-  ArchiveRestore
+  ArchiveRestore,
+  Loader2
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTestCasePriorities, type TestCasePriority } from '@/hooks/useTestSettings';
 
 // Source: Customize_Case_Priorities.doc
-// Features:
-// - Add new case priority
-// - Edit case priority name
-// - Reorder case priorities (drag/drop)
-// - Archive case priorities
-// - Delete case priority
-// - Is Default toggle
-
-interface CasePriority {
-  id: string;
-  name: string;
-  order: number;
-  isDefault: boolean;
-  isArchived: boolean;
-}
-
-const defaultPriorities: CasePriority[] = [
-  { id: '1', name: 'Critical', order: 0, isDefault: false, isArchived: false },
-  { id: '2', name: 'High', order: 1, isDefault: false, isArchived: false },
-  { id: '3', name: 'Medium', order: 2, isDefault: true, isArchived: false },
-  { id: '4', name: 'Low', order: 3, isDefault: false, isArchived: false },
-];
 
 export function CasePrioritiesSettings() {
-  const [priorities, setPriorities] = useState<CasePriority[]>(defaultPriorities);
+  const { programId } = useParams();
+  const { priorities: dbPriorities, isLoading, createPriority, updatePriority, deletePriority } = useTestCasePriorities(programId);
+  
+  // Map DB format to local format for UI compatibility
+  const priorities = dbPriorities.map(p => ({
+    id: p.id,
+    name: p.name,
+    order: p.display_order,
+    isDefault: p.is_default,
+    isArchived: p.is_archived,
+  }));
   const [isReordering, setIsReordering] = useState(false);
-  const [editingPriority, setEditingPriority] = useState<CasePriority | null>(null);
+  const [editingPriority, setEditingPriority] = useState<{ id: string; name: string; order: number; isDefault: boolean; isArchived: boolean; } | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newPriorityName, setNewPriorityName] = useState('');
 
@@ -63,50 +54,53 @@ export function CasePrioritiesSettings() {
       return;
     }
 
-    const priority: CasePriority = {
-      id: Date.now().toString(),
+    createPriority({
       name: newPriorityName,
-      order: activePriorities.length,
-      isDefault: false,
-      isArchived: false,
-    };
-
-    setPriorities([...priorities, priority]);
-    setNewPriorityName('');
-    setIsAddDialogOpen(false);
-    toast.success('Case priority added');
+      display_order: activePriorities.length,
+      program_id: programId || null,
+    }, {
+      onSuccess: () => {
+        setNewPriorityName('');
+        setIsAddDialogOpen(false);
+        toast.success('Case priority added');
+      },
+      onError: () => toast.error('Failed to add priority'),
+    });
   };
 
   const handleUpdatePriority = () => {
     if (!editingPriority) return;
-
-    setPriorities(priorities.map(p => 
-      p.id === editingPriority.id ? editingPriority : p
-    ));
-    setEditingPriority(null);
-    toast.success('Case priority updated');
+    updatePriority({ id: editingPriority.id, name: editingPriority.name }, {
+      onSuccess: () => {
+        setEditingPriority(null);
+        toast.success('Case priority updated');
+      },
+      onError: () => toast.error('Failed to update priority'),
+    });
   };
 
   const handleSetDefault = (id: string) => {
-    setPriorities(priorities.map(p => ({
-      ...p,
-      isDefault: p.id === id,
-    })));
-    toast.success('Default priority updated');
+    // Unset other defaults first
+    priorities.forEach(p => {
+      if (p.isDefault && p.id !== id) {
+        updatePriority({ id: p.id, is_default: false });
+      }
+    });
+    updatePriority({ id, is_default: true }, {
+      onSuccess: () => toast.success('Default priority updated'),
+    });
   };
 
   const handleArchivePriority = (id: string) => {
-    setPriorities(priorities.map(p => 
-      p.id === id ? { ...p, isArchived: true, isDefault: false } : p
-    ));
-    toast.success('Priority archived');
+    updatePriority({ id, is_archived: true, is_default: false }, {
+      onSuccess: () => toast.success('Priority archived'),
+    });
   };
 
   const handleUnarchivePriority = (id: string) => {
-    setPriorities(priorities.map(p => 
-      p.id === id ? { ...p, isArchived: false } : p
-    ));
-    toast.success('Priority restored');
+    updatePriority({ id, is_archived: false }, {
+      onSuccess: () => toast.success('Priority restored'),
+    });
   };
 
   const handleDeletePriority = (id: string) => {
@@ -116,9 +110,21 @@ export function CasePrioritiesSettings() {
       return;
     }
     
-    setPriorities(priorities.filter(p => p.id !== id));
-    toast.success('Priority deleted');
+    deletePriority(id, {
+      onSuccess: () => toast.success('Priority deleted'),
+      onError: () => toast.error('Failed to delete priority'),
+    });
   };
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-gold" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
