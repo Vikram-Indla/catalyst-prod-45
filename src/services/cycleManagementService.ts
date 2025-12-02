@@ -432,12 +432,20 @@ export async function saveCyclePlanning(
 
   // Insert new dependencies
   if (dependencies.length > 0) {
-    const dependencyData = dependencies.map((d) => ({
-      ...d,
-      cycle_id: cycleId,
-    }));
+    const validDependencies = dependencies.filter(
+      (d) => d.predecessor_case_id && d.successor_case_id
+    );
 
-    await supabase.from('test_cycle_dependencies').insert(dependencyData);
+    if (validDependencies.length > 0) {
+      const dependencyData = validDependencies.map((d) => ({
+        cycle_id: cycleId,
+        predecessor_case_id: d.predecessor_case_id as string,
+        successor_case_id: d.successor_case_id as string,
+        dependency_type: d.dependency_type || 'finish_to_start',
+      }));
+
+      await supabase.from('test_cycle_dependencies').insert(dependencyData);
+    }
   }
 }
 
