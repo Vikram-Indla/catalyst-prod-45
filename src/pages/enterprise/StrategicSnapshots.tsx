@@ -16,8 +16,8 @@ export default function StrategicSnapshots() {
   return (
     <div className="h-full flex flex-col p-3 sm:p-4 md:p-6">
       {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-[var(--s3)] sm:gap-[var(--s4)] mb-[var(--s4)] sm:mb-[var(--s6)]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-[var(--s2)] sm:gap-[var(--s3)]">
           <div className="relative w-full sm:flex-1 sm:min-w-[320px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -27,7 +27,7 @@ export default function StrategicSnapshots() {
           </div>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-[var(--s2)]">
           <Button
             variant={view === 'grid' ? 'default' : 'ghost'}
             size="sm"
@@ -51,14 +51,14 @@ export default function StrategicSnapshots() {
 
       {/* Content */}
       {view === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[var(--s3)] sm:gap-[var(--s4)]">
           {snapshots.map((snapshot) => (
             <Card key={snapshot.id} className="cursor-pointer hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-base">{snapshot.name}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-sm text-muted-foreground space-y-1">
+                <div className="text-sm text-muted-foreground space-y-[var(--s1)]">
                   <div>Created: {snapshot.date}</div>
                   <div>Status: <span className={snapshot.status === 'Active' ? 'text-success' : 'text-muted-foreground'}>{snapshot.status}</span></div>
                 </div>
@@ -71,7 +71,7 @@ export default function StrategicSnapshots() {
           <CardContent className="p-0">
             <div className="divide-y">
               {snapshots.map((snapshot) => (
-                <div key={snapshot.id} className="p-4 hover:bg-accent cursor-pointer flex items-center justify-between">
+                <div key={snapshot.id} className="p-[var(--s4)] hover:bg-accent cursor-pointer flex items-center justify-between">
                   <div>
                     <div className="font-medium">{snapshot.name}</div>
                     <div className="text-sm text-muted-foreground">Created: {snapshot.date}</div>

@@ -60,8 +60,8 @@ export default function WorkCodes() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s4)]">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Work Codes</h1>
             <p className="text-muted-foreground mt-2">
@@ -82,8 +82,8 @@ export default function WorkCodes() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
+            <div className="space-y-[var(--s4)]">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s4)]">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -115,7 +115,7 @@ export default function WorkCodes() {
                         <TableCell>{code.type}</TableCell>
                         <TableCell className="max-w-xs truncate">{code.description}</TableCell>
                         <TableCell>
-                          <div className="flex gap-1 flex-wrap">
+                          <div className="flex gap-[var(--s1)] flex-wrap">
                             {code.costCenter.map((cc) => (
                               <Badge key={cc} variant="outline" className="text-xs">
                                 {cc}

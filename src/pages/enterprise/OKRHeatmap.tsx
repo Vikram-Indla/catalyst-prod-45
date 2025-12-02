@@ -44,7 +44,7 @@ export default function OKRHeatmap() {
   return (
     <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-3 mb-6" style={{ height: 'var(--toolbar-h)' }}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s3)] mb-[var(--s6)]" style={{ height: 'var(--toolbar-h)' }}>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[180px]" style={{ height: 'var(--grid-row)' }}>
             <SelectValue />
@@ -87,7 +87,7 @@ export default function OKRHeatmap() {
         </CardHeader>
         <CardContent>
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-[var(--s4)]">
               {[1, 2, 3, 4].map((i) => (
                 <Skeleton key={i} className="h-16 w-full" />
               ))}
@@ -97,9 +97,9 @@ export default function OKRHeatmap() {
               No OKR data available. Select a snapshot and program increments to view the heatmap.
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-[var(--s4)]">
               {/* Header Row */}
-              <div className="grid gap-2" style={{ 
+              <div className="grid gap-[var(--s2)]" style={{
                 gridTemplateColumns: gridColumns
               }}>
                 {heatmapData.programIncrements.map((pi) => (
@@ -114,7 +114,7 @@ export default function OKRHeatmap() {
               {/* Data Rows */}
               {heatmapData.rows.map((row) => (
                 <div key={row.level}>
-                  <div className="grid gap-2" style={{ 
+                  <div className="grid gap-[var(--s2)]" style={{ 
                     gridTemplateColumns: row.spanAllColumns 
                       ? `repeat(${numPIs}, 1fr) 200px 100px` 
                       : gridColumns

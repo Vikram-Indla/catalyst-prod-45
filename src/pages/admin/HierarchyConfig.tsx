@@ -19,7 +19,7 @@ export default function HierarchyConfig() {
   });
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
       <div>
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-2">Hierarchy Configuration</h1>
         <p className="text-muted-foreground">Configure work item hierarchy levels</p>
@@ -71,9 +71,9 @@ export default function HierarchyConfig() {
           <CardTitle>Default SAFe Hierarchy</CardTitle>
           <CardDescription>Standard Scaled Agile Framework levels</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid gap-3">
-            <div className="flex items-center justify-between p-3 border rounded-lg">
+        <CardContent className="space-y-[var(--s4)]">
+          <div className="grid gap-[var(--s3)]">
+            <div className="flex items-center justify-between p-[var(--s3)] border rounded-lg">
               <div>
                 <div className="font-medium">Portfolio Level</div>
                 <div className="text-sm text-muted-foreground">Strategic Themes → Initiatives</div>

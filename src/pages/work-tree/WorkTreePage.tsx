@@ -47,8 +47,8 @@ export function WorkTreePage() {
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="flex items-center justify-between px-4 sm:px-6 h-14">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-[var(--s4)] sm:px-[var(--s6)] h-14 gap-[var(--s3)]">
+          <div className="flex items-center gap-[var(--s3)]">
             <h1 className="text-lg font-semibold">Work Tree</h1>
             <Select value={view} onValueChange={handleViewChange}>
               <SelectTrigger className="w-[240px]">
@@ -63,7 +63,7 @@ export function WorkTreePage() {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-[var(--s2)]">
             <Button
               variant="ghost"
               size="sm"
@@ -93,12 +93,12 @@ export function WorkTreePage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-4 sm:p-6 space-y-6">
+      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{getViewTitle()}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-[var(--s6)]">
             {/* Dashboard - only for top-down, bottom-up, and team views */}
             {hasDashboard && (
               <WorkTreeDashboard view={view} data={data} isLoading={isLoading} />

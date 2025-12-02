@@ -14,7 +14,7 @@ export default function StrategicBacklog() {
   return (
     <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-3 mb-6" style={{ height: 'var(--toolbar-h)' }}>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s3)] mb-[var(--s6)]" style={{ height: 'var(--toolbar-h)' }}>
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input

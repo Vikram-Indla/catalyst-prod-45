@@ -75,7 +75,7 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
   return (
     <div className="fixed inset-y-0 right-0 w-full sm:w-[600px] bg-background border-l shadow-xl z-50 flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b bg-card">
+      <div className="flex items-center justify-between px-[var(--s6)] py-[var(--s4)] border-b bg-card">
         <div className="flex items-center gap-3">
           <span className="text-brand-gold">☆</span>
           <div>
@@ -93,7 +93,7 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         <Tabs defaultValue="details" className="w-full">
-          <div className="border-b px-6">
+          <div className="border-b px-[var(--s6)]">
             <TabsList className="w-full justify-start h-12 bg-transparent">
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="mitigation">Mitigation</TabsTrigger>
@@ -101,9 +101,9 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
             </TabsList>
           </div>
 
-          <TabsContent value="details" className="px-6 py-4 space-y-4">
+          <TabsContent value="details" className="px-[var(--s6)] py-[var(--s4)] space-y-[var(--s4)]">
             {/* Status Row */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-[var(--s4)]">
               <div>
                 <Label className="text-xs text-text-muted mb-2">Status</Label>
                 {isEditing ? (
@@ -160,7 +160,7 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
             </div>
 
             {/* Risk Assessment */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-[var(--s4)]">
               <div>
                 <Label className="text-xs text-text-muted mb-2">Occurrence</Label>
                 <Select
@@ -242,7 +242,7 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
             </div>
           </TabsContent>
 
-          <TabsContent value="mitigation" className="px-6 py-4 space-y-4">
+          <TabsContent value="mitigation" className="px-[var(--s6)] py-[var(--s4)] space-y-[var(--s4)]">
             {/* Mitigation Plan */}
             <div>
               <Label className="text-xs text-text-muted mb-2">Mitigation Plan</Label>
@@ -277,14 +277,14 @@ export function RiskDetailPanel({ risk, isOpen, onClose, onUpdate }: RiskDetailP
             </div>
           </TabsContent>
 
-          <TabsContent value="discussions" className="px-6 py-4">
+          <TabsContent value="discussions" className="px-[var(--s6)] py-[var(--s4)]">
             <RiskDiscussionsTab riskId={risk.id} />
           </TabsContent>
         </Tabs>
       </div>
 
       {/* Footer Actions */}
-      <div className="border-t px-6 py-4 bg-card flex gap-2 justify-end">
+      <div className="border-t px-[var(--s6)] py-[var(--s4)] bg-card flex gap-[var(--s2)] justify-end">
         {isEditing ? (
           <>
             <Button variant="outline" onClick={handleCancel}>

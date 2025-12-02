@@ -43,13 +43,13 @@ export default function Integrations() {
   };
 
   return (
-    <div className="p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6">
+    <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
       <div>
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-2">Integrations</h1>
         <p className="text-muted-foreground">Connect external tools and services</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--s4)] sm:gap-[var(--s6)]">
         {connectors?.map((connector) => (
           <Card key={connector.id}>
             <CardHeader>
@@ -64,7 +64,7 @@ export default function Integrations() {
                 <Switch checked={connector.enabled || false} disabled />
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-[var(--s3)]">
               <div>
                 <label className="text-sm font-medium">Endpoint</label>
                 <p className="text-sm text-muted-foreground truncate">
@@ -113,11 +113,11 @@ export default function Integrations() {
           <CardTitle>Available Integrations</CardTitle>
           <CardDescription>Connect these external tools</CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          <div className="p-4 border rounded-lg">
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[var(--s3)] sm:gap-[var(--s4)]">
+          <div className="p-[var(--s4)] border rounded-lg">
             <Github className="h-8 w-8 mb-2" />
             <div className="font-medium">GitHub</div>
-            <div className="text-sm text-muted-foreground mb-3">Version control integration</div>
+            <div className="text-sm text-muted-foreground mb-[var(--s3)]">Version control integration</div>
             <Button variant="outline" size="sm" disabled>
               Configure
             </Button>

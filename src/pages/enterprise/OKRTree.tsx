@@ -152,9 +152,8 @@ export default function OKRTree() {
   };
 
   return (
-    <div className="h-full flex flex-col p-3 sm:p-4 md:p-6">
-      {/* Header */}
-      <div className="mb-4 sm:mb-6">
+      <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s4)] mb-[var(--s6)]">
         <h1 className="text-xl sm:text-2xl font-semibold mb-1">OKR Tree</h1>
         <p className="text-xs sm:text-sm text-muted-foreground italic">
           Only work items tied to this Snapshot or its Program Increments are shown here
@@ -162,8 +161,8 @@ export default function OKRTree() {
       </div>
 
       {/* Toolbar */}
-      <Card className="mb-3 sm:mb-4">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 p-3 sm:p-4">
+      <Card className="mb-[var(--s3)] sm:mb-[var(--s4)]">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-[var(--s3)] sm:gap-[var(--s4)] px-[var(--s3)] sm:px-[var(--s4)] py-[var(--s3)] sm:py-[var(--s4)]">
           {/* Search */}
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -176,7 +175,7 @@ export default function OKRTree() {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-[var(--s2)]">
             <Button variant="ghost" size="icon">
               <Settings className="h-4 w-4" />
             </Button>
@@ -190,7 +189,7 @@ export default function OKRTree() {
       {/* Tree Content */}
       <Card className="flex-1 overflow-auto">
         {isLoading ? (
-          <div className="p-4 space-y-3">
+          <div className="px-[var(--s4)] space-y-[var(--s3)]">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <Skeleton key={i} className="h-12 w-full" />
             ))}
