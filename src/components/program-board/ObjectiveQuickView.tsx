@@ -93,7 +93,7 @@ export function ObjectiveQuickView({ objectiveId, open, onClose }: ObjectiveQuic
               <h3 className="font-medium mb-[var(--s3)]">Key Results</h3>
               <div className="space-y-[var(--s3)]">
                 {objectiveDetail.keyResults.map((kr: any) => (
-                  <KeyResultCard key={kr.id} keyResult={kr} />
+                  <KeyResultCard key={kr.id} keyResult={kr} objectiveId={objectiveId} readOnly />
                 ))}
               </div>
             </div>

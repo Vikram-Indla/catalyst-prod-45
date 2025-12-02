@@ -108,3 +108,25 @@ export function getScoreLabel(score: number | null): string {
   const percentage = Math.round(score * 100);
   return `${percentage}%`;
 }
+
+/**
+ * Format a metric value based on its type
+ */
+export function formatMetricValue(value: number, metricType: string): string {
+  if (value === null || value === undefined) return '0';
+  
+  switch (metricType) {
+    case 'count':
+      return Math.round(value).toString();
+    case 'currency':
+      return `$${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
+    case 'percentage':
+      return `${Math.round(value)}%`;
+    case 'decimal_score':
+      return value.toFixed(2);
+    case 'nps':
+      return Math.round(value).toString();
+    default:
+      return value.toString();
+  }
+}
