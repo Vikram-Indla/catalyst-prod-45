@@ -1,18 +1,29 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Plus, Calendar, CheckCircle2, Clock, XCircle } from 'lucide-react';
-import { useTestCycles } from '@/hooks/useTestManagement';
+import { useTestCycles, useTestFolders } from '@/hooks/useTestManagement';
 import { CreateCycleModal } from '@/components/test-management/CreateCycleModal';
+import { CreateFolderModal } from '@/components/test-management/CreateFolderModal';
+import { FolderPanel } from '@/components/test-management/FolderPanel';
 import { format } from 'date-fns';
 
 export function TestCyclesPage() {
   const navigate = useNavigate();
+  const { programId } = useParams<{ programId: string }>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreateFolderModalOpen, setIsCreateFolderModalOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [selectedFolderId, setSelectedFolderId] = useState<string | undefined>();
+  
   const { data: cycles, isLoading } = useTestCycles();
+  const { data: folders = [] } = useTestFolders(programId || '');
+
+  // Cycles display without folder filtering (folder_id not in schema yet)
+  const filteredCycles = cycles || [];
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
@@ -36,8 +47,8 @@ export function TestCyclesPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-8">
-        <div className="animate-pulse space-y-4">
+      <div className="flex h-screen">
+        <div className="animate-pulse space-y-4 p-8 flex-1">
           <div className="h-8 bg-muted rounded w-1/4"></div>
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -51,32 +62,59 @@ export function TestCyclesPage() {
 
   return (
     <>
-      <div className="container mx-auto p-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Test Cycles</h1>
-            <p className="text-muted-foreground mt-1">
-              Organize and track test execution across sprints and releases
-            </p>
-          </div>
-          <Button
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-brand-gold hover:bg-brand-gold/90 text-background"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            New Cycle
-          </Button>
+      <div className="flex h-screen overflow-hidden">
+        {/* Folder Panel */}
+        <div 
+          className="transition-all duration-300 border-r border-border bg-background"
+          style={{ 
+            width: isSidebarCollapsed ? '64px' : '300px',
+            minWidth: isSidebarCollapsed ? '64px' : '300px'
+          }}
+        >
+          <FolderPanel
+            entityType="test_cycles"
+            folders={folders}
+            selectedFolderId={selectedFolderId}
+            onFolderSelect={setSelectedFolderId}
+            onCreateFolder={() => setIsCreateFolderModalOpen(true)}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          />
         </div>
 
-        {!cycles || cycles.length === 0 ? (
+        {/* Main Content */}
+        <div className="flex-1 overflow-auto">
+          <div className="container mx-auto p-8">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">Test Cycles</h1>
+                <p className="text-muted-foreground mt-1">
+                  Organize and track test execution across sprints and releases
+                </p>
+              </div>
+              <Button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="bg-brand-gold hover:bg-brand-gold/90 text-background"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                New Cycle
+              </Button>
+            </div>
+
+        {filteredCycles.length === 0 ? (
           <Card className="border-border">
             <CardContent className="flex flex-col items-center justify-center py-16">
               <div className="p-4 rounded-full bg-brand-gold/10 mb-4">
                 <Clock className="h-12 w-12 text-brand-gold" />
               </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">No test cycles yet</h3>
+              <h3 className="text-xl font-semibold text-foreground mb-2">
+                {selectedFolderId ? 'No test cycles in this folder' : 'No test cycles yet'}
+              </h3>
               <p className="text-muted-foreground text-center max-w-md mb-6">
-                Create your first test cycle to organize test execution and track progress
+                {selectedFolderId 
+                  ? 'Create a test cycle in this folder or select a different folder'
+                  : 'Create your first test cycle to organize test execution and track progress'
+                }
               </p>
               <Button
                 onClick={() => setIsCreateModalOpen(true)}
@@ -87,9 +125,9 @@ export function TestCyclesPage() {
               </Button>
             </CardContent>
           </Card>
-        ) : (
-          <div className="grid gap-4">
-            {cycles.map((cycle: any) => {
+            ) : (
+              <div className="grid gap-4">
+                {filteredCycles.map((cycle: any) => {
               const progress = calculateProgress(cycle);
               return (
                 <Card key={cycle.id} className="border-border hover:border-brand-gold/50 transition-colors">
@@ -131,7 +169,7 @@ export function TestCyclesPage() {
                     <div className="flex justify-end pt-2">
                       <Button
                         variant="outline"
-                        onClick={() => navigate(`/tests/cycles/${cycle.id}`)}
+                        onClick={() => navigate(`/programs/${programId}/tests/cycles/${cycle.id}`)}
                         className="border-brand-gold text-brand-gold hover:bg-brand-gold/10"
                       >
                         View Details
@@ -142,12 +180,21 @@ export function TestCyclesPage() {
               );
             })}
           </div>
-        )}
+            )}
+          </div>
+        </div>
       </div>
 
       <CreateCycleModal
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
+      />
+
+      <CreateFolderModal
+        isOpen={isCreateFolderModalOpen}
+        onClose={() => setIsCreateFolderModalOpen(false)}
+        entityType="test_cycles"
+        folders={folders}
       />
     </>
   );
