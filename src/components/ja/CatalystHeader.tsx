@@ -207,6 +207,9 @@ export function CatalystHeader() {
                 )}
               </div>
             ))}
+
+            {/* Tests Dropdown - Only visible in program context */}
+            {showTestsDropdown && <TestsDropdown isActive />}
           </nav>
 
           {/* Right Side Actions - Compact on mobile, full on desktop */}
@@ -218,13 +221,6 @@ export function CatalystHeader() {
             <div className="hidden md:block">
               <ItemsDropdown />
             </div>
-
-            {/* Tests Dropdown - Only visible in program context */}
-            {showTestsDropdown && (
-              <div className="hidden md:block">
-                <TestsDropdown isActive />
-              </div>
-            )}
 
             <TooltipProvider>
               {/* Notifications - Always visible */}
