@@ -61,6 +61,7 @@ const moreItemsSubMenu = [
   { id: 'design-components', label: 'Design components', path: '/team/:teamId/design-components' },
   { id: 'estimation', label: 'Estimation', path: '/team/:teamId/estimation' },
   { id: 'impediments', label: 'Impediments', path: '/team/:teamId/impediments' },
+  { id: 'kanban-boards', label: 'Kanban boards', path: '/team/:teamId/kanban-boards' },
   { id: 'sprints', label: 'Sprints', path: '/team/:teamId/sprints' },
   { id: 'tasks', label: 'Tasks', path: '/team/:teamId/tasks' },
   { id: 'team-objectives', label: 'Team objectives', path: '/team/:teamId/objectives' },

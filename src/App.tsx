@@ -473,11 +473,17 @@ const App = () => (
               <Route path="/programs/:programId/tests/reports" element={<TestReportsPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
-              {/* Kanban Boards Routes */}
-              <Route path="/kanban-boards" element={<KanbanBoardsPage />} />
-              <Route path="/kanban-boards/:boardId" element={<KanbanBoardView />} />
-              <Route path="/kanban-boards/:boardId/setup" element={<KanbanBoardSetup />} />
-              <Route path="/kanban-boards/:boardId/analytics" element={<KanbanBoardAnalytics />} />
+              {/* Kanban Boards Routes - Team Scoped */}
+              <Route path="/team/:teamId/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/team/:teamId/kanban-boards/:boardId" element={<KanbanBoardView />} />
+              <Route path="/team/:teamId/kanban-boards/:boardId/setup" element={<KanbanBoardSetup />} />
+              <Route path="/team/:teamId/kanban-boards/:boardId/analytics" element={<KanbanBoardAnalytics />} />
+              
+              {/* Kanban Boards Routes - Program Scoped */}
+              <Route path="/programs/:programId/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/programs/:programId/kanban-boards/:boardId" element={<KanbanBoardView />} />
+              <Route path="/programs/:programId/kanban-boards/:boardId/setup" element={<KanbanBoardSetup />} />
+              <Route path="/programs/:programId/kanban-boards/:boardId/analytics" element={<KanbanBoardAnalytics />} />
               
               <Route path="/insights/portfolio" element={<PortfolioInsights />} />
               <Route path="/insights/program" element={<ProgramInsights />} />
