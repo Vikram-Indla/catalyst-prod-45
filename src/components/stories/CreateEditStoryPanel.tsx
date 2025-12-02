@@ -15,16 +15,19 @@ interface CreateEditStoryPanelProps {
   onClose: () => void;
   onSuccess: () => void;
   storyId?: string;
+  initialTeamId?: string;
+  initialSprintId?: string;
 }
 
-export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId }: CreateEditStoryPanelProps) {
+export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId, initialTeamId, initialSprintId }: CreateEditStoryPanelProps) {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     feature_id: '',
-    team_id: '',
+    team_id: initialTeamId || '',
+    sprint_id: initialSprintId || '',
     state: 'backlog',
     story_points: '',
     priority: 'medium',
@@ -80,6 +83,7 @@ export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId }: Crea
         description: existingStory.description || '',
         feature_id: existingStory.feature_id || '',
         team_id: existingStory.team_id || '',
+        sprint_id: existingStory.sprint_id || '',
         state: existingStory.state || 'backlog',
         story_points: existingStory.story_points?.toString() || '',
         priority: existingStory.priority || 'medium',
@@ -90,14 +94,15 @@ export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId }: Crea
         name: '',
         description: '',
         feature_id: '',
-        team_id: '',
+        team_id: initialTeamId || '',
+        sprint_id: initialSprintId || '',
         state: 'backlog',
         story_points: '',
         priority: 'medium',
         acceptance_criteria: '',
       });
     }
-  }, [existingStory, open]);
+  }, [existingStory, open, initialTeamId, initialSprintId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,6 +115,7 @@ export function CreateEditStoryPanel({ open, onClose, onSuccess, storyId }: Crea
         description: formData.description || null,
         feature_id: formData.feature_id || null,
         team_id: formData.team_id || null,
+        sprint_id: formData.sprint_id || null,
         state: formData.state,
         story_points: formData.story_points ? parseInt(formData.story_points) : null,
         priority: formData.priority,
