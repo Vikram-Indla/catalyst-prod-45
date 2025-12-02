@@ -11,12 +11,15 @@ import NotificationsSelfTest from '@/pages/dev/NotificationsSelfTest';
 import EpicBacklogWithSidebar from '@/pages/EpicBacklogWithSidebar';
 
 // Test Management pages
+import { TestsLayout } from '@/components/test-management/TestsLayout';
 import TestOverviewPage from '@/pages/TestOverviewPage';
 import { TestCasesPage } from '@/pages/TestCasesPage';
 import { TestCyclesPage } from '@/pages/TestCyclesPage';
 import { TestSetsPage } from '@/pages/TestSetsPage';
 import TestStepLibraryPage from '@/pages/TestStepLibraryPage';
 import { TestReportsPage } from '@/pages/TestReportsPage';
+import { ExecutionDashboard } from '@/pages/ExecutionDashboard';
+import { ExecutionDetailPage } from '@/pages/ExecutionDetailPage';
 
 // Stub components
 const Home = () => <div>Home</div>;
@@ -73,14 +76,27 @@ export const router = createBrowserRouter([
       { path: 'programs/:programId/forecast', element: <div>Program Forecast</div> },
       { path: 'programs/:programId/capacity', element: <div>Program Capacity</div> },
       
-      // Test Management routes (program-scoped)
-      { path: 'programs/:programId/tests', element: <Navigate to="overview" replace /> },
-      { path: 'programs/:programId/tests/overview', element: <TestOverviewPage /> },
-      { path: 'programs/:programId/tests/cases', element: <TestCasesPage /> },
-      { path: 'programs/:programId/tests/sets', element: <TestSetsPage /> },
-      { path: 'programs/:programId/tests/cycles', element: <TestCyclesPage /> },
-      { path: 'programs/:programId/tests/library', element: <TestStepLibraryPage /> },
-      { path: 'programs/:programId/tests/reports', element: <TestReportsPage /> },
+      // Test Management routes (program-scoped with layout)
+      { 
+        path: 'programs/:programId/tests', 
+        element: <TestsLayout />,
+        children: [
+          { index: true, element: <Navigate to="overview" replace /> },
+          { path: 'overview', element: <TestOverviewPage /> },
+          { path: 'cases', element: <TestCasesPage /> },
+          { path: 'cases/:id', element: <div>Test Case Detail</div> },
+          { path: 'sets', element: <TestSetsPage /> },
+          { path: 'sets/:id', element: <div>Test Set Detail</div> },
+          { path: 'cycles', element: <TestCyclesPage /> },
+          { path: 'cycles/:id', element: <div>Test Cycle Detail</div> },
+          { path: 'cycles/:cycleId/execute/:caseId', element: <div>Quick Execute Page</div> },
+          { path: 'executions', element: <ExecutionDashboard /> },
+          { path: 'executions/:id', element: <ExecutionDetailPage /> },
+          { path: 'library', element: <TestStepLibraryPage /> },
+          { path: 'reports', element: <TestReportsPage /> },
+          { path: 'reports/:type', element: <div>Report Detail</div> },
+        ]
+      },
       
       // Team routes
       { path: 'teams', element: <Teams /> },
