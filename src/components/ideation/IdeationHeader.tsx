@@ -29,7 +29,6 @@ interface IdeationHeaderProps {
   onOpenFilters: () => void;
   onOpenMetrics: () => void;
   onOpenSetup: () => void;
-  onOpenManageBacklog: () => void;
   onAddIdea: () => void;
 }
 
@@ -66,7 +65,6 @@ export function IdeationHeader({
   onOpenFilters,
   onOpenMetrics,
   onOpenSetup,
-  onOpenManageBacklog,
   onAddIdea,
 }: IdeationHeaderProps) {
   const navigate = useNavigate();
@@ -155,7 +153,7 @@ export function IdeationHeader({
             <Users className="h-4 w-4 mr-2" />
             Manage Users
           </Button>
-          <Button variant="outline" size="sm" onClick={onOpenManageBacklog}>
+          <Button variant="outline" size="sm" onClick={() => navigate('/items/ideation/manage-backlog')}>
             <Kanban className="h-4 w-4 mr-2" />
             Manage Backlog
           </Button>
