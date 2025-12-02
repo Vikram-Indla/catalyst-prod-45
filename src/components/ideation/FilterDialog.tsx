@@ -11,10 +11,19 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import type { IdeaFilters, IdeaStatus } from '@/types/ideation';
 
 interface FilterDialogProps {
@@ -33,6 +42,19 @@ export function FilterDialog({
   onApply,
 }: FilterDialogProps) {
   const [localFilters, setLocalFilters] = useState<IdeaFilters>(filters);
+
+  // Fetch users for owner filter
+  const { data: users = [] } = useQuery({
+    queryKey: ['profiles-for-filter'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .order('full_name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
   const handleStatusToggle = (status: IdeaStatus) => {
     const currentStatuses = localFilters.status || [];
@@ -90,6 +112,57 @@ export function FilterDialog({
                   </label>
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Owner Filter - per spec */}
+          <div className="space-y-2">
+            <Label>Owner</Label>
+            <Select 
+              value={localFilters.owner_id || 'all'} 
+              onValueChange={(v) => setLocalFilters({ 
+                ...localFilters, 
+                owner_id: v === 'all' ? undefined : v 
+              })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="All owners" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All owners</SelectItem>
+                {users.map(user => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.full_name || 'Unknown User'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Date Range Filter - per spec */}
+          <div className="space-y-2">
+            <Label>Date Range</Label>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-xs text-muted-foreground">From</Label>
+                <Input
+                  type="date"
+                  value={localFilters.date_from || ''}
+                  onChange={(e) =>
+                    setLocalFilters({ ...localFilters, date_from: e.target.value || undefined })
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">To</Label>
+                <Input
+                  type="date"
+                  value={localFilters.date_to || ''}
+                  onChange={(e) =>
+                    setLocalFilters({ ...localFilters, date_to: e.target.value || undefined })
+                  }
+                />
+              </div>
             </div>
           </div>
 

@@ -4,7 +4,7 @@
 // Based on Jira Align Ideation documentation
 // ==============================================
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -25,12 +25,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useCreateIdea, useUploadAttachment, useToggleSubscription } from '@/hooks/useIdeation';
+import { useCreateIdea, useUploadAttachment, useToggleSubscription, useIdeaGroups, useIdeationForm } from '@/hooks/useIdeation';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { IdeaAttachmentUpload } from './IdeaAttachmentUpload';
 import { toast } from 'sonner';
-import type { CreateIdeaRequest } from '@/types/ideation';
+import type { CreateIdeaRequest, IdeationFormField } from '@/types/ideation';
 
 interface CreateIdeaDialogProps {
   open: boolean;
@@ -51,10 +51,21 @@ export function CreateIdeaDialog({
   const [ownerId, setOwnerId] = useState(userId);
   const [subscribeToIdea, setSubscribeToIdea] = useState(true);
   const [pendingAttachments, setPendingAttachments] = useState<File[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState(ideaGroupId);
+  const [customFieldValues, setCustomFieldValues] = useState<Record<string, any>>({});
 
   const createIdea = useCreateIdea();
   const uploadAttachment = useUploadAttachment();
   const toggleSubscription = useToggleSubscription();
+  
+  // Fetch all groups for group selector
+  const { data: groups = [] } = useIdeaGroups();
+  
+  // Fetch the selected group to get form_id
+  const selectedGroup = groups.find(g => g.id === selectedGroupId);
+  
+  // Fetch form fields if group has a form
+  const { data: formData } = useIdeationForm(selectedGroup?.form_id || null);
   
   // Fetch users for owner dropdown
   const { data: users = [] } = useQuery({
@@ -69,18 +80,34 @@ export function CreateIdeaDialog({
     },
   });
 
-  const handleSubmit = async () => {
+  // Update selected group when prop changes
+  useEffect(() => {
+    setSelectedGroupId(ideaGroupId);
+  }, [ideaGroupId]);
+
+  const handleSubmit = async (closeAfter: boolean) => {
     if (!title.trim()) {
       toast.error('Title is required');
       return;
     }
 
+    // Validate required custom fields
+    if (formData?.fields) {
+      for (const field of formData.fields) {
+        if (field.is_required && field.is_active && !customFieldValues[field.id]) {
+          toast.error(`${field.label} is required`);
+          return;
+        }
+      }
+    }
+
     const request: CreateIdeaRequest = {
-      idea_group_id: ideaGroupId,
+      idea_group_id: selectedGroupId,
       title: title.trim(),
       description: description.trim(),
       owner_id: ownerId,
       is_public: isPublic,
+      custom_fields: customFieldValues,
     };
 
     try {
@@ -97,8 +124,14 @@ export function CreateIdeaDialog({
       }
       
       toast.success('Idea created successfully');
-      onOpenChange(false);
-      resetForm();
+      
+      if (closeAfter) {
+        onOpenChange(false);
+        resetForm();
+      } else {
+        // Reset form but keep dialog open for another idea
+        resetForm();
+      }
     } catch (error) {
       toast.error('Failed to create idea');
     }
@@ -111,10 +144,73 @@ export function CreateIdeaDialog({
     setOwnerId(userId);
     setSubscribeToIdea(true);
     setPendingAttachments([]);
+    setCustomFieldValues({});
   };
   
   const handleAttachmentSelect = (files: File[]) => {
     setPendingAttachments(prev => [...prev, ...files]);
+  };
+
+  const handleCustomFieldChange = (fieldId: string, value: any) => {
+    setCustomFieldValues(prev => ({ ...prev, [fieldId]: value }));
+  };
+
+  const renderCustomField = (field: IdeationFormField) => {
+    if (!field.is_active) return null;
+    
+    const value = customFieldValues[field.id] || '';
+    
+    switch (field.field_type) {
+      case 'textbox':
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label htmlFor={field.id}>
+              {field.label} {field.is_required && '*'}
+            </Label>
+            <Input
+              id={field.id}
+              value={value}
+              onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+              placeholder={field.help_text || ''}
+            />
+          </div>
+        );
+      case 'opentext':
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label htmlFor={field.id}>
+              {field.label} {field.is_required && '*'}
+            </Label>
+            <Textarea
+              id={field.id}
+              value={value}
+              onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
+              placeholder={field.help_text || ''}
+              rows={3}
+            />
+          </div>
+        );
+      case 'dropdown':
+        return (
+          <div key={field.id} className="space-y-2">
+            <Label htmlFor={field.id}>
+              {field.label} {field.is_required && '*'}
+            </Label>
+            <Select value={value} onValueChange={(v) => handleCustomFieldChange(field.id, v)}>
+              <SelectTrigger>
+                <SelectValue placeholder={field.help_text || 'Select...'} />
+              </SelectTrigger>
+              <SelectContent>
+                {field.options?.map(opt => (
+                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      default:
+        return null;
+    }
   };
 
   return (
@@ -125,6 +221,23 @@ export function CreateIdeaDialog({
         </DialogHeader>
 
         <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+          {/* Group Selector - per spec */}
+          <div className="space-y-2">
+            <Label htmlFor="group">Campaign (Idea Group)</Label>
+            <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select campaign" />
+              </SelectTrigger>
+              <SelectContent>
+                {groups.map(group => (
+                  <SelectItem key={group.id} value={group.id}>
+                    {group.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
             <Input
@@ -163,6 +276,16 @@ export function CreateIdeaDialog({
             </Select>
           </div>
 
+          {/* Custom Form Fields - per spec */}
+          {formData?.fields && formData.fields.length > 0 && (
+            <div className="space-y-4 border-t pt-4">
+              <Label className="text-sm font-medium">Custom Fields</Label>
+              {formData.fields
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map(renderCustomField)}
+            </div>
+          )}
+
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label>Public Idea</Label>
@@ -200,12 +323,19 @@ export function CreateIdeaDialog({
           </div>
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSubmit} disabled={createIdea.isPending}>
-            {createIdea.isPending ? 'Creating...' : 'Create Idea'}
+          <Button 
+            variant="secondary" 
+            onClick={() => handleSubmit(false)} 
+            disabled={createIdea.isPending}
+          >
+            Save
+          </Button>
+          <Button onClick={() => handleSubmit(true)} disabled={createIdea.isPending}>
+            {createIdea.isPending ? 'Creating...' : 'Save & Close'}
           </Button>
         </DialogFooter>
       </DialogContent>
