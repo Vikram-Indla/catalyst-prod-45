@@ -163,14 +163,14 @@ export default function TeamRoom() {
 
   return (
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
-      {/* Header */}
-      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4 space-y-3 flex-shrink-0">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+      {/* Header with responsive padding and design tokens */}
+      <div className="border-b bg-card px-[var(--s3)] sm:px-[var(--s6)] py-[var(--s3)] sm:py-[var(--s4)] space-y-[var(--s3)] flex-shrink-0">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
           <div className="min-w-0 flex-1">
             <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Team Room</h1>
             <p className="text-xs sm:text-sm text-muted-foreground truncate">Team delivery dashboard with real-time metrics</p>
           </div>
-          <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex gap-[var(--s2)] w-full sm:w-auto">
             <Button variant="outline" size="sm" onClick={() => navigate('/backlog')} className="flex-1 sm:flex-none">
               <ListTodo className="h-4 w-4 sm:mr-2" />
               <span className="hidden sm:inline">Backlog</span>
@@ -182,7 +182,7 @@ export default function TeamRoom() {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="flex flex-col sm:flex-row gap-[var(--s3)]">
         <Select value={selectedTeamId} onValueChange={setSelectedTeamId}>
           <SelectTrigger className="w-full sm:w-[240px]">
             <SelectValue placeholder="Select Team" />
@@ -213,8 +213,8 @@ export default function TeamRoom() {
 
       {selectedTeamId && selectedSprintId && (
         <div className="flex-1 overflow-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 p-3 sm:p-6">
-          <div className="lg:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-[var(--s4)] sm:gap-[var(--s6)] p-[var(--s3)] sm:p-[var(--s6)]">
+          <div className="lg:col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-[var(--s3)] sm:gap-[var(--s4)]">
             <KPIWidgetCard
               title="Sprint Progress"
               value={`${completionPct}%`}

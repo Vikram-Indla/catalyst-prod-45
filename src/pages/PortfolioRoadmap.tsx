@@ -245,9 +245,9 @@ export default function PortfolioRoadmap() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
+      {/* Header with responsive padding and design tokens */}
+      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)]">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
           <div>
             <h1 className="text-2xl font-bold">Portfolio Roadmap</h1>
             <p className="text-sm text-muted-foreground">
@@ -257,17 +257,17 @@ export default function PortfolioRoadmap() {
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto p-6">
+      {/* Content with responsive padding */}
+      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
         <Tabs defaultValue="work-view">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-[var(--s6)] gap-[var(--s4)]">
             <TabsList>
               <TabsTrigger value="work-view">Work View</TabsTrigger>
               <TabsTrigger value="epics">Epics Timeline</TabsTrigger>
             </TabsList>
 
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-[var(--s3)]">
+              <div className="flex items-center gap-[var(--s2)]">
                 <Filter className="h-4 w-4 text-muted-foreground" />
                 <Select value={swimlaneBy} onValueChange={(v: any) => setSwimlaneBy(v)}>
                   <SelectTrigger className="w-[140px]">
@@ -300,9 +300,9 @@ export default function PortfolioRoadmap() {
               </CardHeader>
               <CardContent>
                 <ScrollArea className="h-[600px]">
-                  <div className="space-y-6 min-w-[1000px] pr-4">
-                    {/* Timeline Headers */}
-                    <div className="flex gap-1 sticky top-0 bg-card z-10 pb-2 border-b">
+                  <div className="space-y-[var(--s6)] min-w-[1000px] pr-[var(--s4)]">
+                    {/* Timeline Headers with design tokens */}
+                    <div className="flex gap-1 sticky top-0 bg-card z-10 pb-[var(--s2)] border-b">
                       {quarters.map((quarter, i) => (
                         <div
                           key={i}
@@ -321,10 +321,10 @@ export default function PortfolioRoadmap() {
                       ))}
                     </div>
 
-                    {/* Swimlanes */}
+                    {/* Swimlanes with responsive spacing */}
                     {Object.entries(groupBySwimlane(features || [], 'feature')).map(([swimlane, items]) => (
-                      <div key={swimlane} className="space-y-2">
-                        <div className="flex items-center gap-2 sticky left-0 bg-card">
+                      <div key={swimlane} className="space-y-[var(--s2)]">
+                        <div className="flex items-center gap-[var(--s2)] sticky left-0 bg-card">
                           <div className="text-sm font-semibold text-muted-foreground min-w-[200px]">
                             {swimlane}
                           </div>
