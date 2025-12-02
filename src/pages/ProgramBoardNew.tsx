@@ -732,7 +732,11 @@ export default function ProgramBoard() {
             <DependencyQuickView dependency={selectedItem} onClose={() => setQuickViewOpen(false)} />
           )}
           {quickViewType === 'objective' && selectedItem && (
-            <ObjectiveQuickView objective={selectedItem} onClose={() => setQuickViewOpen(false)} />
+            <ObjectiveQuickView
+              objectiveId={selectedItem.id}
+              open={true}
+              onClose={() => setQuickViewOpen(false)}
+            />
           )}
         </SheetContent>
       </Sheet>
