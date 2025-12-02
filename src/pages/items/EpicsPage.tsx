@@ -268,7 +268,9 @@ export default function EpicsPage() {
         calculateBottomUpEstimate();
         break;
       case 'prioritization':
-        setWSJFDialogOpen(true);
+        window.location.href = portfolioId 
+          ? `/portfolio/${portfolioId}/epic-estimation` 
+          : '/items/epics/estimation';
         break;
       case 'import':
         setImportDialogOpen(true);

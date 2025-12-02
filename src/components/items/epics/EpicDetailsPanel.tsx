@@ -39,6 +39,7 @@ import { EpicForecastTab } from './tabs/EpicForecastTab';
 import { EpicWSJFTab } from './tabs/EpicWSJFTab';
 import { EpicLinksTab } from './tabs/EpicLinksTab';
 import { EpicChildrenTab } from './tabs/EpicChildrenTab';
+import { EpicDiscussionsTab } from './tabs/EpicDiscussionsTab';
 import { toast } from 'sonner';
 
 interface EpicDetailsPanelProps {
@@ -213,6 +214,7 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
             <TabsTrigger value="forecast">Forecast</TabsTrigger>
             <TabsTrigger value="wsjf">WSJF</TabsTrigger>
             <TabsTrigger value="links">Links</TabsTrigger>
+            <TabsTrigger value="discussions">Discussions</TabsTrigger>
           </TabsList>
 
           <div className="flex-1 overflow-y-auto">
@@ -248,6 +250,9 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
             </TabsContent>
             <TabsContent value="links" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
               <EpicLinksTab epic={epic} />
+            </TabsContent>
+            <TabsContent value="discussions" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none h-[500px]">
+              <EpicDiscussionsTab epic={epic} />
             </TabsContent>
           </div>
         </Tabs>
