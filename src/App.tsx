@@ -191,8 +191,7 @@ const App = () => (
             <BrowserRouter>
               <Routes>
               <Route path="/" element={<Navigate to="/home" replace />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/stories" element={<StoriesPage />} />
+              <Route path="/auth" element={<Auth />} />
               
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
