@@ -18,18 +18,18 @@ export function DefectImpactReport({ programId, dateRange }: DefectImpactReportP
 
   const { overview, statusDistribution, priorityDistribution, impactRows } = data;
 
-  // Transform data for Recharts
+  // Transform data for Recharts with proper typing
   const statusChartData = statusDistribution.map(s => ({
     name: s.status,
     value: s.count,
     fill: s.color,
-  }));
+  })) as Array<{ name: string; value: number; fill: string }>;
 
   const priorityChartData = priorityDistribution.map(p => ({
     name: p.priority,
     value: p.count,
     fill: p.color,
-  }));
+  })) as Array<{ name: string; value: number; fill: string }>;
 
   return (
     <div className="space-y-6">
