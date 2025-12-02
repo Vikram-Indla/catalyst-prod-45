@@ -1,17 +1,23 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ChevronDown, ChevronRight, Plus, List, LayoutGrid } from 'lucide-react';
 import { FeatureDetailsPanel } from '@/components/items/features/FeatureDetailsPanel';
 import { StoryDetailPanel } from '@/components/stories/StoryDetailPanel';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface ExpandedFeatures {
   [key: string]: boolean;
@@ -149,6 +155,22 @@ export default function ProgramBacklog() {
             </p>
           </div>
           <div className="flex items-center gap-[var(--s2)]">
+            {/* Add Feature Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="sm" className="bg-brand-gold hover:bg-brand-gold-hover">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Feature
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => toast.info('Create Feature dialog coming soon')}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Create New Feature
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant={viewMode === 'list' ? 'default' : 'outline'}
               size="sm"
