@@ -22,9 +22,9 @@ export default function TestOverviewPage() {
   );
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="container mx-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
+      {/* Header with responsive spacing */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s4)]">
         <div>
           <h1 className="text-3xl font-bold">Catalyst Tests - Overview</h1>
           <p className="text-muted-foreground mt-1">
@@ -33,9 +33,9 @@ export default function TestOverviewPage() {
         </div>
       </div>
 
-      {/* Project Metrics */}
+      {/* Project Metrics with design tokens */}
       <div>
-        <h2 className="text-xl font-semibold mb-4">Project Overview</h2>
+        <h2 className="text-xl font-semibold mb-[var(--s4)]">Project Overview</h2>
         <ProjectMetricsCards />
       </div>
 
@@ -43,9 +43,9 @@ export default function TestOverviewPage() {
       {!hasData ? (
         <EmptyStateOverview />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Activity Trends & My Work */}
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--s6)]">
+          {/* Left Column - Activity Trends & My Work with responsive spacing */}
+          <div className="lg:col-span-2 space-y-[var(--s6)]">
             <ActivityTrendChart />
             <MyWorkSection />
           </div>
