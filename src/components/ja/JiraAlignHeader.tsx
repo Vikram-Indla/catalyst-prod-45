@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Search, Bell, HelpCircle, User, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ItemsDropdown } from "./ItemsDropdown";
@@ -11,6 +11,7 @@ import { PortfolioSelectorDropdown } from "./PortfolioSelectorDropdown";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { TeamSelectorDropdown } from "./TeamSelectorDropdown";
 import { StarredDropdown } from "./StarredDropdown";
+import { TestsDropdown } from "./TestsDropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,8 +32,12 @@ import {
 
 export function CatalystHeader() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+
+  // Check if current route is a tests route
+  const isTestsRoute = location.pathname.includes('/tests');
 
   const navItems = [
     { label: "Home", path: "/home" },
@@ -173,6 +178,9 @@ export function CatalystHeader() {
 
             {/* Items Dropdown */}
             <ItemsDropdown />
+
+            {/* Tests Dropdown - Conditional */}
+            {isTestsRoute && <TestsDropdown isActive={isTestsRoute} />}
           </nav>
 
           {/* Create Button */}

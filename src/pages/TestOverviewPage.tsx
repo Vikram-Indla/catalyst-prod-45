@@ -1,15 +1,12 @@
 import { useEffect } from 'react';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ProjectMetricsCards } from '@/components/test-management/ProjectMetricsCards';
 import { ActivityTrendChart } from '@/components/test-management/ActivityTrendChart';
 import { MyWorkSection } from '@/components/test-management/MyWorkSection';
 import { ActivityFeed } from '@/components/test-management/ActivityFeed';
 import { EmptyStateOverview } from '@/components/test-management/EmptyStateOverview';
 import { useProjectMetrics, useCreateAdhocCycle } from '@/hooks/useTestDashboard';
-import { useNavigate } from 'react-router-dom';
 
 export default function TestOverviewPage() {
-  const navigate = useNavigate();
   const { data: metrics } = useProjectMetrics();
   const { mutate: createAdhocCycle } = useCreateAdhocCycle();
 
@@ -36,48 +33,29 @@ export default function TestOverviewPage() {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="bg-muted">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="cases" onClick={() => navigate('/tests/cases')}>
-            Cases
-          </TabsTrigger>
-          <TabsTrigger value="cycles" onClick={() => navigate('/tests/cycles')}>
-            Cycles
-          </TabsTrigger>
-          <TabsTrigger value="library" onClick={() => navigate('/tests/library')}>
-            Step Library
-          </TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
+      {/* Project Metrics */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Project Overview</h2>
+        <ProjectMetricsCards />
+      </div>
 
-        <TabsContent value="overview" className="space-y-6 mt-6">
-          {/* Project Metrics */}
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Project Overview</h2>
-            <ProjectMetricsCards />
+      {/* Empty State or Dashboard Content */}
+      {!hasData ? (
+        <EmptyStateOverview />
+      ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column - Activity Trends & My Work */}
+          <div className="lg:col-span-2 space-y-6">
+            <ActivityTrendChart />
+            <MyWorkSection />
           </div>
 
-          {/* Empty State or Dashboard Content */}
-          {!hasData ? (
-            <EmptyStateOverview />
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Left Column - Activity Trends & My Work */}
-              <div className="lg:col-span-2 space-y-6">
-                <ActivityTrendChart />
-                <MyWorkSection />
-              </div>
-
-              {/* Right Column - Activity Feed */}
-              <div className="lg:col-span-1">
-                <ActivityFeed />
-              </div>
-            </div>
-          )}
-        </TabsContent>
-      </Tabs>
+          {/* Right Column - Activity Feed */}
+          <div className="lg:col-span-1">
+            <ActivityFeed />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
