@@ -254,14 +254,22 @@ export const useCreateAdhocCycle = (programId?: string) => {
         return existing.id;
       }
 
+      // Generate cycle key
+      const { count } = await supabase
+        .from('test_cycles')
+        .select('*', { count: 'exact', head: true });
+      
+      const cycleKey = `CYC-${String((count || 0) + 1).padStart(3, '0')}`;
+      
       // Create Adhoc cycle
       const { data, error } = await supabase
         .from('test_cycles')
         .insert({
+          key: cycleKey,
           name: 'Adhoc Cycle',
-          description: 'Default cycle for unplanned testing. Created automatically.',
+          objective: 'Default cycle for unplanned testing. Created automatically.',
           program_id: programId,
-          status: 'planned',
+          status: 'not_started',
           is_adhoc: true,
           created_by: user.id,
         })

@@ -139,8 +139,8 @@ export const AddFolderToCycleModal: React.FC<AddFolderToCycleModalProps> = ({
                         {cycle.status}
                       </Badge>
                     </div>
-                    {cycle.description && (
-                      <p className="text-sm text-muted-foreground">{cycle.description}</p>
+                    {cycle.objective && (
+                      <p className="text-sm text-muted-foreground">{cycle.objective}</p>
                     )}
                   </div>
                 </div>

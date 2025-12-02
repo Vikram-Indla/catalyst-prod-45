@@ -216,8 +216,8 @@ export default function CycleDetailPage() {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <CardTitle className="text-2xl text-foreground mb-2">{cycle.name}</CardTitle>
-                {cycle.description && (
-                  <p className="text-muted-foreground">{cycle.description}</p>
+                {cycle.objective && (
+                  <p className="text-muted-foreground">{cycle.objective}</p>
                 )}
                 <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
