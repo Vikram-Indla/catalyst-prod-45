@@ -2778,6 +2778,316 @@ export type Database = {
           },
         ]
       }
+      kanban_board_users: {
+        Row: {
+          board_id: string | null
+          created_at: string | null
+          id: string
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          board_id?: string | null
+          created_at?: string | null
+          id?: string
+          role: string
+          user_id?: string | null
+        }
+        Update: {
+          board_id?: string | null
+          created_at?: string | null
+          id?: string
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kanban_board_users_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kanban_boards: {
+        Row: {
+          allow_overloading: boolean | null
+          allow_state_mapping: boolean | null
+          card_types: Json | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          id: string
+          portfolio_id: string | null
+          program_id: string | null
+          settings: Json | null
+          team_id: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          allow_overloading?: boolean | null
+          allow_state_mapping?: boolean | null
+          card_types?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          portfolio_id?: string | null
+          program_id?: string | null
+          settings?: Json | null
+          team_id?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          allow_overloading?: boolean | null
+          allow_state_mapping?: boolean | null
+          card_types?: Json | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          portfolio_id?: string | null
+          program_id?: string | null
+          settings?: Json | null
+          team_id?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kanban_boards_portfolio_id_fkey"
+            columns: ["portfolio_id"]
+            isOneToOne: false
+            referencedRelation: "portfolios"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kanban_boards_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kanban_boards_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kanban_card_history: {
+        Row: {
+          card_id: string | null
+          from_column_id: string | null
+          id: string
+          moved_at: string | null
+          moved_by: string | null
+          to_column_id: string | null
+          wip_override_reason: string | null
+        }
+        Insert: {
+          card_id?: string | null
+          from_column_id?: string | null
+          id?: string
+          moved_at?: string | null
+          moved_by?: string | null
+          to_column_id?: string | null
+          wip_override_reason?: string | null
+        }
+        Update: {
+          card_id?: string | null
+          from_column_id?: string | null
+          id?: string
+          moved_at?: string | null
+          moved_by?: string | null
+          to_column_id?: string | null
+          wip_override_reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kanban_card_history_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kanban_card_history_from_column_id_fkey"
+            columns: ["from_column_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_columns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kanban_card_history_to_column_id_fkey"
+            columns: ["to_column_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_columns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kanban_cards: {
+        Row: {
+          added_at: string | null
+          board_id: string | null
+          card_type: string | null
+          color: string | null
+          column_id: string | null
+          id: string
+          is_blocked: boolean | null
+          sort_order: number | null
+          swim_lane_id: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          added_at?: string | null
+          board_id?: string | null
+          card_type?: string | null
+          color?: string | null
+          column_id?: string | null
+          id?: string
+          is_blocked?: boolean | null
+          sort_order?: number | null
+          swim_lane_id?: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          added_at?: string | null
+          board_id?: string | null
+          card_type?: string | null
+          color?: string | null
+          column_id?: string | null
+          id?: string
+          is_blocked?: boolean | null
+          sort_order?: number | null
+          swim_lane_id?: string | null
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kanban_cards_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kanban_cards_column_id_fkey"
+            columns: ["column_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_columns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kanban_cards_swim_lane_id_fkey"
+            columns: ["swim_lane_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_swim_lanes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kanban_columns: {
+        Row: {
+          board_id: string | null
+          column_type: string
+          created_at: string | null
+          exit_criteria: string | null
+          id: string
+          name: string
+          parent_column_id: string | null
+          sort_order: number | null
+          state_mappings: Json | null
+          wip_limit: number | null
+        }
+        Insert: {
+          board_id?: string | null
+          column_type: string
+          created_at?: string | null
+          exit_criteria?: string | null
+          id?: string
+          name: string
+          parent_column_id?: string | null
+          sort_order?: number | null
+          state_mappings?: Json | null
+          wip_limit?: number | null
+        }
+        Update: {
+          board_id?: string | null
+          column_type?: string
+          created_at?: string | null
+          exit_criteria?: string | null
+          id?: string
+          name?: string
+          parent_column_id?: string | null
+          sort_order?: number | null
+          state_mappings?: Json | null
+          wip_limit?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kanban_columns_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_boards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kanban_columns_parent_column_id_fkey"
+            columns: ["parent_column_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_columns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kanban_swim_lanes: {
+        Row: {
+          board_id: string | null
+          created_at: string | null
+          id: string
+          is_collapsed: boolean | null
+          name: string
+          sort_order: number | null
+          wip_limit: number | null
+        }
+        Insert: {
+          board_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_collapsed?: boolean | null
+          name: string
+          sort_order?: number | null
+          wip_limit?: number | null
+        }
+        Update: {
+          board_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_collapsed?: boolean | null
+          name?: string
+          sort_order?: number | null
+          wip_limit?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kanban_swim_lanes_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_boards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       key_result_checkins: {
         Row: {
           checked_in_at: string
