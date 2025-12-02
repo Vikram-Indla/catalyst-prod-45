@@ -1,10 +1,10 @@
 import { ProgramPageLayout } from '@/components/program/ProgramPageLayout';
-import Backlog from '../Backlog';
+import ProgramBacklog from './ProgramBacklog';
 
 export default function BacklogWithSidebar() {
   return (
     <ProgramPageLayout>
-      <Backlog />
+      <ProgramBacklog />
     </ProgramPageLayout>
   );
 }
