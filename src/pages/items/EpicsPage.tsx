@@ -29,6 +29,7 @@ import { QuickAddEpicRow } from '@/components/items/epics/QuickAddEpicRow';
 import { DuplicateEpicDialog } from '@/components/items/epics/dialogs/DuplicateEpicDialog';
 import { PullRankDialog } from '@/components/items/epics/dialogs/PullRankDialog';
 import { ImportEpicsDialog } from '@/components/items/epics/dialogs/ImportEpicsDialog';
+import { MoveToPIDialog } from '@/components/items/epics/dialogs/MoveToPIDialog';
 import { 
   Plus, 
   Search, 
@@ -59,6 +60,7 @@ export default function EpicsPage() {
   const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
   const [pullRankOpen, setPullRankOpen] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [moveToPIOpen, setMoveToPIOpen] = useState(false);
   const [contextEpic, setContextEpic] = useState<any>(null);
   const [viewMode, setViewMode] = useState<'list' | 'kanban' | 'process-flow' | 'custom'>('list');
   const [kanbanSubView, setKanbanSubView] = useState<'state' | 'process' | 'custom'>('state');
@@ -352,7 +354,8 @@ export default function EpicsPage() {
       setMoveToPositionOpen(true);
     },
     moveToPI: (epic: any) => {
-      toast.info('Move to PI dialog coming soon');
+      setContextEpic(epic);
+      setMoveToPIOpen(true);
     },
     recycleBin: async (epic: any) => {
       try {
@@ -370,8 +373,8 @@ export default function EpicsPage() {
     }
   };
 
-  const handleMassMoveConfirm = (programId: string, piId: string) => {
-    toast.success(`Moving ${selectedRows.length} epics to selected program and PI`);
+  const handleMassMoveConfirm = () => {
+    // Handled by MassMoveDialog internally
     setSelectedRows([]);
   };
 
@@ -753,7 +756,7 @@ export default function EpicsPage() {
         open={massMoveDialogOpen}
         onOpenChange={setMassMoveDialogOpen}
         selectedEpics={selectedRows}
-        onConfirm={handleMassMoveConfirm}
+        onSuccess={() => setSelectedRows([])}
       />
 
       {/* Move to Position Dialog */}
@@ -796,6 +799,16 @@ export default function EpicsPage() {
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
       />
+
+      {/* Move to PI Dialog */}
+      {contextEpic && (
+        <MoveToPIDialog
+          open={moveToPIOpen}
+          onOpenChange={setMoveToPIOpen}
+          epicId={contextEpic.id}
+          epicName={contextEpic.name}
+        />
+      )}
     </div>
   );
 }

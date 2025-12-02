@@ -52,43 +52,43 @@ export function EpicContextMenu({
       <ContextMenuTrigger asChild>
         {children}
       </ContextMenuTrigger>
-      <ContextMenuContent className="w-56">
-        <ContextMenuItem onClick={() => onDuplicate(epic)}>
+      <ContextMenuContent className="w-56 bg-popover">
+        <ContextMenuItem onSelect={() => onDuplicate(epic)}>
           <Copy className="h-4 w-4 mr-2" />
           Duplicate Epic
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem onClick={() => onMoveToTop(epic)}>
+        <ContextMenuItem onSelect={() => onMoveToTop(epic)}>
           <ArrowUp className="h-4 w-4 mr-2" />
           Move to Top
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => onMoveToBottom(epic)}>
+        <ContextMenuItem onSelect={() => onMoveToBottom(epic)}>
           <ArrowDown className="h-4 w-4 mr-2" />
           Move to Bottom
         </ContextMenuItem>
-        <ContextMenuItem onClick={() => onMoveToPosition(epic)}>
+        <ContextMenuItem onSelect={() => onMoveToPosition(epic)}>
           <Move className="h-4 w-4 mr-2" />
           Move to Position...
         </ContextMenuItem>
         <ContextMenuSeparator />
-        <ContextMenuItem onClick={() => onMoveToPI(epic)}>
+        <ContextMenuItem onSelect={() => onMoveToPI(epic)}>
           <Calendar className="h-4 w-4 mr-2" />
           Move to PI...
         </ContextMenuItem>
         <ContextMenuSeparator />
         {!epic.parked_at ? (
-          <ContextMenuItem onClick={() => onParkingLot(epic)}>
+          <ContextMenuItem onSelect={() => onParkingLot(epic)}>
             <ParkingCircle className="h-4 w-4 mr-2" />
             Move to Parking Lot
           </ContextMenuItem>
         ) : (
-          <ContextMenuItem onClick={() => onParkingLot(epic)}>
+          <ContextMenuItem onSelect={() => onParkingLot(epic)}>
             <Archive className="h-4 w-4 mr-2" />
             Remove from Parking Lot
           </ContextMenuItem>
         )}
         {!epic.deleted_at && (
-          <ContextMenuItem onClick={() => onRecycleBin(epic)} className="text-destructive">
+          <ContextMenuItem onSelect={() => onRecycleBin(epic)} className="text-destructive">
             <Trash2 className="h-4 w-4 mr-2" />
             Move to Recycle Bin
           </ContextMenuItem>
