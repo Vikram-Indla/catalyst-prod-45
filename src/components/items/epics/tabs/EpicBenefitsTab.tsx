@@ -4,8 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -38,21 +37,6 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
     funding_stage: 'Not Defined',
     approvers: '',
     future_state: ''
-  });
-
-  // Fetch epic_value_metrics for benefits-specific data
-  const { data: valueMetrics } = useQuery({
-    queryKey: ['epic-value-metrics', epic.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('epic_value_metrics')
-        .select('*')
-        .eq('epic_id', epic.id)
-        .single();
-      
-      if (error && error.code !== 'PGRST116') throw error;
-      return data;
-    }
   });
 
   // Fetch epic_spend for funding info
@@ -91,7 +75,7 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
   useEffect(() => {
     setFormData({
       success_criteria: epic.success_criteria || '',
-      funding_stage: epicSpend?.funding_stage || epic.funding_stage || 'Not Defined',
+      funding_stage: epicSpend?.funding_stage || 'Not Defined',
       approvers: epic.approvers || '',
       future_state: epic.future_state || ''
     });
@@ -109,7 +93,7 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic', epic.id] });
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Benefits updated');
+      toast.success('Updated');
     },
     onError: () => toast.error('Failed to update')
   });
@@ -155,101 +139,131 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
   const ownerName = owner?.full_name || epic.owner_name || '—';
 
   return (
-    <div className="space-y-6">
-      {/* Lean Business Case Header */}
-      <div className="border-b pb-3">
-        <h3 className="text-base font-semibold text-foreground">Lean Business Case</h3>
-      </div>
+    <div className="space-y-5">
+      {/* Lean Business Case Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Lean Business Case</h3>
 
-      {/* Read-only Epic Info */}
-      <div className="grid grid-cols-[160px_1fr] gap-y-4 text-sm">
-        <Label className="text-muted-foreground">Epic Name:</Label>
-        <div className="text-foreground">{epic.name}</div>
+          {/* Read-only Epic Info */}
+          <div className="space-y-3">
+            <div className="grid grid-cols-[140px_1fr] items-center">
+              <Label className="text-muted-foreground text-sm">Epic Name:</Label>
+              <span className="text-sm text-foreground">{epic.name}</span>
+            </div>
 
-        <Label className="text-muted-foreground">Epic Owner:</Label>
-        <div className="text-foreground">{ownerName}</div>
-
-        <Label className="text-muted-foreground">Entered Funnel:</Label>
-        <div className="flex gap-8">
-          <span className="text-foreground">{formatDate(epic.created_at)}</span>
-          <div className="flex gap-2">
-            <span className="text-muted-foreground">Start / Initiation:</span>
-            <span className="text-foreground">{formatDate(epic.initiation_date)}</span>
+            <div className="grid grid-cols-[140px_1fr] items-center">
+              <Label className="text-muted-foreground text-sm">Epic Owner:</Label>
+              <span className="text-sm text-foreground">{ownerName}</span>
+            </div>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        <Label className="text-muted-foreground">Portfolio Ask:</Label>
-        <div className="flex gap-8">
-          <span className="text-foreground">{formatDate(epic.portfolio_ask_date)}</span>
-          <div className="flex gap-2">
-            <span className="text-muted-foreground">Target Completion:</span>
-            <span className="text-foreground">{formatDate(epic.target_completion_date)}</span>
-          </div>
-        </div>
+      {/* Dates Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Dates</h3>
 
-        <Label className="text-muted-foreground">Description:</Label>
-        <div className="text-foreground line-clamp-2">{epic.description || '—'}</div>
-      </div>
-
-      {/* Editable Fields */}
-      <div className="space-y-4 pt-4 border-t">
-        <div>
-          <Label className="text-muted-foreground">Success Criteria:</Label>
-          <div className="mt-1.5">
-            <Textarea
-              value={formData.success_criteria}
-              onChange={(e) => setFormData(prev => ({ ...prev, success_criteria: e.target.value }))}
-              onBlur={() => {
-                if (formData.success_criteria !== (epic.success_criteria || '')) {
-                  updateEpicMutation.mutate({ success_criteria: formData.success_criteria });
-                }
-              }}
-              placeholder="e.g., An increase of Net Promoter Score (NPS) from +60 to +75."
-              rows={2}
-              className="text-sm"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <Label className="text-muted-foreground">Funding Stage:</Label>
-            <Select
-              value={formData.funding_stage}
-              onValueChange={(value) => {
-                setFormData(prev => ({ ...prev, funding_stage: value }));
-                updateSpendMutation.mutate(value);
-              }}
-            >
-              <SelectTrigger className="mt-1.5">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {FUNDING_STAGES.map(stage => (
-                  <SelectItem key={stage} value={stage}>{stage}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-muted-foreground text-sm">Entered Funnel:</Label>
+              <div className="text-sm text-foreground mt-1">{formatDate(epic.created_at)}</div>
+            </div>
+            <div>
+              <Label className="text-muted-foreground text-sm">Start / Initiation:</Label>
+              <div className="text-sm text-foreground mt-1">{formatDate(epic.initiation_date)}</div>
+            </div>
           </div>
 
-          <div>
-            <Label className="text-muted-foreground">Approvers:</Label>
-            <Input
-              value={formData.approvers}
-              onChange={(e) => setFormData(prev => ({ ...prev, approvers: e.target.value }))}
-              onBlur={() => {
-                if (formData.approvers !== (epic.approvers || '')) {
-                  updateEpicMutation.mutate({ approvers: formData.approvers });
-                }
-              }}
-              placeholder="e.g., Susan Miller, Vicky Murphy"
-              className="mt-1.5"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-muted-foreground text-sm">Portfolio Ask:</Label>
+              <div className="text-sm text-foreground mt-1">{formatDate(epic.portfolio_ask_date)}</div>
+            </div>
+            <div>
+              <Label className="text-muted-foreground text-sm">Target Completion:</Label>
+              <div className="text-sm text-foreground mt-1">{formatDate(epic.target_completion_date)}</div>
+            </div>
           </div>
-        </div>
+        </CardContent>
+      </Card>
 
-        <div>
-          <Label className="text-muted-foreground">Future State & Desired Outcome:</Label>
+      {/* Description Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Description</h3>
+          <div className="text-sm text-foreground">{epic.description || '—'}</div>
+        </CardContent>
+      </Card>
+
+      {/* Success Criteria Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Success Criteria</h3>
+          <Textarea
+            value={formData.success_criteria}
+            onChange={(e) => setFormData(prev => ({ ...prev, success_criteria: e.target.value }))}
+            onBlur={() => {
+              if (formData.success_criteria !== (epic.success_criteria || '')) {
+                updateEpicMutation.mutate({ success_criteria: formData.success_criteria });
+              }
+            }}
+            placeholder="e.g., An increase of Net Promoter Score (NPS) from +60 to +75."
+            rows={3}
+            className="text-sm"
+          />
+        </CardContent>
+      </Card>
+
+      {/* Funding & Approvals Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Funding & Approvals</h3>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-muted-foreground text-sm">Funding Stage:</Label>
+              <Select
+                value={formData.funding_stage}
+                onValueChange={(value) => {
+                  setFormData(prev => ({ ...prev, funding_stage: value }));
+                  updateSpendMutation.mutate(value);
+                }}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {FUNDING_STAGES.map(stage => (
+                    <SelectItem key={stage} value={stage}>{stage}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-muted-foreground text-sm">Approvers:</Label>
+              <Input
+                value={formData.approvers}
+                onChange={(e) => setFormData(prev => ({ ...prev, approvers: e.target.value }))}
+                onBlur={() => {
+                  if (formData.approvers !== (epic.approvers || '')) {
+                    updateEpicMutation.mutate({ approvers: formData.approvers });
+                  }
+                }}
+                placeholder="e.g., Susan Miller, Vicky Murphy"
+                className="mt-1.5"
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Future State Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Future State & Desired Outcome</h3>
           <Textarea
             value={formData.future_state}
             onChange={(e) => setFormData(prev => ({ ...prev, future_state: e.target.value }))}
@@ -260,10 +274,10 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
             }}
             placeholder="Describe the desired future state and expected outcomes..."
             rows={4}
-            className="mt-1.5 text-sm"
+            className="text-sm"
           />
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
