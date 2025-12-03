@@ -24,6 +24,7 @@ const AVAILABLE_COLUMNS = [
   { id: 'chat', label: 'Chat' },
   { id: 'child_count', label: 'Child Count' },
   { id: 'dependency', label: 'Dependency' },
+  { id: 'estimate', label: 'Estimate (Bottom-Up)' },
   { id: 'mvp', label: 'MVP' },
   { id: 'owner', label: 'Owner' },
   { id: 'points_estimate', label: 'Points' },
@@ -36,7 +37,7 @@ const AVAILABLE_COLUMNS = [
   { id: 'wsjf', label: 'WSJF Prioritization' },
 ];
 
-const DEFAULT_COLUMNS = ['id', 'name', 'state', 'labels', 'points_estimate', 'mvp', 'process_step'];
+const DEFAULT_COLUMNS = ['id', 'name', 'state', 'labels', 'points_estimate', 'estimate', 'mvp', 'process_step'];
 
 export function EpicColumnsDialog({
   open,
