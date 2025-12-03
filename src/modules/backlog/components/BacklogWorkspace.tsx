@@ -129,7 +129,7 @@ export function BacklogWorkspace() {
   const isListView = ['list', 'sprint'].includes(backlogState.view);
 
   return (
-    <div className="flex h-screen flex-col bg-background">
+    <div className="h-full flex flex-col bg-background">
       <BacklogHeader
         onOpenFilters={() => setIsFiltersDialogOpen(true)}
         onOpenColumns={() => setIsColumnsDialogOpen(true)}
@@ -147,7 +147,7 @@ export function BacklogWorkspace() {
       />
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-muted-foreground">Loading...</div>
