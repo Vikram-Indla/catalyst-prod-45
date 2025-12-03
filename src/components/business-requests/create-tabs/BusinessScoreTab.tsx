@@ -45,9 +45,9 @@ const isDemandDetailsComplete = (data: any): boolean => {
 
 export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
   const demandComplete = isDemandDetailsComplete(data);
-  const executiveUrgency = data.executive_urgency ?? 5;
-  const businessValue = data.business_value ?? 5;
-  const complexity = data.complexity_score ?? 5;
+  const executiveUrgency = data.executive_urgency ?? 0;
+  const businessValue = data.business_value ?? 0;
+  const complexity = data.complexity_score ?? 0;
 
   // Calculate normalized values
   const normalizedUrgency = executiveUrgency / 10;
