@@ -1412,6 +1412,7 @@ export type Database = {
           failure_impact: string | null
           failure_probability: string | null
           forecasted_spend: number | null
+          funding_stage: string | null
           id: string
           initial_investment: number | null
           it_risk: string | null
@@ -1433,6 +1434,7 @@ export type Database = {
           failure_impact?: string | null
           failure_probability?: string | null
           forecasted_spend?: number | null
+          funding_stage?: string | null
           id?: string
           initial_investment?: number | null
           it_risk?: string | null
@@ -1454,6 +1456,7 @@ export type Database = {
           failure_impact?: string | null
           failure_probability?: string | null
           forecasted_spend?: number | null
+          funding_stage?: string | null
           id?: string
           initial_investment?: number | null
           it_risk?: string | null
@@ -1583,6 +1586,7 @@ export type Database = {
       epics: {
         Row: {
           ability_to_execute: string | null
+          approvers: string | null
           capitalized: boolean | null
           created_at: string | null
           customers: string[] | null
@@ -1598,6 +1602,7 @@ export type Database = {
           estimate_confidence: number | null
           estimate_method: string | null
           estimation_system: string | null
+          future_state: string | null
           global_rank: number | null
           health: Database["public"]["Enums"]["health_status"] | null
           id: string
@@ -1625,6 +1630,7 @@ export type Database = {
           status: Database["public"]["Enums"]["epic_status"] | null
           strategic_driver: string | null
           strategic_value_score: number | null
+          success_criteria: string | null
           tags: string[] | null
           target_completion_date: string | null
           theme_id: string | null
@@ -1632,6 +1638,7 @@ export type Database = {
         }
         Insert: {
           ability_to_execute?: string | null
+          approvers?: string | null
           capitalized?: boolean | null
           created_at?: string | null
           customers?: string[] | null
@@ -1647,6 +1654,7 @@ export type Database = {
           estimate_confidence?: number | null
           estimate_method?: string | null
           estimation_system?: string | null
+          future_state?: string | null
           global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
@@ -1674,6 +1682,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["epic_status"] | null
           strategic_driver?: string | null
           strategic_value_score?: number | null
+          success_criteria?: string | null
           tags?: string[] | null
           target_completion_date?: string | null
           theme_id?: string | null
@@ -1681,6 +1690,7 @@ export type Database = {
         }
         Update: {
           ability_to_execute?: string | null
+          approvers?: string | null
           capitalized?: boolean | null
           created_at?: string | null
           customers?: string[] | null
@@ -1696,6 +1706,7 @@ export type Database = {
           estimate_confidence?: number | null
           estimate_method?: string | null
           estimation_system?: string | null
+          future_state?: string | null
           global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
@@ -1723,6 +1734,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["epic_status"] | null
           strategic_driver?: string | null
           strategic_value_score?: number | null
+          success_criteria?: string | null
           tags?: string[] | null
           target_completion_date?: string | null
           theme_id?: string | null
