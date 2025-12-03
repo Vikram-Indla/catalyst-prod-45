@@ -161,7 +161,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     }) => {
       const userId = (await supabase.auth.getUser()).data.user?.id;
       
-      // Build query for existing entry
+      // Build query for existing entry - use limit(1) to avoid maybeSingle failing on duplicates
       let query = supabase
         .from('forecast_entries')
         .select('id')
@@ -182,7 +182,8 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
         query = query.is('team_id', null);
       }
 
-      const { data: existing } = await query.maybeSingle();
+      const { data: existingRows } = await query.order('updated_at', { ascending: false }).limit(1);
+      const existing = existingRows?.[0];
 
       if (existing) {
         // Update existing
