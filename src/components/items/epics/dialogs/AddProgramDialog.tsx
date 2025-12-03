@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -29,6 +29,7 @@ export function AddProgramDialog({ epicId, primaryProgramId, open, onOpenChange 
   const [searchQuery, setSearchQuery] = useState('');
   const queryClient = useQueryClient();
 
+  // Fetch all programs
   const { data: programs } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
@@ -41,32 +42,63 @@ export function AddProgramDialog({ epicId, primaryProgramId, open, onOpenChange 
     },
   });
 
+  // Fetch current additional programs for this epic
+  const { data: currentAdditionalPrograms } = useQuery({
+    queryKey: ['epic-additional-programs', epicId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epic_programs')
+        .select('program_id')
+        .eq('epic_id', epicId);
+      if (error) throw error;
+      return data?.map(p => p.program_id) || [];
+    },
+    enabled: open,
+  });
+
+  // Initialize selected programs when dialog opens
+  useEffect(() => {
+    if (open && currentAdditionalPrograms) {
+      setSelectedPrograms(currentAdditionalPrograms);
+    }
+  }, [open, currentAdditionalPrograms]);
+
   const saveMutation = useMutation({
     mutationFn: async () => {
-      // For now, update the primary program if one is selected
-      // Note: Additional programs would require a junction table (epic_programs)
+      // Delete existing additional program links
+      await supabase
+        .from('epic_programs')
+        .delete()
+        .eq('epic_id', epicId);
+
+      // Insert new additional program links
       if (selectedPrograms.length > 0) {
-        const newPrimaryProgramId = selectedPrograms[0];
+        const inserts = selectedPrograms.map((programId) => ({
+          epic_id: epicId,
+          program_id: programId,
+        }));
+
         const { error } = await supabase
-          .from('epics')
-          .update({ primary_program_id: newPrimaryProgramId })
-          .eq('id', epicId);
-        
+          .from('epic_programs')
+          .insert(inserts);
+
         if (error) throw error;
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic', epicId] });
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Program updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['epic-additional-programs', epicId] });
+      toast.success('Additional programs updated successfully');
       onOpenChange(false);
     },
-    onError: () => {
-      toast.error('Failed to update program');
+    onError: (error: any) => {
+      toast.error(`Failed to update programs: ${error.message}`);
     },
   });
 
   const toggleProgram = (programId: string) => {
+    // Don't allow selecting the primary program
     if (programId === primaryProgramId) return;
     setSelectedPrograms((prev) =>
       prev.includes(programId) ? prev.filter((id) => id !== programId) : [...prev, programId]
