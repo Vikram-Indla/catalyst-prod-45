@@ -119,20 +119,24 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
     }
   });
 
-  // Update child process steps mutation
+  // Update child process steps mutation (Doc lines 43-55: bulk update child Features to epic's process step)
   const updateChildStepsMutation = useMutation({
     mutationFn: async () => {
-      // Update all child features to have the same process step as the epic
+      // Update all child features to have the same status as the epic
       const { error } = await supabase
         .from('features')
-        .update({ updated_at: new Date().toISOString() })
+        .update({ 
+          status: epic.status || 'funnel',
+          updated_at: new Date().toISOString() 
+        })
         .eq('epic_id', epic.id);
       
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['features'] });
-      toast.success('Child process steps updated');
+      queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
+      toast.success('Child process steps updated to match epic status');
     },
     onError: () => {
       toast.error('Failed to update child process steps');
@@ -165,16 +169,16 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
         updateChildStepsMutation.mutate();
         break;
       case 'responsibility-matrix':
-        navigate(`/epic/${epic.id}/responsibility-matrix`);
+        navigate(`/items/epics/${epic.id}/responsibility-matrix`);
         break;
       case 'trace':
-        navigate(`/epic/${epic.id}/trace`);
+        navigate(`/items/epics/${epic.id}/trace`);
         break;
       case 'status-report':
-        navigate(`/epic/${epic.id}/status-report`);
+        navigate(`/items/epics/${epic.id}/status-report`);
         break;
       case 'requirement-hierarchy':
-        navigate(`/epic/${epic.id}/requirements`);
+        navigate(`/items/epics/${epic.id}/requirement-hierarchy`);
         break;
       case 'audit-log':
         setAuditLogOpen(true);
@@ -201,7 +205,7 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
         navigate(`/kanban-boards?add=${epic.id}`);
         break;
       case 'epic-planning':
-        navigate(`/epic/${epic.id}/planning`);
+        navigate(`/items/epics/${epic.id}/planning`);
         break;
       case 'work-tree':
         navigate(`/work-tree?epic=${epic.id}`);

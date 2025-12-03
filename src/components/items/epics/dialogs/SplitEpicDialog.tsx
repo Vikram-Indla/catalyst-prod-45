@@ -34,8 +34,9 @@ export function SplitEpicDialog({
 
   const splitMutation = useMutation({
     mutationFn: async () => {
-      // Create the new epic as a split
-      const { data, error } = await supabase
+      // Doc lines 199-214: Split creates Part 1 (completed work) and Part 2 (remaining work)
+      // Create the new epic as Part 2
+      const { data: newEpic, error: epicError } = await supabase
         .from('epics')
         .insert([{
           name: newEpicName,
@@ -49,13 +50,25 @@ export function SplitEpicDialog({
         .select()
         .single();
       
-      if (error) throw error;
-      return data;
+      if (epicError) throw epicError;
+
+      // Move incomplete features to the new epic (Part 2)
+      // Features with status != 'done' go to Part 2
+      const { error: featureError } = await supabase
+        .from('features')
+        .update({ epic_id: newEpic.id })
+        .eq('epic_id', epic?.id)
+        .neq('status', 'done');
+      
+      if (featureError) throw featureError;
+
+      return newEpic;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
       queryClient.invalidateQueries({ queryKey: ['backlog-items'] });
-      toast.success('Epic split successfully');
+      toast.success('Epic split: completed features remain in Part 1, remaining features moved to Part 2');
       onOpenChange(false);
       setNewEpicName(`${epic?.name || ''} - Part 2`);
       setDescription('');
@@ -72,7 +85,8 @@ export function SplitEpicDialog({
         <DialogHeader>
           <DialogTitle>Split Epic</DialogTitle>
           <DialogDescription>
-            Create a new epic by splitting "{epic?.name}"
+            Split "{epic?.name}" into Part 1 (completed features) and Part 2 (remaining features).
+            Features with status "Done" will stay with the original epic.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4">

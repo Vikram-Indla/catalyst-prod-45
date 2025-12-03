@@ -27,6 +27,8 @@ import EpicsCanceledPage from "./pages/items/EpicsCanceledPage";
 import EpicStatusReport from "./pages/items/reports/EpicStatusReport";
 import EpicTraceReport from "./pages/items/reports/EpicTraceReport";
 import EpicRequirementHierarchy from "./pages/items/reports/EpicRequirementHierarchy";
+import EpicResponsibilityMatrix from "./pages/items/reports/EpicResponsibilityMatrix";
+import EpicPlanningPage from "./pages/items/reports/EpicPlanningPage";
 import EpicEstimationPage from "./pages/items/EpicEstimationPage";
 import EpicBacklog from "./pages/EpicBacklog";
 import EpicBacklogWithSidebar from "./pages/EpicBacklogWithSidebar";
@@ -290,6 +292,8 @@ const App = () => (
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
               <Route path="/items/epics/:epicId/trace" element={<EpicTraceReport />} />
               <Route path="/items/epics/:epicId/requirement-hierarchy" element={<EpicRequirementHierarchy />} />
+              <Route path="/items/epics/:epicId/responsibility-matrix" element={<EpicResponsibilityMatrix />} />
+              <Route path="/items/epics/:epicId/planning" element={<EpicPlanningPage />} />
               <Route path="/items/epics/estimation" element={<EpicEstimationPage />} />
               <Route path="/portfolio/:portfolioId/epic-estimation" element={<EpicEstimationPage />} />
               
