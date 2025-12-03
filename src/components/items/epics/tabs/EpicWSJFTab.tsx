@@ -24,18 +24,18 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
   const [selectedPiId, setSelectedPiId] = useState<string>('');
   const [wsjfModalOpen, setWsjfModalOpen] = useState(false);
 
-  // Fetch PIs associated with this epic
+  // Fetch ALL available PIs (not just assigned ones) so users can score WSJF
   const { data: pis, isLoading: pisLoading } = useQuery({
-    queryKey: ['epic-wsjf-pis', epic.id],
+    queryKey: ['all-program-increments'],
     queryFn: async () => {
-      const { data: epicPIs } = await supabase
-        .from('epic_program_increments')
-        .select('pi_id, program_increments(id, name, code)')
-        .eq('epic_id', epic.id);
+      const { data, error } = await supabase
+        .from('program_increments')
+        .select('id, name, code')
+        .order('start_date', { ascending: false });
 
-      return epicPIs?.map(ep => (ep.program_increments as any)) || [];
+      if (error) throw error;
+      return data || [];
     },
-    enabled: !!epic?.id,
   });
 
   // Fetch WSJF scores for all PIs
