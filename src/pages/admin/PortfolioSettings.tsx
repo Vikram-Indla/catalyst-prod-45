@@ -54,10 +54,11 @@ export default function PortfolioSettings() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="tshirt">T-Shirt Sizing (XS, S, M, L, XL)</SelectItem>
-                      <SelectItem value="points">Story Points</SelectItem>
-                      <SelectItem value="member_weeks">Member Weeks</SelectItem>
+                      <SelectItem value="points">Points (Fibonacci)</SelectItem>
+                      <SelectItem value="wsjf">WSJF (Prioritisation)</SelectItem>
+                      <SelectItem value="tshirt">T-Shirt Sizing</SelectItem>
                       <SelectItem value="team_weeks">Team Weeks</SelectItem>
+                      <SelectItem value="member_weeks">Member Weeks</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
