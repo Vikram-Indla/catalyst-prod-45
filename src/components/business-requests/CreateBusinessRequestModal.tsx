@@ -32,9 +32,9 @@ const initialFormData: Record<string, any> = {
   is_saudi: '',
   is_non_saudi: '',
   // Business Score
-  executive_urgency: 5,
-  business_value: 5,
-  complexity_score: 5,
+  executive_urgency: 0,
+  business_value: 0,
+  complexity_score: 0,
   // Internal defaults
   process_step: 'new_demand',
   health: 'green',
