@@ -176,11 +176,11 @@ export function IdeaDetailPanel({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-[600px] p-0 flex flex-col">
+      <SheetContent className="executive-drawer w-full sm:max-w-[600px] p-0 flex flex-col overflow-hidden">
         {/* Header */}
-        <SheetHeader className="p-4 border-b flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+        <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-2">
               <Badge
                 variant="outline"
                 className={cn('text-xs', IDEA_STATUS_COLORS[idea.status as IdeaStatus])}
@@ -191,95 +191,98 @@ export function IdeaDetailPanel({
                 {formatDistanceToNow(new Date(idea.created_at), { addSuffix: true })}
               </span>
             </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={onToggleSubscribe}
-              >
-                {isSubscribed ? (
-                  <BellOff className="h-4 w-4" />
-                ) : (
-                  <Bell className="h-4 w-4" />
-                )}
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  {/* Move to status options per Jira Align doc */}
-                  <DropdownMenuItem onClick={() => handleStatusChange('Open')}>
-                    Move to Open
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleStatusChange('Planned')}>
-                    Move to Planned
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleStatusChange('Shelved')}>
-                    Move to Shelved
-                  </DropdownMenuItem>
-                  
-                  <DropdownMenuSeparator />
-                  
-                  {/* Set Size submenu */}
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>Set Size</DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      {(['XS', 'S', 'M', 'L', 'XL'] as TShirtSize[]).map((size) => (
-                        <DropdownMenuItem
-                          key={size}
-                          onClick={() => handleSizeChange(size)}
-                        >
-                          {size} {idea.t_shirt_size === size && '✓'}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
-                  
-                  <DropdownMenuSeparator />
-                  
-                  {/* Convert options per Jira Align doc */}
-                  <DropdownMenuItem onClick={() => handleConvertTo('Epic')}>
-                    Convert to Epic
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleConvertTo('Feature')}>
-                    Convert to Feature
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => handleConvertTo('Story')}>
-                    Convert to Story
-                  </DropdownMenuItem>
-                  
-                  <DropdownMenuSeparator />
-                  
-                  {/* Map to existing */}
-                  <DropdownMenuItem onClick={() => handleMapToExisting()}>
-                    Map to Existing...
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+            <SheetTitle className="executive-drawer-title truncate">{idea.title}</SheetTitle>
           </div>
-          <SheetTitle className="text-left mt-2">{idea.title}</SheetTitle>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onToggleSubscribe}
+              className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]"
+            >
+              {isSubscribed ? (
+                <BellOff className="h-4 w-4" />
+              ) : (
+                <Bell className="h-4 w-4" />
+              )}
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {/* Move to status options per Jira Align doc */}
+                <DropdownMenuItem onClick={() => handleStatusChange('Open')}>
+                  Move to Open
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatusChange('Planned')}>
+                  Move to Planned
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleStatusChange('Shelved')}>
+                  Move to Shelved
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                
+                {/* Set Size submenu */}
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>Set Size</DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    {(['XS', 'S', 'M', 'L', 'XL'] as TShirtSize[]).map((size) => (
+                      <DropdownMenuItem
+                        key={size}
+                        onClick={() => handleSizeChange(size)}
+                      >
+                        {size} {idea.t_shirt_size === size && '✓'}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+                
+                <DropdownMenuSeparator />
+                
+                {/* Convert options per Jira Align doc */}
+                <DropdownMenuItem onClick={() => handleConvertTo('Epic')}>
+                  Convert to Epic
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleConvertTo('Feature')}>
+                  Convert to Feature
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleConvertTo('Story')}>
+                  Convert to Story
+                </DropdownMenuItem>
+                
+                <DropdownMenuSeparator />
+                
+                {/* Map to existing */}
+                <DropdownMenuItem onClick={() => handleMapToExisting()}>
+                  Map to Existing...
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </SheetHeader>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="w-full justify-start rounded-none border-b px-4">
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="comments" className="flex items-center gap-1">
-              <MessageSquare className="h-3 w-3" />
-              Comments ({idea.comment_count})
-            </TabsTrigger>
-            <TabsTrigger value="attachments" className="flex items-center gap-1">
-              <Paperclip className="h-3 w-3" />
-              Attachments ({attachments.length})
-            </TabsTrigger>
-          </TabsList>
+          <div className="executive-drawer-tabs overflow-x-auto flex-shrink-0">
+            <TabsList className="w-full justify-start rounded-none flex-nowrap bg-transparent">
+              <TabsTrigger value="details" className="executive-drawer-tab">Details</TabsTrigger>
+              <TabsTrigger value="comments" className="executive-drawer-tab flex items-center gap-1">
+                <MessageSquare className="h-3 w-3" />
+                Comments ({idea.comment_count})
+              </TabsTrigger>
+              <TabsTrigger value="attachments" className="executive-drawer-tab flex items-center gap-1">
+                <Paperclip className="h-3 w-3" />
+                Attachments ({attachments.length})
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Details Tab */}
-          <TabsContent value="details" className="flex-1 overflow-auto p-4 space-y-6">
+          <TabsContent value="details" className="executive-drawer-content flex-1 overflow-auto p-[var(--s4)] sm:p-[var(--s6)] space-y-6">
             {/* Description */}
             <div>
               <h4 className="text-sm font-medium mb-2">Description</h4>

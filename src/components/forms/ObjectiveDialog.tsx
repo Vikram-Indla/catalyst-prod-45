@@ -261,12 +261,12 @@ export function ObjectiveDialog({ open, onClose, objectiveId, scopeType = 'portf
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden">
-        <SheetHeader className="px-6 py-4 border-b flex-shrink-0">
-          <SheetTitle>{isEdit ? 'Edit Objective' : 'Create New Objective'}</SheetTitle>
+      <SheetContent side="right" className="executive-drawer w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden">
+        <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
+          <SheetTitle className="executive-drawer-title">{isEdit ? 'Edit Objective' : 'Create New Objective'}</SheetTitle>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4">
+        <div className="executive-drawer-content flex-1 overflow-y-auto p-[var(--s4)] sm:p-[var(--s6)]">
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
