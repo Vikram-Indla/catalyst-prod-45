@@ -243,16 +243,27 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
   };
 
   const getForecastValue = (programId?: string, teamId?: string) => {
-    const entry = forecasts.find(f =>
-      f.program_id === programId &&
-      f.team_id === teamId
-    );
+    // Database constraint: team estimates are saved with program_id=NULL
+    // So when looking for team-level estimates, we must look for NULL program_id
+    const entry = forecasts.find(f => {
+      if (teamId) {
+        // For team-level entries, program_id is NULL in database
+        return f.team_id === teamId && f.program_id === null;
+      }
+      // For program-level entries (no team)
+      return f.program_id === programId && f.team_id === null;
+    });
     return entry?.estimate?.toString() || '';
   };
 
   const getProgramTotal = (programId: string) => {
+    // Get teams for this program and sum their estimates
+    // Team estimates are saved with program_id=NULL but we need to find teams belonging to this program
+    const programTeams = teams.filter(t => t.program_id === programId);
+    const teamIds = new Set(programTeams.map(t => t.id));
+    
     return forecasts
-      .filter(f => f.program_id === programId)
+      .filter(f => f.team_id && teamIds.has(f.team_id))
       .reduce((sum, f) => sum + (f.estimate || 0), 0);
   };
 

@@ -234,17 +234,19 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
       return pendingUpdates[key];
     }
     
+    // Handle null/undefined comparison correctly (database returns null, JS may pass undefined)
     const entry = forecasts.find(f =>
       f.work_item_id === workItemId &&
-      f.program_id === programId &&
-      f.team_id === teamId
+      (f.program_id || null) === (programId || null) &&
+      (f.team_id || null) === (teamId || null)
     );
     return entry?.estimate || 0;
   };
 
   const calculateTotalForContext = (programId?: string, teamId?: string) => {
+    // Handle null/undefined comparison correctly
     return forecasts
-      .filter(f => f.program_id === programId && f.team_id === teamId)
+      .filter(f => (f.program_id || null) === (programId || null) && (f.team_id || null) === (teamId || null))
       .reduce((sum, f) => sum + (f.estimate || 0), 0);
   };
 
