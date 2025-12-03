@@ -672,7 +672,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-muted-foreground uppercase">Progress & Children</h3>
         
-        <div className="border rounded-lg p-4">
+        <div className="executive-card">
           <div className="text-sm text-muted-foreground mb-2">Child Items Progress</div>
           {childProgress && childProgress.totalFeatures > 0 ? (
             <div className="space-y-3">
