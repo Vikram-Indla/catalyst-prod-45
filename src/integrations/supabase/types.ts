@@ -992,13 +992,6 @@ export type Database = {
             referencedRelation: "epics"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "epic_intake_responses_field_id_fkey"
-            columns: ["field_id"]
-            isOneToOne: false
-            referencedRelation: "intake_fields"
-            referencedColumns: ["id"]
-          },
         ]
       }
       epic_label_assignments: {

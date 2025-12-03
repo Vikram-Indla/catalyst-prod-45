@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
@@ -30,14 +30,14 @@ const FUNDING_STAGES = [
 
 export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
   const queryClient = useQueryClient();
+  const initializedRef = useRef(false);
+  const epicIdRef = useRef(epic.id);
   
   // Local state for editable fields
-  const [formData, setFormData] = useState({
-    success_criteria: '',
-    funding_stage: 'Not Defined',
-    approvers: '',
-    future_state: ''
-  });
+  const [successCriteria, setSuccessCriteria] = useState('');
+  const [fundingStage, setFundingStage] = useState('Not Defined');
+  const [approvers, setApprovers] = useState('');
+  const [futureState, setFutureState] = useState('');
 
   // Fetch epic_spend for funding info
   const { data: epicSpend } = useQuery({
@@ -47,10 +47,10 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
         .from('epic_spend')
         .select('*')
         .eq('epic_id', epic.id)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') throw error;
-      return data as any;
+      if (error) throw error;
+      return data;
     }
   });
 
@@ -63,27 +63,40 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
         .from('profiles')
         .select('id, full_name, email')
         .eq('id', epic.owner_id)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') return null;
+      if (error) return null;
       return data;
     },
     enabled: !!epic.owner_id
   });
 
-  // Initialize form data from epic
+  // Initialize form data from epic only once per epic or when epic changes
   useEffect(() => {
-    setFormData({
-      success_criteria: epic.success_criteria || '',
-      funding_stage: epicSpend?.funding_stage || 'Not Defined',
-      approvers: epic.approvers || '',
-      future_state: epic.future_state || ''
-    });
-  }, [epic, epicSpend]);
+    if (epicIdRef.current !== epic.id) {
+      // Epic changed - reset everything
+      epicIdRef.current = epic.id;
+      initializedRef.current = false;
+    }
+    
+    if (!initializedRef.current) {
+      setSuccessCriteria(epic.success_criteria || '');
+      setApprovers(epic.approvers || '');
+      setFutureState(epic.future_state || '');
+      initializedRef.current = true;
+    }
+  }, [epic.id, epic.success_criteria, epic.approvers, epic.future_state]);
+
+  // Sync funding stage when epicSpend loads
+  useEffect(() => {
+    if (epicSpend?.funding_stage) {
+      setFundingStage(epicSpend.funding_stage);
+    }
+  }, [epicSpend?.funding_stage]);
 
   // Update mutation for epic fields
   const updateEpicMutation = useMutation({
-    mutationFn: async (updates: any) => {
+    mutationFn: async (updates: Record<string, string>) => {
       const { error } = await supabase
         .from('epics')
         .update(updates)
@@ -93,39 +106,59 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic', epic.id] });
       queryClient.invalidateQueries({ queryKey: ['epics'] });
-      toast.success('Updated');
     },
-    onError: () => toast.error('Failed to update')
+    onError: (error) => {
+      console.error('Failed to update epic:', error);
+      toast.error('Failed to save');
+    }
   });
 
-  // Update mutation for epic_spend
+  // Update mutation for epic_spend using upsert
   const updateSpendMutation = useMutation({
-    mutationFn: async (funding_stage: string) => {
-      const { data: existing } = await supabase
+    mutationFn: async (newFundingStage: string) => {
+      const { error } = await supabase
         .from('epic_spend')
-        .select('id')
-        .eq('epic_id', epic.id)
-        .single();
-      
-      if (existing) {
-        const { error } = await supabase
-          .from('epic_spend')
-          .update({ funding_stage } as any)
-          .eq('epic_id', epic.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('epic_spend')
-          .insert({ epic_id: epic.id, funding_stage } as any);
-        if (error) throw error;
-      }
+        .upsert(
+          { 
+            epic_id: epic.id, 
+            funding_stage: newFundingStage,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'epic_id' }
+        );
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-spend-benefits', epic.id] });
-      toast.success('Funding stage updated');
     },
-    onError: () => toast.error('Failed to update funding stage')
+    onError: (error) => {
+      console.error('Failed to update funding stage:', error);
+      toast.error('Failed to save funding stage');
+    }
   });
+
+  const handleSuccessCriteriaBlur = () => {
+    if (successCriteria !== (epic.success_criteria || '')) {
+      updateEpicMutation.mutate({ success_criteria: successCriteria });
+    }
+  };
+
+  const handleApproversBlur = () => {
+    if (approvers !== (epic.approvers || '')) {
+      updateEpicMutation.mutate({ approvers });
+    }
+  };
+
+  const handleFutureStateBlur = () => {
+    if (futureState !== (epic.future_state || '')) {
+      updateEpicMutation.mutate({ future_state: futureState });
+    }
+  };
+
+  const handleFundingStageChange = (value: string) => {
+    setFundingStage(value);
+    updateSpendMutation.mutate(value);
+  };
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return '—';
@@ -202,13 +235,9 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
         <CardContent className="p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground">Success Criteria</h3>
           <Textarea
-            value={formData.success_criteria}
-            onChange={(e) => setFormData(prev => ({ ...prev, success_criteria: e.target.value }))}
-            onBlur={() => {
-              if (formData.success_criteria !== (epic.success_criteria || '')) {
-                updateEpicMutation.mutate({ success_criteria: formData.success_criteria });
-              }
-            }}
+            value={successCriteria}
+            onChange={(e) => setSuccessCriteria(e.target.value)}
+            onBlur={handleSuccessCriteriaBlur}
             placeholder="e.g., An increase of Net Promoter Score (NPS) from +60 to +75."
             rows={3}
             className="text-sm"
@@ -225,11 +254,8 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
             <div>
               <Label className="text-muted-foreground text-sm">Funding Stage:</Label>
               <Select
-                value={formData.funding_stage}
-                onValueChange={(value) => {
-                  setFormData(prev => ({ ...prev, funding_stage: value }));
-                  updateSpendMutation.mutate(value);
-                }}
+                value={fundingStage}
+                onValueChange={handleFundingStageChange}
               >
                 <SelectTrigger className="mt-1.5">
                   <SelectValue />
@@ -245,13 +271,9 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
             <div>
               <Label className="text-muted-foreground text-sm">Approvers:</Label>
               <Input
-                value={formData.approvers}
-                onChange={(e) => setFormData(prev => ({ ...prev, approvers: e.target.value }))}
-                onBlur={() => {
-                  if (formData.approvers !== (epic.approvers || '')) {
-                    updateEpicMutation.mutate({ approvers: formData.approvers });
-                  }
-                }}
+                value={approvers}
+                onChange={(e) => setApprovers(e.target.value)}
+                onBlur={handleApproversBlur}
                 placeholder="e.g., Susan Miller, Vicky Murphy"
                 className="mt-1.5"
               />
@@ -265,13 +287,9 @@ export function EpicBenefitsTab({ epic }: EpicBenefitsTabProps) {
         <CardContent className="p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground">Future State & Desired Outcome</h3>
           <Textarea
-            value={formData.future_state}
-            onChange={(e) => setFormData(prev => ({ ...prev, future_state: e.target.value }))}
-            onBlur={() => {
-              if (formData.future_state !== (epic.future_state || '')) {
-                updateEpicMutation.mutate({ future_state: formData.future_state });
-              }
-            }}
+            value={futureState}
+            onChange={(e) => setFutureState(e.target.value)}
+            onBlur={handleFutureStateBlur}
             placeholder="Describe the desired future state and expected outcomes..."
             rows={4}
             className="text-sm"

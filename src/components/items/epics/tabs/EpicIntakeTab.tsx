@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -59,34 +59,28 @@ export function EpicIntakeTab({ epic }: EpicIntakeTabProps) {
     }
   }, [intakeData]);
 
-  // Save mutation for individual field
+  // Save mutation using upsert
   const saveMutation = useMutation({
     mutationFn: async ({ fieldId, value }: { fieldId: string; value: string }) => {
-      // Check if response exists
-      const { data: existing } = await supabase
+      const { error } = await supabase
         .from('epic_intake_responses')
-        .select('id')
-        .eq('epic_id', epic.id)
-        .eq('field_id', fieldId)
-        .single();
+        .upsert(
+          { 
+            epic_id: epic.id, 
+            field_id: fieldId, 
+            value,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict: 'epic_id,field_id' }
+        );
       
-      if (existing) {
-        const { error } = await supabase
-          .from('epic_intake_responses')
-          .update({ value })
-          .eq('id', existing.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('epic_intake_responses')
-          .insert({ epic_id: epic.id, field_id: fieldId, value });
-        if (error) throw error;
-      }
+      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-intake', epic.id] });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Failed to save intake response:', error);
       toast.error('Failed to save');
     }
   });
