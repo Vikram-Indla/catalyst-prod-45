@@ -876,52 +876,54 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
         <div>
           <Label>Tags</Label>
-          <div className="flex flex-wrap gap-2 p-2 min-h-[42px] border rounded-md bg-background">
-            {/* Existing Tags as Chips */}
-            {formData.tags && formData.tags.split(',').filter(t => t.trim()).map((tag, index) => (
-              <Badge 
-                key={index} 
-                variant="secondary" 
-                className="flex items-center gap-1 px-2 py-1 bg-brand-gold/10 text-brand-gold border-brand-gold/20"
-              >
-                {tag.trim()}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const currentTags = formData.tags.split(',').filter(t => t.trim());
-                    const newTags = currentTags.filter((_, i) => i !== index);
-                    const newTagsString = newTags.join(', ');
-                    setFormData(prev => ({ ...prev, tags: newTagsString }));
-                    updateMutation.mutate({ tags: newTagsString });
-                  }}
-                  className="ml-1 hover:text-destructive"
+          {/* Existing Tags as Chips */}
+          {formData.tags && formData.tags.split(',').filter(t => t.trim()).length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.tags.split(',').filter(t => t.trim()).map((tag, index) => (
+                <Badge 
+                  key={index} 
+                  variant="secondary" 
+                  className="flex items-center gap-1 px-2 py-1 bg-brand-gold/10 text-brand-gold border-brand-gold/20"
                 >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-            ))}
-            {/* Input to Add New Tag */}
-            <Input
-              className="flex-1 min-w-[80px] h-7 border-0 shadow-none focus-visible:ring-0 p-0 text-sm"
-              value={newTagInput}
-              onChange={(e) => setNewTagInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  const newTag = newTagInput.trim();
-                  if (newTag && !newTag.startsWith('j:')) {
-                    const currentTags = formData.tags ? formData.tags.split(',').filter(t => t.trim()) : [];
-                    if (!currentTags.includes(newTag)) {
-                      const newTagsString = [...currentTags, newTag].join(', ');
+                  {tag.trim()}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const currentTags = formData.tags.split(',').filter(t => t.trim());
+                      const newTags = currentTags.filter((_, i) => i !== index);
+                      const newTagsString = newTags.join(', ');
                       setFormData(prev => ({ ...prev, tags: newTagsString }));
                       updateMutation.mutate({ tags: newTagsString });
-                    }
-                    setNewTagInput('');
+                    }}
+                    className="ml-1 hover:text-destructive"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+          )}
+          {/* Input to Add New Tag */}
+          <Input
+            className="w-full text-sm"
+            value={newTagInput}
+            onChange={(e) => setNewTagInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const newTag = newTagInput.trim();
+                if (newTag && !newTag.startsWith('j:')) {
+                  const currentTags = formData.tags ? formData.tags.split(',').filter(t => t.trim()) : [];
+                  if (!currentTags.includes(newTag)) {
+                    const newTagsString = [...currentTags, newTag].join(', ');
+                    setFormData(prev => ({ ...prev, tags: newTagsString }));
+                    updateMutation.mutate({ tags: newTagsString });
                   }
+                  setNewTagInput('');
                 }
-              }}
-            />
-          </div>
+              }
+            }}
+          />
           <p className="text-xs text-muted-foreground mt-1">Tags sync as labels across work items.</p>
         </div>
 
