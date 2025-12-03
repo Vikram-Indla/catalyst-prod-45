@@ -2,88 +2,99 @@ import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { X, Save } from 'lucide-react';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
-import { BusinessRequest } from '@/types/business-request';
-import { OverviewTab } from './drawer-tabs/OverviewTab';
-import { PortfolioTab } from './drawer-tabs/PortfolioTab';
-import { TechnicalTab } from './drawer-tabs/TechnicalTab';
-import { EstimationTab } from './drawer-tabs/EstimationTab';
-import { ApprovalTab } from './drawer-tabs/ApprovalTab';
 import { toast } from 'sonner';
+import { DemandDetailsTab } from './create-tabs/DemandDetailsTab';
+import { EntityServicesTab } from './create-tabs/EntityServicesTab';
+import { BusinessScoreTab } from './create-tabs/BusinessScoreTab';
 
 interface CreateBusinessRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const initialFormData: Partial<BusinessRequest> = {
+const initialFormData: Record<string, any> = {
   title: '',
   description: '',
   platform: '',
-  complexity: '',
-  urgency: '',
   track: '',
+  delivery_track_parent: '',
   requestor: '',
-  business_justification: '',
+  start_date: null,
+  impl_start_date: null,
+  end_date: null,
+  // Entity Services
+  efs_domain: '',
+  efs_service: '',
+  efs_track_type: '',
+  ecs_registry: '',
+  is_saudi: '',
+  is_non_saudi: '',
+  // Business Score
+  executive_urgency: 5,
+  business_value: 5,
+  complexity_score: 5,
+  // Internal defaults
   process_step: 'new_demand',
   health: 'green',
 };
 
-// Tabs for creating a new request (without Process Step, Health, Readiness, Implementation, Support, On Hold)
 const CREATE_TABS = [
-  { value: 'overview', label: 'Overview' },
-  { value: 'portfolio', label: 'Portfolio' },
-  { value: 'technical', label: 'Technical' },
-  { value: 'estimation', label: 'Estimation' },
-  { value: 'approval', label: 'Approval' },
+  { value: 'demand-details', label: 'Demand Details' },
+  { value: 'entity-services', label: 'Entity & Individual Services' },
+  { value: 'business-score', label: 'Business Score' },
 ];
 
 export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
-  const [formData, setFormData] = useState<Partial<BusinessRequest>>(initialFormData);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [formData, setFormData] = useState<Record<string, any>>(initialFormData);
+  const [activeTab, setActiveTab] = useState('demand-details');
 
-  const handleFieldChange = (field: keyof BusinessRequest, value: any) => {
+  const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
     // Validate required fields
     if (!formData.title || formData.title.length < 5) {
-      toast.error('Title is required and must be at least 5 characters');
+      toast.error('Summary is required and must be at least 5 characters');
       return;
     }
     if (!formData.platform) {
-      toast.error('Platform is required');
-      return;
-    }
-    if (!formData.complexity) {
-      toast.error('Complexity is required');
-      return;
-    }
-    if (!formData.urgency) {
-      toast.error('Urgency is required');
+      toast.error('Delivery Platform is required');
       return;
     }
 
-    await createMutation.mutateAsync(formData as any);
+    // Map form data to API format
+    const requestData = {
+      title: formData.title,
+      description: formData.description,
+      platform: formData.platform,
+      track: formData.track,
+      requestor: formData.requestor,
+      start_date: formData.start_date,
+      end_date: formData.end_date,
+      impl_start_date: formData.impl_start_date,
+      complexity: formData.complexity_score <= 3 ? 'Low' : formData.complexity_score <= 6 ? 'Medium' : 'High',
+      urgency: formData.executive_urgency <= 3 ? 'Low' : formData.executive_urgency <= 6 ? 'Normal' : formData.executive_urgency <= 8 ? 'High' : 'Critical',
+    };
+
+    await createMutation.mutateAsync(requestData as any);
     setFormData(initialFormData);
-    setActiveTab('overview');
+    setActiveTab('demand-details');
     onClose();
   };
 
   const handleClose = () => {
     setFormData(initialFormData);
-    setActiveTab('overview');
+    setActiveTab('demand-details');
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[900px] max-h-[90vh] p-0 flex flex-col bg-[#feffff] overflow-hidden">
+      <DialogContent className="sm:max-w-[1000px] max-h-[90vh] p-0 flex flex-col bg-[#feffff] overflow-hidden">
         {/* Gold Bar */}
         <div className="h-1 bg-brand-gold flex-shrink-0" />
 
@@ -92,10 +103,10 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0 pr-4">
               <h2 className="text-xl font-semibold text-[#1a1a1a]">
-                Create Business Request
+                Create Demand Intake
               </h2>
               <p className="text-sm text-[#6b7280] mt-1">
-                Submit a new business request for review
+                Submit a new demand request for review and prioritization
               </p>
             </div>
             <Button variant="ghost" size="icon" onClick={handleClose} className="flex-shrink-0">
@@ -104,49 +115,34 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
           </div>
         </div>
 
-        {/* Title Input */}
-        <div className="px-6 py-4 border-b border-[#e5e5e5] flex-shrink-0">
-          <Label className="text-sm font-medium text-[#1a1a1a] mb-2 block">
-            Title <span className="text-destructive">*</span>
-          </Label>
-          <Input
-            value={formData.title || ''}
-            onChange={(e) => handleFieldChange('title', e.target.value)}
-            placeholder="Enter request title (min 5 characters)"
-            className="border-[#e5e5e5] focus:border-brand-gold"
-          />
-        </div>
-
-        {/* Tabs with horizontal scroll - matching view request style */}
+        {/* Tabs with horizontal scroll */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
-          <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b h-auto shrink-0 overflow-x-auto flex-nowrap bg-[#feffff] px-6">
-            {CREATE_TABS.map((tab) => (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                className="executive-tab whitespace-nowrap"
-              >
-                {tab.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+          <div className="border-b border-[#e5e5e5] flex-shrink-0">
+            <div className="overflow-x-auto">
+              <TabsList className="inline-flex h-auto p-0 bg-transparent gap-0 min-w-full px-6">
+                {CREATE_TABS.map((tab) => (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="relative px-4 py-3 text-sm font-medium text-[#6b6b6b] whitespace-nowrap rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:text-[#1a1a1a] data-[state=active]:bg-transparent hover:text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)] transition-all"
+                  >
+                    {tab.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+          </div>
 
           {/* Content Area */}
-          <div className="flex-1 overflow-y-auto executive-drawer-content">
-            <TabsContent value="overview" className="m-0 focus-visible:outline-none">
-              <OverviewTab data={formData} isEditMode={true} onChange={handleFieldChange} hideProcessStepHealth={true} />
+          <div className="flex-1 overflow-y-auto bg-[#f8f8f8]">
+            <TabsContent value="demand-details" className="m-0 focus-visible:outline-none">
+              <DemandDetailsTab data={formData} onChange={handleFieldChange} />
             </TabsContent>
-            <TabsContent value="portfolio" className="m-0 focus-visible:outline-none">
-              <PortfolioTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            <TabsContent value="entity-services" className="m-0 focus-visible:outline-none">
+              <EntityServicesTab data={formData} onChange={handleFieldChange} />
             </TabsContent>
-            <TabsContent value="technical" className="m-0 focus-visible:outline-none">
-              <TechnicalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="estimation" className="m-0 focus-visible:outline-none">
-              <EstimationTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="approval" className="m-0 focus-visible:outline-none">
-              <ApprovalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            <TabsContent value="business-score" className="m-0 focus-visible:outline-none">
+              <BusinessScoreTab data={formData} onChange={handleFieldChange} />
             </TabsContent>
           </div>
 
