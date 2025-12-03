@@ -33,7 +33,6 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const [risksOpen, setRisksOpen] = useState(false);
   const [dependenciesOpen, setDependenciesOpen] = useState(false);
   const [newCriteriaText, setNewCriteriaText] = useState('');
-  const [showAddRisk, setShowAddRisk] = useState(false);
   const [showAddDependency, setShowAddDependency] = useState(false);
   const [riskDialogOpen, setRiskDialogOpen] = useState(false);
   const [newTagInput, setNewTagInput] = useState('');
@@ -354,7 +353,6 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-linked-risks', epic.id] });
       queryClient.invalidateQueries({ queryKey: ['available-risks-for-epic'] });
-      setShowAddRisk(false);
       toast.success('Risk linked');
     },
     onError: () => toast.error('Failed to link risk'),
@@ -1028,64 +1026,19 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                   </div>
                 )}
                 
-                {(!linkedRisks || linkedRisks.length === 0) && !showAddRisk && (
+                {(!linkedRisks || linkedRisks.length === 0) && (
                   <div className="text-sm text-muted-foreground">No risks linked</div>
                 )}
                 
-                {showAddRisk ? (
-                  <div className="space-y-3">
-                    <div className="text-xs font-medium text-muted-foreground">
-                      Link existing risk or create new:
-                    </div>
-                    <ScrollArea className="h-[120px] border rounded-md">
-                      {availableRisks && availableRisks.length > 0 ? (
-                        availableRisks.map((risk: any) => (
-                          <div
-                            key={risk.id}
-                            className="flex items-center justify-between px-3 py-2 hover:bg-muted cursor-pointer border-b last:border-b-0"
-                            onClick={() => linkRiskMutation.mutate(risk.id)}
-                          >
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <span className="text-xs font-medium text-muted-foreground">RSK-{risk.id?.slice(0, 4)}</span>
-                              <span className="text-sm text-foreground truncate">{risk.title}</span>
-                            </div>
-                            <Badge variant="outline" className="ml-2 text-xs">{risk.status}</Badge>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="p-3 text-sm text-muted-foreground">No available risks in program context</div>
-                      )}
-                    </ScrollArea>
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        className="text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
-                        onClick={() => { setShowAddRisk(false); setRiskDialogOpen(true); }}
-                      >
-                        <Plus className="h-3.5 w-3.5 mr-1" />
-                        Create New Risk
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-xs"
-                        onClick={() => setShowAddRisk(false)}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-xs"
-                    onClick={() => setShowAddRisk(true)}
-                  >
-                    <Plus className="h-3.5 w-3.5 mr-1.5" />
-                    Add Risk
-                  </Button>
-                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs"
+                  onClick={() => setRiskDialogOpen(true)}
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1.5" />
+                  Add Risk
+                </Button>
               </div>
             </CollapsibleContent>
           </Collapsible>
