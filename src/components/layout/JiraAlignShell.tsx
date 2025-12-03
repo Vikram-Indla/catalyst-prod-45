@@ -7,6 +7,7 @@ import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
 import { ProgramRoomSidebar } from './ProgramRoomSidebar';
 import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
+import { ProductRoomSidebar } from './ProductRoomSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { MobileMenuButton } from './MobileMenuButton';
@@ -47,6 +48,9 @@ function CatalystShellContent() {
     }
   }, [defaultPIId, selectedPI]);
 
+  // Check if on product/industry route
+  const isProductRoute = location.pathname.startsWith('/industry');
+
   // Automatically set tier based on current route
   useEffect(() => {
     const path = location.pathname;
@@ -66,7 +70,15 @@ function CatalystShellContent() {
   const renderMobileSidebar = () => {
     if (location.pathname === '/home') return null;
     
-    if (tier === 'enterprise') {
+    if (isProductRoute) {
+      return (
+        <ProductRoomSidebar
+          expanded={true}
+          onToggle={() => {}}
+          className="flex"
+        />
+      );
+    } else if (tier === 'enterprise') {
       return <LeftContextPanel className="flex" />;
     } else if (tier === 'program' && currentProgramId) {
       return (
@@ -128,7 +140,13 @@ function CatalystShellContent() {
         {/* Desktop Sidebar - Hidden on Mobile */}
         {location.pathname !== '/home' && (
           <>
-            {tier === 'enterprise' ? (
+            {isProductRoute ? (
+              <ProductRoomSidebar
+                expanded={sidebarExpanded}
+                onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                className="hidden lg:flex"
+              />
+            ) : tier === 'enterprise' ? (
               <LeftContextPanel className="hidden lg:flex" />
             ) : tier === 'program' && currentProgramId ? (
               <ProgramRoomSidebar
