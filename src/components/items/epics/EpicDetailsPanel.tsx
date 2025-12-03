@@ -15,7 +15,8 @@ import {
 import { 
   MoreVertical, 
   MessageSquare, 
-  Bell, 
+  Bell,
+  BellOff, 
   RefreshCw, 
   Users,
   GitBranch,
@@ -48,6 +49,7 @@ import { CancelEpicDialog } from './dialogs/CancelEpicDialog';
 import { SplitEpicDialog } from './dialogs/SplitEpicDialog';
 import { DuplicateEpicDialog } from './dialogs/DuplicateEpicDialog';
 import { AuditLogDialog } from './dialogs/AuditLogDialog';
+import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { toast } from 'sonner';
 
 interface EpicDetailsPanelProps {
@@ -143,17 +145,17 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
     }
   });
 
-  // Subscribe mutation (store in local storage for now)
+  // Subscribe functionality using DB-backed hook (Doc lines 28-40)
+  const { isSubscribed, subscribe, unsubscribe } = useSubscriptions('epic', epic.id);
+  const subscribed = isSubscribed('epic', epic.id);
+  
   const handleSubscribe = () => {
-    const subscriptions = JSON.parse(localStorage.getItem('epic-subscriptions') || '[]');
-    if (!subscriptions.includes(epic.id)) {
-      subscriptions.push(epic.id);
-      localStorage.setItem('epic-subscriptions', JSON.stringify(subscriptions));
-      toast.success('Subscribed to epic notifications');
-    } else {
-      const filtered = subscriptions.filter((id: string) => id !== epic.id);
-      localStorage.setItem('epic-subscriptions', JSON.stringify(filtered));
+    if (subscribed) {
+      unsubscribe({ entityType: 'epic', entityId: epic.id });
       toast.success('Unsubscribed from epic notifications');
+    } else {
+      subscribe({ entityType: 'epic', entityId: epic.id });
+      toast.success('Subscribed to epic notifications');
     }
   };
 
@@ -241,8 +243,12 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
                     Discussions
                   </DropdownMenuItem>
                   <DropdownMenuItem onSelect={() => handleAdditionalOption('subscribe')}>
-                    <Bell className="h-4 w-4 mr-2" />
-                    Subscribe
+                    {subscribed ? (
+                      <BellOff className="h-4 w-4 mr-2" />
+                    ) : (
+                      <Bell className="h-4 w-4 mr-2" />
+                    )}
+                    {subscribed ? 'Unsubscribe' : 'Subscribe'}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onSelect={() => handleAdditionalOption('update-child-steps')}>
