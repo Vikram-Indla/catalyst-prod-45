@@ -30,7 +30,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('program_increments')
-        .select('id, name, code')
+        .select('id, name')
         .order('start_date', { ascending: false });
 
       if (error) throw error;
@@ -46,7 +46,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
         .from('epic_wsjf')
         .select(`
           *,
-          program_increments(id, name, code)
+          program_increments(id, name)
         `)
         .eq('epic_id', epic.id);
 
@@ -104,7 +104,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
           <CardContent>
             <div className="space-y-3">
               {allWsjfScores.map((score: any) => {
-                const piName = score.program_increments?.code || score.program_increments?.name || 'PI';
+                const piName = score.program_increments?.name || 'PI';
                 return (
                   <div 
                     key={score.id}
@@ -146,8 +146,8 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
                   <SelectItem value="loading" disabled>Loading...</SelectItem>
                 ) : pis && pis.length > 0 ? (
                   pis.map((pi: any) => (
-                    <SelectItem key={pi.id} value={pi.id}>
-                      {pi.code || pi.name}
+                  <SelectItem key={pi.id} value={pi.id}>
+                      {pi.name}
                     </SelectItem>
                   ))
                 ) : (
