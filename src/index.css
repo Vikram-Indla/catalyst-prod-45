@@ -652,133 +652,245 @@ h3 {
 }
 
 /* ============================================
-   7) EXECUTIVE DRAWER STYLES
+   7) ATLASSIAN-STYLE DRAWER STYLES
    ============================================ */
 
-/* Drawer Container */
+/* 
+ * Atlassian Design System alignment:
+ * - Overlay elevation: surface + shadow for floating panels
+ * - 8px spacing grid (space.100=8px, space.200=16px, space.300=24px)
+ * - Neutral surfaces with proper layering (N0, N10, N20)
+ * - Brand gold (#c69c6d) as accent instead of Atlassian blue
+ */
+
+/* Drawer Container - Overlay elevation */
 .executive-drawer {
-  background-color: #f8f8f8;
-  border-left: 1px solid #e5e5e5;
-  box-shadow: -4px 0 20px rgba(26, 26, 26, 0.08);
+  background-color: hsl(var(--surface-gray-50));  /* N10 equivalent - subtle off-white */
+  border-left: 1px solid hsl(var(--border));
+  box-shadow: 
+    0 0 0 1px rgba(9, 30, 66, 0.08),              /* Atlassian overlay shadow layer 1 */
+    0 2px 1px rgba(9, 30, 66, 0.08),              /* Atlassian overlay shadow layer 2 */
+    0 0 20px -6px rgba(9, 30, 66, 0.31);          /* Depth shadow */
 }
 
-/* Drawer Header */
+/* Drawer Header - Clean separation with accent border */
 .executive-drawer-header {
-  background-color: #feffff;
-  border-bottom: 2px solid #c69c6d;
-  padding: 20px 24px;
+  background-color: hsl(var(--surface-white));    /* N0 - pure white */
+  border-bottom: 2px solid hsl(var(--brand-gold));
+  padding: 20px 24px;                              /* space.250 x space.300 */
 }
 
 .executive-drawer-title {
   font-weight: 600;
-  color: #1a1a1a;
-  font-size: 18px;
+  color: hsl(var(--text-primary));                /* N800 equivalent */
+  font-size: 20px;                                 /* Atlassian heading size */
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
 .executive-drawer-subtitle {
-  color: #6b6b6b;
-  font-size: 13px;
+  color: hsl(var(--text-secondary));              /* N500 equivalent */
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
-/* Tab Navigation */
+/* Tab Navigation - Atlassian tab pattern */
 .executive-tabs-list {
-  background-color: #feffff;
+  background-color: hsl(var(--surface-white));
+  padding: 0 24px;                                /* space.300 */
+  gap: 0;
 }
 
 .executive-tab {
-  color: #6b6b6b;
+  color: hsl(var(--text-tertiary));               /* N500 - muted tab text */
   font-weight: 500;
-  padding: 12px 16px;
+  font-size: 14px;
+  padding: 12px 12px;                             /* space.150 x space.150 */
   border-bottom: 2px solid transparent;
-  transition: all 150ms ease;
+  border-radius: 0;
+  background: transparent;
+  transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
+  margin-bottom: -1px;                            /* Overlap border */
 }
 
 .executive-tab:hover {
-  background-color: rgba(198, 156, 109, 0.08);
+  color: hsl(var(--text-secondary));
+  background-color: hsl(var(--brand-gold-pale));  /* Subtle gold hover */
 }
 
 .executive-tab[data-state="active"] {
-  color: #1a1a1a;
-  border-bottom: 2px solid #c69c6d;
+  color: hsl(var(--brand-gold));                  /* Gold text for active */
+  font-weight: 600;
+  border-bottom: 2px solid hsl(var(--brand-gold));
+  background: transparent;
 }
 
-/* Content Area */
+/* Content Area - Sunken surface */
 .executive-drawer-content {
-  background-color: #f8f8f8;
-  padding: 24px;
+  background-color: hsl(var(--surface-gray-50)); /* N10 - sunken background */
+  padding: 24px;                                  /* space.300 */
   overflow-y: auto;
 }
 
-/* Form Cards */
+/* Form Cards - Raised surface */
 .executive-card {
-  background-color: #feffff;
-  border-radius: 8px;
-  border: 1px solid #e8e8e8;
-  box-shadow: 0 1px 3px rgba(26, 26, 26, 0.04);
-  padding: 20px;
+  background-color: hsl(var(--surface-white));   /* N0 - card surface */
+  border-radius: 8px;                            /* border-radius.100 */
+  border: 1px solid hsl(var(--border));
+  box-shadow: 
+    0 1px 1px rgba(9, 30, 66, 0.04),
+    0 0 1px rgba(9, 30, 66, 0.04);                /* Atlassian raised shadow */
+  padding: 20px;                                  /* space.250 */
+  margin-bottom: 16px;                            /* space.200 */
 }
 
-/* Input Fields */
+/* Input Fields - Atlassian form pattern */
 .executive-input {
-  background-color: #fafafa;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 12px 14px;
-  transition: all 150ms ease;
+  background-color: hsl(var(--surface-gray-50)); /* N10 */
+  border: 2px solid hsl(var(--border));
+  border-radius: 4px;                            /* border-radius.050 */
+  padding: 8px 12px;                             /* space.100 x space.150 */
+  font-size: 14px;
+  line-height: 1.42857;
+  color: hsl(var(--text-primary));
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.executive-input:hover {
+  background-color: hsl(var(--surface-gray-100)); /* N20 on hover */
 }
 
 .executive-input:focus {
-  border-color: #c69c6d;
-  box-shadow: 0 0 0 3px rgba(198, 156, 109, 0.15);
+  background-color: hsl(var(--surface-white));   /* N0 on focus */
+  border-color: hsl(var(--brand-gold));
+  box-shadow: 0 0 0 2px hsl(var(--brand-gold) / 0.2);
   outline: none;
 }
 
-/* Primary Button */
+/* Primary Button - Atlassian button with brand gold */
 .executive-btn-primary {
-  background-color: #c69c6d;
-  color: #feffff;
-  border-radius: 6px;
+  background-color: hsl(var(--brand-gold));
+  color: hsl(var(--surface-white));
+  border: none;
+  border-radius: 4px;                            /* Atlassian uses 3px, we use 4px */
   font-weight: 500;
-  padding: 10px 18px;
-  box-shadow: 0 2px 4px rgba(198, 156, 109, 0.3);
-  transition: all 150ms ease;
+  font-size: 14px;
+  padding: 8px 16px;                             /* space.100 x space.200 */
+  line-height: 1.42857;
+  cursor: pointer;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
 }
 
 .executive-btn-primary:hover {
-  background-color: #b8905f;
+  background-color: hsl(var(--brand-gold-hover));
 }
 
-/* Section Headings */
+.executive-btn-primary:active {
+  background-color: hsl(35 41% 50%);             /* Darker gold on press */
+}
+
+/* Secondary Button */
+.executive-btn-secondary {
+  background-color: hsl(var(--surface-gray-100));
+  color: hsl(var(--text-primary));
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.executive-btn-secondary:hover {
+  background-color: hsl(var(--surface-gray-200));
+}
+
+/* Section Headings - Atlassian heading pattern */
 .executive-section-heading {
   font-weight: 600;
-  color: #1a1a1a;
-  font-size: 15px;
-  margin-bottom: 8px;
+  color: hsl(var(--text-primary));
+  font-size: 14px;
+  line-height: 1.42857;
+  margin-bottom: 8px;                            /* space.100 */
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
-/* Empty State */
+/* Subsection label */
+.executive-label {
+  font-weight: 600;
+  font-size: 12px;
+  color: hsl(var(--text-secondary));
+  margin-bottom: 4px;
+  display: block;
+}
+
+/* Empty State - Atlassian empty state pattern */
 .executive-empty-state {
-  color: #8a8a8a;
+  color: hsl(var(--text-tertiary));
   font-size: 14px;
   text-align: center;
-  padding: 40px;
+  padding: 48px 24px;                            /* space.600 x space.300 */
 }
 
-/* Custom Scrollbar for Executive Drawer */
+/* Divider */
+.executive-divider {
+  height: 1px;
+  background-color: hsl(var(--border));
+  margin: 16px 0;
+}
+
+/* Custom Scrollbar - Atlassian style */
 .executive-drawer-content::-webkit-scrollbar {
   width: 8px;
 }
 
 .executive-drawer-content::-webkit-scrollbar-track {
-  background: #e8e8e8;
+  background: hsl(var(--surface-gray-200));
   border-radius: 4px;
 }
 
 .executive-drawer-content::-webkit-scrollbar-thumb {
-  background: #c69c6d;
+  background: hsl(var(--neutral-400));           /* Subtle gray thumb */
   border-radius: 4px;
+  transition: background 150ms ease;
 }
 
 .executive-drawer-content::-webkit-scrollbar-thumb:hover {
-  background: #b8905f;
+  background: hsl(var(--brand-gold));            /* Gold on hover */
+}
+
+/* Badge styles for drawer */
+.executive-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.executive-badge-success {
+  background-color: hsl(142 71% 95%);
+  color: hsl(142 71% 35%);
+}
+
+.executive-badge-warning {
+  background-color: hsl(38 92% 95%);
+  color: hsl(38 92% 35%);
+}
+
+.executive-badge-error {
+  background-color: hsl(0 72% 95%);
+  color: hsl(0 72% 40%);
+}
+
+.executive-badge-neutral {
+  background-color: hsl(var(--surface-gray-200));
+  color: hsl(var(--text-secondary));
 }
