@@ -1,16 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Pencil, Upload, SlidersHorizontal, Download } from 'lucide-react';
-import { useBusinessRequests } from '@/hooks/useBusinessRequests';
+import { Plus, Search, Pencil, Upload, Download, GripVertical } from 'lucide-react';
+import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
 // Default columns configuration per screenshot
 const DEFAULT_COLUMNS: ColumnConfig[] = [
@@ -19,6 +20,7 @@ const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'title', label: 'Summary', visible: true, default: true },
   { id: 'process_step', label: 'Process Step', visible: true, default: true },
   { id: 'business_score', label: 'Business Score', visible: true, default: true },
+  { id: 'planned_quarter', label: 'Planned Quarter', visible: true, default: true },
   { id: 'end_date', label: 'Target Completion', visible: true, default: true },
 ];
 
@@ -28,9 +30,28 @@ export default function IndustryPage() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [columns, setColumns] = useState<ColumnConfig[]>(DEFAULT_COLUMNS);
+  const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const { toast } = useToast();
 
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
+  const updateRequest = useUpdateBusinessRequest();
+
+  // Sort requests by rank or business_score
+  useEffect(() => {
+    if (requests && requests.length > 0) {
+      const sorted = [...requests].sort((a: any, b: any) => {
+        // If both have explicit ranks, sort by rank
+        if (a.rank !== null && b.rank !== null) {
+          return a.rank - b.rank;
+        }
+        // Otherwise sort by business_score descending
+        return (b.business_score || 0) - (a.business_score || 0);
+      });
+      setSortedRequests(sorted);
+    } else {
+      setSortedRequests([]);
+    }
+  }, [requests]);
 
   const getStatusBadge = (status: string) => {
     const step = PROCESS_STEPS.find(s => s.value === status);
@@ -63,7 +84,7 @@ export default function IndustryPage() {
 
   const handleExport = () => {
     if (requests && requests.length > 0) {
-      exportToCSV(requests, 'industry-requests', ['request_key', 'title', 'process_step', 'start_date', 'impl_start_date', 'end_date']);
+      exportToCSV(requests, 'industry-requests', ['request_key', 'title', 'process_step', 'planned_quarter', 'end_date']);
       toast({ title: 'Requests exported successfully' });
     }
   };
@@ -72,7 +93,52 @@ export default function IndustryPage() {
     return columns.find(c => c.id === columnId)?.visible ?? false;
   };
 
-  const visibleColumnCount = columns.filter(c => c.visible).length + 1; // +1 for checkbox
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) return;
+    
+    const sourceIndex = result.source.index;
+    const destIndex = result.destination.index;
+    
+    if (sourceIndex === destIndex) return;
+
+    const reordered = Array.from(sortedRequests);
+    const [removed] = reordered.splice(sourceIndex, 1);
+    reordered.splice(destIndex, 0, removed);
+
+    // Update ranks for all items
+    const updatedRequests = reordered.map((req, index) => ({
+      ...req,
+      rank: index + 1
+    }));
+
+    setSortedRequests(updatedRequests);
+
+    // Update the dragged item's rank in database
+    const newRank = destIndex + 1;
+    updateRequest.mutate({
+      id: removed.id,
+      data: { rank: newRank }
+    });
+
+    toast({
+      title: 'Rank Forced Changed',
+      description: `Request moved to rank ${newRank}. This overrides the business score ranking.`,
+    });
+  };
+
+  const handleBulkEdit = () => {
+    if (selectedRows.length === 0) {
+      toast({ title: 'No items selected', description: 'Please select items to bulk edit', variant: 'destructive' });
+      return;
+    }
+    toast({ title: 'Bulk Edit', description: `${selectedRows.length} items selected for editing` });
+  };
+
+  const toggleRowSelection = (id: string) => {
+    setSelectedRows(prev => 
+      prev.includes(id) ? prev.filter(r => r !== id) : [...prev, id]
+    );
+  };
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -104,7 +170,7 @@ export default function IndustryPage() {
 
         {/* Toolbar - right aligned */}
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" disabled={selectedRows.length === 0} className="border-border">
+          <Button variant="outline" size="sm" onClick={handleBulkEdit} className="border-border">
             <Pencil className="h-4 w-4 mr-2" />
             Bulk Edit
           </Button>
@@ -120,71 +186,111 @@ export default function IndustryPage() {
         </div>
       </div>
 
-      {/* Table - no extra padding/space */}
-      <div className="flex-1 overflow-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-muted/30">
-              <TableHead className="w-12">
-                <Checkbox />
-              </TableHead>
-              {isColumnVisible('request_key') && <TableHead className="font-medium">Request ID</TableHead>}
-              {isColumnVisible('rank') && <TableHead className="font-medium">Rank</TableHead>}
-              {isColumnVisible('title') && <TableHead className="font-medium">Summary</TableHead>}
-              {isColumnVisible('process_step') && <TableHead className="font-medium">Process Step</TableHead>}
-              {isColumnVisible('business_score') && <TableHead className="font-medium">Business Score</TableHead>}
-              {isColumnVisible('end_date') && <TableHead className="font-medium">Target Completion</TableHead>}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={visibleColumnCount} className="text-center py-8 text-muted-foreground">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : requests && requests.length > 0 ? (
-              // Sort by business_score descending to calculate ranks
-              [...requests]
-                .sort((a: any, b: any) => (b.business_score || 0) - (a.business_score || 0))
-                .map((request: any, index: number) => (
-                <TableRow 
-                  key={request.id} 
-                  className="cursor-pointer hover:bg-muted/50"
-                  onClick={() => setSelectedRequestId(request.id)}
+      {/* Card List with Drag & Drop */}
+      <div className="flex-1 overflow-auto p-4 sm:p-6">
+        {isLoading ? (
+          <div className="text-center py-8 text-muted-foreground">Loading...</div>
+        ) : sortedRequests.length > 0 ? (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="requests">
+              {(provided) => (
+                <div 
+                  {...provided.droppableProps} 
+                  ref={provided.innerRef}
+                  className="space-y-2"
                 >
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <Checkbox />
-                  </TableCell>
-                  {isColumnVisible('request_key') && (
-                    <TableCell className="text-sm font-medium text-primary">{request.request_key || '-'}</TableCell>
-                  )}
-                  {isColumnVisible('rank') && (
-                    <TableCell className="text-sm font-medium">{request.rank || index + 1}</TableCell>
-                  )}
-                  {isColumnVisible('title') && (
-                    <TableCell className="font-medium text-foreground">{request.title}</TableCell>
-                  )}
-                  {isColumnVisible('process_step') && (
-                    <TableCell>{getStatusBadge(request.process_step)}</TableCell>
-                  )}
-                  {isColumnVisible('business_score') && (
-                    <TableCell>{getBusinessScoreBadge(request.business_score)}</TableCell>
-                  )}
-                  {isColumnVisible('end_date') && (
-                    <TableCell className="text-sm text-muted-foreground">{formatDate(request.end_date)}</TableCell>
-                  )}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={visibleColumnCount} className="text-center py-8 text-muted-foreground">
-                  No industry requests found
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                  {sortedRequests.map((request: any, index: number) => (
+                    <Draggable key={request.id} draggableId={request.id} index={index}>
+                      {(provided, snapshot) => (
+                        <Card
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={`p-4 cursor-pointer hover:shadow-md transition-shadow ${
+                            snapshot.isDragging ? 'shadow-lg ring-2 ring-brand-gold' : ''
+                          } ${selectedRows.includes(request.id) ? 'ring-2 ring-primary' : ''}`}
+                          onClick={() => setSelectedRequestId(request.id)}
+                        >
+                          <div className="flex items-center gap-4">
+                            {/* Drag Handle */}
+                            <div
+                              {...provided.dragHandleProps}
+                              className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <GripVertical className="h-5 w-5" />
+                            </div>
+                            
+                            {/* Checkbox */}
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <Checkbox 
+                                checked={selectedRows.includes(request.id)}
+                                onCheckedChange={() => toggleRowSelection(request.id)}
+                              />
+                            </div>
+
+                            {/* Request ID */}
+                            {isColumnVisible('request_key') && (
+                              <div className="w-28 shrink-0">
+                                <span className="text-sm font-medium text-primary">{request.request_key || '-'}</span>
+                              </div>
+                            )}
+
+                            {/* Rank */}
+                            {isColumnVisible('rank') && (
+                              <div className="w-16 shrink-0 text-center">
+                                <span className="text-sm font-bold">{request.rank || index + 1}</span>
+                              </div>
+                            )}
+
+                            {/* Summary */}
+                            {isColumnVisible('title') && (
+                              <div className="flex-1 min-w-0">
+                                <span className="font-medium text-foreground truncate block">{request.title}</span>
+                              </div>
+                            )}
+
+                            {/* Process Step */}
+                            {isColumnVisible('process_step') && (
+                              <div className="w-40 shrink-0">
+                                {getStatusBadge(request.process_step)}
+                              </div>
+                            )}
+
+                            {/* Business Score */}
+                            {isColumnVisible('business_score') && (
+                              <div className="w-28 shrink-0 text-center">
+                                {getBusinessScoreBadge(request.business_score)}
+                              </div>
+                            )}
+
+                            {/* Planned Quarter */}
+                            {isColumnVisible('planned_quarter') && (
+                              <div className="w-24 shrink-0 text-sm text-muted-foreground">
+                                {request.planned_quarter || '-'}
+                              </div>
+                            )}
+
+                            {/* Target Completion */}
+                            {isColumnVisible('end_date') && (
+                              <div className="w-28 shrink-0 text-sm text-muted-foreground">
+                                {formatDate(request.end_date)}
+                              </div>
+                            )}
+                          </div>
+                        </Card>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        ) : (
+          <div className="text-center py-8 text-muted-foreground">
+            No industry requests found
+          </div>
+        )}
       </div>
 
       {/* Create Modal */}

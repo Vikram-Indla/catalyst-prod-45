@@ -271,6 +271,7 @@ export type Database = {
           on_hold_comment: string | null
           on_hold_reason: string | null
           outcome_summary: string | null
+          planned_quarter: string | null
           platform: string | null
           portfolio_comments: string | null
           portfolio_decision: string | null
@@ -332,6 +333,7 @@ export type Database = {
           on_hold_comment?: string | null
           on_hold_reason?: string | null
           outcome_summary?: string | null
+          planned_quarter?: string | null
           platform?: string | null
           portfolio_comments?: string | null
           portfolio_decision?: string | null
@@ -393,6 +395,7 @@ export type Database = {
           on_hold_comment?: string | null
           on_hold_reason?: string | null
           outcome_summary?: string | null
+          planned_quarter?: string | null
           platform?: string | null
           portfolio_comments?: string | null
           portfolio_decision?: string | null

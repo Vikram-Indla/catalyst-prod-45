@@ -1,17 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, Save, CheckCircle } from 'lucide-react';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { toast } from 'sonner';
 import { DemandDetailsTab } from './create-tabs/DemandDetailsTab';
+import { useCatalystContext } from '@/contexts/CatalystContext';
 
 interface CreateBusinessRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const initialFormData: Record<string, any> = {
+const getInitialFormData = (deliveryPlatform: string): Record<string, any> => ({
   title: '',
   description: '',
   platform: '',
@@ -22,7 +23,7 @@ const initialFormData: Record<string, any> = {
   impl_start_date: null,
   end_date: null,
   attachments: [],
-  delivery_platform: '', // Read-only from side panel
+  delivery_platform: deliveryPlatform, // Auto-populated from context
   planned_quarter: '',
   // Entity Services
   efs_domain: '',
@@ -34,12 +35,18 @@ const initialFormData: Record<string, any> = {
   // Internal defaults
   process_step: 'new_demand',
   health: 'green',
-};
+});
 
 export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
-  const [formData, setFormData] = useState<Record<string, any>>(initialFormData);
+  const { deliveryPlatform } = useCatalystContext();
+  const [formData, setFormData] = useState<Record<string, any>>(getInitialFormData(deliveryPlatform));
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  // Update delivery_platform when context changes
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, delivery_platform: deliveryPlatform }));
+  }, [deliveryPlatform]);
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -62,6 +69,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       end_date: formData.end_date,
       impl_start_date: formData.impl_start_date,
       delivery_platform: formData.delivery_platform,
+      planned_quarter: formData.planned_quarter,
     };
 
     await createMutation.mutateAsync(requestData as any);
@@ -70,14 +78,14 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
     // Hide success message and close after 2 seconds
     setTimeout(() => {
       setShowSuccessMessage(false);
-      setFormData(initialFormData);
+      setFormData(getInitialFormData(deliveryPlatform));
       onClose();
     }, 2500);
   };
 
   const handleClose = () => {
     setShowSuccessMessage(false);
-    setFormData(initialFormData);
+    setFormData(getInitialFormData(deliveryPlatform));
     onClose();
   };
 
