@@ -134,25 +134,65 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     },
   });
 
-  // Fetch child features and their progress
+  // Fetch child features and their progress with story points - per Jira Align spec
   const { data: childProgress } = useQuery({
     queryKey: ['epic-child-progress', epic.id],
     queryFn: async () => {
+      // Get features with their stories
       const { data: features } = await supabase
         .from('features')
-        .select('id, status, progress_pct')
+        .select(`
+          id, 
+          status, 
+          progress_pct,
+          stories:stories(id, status, estimate_points)
+        `)
         .eq('epic_id', epic.id);
 
       if (!features || features.length === 0) {
-        return { totalFeatures: 0, completedFeatures: 0, progressPct: 0 };
+        return { 
+          totalFeatures: 0, 
+          featuresAccepted: 0,
+          featuresInDelivery: 0,
+          featuresDelivered: 0,
+          totalStoryPoints: 0,
+          acceptedStoryPoints: 0,
+          progressPct: 0 
+        };
       }
 
-      const completedFeatures = features.filter(f => f.status === 'done').length;
+      // Calculate feature breakdown by status per Jira Align
+      const featuresAccepted = features.filter(f => f.status === 'done').length;
+      const featuresInDelivery = features.filter(f => 
+        ['dev_complete', 'test_complete', 'implementing'].includes(f.status || '')
+      ).length;
+      // Features delivered = done status (same as accepted for now, since no 'released' status)
+      const featuresDelivered = 0; // No released status in schema
+
+      // Calculate story points
+      let totalStoryPoints = 0;
+      let acceptedStoryPoints = 0;
+      
+      features.forEach((feature: any) => {
+        const stories = feature.stories || [];
+        stories.forEach((story: any) => {
+          const pts = story.estimate_points || 0;
+          totalStoryPoints += pts;
+          if (story.status === 'done') {
+            acceptedStoryPoints += pts;
+          }
+        });
+      });
+
       const avgProgress = features.reduce((sum, f) => sum + (f.progress_pct || 0), 0) / features.length;
 
       return {
         totalFeatures: features.length,
-        completedFeatures,
+        featuresAccepted,
+        featuresInDelivery,
+        featuresDelivered,
+        totalStoryPoints,
+        acceptedStoryPoints,
         progressPct: Math.round(avgProgress),
       };
     },
@@ -321,6 +361,39 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
               <span className="text-sm text-muted-foreground">No theme assigned</span>
             )}
           </div>
+        </div>
+
+        <div>
+          <Label>Theme</Label>
+          <Select 
+            value={epic.theme_id || 'none'} 
+            onValueChange={async (value) => {
+              const newThemeId = value === 'none' ? null : value;
+              const { error } = await supabase
+                .from('epics')
+                .update({ theme_id: newThemeId })
+                .eq('id', epic.id);
+              if (error) {
+                toast.error('Failed to update theme');
+              } else {
+                queryClient.invalidateQueries({ queryKey: ['epics'] });
+                queryClient.invalidateQueries({ queryKey: ['epic-detail', epic.id] });
+                toast.success('Theme updated');
+              }
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">None</SelectItem>
+              {themes?.map(theme => (
+                <SelectItem key={theme.id} value={theme.id}>
+                  {theme.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         </CardContent>
       </Card>
@@ -680,41 +753,81 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         </CardContent>
       </Card>
 
-      {/* Progress & Children Section */}
+      {/* Progress & Children Section - per Jira Align spec */}
       <Card className="border border-border/60 rounded-lg">
         <CardContent className="p-5 space-y-4">
           <h3 className="text-sm font-semibold text-foreground">Progress & Children</h3>
         
-          <div className="executive-card">
-          <div className="text-sm text-muted-foreground mb-2">Child Items Progress</div>
-          {childProgress && childProgress.totalFeatures > 0 ? (
-            <div className="space-y-3">
-              <div className="text-center">
-                <div className="text-4xl font-bold text-primary mb-1">{childProgress.progressPct}%</div>
-                <div className="text-sm text-muted-foreground">
-                  {childProgress.completedFeatures} of {childProgress.totalFeatures} features complete
-                </div>
-              </div>
-              <Progress value={childProgress.progressPct} className="h-2" />
+          {/* Story Points Progress */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">Story Points Accepted</span>
+              <span className="text-muted-foreground">
+                {childProgress?.acceptedStoryPoints || 0} of {childProgress?.totalStoryPoints || 0}
+              </span>
             </div>
-          ) : (
-            <div className="text-center py-8">
-              <div className="text-4xl font-bold text-muted-foreground mb-2">0%</div>
-              <div className="text-sm text-muted-foreground">No child items</div>
-            </div>
-          )}
-        </div>
+            <Progress 
+              value={childProgress?.totalStoryPoints ? 
+                (childProgress.acceptedStoryPoints / childProgress.totalStoryPoints) * 100 : 0} 
+              className="h-2 bg-muted"
+            />
+          </div>
 
-        <div className="space-y-2">
-          <Button variant="outline" className="w-full" onClick={() => setAddFeatureOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Feature
-          </Button>
-          <Button variant="outline" className="w-full" onClick={() => setFeatureStatusOpen(true)}>
-            <ExternalLink className="h-4 w-4 mr-2" />
-            View Feature Status Details
-          </Button>
-        </div>
+          {/* Features Accepted */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">Features Accepted</span>
+              <span className="text-muted-foreground">
+                {childProgress?.featuresAccepted || 0} of {childProgress?.totalFeatures || 0}
+              </span>
+            </div>
+            <Progress 
+              value={childProgress?.totalFeatures ? 
+                (childProgress.featuresAccepted / childProgress.totalFeatures) * 100 : 0} 
+              className="h-2 bg-muted"
+            />
+          </div>
+
+          {/* Features in Delivery */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">Features in Delivery</span>
+              <span className="text-muted-foreground">
+                {childProgress?.featuresInDelivery || 0} of {childProgress?.totalFeatures || 0}
+              </span>
+            </div>
+            <Progress 
+              value={childProgress?.totalFeatures ? 
+                (childProgress.featuresInDelivery / childProgress.totalFeatures) * 100 : 0} 
+              className="h-2 bg-muted"
+            />
+          </div>
+
+          {/* Features Delivered */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="font-medium">Features Delivered</span>
+              <span className="text-muted-foreground">
+                {childProgress?.featuresDelivered || 0} of {childProgress?.totalFeatures || 0}
+              </span>
+            </div>
+            <Progress 
+              value={childProgress?.totalFeatures ? 
+                (childProgress.featuresDelivered / childProgress.totalFeatures) * 100 : 0} 
+              className="h-2 bg-muted"
+            />
+          </div>
+
+          <div className="space-y-2 pt-2">
+            <Button variant="outline" className="w-full" onClick={() => setAddFeatureOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Feature
+            </Button>
+            <Button variant="outline" className="w-full" onClick={() => setFeatureStatusOpen(true)}>
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View Feature Status Details
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
