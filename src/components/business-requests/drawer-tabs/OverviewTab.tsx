@@ -23,59 +23,63 @@ interface OverviewTabProps {
   data: Partial<BusinessRequest>;
   isEditMode: boolean;
   onChange: (field: keyof BusinessRequest, value: any) => void;
+  hideProcessStepHealth?: boolean;
 }
 
-export function OverviewTab({ data, isEditMode, onChange }: OverviewTabProps) {
+export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth = false }: OverviewTabProps) {
   return (
     <div className="space-y-6 p-5">
       {/* Classification Section */}
       <Card className="border border-border/60 rounded-lg">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-foreground">Classification</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Classification</h3>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">Process Step</Label>
-              <Select
-                value={data.process_step || 'new_demand'}
-                onValueChange={(value) => onChange('process_step', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PROCESS_STEPS.map((step) => (
-                    <SelectItem key={step.value} value={step.value}>
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${step.color}`}>
-                        {step.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Process Step and Health - only show in view mode */}
+          {!hideProcessStepHealth && (
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Process Step</Label>
+                <Select
+                  value={data.process_step || 'new_demand'}
+                  onValueChange={(value) => onChange('process_step', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROCESS_STEPS.map((step) => (
+                      <SelectItem key={step.value} value={step.value}>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${step.color}`}>
+                          {step.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div>
-              <Label className="text-sm font-medium">Health</Label>
-              <Select
-                value={data.health || 'green'}
-                onValueChange={(value) => onChange('health', value)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {HEALTH_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${opt.color}`}>
-                        {opt.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div>
+                <Label className="text-sm font-medium">Health</Label>
+                <Select
+                  value={data.health || 'green'}
+                  onValueChange={(value) => onChange('health', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {HEALTH_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${opt.color}`}>
+                          {opt.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="grid grid-cols-3 gap-4">
             <div>
@@ -169,7 +173,7 @@ export function OverviewTab({ data, isEditMode, onChange }: OverviewTabProps) {
       {/* Description Section */}
       <Card className="border border-border/60 rounded-lg">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-foreground">Description</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Description</h3>
           
           <div>
             <Textarea
@@ -185,7 +189,7 @@ export function OverviewTab({ data, isEditMode, onChange }: OverviewTabProps) {
       {/* Business Justification Section */}
       <Card className="border border-border/60 rounded-lg">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-foreground">Business Justification</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Business Justification</h3>
           
           <div>
             <Textarea
@@ -201,7 +205,7 @@ export function OverviewTab({ data, isEditMode, onChange }: OverviewTabProps) {
       {/* Timeline Section */}
       <Card className="border border-border/60 rounded-lg">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-foreground">Timeline</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Timeline</h3>
           
           <div className="grid grid-cols-2 gap-4">
             <div>

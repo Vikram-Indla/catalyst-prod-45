@@ -2,19 +2,16 @@ import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { X, Save } from 'lucide-react';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
-import { BusinessRequest, PROCESS_STEPS, HEALTH_OPTIONS } from '@/types/business-request';
+import { BusinessRequest } from '@/types/business-request';
 import { OverviewTab } from './drawer-tabs/OverviewTab';
 import { PortfolioTab } from './drawer-tabs/PortfolioTab';
 import { TechnicalTab } from './drawer-tabs/TechnicalTab';
 import { EstimationTab } from './drawer-tabs/EstimationTab';
 import { ApprovalTab } from './drawer-tabs/ApprovalTab';
-import { ReadinessTab } from './drawer-tabs/ReadinessTab';
-import { ImplementationTab } from './drawer-tabs/ImplementationTab';
-import { SupportTab } from './drawer-tabs/SupportTab';
-import { OnHoldTab } from './drawer-tabs/OnHoldTab';
 import { toast } from 'sonner';
 
 interface CreateBusinessRequestModalProps {
@@ -35,9 +32,19 @@ const initialFormData: Partial<BusinessRequest> = {
   health: 'green',
 };
 
+// Tabs for creating a new request (without Process Step, Health, Readiness, Implementation, Support, On Hold)
+const CREATE_TABS = [
+  { value: 'overview', label: 'Overview' },
+  { value: 'portfolio', label: 'Portfolio' },
+  { value: 'technical', label: 'Technical' },
+  { value: 'estimation', label: 'Estimation' },
+  { value: 'approval', label: 'Approval' },
+];
+
 export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
   const [formData, setFormData] = useState<Partial<BusinessRequest>>(initialFormData);
+  const [activeTab, setActiveTab] = useState('overview');
 
   const handleFieldChange = (field: keyof BusinessRequest, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -64,22 +71,19 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
 
     await createMutation.mutateAsync(formData as any);
     setFormData(initialFormData);
+    setActiveTab('overview');
     onClose();
   };
 
   const handleClose = () => {
     setFormData(initialFormData);
+    setActiveTab('overview');
     onClose();
-  };
-
-  const getProcessStepStyle = (step: string) => {
-    const found = PROCESS_STEPS.find(s => s.value === step);
-    return found?.color || 'bg-gray-100 text-gray-600';
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[720px] max-h-[90vh] p-0 flex flex-col bg-[#feffff] overflow-hidden">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] p-0 flex flex-col bg-[#feffff] overflow-hidden">
         {/* Gold Bar */}
         <div className="h-1 bg-brand-gold flex-shrink-0" />
 
@@ -100,105 +104,54 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
           </div>
         </div>
 
-        {/* Tabs */}
-        <Tabs defaultValue="overview" className="flex-1 flex flex-col min-h-0">
-          <div className="border-b border-[#e5e5e5] px-6 flex-shrink-0 overflow-x-auto">
-            <TabsList className="h-auto bg-transparent p-0 gap-0 flex-wrap">
-              {['Overview', 'Portfolio', 'Technical', 'Estimation', 'Approval', 'Readiness', 'Implementation', 'Support', 'On Hold'].map((tab) => (
-                <TabsTrigger
-                  key={tab}
-                  value={tab.toLowerCase().replace(' ', '-')}
-                  className="px-4 py-3 text-sm text-[#6b7280] border-b-2 border-transparent rounded-none data-[state=active]:text-[#1a1a1a] data-[state=active]:font-medium data-[state=active]:border-brand-gold data-[state=active]:bg-transparent hover:text-[#1a1a1a]"
-                >
-                  {tab}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
+        {/* Title Input */}
+        <div className="px-6 py-4 border-b border-[#e5e5e5] flex-shrink-0">
+          <Label className="text-sm font-medium text-[#1a1a1a] mb-2 block">
+            Title <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            value={formData.title || ''}
+            onChange={(e) => handleFieldChange('title', e.target.value)}
+            placeholder="Enter request title (min 5 characters)"
+            className="border-[#e5e5e5] focus:border-brand-gold"
+          />
+        </div>
+
+        {/* Tabs with horizontal scroll - matching view request style */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col min-h-0">
+          <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b h-auto shrink-0 overflow-x-auto flex-nowrap bg-[#feffff] px-6">
+            {CREATE_TABS.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="executive-tab whitespace-nowrap"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
           {/* Content Area */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-6 space-y-6">
-              {/* Global Fields */}
-              <div className="grid grid-cols-2 gap-4">
-                {/* Process Step */}
-                <div>
-                  <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Process Step</label>
-                  <Select
-                    value={formData.process_step || 'new_demand'}
-                    onValueChange={(value) => handleFieldChange('process_step', value)}
-                  >
-                    <SelectTrigger className="border-[#e5e5e5]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {PROCESS_STEPS.map((step) => (
-                        <SelectItem key={step.value} value={step.value}>
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${step.color}`}>
-                            {step.label}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Health */}
-                <div>
-                  <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Health</label>
-                  <Select
-                    value={formData.health || 'green'}
-                    onValueChange={(value) => handleFieldChange('health', value)}
-                  >
-                    <SelectTrigger className="border-[#e5e5e5]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {HEALTH_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${opt.color}`}>
-                            {opt.label}
-                          </span>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* Tab Contents */}
-              <TabsContent value="overview" className="m-0 mt-4">
-                <OverviewTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="portfolio" className="m-0 mt-4">
-                <PortfolioTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="technical" className="m-0 mt-4">
-                <TechnicalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="estimation" className="m-0 mt-4">
-                <EstimationTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="approval" className="m-0 mt-4">
-                <ApprovalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="readiness" className="m-0 mt-4">
-                <ReadinessTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="implementation" className="m-0 mt-4">
-                <ImplementationTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="support" className="m-0 mt-4">
-                <SupportTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="on-hold" className="m-0 mt-4">
-                <OnHoldTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-              </TabsContent>
-            </div>
+          <div className="flex-1 overflow-y-auto executive-drawer-content">
+            <TabsContent value="overview" className="m-0 focus-visible:outline-none">
+              <OverviewTab data={formData} isEditMode={true} onChange={handleFieldChange} hideProcessStepHealth={true} />
+            </TabsContent>
+            <TabsContent value="portfolio" className="m-0 focus-visible:outline-none">
+              <PortfolioTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="technical" className="m-0 focus-visible:outline-none">
+              <TechnicalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="estimation" className="m-0 focus-visible:outline-none">
+              <EstimationTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="approval" className="m-0 focus-visible:outline-none">
+              <ApprovalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-4 border-t border-[#e5e5e5] flex justify-end gap-3 flex-shrink-0">
+          <div className="px-6 py-4 border-t border-[#e5e5e5] flex justify-end gap-3 flex-shrink-0 bg-[#feffff]">
             <Button variant="outline" onClick={handleClose} className="border-[#e5e5e5]">
               Cancel
             </Button>

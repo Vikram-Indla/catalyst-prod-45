@@ -18,9 +18,6 @@ import {
   Maximize2, 
   Minimize2,
   MoreVertical,
-  MessageSquare,
-  Bell,
-  BellOff,
   Trash2,
   Copy,
   History
@@ -32,10 +29,6 @@ import { PortfolioTab } from './drawer-tabs/PortfolioTab';
 import { TechnicalTab } from './drawer-tabs/TechnicalTab';
 import { EstimationTab } from './drawer-tabs/EstimationTab';
 import { ApprovalTab } from './drawer-tabs/ApprovalTab';
-import { ReadinessTab } from './drawer-tabs/ReadinessTab';
-import { ImplementationTab } from './drawer-tabs/ImplementationTab';
-import { SupportTab } from './drawer-tabs/SupportTab';
-import { OnHoldTab } from './drawer-tabs/OnHoldTab';
 import { toast } from 'sonner';
 
 interface BusinessRequestDrawerProps {
@@ -43,6 +36,15 @@ interface BusinessRequestDrawerProps {
   onClose: () => void;
   requestId: string | null;
 }
+
+// Tabs for viewing/editing a request (with Process Step and Health in Overview, no Readiness/Implementation/Support/On Hold)
+const VIEW_TABS = [
+  { value: 'overview', label: 'Overview' },
+  { value: 'portfolio', label: 'Portfolio' },
+  { value: 'technical', label: 'Technical' },
+  { value: 'estimation', label: 'Estimation' },
+  { value: 'approval', label: 'Approval' },
+];
 
 export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRequestDrawerProps) {
   const { data: request, isLoading } = useBusinessRequest(requestId);
@@ -133,7 +135,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
     switch (action) {
       case 'duplicate':
         if (request && requestId) {
-          // Create duplicate
           toast.info('Duplicate functionality coming soon');
         }
         break;
@@ -155,7 +156,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
   // Get drawer width classes based on expanded state
   const drawerWidthClass = isExpanded 
     ? 'w-full sm:max-w-full' 
-    : 'w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw]';
+    : 'w-full sm:w-[700px] md:w-[800px] lg:w-[900px] sm:max-w-[90vw]';
 
   if (!isOpen) return null;
 
@@ -289,20 +290,20 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
         {/* Tabs with horizontal scroll */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
           <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b h-auto shrink-0 overflow-x-auto flex-nowrap bg-[#feffff]">
-            <TabsTrigger value="overview" className="executive-tab">Overview</TabsTrigger>
-            <TabsTrigger value="portfolio" className="executive-tab">Portfolio</TabsTrigger>
-            <TabsTrigger value="technical" className="executive-tab">Technical</TabsTrigger>
-            <TabsTrigger value="estimation" className="executive-tab">Estimation</TabsTrigger>
-            <TabsTrigger value="approval" className="executive-tab">Approval</TabsTrigger>
-            <TabsTrigger value="readiness" className="executive-tab">Readiness</TabsTrigger>
-            <TabsTrigger value="implementation" className="executive-tab">Implementation</TabsTrigger>
-            <TabsTrigger value="support" className="executive-tab">Support</TabsTrigger>
-            <TabsTrigger value="on-hold" className="executive-tab">On Hold</TabsTrigger>
+            {VIEW_TABS.map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="executive-tab whitespace-nowrap"
+              >
+                {tab.label}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
           <div className="executive-drawer-content flex-1 overflow-y-auto">
             <TabsContent value="overview" className="m-0 focus-visible:outline-none">
-              <OverviewTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+              <OverviewTab data={formData} isEditMode={true} onChange={handleFieldChange} hideProcessStepHealth={false} />
             </TabsContent>
             <TabsContent value="portfolio" className="m-0 focus-visible:outline-none">
               <PortfolioTab data={formData} isEditMode={true} onChange={handleFieldChange} />
@@ -315,18 +316,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
             </TabsContent>
             <TabsContent value="approval" className="m-0 focus-visible:outline-none">
               <ApprovalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="readiness" className="m-0 focus-visible:outline-none">
-              <ReadinessTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="implementation" className="m-0 focus-visible:outline-none">
-              <ImplementationTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="support" className="m-0 focus-visible:outline-none">
-              <SupportTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="on-hold" className="m-0 focus-visible:outline-none">
-              <OnHoldTab data={formData} isEditMode={true} onChange={handleFieldChange} />
             </TabsContent>
           </div>
         </Tabs>
