@@ -18,6 +18,7 @@ import { Link as LinkIcon, Lock, Unlock, Plus, Loader2, X, ChevronRight, Search 
 import { WSJFInlineScores } from '@/components/wsjf';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
+import { RiskDialog } from '@/components/forms/RiskDialog';
 import { toast } from 'sonner';
 
 interface EpicDetailsTabProps {
@@ -35,6 +36,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const [showAddCriteria, setShowAddCriteria] = useState(false);
   const [showAddRisk, setShowAddRisk] = useState(false);
   const [showAddDependency, setShowAddDependency] = useState(false);
+  const [riskDialogOpen, setRiskDialogOpen] = useState(false);
   const [newTagInput, setNewTagInput] = useState('');
   const queryClient = useQueryClient();
 
@@ -991,7 +993,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                     <div className="flex gap-2">
                       <Button 
                         size="sm" 
-                        className="text-xs bg-brand-gold hover:bg-brand-gold-hover"
+                        className="text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
                         onClick={() => {
                           if (newCriteriaText.trim()) {
                             addCriteriaMutation.mutate(newCriteriaText.trim());
@@ -999,7 +1001,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                         }}
                         disabled={!newCriteriaText.trim() || addCriteriaMutation.isPending}
                       >
-                        {addCriteriaMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Save'}
+                        {addCriteriaMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Add'}
                       </Button>
                       <Button 
                         variant="outline" 
@@ -1035,28 +1037,27 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="pl-6 py-3 space-y-3">
+                {/* Display linked risks as badges */}
                 {linkedRisks && linkedRisks.length > 0 && (
-                  <div className="space-y-2">
+                  <div className="flex flex-wrap gap-2">
                     {linkedRisks.map((risk: any) => (
-                      <div key={risk.id} className="flex items-center gap-3 p-3 bg-card border rounded-md">
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-foreground">{risk.title}</div>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                            <Badge variant={risk.status === 'Open' ? 'destructive' : 'secondary'} className="text-xs h-5">
-                              {risk.status}
-                            </Badge>
-                            <span>Impact: {risk.impact}</span>
-                          </div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0"
-                          onClick={() => unlinkRiskMutation.mutate(risk.id)}
+                      <Badge 
+                        key={risk.id} 
+                        variant={risk.status === 'Open' ? 'destructive' : 'secondary'}
+                        className="text-xs px-2 py-1 flex items-center gap-1.5"
+                      >
+                        <span className="font-medium">RSK-{risk.id?.slice(0, 4)}</span>
+                        <span className="text-muted-foreground">|</span>
+                        <span className="max-w-[120px] truncate">{risk.title}</span>
+                        <span className="text-muted-foreground">|</span>
+                        <span>{risk.status}</span>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); unlinkRiskMutation.mutate(risk.id); }}
+                          className="ml-1 hover:text-destructive"
                         >
                           <X className="h-3 w-3" />
-                        </Button>
-                      </div>
+                        </button>
+                      </Badge>
                     ))}
                   </div>
                 )}
@@ -1066,11 +1067,11 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                 )}
                 
                 {showAddRisk ? (
-                  <div className="space-y-2">
-                    <div className="text-xs font-medium text-muted-foreground mb-2">
-                      Available risks from {epic.primary_program_id ? 'program context' : 'all programs'}:
+                  <div className="space-y-3">
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Link existing risk or create new:
                     </div>
-                    <ScrollArea className="h-[150px] border rounded-md">
+                    <ScrollArea className="h-[120px] border rounded-md">
                       {availableRisks && availableRisks.length > 0 ? (
                         availableRisks.map((risk: any) => (
                           <div
@@ -1078,24 +1079,35 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                             className="flex items-center justify-between px-3 py-2 hover:bg-muted cursor-pointer border-b last:border-b-0"
                             onClick={() => linkRiskMutation.mutate(risk.id)}
                           >
-                            <div className="flex-1 min-w-0">
-                              <span className="text-sm text-foreground">{risk.title}</span>
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <span className="text-xs font-medium text-muted-foreground">RSK-{risk.id?.slice(0, 4)}</span>
+                              <span className="text-sm text-foreground truncate">{risk.title}</span>
                             </div>
                             <Badge variant="outline" className="ml-2 text-xs">{risk.status}</Badge>
                           </div>
                         ))
                       ) : (
-                        <div className="p-3 text-sm text-muted-foreground">No available risks found</div>
+                        <div className="p-3 text-sm text-muted-foreground">No available risks in program context</div>
                       )}
                     </ScrollArea>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-xs"
-                      onClick={() => setShowAddRisk(false)}
-                    >
-                      Cancel
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        className="text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                        onClick={() => { setShowAddRisk(false); setRiskDialogOpen(true); }}
+                      >
+                        <Plus className="h-3.5 w-3.5 mr-1" />
+                        Create New Risk
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs"
+                        onClick={() => setShowAddRisk(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <Button 
@@ -1105,12 +1117,25 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                     onClick={() => setShowAddRisk(true)}
                   >
                     <Plus className="h-3.5 w-3.5 mr-1.5" />
-                    Add
+                    Add Risk
                   </Button>
                 )}
               </div>
             </CollapsibleContent>
           </Collapsible>
+
+          {/* Risk Dialog for creating new risks */}
+          <RiskDialog 
+            open={riskDialogOpen} 
+            onOpenChange={(open) => {
+              setRiskDialogOpen(open);
+              if (!open) {
+                // Refresh linked risks after dialog closes
+                queryClient.invalidateQueries({ queryKey: ['linked-risks', epic.id] });
+                queryClient.invalidateQueries({ queryKey: ['available-risks'] });
+              }
+            }}
+          />
 
           {/* Dependencies Collapsible Section */}
           <Collapsible open={dependenciesOpen} onOpenChange={setDependenciesOpen}>
@@ -1121,58 +1146,77 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="pl-6 py-3 space-y-3">
-                {epicDependencies?.dependencies && epicDependencies.dependencies.length > 0 ? (
-                  <div className="space-y-2">
+                {/* Display dependencies as badges */}
+                {epicDependencies?.dependencies && epicDependencies.dependencies.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
                     {epicDependencies.dependencies.map((dep: any) => (
-                      <div key={dep.id} className="flex items-center gap-3 p-3 bg-card border rounded-md">
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-foreground">
-                            {dep.from_feature?.name} → {dep.to_feature?.name}
-                          </div>
-                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                            <Badge variant="outline" className="text-xs h-5">{dep.status}</Badge>
-                            {dep.type && <span>{dep.type}</span>}
-                          </div>
-                        </div>
-                      </div>
+                      <Badge 
+                        key={dep.id} 
+                        variant={dep.status === 'open' ? 'outline' : dep.status === 'committed' ? 'default' : 'secondary'}
+                        className="text-xs px-2 py-1 flex items-center gap-1.5"
+                      >
+                        <span className="font-medium">DEP-{dep.id?.slice(0, 4)}</span>
+                        <span className="text-muted-foreground">|</span>
+                        <span className="max-w-[100px] truncate">{dep.from_feature?.name || 'Unknown'}</span>
+                        <span>→</span>
+                        <span className="max-w-[100px] truncate">{dep.to_feature?.name || 'Unknown'}</span>
+                        <span className="text-muted-foreground">|</span>
+                        <span className="capitalize">{dep.status}</span>
+                      </Badge>
                     ))}
                   </div>
-                ) : (
-                  !showAddDependency && <div className="text-sm text-muted-foreground">No dependencies linked through features</div>
+                )}
+                
+                {(!epicDependencies?.dependencies || epicDependencies.dependencies.length === 0) && !showAddDependency && (
+                  <div className="text-sm text-muted-foreground">No dependencies linked</div>
                 )}
                 
                 {showAddDependency ? (
-                  <div className="space-y-2">
-                    <div className="text-xs font-medium text-muted-foreground mb-2">
-                      Available dependencies from program context:
+                  <div className="space-y-3">
+                    <div className="text-xs font-medium text-muted-foreground">
+                      Link existing dependency or create new:
                     </div>
-                    <ScrollArea className="h-[150px] border rounded-md">
+                    <ScrollArea className="h-[120px] border rounded-md">
                       {availableDependencies && availableDependencies.length > 0 ? (
                         availableDependencies.map((dep: any) => (
                           <div
                             key={dep.id}
                             className="flex items-center justify-between px-3 py-2 hover:bg-muted cursor-pointer border-b last:border-b-0"
                           >
-                            <div className="flex-1 min-w-0">
-                              <span className="text-sm text-foreground">
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
+                              <span className="text-xs font-medium text-muted-foreground">DEP-{dep.id?.slice(0, 4)}</span>
+                              <span className="text-sm text-foreground truncate">
                                 {dep.from_feature?.name || 'Unknown'} → {dep.to_feature?.name || 'Unknown'}
                               </span>
                             </div>
-                            <Badge variant="outline" className="ml-2 text-xs">{dep.status}</Badge>
+                            <Badge variant="outline" className="ml-2 text-xs capitalize">{dep.status}</Badge>
                           </div>
                         ))
                       ) : (
-                        <div className="p-3 text-sm text-muted-foreground">No available dependencies found</div>
+                        <div className="p-3 text-sm text-muted-foreground">No available dependencies in program context</div>
                       )}
                     </ScrollArea>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="text-xs"
-                      onClick={() => setShowAddDependency(false)}
-                    >
-                      Cancel
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        className="text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                        onClick={() => {
+                          toast.info('Dependency creation via Dependencies module');
+                          setShowAddDependency(false);
+                        }}
+                      >
+                        <Plus className="h-3.5 w-3.5 mr-1" />
+                        Create New Dependency
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs"
+                        onClick={() => setShowAddDependency(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
                 ) : (
                   <Button 
@@ -1182,7 +1226,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                     onClick={() => setShowAddDependency(true)}
                   >
                     <Plus className="h-3.5 w-3.5 mr-1.5" />
-                    Add
+                    Add Dependency
                   </Button>
                 )}
               </div>
