@@ -1,7 +1,9 @@
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { X } from 'lucide-react';
 import { BusinessRequest, INTEGRATION_SYSTEMS_OPTIONS } from '@/types/business-request';
 
@@ -23,102 +25,109 @@ export function TechnicalTab({ data, isEditMode, onChange }: TechnicalTabProps) 
   };
 
   return (
-    <div className="space-y-4">
-      {/* Proposed Solution */}
-      <div>
-        <label className="text-sm font-medium text-[#1a1a1a] block mb-2">
-          Proposed Solution {isEditMode && <span className="text-red-500">*</span>}
-        </label>
-        <Textarea
-          value={data.proposed_solution || ''}
-          onChange={(e) => onChange('proposed_solution', e.target.value)}
-          disabled={!isEditMode}
-          placeholder="Describe the proposed solution..."
-          className="border-[#e5e5e5] focus:border-brand-gold disabled:bg-[#f9fafb] disabled:text-[#6b7280] min-h-[100px]"
-        />
-      </div>
-
-      {/* Estimated Effort & Cost */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium text-[#1a1a1a] block mb-2">
-            Estimated Effort {isEditMode && <span className="text-red-500">*</span>}
-          </label>
-          <Input
-            value={data.estimated_effort || ''}
-            onChange={(e) => onChange('estimated_effort', e.target.value)}
-            disabled={!isEditMode}
-            placeholder="e.g., 4 weeks"
-            className="border-[#e5e5e5] focus:border-brand-gold disabled:bg-[#f9fafb] disabled:text-[#6b7280]"
-          />
-        </div>
-
-        <div>
-          <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Estimated Cost</label>
-          <Input
-            type="number"
-            value={data.estimated_cost || ''}
-            onChange={(e) => onChange('estimated_cost', e.target.value ? parseFloat(e.target.value) : null)}
-            disabled={!isEditMode}
-            placeholder="Enter amount"
-            className="border-[#e5e5e5] focus:border-brand-gold disabled:bg-[#f9fafb] disabled:text-[#6b7280]"
-          />
-        </div>
-      </div>
-
-      {/* Integration Required Toggle */}
-      <div className="flex items-center justify-between p-4 border border-[#e5e5e5] rounded-lg">
-        <div>
-          <label className="text-sm font-medium text-[#1a1a1a]">Integration Required</label>
-          <p className="text-xs text-[#6b7280]">Does this require integration with other systems?</p>
-        </div>
-        <Switch
-          checked={data.integration_required || false}
-          onCheckedChange={(checked) => onChange('integration_required', checked)}
-          disabled={!isEditMode}
-        />
-      </div>
-
-      {/* Integration Systems - Conditional */}
-      {data.integration_required && (
-        <div>
-          <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Integration Systems</label>
-          <div className="flex flex-wrap gap-2">
-            {INTEGRATION_SYSTEMS_OPTIONS.map((system) => {
-              const isSelected = integrationSystems.includes(system);
-              return (
-                <Badge
-                  key={system}
-                  variant={isSelected ? 'default' : 'outline'}
-                  className={`cursor-pointer ${
-                    isSelected 
-                      ? 'bg-brand-gold text-white hover:bg-brand-gold-hover' 
-                      : 'border-[#e5e5e5] text-[#6b7280] hover:bg-gray-50'
-                  } ${!isEditMode ? 'pointer-events-none opacity-60' : ''}`}
-                  onClick={() => isEditMode && toggleIntegrationSystem(system)}
-                >
-                  {system}
-                  {isSelected && isEditMode && (
-                    <X className="h-3 w-3 ml-1" />
-                  )}
-                </Badge>
-              );
-            })}
+    <div className="space-y-6 p-5">
+      {/* Solution Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Proposed Solution</h3>
+          
+          <div>
+            <Textarea
+              value={data.proposed_solution || ''}
+              onChange={(e) => onChange('proposed_solution', e.target.value)}
+              placeholder="Describe the proposed solution..."
+              className="min-h-[120px] resize-none"
+            />
           </div>
-        </div>
-      )}
+        </CardContent>
+      </Card>
 
-      {/* Technical Validator */}
-      <div>
-        <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Technical Validator</label>
-        <Input
-          value={data.technical_validator || ''}
-          onChange={(e) => onChange('technical_validator', e.target.value)}
-          disabled={!isEditMode}
-          placeholder="Enter validator name"
-          className="border-[#e5e5e5] focus:border-brand-gold disabled:bg-[#f9fafb] disabled:text-[#6b7280]"
-        />
-      </div>
+      {/* Effort & Cost Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Effort & Cost</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">
+                Estimated Effort <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                value={data.estimated_effort || ''}
+                onChange={(e) => onChange('estimated_effort', e.target.value)}
+                placeholder="e.g., 4 weeks"
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium">Estimated Cost (SAR)</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">SAR</span>
+                <Input
+                  type="number"
+                  value={data.estimated_cost || ''}
+                  onChange={(e) => onChange('estimated_cost', e.target.value ? parseFloat(e.target.value) : null)}
+                  placeholder="0.00"
+                  className="pl-12"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-sm font-medium">Technical Validator</Label>
+            <Input
+              value={data.technical_validator || ''}
+              onChange={(e) => onChange('technical_validator', e.target.value)}
+              placeholder="Enter validator name"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Integration Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Integration</h3>
+          
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <Label className="text-sm font-medium">Integration Required</Label>
+              <p className="text-xs text-muted-foreground">Does this require integration with other systems?</p>
+            </div>
+            <Switch
+              checked={data.integration_required || false}
+              onCheckedChange={(checked) => onChange('integration_required', checked)}
+            />
+          </div>
+
+          {data.integration_required && (
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Integration Systems</Label>
+              <div className="flex flex-wrap gap-2">
+                {INTEGRATION_SYSTEMS_OPTIONS.map((system) => {
+                  const isSelected = integrationSystems.includes(system);
+                  return (
+                    <Badge
+                      key={system}
+                      variant={isSelected ? 'default' : 'outline'}
+                      className={`cursor-pointer transition-colors ${
+                        isSelected 
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90' 
+                          : 'border-border text-muted-foreground hover:bg-muted'
+                      }`}
+                      onClick={() => toggleIntegrationSystem(system)}
+                    >
+                      {system}
+                      {isSelected && <X className="h-3 w-3 ml-1" />}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
