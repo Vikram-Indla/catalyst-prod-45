@@ -27,7 +27,7 @@ export function ScopeSelector({ value, onChange, placeholder = "Select Portfolio
         <SelectValue placeholder={isLoading ? "Loading..." : placeholder} />
       </SelectTrigger>
       <SelectContent>
-        {portfolios?.filter(portfolio => portfolio.id).map((portfolio) => (
+        {portfolios?.filter(portfolio => portfolio.id && portfolio.id.trim() !== '').map((portfolio) => (
           <SelectItem key={portfolio.id} value={portfolio.id}>
             {portfolio.name}
           </SelectItem>
