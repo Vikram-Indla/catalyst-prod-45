@@ -117,7 +117,7 @@ export function EpicMilestonesTab({ epic }: EpicMilestonesTabProps) {
         </Button>
       </div>
 
-      <div className="border rounded-lg divide-y">
+      <div className="executive-card p-0 divide-y">
         {milestones && milestones.length > 0 ? (
           milestones.map((milestone) => (
             <div key={milestone.id} className="p-4 flex items-start justify-between">
