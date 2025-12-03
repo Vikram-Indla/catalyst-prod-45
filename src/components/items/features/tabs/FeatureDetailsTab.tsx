@@ -6,11 +6,25 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { FeatureProgressVisualization, type FeatureProgress } from '../FeatureProgressVisualization';
 import type { Feature } from '@/types/feature.types';
 
-interface FeatureDetailsTabProps {
-  feature?: Feature;
+interface FeatureFormData {
+  name: string;
+  description: string;
+  status: string;
+  health: string;
+  blocked: boolean;
+  blocked_reason: string;
+  mmf: boolean;
+  acceptance_criteria: string;
+  notes: string;
 }
 
-export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
+interface FeatureDetailsTabProps {
+  feature?: Feature;
+  formData: FeatureFormData;
+  updateField: (field: keyof FeatureFormData, value: any) => void;
+}
+
+export function FeatureDetailsTab({ feature, formData, updateField }: FeatureDetailsTabProps) {
   // Mock progress data - in real implementation, this would come from child stories
   const mockProgress: FeatureProgress = {
     totalStories: 12,
@@ -28,12 +42,14 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
           featureState={feature.status}
         />
       )}
+      
       {/* Title */}
       <div className="space-y-2">
         <Label htmlFor="title">Title *</Label>
         <Input
           id="title"
-          defaultValue={feature?.name || ''}
+          value={formData.name}
+          onChange={(e) => updateField('name', e.target.value)}
           placeholder="Enter feature title..."
         />
       </div>
@@ -43,7 +59,8 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
         <Label htmlFor="description">Description</Label>
         <Textarea
           id="description"
-          defaultValue={feature?.description || ''}
+          value={formData.description}
+          onChange={(e) => updateField('description', e.target.value)}
           placeholder="Enter feature description..."
           rows={4}
         />
@@ -52,12 +69,16 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
       {/* State */}
       <div className="space-y-2">
         <Label>State</Label>
-        <Select defaultValue={feature?.status || 'funnel'}>
+        <Select 
+          value={formData.status} 
+          onValueChange={(value) => updateField('status', value)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select state" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="funnel">Funnel</SelectItem>
+            <SelectItem value="analyzing">Analyzing</SelectItem>
             <SelectItem value="backlog">Backlog</SelectItem>
             <SelectItem value="implementing">Implementing</SelectItem>
             <SelectItem value="validating">Validating</SelectItem>
@@ -70,7 +91,10 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
       {/* Health */}
       <div className="space-y-2">
         <Label>Health</Label>
-        <Select defaultValue={feature?.health || 'green'}>
+        <Select 
+          value={formData.health} 
+          onValueChange={(value) => updateField('health', value)}
+        >
           <SelectTrigger>
             <SelectValue placeholder="Select health" />
           </SelectTrigger>
@@ -86,7 +110,8 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
       <div className="flex items-center space-x-2">
         <Checkbox
           id="blocked"
-          defaultChecked={feature?.blocked || false}
+          checked={formData.blocked}
+          onCheckedChange={(checked) => updateField('blocked', checked)}
         />
         <Label htmlFor="blocked">Feature is blocked</Label>
       </div>
@@ -95,17 +120,19 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
       <div className="flex items-center space-x-2">
         <Checkbox
           id="mmf"
-          defaultChecked={feature?.mmf || false}
+          checked={formData.mmf}
+          onCheckedChange={(checked) => updateField('mmf', checked)}
         />
         <Label htmlFor="mmf">MMF (Minimum Marketable Feature)</Label>
       </div>
 
-      {feature?.blocked && (
+      {formData.blocked && (
         <div className="space-y-2">
           <Label htmlFor="blocked-reason">Blocked Reason</Label>
           <Textarea
             id="blocked-reason"
-            defaultValue={feature?.blocked_reason || ''}
+            value={formData.blocked_reason}
+            onChange={(e) => updateField('blocked_reason', e.target.value)}
             placeholder="Describe why this feature is blocked..."
             rows={2}
           />
@@ -117,7 +144,8 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
         <Label htmlFor="acceptance">Acceptance Criteria</Label>
         <Textarea
           id="acceptance"
-          defaultValue={feature?.acceptance_criteria || ''}
+          value={formData.acceptance_criteria}
+          onChange={(e) => updateField('acceptance_criteria', e.target.value)}
           placeholder="Enter acceptance criteria..."
           rows={3}
         />
@@ -128,7 +156,8 @@ export function FeatureDetailsTab({ feature }: FeatureDetailsTabProps) {
         <Label htmlFor="notes">Notes</Label>
         <Textarea
           id="notes"
-          defaultValue={feature?.notes || ''}
+          value={formData.notes}
+          onChange={(e) => updateField('notes', e.target.value)}
           placeholder="Additional notes..."
           rows={3}
         />

@@ -28,6 +28,7 @@ export interface Feature {
 
   // Estimation
   estimate_points?: number | null;
+  estimation_method?: string | null;
   progress_pct?: number | null;
   rank_within_epic?: number | null;
   mmf?: boolean | null; // Minimum Marketable Feature flag
@@ -43,6 +44,13 @@ export interface Feature {
   owner_id?: string | null;
   acceptance_criteria?: string | null;
   notes?: string | null;
+
+  // Financial fields
+  budget?: number | null;
+  work_code?: string | null;
+  capitalized?: boolean | null;
+  expected_revenue_growth?: number | null;
+  expected_cost_savings?: number | null;
 
   // Program Board specific
   is_orphan_on_board?: boolean | null;
