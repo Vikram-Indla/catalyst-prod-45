@@ -1,10 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BusinessRequest } from '@/types/business-request';
+import { useToast } from '@/hooks/use-toast';
 
 // Score options 0-10
 const SCORE_OPTIONS = Array.from({ length: 11 }, (_, i) => i);
@@ -34,9 +37,14 @@ interface BusinessScoreViewTabProps {
 }
 
 export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabProps) {
+  const { toast } = useToast();
   const executiveUrgency = data.executive_urgency ?? 0;
   const businessValue = data.business_value ?? 0;
   const complexity = data.complexity_score ?? 0;
+
+  // Local state for justification
+  const [justification, setJustification] = useState(data.rank_override_justification || '');
+  const [showJustification, setShowJustification] = useState(false);
 
   // Calculate normalized values
   const normalizedUrgency = executiveUrgency / 10;
@@ -62,6 +70,47 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
     if (businessScore >= 40) return 10;
     return 15;
   }, [businessScore]);
+
+  // Check if rank is overridden (different from calculated default)
+  const currentRank = data.rank || calculatedDefaultRank;
+  const isRankOverridden = data.rank !== null && data.rank !== undefined && data.rank !== calculatedDefaultRank && data.rank >= 1 && data.rank <= 10;
+
+  // Show justification box when rank is manually set between 1-10
+  useEffect(() => {
+    setShowJustification(isRankOverridden);
+  }, [isRankOverridden]);
+
+  // Update justification from data when it changes
+  useEffect(() => {
+    setJustification(data.rank_override_justification || '');
+  }, [data.rank_override_justification]);
+
+  const handleRankChange = (value: string) => {
+    const newRank = parseInt(value);
+    onChange('rank', newRank);
+    
+    // Show toast warning when rank is changed
+    toast({
+      title: 'Rank Override Warning',
+      description: 'This forced rank will override the auto-calculated business score ranking.',
+      variant: 'default',
+    });
+
+    // Show justification box if rank is between 1-10 and different from default
+    if (newRank >= 1 && newRank <= 10 && newRank !== calculatedDefaultRank) {
+      setShowJustification(true);
+    } else {
+      setShowJustification(false);
+    }
+  };
+
+  const handleSaveJustification = () => {
+    onChange('rank_override_justification', justification);
+    toast({
+      title: 'Justification Saved',
+      description: 'Your business justification for the rank override has been saved.',
+    });
+  };
 
   return (
     <div className="space-y-6 p-5">
@@ -170,8 +219,8 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
                     1 = Highest priority. Default based on business score.
                   </p>
                   <Select
-                    value={String(data.rank || calculatedDefaultRank)}
-                    onValueChange={(value) => onChange('rank', parseInt(value))}
+                    value={String(currentRank)}
+                    onValueChange={handleRankChange}
                   >
                     <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
@@ -187,9 +236,34 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
                   "w-14 h-14 rounded-full border-4 flex items-center justify-center font-bold text-lg shrink-0",
                   "border-brand-gold text-brand-gold"
                 )}>
-                  {data.rank || calculatedDefaultRank}
+                  {currentRank}
                 </div>
               </div>
+
+              {/* Justification text box - shown when rank is overridden (1-10) */}
+              {showJustification && (
+                <div className="pt-4 border-t border-border/40 space-y-3">
+                  <Label className="text-sm font-medium text-amber-700">
+                    Business Justification for Overriding the Rank
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Please provide a business justification for manually overriding the calculated rank.
+                  </p>
+                  <Textarea
+                    value={justification}
+                    onChange={(e) => setJustification(e.target.value)}
+                    placeholder="Enter your justification for this rank override..."
+                    className="min-h-[100px] resize-none"
+                  />
+                  <Button 
+                    onClick={handleSaveJustification}
+                    className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                    size="sm"
+                  >
+                    Save Justification
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
