@@ -25,7 +25,7 @@ interface ProductRoomSidebarProps {
 
 const menuItems = [
   { title: 'Product Room', path: '/industry', icon: Box },
-  { title: 'Backlog', path: '/industry/backlog', icon: ListTree },
+  { title: 'Backlog', path: '/industry', icon: ListTree },
   { title: 'Roadmaps', path: '/industry/roadmaps', icon: Map },
   { title: 'Reports', path: '/industry/reports', icon: TrendingUp },
 ];
