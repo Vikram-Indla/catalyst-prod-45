@@ -894,3 +894,133 @@ h3 {
   background-color: hsl(var(--surface-gray-200));
   color: hsl(var(--text-secondary));
 }
+
+/* ============================================
+   8) EXECUTIVE DRAWER FORM CONTROLS
+   ============================================ */
+
+/* 
+ * Form controls within executive drawer should have:
+ * - White backgrounds (not gray)
+ * - Visible border definition
+ * - Brand gold focus states
+ * - Proper contrast for readability
+ */
+
+/* Select triggers within drawer - targeting shadcn SelectTrigger */
+.executive-drawer-content button[role="combobox"],
+.executive-drawer-content [data-radix-collection-item] {
+  background-color: hsl(var(--surface-white)) !important;
+  border: 1px solid hsl(var(--neutral-300)) !important;
+  border-radius: 6px !important;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.executive-drawer-content button[role="combobox"]:hover {
+  border-color: hsl(var(--neutral-400)) !important;
+  background-color: hsl(var(--surface-white)) !important;
+}
+
+.executive-drawer-content button[role="combobox"]:focus,
+.executive-drawer-content button[role="combobox"][data-state="open"] {
+  border-color: hsl(var(--brand-gold)) !important;
+  box-shadow: 0 0 0 3px hsl(var(--brand-gold) / 0.12) !important;
+  outline: none !important;
+  ring: none !important;
+}
+
+/* Input fields within drawer */
+.executive-drawer-content input:not([type="checkbox"]):not([type="radio"]),
+.executive-drawer-content textarea {
+  background-color: hsl(var(--surface-white)) !important;
+  border: 1px solid hsl(var(--neutral-300)) !important;
+  border-radius: 6px !important;
+  color: hsl(var(--text-primary));
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.executive-drawer-content input:not([type="checkbox"]):not([type="radio"]):hover,
+.executive-drawer-content textarea:hover {
+  border-color: hsl(var(--neutral-400)) !important;
+}
+
+.executive-drawer-content input:not([type="checkbox"]):not([type="radio"]):focus,
+.executive-drawer-content textarea:focus {
+  border-color: hsl(var(--brand-gold)) !important;
+  box-shadow: 0 0 0 3px hsl(var(--brand-gold) / 0.12) !important;
+  outline: none !important;
+}
+
+/* Placeholder text - better contrast */
+.executive-drawer-content input::placeholder,
+.executive-drawer-content textarea::placeholder {
+  color: hsl(var(--neutral-400));
+  opacity: 1;
+}
+
+/* Section headings in drawer tabs */
+.executive-drawer-content h3 {
+  color: hsl(var(--brand-gold));
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+/* Labels - stronger styling */
+.executive-drawer-content label {
+  font-weight: 600;
+  font-size: 13px;
+  color: hsl(var(--text-primary));
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Cards/list items within drawer */
+.executive-drawer-content .executive-list-item,
+.executive-drawer-content > div > div[class*="border"] {
+  background-color: hsl(var(--surface-white));
+  border: 1px solid hsl(var(--border));
+  border-radius: 8px;
+}
+
+/* Primary buttons in drawer */
+.executive-drawer-content button[class*="bg-primary"],
+.executive-drawer-content .btn-primary {
+  background-color: hsl(var(--brand-gold)) !important;
+  color: white !important;
+  border: none;
+  font-weight: 500;
+}
+
+.executive-drawer-content button[class*="bg-primary"]:hover,
+.executive-drawer-content .btn-primary:hover {
+  background-color: hsl(var(--brand-gold-hover)) !important;
+}
+
+/* Muted/secondary text */
+.executive-drawer-content .text-muted-foreground {
+  color: hsl(var(--text-tertiary));
+}
+
+/* Links */
+.executive-drawer-content a,
+.executive-drawer-content button[class*="text-primary"] {
+  color: hsl(var(--brand-gold));
+}
+
+.executive-drawer-content a:hover {
+  color: hsl(var(--brand-gold-hover));
+}
+
+/* Progress bars */
+.executive-drawer-content [role="progressbar"] > div {
+  background-color: hsl(var(--brand-gold));
+}
+
+/* Badges */
+.executive-drawer-content [data-slot="badge"] {
+  border-radius: 4px;
+  font-weight: 500;
+}
