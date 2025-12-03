@@ -8,15 +8,15 @@ import {
   Settings,
   LayoutDashboard,
   Diamond,
-  Layers3,
+  ListTree,
   Map,
-  Target,
-  Network,
+  Focus,
+  Share2,
   Grid3x3,
   Users as UsersIcon,
-  Menu,
+  Blocks,
   FileText,
-  FolderTree
+  Workflow
 } from 'lucide-react';
 import {
   Select,
@@ -27,6 +27,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
 interface PortfolioRoomSidebarProps {
@@ -45,17 +51,17 @@ type MenuItem =
 
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
-  { id: 'themes', label: 'Themes', icon: FolderTree, path: '/themes' },
+  { id: 'themes', label: 'Themes', icon: Workflow, path: '/themes' },
   { id: 'epics', label: 'Epics', icon: Diamond, path: '/epics' },
-  { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Target, path: '/portfolio/:portfolioId/objective-tree' },
-  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
-  { id: 'backlog', label: 'Backlog', icon: Layers3, path: '/portfolio/:portfolioId/backlog' },
+  { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Focus, path: '/portfolio/:portfolioId/objective-tree' },
+  { id: 'work-tree', label: 'Work tree', icon: Share2, path: '/portfolio/:portfolioId/work-tree' },
+  { id: 'backlog', label: 'Backlog', icon: ListTree, path: '/portfolio/:portfolioId/backlog' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/portfolio/:portfolioId/roadmaps' },
   { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/portfolio/:portfolioId/forecast' },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/portfolio/:portfolioId/capacity', badge: 'NEW' },
-  { id: 'more-items', label: 'More items', icon: Menu, expandable: true },
+  { id: 'more-items', label: 'More items', icon: Blocks, expandable: true },
   { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
-  { id: 'more-pages', label: 'More pages', icon: Menu, expandable: true },
+  { id: 'more-pages', label: 'More pages', icon: Blocks, expandable: true },
 ];
 
 export function PortfolioRoomSidebar({ 
@@ -205,17 +211,17 @@ export function PortfolioRoomSidebar({
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto py-1">
-          {menuItems.map((item, index) => {
-            if (!('id' in item)) return null;
+          <TooltipProvider delayDuration={0}>
+            {menuItems.map((item, index) => {
+              if (!('id' in item)) return null;
 
-            const Icon = item.icon;
-            const active = isActive('path' in item ? item.path : undefined);
-            const isMoreItems = item.id === 'more-items';
-            const isReports = item.id === 'reports';
-            const isMorePages = item.id === 'more-pages';
+              const Icon = item.icon;
+              const active = isActive('path' in item ? item.path : undefined);
+              const isMoreItems = item.id === 'more-items';
+              const isReports = item.id === 'reports';
+              const isMorePages = item.id === 'more-pages';
 
-            return (
-              <div key={item.id}>
+              const menuButton = (
                 <button
                   onClick={() => {
                     if ('expandable' in item && item.expandable) {
@@ -232,7 +238,6 @@ export function PortfolioRoomSidebar({
                     active && "bg-accent text-primary font-medium",
                     !expanded && "justify-center px-2"
                   )}
-                  title={!expanded ? item.label : undefined}
                 >
                   <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
                   {expanded && (
@@ -256,6 +261,22 @@ export function PortfolioRoomSidebar({
                     </>
                   )}
                 </button>
+              );
+
+              return (
+                <div key={item.id}>
+                  {!expanded ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        {menuButton}
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="z-[100]">
+                        <p>{item.label}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    menuButton
+                  )}
 
                 {/* Submenu rendering */}
                 {isMoreItems && moreItemsExpanded && expanded && (
@@ -302,6 +323,7 @@ export function PortfolioRoomSidebar({
               </div>
             );
           })}
+          </TooltipProvider>
         </nav>
 
         {/* Footer */}

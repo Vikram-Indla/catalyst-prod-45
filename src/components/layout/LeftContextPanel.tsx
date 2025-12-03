@@ -5,15 +5,17 @@ import {
   ChevronRight,
   Settings,
   LayoutDashboard,
-  List,
+  ListTree,
   Map,
-  GitBranch,
-  Network,
+  Workflow,
+  Share2,
   TrendingUp,
   Users as UsersIcon,
-  Target,
-  Boxes,
+  Focus,
+  CircleDot,
+  Component,
   Link,
+  Blocks,
 } from 'lucide-react';
 import {
   Select,
@@ -24,6 +26,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useCatalystContext, TierType } from '@/contexts/CatalystContext';
 
@@ -38,32 +46,32 @@ interface MenuItem {
 
 // Enterprise menu items (when tier === 'enterprise')
 const getEnterpriseMenuItems = (): MenuItem[] => [
-  { id: 'strategy-room', label: 'Strategy Room', icon: Target, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
-  { id: 'strategic-snapshots', label: 'Strategic Snapshots', icon: Target, path: '/enterprise/snapshots', tiers: ['enterprise'] },
-  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: '/enterprise/okr-hub', tiers: ['enterprise'] },
-  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/work-tree', tiers: ['enterprise'] },
-  { id: 'backlog', label: 'Backlog', icon: List, path: '/enterprise/backlog', tiers: ['enterprise'] },
+  { id: 'strategy-room', label: 'Strategy Room', icon: Focus, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
+  { id: 'strategic-snapshots', label: 'Strategic Snapshots', icon: CircleDot, path: '/enterprise/snapshots', tiers: ['enterprise'] },
+  { id: 'objective-tree', label: 'Objective tree', icon: Workflow, path: '/enterprise/okr-hub', tiers: ['enterprise'] },
+  { id: 'work-tree', label: 'Work tree', icon: Share2, path: '/work-tree', tiers: ['enterprise'] },
+  { id: 'backlog', label: 'Backlog', icon: ListTree, path: '/enterprise/backlog', tiers: ['enterprise'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps', tiers: ['enterprise'] },
-  { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['enterprise'], expandable: true },
+  { id: 'more-items', label: 'More items', icon: Blocks, path: '#', tiers: ['enterprise'], expandable: true },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['enterprise'] },
-  { id: 'more-pages', label: 'More pages', icon: Boxes, path: '#', tiers: ['enterprise'], expandable: true },
+  { id: 'more-pages', label: 'More pages', icon: Component, path: '#', tiers: ['enterprise'], expandable: true },
 ];
 
 // Portfolio/Program/Team menu items
 const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): MenuItem[] => [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: portfolioId ? `/portfolio/${portfolioId}/room` : '/portfolio-room', tiers: ['portfolio', 'program', 'team'] },
-  { id: 'initiatives', label: 'Initiatives', icon: Target, path: '/initiatives', tiers: ['portfolio', 'program'] },
-  { id: 'backlog', label: 'Backlog', icon: List, path: '/items/epics', tiers: ['portfolio', 'program'] },
+  { id: 'initiatives', label: 'Initiatives', icon: Focus, path: '/initiatives', tiers: ['portfolio', 'program'] },
+  { id: 'backlog', label: 'Backlog', icon: ListTree, path: '/items/epics', tiers: ['portfolio', 'program'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['portfolio', 'program'] },
-  { id: 'objective-tree', label: 'Objective tree', icon: GitBranch, path: tier === 'portfolio' ? '/portfolio/okr-hub' : tier === 'program' ? '/program/okr-hub' : '/team/okr-hub', tiers: ['portfolio', 'program', 'team'] },
-  { id: 'work-tree', label: 'Work tree', icon: Network, path: '/work-tree', tiers: ['portfolio', 'program'] },
+  { id: 'objective-tree', label: 'Objective tree', icon: Workflow, path: tier === 'portfolio' ? '/portfolio/okr-hub' : tier === 'program' ? '/program/okr-hub' : '/team/okr-hub', tiers: ['portfolio', 'program', 'team'] },
+  { id: 'work-tree', label: 'Work tree', icon: Share2, path: '/work-tree', tiers: ['portfolio', 'program'] },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: portfolioId ? `/portfolio/${portfolioId}/forecast` : '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
-  { id: 'program-board', label: 'Program Board', icon: Boxes, path: '/programs/program-board', tiers: ['program'] },
+  { id: 'program-board', label: 'Program Board', icon: Blocks, path: '/programs/program-board', tiers: ['program'] },
   { id: 'dependencies', label: 'Dependencies', icon: Link, path: '/dependencies', tiers: ['program'] },
-  { id: 'more-items', label: 'More items', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
+  { id: 'more-items', label: 'More items', icon: Blocks, path: '#', tiers: ['portfolio', 'program'], expandable: true },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['portfolio', 'program'] },
-  { id: 'more-pages', label: 'More pages', icon: Boxes, path: '#', tiers: ['portfolio', 'program'], expandable: true },
+  { id: 'more-pages', label: 'More pages', icon: Component, path: '#', tiers: ['portfolio', 'program'], expandable: true },
 ];
 
 interface LeftContextPanelProps {
@@ -325,16 +333,16 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto py-1">
-          {getFilteredMenuItems().map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            const isExpandable = item.expandable;
-            const isMoreItems = item.id === 'more-items';
-            const isReports = item.id === 'reports';
-            const isMorePages = item.id === 'more-pages';
+          <TooltipProvider delayDuration={0}>
+            {getFilteredMenuItems().map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.path);
+              const isExpandable = item.expandable;
+              const isMoreItems = item.id === 'more-items';
+              const isReports = item.id === 'reports';
+              const isMorePages = item.id === 'more-pages';
 
-            return (
-              <div key={item.id}>
+              const menuButton = (
                 <button
                   onClick={() => {
                     if (isExpandable) {
@@ -349,7 +357,6 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     active && "bg-accent text-primary font-medium",
                     expanded ? "px-4 py-2.5" : "justify-center px-0 py-3"
                   )}
-                  title={!expanded ? item.label : undefined}
                 >
                   <Icon className={cn(
                     "flex-shrink-0",
@@ -367,8 +374,24 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     />
                   )}
                 </button>
+              );
 
-                {/* More items submenu - only for Enterprise tier */}
+              return (
+                <div key={item.id}>
+                  {!expanded ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        {menuButton}
+                      </TooltipTrigger>
+                      <TooltipContent side="right" className="z-[100]">
+                        <p>{item.label}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    menuButton
+                  )}
+
+                  {/* More items submenu - only for Enterprise tier */}
                 {isMoreItems && moreItemsExpanded && expanded && tier === 'enterprise' && (
                   <div className="bg-accent/20">
                     {moreItemsSubMenu.map((subItem) => (
@@ -427,6 +450,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
               </div>
             );
           })}
+          </TooltipProvider>
         </nav>
 
         {/* Footer */}
