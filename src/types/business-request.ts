@@ -122,6 +122,10 @@ export interface BusinessRequest {
   expected_resume_date: string | null;
   on_hold_comment: string | null;
   
+  // Ranking
+  rank: number | null;
+  rank_override_justification: string | null;
+  
   // Metadata
   created_at: string;
   updated_at: string;

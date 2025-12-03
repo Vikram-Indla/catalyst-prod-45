@@ -277,6 +277,8 @@ export type Database = {
           process_step: string | null
           proposed_solution: string | null
           qa_remarks: string | null
+          rank: number | null
+          rank_override_justification: string | null
           readiness_checklist: Json | null
           request_key: string | null
           requestor: string | null
@@ -336,6 +338,8 @@ export type Database = {
           process_step?: string | null
           proposed_solution?: string | null
           qa_remarks?: string | null
+          rank?: number | null
+          rank_override_justification?: string | null
           readiness_checklist?: Json | null
           request_key?: string | null
           requestor?: string | null
@@ -395,6 +399,8 @@ export type Database = {
           process_step?: string | null
           proposed_solution?: string | null
           qa_remarks?: string | null
+          rank?: number | null
+          rank_override_justification?: string | null
           readiness_checklist?: Json | null
           request_key?: string | null
           requestor?: string | null
