@@ -385,9 +385,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             )}
           </div>
           <Button 
-            variant="outline" 
             size="sm" 
-            className="mt-2"
+            className="mt-2 bg-brand-gold hover:bg-brand-gold-hover text-white"
             onClick={() => setAddPIOpen(true)}
           >
             <Plus className="h-3 w-3 mr-1" />
