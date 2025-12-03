@@ -29,7 +29,22 @@ interface BusinessScoreTabProps {
   onChange: (field: string, value: any) => void;
 }
 
+// Check if demand details are complete
+const isDemandDetailsComplete = (data: any): boolean => {
+  return !!(
+    data.title && data.title.length >= 5 &&
+    data.description &&
+    data.requestor &&
+    data.delivery_track_parent &&
+    data.track &&
+    data.start_date &&
+    data.impl_start_date &&
+    data.end_date
+  );
+};
+
 export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
+  const demandComplete = isDemandDetailsComplete(data);
   const executiveUrgency = data.executive_urgency ?? 5;
   const businessValue = data.business_value ?? 5;
   const complexity = data.complexity_score ?? 5;
@@ -50,8 +65,27 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
 
   return (
     <div className="space-y-6 p-5">
+      {/* Warning Banner when Demand Details incomplete */}
+      {!demandComplete && (
+        <Card className="border-2 border-amber-400 rounded-lg bg-amber-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h4 className="font-bold text-amber-800 text-lg">Complete Demand Details First</h4>
+                <p className="text-sm text-amber-700">
+                  Please fill in all required fields in the Demand Details tab before scoring this demand.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Priority Banner for High Scores */}
-      {businessScore >= 90 && (
+      {demandComplete && businessScore >= 90 && (
         <Card className="border-2 border-green-500 rounded-lg bg-green-50">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -69,7 +103,7 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
         </Card>
       )}
 
-      {businessScore >= 75 && businessScore < 90 && (
+      {demandComplete && businessScore >= 75 && businessScore < 90 && (
         <Card className="border-2 border-emerald-500 rounded-lg bg-emerald-50">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
@@ -107,8 +141,9 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
                   <Select
                     value={String(executiveUrgency)}
                     onValueChange={(value) => onChange('executive_urgency', parseInt(value))}
+                    disabled={!demandComplete}
                   >
-                    <SelectTrigger className="mt-2 w-full">
+                    <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border shadow-lg z-50">
@@ -136,8 +171,9 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
                   <Select
                     value={String(businessValue)}
                     onValueChange={(value) => onChange('business_value', parseInt(value))}
+                    disabled={!demandComplete}
                   >
-                    <SelectTrigger className="mt-2 w-full">
+                    <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border shadow-lg z-50">
@@ -165,8 +201,9 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
                   <Select
                     value={String(complexity)}
                     onValueChange={(value) => onChange('complexity_score', parseInt(value))}
+                    disabled={!demandComplete}
                   >
-                    <SelectTrigger className="mt-2 w-full">
+                    <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border shadow-lg z-50">
