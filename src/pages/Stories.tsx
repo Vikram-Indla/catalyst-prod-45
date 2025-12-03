@@ -209,43 +209,44 @@ export default function Stories() {
     <div className="h-full w-full flex flex-col bg-background overflow-hidden">
       {/* Header */}
       <div className="flex-none border-b bg-card">
-        <div className="flex items-center justify-between p-4">
-          <div>
-            <h1 className="text-2xl font-semibold">Stories</h1>
-            <p className="text-sm text-muted-foreground">Manage user stories across teams</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:p-4 gap-3">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-semibold">Stories</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Manage user stories across teams</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'list' | 'kanban')}>
-              <TabsList>
-                <TabsTrigger value="list">
-                  <List className="h-4 w-4 mr-2" />
-                  List
+              <TabsList className="h-8 sm:h-9">
+                <TabsTrigger value="list" className="text-xs sm:text-sm px-2 sm:px-3">
+                  <List className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">List</span>
                 </TabsTrigger>
-                <TabsTrigger value="kanban">
-                  <LayoutGrid className="h-4 w-4 mr-2" />
-                  Kanban
+                <TabsTrigger value="kanban" className="text-xs sm:text-sm px-2 sm:px-3">
+                  <LayoutGrid className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Kanban</span>
                 </TabsTrigger>
               </TabsList>
             </Tabs>
             <PermissionGuard requiredRole="user" showMessage={false}>
-              <Button onClick={handleCreate}>
-                <Plus className="h-4 w-4 mr-2" />
-                Create Story
+              <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm">
+                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Create Story</span>
+                <span className="sm:hidden">New</span>
               </Button>
             </PermissionGuard>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-3 px-4 pb-4 flex-wrap">
+        <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 pb-3 sm:pb-4 flex-wrap overflow-x-auto">
           <Input
-            placeholder="Search stories..."
+            placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-sm"
+            className="w-full sm:w-auto sm:max-w-sm min-w-[120px]"
           />
           <Select value={programFilter} onValueChange={setProgramFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[140px] sm:w-[180px] text-xs sm:text-sm">
               <SelectValue placeholder="All Programs" />
             </SelectTrigger>
             <SelectContent>
@@ -258,7 +259,7 @@ export default function Stories() {
             </SelectContent>
           </Select>
           <Select value={teamFilter} onValueChange={setTeamFilter}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[140px] sm:w-[180px] text-xs sm:text-sm">
               <SelectValue placeholder="All Teams" />
             </SelectTrigger>
             <SelectContent>
@@ -271,8 +272,8 @@ export default function Stories() {
             </SelectContent>
           </Select>
           <Select value={statusFilter || 'all'} onValueChange={(value) => setStatusFilter(value === 'all' ? '' : value)}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="All Status" />
+            <SelectTrigger className="w-[120px] sm:w-[150px] text-xs sm:text-sm">
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Status</SelectItem>
@@ -283,13 +284,13 @@ export default function Stories() {
               <SelectItem value="blocked">Blocked</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" onClick={() => setFiltersOpen(true)}>
-            <Filter className="h-4 w-4 mr-2" />
-            More
+          <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={() => setFiltersOpen(true)}>
+            <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+            <span className="hidden sm:inline">More</span>
           </Button>
-          <Button variant="outline" onClick={() => setColumnConfigOpen(true)}>
-            <Columns className="h-4 w-4 mr-2" />
-            Columns
+          <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={() => setColumnConfigOpen(true)}>
+            <Columns className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Columns</span>
           </Button>
         </div>
 

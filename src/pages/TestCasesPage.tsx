@@ -50,8 +50,8 @@ export const TestCasesPage: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Folder sidebar with design tokens */}
-      <div className={`${isSidebarCollapsed ? 'w-16' : 'w-[var(--sidebar-w)]'} transition-all duration-300 border-r border-border`}>
+      {/* Folder sidebar - hidden on mobile, shown on lg+ */}
+      <div className={`hidden lg:block ${isSidebarCollapsed ? 'w-16' : 'w-[var(--sidebar-w)]'} transition-all duration-300 border-r border-border flex-shrink-0`}>
         <FolderPanel
           entityType="test_cases"
           folders={foldersData || []}
@@ -63,7 +63,7 @@ export const TestCasesPage: React.FC = () => {
         />
       </div>
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         <TestCaseHeader
           onCreateTestCase={() => setIsCreateModalOpen(true)}
           filters={filters}

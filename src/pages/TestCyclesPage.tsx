@@ -63,9 +63,9 @@ export function TestCyclesPage() {
   return (
     <>
       <div className="flex h-screen overflow-hidden">
-        {/* Folder Panel with design tokens */}
+        {/* Folder Panel - hidden on mobile */}
         <div 
-          className="transition-all duration-300 border-r border-border bg-background"
+          className="hidden lg:block transition-all duration-300 border-r border-border bg-background flex-shrink-0"
           style={{ 
             width: isSidebarCollapsed ? '64px' : 'var(--sidebar-w)',
             minWidth: isSidebarCollapsed ? '64px' : 'var(--sidebar-w)'
@@ -83,11 +83,11 @@ export function TestCyclesPage() {
         </div>
 
         {/* Main Content with responsive container */}
-        <div className="flex-1 overflow-auto">
-          <div className="container mx-auto px-[var(--s4)] sm:px-[var(--s8)] py-[var(--s8)]">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-[var(--s6)] gap-[var(--s4)]">
-              <div>
-                <h1 className="text-3xl font-bold text-foreground">Test Cycles</h1>
+        <div className="flex-1 overflow-auto min-w-0">
+          <div className="container mx-auto px-3 sm:px-[var(--s8)] py-4 sm:py-[var(--s8)]">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-[var(--s6)] gap-3">
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground">Test Cycles</h1>
                 <p className="text-muted-foreground mt-1">
                   Organize and track test execution across sprints and releases
                 </p>

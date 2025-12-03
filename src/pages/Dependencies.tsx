@@ -123,73 +123,74 @@ export default function Dependencies() {
   };
 
   return (
-    <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold">Dependencies</h1>
-          <p className="text-sm text-muted-foreground">Advanced dependency tracking with critical path analysis</p>
+    <div className="px-3 sm:px-[var(--s6)] py-3 sm:py-[var(--s6)] space-y-3 sm:space-y-[var(--s6)]">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Dependencies</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Advanced dependency tracking with critical path analysis</p>
         </div>
         <PermissionGuard requiredRole="team_lead" showMessage={false}>
-          <Button onClick={() => { setEditingDependencyId(undefined); setDialogOpen(true); }} className="w-full sm:w-auto">
-            <Plus className="h-4 w-4 mr-2" />
-            Create Dependency
+          <Button onClick={() => { setEditingDependencyId(undefined); setDialogOpen(true); }} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm w-full sm:w-auto">
+            <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Create Dependency</span>
+            <span className="sm:hidden ml-1">Create</span>
           </Button>
         </PermissionGuard>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-[var(--s3)] sm:gap-[var(--s4)]">
-        <Card className="px-[var(--s4)] py-[var(--s4)]">
-          <div className="flex items-center gap-[var(--s3)]">
-            <ArrowRight className="h-8 w-8 text-muted-foreground" />
-            <div>
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <div className="text-sm text-muted-foreground">Total</div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-[var(--s4)]">
+        <Card className="px-3 sm:px-[var(--s4)] py-3 sm:py-[var(--s4)]">
+          <div className="flex items-center gap-2 sm:gap-[var(--s3)]">
+            <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground flex-shrink-0" />
+            <div className="min-w-0">
+              <div className="text-xl sm:text-2xl font-bold">{stats.total}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground truncate">Total</div>
             </div>
           </div>
         </Card>
-        <Card className="p-4 border-destructive/20">
-          <div className="flex items-center gap-3">
-            <AlertCircle className="h-8 w-8 text-destructive" />
-            <div>
-              <div className="text-2xl font-bold">{stats.critical}</div>
-              <div className="text-sm text-muted-foreground">High Risk</div>
+        <Card className="px-3 sm:p-4 py-3 border-destructive/20">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-destructive flex-shrink-0" />
+            <div className="min-w-0">
+              <div className="text-xl sm:text-2xl font-bold">{stats.critical}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground truncate">High Risk</div>
             </div>
           </div>
         </Card>
-        <Card className="p-4 border-warning/20">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="h-8 w-8 text-warning" />
-            <div>
-              <div className="text-2xl font-bold">{stats.open}</div>
-              <div className="text-sm text-muted-foreground">Open</div>
+        <Card className="px-3 sm:p-4 py-3 border-warning/20">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <AlertTriangle className="h-6 w-6 sm:h-8 sm:w-8 text-warning flex-shrink-0" />
+            <div className="min-w-0">
+              <div className="text-xl sm:text-2xl font-bold">{stats.open}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground truncate">Open</div>
             </div>
           </div>
         </Card>
-        <Card className="p-4 border-primary/20">
-          <div className="flex items-center gap-3">
-            <Network className="h-8 w-8 text-primary" />
-            <div>
-              <div className="text-2xl font-bold">{stats.crossProgram}</div>
-              <div className="text-sm text-muted-foreground">Cross-Program</div>
+        <Card className="px-3 sm:p-4 py-3 border-primary/20">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Network className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
+            <div className="min-w-0">
+              <div className="text-xl sm:text-2xl font-bold">{stats.crossProgram}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground truncate">Cross-Program</div>
             </div>
           </div>
         </Card>
-        <Card className="p-4 border-primary/20">
-          <div className="flex items-center gap-3">
-            <AlertCircle className="h-8 w-8 text-primary" />
-            <div>
-              <div className="text-2xl font-bold">{stats.criticalPath}</div>
-              <div className="text-sm text-muted-foreground">Critical Path</div>
+        <Card className="px-3 sm:p-4 py-3 border-primary/20 col-span-2 sm:col-span-1">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-primary flex-shrink-0" />
+            <div className="min-w-0">
+              <div className="text-xl sm:text-2xl font-bold">{stats.criticalPath}</div>
+              <div className="text-xs sm:text-sm text-muted-foreground truncate">Critical Path</div>
             </div>
           </div>
         </Card>
       </div>
 
       <Tabs defaultValue="all">
-        <TabsList>
-          <TabsTrigger value="all">All Dependencies</TabsTrigger>
-          <TabsTrigger value="critical">Critical Path</TabsTrigger>
-          <TabsTrigger value="cross-program">Cross-Program</TabsTrigger>
+        <TabsList className="w-full sm:w-auto overflow-x-auto">
+          <TabsTrigger value="all" className="text-xs sm:text-sm">All</TabsTrigger>
+          <TabsTrigger value="critical" className="text-xs sm:text-sm">Critical</TabsTrigger>
+          <TabsTrigger value="cross-program" className="text-xs sm:text-sm">Cross-Program</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-[var(--s3)] sm:space-y-[var(--s4)]">
