@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Info } from 'lucide-react';
+import { Info, AlertTriangle, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Score options 0-10
@@ -47,10 +47,46 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
   }, [normalizedBusinessValue, normalizedUrgency, normalizedSimplicity]);
 
   const rank = getRank(businessScore);
-  const scoreColor = getScoreColor(businessScore);
 
   return (
     <div className="space-y-6 p-5">
+      {/* Priority Banner for High Scores */}
+      {businessScore >= 90 && (
+        <Card className="border-2 border-green-500 rounded-lg bg-green-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+                <Zap className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h4 className="font-bold text-green-800 text-lg">MUST-DO NOW</h4>
+                <p className="text-sm text-green-700">
+                  This demand has scored {businessScore}/100 and should be prioritized immediately for execution.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {businessScore >= 75 && businessScore < 90 && (
+        <Card className="border-2 border-emerald-500 rounded-lg bg-emerald-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
+                <AlertTriangle className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h4 className="font-bold text-emerald-800 text-lg">HIGH PRIORITY</h4>
+                <p className="text-sm text-emerald-700">
+                  This demand has scored {businessScore}/100 and should be considered as a high priority item.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid grid-cols-2 gap-6">
         {/* Left Column - Inputs */}
         <div className="space-y-6">
@@ -75,7 +111,7 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
                     <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border shadow-lg z-50">
                       {SCORE_OPTIONS.map((opt) => (
                         <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
                       ))}
@@ -104,7 +140,7 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
                     <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border shadow-lg z-50">
                       {SCORE_OPTIONS.map((opt) => (
                         <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
                       ))}
@@ -133,7 +169,7 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
                     <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-popover border shadow-lg z-50">
                       {SCORE_OPTIONS.map((opt) => (
                         <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
                       ))}
@@ -146,32 +182,6 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
                 )}>
                   {Math.round(normalizedSimplicity * 100)}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Normalized Contributions */}
-          <Card className="border border-border/60 rounded-lg bg-card">
-            <CardContent className="p-5 space-y-3">
-              <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">
-                Normalized Contributions
-              </h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Normalized Urgency (0–1):</span>
-                  <span className="font-medium">{normalizedUrgency.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-border/40">
-                  <span className="text-muted-foreground">Normalized Business Value (0–1):</span>
-                  <span className="font-medium">{normalizedBusinessValue.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between py-1">
-                  <span className="text-muted-foreground">Normalized Simplicity (0–1):</span>
-                  <span className="font-medium">{normalizedSimplicity.toFixed(2)}</span>
-                </div>
-                <p className="text-xs text-muted-foreground pt-2">
-                  (Simplicity = (10 - Complexity) / 10)
-                </p>
               </div>
             </CardContent>
           </Card>
@@ -200,13 +210,6 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
                 )}>
                   Business Rank: {rank.label}
                 </span>
-              </div>
-
-              <div className="pt-4 border-t border-border/40 space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Formula:</p>
-                <code className="block text-xs bg-muted/50 p-2 rounded">
-                  round((0.45 × Business Value) + (0.35 × Urgency) + (0.20 × Simplicity) × 100)
-                </code>
               </div>
 
               <div className="pt-4 border-t border-border/40">
