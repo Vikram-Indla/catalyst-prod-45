@@ -47,7 +47,7 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
 const PriorityBadge: React.FC<{ priority: string }> = ({ priority }) => {
   const colors = {
     critical: 'bg-red-500 text-white',
-    high: 'bg-orange-500 text-brand-dark',
+    high: 'bg-orange-500 text-white',
     medium: 'bg-blue-500 text-white',
     low: 'bg-gray-500 text-white'
   };

@@ -208,7 +208,7 @@ export const TestDataTable: React.FC<TestDataTableProps> = ({ testCaseId }) => {
         <Button
           onClick={handleAddParameter}
           disabled={createParamMutation.isPending}
-          className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+          className="bg-brand-gold text-white hover:bg-brand-gold-hover"
         >
           <Plus className="h-4 w-4 mr-2" />
           Add Parameter
@@ -295,7 +295,7 @@ export const TestDataTable: React.FC<TestDataTableProps> = ({ testCaseId }) => {
           <div className="p-4 border-t border-border bg-muted/30">
             <Button
               onClick={handleAddRow}
-              className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+              className="bg-brand-gold text-white hover:bg-brand-gold-hover"
               disabled={parameters.length === 0}
             >
               <Plus className="h-4 w-4 mr-2" />

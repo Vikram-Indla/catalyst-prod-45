@@ -128,7 +128,7 @@ export const BulkExecuteModal: React.FC<BulkExecuteModalProps> = ({
           <Button
             onClick={handleExecute}
             disabled={isLoading || !selectedStatus}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
           >
             {isLoading ? 'Executing...' : 'Execute'}
           </Button>

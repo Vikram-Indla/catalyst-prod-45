@@ -19,7 +19,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({ onCreateClick }) => {
         Create your first test case to get started with test management
       </p>
       <Button 
-        className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+        className="bg-brand-gold text-white hover:bg-brand-gold-hover"
         onClick={onCreateClick}
       >
         Create Test Case

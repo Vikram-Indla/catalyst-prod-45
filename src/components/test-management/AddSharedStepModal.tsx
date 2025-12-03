@@ -146,7 +146,7 @@ export const AddSharedStepModal: React.FC<AddSharedStepModalProps> = ({
           <Button
             onClick={handleAdd}
             disabled={!selectedStep || addMutation.isPending}
-            className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+            className="bg-brand-gold text-white hover:bg-brand-gold-hover"
           >
             {addMutation.isPending ? (
               <>Adding...</>

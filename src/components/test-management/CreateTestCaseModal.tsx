@@ -397,7 +397,7 @@ export const CreateTestCaseModal: React.FC<CreateTestCaseModalProps> = ({
             </Button>
             <Button
               type="submit"
-              className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+              className="bg-brand-gold text-white hover:bg-brand-gold-hover"
               disabled={createMutation.isPending}
             >
               {createMutation.isPending ? 'Saving...' : 'Save Test Case'}

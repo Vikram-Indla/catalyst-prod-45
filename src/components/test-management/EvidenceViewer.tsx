@@ -93,7 +93,7 @@ export const EvidenceViewer: React.FC<EvidenceViewerProps> = ({
         <p className="text-muted-foreground">Preview not available for this file type</p>
         <Button
           onClick={handleDownload}
-          className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+          className="bg-brand-gold text-white hover:bg-brand-gold-hover"
         >
           <Download className="h-4 w-4 mr-2" />
           Download File

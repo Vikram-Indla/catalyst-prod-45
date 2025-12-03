@@ -325,7 +325,7 @@ export const TestExecutionModal: React.FC<TestExecutionModalProps> = ({
           <Button
             onClick={handleSaveExecution}
             disabled={createExecutionMutation.isPending}
-            className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+            className="bg-brand-gold text-white hover:bg-brand-gold-hover"
           >
             {createExecutionMutation.isPending ? 'Saving...' : 'Save Execution'}
           </Button>

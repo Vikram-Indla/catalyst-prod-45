@@ -55,7 +55,7 @@ export const TestCaseHeader: React.FC<TestCaseHeaderProps> = ({
             <Button
               onClick={onCreateTestCase}
               size="sm"
-              className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover h-8 sm:h-9 text-xs sm:text-sm"
+              className="bg-brand-gold text-white hover:bg-brand-gold-hover h-8 sm:h-9 text-xs sm:text-sm"
             >
               <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
               <span className="hidden sm:inline">New Test Case</span>

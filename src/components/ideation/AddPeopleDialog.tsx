@@ -221,7 +221,7 @@ export function AddPeopleDialog({
           <Button
             onClick={handleSave}
             disabled={addMember.isPending || removeMember.isPending}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
           >
             Save
           </Button>

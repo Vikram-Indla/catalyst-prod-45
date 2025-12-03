@@ -166,7 +166,7 @@ export const DataRowEditor: React.FC<DataRowEditorProps> = ({
           <Button
             onClick={handleSave}
             disabled={createMutation.isPending || updateMutation.isPending}
-            className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+            className="bg-brand-gold text-white hover:bg-brand-gold-hover"
           >
             {createMutation.isPending || updateMutation.isPending ? 'Saving...' : 'Save'}
           </Button>
