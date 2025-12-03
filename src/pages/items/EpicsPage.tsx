@@ -613,7 +613,7 @@ export default function EpicsPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)] border-b">
+      <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)] border-b bg-card">
         <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -670,7 +670,7 @@ export default function EpicsPage() {
           <Card>
             <CardContent className="p-0">
               <Table>
-              <TableHeader>
+              <TableHeader className="bg-muted/30">
                 <TableRow>
                   <TableHead className="w-12">
                     <Checkbox
