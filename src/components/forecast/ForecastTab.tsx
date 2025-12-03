@@ -259,6 +259,23 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     return forecasts.reduce((sum, f) => sum + (f.estimate || 0), 0);
   };
 
+  // Map estimation system to valid database unit values
+  // Database constraint: CHECK unit IN ('points', 'team_weeks', 'member_weeks')
+  const getDbUnit = (system: EstimationSystem): string => {
+    switch (system) {
+      case 'points':
+      case 'wsjf':
+        return 'points';
+      case 'tshirt':
+      case 'team_weeks':
+        return 'team_weeks';
+      case 'member_weeks':
+        return 'member_weeks';
+      default:
+        return 'points';
+    }
+  };
+
   const handleEstimateChange = (
     programId: string | undefined,
     teamId: string | undefined,
@@ -267,13 +284,12 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     if (!selectedPiId) return;
     
     let estimate: number;
-    let unit = getUnitLabel(estimationSystem).toLowerCase();
+    let unit = getDbUnit(estimationSystem);
     
     if (estimationSystem === 'tshirt') {
       // For T-Shirt, convert to team weeks for storage
       const option = TSHIRT_OPTIONS.find(o => o.value === value);
       estimate = option?.teamWeeks || 0;
-      unit = 'team_weeks';
     } else {
       estimate = parseFloat(value) || 0;
     }
