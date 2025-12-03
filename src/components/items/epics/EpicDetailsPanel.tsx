@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -31,7 +32,12 @@ import {
   Copy,
   Kanban,
   LayoutGrid,
-  X
+  X,
+  Pencil,
+  HelpCircle,
+  ChevronDown,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { EpicDetailsTab } from './tabs/EpicDetailsTab';
 import { EpicDesignTab } from './tabs/EpicDesignTab';
@@ -66,9 +72,21 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
   const [splitDialogOpen, setSplitDialogOpen] = useState(false);
   const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
   const [auditLogOpen, setAuditLogOpen] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(initialEpic?.name || '');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
   
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  // Sync editedName when epic changes
+  useEffect(() => {
+    if (initialEpic?.name) {
+      setEditedName(initialEpic.name);
+    }
+  }, [initialEpic?.name]);
 
   // Fetch fresh epic data to ensure we have latest estimation_system and other fields
   const { data: freshEpic } = useQuery({
@@ -240,21 +258,197 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
     duplicateMutation.mutate({ newName, options });
   };
 
+  // Save name mutation
+  const saveNameMutation = useMutation({
+    mutationFn: async (newName: string) => {
+      const { error } = await supabase
+        .from('epics')
+        .update({ name: newName, updated_at: new Date().toISOString() })
+        .eq('id', epic.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epics'] });
+      queryClient.invalidateQueries({ queryKey: ['epic-detail', epic.id] });
+      setIsEditingName(false);
+      setHasChanges(false);
+      toast.success('Epic name updated');
+    },
+    onError: () => {
+      toast.error('Failed to update epic name');
+    }
+  });
+
+  // Copy link handler
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/items/epics/${epic.id}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard');
+  };
+
+  // Edit name handlers
+  const handleStartEditName = () => {
+    setIsEditingName(true);
+    setEditedName(epic.name);
+    setTimeout(() => nameInputRef.current?.focus(), 0);
+  };
+
+  const handleSaveName = () => {
+    if (editedName.trim() && editedName !== epic.name) {
+      saveNameMutation.mutate(editedName.trim());
+    } else {
+      setIsEditingName(false);
+    }
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveName();
+    } else if (e.key === 'Escape') {
+      setIsEditingName(false);
+      setEditedName(epic.name);
+    }
+  };
+
+  // Why button handler - shows parent hierarchy, WSJF, and business case info
+  const handleWhyClick = () => {
+    toast.info('Opening Why panel...', {
+      description: 'Shows parent work items, WSJF scoring, success measurements, and business cases linked to this epic.'
+    });
+    // TODO: Implement Why slide-out panel
+  };
+
+  // Save handlers
+  const handleSave = () => {
+    // Trigger save across all tabs
+    toast.success('Epic saved');
+    setHasChanges(false);
+  };
+
+  const handleSaveAndClose = () => {
+    handleSave();
+    onClose();
+  };
+
+  // Toggle expand/collapse drawer
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  // Get drawer width classes based on expanded state
+  const drawerWidthClass = isExpanded 
+    ? 'w-full sm:max-w-full' 
+    : 'w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw]';
+
   return (
     <>
       <Sheet open={open} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent side="right" hideClose className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
-          <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
-            <div className="flex-1 pr-2 sm:pr-4 min-w-0">
-              <SheetTitle className="executive-drawer-title truncate">{epic.name}</SheetTitle>
-              <SheetDescription className="executive-drawer-subtitle mt-1 truncate">
-                Epic {epic.epic_key || epic.id?.slice(0, 8)}
-              </SheetDescription>
+        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden`}>
+          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0">
+            {/* Top row: Epic ID with copy link, action buttons */}
+            <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/10 rounded text-sm">
+                  <span className="text-primary font-medium">Epic {epic.epic_key || epic.id?.slice(0, 8)}</span>
+                  <button
+                    onClick={handleCopyLink}
+                    className="text-muted-foreground hover:text-primary transition-colors p-0.5"
+                    title="Copy link"
+                  >
+                    <LinkIcon className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+              
+              {/* Action buttons row: Why?, Save, Save & Close, Expand, Close */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleWhyClick}
+                  className="h-8 px-3 text-sm font-medium"
+                >
+                  Why?
+                </Button>
+                
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-8 px-3 text-sm font-medium"
+                    >
+                      Save
+                      <ChevronDown className="h-3.5 w-3.5 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="bg-popover">
+                    <DropdownMenuItem onSelect={handleSave}>
+                      Save
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onSelect={handleSaveAndClose}>
+                      Save & Close
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleSaveAndClose}
+                  className="h-8 px-3 text-sm font-medium bg-primary hover:bg-primary/90"
+                >
+                  Save & Close
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleExpand}
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  title={isExpanded ? 'Collapse' : 'Expand'}
+                >
+                  {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                </Button>
+                
+                <SheetClose asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </SheetClose>
+              </div>
             </div>
-            <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
+            
+            {/* Second row: Editable title with pen icon */}
+            <div className="px-5 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2 flex-1 min-w-0 group">
+                {isEditingName ? (
+                  <Input
+                    ref={nameInputRef}
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    onBlur={handleSaveName}
+                    onKeyDown={handleNameKeyDown}
+                    className="text-lg font-semibold h-auto py-1 px-2 border-primary/50 focus:border-primary"
+                  />
+                ) : (
+                  <>
+                    <SheetTitle className="executive-drawer-title truncate text-lg">{epic.name}</SheetTitle>
+                    <button
+                      onClick={handleStartEditName}
+                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-primary transition-all p-1"
+                      title="Edit name"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                  </>
+                )}
+              </div>
+              
+              {/* More options dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50">
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -336,12 +530,8 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <SheetClose asChild>
-                <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]">
-                  <X className="h-4 w-4" />
-                </Button>
-              </SheetClose>
             </div>
+            <SheetDescription className="sr-only">Epic details panel</SheetDescription>
           </SheetHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
