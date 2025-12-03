@@ -530,7 +530,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
                 const isExpanded = expandedPrograms.has(program.id);
                 
                 return (
-                  <Card key={program.id} className="overflow-hidden">
+                  <Card key={program.id} className="overflow-hidden border-brand-gold">
                     <Collapsible open={isExpanded} onOpenChange={() => toggleProgram(program.id)}>
                       <CollapsibleTrigger className="w-full">
                         <div className="flex items-center gap-2 p-3 hover:bg-muted/50 transition-colors">
