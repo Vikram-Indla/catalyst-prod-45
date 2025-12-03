@@ -257,14 +257,20 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
   };
 
   const getProgramTotal = (programId: string) => {
-    // Get teams for this program and sum their estimates
-    // Team estimates are saved with program_id=NULL but we need to find teams belonging to this program
+    // Get teams for this program
     const programTeams = teams.filter(t => t.program_id === programId);
-    const teamIds = new Set(programTeams.map(t => t.id));
+    const teamIds = programTeams.map(t => t.id);
     
-    return forecasts
-      .filter(f => f.team_id && teamIds.has(f.team_id))
-      .reduce((sum, f) => sum + (f.estimate || 0), 0);
+    // Sum estimates for all teams in this program
+    // Team estimates are stored with team_id set and program_id=NULL
+    let total = 0;
+    for (const teamId of teamIds) {
+      const entry = forecasts.find(f => f.team_id === teamId);
+      if (entry) {
+        total += entry.estimate || 0;
+      }
+    }
+    return total;
   };
 
   const getTotalEstimate = () => {
@@ -319,6 +325,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
   };
 
   // Render the appropriate input based on estimation system
+  // Using onBlur instead of onChange to prevent mutation on every keystroke
   const renderEstimateInput = (programId: string, teamId: string) => {
     const currentValue = getForecastValue(programId, teamId);
     
@@ -376,8 +383,8 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
               type="number"
               min="0"
               step="0.5"
-              value={currentValue}
-              onChange={(e) => handleEstimateChange(programId, teamId, e.target.value)}
+              defaultValue={currentValue}
+              onBlur={(e) => handleEstimateChange(programId, teamId, e.target.value)}
               placeholder="Estimate"
               className="w-24 h-8 text-sm"
             />
@@ -392,8 +399,8 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
               type="number"
               min="0"
               step="1"
-              value={currentValue}
-              onChange={(e) => handleEstimateChange(programId, teamId, e.target.value)}
+              defaultValue={currentValue}
+              onBlur={(e) => handleEstimateChange(programId, teamId, e.target.value)}
               placeholder="Estimate"
               className="w-24 h-8 text-sm"
             />
@@ -408,8 +415,8 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
               type="number"
               min="0"
               step="1"
-              value={currentValue}
-              onChange={(e) => handleEstimateChange(programId, teamId, e.target.value)}
+              defaultValue={currentValue}
+              onBlur={(e) => handleEstimateChange(programId, teamId, e.target.value)}
               placeholder="Job Size"
               className="w-24 h-8 text-sm"
             />
@@ -424,8 +431,8 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
               type="number"
               min="0"
               step="0.5"
-              value={currentValue}
-              onChange={(e) => handleEstimateChange(programId, teamId, e.target.value)}
+              defaultValue={currentValue}
+              onBlur={(e) => handleEstimateChange(programId, teamId, e.target.value)}
               placeholder="Estimate"
               className="w-24 h-8 text-sm"
             />
