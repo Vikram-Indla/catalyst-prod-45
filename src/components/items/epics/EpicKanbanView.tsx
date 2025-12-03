@@ -31,18 +31,33 @@ const STATE_COLUMNS = [
   { id: 'analyzing', label: 'Analyzing', color: 'bg-primary/10' },
   { id: 'portfolio_backlog', label: 'Portfolio Backlog', color: 'bg-warning/10' },
   { id: 'implementing', label: 'Implementing', color: 'bg-success/10' },
-  { id: 'validating_in_production', label: 'Validating', color: 'bg-workitem-theme/10' },
-  { id: 'done', label: 'Done', color: 'bg-success/20' },
 ];
+
+// Map database state values to Kanban column IDs
+const STATE_TO_COLUMN: Record<string, string> = {
+  'not_started': 'funnel',
+  'funnel': 'funnel',
+  'analyzing': 'analyzing',
+  'in_progress': 'implementing',
+  'implementing': 'implementing',
+  'portfolio_backlog': 'portfolio_backlog',
+  'accepted': 'implementing',
+  'done': 'implementing',
+};
+
+const getColumnId = (state: string | null | undefined): string => {
+  if (!state) return 'funnel';
+  return STATE_TO_COLUMN[state.toLowerCase()] || 'funnel';
+};
 
 export function EpicKanbanView({ epics, onEpicClick, onContextMenu }: EpicKanbanViewProps) {
   const queryClient = useQueryClient();
   
-  // Sync columns with epics prop changes
+  // Group epics by mapped column ID
   const columns = (() => {
     const cols: Record<string, Epic[]> = {};
     STATE_COLUMNS.forEach(col => {
-      cols[col.id] = epics.filter(e => e.state === col.id || (!e.state && col.id === 'funnel'));
+      cols[col.id] = epics.filter(e => getColumnId(e.state) === col.id);
     });
     return cols;
   })();
