@@ -178,26 +178,69 @@ function ROIAnalysisModal({
   onClose, 
   epic, 
   allEpics, 
-  fieldScores, 
-  averages,
-  valueScore
+  averages
 }: {
   isOpen: boolean;
   onClose: () => void;
   epic: any;
   allEpics: any[];
-  fieldScores: Record<string, number>;
   averages: Record<string, number>;
-  valueScore: number;
 }) {
   const [selectedEpicId, setSelectedEpicId] = useState(epic.id);
   
+  // Reset selected epic when modal opens with different epic
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedEpicId(epic.id);
+    }
+  }, [epic.id, isOpen]);
+  
+  // Fetch ROI scores for the selected epic dynamically
+  const { data: selectedEpicScores } = useQuery({
+    queryKey: ['epic-roi-scores-modal', selectedEpicId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('epic_roi_scores')
+        .select('*')
+        .eq('epic_id', selectedEpicId)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: isOpen && !!selectedEpicId
+  });
+
   const sortedEpics = useMemo(() => {
     return [...allEpics].sort((a, b) => (b.score || 0) - (a.score || 0));
   }, [allEpics]);
 
   const currentIndex = sortedEpics.findIndex(e => e.id === selectedEpicId);
   const selectedEpic = sortedEpics.find(e => e.id === selectedEpicId) || epic;
+
+  // Compute field scores dynamically from fetched data
+  const dynamicFieldScores = useMemo(() => {
+    const scores: Record<string, number> = {};
+    if (selectedEpicScores) {
+      scores.cost = selectedEpicScores.cost_score || 66;
+      scores.profit_potential = selectedEpicScores.profit_potential_score || 66;
+      scores.time_to_market = selectedEpicScores.time_to_market_score || 66;
+      scores.development_risks = selectedEpicScores.development_risks_score || 66;
+    } else {
+      // Default scores if no data
+      scores.cost = 66;
+      scores.profit_potential = 66;
+      scores.time_to_market = 66;
+      scores.development_risks = 66;
+    }
+    return scores;
+  }, [selectedEpicScores]);
+
+  // Compute dynamic value score
+  const dynamicValueScore = useMemo(() => {
+    if (selectedEpicScores?.value_score) return selectedEpicScores.value_score;
+    const scores = Object.values(dynamicFieldScores);
+    return scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length * 10) / 10 : 0;
+  }, [selectedEpicScores, dynamicFieldScores]);
 
   const goToPrev = () => {
     if (currentIndex > 0) {
@@ -214,7 +257,7 @@ function ROIAnalysisModal({
   const avgScore = allEpics.length > 0 
     ? Math.round(allEpics.reduce((sum, e) => sum + (e.score || 0), 0) / allEpics.length) 
     : 0;
-  const percentDiff = avgScore > 0 ? Math.round(((valueScore - avgScore) / avgScore) * 100) : 0;
+  const percentDiff = avgScore > 0 ? Math.round(((dynamicValueScore - avgScore) / avgScore) * 100) : 0;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -278,7 +321,7 @@ function ROIAnalysisModal({
                 {/* Value Score Card */}
                 <div className="bg-card border border-border rounded-lg p-6 text-center min-w-[200px] shadow-sm">
                   <p className="text-sm text-muted-foreground mb-2">Value Score:</p>
-                  <p className="text-5xl font-bold text-brand-gold mb-3">{valueScore}</p>
+                  <p className="text-5xl font-bold text-brand-gold mb-3">{dynamicValueScore}</p>
                   <p className="text-sm text-muted-foreground mb-3">(Average: {avgScore})</p>
                   {percentDiff !== 0 && (
                     <p className="text-xs text-foreground leading-relaxed">
@@ -291,7 +334,7 @@ function ROIAnalysisModal({
 
                 {/* Diamond Chart */}
                 <div className="px-20 py-10">
-                  <DiamondChart scores={fieldScores} averages={averages} />
+                  <DiamondChart scores={dynamicFieldScores} averages={averages} />
                 </div>
               </div>
 
@@ -326,8 +369,8 @@ function ROIAnalysisModal({
                     key={field.id}
                     number={field.number}
                     label={field.label}
-                    score={fieldScores[field.id] || 66}
-                    level={getOptionFromScore(fieldScores[field.id], field.scoreType)}
+                    score={dynamicFieldScores[field.id] || 66}
+                    level={getOptionFromScore(dynamicFieldScores[field.id], field.scoreType)}
                     average={averages[field.id] || 50}
                   />
                 ))}
@@ -565,9 +608,7 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
         onClose={() => setShowAnalysis(false)}
         epic={epic}
         allEpics={allEpicsWithScores || [{ id: epic.id, name: epic.name, epic_key: epic.epic_key, score: valueScore }]}
-        fieldScores={fieldScores}
         averages={averages}
-        valueScore={valueScore}
       />
     </div>
   );
