@@ -230,17 +230,15 @@ export function CatalystHeader() {
 
             {/* Tests Dropdown - Only visible in program context */}
             {showTestsDropdown && <TestsDropdown isActive />}
+
+            {/* Items Dropdown - After Starred */}
+            <ItemsDropdown />
           </nav>
 
           {/* Right Side Actions - Compact on mobile, full on desktop */}
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Create Button - Always visible */}
             <CreateDropdown />
-
-            {/* Items Dropdown - Tablet and up */}
-            <div className="hidden md:block">
-              <ItemsDropdown />
-            </div>
 
             <TooltipProvider>
               {/* Notifications - Always visible */}
