@@ -9,7 +9,7 @@ import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { ThemeDialog } from '@/components/forms/ThemeDialog';
 import { ImportDialog } from '@/components/shared/ImportDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Edit } from 'lucide-react';
 import { exportToCSV } from '@/lib/exportUtils';
@@ -122,24 +122,25 @@ export default function Themes() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-background">
-      {/* Header with responsive padding and design tokens */}
-      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)]">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
-          <div>
-            <h1 className="text-2xl font-bold">Strategic Themes</h1>
-            <p className="text-sm text-muted-foreground">High-level strategic investment areas</p>
+    <div className="h-full flex flex-col bg-background overflow-hidden">
+      {/* Header */}
+      <div className="border-b bg-card">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-[var(--s4)] sm:px-[var(--s6)] h-14 gap-[var(--s3)]">
+          <div className="flex items-center gap-[var(--s3)]">
+            <h1 className="text-lg font-semibold">Strategic Themes</h1>
           </div>
-          <PermissionGuard requiredRole="team_lead" showMessage={false}>
-            <Button onClick={handleCreate}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Theme
-            </Button>
-          </PermissionGuard>
+          <div className="flex items-center gap-[var(--s2)]">
+            <PermissionGuard requiredRole="team_lead" showMessage={false}>
+              <Button onClick={handleCreate} size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                New Theme
+              </Button>
+            </PermissionGuard>
+          </div>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)] overflow-hidden">
+      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
         {/* Filter Bar with responsive layout */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s4)]">
           <div className="relative flex-1 max-w-sm">
@@ -163,8 +164,11 @@ export default function Themes() {
         />
 
         {/* Data Grid */}
-        <Card className="flex-1 overflow-hidden">
-          <CardContent className="p-0 h-full overflow-auto">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Themes List</CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30">
