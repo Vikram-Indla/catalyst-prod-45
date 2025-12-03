@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { 
@@ -30,7 +30,8 @@ import {
   XCircle,
   Copy,
   Kanban,
-  LayoutGrid
+  LayoutGrid,
+  X
 } from 'lucide-react';
 import { EpicDetailsTab } from './tabs/EpicDetailsTab';
 import { EpicDesignTab } from './tabs/EpicDesignTab';
@@ -242,7 +243,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
   return (
     <>
       <Sheet open={open} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
+        <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden [&>[data-radix-dialog-close]]:hidden">
           <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
             <div className="flex-1 pr-2 sm:pr-4 min-w-0">
               <SheetTitle className="executive-drawer-title truncate">{epic.name}</SheetTitle>
@@ -335,6 +336,11 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <SheetClose asChild>
+                <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]">
+                  <X className="h-4 w-4" />
+                </Button>
+              </SheetClose>
             </div>
           </SheetHeader>
 
