@@ -21,7 +21,7 @@ export function TeamDetailsDrawer({ teamId, open, onOpenChange }: TeamDetailsDra
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-2xl overflow-y-auto">
+      <SheetContent side="right" className="executive-drawer w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-muted-foreground">Loading team details...</div>
@@ -32,85 +32,87 @@ export function TeamDetailsDrawer({ teamId, open, onOpenChange }: TeamDetailsDra
           </div>
         ) : (
           <>
-            <SheetHeader className="mb-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <SheetTitle className="text-2xl mb-2">{team.name}</SheetTitle>
-                  {team.short_name && (
-                    <p className="text-sm text-muted-foreground mb-2">{team.short_name}</p>
-                  )}
-                  <div className="flex items-center gap-2">
-                    <Badge variant={team.is_active ? 'default' : 'secondary'}>
-                      {team.is_active ? 'Active' : 'Inactive'}
-                    </Badge>
-                    <Badge variant="outline">
-                      {team.team_type === 'AGILE' ? 'Agile' : team.team_type === 'KANBAN' ? 'Kanban' : team.team_type === 'COP' ? 'CoP' : team.team_type}
-                    </Badge>
-                  </div>
+            <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
+              <div className="flex-1 min-w-0">
+                <SheetTitle className="executive-drawer-title truncate">{team.name}</SheetTitle>
+                {team.short_name && (
+                  <p className="executive-drawer-subtitle mt-1">{team.short_name}</p>
+                )}
+                <div className="flex items-center gap-2 mt-2">
+                  <Badge variant={team.is_active ? 'default' : 'secondary'}>
+                    {team.is_active ? 'Active' : 'Inactive'}
+                  </Badge>
+                  <Badge variant="outline">
+                    {team.team_type === 'AGILE' ? 'Agile' : team.team_type === 'KANBAN' ? 'Kanban' : team.team_type === 'COP' ? 'CoP' : team.team_type}
+                  </Badge>
                 </div>
-                <Button size="sm" variant="outline">
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
               </div>
+              <Button size="sm" variant="outline">
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </Button>
             </SheetHeader>
 
-            <Tabs defaultValue="details" className="w-full">
-              <TabsList className="grid w-full grid-cols-6 mb-6">
-                <TabsTrigger value="details" className="text-xs">
-                  <Settings className="w-3 h-3 mr-1" />
-                  Details
-                </TabsTrigger>
-                <TabsTrigger value="members" className="text-xs">
-                  <Users className="w-3 h-3 mr-1" />
-                  Members
-                </TabsTrigger>
-                <TabsTrigger value="sprints" className="text-xs">
-                  <Calendar className="w-3 h-3 mr-1" />
-                  Sprints
-                </TabsTrigger>
-                <TabsTrigger value="velocity" className="text-xs">
-                  <BarChart3 className="w-3 h-3 mr-1" />
-                  Velocity
-                </TabsTrigger>
-                <TabsTrigger value="dependencies" className="text-xs">
-                  <GitBranch className="w-3 h-3 mr-1" />
-                  Dependencies
-                </TabsTrigger>
-                <TabsTrigger value="objectives" className="text-xs">
-                  <Target className="w-3 h-3 mr-1" />
-                  Objectives
-                </TabsTrigger>
-              </TabsList>
+            <Tabs defaultValue="details" className="flex-1 flex flex-col overflow-hidden">
+              <div className="executive-drawer-tabs overflow-x-auto flex-shrink-0">
+                <TabsList className="w-full justify-start rounded-none flex-nowrap bg-transparent">
+                  <TabsTrigger value="details" className="executive-drawer-tab">
+                    <Settings className="w-3 h-3 mr-1" />
+                    Details
+                  </TabsTrigger>
+                  <TabsTrigger value="members" className="executive-drawer-tab">
+                    <Users className="w-3 h-3 mr-1" />
+                    Members
+                  </TabsTrigger>
+                  <TabsTrigger value="sprints" className="executive-drawer-tab">
+                    <Calendar className="w-3 h-3 mr-1" />
+                    Sprints
+                  </TabsTrigger>
+                  <TabsTrigger value="velocity" className="executive-drawer-tab">
+                    <BarChart3 className="w-3 h-3 mr-1" />
+                    Velocity
+                  </TabsTrigger>
+                  <TabsTrigger value="dependencies" className="executive-drawer-tab">
+                    <GitBranch className="w-3 h-3 mr-1" />
+                    Dependencies
+                  </TabsTrigger>
+                  <TabsTrigger value="objectives" className="executive-drawer-tab">
+                    <Target className="w-3 h-3 mr-1" />
+                    Objectives
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-              <TabsContent value="details" className="space-y-4">
-                <TeamDetailsTab team={team} />
-              </TabsContent>
+              <div className="executive-drawer-content flex-1 overflow-y-auto">
+                <TabsContent value="details" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
+                  <TeamDetailsTab team={team} />
+                </TabsContent>
 
-              <TabsContent value="members" className="space-y-4">
-                <TeamMembersTab teamId={team.id} />
-              </TabsContent>
+                <TabsContent value="members" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
+                  <TeamMembersTab teamId={team.id} />
+                </TabsContent>
 
-              <TabsContent value="sprints" className="space-y-4">
-                <TeamSprintsTab 
-                  teamId={team.id} 
-                  teamType={team.team_type}
-                  teamName={team.name}
-                  sprintPrefix={team.sprint_prefix}
-                />
-              </TabsContent>
+                <TabsContent value="sprints" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
+                  <TeamSprintsTab 
+                    teamId={team.id} 
+                    teamType={team.team_type}
+                    teamName={team.name}
+                    sprintPrefix={team.sprint_prefix}
+                  />
+                </TabsContent>
 
-              <TabsContent value="velocity" className="space-y-4">
-                <div className="text-sm text-muted-foreground">Velocity chart coming soon...</div>
-              </TabsContent>
+                <TabsContent value="velocity" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
+                  <div className="text-sm text-muted-foreground">Velocity chart coming soon...</div>
+                </TabsContent>
 
-              <TabsContent value="dependencies" className="space-y-4">
-                <div className="text-sm text-muted-foreground">Dependencies view coming soon...</div>
-              </TabsContent>
+                <TabsContent value="dependencies" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
+                  <div className="text-sm text-muted-foreground">Dependencies view coming soon...</div>
+                </TabsContent>
 
-              <TabsContent value="objectives" className="space-y-4">
-                <div className="text-sm text-muted-foreground">Objectives view coming soon...</div>
-              </TabsContent>
+                <TabsContent value="objectives" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
+                  <div className="text-sm text-muted-foreground">Objectives view coming soon...</div>
+                </TabsContent>
+              </div>
             </Tabs>
           </>
         )}

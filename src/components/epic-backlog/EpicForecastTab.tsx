@@ -241,7 +241,7 @@ export function EpicForecastTab({ epicId }: EpicForecastTabProps) {
   if (pis.length === 0) {
     return (
       <div className="p-6">
-        <Alert>
+        <Alert className="bg-card">
           <AlertDescription>
             No Program Increment associated with this epic. Please associate a PI to use the Forecast feature.
           </AlertDescription>
@@ -271,7 +271,7 @@ export function EpicForecastTab({ epicId }: EpicForecastTabProps) {
               </SelectContent>
             </Select>
           </div>
-          <Alert>
+          <Alert className="bg-card">
             <AlertDescription>
               Marked out-of-scope for {selectedPI?.name}.
             </AlertDescription>

@@ -116,7 +116,7 @@ export function ApplyWSJFToRankDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <Alert>
+          <Alert className="bg-card">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
               <div className="space-y-2">
@@ -132,7 +132,7 @@ export function ApplyWSJFToRankDialog({
           </Alert>
 
           {previewCount > 0 && (
-            <Alert>
+            <Alert className="bg-card">
               <CheckCircle2 className="h-4 w-4 text-green-600" />
               <AlertDescription>
                 Ready to rerank {previewCount} {workItemType}{previewCount !== 1 ? 's' : ''}

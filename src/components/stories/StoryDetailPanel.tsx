@@ -104,10 +104,10 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent side="right" className="w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
-        <SheetHeader className="border-b flex-row items-start justify-between space-y-0 shrink-0 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s4)]">
+      <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
+        <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
           <div className="flex-1 pr-2 sm:pr-4 min-w-0">
-            <SheetTitle className="text-base sm:text-lg md:text-xl truncate">{story.name}</SheetTitle>
+            <SheetTitle className="executive-drawer-title truncate">{story.name}</SheetTitle>
             <div className="flex items-center gap-[var(--s2)] mt-1">
               <Badge variant="outline" className="capitalize text-xs">
                 {story.status ? STORY_STATUS_LABELS[story.status] : 'To Do'}
@@ -133,7 +133,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
             )}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]">
                   <MoreVertical className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -178,19 +178,21 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
         </SheetHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="w-full justify-start rounded-none border-b px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] shrink-0 overflow-x-auto flex-nowrap">
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="children">Children</TabsTrigger>
-            <TabsTrigger value="tests">Tests</TabsTrigger>
-            <TabsTrigger value="links">Links</TabsTrigger>
-            <TabsTrigger value="attachments">Attachments</TabsTrigger>
-            <TabsTrigger value="discussions">Discussions</TabsTrigger>
-            <TabsTrigger value="history">History</TabsTrigger>
-          </TabsList>
+          <div className="executive-drawer-tabs overflow-x-auto flex-shrink-0">
+            <TabsList className="w-full justify-start rounded-none flex-nowrap bg-transparent">
+              <TabsTrigger value="details" className="executive-drawer-tab">Details</TabsTrigger>
+              <TabsTrigger value="children" className="executive-drawer-tab">Children</TabsTrigger>
+              <TabsTrigger value="tests" className="executive-drawer-tab">Tests</TabsTrigger>
+              <TabsTrigger value="links" className="executive-drawer-tab">Links</TabsTrigger>
+              <TabsTrigger value="attachments" className="executive-drawer-tab">Attachments</TabsTrigger>
+              <TabsTrigger value="discussions" className="executive-drawer-tab">Discussions</TabsTrigger>
+              <TabsTrigger value="history" className="executive-drawer-tab">History</TabsTrigger>
+            </TabsList>
+          </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="executive-drawer-content flex-1 overflow-y-auto">
 
-            <TabsContent value="details" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none space-y-[var(--s4)]">
+            <TabsContent value="details" className="m-0 p-[var(--s4)] sm:p-[var(--s6)] focus-visible:outline-none space-y-[var(--s4)]">
               {/* Name */}
               <div>
                 <label className="text-sm font-medium flex items-center gap-2 mb-2">

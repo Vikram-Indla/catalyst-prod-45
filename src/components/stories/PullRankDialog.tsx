@@ -40,7 +40,7 @@ export function PullRankDialog({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          <Alert>
+          <Alert className="bg-card">
             <Info className="h-4 w-4" />
             <AlertDescription>
               This will reorder <strong>{storyCount} stories</strong> based on their parent Feature's rank.

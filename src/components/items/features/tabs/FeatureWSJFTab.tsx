@@ -67,8 +67,8 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
   }
 
   return (
-    <div className="space-y-6 p-6">
-      <Alert>
+    <div className="space-y-6">
+      <Alert className="bg-card">
         <Info className="h-4 w-4" />
         <AlertDescription>
           WSJF (Weighted Shortest Job First) prioritizes features based on Cost of Delay divided by Job Size.

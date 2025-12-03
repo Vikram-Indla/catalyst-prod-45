@@ -188,15 +188,15 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent className="w-full sm:w-[600px] md:w-[700px] lg:w-[900px] sm:max-w-[90vw] p-0 flex flex-col">
-        <div className="border-b flex-shrink-0 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s4)]">
+      <SheetContent className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[900px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
+        <div className="executive-drawer-header flex-shrink-0">
           <div className="flex items-start justify-between gap-[var(--s2)] sm:gap-[var(--s4)]">
             <div className="flex-1 min-w-0">
-              <h2 className="text-base sm:text-lg md:text-xl font-semibold truncate">
+              <h2 className="executive-drawer-title truncate">
                 {feature ? `Feature: ${formData.name || feature.name}` : 'New Feature'}
               </h2>
               {feature?.display_id && (
-                <div className="text-xs sm:text-sm text-muted-foreground font-mono mt-1">
+                <div className="executive-drawer-subtitle font-mono mt-1">
                   {feature.display_id}
                 </div>
               )}
@@ -214,12 +214,13 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
                 size="sm" 
                 onClick={handleSaveAndClose}
                 disabled={saveMutation.isPending}
+                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
               >
                 Save & Close
               </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]">
                     <MoreVertical className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -256,52 +257,52 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <div className="border-b overflow-x-auto flex-shrink-0 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)]">
+          <div className="executive-drawer-tabs overflow-x-auto flex-shrink-0">
             <TabsList className="inline-flex bg-transparent w-auto min-w-full justify-start flex-nowrap" style={{ height: 'var(--toolbar-h)' }}>
-              <TabsTrigger value="details" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="details" className="executive-drawer-tab">
                 Details
               </TabsTrigger>
-              <TabsTrigger value="children" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="children" className="executive-drawer-tab">
                 Children
               </TabsTrigger>
-              <TabsTrigger value="planning" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="planning" className="executive-drawer-tab">
                 Planning
               </TabsTrigger>
-              <TabsTrigger value="financials" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="financials" className="executive-drawer-tab">
                 Financials
               </TabsTrigger>
-              <TabsTrigger value="forecast" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="forecast" className="executive-drawer-tab">
                 Forecast
               </TabsTrigger>
-              <TabsTrigger value="wsjf" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="wsjf" className="executive-drawer-tab">
                 WSJF
               </TabsTrigger>
-              <TabsTrigger value="trace" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="trace" className="executive-drawer-tab">
                 Trace
               </TabsTrigger>
-              <TabsTrigger value="attachments" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="attachments" className="executive-drawer-tab">
                 Attachments
               </TabsTrigger>
-              <TabsTrigger value="discussions" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="discussions" className="executive-drawer-tab">
                 Discussions
               </TabsTrigger>
-              <TabsTrigger value="links" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="links" className="executive-drawer-tab">
                 Links
               </TabsTrigger>
-              <TabsTrigger value="audit" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="audit" className="executive-drawer-tab">
                 Audit
               </TabsTrigger>
-              <TabsTrigger value="tests" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="tests" className="executive-drawer-tab">
                 Tests
               </TabsTrigger>
-              <TabsTrigger value="options" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">
+              <TabsTrigger value="options" className="executive-drawer-tab">
                 Options
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
-            <TabsContent value="details" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+          <div className="executive-drawer-content flex-1 overflow-y-auto">
+            <TabsContent value="details" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureDetailsTab 
                 feature={feature} 
                 formData={formData}
@@ -309,15 +310,15 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               />
             </TabsContent>
 
-            <TabsContent value="children" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="children" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureChildrenTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="planning" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="planning" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeaturePlanningTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="financials" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="financials" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureFinancialsTab 
                 feature={feature}
                 formData={formData}
@@ -325,35 +326,35 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               />
             </TabsContent>
 
-            <TabsContent value="forecast" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="forecast" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureForecastTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="wsjf" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="wsjf" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureWSJFTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="trace" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="trace" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureTraceTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="attachments" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="attachments" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureAttachmentsTab featureId={feature?.id} />
             </TabsContent>
 
-            <TabsContent value="discussions" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="discussions" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureDiscussionsTab featureId={feature?.id} />
             </TabsContent>
 
-            <TabsContent value="links" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="links" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureLinksTab feature={feature} />
             </TabsContent>
 
-            <TabsContent value="audit" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="audit" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureAuditTab featureId={feature?.id} />
             </TabsContent>
 
-            <TabsContent value="tests" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="tests" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               {feature && (
                 <AIOTestsSection
                   workItemId={feature.id}
@@ -364,7 +365,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               )}
             </TabsContent>
 
-            <TabsContent value="options" className="mt-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)]">
+            <TabsContent value="options" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureAdditionalOptionsTab 
                 feature={feature}
                 onAction={handleAdditionalOption}

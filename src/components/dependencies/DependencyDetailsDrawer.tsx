@@ -258,13 +258,13 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
-        <SheetHeader className="border-b flex-row items-start justify-between space-y-0 shrink-0 px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s4)]">
+      <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
+        <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
           <div className="flex-1 pr-2 sm:pr-4 min-w-0">
-            <SheetTitle className="text-base sm:text-lg md:text-xl truncate">
+            <SheetTitle className="executive-drawer-title truncate">
               {isEdit ? 'Edit Dependency' : 'Create Dependency'}
             </SheetTitle>
-            <SheetDescription className="text-xs sm:text-sm mt-1 truncate">
+            <SheetDescription className="executive-drawer-subtitle mt-1 truncate">
               {isEdit && existingDependency ? (
                 `${existingDependency.from_feature?.name || 'Unknown'} → ${existingDependency.to_feature?.name || 'Unknown'}`
               ) : (
@@ -276,7 +276,7 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
             <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="text-[#1a1a1a] hover:bg-[rgba(198,156,109,0.08)]">
                     <MoreVertical className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -310,18 +310,20 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
         </SheetHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="w-full justify-start rounded-none border-b px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] shrink-0 overflow-x-auto flex-nowrap">
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="negotiation">Negotiation</TabsTrigger>
-            <TabsTrigger value="stories">Stories</TabsTrigger>
-            <TabsTrigger value="audit">Audit</TabsTrigger>
-          </TabsList>
+          <div className="executive-drawer-tabs overflow-x-auto flex-shrink-0">
+            <TabsList className="w-full justify-start rounded-none flex-nowrap bg-transparent">
+              <TabsTrigger value="details" className="executive-drawer-tab">Details</TabsTrigger>
+              <TabsTrigger value="negotiation" className="executive-drawer-tab">Negotiation</TabsTrigger>
+              <TabsTrigger value="stories" className="executive-drawer-tab">Stories</TabsTrigger>
+              <TabsTrigger value="audit" className="executive-drawer-tab">Audit</TabsTrigger>
+            </TabsList>
+          </div>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="executive-drawer-content flex-1 overflow-y-auto">
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="h-full flex flex-col">
 
-              <TabsContent value="details" className="space-y-4 mt-4">
+              <TabsContent value="details" className="space-y-4 p-[var(--s4)] sm:p-[var(--s6)]">
                 {/* Core Fields Section */}
                 <div className="space-y-4">
                   <h3 className="font-semibold text-sm flex items-center gap-2">
