@@ -113,7 +113,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     queryFn: async () => {
       const { data } = await supabase
         .from('epic_program_increments')
-        .select('pi_id, program_increments(id, name, code)')
+        .select('pi_id, program_increments(id, name)')
         .eq('epic_id', epic.id);
       return data || [];
     },

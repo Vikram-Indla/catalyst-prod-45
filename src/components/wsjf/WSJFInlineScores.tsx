@@ -30,7 +30,7 @@ export function WSJFInlineScores({ epicId, epicTitle, epicKey }: WSJFInlineScore
         .from('epic_wsjf')
         .select(`
           *,
-          program_increments(id, name, code)
+          program_increments(id, name)
         `)
         .eq('epic_id', epicId);
       
@@ -66,7 +66,7 @@ export function WSJFInlineScores({ epicId, epicTitle, epicKey }: WSJFInlineScore
     <>
       <div className="space-y-2">
         {wsjfScores.map((score: any) => {
-          const piName = score.program_increments?.code || score.program_increments?.name || 'PI';
+          const piName = score.program_increments?.name || 'PI';
           const wsjfValue = score.wsjf_score || 0;
           
           return (
