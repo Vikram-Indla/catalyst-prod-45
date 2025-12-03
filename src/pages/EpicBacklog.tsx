@@ -68,13 +68,13 @@ export default function EpicBacklog() {
     },
   });
 
-  // Fetch epics with PI filtering
+  // Fetch all epics (without PI filtering for State/Kanban views)
   const { data: epics, refetch } = useQuery({
     queryKey: ['epic-backlog'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('epics')
-        .select('*, epic_program_increments!inner(pi_id)')
+        .select('*, epic_program_increments(pi_id)')
         .is('deleted_at', null)
         .is('parked_at', null)
         .order('global_rank');
