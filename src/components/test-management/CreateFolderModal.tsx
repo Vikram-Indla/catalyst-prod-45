@@ -55,11 +55,14 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
+      // Convert "none" to null for root level folders
+      const parentId = parentFolderId === 'none' || !parentFolderId ? null : parentFolderId;
+
       const { data, error } = await supabase
         .from('test_folders')
         .insert({
           name: name.trim(),
-          parent_folder_id: parentFolderId === 'none' ? null : parentFolderId,
+          parent_folder_id: parentId,
           program_id: programId,
           created_by: user.id,
         })

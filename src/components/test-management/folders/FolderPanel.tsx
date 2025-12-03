@@ -75,9 +75,10 @@ export const FolderPanel: React.FC<FolderPanelProps> = ({
     setIsCreateModalOpen(true);
   };
 
-  const handleFolderCreated = () => {
-    loadFolders();
+  const handleFolderCreated = async () => {
     setIsCreateModalOpen(false);
+    // Ensure folders are refreshed after modal closes
+    await loadFolders();
   };
 
   // Filter folders by search query

@@ -51,9 +51,12 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
 
     setIsSubmitting(true);
     try {
+      // Convert "none" to null for root level folders
+      const parentIdValue = selectedParentId === 'none' || !selectedParentId ? null : selectedParentId;
+      
       await createFolder({
         name,
-        parent_id: selectedParentId,
+        parent_id: parentIdValue,
         entity_type: entityType,
         program_id: programId
       });
@@ -63,7 +66,11 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
         description: `"${name}" has been created successfully`
       });
 
+      // Reset form state
       setName('');
+      setSelectedParentId(parentId);
+      
+      // Trigger refresh callback
       onSuccess();
     } catch (error: any) {
       toast({
