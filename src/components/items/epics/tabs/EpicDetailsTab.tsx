@@ -16,6 +16,7 @@ import { WSJFInlineScores } from '@/components/wsjf';
 import { FeatureStatusModal } from '../modals/FeatureStatusModal';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
+import { AddFeatureDialog } from '../dialogs/AddFeatureDialog';
 import { toast } from 'sonner';
 
 interface EpicDetailsTabProps {
@@ -26,6 +27,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const [featureStatusOpen, setFeatureStatusOpen] = useState(false);
   const [addPIOpen, setAddPIOpen] = useState(false);
   const [addProgramOpen, setAddProgramOpen] = useState(false);
+  const [addFeatureOpen, setAddFeatureOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Local state for all editable fields
@@ -704,9 +706,9 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         </div>
 
         <div className="space-y-2">
-          <Button variant="outline" className="w-full">
+          <Button variant="outline" className="w-full" onClick={() => setAddFeatureOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Add Capability or Feature
+            Add Feature
           </Button>
           <Button variant="outline" className="w-full" onClick={() => setFeatureStatusOpen(true)}>
             <ExternalLink className="h-4 w-4 mr-2" />
@@ -734,6 +736,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         primaryProgramId={epic.primary_program_id}
         open={addProgramOpen}
         onOpenChange={setAddProgramOpen}
+      />
+
+      <AddFeatureDialog
+        epicId={epic.id}
+        open={addFeatureOpen}
+        onOpenChange={setAddFeatureOpen}
       />
     </div>
   );
