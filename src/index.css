@@ -1019,38 +1019,8 @@ h3 {
   background-color: hsl(var(--brand-gold));
 }
 
-/* Badges - white background with border */
-.executive-drawer-content [data-slot="badge"],
-.executive-drawer-content .badge,
-.executive-drawer-content span[class*="inline-flex"][class*="rounded"] {
-  background-color: hsl(var(--surface-white)) !important;
-  border: 1px solid hsl(var(--neutral-300)) !important;
-  border-radius: 6px;
+/* Badges */
+.executive-drawer-content [data-slot="badge"] {
+  border-radius: 4px;
   font-weight: 500;
-  color: hsl(var(--text-primary)) !important;
-  padding: 6px 12px;
-}
-
-/* All buttons in drawer - gold styling */
-.executive-drawer-content button:not([role="combobox"]):not([class*="ghost"]):not([class*="link"]) {
-  background-color: hsl(var(--brand-gold)) !important;
-  color: hsl(var(--surface-white)) !important;
-  border: none !important;
-  font-weight: 500;
-  transition: background-color 150ms ease;
-}
-
-.executive-drawer-content button:not([role="combobox"]):not([class*="ghost"]):not([class*="link"]):hover {
-  background-color: hsl(var(--brand-gold-hover)) !important;
-}
-
-/* Ghost buttons remain subtle */
-.executive-drawer-content button[class*="ghost"] {
-  background-color: transparent !important;
-  color: hsl(var(--text-secondary)) !important;
-}
-
-.executive-drawer-content button[class*="ghost"]:hover {
-  background-color: hsl(var(--brand-gold) / 0.08) !important;
-  color: hsl(var(--brand-gold)) !important;
 }
