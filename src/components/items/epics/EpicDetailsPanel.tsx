@@ -243,7 +243,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
   return (
     <>
       <Sheet open={open} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden [&>[data-radix-dialog-close]]:hidden">
+        <SheetContent side="right" hideClose className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
           <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
             <div className="flex-1 pr-2 sm:pr-4 min-w-0">
               <SheetTitle className="executive-drawer-title truncate">{epic.name}</SheetTitle>
