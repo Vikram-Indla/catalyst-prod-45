@@ -24,11 +24,8 @@ import {
 } from 'lucide-react';
 import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest } from '@/hooks/useBusinessRequests';
 import { BusinessRequest } from '@/types/business-request';
-import { OverviewTab } from './drawer-tabs/OverviewTab';
-import { PortfolioTab } from './drawer-tabs/PortfolioTab';
-import { TechnicalTab } from './drawer-tabs/TechnicalTab';
-import { EstimationTab } from './drawer-tabs/EstimationTab';
-import { ApprovalTab } from './drawer-tabs/ApprovalTab';
+import { DemandDetailsViewTab } from './drawer-tabs/DemandDetailsViewTab';
+import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
 import { toast } from 'sonner';
 
 interface BusinessRequestDrawerProps {
@@ -37,13 +34,10 @@ interface BusinessRequestDrawerProps {
   requestId: string | null;
 }
 
-// Tabs for viewing/editing a request (with Process Step and Health in Overview, no Readiness/Implementation/Support/On Hold)
+// Two tabs for the view drawer
 const VIEW_TABS = [
-  { value: 'overview', label: 'Overview' },
-  { value: 'portfolio', label: 'Portfolio' },
-  { value: 'technical', label: 'Technical' },
-  { value: 'estimation', label: 'Estimation' },
-  { value: 'approval', label: 'Approval' },
+  { value: 'demand-details', label: 'Demand Details' },
+  { value: 'business-score', label: 'Business Score' },
 ];
 
 export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRequestDrawerProps) {
@@ -51,8 +45,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
   const updateMutation = useUpdateBusinessRequest();
   const deleteMutation = useDeleteBusinessRequest();
   
-  const [activeTab, setActiveTab] = useState('overview');
-  const [formData, setFormData] = useState<Partial<BusinessRequest>>({});
+  const [activeTab, setActiveTab] = useState('demand-details');
+  const [formData, setFormData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -67,18 +61,18 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
     }
   }, [request]);
 
-  const handleFieldChange = (field: keyof BusinessRequest, value: any) => {
+  const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setHasChanges(true);
     // Auto-save on field change
     if (requestId) {
-      updateMutation.mutate({ id: requestId, data: { [field]: value } });
+      updateMutation.mutate({ id: requestId, data: { [field]: value } as Partial<BusinessRequest> });
     }
   };
 
   const handleSave = () => {
     if (!requestId) return;
-    updateMutation.mutate({ id: requestId, data: formData });
+    updateMutation.mutate({ id: requestId, data: formData as Partial<BusinessRequest> });
     setHasChanges(false);
     toast.success('Business request saved');
   };
@@ -302,20 +296,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
           </TabsList>
 
           <div className="executive-drawer-content flex-1 overflow-y-auto">
-            <TabsContent value="overview" className="m-0 focus-visible:outline-none">
-              <OverviewTab data={formData} isEditMode={true} onChange={handleFieldChange} hideProcessStepHealth={false} />
+            <TabsContent value="demand-details" className="m-0 focus-visible:outline-none">
+              <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
             </TabsContent>
-            <TabsContent value="portfolio" className="m-0 focus-visible:outline-none">
-              <PortfolioTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="technical" className="m-0 focus-visible:outline-none">
-              <TechnicalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="estimation" className="m-0 focus-visible:outline-none">
-              <EstimationTab data={formData} isEditMode={true} onChange={handleFieldChange} />
-            </TabsContent>
-            <TabsContent value="approval" className="m-0 focus-visible:outline-none">
-              <ApprovalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            <TabsContent value="business-score" className="m-0 focus-visible:outline-none">
+              <BusinessScoreViewTab data={formData} onChange={handleFieldChange} />
             </TabsContent>
           </div>
         </Tabs>

@@ -6,29 +6,29 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CalendarIcon, Lock, Unlock, Upload, X, FileText, Info } from 'lucide-react';
+import { CalendarIcon, Lock, Unlock, Info } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { RichTextEditor } from '../RichTextEditor';
+import { 
+  BusinessRequest, 
+  PROCESS_STEPS,
+  HEALTH_OPTIONS
+} from '@/types/business-request';
 
-// Allowed document MIME types
-const ALLOWED_FILE_TYPES = [
-  'application/pdf',
-  'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-  'application/vnd.ms-excel',
-  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  'application/vnd.ms-powerpoint',
-  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-  'text/plain',
-  'text/csv',
+// Delivery Track Parent Options
+const DELIVERY_TRACK_PARENTS = [
+  'BAU Fast Track',
+  'Project',
+  'Entity Integration',
 ];
 
-const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv'];
-const MAX_FILES = 5;
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
-
+// Delivery Track Child Options (cascading)
+const DELIVERY_TRACK_CHILDREN: Record<string, string[]> = {
+  'BAU Fast Track': ['Operational', 'Change Request'],
+  'Project': ['New Project', 'New Feature'],
+  'Entity Integration': ['New Entity', 'Entity CR'],
+};
 
 // EFS Factory Service Domains
 const EFS_DOMAINS = [
@@ -93,18 +93,15 @@ const IS_NON_SAUDI_OPTIONS = [
   'Incentives & Enablers',
 ];
 
-interface DemandDetailsTabProps {
-  data: any;
+interface DemandDetailsViewTabProps {
+  data: Partial<BusinessRequest> & Record<string, any>;
   onChange: (field: string, value: any) => void;
 }
 
-export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
+export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabProps) {
   const [targetDateLocked, setTargetDateLocked] = useState(false);
   const [lockedByUser, setLockedByUser] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = 'Current User';
-
-  const attachments: File[] = data.attachments || [];
 
   const handleLockToggle = () => {
     if (targetDateLocked) {
@@ -130,59 +127,64 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
     }
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    
-    if (attachments.length + files.length > MAX_FILES) {
-      toast.error(`Maximum ${MAX_FILES} files allowed`);
-      return;
-    }
-
-    const validFiles: File[] = [];
-    let totalSize = attachments.reduce((sum, f) => sum + f.size, 0);
-
-    for (const file of files) {
-      const extension = '.' + file.name.split('.').pop()?.toLowerCase();
-      if (!ALLOWED_FILE_TYPES.includes(file.type) && !ALLOWED_EXTENSIONS.includes(extension)) {
-        toast.error(`"${file.name}" is not a supported document type`);
-        continue;
-      }
-
-      if (totalSize + file.size > MAX_FILE_SIZE) {
-        toast.error(`Total file size cannot exceed 20MB`);
-        break;
-      }
-
-      validFiles.push(file);
-      totalSize += file.size;
-    }
-
-    if (validFiles.length > 0) {
-      onChange('attachments', [...attachments, ...validFiles]);
-      toast.success(`${validFiles.length} file(s) added`);
-    }
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const removeAttachment = (index: number) => {
-    const newAttachments = attachments.filter((_, i) => i !== index);
-    onChange('attachments', newAttachments);
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
+  const selectedTrackParent = data.delivery_track_parent || '';
+  const childOptions = DELIVERY_TRACK_CHILDREN[selectedTrackParent] || [];
   const selectedDomain = data.efs_domain || '';
   const serviceOptions = EFS_SERVICES[selectedDomain] || [];
 
   return (
     <div className="space-y-6 p-5">
+      {/* Process & Health Section */}
+      <Card className="border border-border/60 rounded-lg bg-card">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Process & Health</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Process Step</Label>
+              <Select
+                value={data.process_step || 'new_demand'}
+                onValueChange={(value) => onChange('process_step', value)}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  {PROCESS_STEPS.map((step) => (
+                    <SelectItem key={step.value} value={step.value}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${step.color}`}>
+                        {step.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium">Health</Label>
+              <Select
+                value={data.health || 'green'}
+                onValueChange={(value) => onChange('health', value)}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  {HEALTH_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${opt.color}`}>
+                        {opt.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Basic Information Section */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
@@ -202,18 +204,17 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
 
           <div>
             <Label className="text-sm font-medium">Description</Label>
-            <p className="text-xs text-muted-foreground mb-1.5">Provide a detailed description (up to 2,000 words)</p>
-            <RichTextEditor
+            <textarea
               value={data.description || ''}
-              onChange={(value) => onChange('description', value)}
+              onChange={(e) => onChange('description', e.target.value)}
               placeholder="Describe the demand in detail..."
-              className="mt-1"
+              className="mt-1.5 w-full min-h-[150px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
             />
           </div>
         </CardContent>
       </Card>
 
-      {/* Timeline Section - Moved after Description */}
+      {/* Timeline Section */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Timeline</h3>
@@ -314,70 +315,16 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                   {targetDateLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
                 </Button>
               </div>
-              {targetDateLocked && lockedByUser && (
-                <p className="text-xs text-muted-foreground mt-1">Locked by {lockedByUser}</p>
-              )}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Attachments & Assignment Section */}
+      {/* Assignment Section */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Attachments & Assignment</h3>
-
-          <div>
-            <div className="flex items-baseline gap-2">
-              <Label className="text-sm font-medium">Attachments</Label>
-              <span className="text-xs text-muted-foreground">(Max 5 files, 20MB total. Documents only: PDF, DOC, XLS, PPT, TXT, CSV)</span>
-            </div>
-            <div className="mt-1.5 space-y-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept={ALLOWED_EXTENSIONS.join(',')}
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-              <Button 
-                variant="outline" 
-                className="w-full justify-start text-muted-foreground"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={attachments.length >= MAX_FILES}
-              >
-                <Upload className="mr-2 h-4 w-4" />
-                {attachments.length >= MAX_FILES ? 'Maximum files reached' : 'Upload Files...'}
-              </Button>
-
-              {attachments.length > 0 && (
-                <div className="space-y-2 mt-2">
-                  {attachments.map((file, index) => (
-                    <div 
-                      key={index}
-                      className="flex items-center justify-between p-2 bg-muted/50 rounded-md border border-border/40"
-                    >
-                      <div className="flex items-center gap-2 min-w-0">
-                        <FileText className="h-4 w-4 text-brand-gold shrink-0" />
-                        <span className="text-sm truncate">{file.name}</span>
-                        <span className="text-xs text-muted-foreground shrink-0">({formatFileSize(file.size)})</span>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-                        onClick={() => removeAttachment(index)}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Assignment</h3>
+          
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-sm font-medium">Reporter</Label>
@@ -386,7 +333,6 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 disabled
                 className="mt-1.5 bg-muted/50"
               />
-              <p className="text-xs text-muted-foreground mt-1">Auto-filled (current user)</p>
             </div>
 
             <div>
@@ -438,6 +384,53 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 placeholder="Enter business owner name"
                 className="mt-1.5"
               />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Delivery Track Section - Only in View Form */}
+      <Card className="border border-border/60 rounded-lg bg-card">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Delivery Track</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Delivery Track</Label>
+              <Select
+                value={data.delivery_track_parent || ''}
+                onValueChange={(value) => {
+                  onChange('delivery_track_parent', value);
+                  onChange('track', '');
+                }}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select track..." />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  {DELIVERY_TRACK_PARENTS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium">Delivery Track (Child)</Label>
+              <Select
+                value={data.track || ''}
+                onValueChange={(value) => onChange('track', value)}
+                disabled={!selectedTrackParent}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder={selectedTrackParent ? "Select..." : "Select parent first"} />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  {childOptions.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
