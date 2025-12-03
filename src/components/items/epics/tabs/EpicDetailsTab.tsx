@@ -33,7 +33,6 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const [risksOpen, setRisksOpen] = useState(false);
   const [dependenciesOpen, setDependenciesOpen] = useState(false);
   const [newCriteriaText, setNewCriteriaText] = useState('');
-  const [showAddCriteria, setShowAddCriteria] = useState(false);
   const [showAddRisk, setShowAddRisk] = useState(false);
   const [showAddDependency, setShowAddDependency] = useState(false);
   const [riskDialogOpen, setRiskDialogOpen] = useState(false);
@@ -322,7 +321,6 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-acceptance-criteria', epic.id] });
       setNewCriteriaText('');
-      setShowAddCriteria(false);
       toast.success('Acceptance criteria added');
     },
     onError: () => toast.error('Failed to add criteria'),
@@ -961,71 +959,37 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="pl-6 py-3 space-y-3">
-                {acceptanceCriteria && acceptanceCriteria.length > 0 ? (
-                  <div className="space-y-2">
-                    {acceptanceCriteria.map((criteria: any) => (
-                      <div key={criteria.id} className="flex items-start gap-3 p-3 bg-card border rounded-md">
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm text-foreground">{criteria.description}</div>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0"
-                          onClick={() => deleteCriteriaMutation.mutate(criteria.id)}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
+                <div className="space-y-2">
+                  <Textarea
+                    value={newCriteriaText}
+                    onChange={(e) => setNewCriteriaText(e.target.value)}
+                    placeholder="Enter acceptance criteria..."
+                    rows={4}
+                    className="text-sm"
+                  />
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm" 
+                      className="text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                      onClick={() => {
+                        if (newCriteriaText.trim()) {
+                          addCriteriaMutation.mutate(newCriteriaText.trim());
+                        }
+                      }}
+                      disabled={!newCriteriaText.trim() || addCriteriaMutation.isPending}
+                    >
+                      {addCriteriaMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Add'}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={() => setNewCriteriaText('')}
+                    >
+                      Cancel
+                    </Button>
                   </div>
-                ) : (
-                  !showAddCriteria && <div className="text-sm text-muted-foreground">No acceptance criteria defined</div>
-                )}
-                
-                {showAddCriteria ? (
-                  <div className="space-y-2">
-                    <Textarea
-                      value={newCriteriaText}
-                      onChange={(e) => setNewCriteriaText(e.target.value)}
-                      placeholder="Enter acceptance criteria..."
-                      rows={2}
-                      className="text-sm"
-                    />
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        className="text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
-                        onClick={() => {
-                          if (newCriteriaText.trim()) {
-                            addCriteriaMutation.mutate(newCriteriaText.trim());
-                          }
-                        }}
-                        disabled={!newCriteriaText.trim() || addCriteriaMutation.isPending}
-                      >
-                        {addCriteriaMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Add'}
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="text-xs"
-                        onClick={() => { setShowAddCriteria(false); setNewCriteriaText(''); }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-xs"
-                    onClick={() => setShowAddCriteria(true)}
-                  >
-                    <Plus className="h-3.5 w-3.5 mr-1.5" />
-                    Add
-                  </Button>
-                )}
+                </div>
               </div>
             </CollapsibleContent>
           </Collapsible>
