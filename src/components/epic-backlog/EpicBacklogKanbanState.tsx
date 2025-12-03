@@ -21,16 +21,49 @@ interface EpicBacklogKanbanStateProps {
   onRefetch: () => void;
 }
 
+// Kanban columns matching Jira Align specification
 const STATES = [
-  { key: 'not_started', label: 'Not Started', color: 'bg-[#F4F5F7]', textColor: 'text-[#6B778C]' },
-  { key: 'in_progress', label: 'In Progress', color: 'bg-[#F4F5F7]', textColor: 'text-[#6B778C]' },
-  { key: 'accepted', label: 'Accepted', color: 'bg-[#F4F5F7]', textColor: 'text-[#6B778C]' },
+  { key: 'funnel', label: 'Funnel', color: 'bg-[#FFF9E6]', textColor: 'text-[#6B778C]' },
+  { key: 'analyzing', label: 'Analyzing', color: 'bg-[#FFF4E5]', textColor: 'text-[#6B778C]' },
+  { key: 'portfolio_backlog', label: 'Portfolio Backlog', color: 'bg-[#F4F5F7]', textColor: 'text-[#6B778C]' },
+  { key: 'implementing', label: 'Implementing', color: 'bg-[#E3FCEF]', textColor: 'text-[#6B778C]' },
 ];
 
 const STATE_BORDER_COLORS: Record<string, string> = {
-  'not_started': 'border-l-[#DE350B]',
-  'in_progress': 'border-l-[#FF8B00]', 
-  'accepted': 'border-l-[#0052CC]',
+  'funnel': 'border-l-[#C69C6D]',
+  'analyzing': 'border-l-[#FF8B00]',
+  'portfolio_backlog': 'border-l-[#6B778C]',
+  'implementing': 'border-l-[#36B37E]',
+};
+
+// Map database state values to Kanban column keys
+const STATE_COLUMN_MAP: Record<string, string> = {
+  'not_started': 'funnel',
+  'not started': 'funnel',
+  'funnel': 'funnel',
+  'analyzing': 'analyzing',
+  'in_progress': 'portfolio_backlog',
+  'in progress': 'portfolio_backlog',
+  'portfolio_backlog': 'portfolio_backlog',
+  'portfolio backlog': 'portfolio_backlog',
+  'accepted': 'implementing',
+  'implementing': 'implementing',
+  'done': 'implementing',
+};
+
+// Normalize state value to column key
+const getColumnKey = (state: string | null | undefined): string => {
+  if (!state) return 'funnel';
+  const normalizedState = state.toLowerCase().trim();
+  return STATE_COLUMN_MAP[normalizedState] || 'funnel';
+};
+
+// Map column key back to database state value
+const COLUMN_TO_DB_STATE: Record<string, 'not_started' | 'in_progress' | 'accepted'> = {
+  'funnel': 'not_started',
+  'analyzing': 'in_progress',
+  'portfolio_backlog': 'in_progress',
+  'implementing': 'accepted',
 };
 
 export function EpicBacklogKanbanState({ epics, onEpicSelect, onRefetch }: EpicBacklogKanbanStateProps) {
@@ -61,13 +94,15 @@ export function EpicBacklogKanbanState({ epics, onEpicSelect, onRefetch }: EpicB
     if (!result.destination) return;
     
     const epicId = result.draggableId;
-    const newState = result.destination.droppableId;
+    const columnKey = result.destination.droppableId;
     
-    // Handle moving to unassigned (set state to null or not_started)
-    if (newState === 'unassigned') {
+    // Handle moving to unassigned (set state to not_started)
+    if (columnKey === 'unassigned') {
       updateStateMutation.mutate({ epicId, newState: 'not_started' });
     } else {
-      updateStateMutation.mutate({ epicId, newState });
+      // Map column key to database state value
+      const dbState = COLUMN_TO_DB_STATE[columnKey] || 'not_started';
+      updateStateMutation.mutate({ epicId, newState: dbState });
     }
   };
 
@@ -75,9 +110,10 @@ export function EpicBacklogKanbanState({ epics, onEpicSelect, onRefetch }: EpicB
     <div className="h-full overflow-auto">
       <DragDropContext onDragEnd={handleDragEnd}>
         {/* Column Headers */}
-        <div className="grid grid-cols-3 gap-px bg-border mb-px">
+        <div className="grid grid-cols-4 gap-px bg-border mb-px">
           {STATES.map((state) => {
-            const stateEpics = epics.filter(e => e.state === state.key);
+            // Filter epics by mapping their state to the column key
+            const stateEpics = epics.filter(e => getColumnKey(e.state) === state.key);
             return (
               <div 
                 key={state.key} 
@@ -94,9 +130,10 @@ export function EpicBacklogKanbanState({ epics, onEpicSelect, onRefetch }: EpicB
         </div>
 
         {/* Kanban Columns */}
-        <div className="grid grid-cols-3 gap-px bg-border min-h-[400px] mb-6">
+        <div className="grid grid-cols-4 gap-px bg-border min-h-[400px] mb-6">
           {STATES.map((state) => {
-            const stateEpics = epics.filter(e => e.state === state.key);
+            // Filter epics by mapping their state to the column key
+            const stateEpics = epics.filter(e => getColumnKey(e.state) === state.key);
             return (
               <Droppable key={state.key} droppableId={state.key}>
                 {(provided, snapshot) => (
