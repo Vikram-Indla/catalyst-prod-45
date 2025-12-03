@@ -4,6 +4,25 @@ import { BusinessRequest, CreateBusinessRequestFormData, ReadinessChecklist } fr
 import { useToast } from '@/hooks/use-toast';
 import { Json } from '@/integrations/supabase/types';
 
+// Helper to generate MDT-XXX format request key
+const generateRequestKey = async (): Promise<string> => {
+  // Get count of existing requests to generate next number
+  const { count, error } = await supabase
+    .from('business_requests')
+    .select('*', { count: 'exact', head: true });
+  
+  if (error) {
+    console.error('Error getting request count:', error);
+    // Fallback to random 3-digit number
+    const randomNum = Math.floor(Math.random() * 900) + 100;
+    return `MDT-${randomNum}`;
+  }
+  
+  // Generate next sequential number, padded to 3 digits
+  const nextNum = ((count || 0) + 1).toString().padStart(3, '0');
+  return `MDT-${nextNum}`;
+};
+
 // Helper to transform DB row to BusinessRequest
 const transformRow = (row: any): BusinessRequest => ({
   ...row,
@@ -59,6 +78,9 @@ export function useCreateBusinessRequest() {
 
   return useMutation({
     mutationFn: async (data: CreateBusinessRequestFormData) => {
+      // Generate request key in MDT-XXX format
+      const requestKey = await generateRequestKey();
+      
       const { data: result, error } = await supabase
         .from('business_requests')
         .insert([{
@@ -70,6 +92,7 @@ export function useCreateBusinessRequest() {
           track: data.track || null,
           requestor: data.requestor || null,
           business_justification: data.business_justification || null,
+          request_key: requestKey,
         }])
         .select()
         .single();

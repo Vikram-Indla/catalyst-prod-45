@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -7,29 +7,22 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { CalendarIcon, Lock, Unlock, Info, ChevronDown } from 'lucide-react';
+import { CalendarIcon, Lock, Unlock, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { RichTextEditor } from '../RichTextEditor';
 import { 
   BusinessRequest, 
-  PROCESS_STEPS,
-  HEALTH_OPTIONS
+  PROCESS_STEPS
 } from '@/types/business-request';
 
-// Delivery Track Parent Options
-const DELIVERY_TRACK_PARENTS = [
+// Delivery Track Options
+const DELIVERY_TRACK_OPTIONS = [
   'BAU Fast Track',
   'Project',
   'Entity Integration',
 ];
-
-// Delivery Track Child Options (cascading)
-const DELIVERY_TRACK_CHILDREN: Record<string, string[]> = {
-  'BAU Fast Track': ['Operational', 'Change Request'],
-  'Project': ['New Project', 'New Feature'],
-  'Entity Integration': ['New Entity', 'Entity CR'],
-};
 
 // EFS Factory Service Domains
 const EFS_DOMAINS = [
@@ -128,60 +121,35 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
     }
   };
 
-  const selectedTrackParent = data.delivery_track_parent || '';
-  const childOptions = DELIVERY_TRACK_CHILDREN[selectedTrackParent] || [];
   const selectedDomain = data.efs_domain || '';
   const serviceOptions = EFS_SERVICES[selectedDomain] || [];
 
   return (
     <div className="space-y-6 p-5">
-      {/* Process & Health Section */}
+      {/* Process Step Section (Health removed) */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Process & Health</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Process Step</h3>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">Process Step</Label>
-              <Select
-                value={data.process_step || 'new_demand'}
-                onValueChange={(value) => onChange('process_step', value)}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
-                  {PROCESS_STEPS.map((step) => (
-                    <SelectItem key={step.value} value={step.value}>
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${step.color}`}>
-                        {step.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">Health</Label>
-              <Select
-                value={data.health || 'green'}
-                onValueChange={(value) => onChange('health', value)}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
-                  {HEALTH_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${opt.color}`}>
-                        {opt.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label className="text-sm font-medium">Process Step</Label>
+            <Select
+              value={data.process_step || 'new_demand'}
+              onValueChange={(value) => onChange('process_step', value)}
+            >
+              <SelectTrigger className="mt-1.5">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border shadow-lg z-50">
+                {PROCESS_STEPS.map((step) => (
+                  <SelectItem key={step.value} value={step.value}>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${step.color}`}>
+                      {step.label}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -205,12 +173,13 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
 
           <div>
             <Label className="text-sm font-medium">Description</Label>
-            <textarea
-              value={data.description || ''}
-              onChange={(e) => onChange('description', e.target.value)}
-              placeholder="Describe the demand in detail..."
-              className="mt-1.5 w-full min-h-[150px] p-3 rounded-md border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-            />
+            <div className="mt-1.5">
+              <RichTextEditor
+                value={data.description || ''}
+                onChange={(value) => onChange('description', value)}
+                placeholder="Describe the demand in detail..."
+              />
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -390,49 +359,26 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
         </CardContent>
       </Card>
 
-      {/* Delivery Track Section - Only in View Form */}
+      {/* Delivery Track Section - Single field only */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Delivery Track</h3>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">Delivery Track</Label>
-              <Select
-                value={data.delivery_track_parent || ''}
-                onValueChange={(value) => {
-                  onChange('delivery_track_parent', value);
-                  onChange('track', '');
-                }}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select track..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
-                  {DELIVERY_TRACK_PARENTS.map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium">Delivery Track (Child)</Label>
-              <Select
-                value={data.track || ''}
-                onValueChange={(value) => onChange('track', value)}
-                disabled={!selectedTrackParent}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder={selectedTrackParent ? "Select..." : "Select parent first"} />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
-                  {childOptions.map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div>
+            <Label className="text-sm font-medium">Delivery Track</Label>
+            <Select
+              value={data.delivery_track_parent || data.track || ''}
+              onValueChange={(value) => onChange('delivery_track_parent', value)}
+            >
+              <SelectTrigger className="mt-1.5">
+                <SelectValue placeholder="Select track..." />
+              </SelectTrigger>
+              <SelectContent className="bg-popover border shadow-lg z-50">
+                {DELIVERY_TRACK_OPTIONS.map((opt) => (
+                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </CardContent>
       </Card>
@@ -577,23 +523,6 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
           </CollapsibleContent>
         </Card>
       </Collapsible>
-
-      {/* Usage Guidance */}
-      <Card className="border border-blue-200 rounded-lg bg-blue-50/50">
-        <CardContent className="p-4">
-          <div className="flex gap-3">
-            <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-            <div className="space-y-2 text-sm text-blue-800">
-              <p className="font-medium">Usage Guidance:</p>
-              <ul className="list-disc list-inside space-y-1 text-blue-700">
-                <li>If the demand is related to a <strong>FACTORY</strong> (license, site, environment, customs, labor, incentives), choose the domain under EFS – Factory Services.</li>
-                <li>If the demand affects <strong>COMMERCIAL REGISTRY</strong>, fill ECS – Commercial Registry.</li>
-                <li>If the demand targets <strong>INVESTOR</strong> incentives or competitiveness (Saudi or Non-Saudi), fill the relevant IS fields.</li>
-              </ul>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

@@ -77,11 +77,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
     toast.success('Business request saved');
   };
 
-  const handleSaveAndClose = () => {
-    handleSave();
-    onClose();
-  };
-
   const handleClose = () => {
     setHasChanges(false);
     onClose();
@@ -158,10 +153,11 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
     <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden`}>
         <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0">
-          {/* Top row: Request ID with copy link, action buttons */}
+          {/* Single header row with request ID, title, and action buttons */}
           <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/10 rounded text-sm">
+            {/* Left side: Request ID with copy link + Title with edit */}
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/10 rounded text-sm shrink-0">
                 <span className="text-primary font-medium">{request?.request_key || 'Loading...'}</span>
                 <button
                   onClick={handleCopyLink}
@@ -171,16 +167,42 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
                   <LinkIcon className="h-3.5 w-3.5" />
                 </button>
               </div>
+              
+              {/* Editable title inline */}
+              <div className="flex items-center gap-2 flex-1 min-w-0 group">
+                {isEditingName ? (
+                  <Input
+                    ref={nameInputRef}
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    onBlur={handleSaveName}
+                    onKeyDown={handleNameKeyDown}
+                    className="text-lg font-semibold h-auto py-1 px-2 border-primary/50 focus:border-primary"
+                  />
+                ) : (
+                  <>
+                    <SheetTitle className="executive-drawer-title truncate text-lg">
+                      {request?.title || 'Loading...'}
+                    </SheetTitle>
+                    <button
+                      onClick={handleStartEditName}
+                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-primary transition-all p-1"
+                      title="Rename"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
             
-            {/* Action buttons row */}
-            <div className="flex items-center gap-2">
+            {/* Right side: Save button + action icons all inline */}
+            <div className="flex items-center gap-2 shrink-0">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="outline"
                     size="sm"
-                    className="h-8 px-3 text-sm font-medium"
+                    className="h-8 px-3 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
                   >
                     Save
                     <ChevronDown className="h-3.5 w-3.5 ml-1" />
@@ -190,20 +212,38 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
                   <DropdownMenuItem onSelect={handleSave}>
                     Save
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={handleSaveAndClose}>
+                  <DropdownMenuItem onSelect={() => { handleSave(); onClose(); }}>
                     Save & Close
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
               
-              <Button
-                variant="default"
-                size="sm"
-                onClick={handleSaveAndClose}
-                className="h-8 px-3 text-sm font-medium bg-primary hover:bg-primary/90"
-              >
-                Save & Close
-              </Button>
+              {/* More options dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 bg-popover">
+                  <DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Duplicate Request
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => handleAdditionalOption('audit-log')}>
+                    <History className="h-4 w-4 mr-2" />
+                    View Audit Log
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onSelect={() => handleAdditionalOption('delete')}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete Request
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               
               <Button
                 variant="ghost"
@@ -221,62 +261,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
                 </Button>
               </SheetClose>
             </div>
-          </div>
-          
-          {/* Second row: Editable title with pen icon */}
-          <div className="px-5 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2 flex-1 min-w-0 group">
-              {isEditingName ? (
-                <Input
-                  ref={nameInputRef}
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
-                  onBlur={handleSaveName}
-                  onKeyDown={handleNameKeyDown}
-                  className="text-lg font-semibold h-auto py-1 px-2 border-primary/50 focus:border-primary"
-                />
-              ) : (
-                <>
-                  <SheetTitle className="executive-drawer-title truncate text-lg">
-                    {request?.title || 'Loading...'}
-                  </SheetTitle>
-                  <button
-                    onClick={handleStartEditName}
-                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-primary transition-all p-1"
-                    title="Edit name"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </button>
-                </>
-              )}
-            </div>
-            
-            {/* More options dropdown */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 bg-popover">
-                <DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}>
-                  <Copy className="h-4 w-4 mr-2" />
-                  Duplicate Request
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => handleAdditionalOption('audit-log')}>
-                  <History className="h-4 w-4 mr-2" />
-                  View Audit Log
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem 
-                  onSelect={() => handleAdditionalOption('delete')}
-                  className="text-destructive focus:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Request
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
           <SheetDescription className="sr-only">Business request details panel</SheetDescription>
         </SheetHeader>
