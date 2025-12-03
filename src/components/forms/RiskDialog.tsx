@@ -13,16 +13,20 @@ interface RiskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   risk?: any;
+  defaultProgramId?: string;
+  defaultPiId?: string;
 }
 
-export function RiskDialog({ open, onOpenChange, risk }: RiskDialogProps) {
-  const [name, setName] = useState(risk?.name || '');
+export function RiskDialog({ open, onOpenChange, risk, defaultProgramId, defaultPiId }: RiskDialogProps) {
+  const [title, setTitle] = useState(risk?.title || '');
   const [description, setDescription] = useState(risk?.description || '');
-  const [roamStatus, setRoamStatus] = useState(risk?.roam_status || 'owned');
-  const [programId, setProgramId] = useState(risk?.program_id || '');
-  const [piId, setPiId] = useState(risk?.pi_id || '');
-  const [impact, setImpact] = useState(risk?.impact || 1);
-  const [probability, setProbability] = useState(risk?.probability || 1);
+  const [status, setStatus] = useState(risk?.status || 'Open');
+  const [resolutionMethod, setResolutionMethod] = useState(risk?.resolution_method || 'Owned');
+  const [programId, setProgramId] = useState(risk?.program_id || defaultProgramId || '');
+  const [piId, setPiId] = useState(risk?.program_increment_id || defaultPiId || '');
+  const [impact, setImpact] = useState(risk?.impact || 'Medium');
+  const [occurrence, setOccurrence] = useState(risk?.occurrence || 'Medium');
+  const [relationship, setRelationship] = useState(risk?.relationship || 'Program');
 
   const queryClient = useQueryClient();
 
@@ -61,28 +65,53 @@ export function RiskDialog({ open, onOpenChange, risk }: RiskDialogProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['risks'] });
+      queryClient.invalidateQueries({ queryKey: ['epic-linked-risks'] });
       toast.success(risk ? 'Risk updated' : 'Risk created');
       onOpenChange(false);
+      // Reset form
+      setTitle('');
+      setDescription('');
+      setStatus('Open');
+      setResolutionMethod('Owned');
+      setImpact('Medium');
+      setOccurrence('Medium');
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Risk save error:', error);
       toast.error('Failed to save risk');
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!programId || !piId) {
-      toast.error('Please select a program and PI');
+    if (!title.trim()) {
+      toast.error('Please enter a risk title');
       return;
     }
+    if (!programId) {
+      toast.error('Please select a program');
+      return;
+    }
+    if (!piId) {
+      toast.error('Please select a PI');
+      return;
+    }
+    
+    // Get a placeholder owner_id and created_by (in real app, use auth user)
+    const placeholderId = '00000000-0000-0000-0000-000000000000';
+    
     mutation.mutate({
-      name,
-      description,
-      roam_status: roamStatus,
+      title: title.trim(),
+      description: description.trim() || title.trim(),
+      status,
+      resolution_method: resolutionMethod,
       program_id: programId,
-      pi_id: piId,
+      program_increment_id: piId,
       impact,
-      probability,
+      occurrence,
+      relationship,
+      owner_id: risk?.owner_id || placeholderId,
+      created_by: risk?.created_by || placeholderId,
     });
   };
 
@@ -94,11 +123,11 @@ export function RiskDialog({ open, onOpenChange, risk }: RiskDialogProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Name *</Label>
+            <Label htmlFor="title">Name *</Label>
             <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
@@ -144,15 +173,15 @@ export function RiskDialog({ open, onOpenChange, risk }: RiskDialogProps) {
             </div>
             <div>
               <Label htmlFor="status">ROAM Status</Label>
-              <Select value={roamStatus} onValueChange={setRoamStatus}>
+              <Select value={resolutionMethod} onValueChange={setResolutionMethod}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="resolved">Resolved</SelectItem>
-                  <SelectItem value="owned">Owned</SelectItem>
-                  <SelectItem value="accepted">Accepted</SelectItem>
-                  <SelectItem value="mitigated">Mitigated</SelectItem>
+                  <SelectItem value="Resolved">Resolved</SelectItem>
+                  <SelectItem value="Owned">Owned</SelectItem>
+                  <SelectItem value="Accepted">Accepted</SelectItem>
+                  <SelectItem value="Mitigated">Mitigated</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -160,32 +189,40 @@ export function RiskDialog({ open, onOpenChange, risk }: RiskDialogProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="impact">Impact (1-5)</Label>
-              <Input
-                id="impact"
-                type="number"
-                min="1"
-                max="5"
-                value={impact}
-                onChange={(e) => setImpact(Number(e.target.value))}
-              />
+              <Select value={impact} onValueChange={setImpact}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Very Low">1 - Very Low</SelectItem>
+                  <SelectItem value="Low">2 - Low</SelectItem>
+                  <SelectItem value="Medium">3 - Medium</SelectItem>
+                  <SelectItem value="High">4 - High</SelectItem>
+                  <SelectItem value="Very High">5 - Very High</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
-              <Label htmlFor="probability">Probability (1-5)</Label>
-              <Input
-                id="probability"
-                type="number"
-                min="1"
-                max="5"
-                value={probability}
-                onChange={(e) => setProbability(Number(e.target.value))}
-              />
+              <Label htmlFor="occurrence">Probability (1-5)</Label>
+              <Select value={occurrence} onValueChange={setOccurrence}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Very Low">1 - Very Low</SelectItem>
+                  <SelectItem value="Low">2 - Low</SelectItem>
+                  <SelectItem value="Medium">3 - Medium</SelectItem>
+                  <SelectItem value="High">4 - High</SelectItem>
+                  <SelectItem value="Very High">5 - Very High</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={mutation.isPending}>
+            <Button type="submit" disabled={mutation.isPending} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
               {mutation.isPending ? 'Saving...' : 'Save'}
             </Button>
           </DialogFooter>
