@@ -92,26 +92,28 @@ export default function Forecast() {
     <div className="h-screen flex flex-col bg-background">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="px-6 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-semibold text-foreground">Forecast</h1>
+        <div className="px-3 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Forecast</h1>
           <Button 
             variant="outline" 
             size="sm"
+            className="h-8 sm:h-9 text-xs sm:text-sm"
             onClick={() => setPiSelectorOpen(!piSelectorOpen)}
           >
-            <Filter className="h-4 w-4 mr-2" />
-            Select PIs ({selectedPIs.length})
+            <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Select PIs ({selectedPIs.length})</span>
+            <span className="sm:hidden ml-1">PIs ({selectedPIs.length})</span>
           </Button>
         </div>
         
         {/* Filters Bar */}
-        <div className="px-6 py-3 border-t flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+        <div className="px-3 sm:px-6 py-2 sm:py-3 border-t flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             {/* View Level Filter */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">View:</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <span className="text-xs sm:text-sm text-muted-foreground">View:</span>
               <Select value={viewLevel} onValueChange={(val) => setViewLevel(val as 'team' | 'program')}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-24 sm:w-32 h-8 sm:h-9 text-xs sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -122,10 +124,10 @@ export default function Forecast() {
             </div>
 
             {/* Work Item Level Filter */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Level:</span>
+            <div className="flex items-center gap-1 sm:gap-2">
+              <span className="text-xs sm:text-sm text-muted-foreground">Level:</span>
               <Select value={workItemLevel} onValueChange={(val) => setWorkItemLevel(val as any)}>
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-24 sm:w-40 h-8 sm:h-9 text-xs sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -136,16 +138,16 @@ export default function Forecast() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setFiltersOpen(true)}>
-              <Filter className="h-4 w-4 mr-2" />
-              Apply Filters
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={() => setFiltersOpen(true)}>
+              <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Filters</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setColumnsOpen(true)}>
-              <Settings className="h-4 w-4 mr-2" />
-              Configure Columns
+            <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={() => setColumnsOpen(true)}>
+              <Settings className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Columns</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={() => {
+            <Button variant="outline" size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={() => {
               toast.info('Apply Backlog Rank resets ordering based on program/portfolio/global rank');
             }}>
               <ArrowUpDown className="h-4 w-4 mr-2" />

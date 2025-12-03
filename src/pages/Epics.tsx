@@ -98,21 +98,25 @@ export default function Epics() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Epics</h1>
-            <p className="text-sm text-muted-foreground">Large initiatives broken into deliverable features</p>
+      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-bold">Epics</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground">Large initiatives broken into deliverable features</p>
           </div>
           <PermissionGuard requiredRole="program_manager" showMessage={false}>
-            <Button onClick={handleCreate}><Plus className="h-4 w-4 mr-2" />New Epic</Button>
+            <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm">
+              <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+              <span className="hidden sm:inline">New Epic</span>
+              <span className="sm:hidden ml-1">New</span>
+            </Button>
           </PermissionGuard>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col p-6 space-y-4 overflow-hidden">
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1 max-w-sm">
+      <div className="flex-1 flex flex-col p-3 sm:p-6 space-y-3 sm:space-y-4 overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          <div className="relative flex-1 sm:max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input placeholder="Search epics..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-9" />
           </div>

@@ -47,8 +47,8 @@ export const TestSetsPage: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Folder Sidebar */}
-      <div className={`${isSidebarCollapsed ? 'w-16' : 'w-[300px]'} transition-all duration-300`}>
+      {/* Folder Sidebar - hidden on mobile */}
+      <div className={`hidden lg:block ${isSidebarCollapsed ? 'w-16' : 'w-[300px]'} transition-all duration-300 flex-shrink-0 border-r border-border`}>
         <FolderPanel
           entityType="test_sets"
           folders={foldersData || []}
@@ -61,25 +61,26 @@ export const TestSetsPage: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Header */}
-        <div className="border-b bg-card px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Test Sets</h1>
-              <p className="text-sm text-muted-foreground mt-1">
+        <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold">Test Sets</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 Organize and manage test case collections
               </p>
             </div>
-            <Button onClick={() => navigate(`/programs/${programId}/tests/sets/create`)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Set
+            <Button size="sm" className="h-8 sm:h-9 text-xs sm:text-sm" onClick={() => navigate(`/programs/${programId}/tests/sets/create`)}>
+              <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Create Set</span>
+              <span className="sm:hidden ml-1">Create</span>
             </Button>
           </div>
         </div>
 
         {/* Test Sets Grid */}
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto p-3 sm:p-6">
           {isLoading ? (
             <div className="flex items-center justify-center h-64">
               <div className="text-muted-foreground">Loading test sets...</div>
