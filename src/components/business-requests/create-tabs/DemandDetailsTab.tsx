@@ -6,7 +6,8 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CalendarIcon, Lock, Unlock, Upload, X, FileText, Info } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { CalendarIcon, Lock, Unlock, Upload, X, FileText, Info, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -443,136 +444,146 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
         </CardContent>
       </Card>
 
-      {/* Entity & Individual Services - Combined Section */}
-      <Card className="border border-border/60 rounded-lg bg-card">
-        <CardContent className="p-5 space-y-5">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">
-            Entity & Individual Services
-          </h3>
-          
-          {/* EFS - Factory Services */}
-          <div className="space-y-4">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">EFS – Factory Services</p>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label className="text-sm font-medium">Factory Service Domain</Label>
-                <Select
-                  value={data.efs_domain || ''}
-                  onValueChange={(value) => {
-                    onChange('efs_domain', value);
-                    onChange('efs_service', '');
-                  }}
-                >
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue placeholder="Select domain..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
-                    {EFS_DOMAINS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+      {/* Entity & Individual Services - Collapsible Section */}
+      <Collapsible defaultOpen={false}>
+        <Card className="border border-border/60 rounded-lg bg-card">
+          <CollapsibleTrigger asChild>
+            <CardContent className="p-5 cursor-pointer hover:bg-muted/30 transition-colors">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">
+                  Entity & Individual Services
+                </h3>
+                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 [&[data-state=open]>svg]:rotate-180" />
+              </div>
+            </CardContent>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="pt-0 px-5 pb-5 space-y-5">
+              {/* EFS - Factory Services */}
+              <div className="space-y-4">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">EFS – Factory Services</p>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">Factory Service Domain</Label>
+                    <Select
+                      value={data.efs_domain || ''}
+                      onValueChange={(value) => {
+                        onChange('efs_domain', value);
+                        onChange('efs_service', '');
+                      }}
+                    >
+                      <SelectTrigger className="mt-1.5">
+                        <SelectValue placeholder="Select domain..." />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border shadow-lg z-50">
+                        {EFS_DOMAINS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium">Specific Service</Label>
+                    <Select
+                      value={data.efs_service || ''}
+                      onValueChange={(value) => onChange('efs_service', value)}
+                      disabled={!selectedDomain}
+                    >
+                      <SelectTrigger className="mt-1.5">
+                        <SelectValue placeholder={selectedDomain ? "Select service..." : "Select domain first"} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border shadow-lg z-50">
+                        {serviceOptions.map((opt) => (
+                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium">EFS – Track Type</Label>
+                    <Select
+                      value={data.efs_track_type || ''}
+                      onValueChange={(value) => onChange('efs_track_type', value)}
+                    >
+                      <SelectTrigger className="mt-1.5">
+                        <SelectValue placeholder="Select track type..." />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border shadow-lg z-50">
+                        {EFS_TRACK_TYPES.map((opt) => (
+                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
 
-              <div>
-                <Label className="text-sm font-medium">Specific Service</Label>
-                <Select
-                  value={data.efs_service || ''}
-                  onValueChange={(value) => onChange('efs_service', value)}
-                  disabled={!selectedDomain}
-                >
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue placeholder={selectedDomain ? "Select service..." : "Select domain first"} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
-                    {serviceOptions.map((opt) => (
-                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              {/* ECS - Commercial Services */}
+              <div className="space-y-4 pt-4 border-t border-border/40">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">ECS – Commercial Services</p>
+                <div>
+                  <Label className="text-sm font-medium">ECS – Commercial Registry</Label>
+                  <Select
+                    value={data.ecs_registry || ''}
+                    onValueChange={(value) => onChange('ecs_registry', value)}
+                  >
+                    <SelectTrigger className="mt-1.5">
+                      <SelectValue placeholder="Select registry type..." />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border shadow-lg z-50">
+                      {ECS_OPTIONS.map((opt) => (
+                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div>
-                <Label className="text-sm font-medium">EFS – Track Type</Label>
-                <Select
-                  value={data.efs_track_type || ''}
-                  onValueChange={(value) => onChange('efs_track_type', value)}
-                >
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue placeholder="Select track type..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
-                    {EFS_TRACK_TYPES.map((opt) => (
-                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
+              {/* IS - Individual Services */}
+              <div className="space-y-4 pt-4 border-t border-border/40">
+                <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">IS – Individual Services</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label className="text-sm font-medium">IS – Saudi Category</Label>
+                    <Select
+                      value={data.is_saudi || ''}
+                      onValueChange={(value) => onChange('is_saudi', value)}
+                    >
+                      <SelectTrigger className="mt-1.5">
+                        <SelectValue placeholder="Select category..." />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border shadow-lg z-50">
+                        {IS_SAUDI_OPTIONS.map((opt) => (
+                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-          {/* ECS - Commercial Services */}
-          <div className="space-y-4 pt-4 border-t border-border/40">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">ECS – Commercial Services</p>
-            <div>
-              <Label className="text-sm font-medium">ECS – Commercial Registry</Label>
-              <Select
-                value={data.ecs_registry || ''}
-                onValueChange={(value) => onChange('ecs_registry', value)}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select registry type..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
-                  {ECS_OPTIONS.map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          {/* IS - Individual Services */}
-          <div className="space-y-4 pt-4 border-t border-border/40">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">IS – Individual Services</p>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium">IS – Saudi Category</Label>
-                <Select
-                  value={data.is_saudi || ''}
-                  onValueChange={(value) => onChange('is_saudi', value)}
-                >
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue placeholder="Select category..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
-                    {IS_SAUDI_OPTIONS.map((opt) => (
-                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  <div>
+                    <Label className="text-sm font-medium">IS – Non-Saudi Category</Label>
+                    <Select
+                      value={data.is_non_saudi || ''}
+                      onValueChange={(value) => onChange('is_non_saudi', value)}
+                    >
+                      <SelectTrigger className="mt-1.5">
+                        <SelectValue placeholder="Select category..." />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover border shadow-lg z-50">
+                        {IS_NON_SAUDI_OPTIONS.map((opt) => (
+                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </div>
-
-              <div>
-                <Label className="text-sm font-medium">IS – Non-Saudi Category</Label>
-                <Select
-                  value={data.is_non_saudi || ''}
-                  onValueChange={(value) => onChange('is_non_saudi', value)}
-                >
-                  <SelectTrigger className="mt-1.5">
-                    <SelectValue placeholder="Select category..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
-                    {IS_NON_SAUDI_OPTIONS.map((opt) => (
-                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       {/* Usage Guidance */}
       <Card className="border border-blue-200 rounded-lg bg-blue-50/50">
