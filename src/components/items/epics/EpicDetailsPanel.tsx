@@ -56,6 +56,7 @@ import { CancelEpicDialog } from './dialogs/CancelEpicDialog';
 import { SplitEpicDialog } from './dialogs/SplitEpicDialog';
 import { DuplicateEpicDialog } from './dialogs/DuplicateEpicDialog';
 import { AuditLogDialog } from './dialogs/AuditLogDialog';
+import { WhyPanelDialog } from './dialogs/WhyPanelDialog';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { toast } from 'sonner';
 
@@ -72,6 +73,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
   const [splitDialogOpen, setSplitDialogOpen] = useState(false);
   const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
   const [auditLogOpen, setAuditLogOpen] = useState(false);
+  const [whyPanelOpen, setWhyPanelOpen] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [editedName, setEditedName] = useState(initialEpic?.name || '');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -312,10 +314,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
 
   // Why button handler - shows parent hierarchy, WSJF, and business case info
   const handleWhyClick = () => {
-    toast.info('Opening Why panel...', {
-      description: 'Shows parent work items, WSJF scoring, success measurements, and business cases linked to this epic.'
-    });
-    // TODO: Implement Why slide-out panel
+    setWhyPanelOpen(true);
   };
 
   // Save handlers
@@ -628,6 +627,12 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
         entityId={epic.id}
         entityType="epics"
         entityName={epic.name}
+      />
+
+      <WhyPanelDialog
+        open={whyPanelOpen}
+        onOpenChange={setWhyPanelOpen}
+        epic={epic}
       />
     </>
   );
