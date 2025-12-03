@@ -221,11 +221,12 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['forecast-entries'] });
-      toast.success('Forecast updated');
+      // Use toast ID to prevent duplicate notifications
+      toast.success('Forecast updated', { id: 'forecast-update' });
     },
     onError: (error) => {
       console.error('Failed to update forecast:', error);
-      toast.error('Failed to update forecast');
+      toast.error('Failed to update forecast', { id: 'forecast-error' });
     },
   });
 

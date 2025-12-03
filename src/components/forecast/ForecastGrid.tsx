@@ -172,11 +172,12 @@ export function ForecastGrid({ piId, viewLevel, workItemLevel }: ForecastGridPro
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['forecast-entries'] });
-      toast.success('Forecast updated');
+      // Use toast ID to prevent duplicate notifications
+      toast.success('Forecast updated', { id: 'forecast-update' });
     },
     onError: (error: any) => {
       console.error('Failed to update forecast:', error);
-      toast.error(error.message || 'Failed to update forecast');
+      toast.error(error.message || 'Failed to update forecast', { id: 'forecast-error' });
     },
   });
 
