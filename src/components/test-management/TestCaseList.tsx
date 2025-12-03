@@ -1,5 +1,5 @@
-import React from 'react';
-import { Edit, Trash2, Play } from 'lucide-react';
+import React, { useState } from 'react';
+import { Edit, Trash2, Play, Copy, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -9,14 +9,24 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
 import { EmptyState } from './EmptyState';
-import type { TestCase } from '@/types/test-management';
+import { CloneTestCaseModal } from './CloneTestCaseModal';
+import type { TestCase, TestFolder } from '@/types/test-management';
 import { format } from 'date-fns';
 
 interface TestCaseListProps {
   testCases: TestCase[];
   loading: boolean;
+  folders?: TestFolder[];
+  onRefresh?: () => void;
 }
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
@@ -50,8 +60,18 @@ const PriorityBadge: React.FC<{ priority: string }> = ({ priority }) => {
 
 export const TestCaseList: React.FC<TestCaseListProps> = ({
   testCases,
-  loading
+  loading,
+  folders = [],
+  onRefresh
 }) => {
+  const [cloneModalOpen, setCloneModalOpen] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<TestCase | null>(null);
+
+  const handleClone = (testCase: TestCase) => {
+    setSelectedCase(testCase);
+    setCloneModalOpen(true);
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -109,37 +129,51 @@ export const TestCaseList: React.FC<TestCaseListProps> = ({
                 {format(new Date(testCase.created_at), 'MMM dd, yyyy')}
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0"
-                    title="Edit"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-destructive"
-                    title="Delete"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-brand-gold"
-                    title="Execute"
-                  >
-                    <Play className="h-4 w-4" />
-                  </Button>
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>
+                      <Edit className="h-4 w-4 mr-2" /> Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleClone(testCase)}>
+                      <Copy className="h-4 w-4 mr-2" /> Clone
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Play className="h-4 w-4 mr-2" /> Execute
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="text-destructive">
+                      <Trash2 className="h-4 w-4 mr-2" /> Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+
+      {/* Clone Modal */}
+      {selectedCase && (
+        <CloneTestCaseModal
+          isOpen={cloneModalOpen}
+          onClose={() => {
+            setCloneModalOpen(false);
+            setSelectedCase(null);
+          }}
+          testCase={selectedCase}
+          folders={folders}
+          onSuccess={() => {
+            onRefresh?.();
+            setCloneModalOpen(false);
+            setSelectedCase(null);
+          }}
+        />
+      )}
     </div>
   );
 };
