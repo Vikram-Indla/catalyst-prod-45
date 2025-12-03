@@ -12,14 +12,13 @@ import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 
-// Default columns configuration
+// Default columns configuration per screenshot
 const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'request_key', label: 'Request ID', visible: true, default: true },
-  { id: 'title', label: 'Name', visible: true, default: true },
-  { id: 'process_step', label: 'Status', visible: true, default: true },
+  { id: 'rank', label: 'Rank', visible: true, default: true },
+  { id: 'title', label: 'Summary', visible: true, default: true },
+  { id: 'process_step', label: 'Process Step', visible: true, default: true },
   { id: 'business_score', label: 'Business Score', visible: true, default: true },
-  { id: 'start_date', label: 'Business Ask Date', visible: true, default: true },
-  { id: 'impl_start_date', label: 'Initiation Date', visible: true, default: true },
   { id: 'end_date', label: 'Target Completion', visible: true, default: true },
 ];
 
@@ -130,11 +129,10 @@ export default function IndustryPage() {
                 <Checkbox />
               </TableHead>
               {isColumnVisible('request_key') && <TableHead className="font-medium">Request ID</TableHead>}
-              {isColumnVisible('title') && <TableHead className="font-medium">Name</TableHead>}
-              {isColumnVisible('process_step') && <TableHead className="font-medium">Status</TableHead>}
+              {isColumnVisible('rank') && <TableHead className="font-medium">Rank</TableHead>}
+              {isColumnVisible('title') && <TableHead className="font-medium">Summary</TableHead>}
+              {isColumnVisible('process_step') && <TableHead className="font-medium">Process Step</TableHead>}
               {isColumnVisible('business_score') && <TableHead className="font-medium">Business Score</TableHead>}
-              {isColumnVisible('start_date') && <TableHead className="font-medium">Business Ask Date</TableHead>}
-              {isColumnVisible('impl_start_date') && <TableHead className="font-medium">Initiation Date</TableHead>}
               {isColumnVisible('end_date') && <TableHead className="font-medium">Target Completion</TableHead>}
             </TableRow>
           </TableHeader>
@@ -146,7 +144,10 @@ export default function IndustryPage() {
                 </TableCell>
               </TableRow>
             ) : requests && requests.length > 0 ? (
-              requests.map((request: any) => (
+              // Sort by business_score descending to calculate ranks
+              [...requests]
+                .sort((a: any, b: any) => (b.business_score || 0) - (a.business_score || 0))
+                .map((request: any, index: number) => (
                 <TableRow 
                   key={request.id} 
                   className="cursor-pointer hover:bg-muted/50"
@@ -158,6 +159,9 @@ export default function IndustryPage() {
                   {isColumnVisible('request_key') && (
                     <TableCell className="text-sm font-medium text-primary">{request.request_key || '-'}</TableCell>
                   )}
+                  {isColumnVisible('rank') && (
+                    <TableCell className="text-sm font-medium">{request.rank || index + 1}</TableCell>
+                  )}
                   {isColumnVisible('title') && (
                     <TableCell className="font-medium text-foreground">{request.title}</TableCell>
                   )}
@@ -166,12 +170,6 @@ export default function IndustryPage() {
                   )}
                   {isColumnVisible('business_score') && (
                     <TableCell>{getBusinessScoreBadge(request.business_score)}</TableCell>
-                  )}
-                  {isColumnVisible('start_date') && (
-                    <TableCell className="text-sm text-muted-foreground">{formatDate(request.start_date)}</TableCell>
-                  )}
-                  {isColumnVisible('impl_start_date') && (
-                    <TableCell className="text-sm text-muted-foreground">{formatDate(request.impl_start_date)}</TableCell>
                   )}
                   {isColumnVisible('end_date') && (
                     <TableCell className="text-sm text-muted-foreground">{formatDate(request.end_date)}</TableCell>

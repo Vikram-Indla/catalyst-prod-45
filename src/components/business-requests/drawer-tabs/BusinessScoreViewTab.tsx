@@ -9,6 +9,15 @@ import { BusinessRequest } from '@/types/business-request';
 // Score options 0-10
 const SCORE_OPTIONS = Array.from({ length: 11 }, (_, i) => i);
 
+// Rank options 1-20
+const RANK_OPTIONS = Array.from({ length: 20 }, (_, i) => i + 1);
+
+// Quarter options
+const QUARTER_OPTIONS = [
+  'Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024',
+  'Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025',
+];
+
 // Get rank based on score
 const getRank = (score: number): { label: string; color: string } => {
   if (score >= 90) return { label: 'Must-Do Now', color: 'text-green-600 bg-green-100' };
@@ -61,6 +70,17 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
   }, [normalizedBusinessValue, normalizedUrgency, normalizedSimplicity]);
 
   const rank = getRank(businessScore);
+
+  // Calculate default rank from business score (1 = highest)
+  const calculatedDefaultRank = useMemo(() => {
+    if (businessScore >= 90) return 1;
+    if (businessScore >= 80) return 2;
+    if (businessScore >= 70) return 3;
+    if (businessScore >= 60) return 5;
+    if (businessScore >= 50) return 8;
+    if (businessScore >= 40) return 10;
+    return 15;
+  }, [businessScore]);
 
   return (
     <div className="space-y-6 p-5">
@@ -119,6 +139,59 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
           </CardContent>
         </Card>
       )}
+
+      {/* Rank & Planned Quarter Section */}
+      <Card className="border border-border/60 rounded-lg bg-card">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">
+            Ranking & Planning
+          </h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Manual Rank (1-20)</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                1 = Highest priority. Default based on business score.
+              </p>
+              <Select
+                value={String(data.rank || calculatedDefaultRank)}
+                onValueChange={(value) => onChange('rank', parseInt(value))}
+                disabled={!demandComplete}
+              >
+                <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  {RANK_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="text-sm font-medium">Planned Quarter</Label>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Target quarter for implementation
+              </p>
+              <Select
+                value={data.planned_quarter || ''}
+                onValueChange={(value) => onChange('planned_quarter', value)}
+                disabled={!demandComplete}
+              >
+                <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
+                  <SelectValue placeholder="Select quarter..." />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  {QUARTER_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-2 gap-6">
         {/* Left Column - Inputs */}
