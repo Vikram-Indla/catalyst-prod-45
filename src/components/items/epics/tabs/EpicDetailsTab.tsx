@@ -28,12 +28,14 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const [addPIOpen, setAddPIOpen] = useState(false);
   const [addProgramOpen, setAddProgramOpen] = useState(false);
   const [hideDetails, setHideDetails] = useState(false);
-  const [featuresOpen, setFeaturesOpen] = useState(false);
   const [acceptanceCriteriaOpen, setAcceptanceCriteriaOpen] = useState(false);
   const [risksOpen, setRisksOpen] = useState(false);
   const [dependenciesOpen, setDependenciesOpen] = useState(false);
-  const [featureSearch, setFeatureSearch] = useState('');
-  const [showFeatureSuggestions, setShowFeatureSuggestions] = useState(false);
+  const [newCriteriaText, setNewCriteriaText] = useState('');
+  const [showAddCriteria, setShowAddCriteria] = useState(false);
+  const [showAddRisk, setShowAddRisk] = useState(false);
+  const [showAddDependency, setShowAddDependency] = useState(false);
+  const [newTagInput, setNewTagInput] = useState('');
   const queryClient = useQueryClient();
 
   // Local state for all editable fields
@@ -51,7 +53,6 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     target_completion_date: epic.target_completion_date || '',
     date_locked: epic.date_locked || false,
     capitalized: epic.capitalized || false,
-    budget: epic.budget || '',
     estimation_system: epic.estimation_system || 'points',
     strategic_value_score: epic.strategic_value_score || '',
     effort_swag: epic.effort_swag || '',
@@ -79,7 +80,6 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
       target_completion_date: epic.target_completion_date || '',
       date_locked: epic.date_locked || false,
       capitalized: epic.capitalized || false,
-      budget: epic.budget || '',
       estimation_system: epic.estimation_system || 'points',
       strategic_value_score: epic.strategic_value_score || '',
       effort_swag: epic.effort_swag || '',
@@ -149,126 +149,90 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     },
   });
 
-  // Fetch child features with teams and progress - per Jira Align spec
-  const { data: childProgress } = useQuery({
-    queryKey: ['epic-child-progress', epic.id],
+  // Fetch epic spend for budget
+  const { data: epicSpend } = useQuery({
+    queryKey: ['epic-spend', epic.id],
     queryFn: async () => {
-      const { data: features } = await supabase
-        .from('features')
-        .select(`
-          id, 
-          name,
-          display_id,
-          status, 
-          progress_pct,
-          estimate_points,
-          team_id,
-          teams:team_id(id, name),
-          stories:stories(id, status, estimate_points)
-        `)
-        .eq('epic_id', epic.id);
-
-      if (!features || features.length === 0) {
-        return { totalFeatures: 0, features: [] };
-      }
-
-      return {
-        totalFeatures: features.length,
-        features,
-      };
+      const { data } = await supabase
+        .from('epic_spend')
+        .select('*')
+        .eq('epic_id', epic.id)
+        .single();
+      return data;
     },
   });
 
-  // Fetch available features for inline search/add
-  const { data: availableFeatures } = useQuery({
-    queryKey: ['available-features-for-epic', epic.id, featureSearch],
+  // Fetch acceptance criteria for this epic
+  const { data: acceptanceCriteria } = useQuery({
+    queryKey: ['epic-acceptance-criteria', epic.id],
     queryFn: async () => {
-      if (!featureSearch || featureSearch.length < 2) return [];
-      
       const { data } = await supabase
-        .from('features')
-        .select('id, name, display_id, status, estimate_points, teams:team_id(name)')
-        .or(`epic_id.is.null,epic_id.neq.${epic.id}`)
-        .or(`name.ilike.%${featureSearch}%,display_id.ilike.%${featureSearch}%`)
-        .limit(10);
-      
+        .from('epic_acceptance_criteria')
+        .select('*')
+        .eq('epic_id', epic.id)
+        .order('created_at');
       return data || [];
     },
-    enabled: featureSearch.length >= 2,
+  });
+
+  // Fetch available risks filtered by program context
+  const { data: availableRisks } = useQuery({
+    queryKey: ['available-risks-for-epic', epic.primary_program_id, epic.theme_id],
+    queryFn: async () => {
+      let query = supabase
+        .from('risks')
+        .select('id, title, status, impact, occurrence, program_id')
+        .is('deleted_at', null);
+      
+      // Filter by program or theme context
+      if (epic.primary_program_id) {
+        query = query.eq('program_id', epic.primary_program_id);
+      }
+      
+      const { data } = await query.order('title');
+      return data || [];
+    },
   });
 
   // Fetch dependencies count for this epic (via features)
-  const { data: dependenciesCount } = useQuery({
-    queryKey: ['epic-dependencies-count', epic.id],
+  const { data: epicDependencies } = useQuery({
+    queryKey: ['epic-dependencies', epic.id, epic.primary_program_id],
     queryFn: async () => {
-      // Get feature IDs for this epic first
+      // Get feature IDs for this epic
       const { data: features } = await supabase
         .from('features')
         .select('id')
         .eq('epic_id', epic.id);
       
-      if (!features || features.length === 0) return 0;
+      if (!features || features.length === 0) return { count: 0, dependencies: [] };
       
       const featureIds = features.map(f => f.id);
       
-      // Count dependencies where from_feature_id or to_feature_id is in our features
-      const { count } = await supabase
+      // Fetch dependencies where from_feature_id or to_feature_id is in our features
+      const { data: deps } = await supabase
         .from('dependencies')
-        .select('*', { count: 'exact', head: true })
+        .select('*, from_feature:from_feature_id(id, name), to_feature:to_feature_id(id, name)')
         .or(`from_feature_id.in.(${featureIds.join(',')}),to_feature_id.in.(${featureIds.join(',')})`);
       
-      return count || 0;
+      return { count: deps?.length || 0, dependencies: deps || [] };
     },
   });
 
-  // Fetch linked risks for this epic
-  const { data: linkedRisks } = useQuery({
-    queryKey: ['epic-linked-risks', epic.id],
+  // Fetch available dependencies for linking (from program context)
+  const { data: availableDependencies } = useQuery({
+    queryKey: ['available-dependencies-for-epic', epic.primary_program_id],
     queryFn: async () => {
-      const result = await (supabase
-        .from('risks' as any)
-        .select('id, title, status, impact, occurrence')
-        .eq('related_entity_type', 'Epic')
-        .eq('related_entity_id', epic.id)
-        .is('deleted_at', null) as any);
-      return result.data || [];
+      if (!epic.primary_program_id) return [];
+      
+      const { data } = await supabase
+        .from('dependencies')
+        .select('*, from_feature:from_feature_id(id, name, program_id), to_feature:to_feature_id(id, name, program_id)')
+        .or(`requesting_program_id.eq.${epic.primary_program_id},depends_on_program_id.eq.${epic.primary_program_id}`)
+        .limit(50);
+      
+      return data || [];
     },
-  });
-
-  // Link feature to epic mutation
-  const linkFeatureMutation = useMutation({
-    mutationFn: async (featureId: string) => {
-      const { error } = await supabase
-        .from('features')
-        .update({ epic_id: epic.id })
-        .eq('id', featureId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['epic-child-progress', epic.id] });
-      queryClient.invalidateQueries({ queryKey: ['features'] });
-      setFeatureSearch('');
-      setShowFeatureSuggestions(false);
-      toast.success('Feature linked to epic');
-    },
-    onError: () => toast.error('Failed to link feature'),
-  });
-
-  // Unlink feature from epic mutation
-  const unlinkFeatureMutation = useMutation({
-    mutationFn: async (featureId: string) => {
-      const { error } = await supabase
-        .from('features')
-        .update({ epic_id: null })
-        .eq('id', featureId);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['epic-child-progress', epic.id] });
-      queryClient.invalidateQueries({ queryKey: ['features'] });
-      toast.success('Feature unlinked');
-    },
-    onError: () => toast.error('Failed to unlink feature'),
+    enabled: !!epic.primary_program_id,
   });
 
   // Mutation to update epic
@@ -315,7 +279,117 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     }
   });
 
-  // Handle field change with auto-save
+  // Mutation to save budget to epic_spend table
+  const budgetMutation = useMutation({
+    mutationFn: async (budget: number | null) => {
+      // Check if epic_spend record exists
+      const { data: existing } = await supabase
+        .from('epic_spend')
+        .select('id')
+        .eq('epic_id', epic.id)
+        .single();
+      
+      if (existing) {
+        const { error } = await supabase
+          .from('epic_spend')
+          .update({ budget })
+          .eq('epic_id', epic.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('epic_spend')
+          .insert({ epic_id: epic.id, budget });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-spend', epic.id] });
+      toast.success('Budget updated');
+    },
+    onError: () => toast.error('Failed to update budget'),
+  });
+
+  // Mutation to add acceptance criteria
+  const addCriteriaMutation = useMutation({
+    mutationFn: async (description: string) => {
+      const { error } = await supabase
+        .from('epic_acceptance_criteria')
+        .insert({ epic_id: epic.id, description });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-acceptance-criteria', epic.id] });
+      setNewCriteriaText('');
+      setShowAddCriteria(false);
+      toast.success('Acceptance criteria added');
+    },
+    onError: () => toast.error('Failed to add criteria'),
+  });
+
+  // Mutation to delete acceptance criteria
+  const deleteCriteriaMutation = useMutation({
+    mutationFn: async (criteriaId: string) => {
+      const { error } = await supabase
+        .from('epic_acceptance_criteria')
+        .delete()
+        .eq('id', criteriaId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-acceptance-criteria', epic.id] });
+      toast.success('Criteria removed');
+    },
+    onError: () => toast.error('Failed to remove criteria'),
+  });
+
+  // Mutation to link risk to epic
+  const linkRiskMutation = useMutation({
+    mutationFn: async (riskId: string) => {
+      const { error } = await supabase
+        .from('risks')
+        .update({ relationship: 'Epic', related_item_id: epic.id })
+        .eq('id', riskId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-linked-risks', epic.id] });
+      queryClient.invalidateQueries({ queryKey: ['available-risks-for-epic'] });
+      setShowAddRisk(false);
+      toast.success('Risk linked');
+    },
+    onError: () => toast.error('Failed to link risk'),
+  });
+
+  // Mutation to unlink risk from epic
+  const unlinkRiskMutation = useMutation({
+    mutationFn: async (riskId: string) => {
+      const { error } = await supabase
+        .from('risks')
+        .update({ relationship: null, related_item_id: null })
+        .eq('id', riskId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-linked-risks', epic.id] });
+      queryClient.invalidateQueries({ queryKey: ['available-risks-for-epic'] });
+      toast.success('Risk unlinked');
+    },
+    onError: () => toast.error('Failed to unlink risk'),
+  });
+
+  // Fetch linked risks for this epic
+  const { data: linkedRisks } = useQuery({
+    queryKey: ['epic-linked-risks', epic.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('risks')
+        .select('id, title, status, impact, occurrence')
+        .eq('relationship', 'Epic')
+        .eq('related_item_id', epic.id)
+        .is('deleted_at', null);
+      return data || [];
+    },
+  });
   const handleFieldChange = (field: keyof typeof formData, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     updateMutation.mutate({ [field]: value });
@@ -670,12 +744,14 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         </div>
 
         <div>
-          <Label>Budget</Label>
+          <Label>Budget (SAR)</Label>
           <Input 
             type="number" 
-            value={formData.budget}
-            onChange={(e) => setFormData(prev => ({ ...prev, budget: e.target.value }))}
-            onBlur={() => handleTextBlur('budget')}
+            defaultValue={epicSpend?.budget || ''}
+            onBlur={(e) => {
+              const value = e.target.value ? parseFloat(e.target.value) : null;
+              budgetMutation.mutate(value);
+            }}
             placeholder="Enter budget" 
           />
         </div>
@@ -824,13 +900,13 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             ))}
             {/* Input to Add New Tag */}
             <Input
-              className="flex-1 min-w-[120px] h-7 border-0 shadow-none focus-visible:ring-0 p-0 text-sm"
-              placeholder="Type and press Enter to add tag..."
+              className="flex-1 min-w-[80px] h-7 border-0 shadow-none focus-visible:ring-0 p-0 text-sm"
+              value={newTagInput}
+              onChange={(e) => setNewTagInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  const input = e.currentTarget;
-                  const newTag = input.value.trim();
+                  const newTag = newTagInput.trim();
                   if (newTag && !newTag.startsWith('j:')) {
                     const currentTags = formData.tags ? formData.tags.split(',').filter(t => t.trim()) : [];
                     if (!currentTags.includes(newTag)) {
@@ -838,13 +914,13 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                       setFormData(prev => ({ ...prev, tags: newTagsString }));
                       updateMutation.mutate({ tags: newTagsString });
                     }
-                    input.value = '';
+                    setNewTagInput('');
                   }
                 }
               }}
             />
           </div>
-          <p className="text-xs text-muted-foreground mt-1">Press Enter to add. Tags sync as labels across work items.</p>
+          <p className="text-xs text-muted-foreground mt-1">Tags sync as labels across work items.</p>
         </div>
 
         <div>
@@ -872,120 +948,80 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
       {!hideDetails && (
         <>
-          {/* Features Collapsible Section - per Jira Align spec */}
-          <Collapsible open={featuresOpen} onOpenChange={setFeaturesOpen}>
-            <CollapsibleTrigger className="flex items-center gap-2 w-full py-3 hover:bg-muted/50 rounded px-2 border-b border-border">
-              <ChevronRight className={`h-4 w-4 transition-transform text-muted-foreground ${featuresOpen ? 'rotate-90' : ''}`} />
-              <span className="text-sm font-medium text-foreground">Features</span>
-              <Badge variant="secondary" className="ml-auto text-xs">{childProgress?.totalFeatures || 0}</Badge>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="pl-6 space-y-3 pt-3 pb-2">
-                {/* Inline Search to Add Feature */}
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search existing Features (type the External ID or Name)"
-                    value={featureSearch}
-                    onChange={(e) => {
-                      setFeatureSearch(e.target.value);
-                      setShowFeatureSuggestions(true);
-                    }}
-                    onFocus={() => setShowFeatureSuggestions(true)}
-                    className="pl-9 pr-16 text-sm"
-                  />
-                  {featureSearch.length >= 2 && (
-                    <Button 
-                      size="sm" 
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 bg-brand-gold hover:bg-brand-gold-hover text-xs"
-                      onClick={() => {
-                        if (availableFeatures && availableFeatures.length > 0) {
-                          linkFeatureMutation.mutate(availableFeatures[0].id);
-                        }
-                      }}
-                      disabled={!availableFeatures || availableFeatures.length === 0 || linkFeatureMutation.isPending}
-                    >
-                      {linkFeatureMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Add'}
-                    </Button>
-                  )}
-                  
-                  {/* Autocomplete Suggestions */}
-                  {showFeatureSuggestions && featureSearch.length >= 2 && availableFeatures && availableFeatures.length > 0 && (
-                    <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-card border rounded-md shadow-lg max-h-[200px] overflow-auto">
-                      {availableFeatures.map((feature: any) => (
-                        <div
-                          key={feature.id}
-                          className="flex items-center justify-between px-3 py-2 hover:bg-muted cursor-pointer"
-                          onClick={() => linkFeatureMutation.mutate(feature.id)}
-                        >
-                          <div className="flex-1 min-w-0">
-                            <span className="text-sm font-medium text-foreground">{feature.name}</span>
-                            <span className="text-xs text-muted-foreground ml-2">({feature.display_id || 'No ID'})</span>
-                          </div>
-                          <Badge variant="outline" className="ml-2 text-xs">{feature.status || 'funnel'}</Badge>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                
-                {/* Linked Features as Cards */}
-                {childProgress?.features && childProgress.features.length > 0 && (
-                  <div className="space-y-2">
-                    {childProgress.features.map((feature: any) => {
-                      const pct = feature.progress_pct || 0;
-                      
-                      return (
-                        <div key={feature.id} className="flex items-center gap-3 p-3 bg-card border rounded-md hover:border-brand-gold/50 transition-colors">
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-foreground truncate">{feature.name}</div>
-                            <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
-                              <span>{feature.estimate_points || 0} pts</span>
-                              <Badge variant="outline" className="text-xs h-5">{feature.status || 'funnel'}</Badge>
-                              {feature.teams?.name && <span>{feature.teams.name}</span>}
-                            </div>
-                            <Progress value={pct} className="h-1.5 mt-2" />
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0"
-                            onClick={() => unlinkFeatureMutation.mutate(feature.id)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-                
-                {(!childProgress?.features || childProgress.features.length === 0) && (
-                  <div className="text-sm text-muted-foreground">No features linked to this epic</div>
-                )}
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
-
           {/* Acceptance Criteria Collapsible Section */}
           <Collapsible open={acceptanceCriteriaOpen} onOpenChange={setAcceptanceCriteriaOpen}>
             <CollapsibleTrigger className="flex items-center gap-2 w-full py-3 hover:bg-muted/50 rounded px-2 border-b border-border">
               <ChevronRight className={`h-4 w-4 transition-transform text-muted-foreground ${acceptanceCriteriaOpen ? 'rotate-90' : ''}`} />
               <span className="text-sm font-medium text-foreground">Acceptance Criteria</span>
-              <Badge variant="secondary" className="ml-auto text-xs">0</Badge>
+              <Badge variant="secondary" className="ml-auto text-xs">{acceptanceCriteria?.length || 0}</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="pl-6 py-3 space-y-3">
-                <div className="text-sm text-muted-foreground">No acceptance criteria defined</div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="text-xs"
-                  onClick={() => toast.info('Acceptance criteria functionality coming soon')}
-                >
-                  <Plus className="h-3.5 w-3.5 mr-1.5" />
-                  Add
-                </Button>
+                {acceptanceCriteria && acceptanceCriteria.length > 0 ? (
+                  <div className="space-y-2">
+                    {acceptanceCriteria.map((criteria: any) => (
+                      <div key={criteria.id} className="flex items-start gap-3 p-3 bg-card border rounded-md">
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm text-foreground">{criteria.description}</div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0"
+                          onClick={() => deleteCriteriaMutation.mutate(criteria.id)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  !showAddCriteria && <div className="text-sm text-muted-foreground">No acceptance criteria defined</div>
+                )}
+                
+                {showAddCriteria ? (
+                  <div className="space-y-2">
+                    <Textarea
+                      value={newCriteriaText}
+                      onChange={(e) => setNewCriteriaText(e.target.value)}
+                      placeholder="Enter acceptance criteria..."
+                      rows={2}
+                      className="text-sm"
+                    />
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        className="text-xs bg-brand-gold hover:bg-brand-gold-hover"
+                        onClick={() => {
+                          if (newCriteriaText.trim()) {
+                            addCriteriaMutation.mutate(newCriteriaText.trim());
+                          }
+                        }}
+                        disabled={!newCriteriaText.trim() || addCriteriaMutation.isPending}
+                      >
+                        {addCriteriaMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Save'}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="text-xs"
+                        onClick={() => { setShowAddCriteria(false); setNewCriteriaText(''); }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs"
+                    onClick={() => setShowAddCriteria(true)}
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-1.5" />
+                    Add
+                  </Button>
+                )}
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -999,7 +1035,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="pl-6 py-3 space-y-3">
-                {linkedRisks && linkedRisks.length > 0 ? (
+                {linkedRisks && linkedRisks.length > 0 && (
                   <div className="space-y-2">
                     {linkedRisks.map((risk: any) => (
                       <div key={risk.id} className="flex items-center gap-3 p-3 bg-card border rounded-md">
@@ -1012,21 +1048,66 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                             <span>Impact: {risk.impact}</span>
                           </div>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-muted-foreground hover:text-destructive shrink-0"
+                          onClick={() => unlinkRiskMutation.mutate(risk.id)}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
                       </div>
                     ))}
                   </div>
-                ) : (
+                )}
+                
+                {(!linkedRisks || linkedRisks.length === 0) && !showAddRisk && (
                   <div className="text-sm text-muted-foreground">No risks linked</div>
                 )}
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="text-xs"
-                  onClick={() => toast.info('Risk linking functionality coming soon')}
-                >
-                  <Plus className="h-3.5 w-3.5 mr-1.5" />
-                  Add
-                </Button>
+                
+                {showAddRisk ? (
+                  <div className="space-y-2">
+                    <div className="text-xs font-medium text-muted-foreground mb-2">
+                      Available risks from {epic.primary_program_id ? 'program context' : 'all programs'}:
+                    </div>
+                    <ScrollArea className="h-[150px] border rounded-md">
+                      {availableRisks && availableRisks.length > 0 ? (
+                        availableRisks.map((risk: any) => (
+                          <div
+                            key={risk.id}
+                            className="flex items-center justify-between px-3 py-2 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                            onClick={() => linkRiskMutation.mutate(risk.id)}
+                          >
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm text-foreground">{risk.title}</span>
+                            </div>
+                            <Badge variant="outline" className="ml-2 text-xs">{risk.status}</Badge>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-3 text-sm text-muted-foreground">No available risks found</div>
+                      )}
+                    </ScrollArea>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={() => setShowAddRisk(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs"
+                    onClick={() => setShowAddRisk(true)}
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-1.5" />
+                    Add
+                  </Button>
+                )}
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -1036,24 +1117,74 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             <CollapsibleTrigger className="flex items-center gap-2 w-full py-3 hover:bg-muted/50 rounded px-2 border-b border-border">
               <ChevronRight className={`h-4 w-4 transition-transform text-muted-foreground ${dependenciesOpen ? 'rotate-90' : ''}`} />
               <span className="text-sm font-medium text-foreground">Dependencies</span>
-              <Badge variant="secondary" className="ml-auto text-xs">{dependenciesCount || 0}</Badge>
+              <Badge variant="secondary" className="ml-auto text-xs">{epicDependencies?.count || 0}</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="pl-6 py-3 space-y-3">
-                <div className="text-sm text-muted-foreground">
-                  {dependenciesCount && dependenciesCount > 0 
-                    ? `${dependenciesCount} dependencies linked through features`
-                    : 'No dependencies linked'}
-                </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="text-xs"
-                  onClick={() => toast.info('Dependency linking functionality coming soon')}
-                >
-                  <Plus className="h-3.5 w-3.5 mr-1.5" />
-                  Add
-                </Button>
+                {epicDependencies?.dependencies && epicDependencies.dependencies.length > 0 ? (
+                  <div className="space-y-2">
+                    {epicDependencies.dependencies.map((dep: any) => (
+                      <div key={dep.id} className="flex items-center gap-3 p-3 bg-card border rounded-md">
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-foreground">
+                            {dep.from_feature?.name} → {dep.to_feature?.name}
+                          </div>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                            <Badge variant="outline" className="text-xs h-5">{dep.status}</Badge>
+                            {dep.type && <span>{dep.type}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  !showAddDependency && <div className="text-sm text-muted-foreground">No dependencies linked through features</div>
+                )}
+                
+                {showAddDependency ? (
+                  <div className="space-y-2">
+                    <div className="text-xs font-medium text-muted-foreground mb-2">
+                      Available dependencies from program context:
+                    </div>
+                    <ScrollArea className="h-[150px] border rounded-md">
+                      {availableDependencies && availableDependencies.length > 0 ? (
+                        availableDependencies.map((dep: any) => (
+                          <div
+                            key={dep.id}
+                            className="flex items-center justify-between px-3 py-2 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <span className="text-sm text-foreground">
+                                {dep.from_feature?.name || 'Unknown'} → {dep.to_feature?.name || 'Unknown'}
+                              </span>
+                            </div>
+                            <Badge variant="outline" className="ml-2 text-xs">{dep.status}</Badge>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-3 text-sm text-muted-foreground">No available dependencies found</div>
+                      )}
+                    </ScrollArea>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-xs"
+                      onClick={() => setShowAddDependency(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="text-xs"
+                    onClick={() => setShowAddDependency(true)}
+                  >
+                    <Plus className="h-3.5 w-3.5 mr-1.5" />
+                    Add
+                  </Button>
+                )}
               </div>
             </CollapsibleContent>
           </Collapsible>
