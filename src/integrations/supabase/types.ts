@@ -1915,13 +1915,18 @@ export type Database = {
           actual_start_date: string | null
           blocked: boolean | null
           blocked_reason: string | null
+          budget: number | null
           business_value: number | null
+          capitalized: boolean | null
           created_at: string | null
           deleted_at: string | null
           description: string | null
           display_id: string | null
           epic_id: string
           estimate_points: number | null
+          estimation_method: string | null
+          expected_cost_savings: number | null
+          expected_revenue_growth: number | null
           global_rank: number | null
           health: Database["public"]["Enums"]["health_status"] | null
           id: string
@@ -1945,6 +1950,7 @@ export type Database = {
           team_target_completion_sprint_id: string | null
           time_criticality: number | null
           updated_at: string | null
+          work_code: string | null
           wsjf_score: number | null
         }
         Insert: {
@@ -1953,13 +1959,18 @@ export type Database = {
           actual_start_date?: string | null
           blocked?: boolean | null
           blocked_reason?: string | null
+          budget?: number | null
           business_value?: number | null
+          capitalized?: boolean | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
           display_id?: string | null
           epic_id: string
           estimate_points?: number | null
+          estimation_method?: string | null
+          expected_cost_savings?: number | null
+          expected_revenue_growth?: number | null
           global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
@@ -1983,6 +1994,7 @@ export type Database = {
           team_target_completion_sprint_id?: string | null
           time_criticality?: number | null
           updated_at?: string | null
+          work_code?: string | null
           wsjf_score?: number | null
         }
         Update: {
@@ -1991,13 +2003,18 @@ export type Database = {
           actual_start_date?: string | null
           blocked?: boolean | null
           blocked_reason?: string | null
+          budget?: number | null
           business_value?: number | null
+          capitalized?: boolean | null
           created_at?: string | null
           deleted_at?: string | null
           description?: string | null
           display_id?: string | null
           epic_id?: string
           estimate_points?: number | null
+          estimation_method?: string | null
+          expected_cost_savings?: number | null
+          expected_revenue_growth?: number | null
           global_rank?: number | null
           health?: Database["public"]["Enums"]["health_status"] | null
           id?: string
@@ -2021,6 +2038,7 @@ export type Database = {
           team_target_completion_sprint_id?: string | null
           time_criticality?: number | null
           updated_at?: string | null
+          work_code?: string | null
           wsjf_score?: number | null
         }
         Relationships: [

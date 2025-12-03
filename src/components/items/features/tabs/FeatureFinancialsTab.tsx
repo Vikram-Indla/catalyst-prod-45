@@ -4,11 +4,31 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Feature } from '@/types/feature.types';
 
-interface FeatureFinancialsTabProps {
-  feature?: Feature;
+// Currency constant - SAR (Saudi Riyal)
+const CURRENCY_SYMBOL = 'SAR';
+
+interface FeatureFormData {
+  estimate_points: number;
+  estimation_method: string;
+  budget: number;
+  work_code: string;
+  capitalized: boolean;
+  expected_revenue_growth: number;
+  expected_cost_savings: number;
 }
 
-export function FeatureFinancialsTab({ feature }: FeatureFinancialsTabProps) {
+interface FeatureFinancialsTabProps {
+  feature?: Feature;
+  formData: FeatureFormData;
+  updateField: (field: keyof FeatureFormData, value: any) => void;
+}
+
+export function FeatureFinancialsTab({ feature, formData, updateField }: FeatureFinancialsTabProps) {
+  // Format currency display
+  const formatCurrency = (value: number) => {
+    return `${CURRENCY_SYMBOL} ${value.toLocaleString('en-SA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
   return (
     <div className="space-y-6">
       <div className="text-sm text-muted-foreground mb-4">
@@ -18,7 +38,10 @@ export function FeatureFinancialsTab({ feature }: FeatureFinancialsTabProps) {
       {/* Estimation Method */}
       <div className="space-y-2">
         <Label>Estimation Method</Label>
-        <Select defaultValue="points">
+        <Select 
+          value={formData.estimation_method} 
+          onValueChange={(value) => updateField('estimation_method', value)}
+        >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -38,7 +61,8 @@ export function FeatureFinancialsTab({ feature }: FeatureFinancialsTabProps) {
           id="points"
           type="number"
           min="0"
-          defaultValue={feature?.estimate_points || 0}
+          value={formData.estimate_points}
+          onChange={(e) => updateField('estimate_points', Number(e.target.value))}
           placeholder="Enter story points..."
         />
       </div>
@@ -48,14 +72,22 @@ export function FeatureFinancialsTab({ feature }: FeatureFinancialsTabProps) {
 
         {/* Budget */}
         <div className="space-y-2">
-          <Label htmlFor="budget">Budget</Label>
-          <Input
-            id="budget"
-            type="number"
-            min="0"
-            step="100"
-            placeholder="$ 0.00"
-          />
+          <Label htmlFor="budget">Budget ({CURRENCY_SYMBOL})</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+              {CURRENCY_SYMBOL}
+            </span>
+            <Input
+              id="budget"
+              type="number"
+              min="0"
+              step="100"
+              value={formData.budget}
+              onChange={(e) => updateField('budget', Number(e.target.value))}
+              className="pl-12"
+              placeholder="0.00"
+            />
+          </div>
         </div>
 
         {/* Work Code */}
@@ -63,13 +95,19 @@ export function FeatureFinancialsTab({ feature }: FeatureFinancialsTabProps) {
           <Label htmlFor="work-code">Work Code</Label>
           <Input
             id="work-code"
+            value={formData.work_code}
+            onChange={(e) => updateField('work_code', e.target.value)}
             placeholder="Enter work code..."
           />
         </div>
 
         {/* Capitalized */}
         <div className="flex items-center space-x-2 mt-4">
-          <Checkbox id="capitalized" />
+          <Checkbox 
+            id="capitalized" 
+            checked={formData.capitalized}
+            onCheckedChange={(checked) => updateField('capitalized', checked)}
+          />
           <Label htmlFor="capitalized">Capitalized</Label>
         </div>
       </div>
@@ -79,26 +117,42 @@ export function FeatureFinancialsTab({ feature }: FeatureFinancialsTabProps) {
 
         {/* Revenue */}
         <div className="space-y-2">
-          <Label htmlFor="revenue">Expected Revenue Growth</Label>
-          <Input
-            id="revenue"
-            type="number"
-            min="0"
-            step="1000"
-            placeholder="$ 0.00"
-          />
+          <Label htmlFor="revenue">Expected Revenue Growth ({CURRENCY_SYMBOL})</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+              {CURRENCY_SYMBOL}
+            </span>
+            <Input
+              id="revenue"
+              type="number"
+              min="0"
+              step="1000"
+              value={formData.expected_revenue_growth}
+              onChange={(e) => updateField('expected_revenue_growth', Number(e.target.value))}
+              className="pl-12"
+              placeholder="0.00"
+            />
+          </div>
         </div>
 
         {/* Cost Savings */}
         <div className="space-y-2 mt-4">
-          <Label htmlFor="savings">Expected Cost Savings</Label>
-          <Input
-            id="savings"
-            type="number"
-            min="0"
-            step="1000"
-            placeholder="$ 0.00"
-          />
+          <Label htmlFor="savings">Expected Cost Savings ({CURRENCY_SYMBOL})</Label>
+          <div className="relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+              {CURRENCY_SYMBOL}
+            </span>
+            <Input
+              id="savings"
+              type="number"
+              min="0"
+              step="1000"
+              value={formData.expected_cost_savings}
+              onChange={(e) => updateField('expected_cost_savings', Number(e.target.value))}
+              className="pl-12"
+              placeholder="0.00"
+            />
+          </div>
         </div>
       </div>
     </div>
