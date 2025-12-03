@@ -140,10 +140,10 @@ export default function Themes() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
-        {/* Filter Bar with responsive layout */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s4)]">
-          <div className="relative flex-1 max-w-sm">
+      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s4)]">
+        {/* Search and Toolbar in one row */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-[var(--s3)]">
+          <div className="relative w-full sm:w-auto sm:min-w-[280px]">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search themes..."
@@ -152,16 +152,14 @@ export default function Themes() {
               className="pl-9"
             />
           </div>
+          <ListScreenToolbar
+            selectedCount={selectedRows.length}
+            onColumnChooser={() => {}}
+            onBulkEdit={() => {}}
+            onExport={handleExport}
+            onImport={() => setImportDialogOpen(true)}
+          />
         </div>
-
-        {/* Toolbar */}
-        <ListScreenToolbar
-          selectedCount={selectedRows.length}
-          onColumnChooser={() => {}}
-          onBulkEdit={() => {}}
-          onExport={handleExport}
-          onImport={() => setImportDialogOpen(true)}
-        />
 
         {/* Data Grid */}
         <Card>
