@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
@@ -14,11 +14,10 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { HealthBadge } from '@/components/shared/HealthBadge';
-import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink, Loader2, X, ChevronRight, Search } from 'lucide-react';
+import { Link as LinkIcon, Lock, Unlock, Plus, Loader2, X, ChevronRight, Search } from 'lucide-react';
 import { WSJFInlineScores } from '@/components/wsjf';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
-import { AddFeatureDialog } from '../dialogs/AddFeatureDialog';
 import { toast } from 'sonner';
 
 interface EpicDetailsTabProps {
@@ -28,13 +27,13 @@ interface EpicDetailsTabProps {
 export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
   const [addPIOpen, setAddPIOpen] = useState(false);
   const [addProgramOpen, setAddProgramOpen] = useState(false);
-  const [addFeatureOpen, setAddFeatureOpen] = useState(false);
   const [hideDetails, setHideDetails] = useState(false);
   const [featuresOpen, setFeaturesOpen] = useState(false);
   const [acceptanceCriteriaOpen, setAcceptanceCriteriaOpen] = useState(false);
   const [risksOpen, setRisksOpen] = useState(false);
+  const [dependenciesOpen, setDependenciesOpen] = useState(false);
   const [featureSearch, setFeatureSearch] = useState('');
-  const [newTag, setNewTag] = useState('');
+  const [showFeatureSuggestions, setShowFeatureSuggestions] = useState(false);
   const queryClient = useQueryClient();
 
   // Local state for all editable fields
@@ -141,11 +140,10 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     },
   });
 
-  // Fetch child features and their progress with story points - per Jira Align spec
+  // Fetch child features with teams and progress - per Jira Align spec
   const { data: childProgress } = useQuery({
     queryKey: ['epic-child-progress', epic.id],
     queryFn: async () => {
-      // Get features with their stories
       const { data: features } = await supabase
         .from('features')
         .select(`
@@ -155,58 +153,99 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           status, 
           progress_pct,
           estimate_points,
+          team_id,
+          teams:team_id(id, name),
           stories:stories(id, status, estimate_points)
         `)
         .eq('epic_id', epic.id);
 
       if (!features || features.length === 0) {
-        return { 
-          totalFeatures: 0, 
-          featuresAccepted: 0,
-          featuresInDelivery: 0,
-          featuresDelivered: 0,
-          totalStoryPoints: 0,
-          acceptedStoryPoints: 0,
-          progressPct: 0,
-          features: []
-        };
+        return { totalFeatures: 0, features: [] };
       }
-
-      // Calculate feature breakdown by status per Jira Align
-      const featuresAccepted = features.filter(f => f.status === 'done').length;
-      const featuresInDelivery = features.filter(f => 
-        ['dev_complete', 'test_complete', 'implementing'].includes(f.status || '')
-      ).length;
-      const featuresDelivered = 0;
-
-      // Calculate story points
-      let totalStoryPoints = 0;
-      let acceptedStoryPoints = 0;
-      
-      features.forEach((feature: any) => {
-        const stories = feature.stories || [];
-        stories.forEach((story: any) => {
-          const pts = story.estimate_points || 0;
-          totalStoryPoints += pts;
-          if (story.status === 'done') {
-            acceptedStoryPoints += pts;
-          }
-        });
-      });
-
-      const avgProgress = features.reduce((sum, f) => sum + (f.progress_pct || 0), 0) / features.length;
 
       return {
         totalFeatures: features.length,
-        featuresAccepted,
-        featuresInDelivery,
-        featuresDelivered,
-        totalStoryPoints,
-        acceptedStoryPoints,
-        progressPct: Math.round(avgProgress),
         features,
       };
     },
+  });
+
+  // Fetch available features for inline search/add
+  const { data: availableFeatures } = useQuery({
+    queryKey: ['available-features-for-epic', epic.id, featureSearch],
+    queryFn: async () => {
+      if (!featureSearch || featureSearch.length < 2) return [];
+      
+      const { data } = await supabase
+        .from('features')
+        .select('id, name, display_id, status, estimate_points, teams:team_id(name)')
+        .or(`epic_id.is.null,epic_id.neq.${epic.id}`)
+        .or(`name.ilike.%${featureSearch}%,display_id.ilike.%${featureSearch}%`)
+        .limit(10);
+      
+      return data || [];
+    },
+    enabled: featureSearch.length >= 2,
+  });
+
+  // Fetch dependencies count for this epic (via features)
+  const { data: dependenciesCount } = useQuery({
+    queryKey: ['epic-dependencies-count', epic.id],
+    queryFn: async () => {
+      // Get feature IDs for this epic first
+      const { data: features } = await supabase
+        .from('features')
+        .select('id')
+        .eq('epic_id', epic.id);
+      
+      if (!features || features.length === 0) return 0;
+      
+      const featureIds = features.map(f => f.id);
+      
+      // Count dependencies where from_feature_id or to_feature_id is in our features
+      const { count } = await supabase
+        .from('dependencies')
+        .select('*', { count: 'exact', head: true })
+        .or(`from_feature_id.in.(${featureIds.join(',')}),to_feature_id.in.(${featureIds.join(',')})`);
+      
+      return count || 0;
+    },
+  });
+
+  // Link feature to epic mutation
+  const linkFeatureMutation = useMutation({
+    mutationFn: async (featureId: string) => {
+      const { error } = await supabase
+        .from('features')
+        .update({ epic_id: epic.id })
+        .eq('id', featureId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-child-progress', epic.id] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      setFeatureSearch('');
+      setShowFeatureSuggestions(false);
+      toast.success('Feature linked to epic');
+    },
+    onError: () => toast.error('Failed to link feature'),
+  });
+
+  // Unlink feature from epic mutation
+  const unlinkFeatureMutation = useMutation({
+    mutationFn: async (featureId: string) => {
+      const { error } = await supabase
+        .from('features')
+        .update({ epic_id: null })
+        .eq('id', featureId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['epic-child-progress', epic.id] });
+      queryClient.invalidateQueries({ queryKey: ['features'] });
+      toast.success('Feature unlinked');
+    },
+    onError: () => toast.error('Failed to unlink feature'),
   });
 
   // Mutation to update epic
@@ -780,96 +819,114 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           <Collapsible open={featuresOpen} onOpenChange={setFeaturesOpen}>
             <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
               <ChevronRight className={`h-4 w-4 transition-transform ${featuresOpen ? 'rotate-90' : ''}`} />
-              <span className="font-medium">Features ({childProgress?.totalFeatures || 0})</span>
+              <span className="font-medium">Features</span>
+              <Badge variant="secondary" className="ml-auto">{childProgress?.totalFeatures || 0}</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="pl-6 space-y-3">
+              <div className="pl-6 space-y-3 pt-2">
+                {/* Inline Search to Add Feature */}
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder="Search existing Features (type the ID, External ID or Name)"
+                    placeholder="Search existing Features (type the External ID or Name)"
                     value={featureSearch}
-                    onChange={(e) => setFeatureSearch(e.target.value)}
-                    className="pl-9"
+                    onChange={(e) => {
+                      setFeatureSearch(e.target.value);
+                      setShowFeatureSuggestions(true);
+                    }}
+                    onFocus={() => setShowFeatureSuggestions(true)}
+                    className="pl-9 pr-16"
                   />
+                  {featureSearch.length >= 2 && (
+                    <Button 
+                      size="sm" 
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 bg-brand-gold hover:bg-brand-gold-hover"
+                      onClick={() => {
+                        if (availableFeatures && availableFeatures.length > 0) {
+                          linkFeatureMutation.mutate(availableFeatures[0].id);
+                        }
+                      }}
+                      disabled={!availableFeatures || availableFeatures.length === 0 || linkFeatureMutation.isPending}
+                    >
+                      {linkFeatureMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : 'Add'}
+                    </Button>
+                  )}
+                  
+                  {/* Autocomplete Suggestions */}
+                  {showFeatureSuggestions && featureSearch.length >= 2 && availableFeatures && availableFeatures.length > 0 && (
+                    <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-background border rounded-md shadow-lg max-h-[200px] overflow-auto">
+                      {availableFeatures.map((feature: any) => (
+                        <div
+                          key={feature.id}
+                          className="flex items-center justify-between px-3 py-2 hover:bg-muted cursor-pointer text-sm"
+                          onClick={() => {
+                            linkFeatureMutation.mutate(feature.id);
+                          }}
+                        >
+                          <div className="flex-1 min-w-0">
+                            <span className="font-medium">{feature.name}</span>
+                            <span className="text-muted-foreground ml-2">({feature.display_id || 'No ID'})</span>
+                          </div>
+                          <Badge variant="outline" className="ml-2">{feature.status || 'funnel'}</Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 
-                <div className="border rounded">
-                  <div className="grid grid-cols-[60px_80px_1fr_150px] gap-2 p-2 bg-muted/50 text-xs font-medium text-muted-foreground border-b">
-                    <div>ID</div>
-                    <div>Ext ID</div>
-                    <div>Title</div>
-                    <div>Progress</div>
+                {/* Linked Features Table */}
+                {childProgress?.features && childProgress.features.length > 0 && (
+                  <div className="border rounded">
+                    <div className="grid grid-cols-[1fr_80px_80px_100px_40px] gap-2 p-2 bg-muted/50 text-xs font-medium text-muted-foreground border-b">
+                      <div>Title</div>
+                      <div>Points</div>
+                      <div>Status</div>
+                      <div>Team</div>
+                      <div></div>
+                    </div>
+                    <ScrollArea className="max-h-[200px]">
+                      {childProgress.features.map((feature: any) => {
+                        const pct = feature.progress_pct || 0;
+                        
+                        return (
+                          <TooltipProvider key={feature.id}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div className="grid grid-cols-[1fr_80px_80px_100px_40px] gap-2 p-2 border-b hover:bg-muted/30 items-center">
+                                  <div className="text-sm truncate">{feature.name}</div>
+                                  <div className="text-sm">{feature.estimate_points || 0}</div>
+                                  <Badge variant="outline" className="text-xs w-fit">{feature.status || 'funnel'}</Badge>
+                                  <div className="text-sm text-muted-foreground truncate">
+                                    {feature.teams?.name || '—'}
+                                  </div>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                                    onClick={() => unlinkFeatureMutation.mutate(feature.id)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="right" className="w-64 p-3">
+                                <div className="space-y-2">
+                                  <div className="font-medium">{feature.name}</div>
+                                  <Progress value={pct} className="h-2" />
+                                  <div className="text-xs text-muted-foreground">{pct}% complete</div>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        );
+                      })}
+                    </ScrollArea>
                   </div>
-                  <ScrollArea className="max-h-[250px]">
-                    {childProgress?.features?.filter((f: any) =>
-                      f.name.toLowerCase().includes(featureSearch.toLowerCase()) ||
-                      f.display_id?.toLowerCase().includes(featureSearch.toLowerCase())
-                    ).map((feature: any) => {
-                      const stories = feature.stories || [];
-                      const acceptedPts = stories.filter((s: any) => s.status === 'done')
-                        .reduce((sum: number, s: any) => sum + (s.estimate_points || 0), 0);
-                      const totalPts = stories.reduce((sum: number, s: any) => sum + (s.estimate_points || 0), 0);
-                      const pct = totalPts > 0 ? Math.round((acceptedPts / totalPts) * 100) : 0;
-                      const isLate = pct < 30 && feature.status !== 'done';
-                      
-                      return (
-                        <TooltipProvider key={feature.id}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div className="grid grid-cols-[60px_80px_1fr_150px] gap-2 p-2 border-b hover:bg-muted/30 cursor-pointer items-center">
-                                <div className="text-sm">{feature.display_id || feature.id.slice(0, 4)}</div>
-                                <div className="text-sm text-muted-foreground">—</div>
-                                <div className="text-sm truncate">{feature.name}</div>
-                                <Progress value={pct} className="h-2" />
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent side="right" className="w-72 p-0">
-                              <div className="bg-[#1a1a1a] text-white rounded-lg overflow-hidden">
-                                <div className={`${isLate ? 'bg-red-500' : 'bg-green-500'} px-3 py-1`}>
-                                  <span className="font-bold">{isLate ? 'Late' : 'On Track'}</span>
-                                </div>
-                                <div className="p-3 space-y-2">
-                                  <p className="text-xs text-gray-300">
-                                    The Feature is in {feature.status || 'funnel'}
-                                  </p>
-                                  <div>
-                                    <span className="font-bold">{pct}% Done</span>
-                                    <span className="text-xs text-gray-400 ml-1">(based on story points)</span>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                      <Progress value={pct} className="h-1.5 flex-1" />
-                                      <span className="text-xs">{acceptedPts} of {totalPts} Story Points</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                      <Progress value={(stories.filter((s: any) => s.status === 'done').length / Math.max(stories.length, 1)) * 100} className="h-1.5 flex-1" />
-                                      <span className="text-xs">{stories.filter((s: any) => s.status === 'done').length} of {stories.length} Stories</span>
-                                    </div>
-                                  </div>
-                                  <div className="pt-2 border-t border-gray-600">
-                                    <span className="font-bold">Scope</span>
-                                    <p className="text-xs text-gray-400">Estimate: {feature.estimate_points || 0} points</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      );
-                    })}
-                    {(!childProgress?.features || childProgress.features.length === 0) && (
-                      <div className="p-4 text-center text-sm text-muted-foreground">
-                        No features found
-                      </div>
-                    )}
-                  </ScrollArea>
-                </div>
+                )}
                 
-                <Button variant="outline" size="sm" onClick={() => setAddFeatureOpen(true)}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Feature
-                </Button>
+                {(!childProgress?.features || childProgress.features.length === 0) && (
+                  <div className="text-sm text-muted-foreground">No features linked to this epic</div>
+                )}
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -878,11 +935,16 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           <Collapsible open={acceptanceCriteriaOpen} onOpenChange={setAcceptanceCriteriaOpen}>
             <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
               <ChevronRight className={`h-4 w-4 transition-transform ${acceptanceCriteriaOpen ? 'rotate-90' : ''}`} />
-              <span className="font-medium">Acceptance Criteria (0)</span>
+              <span className="font-medium">Acceptance Criteria</span>
+              <Badge variant="secondary" className="ml-auto">0</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="pl-6 py-2 text-sm text-muted-foreground">
-                No acceptance criteria defined
+              <div className="pl-6 py-2 space-y-2">
+                <div className="text-sm text-muted-foreground">No acceptance criteria defined</div>
+                <Button variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -891,22 +953,41 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           <Collapsible open={risksOpen} onOpenChange={setRisksOpen}>
             <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
               <ChevronRight className={`h-4 w-4 transition-transform ${risksOpen ? 'rotate-90' : ''}`} />
-              <span className="font-medium">Risks (0)</span>
+              <span className="font-medium">Risks</span>
+              <Badge variant="secondary" className="ml-auto">0</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="pl-6 py-2 text-sm text-muted-foreground">
-                No risks linked
+              <div className="pl-6 py-2 space-y-2">
+                <div className="text-sm text-muted-foreground">No risks linked</div>
+                <Button variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
               </div>
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Add Button */}
-          <div className="flex justify-end pt-2">
-            <Button variant="ghost" size="sm" className="text-muted-foreground">
-              <Plus className="h-4 w-4 mr-1" />
-              Add
-            </Button>
-          </div>
+          {/* Dependencies Collapsible Section */}
+          <Collapsible open={dependenciesOpen} onOpenChange={setDependenciesOpen}>
+            <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
+              <ChevronRight className={`h-4 w-4 transition-transform ${dependenciesOpen ? 'rotate-90' : ''}`} />
+              <span className="font-medium">Dependencies</span>
+              <Badge variant="secondary" className="ml-auto">{dependenciesCount || 0}</Badge>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="pl-6 py-2 space-y-2">
+                <div className="text-sm text-muted-foreground">
+                  {dependenciesCount && dependenciesCount > 0 
+                    ? `${dependenciesCount} dependencies linked through features`
+                    : 'No dependencies linked'}
+                </div>
+                <Button variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add
+                </Button>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         </>
       )}
 
@@ -922,12 +1003,6 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         primaryProgramId={epic.primary_program_id}
         open={addProgramOpen}
         onOpenChange={setAddProgramOpen}
-      />
-
-      <AddFeatureDialog
-        epicId={epic.id}
-        open={addFeatureOpen}
-        onOpenChange={setAddFeatureOpen}
       />
     </div>
   );
