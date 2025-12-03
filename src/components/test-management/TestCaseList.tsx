@@ -27,6 +27,7 @@ interface TestCaseListProps {
   loading: boolean;
   folders?: TestFolder[];
   onRefresh?: () => void;
+  onCreateClick?: () => void;
 }
 
 const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
@@ -62,7 +63,8 @@ export const TestCaseList: React.FC<TestCaseListProps> = ({
   testCases,
   loading,
   folders = [],
-  onRefresh
+  onRefresh,
+  onCreateClick
 }) => {
   const [cloneModalOpen, setCloneModalOpen] = useState(false);
   const [selectedCase, setSelectedCase] = useState<TestCase | null>(null);
@@ -81,7 +83,7 @@ export const TestCaseList: React.FC<TestCaseListProps> = ({
   }
 
   if (testCases.length === 0) {
-    return <EmptyState />;
+    return <EmptyState onCreateClick={onCreateClick} />;
   }
 
   return (

@@ -2,7 +2,11 @@ import React from 'react';
 import { TestTube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export const EmptyState: React.FC = () => {
+interface EmptyStateProps {
+  onCreateClick?: () => void;
+}
+
+export const EmptyState: React.FC<EmptyStateProps> = ({ onCreateClick }) => {
   return (
     <div className="flex flex-col items-center justify-center h-[500px] text-center px-4">
       <div className="rounded-full bg-muted p-6 mb-6">
@@ -14,7 +18,10 @@ export const EmptyState: React.FC = () => {
       <p className="text-muted-foreground mb-6 max-w-md">
         Create your first test case to get started with test management
       </p>
-      <Button className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover">
+      <Button 
+        className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+        onClick={onCreateClick}
+      >
         Create Test Case
       </Button>
     </div>

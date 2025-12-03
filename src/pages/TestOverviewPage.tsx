@@ -1,14 +1,20 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ProjectMetricsCards } from '@/components/test-management/ProjectMetricsCards';
 import { ActivityTrendChart } from '@/components/test-management/ActivityTrendChart';
 import { MyWorkSection } from '@/components/test-management/MyWorkSection';
 import { ActivityFeed } from '@/components/test-management/ActivityFeed';
 import { EmptyStateOverview } from '@/components/test-management/EmptyStateOverview';
+import { CreateTestCaseModal } from '@/components/test-management/CreateTestCaseModal';
 import { useProjectMetrics, useCreateAdhocCycle } from '@/hooks/useTestDashboard';
+import { useTestFolders } from '@/hooks/useTestManagement';
+import { toast } from 'sonner';
 
 export default function TestOverviewPage() {
   const { data: metrics } = useProjectMetrics();
   const { mutate: createAdhocCycle } = useCreateAdhocCycle();
+  const { data: folders = [] } = useTestFolders('test_cases');
+  
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   // Auto-create Adhoc cycle on first access
   useEffect(() => {
@@ -20,6 +26,14 @@ export default function TestOverviewPage() {
     metrics.total_sets > 0 || 
     metrics.total_defects > 0
   );
+
+  const handleCreateClick = () => {
+    setCreateModalOpen(true);
+  };
+
+  const handleImportClick = () => {
+    toast.info('Import from Excel coming soon');
+  };
 
   return (
     <div className="container mx-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)] space-y-[var(--s6)]">
@@ -41,7 +55,10 @@ export default function TestOverviewPage() {
 
       {/* Empty State or Dashboard Content */}
       {!hasData ? (
-        <EmptyStateOverview />
+        <EmptyStateOverview 
+          onCreateClick={handleCreateClick}
+          onImportClick={handleImportClick}
+        />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-[var(--s6)]">
           {/* Left Column - Activity Trends & My Work with responsive spacing */}
@@ -56,6 +73,13 @@ export default function TestOverviewPage() {
           </div>
         </div>
       )}
+
+      {/* Create Test Case Modal */}
+      <CreateTestCaseModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        folders={folders}
+      />
     </div>
   );
 }
