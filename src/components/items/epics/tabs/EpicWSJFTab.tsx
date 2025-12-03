@@ -84,7 +84,7 @@ export function EpicWSJFTab({ epic }: EpicWSJFTabProps) {
 
   return (
     <div className="space-y-6 p-6">
-      <Alert>
+      <Alert className="bg-card">
         <Info className="h-4 w-4" />
         <AlertDescription>
           WSJF (Weighted Shortest Job First) prioritizes work items based on Cost of Delay divided by Job Size.
