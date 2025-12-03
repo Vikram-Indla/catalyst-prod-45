@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink, Loader2 } from 'lucide-react';
 import { WSJFInlineScores } from '@/components/wsjf';
@@ -221,13 +222,14 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
       )}
 
       {/* Classification Section */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase">Classification</h3>
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Classification</h3>
         
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label>State</Label>
-            <Select 
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>State</Label>
+              <Select
               value={formData.state} 
               onValueChange={(value) => handleFieldChange('state', value)}
             >
@@ -318,14 +320,16 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             )}
           </div>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Context Section */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase">Context</h3>
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Context</h3>
         
-        <div>
-          <Label>Primary Program *</Label>
+          <div>
+            <Label>Primary Program *</Label>
           <Select 
             value={formData.primary_program_id || 'none'} 
             onValueChange={(value) => handleFieldChange('primary_program_id', value === 'none' ? null : value)}
@@ -446,14 +450,16 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             </SelectContent>
           </Select>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Full Details Section */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase">Full Details</h3>
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Full Details</h3>
         
-        <div>
-          <Label>Description</Label>
+          <div>
+            <Label>Description</Label>
           <Textarea
             value={formData.description}
             onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
@@ -505,13 +511,15 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             <HealthBadge health={epic.health} />
           </div>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Financial & Estimation Section */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase">Financial & Estimation</h3>
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Financial & Estimation</h3>
         
-        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
           <Checkbox 
             id="capitalized" 
             checked={formData.capitalized}
@@ -549,13 +557,15 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             </SelectContent>
           </Select>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Strategy & Analysis Section */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase">Strategy & Analysis</h3>
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Strategy & Analysis</h3>
         
-        <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4">
           <div>
             <Label>Strategic Value Score (1-100)</Label>
             <Input
@@ -665,13 +675,15 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             placeholder="Enter customer names (one per line)"
           />
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       {/* Progress & Children Section */}
-      <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase">Progress & Children</h3>
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Progress & Children</h3>
         
-        <div className="executive-card">
+          <div className="executive-card">
           <div className="text-sm text-muted-foreground mb-2">Child Items Progress</div>
           {childProgress && childProgress.totalFeatures > 0 ? (
             <div className="space-y-3">
@@ -701,7 +713,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             View Feature Status Details
           </Button>
         </div>
-      </div>
+        </CardContent>
+      </Card>
 
       <FeatureStatusModal
         epicId={epic.id}
