@@ -114,105 +114,114 @@ export default function StrategyRoomPage() {
 
   if (snapshotsLoading || !effectiveSelectedSnapshotId) {
     return (
-      <div className="p-6 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="h-full flex flex-col bg-background">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="px-[var(--s3)] sm:px-[var(--s4)] md:px-[var(--s6)] py-[var(--s3)] sm:py-[var(--s4)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
+    <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="flex flex-col" style={{ gap: 'var(--s4)' }}>
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-          <div className="flex items-center" style={{ gap: 'var(--s2)' }}>
-            <Star className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Strategy Room</h1>
+      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Star className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold">Strategy Room</h1>
+            </div>
+            <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">for Snapshot</span>
+            <div className="w-full sm:w-64">
+              <Select value={effectiveSelectedSnapshotId} onValueChange={setSelectedSnapshotId}>
+                <SelectTrigger className="text-xs sm:text-sm">
+                  <SelectValue placeholder="Select one" />
+                </SelectTrigger>
+                <SelectContent>
+                  <div className="p-2">
+                    <Input
+                      placeholder="Search to filter snapshots"
+                      value={snapshotSearchQuery}
+                      onChange={(e) => setSnapshotSearchQuery(e.target.value)}
+                      className="mb-2 h-8 text-xs sm:text-sm"
+                    />
+                  </div>
+                  {filteredSnapshots.map((snapshot) => (
+                    <SelectItem key={snapshot.id} value={snapshot.id} className="text-xs sm:text-sm">
+                      {snapshot.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">for Snapshot</span>
-          <div className="w-full sm:w-64">
-            <Select value={effectiveSelectedSnapshotId} onValueChange={setSelectedSnapshotId}>
-              <SelectTrigger className="text-xs sm:text-sm">
-                <SelectValue placeholder="Select one" />
-              </SelectTrigger>
-              <SelectContent>
-                <div className="p-2">
-                  <Input
-                    placeholder="Search to filter snapshots"
-                    value={snapshotSearchQuery}
-                    onChange={(e) => setSnapshotSearchQuery(e.target.value)}
-                    className="mb-2 h-8 text-xs sm:text-sm"
-                  />
-                </div>
-                {filteredSnapshots.map((snapshot) => (
-                  <SelectItem key={snapshot.id} value={snapshot.id} className="text-xs sm:text-sm">
-                    {snapshot.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate('/enterprise/backlog')}
+              className="text-xs sm:text-sm"
+            >
+              Strategic Backlog
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => setExtraConfigsOpen(true)}
+              className="text-xs sm:text-sm"
+            >
+              <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">Extra Configs</span>
+              <span className="sm:hidden">Configs</span>
+            </Button>
           </div>
         </div>
+      </div>
 
-        <div className="flex flex-wrap items-center" style={{ gap: 'var(--s2)' }}>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => navigate('/enterprise/backlog')}
-            className="text-xs sm:text-sm flex-1 sm:flex-none"
-          >
-            Strategic Backlog
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => setExtraConfigsOpen(true)}
-            className="text-xs sm:text-sm flex-1 sm:flex-none"
-          >
-            <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="hidden sm:inline">Extra Configs</span>
-            <span className="sm:hidden">Configs</span>
-          </Button>
+      {/* Content Area */}
+      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
+        <div className="space-y-[var(--s4)] sm:space-y-[var(--s6)]">
+          {/* Mission/Vision/Values */}
+          <MissionVisionValues snapshot={selectedSnapshot} />
+
+          {/* Execution and Goals Widgets */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-[var(--s4)]">
+            <ExecutionAgainstOutcomesWidget 
+              snapshotId={effectiveSelectedSnapshotId} 
+              piIds={selectedPIs} 
+            />
+            <StrategicGoalsWidget snapshotId={effectiveSelectedSnapshotId} />
+          </div>
+
+          {/* Strategy Pyramid - Full width on mobile */}
+          <div className="overflow-x-auto -mx-[var(--s4)] sm:mx-0">
+            <div className="min-w-[600px] px-[var(--s4)] sm:px-0">
+              <StrategyPyramid onLayerClick={handlePyramidLayerClick} snapshotId={effectiveSelectedSnapshotId} />
+            </div>
+          </div>
+
+          {/* Snapshot Progress and Misaligned Items */}
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-[var(--s4)]">
+            <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
+            <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
+          </div>
+
+          {/* OKR Heatmap */}
+          <OkrHeatmap
+            selectedSnapshot={effectiveSelectedSnapshotId}
+            programIncrements={selectedPIs}
+            onCellClick={handleHeatmapCellClick}
+          />
+
+          {/* OKR Tree */}
+          <OkrTree
+            selectedSnapshot={effectiveSelectedSnapshotId}
+            onObjectiveClick={handleObjectiveClick}
+          />
         </div>
       </div>
-
-      {/* Mission/Vision/Values */}
-      <MissionVisionValues snapshot={selectedSnapshot} />
-
-      {/* Execution and Goals Widgets */}
-      <div className="grid grid-cols-1 lg:grid-cols-2" style={{ gap: 'var(--s4)' }}>
-        <ExecutionAgainstOutcomesWidget 
-          snapshotId={effectiveSelectedSnapshotId} 
-          piIds={selectedPIs} 
-        />
-        <StrategicGoalsWidget snapshotId={effectiveSelectedSnapshotId} />
-      </div>
-
-      {/* Strategy Pyramid - Full width on mobile */}
-      <div className="overflow-x-auto -mx-3 sm:mx-0">
-        <div className="min-w-[600px] px-3 sm:px-0">
-          <StrategyPyramid onLayerClick={handlePyramidLayerClick} snapshotId={effectiveSelectedSnapshotId} />
-        </div>
-      </div>
-
-      {/* Snapshot Progress and Misaligned Items */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px]" style={{ gap: 'var(--s4)' }}>
-        <SnapshotProgress snapshotId={effectiveSelectedSnapshotId} />
-        <MisalignedWorkItems snapshotId={effectiveSelectedSnapshotId} />
-      </div>
-
-      {/* OKR Heatmap */}
-      <OkrHeatmap
-        selectedSnapshot={effectiveSelectedSnapshotId}
-        programIncrements={selectedPIs}
-        onCellClick={handleHeatmapCellClick}
-      />
-
-      {/* OKR Tree */}
-      <OkrTree
-        selectedSnapshot={effectiveSelectedSnapshotId}
-        onObjectiveClick={handleObjectiveClick}
-      />
 
       {/* Objective Drawer */}
       <ObjectiveDrawer
