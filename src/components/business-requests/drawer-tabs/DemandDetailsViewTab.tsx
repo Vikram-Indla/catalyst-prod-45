@@ -403,14 +403,19 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
                   <SelectValue placeholder="Select quarter..." />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border shadow-lg z-50">
-                  <SelectItem value="Q1-2024">Q1 2024</SelectItem>
-                  <SelectItem value="Q2-2024">Q2 2024</SelectItem>
-                  <SelectItem value="Q3-2024">Q3 2024</SelectItem>
-                  <SelectItem value="Q4-2024">Q4 2024</SelectItem>
-                  <SelectItem value="Q1-2025">Q1 2025</SelectItem>
-                  <SelectItem value="Q2-2025">Q2 2025</SelectItem>
-                  <SelectItem value="Q3-2025">Q3 2025</SelectItem>
                   <SelectItem value="Q4-2025">Q4 2025</SelectItem>
+                  <SelectItem value="Q1-2026">Q1 2026</SelectItem>
+                  <SelectItem value="Q2-2026">Q2 2026</SelectItem>
+                  <SelectItem value="Q3-2026">Q3 2026</SelectItem>
+                  <SelectItem value="Q4-2026">Q4 2026</SelectItem>
+                  <SelectItem value="Q1-2027">Q1 2027</SelectItem>
+                  <SelectItem value="Q2-2027">Q2 2027</SelectItem>
+                  <SelectItem value="Q3-2027">Q3 2027</SelectItem>
+                  <SelectItem value="Q4-2027">Q4 2027</SelectItem>
+                  <SelectItem value="Q1-2028">Q1 2028</SelectItem>
+                  <SelectItem value="Q2-2028">Q2 2028</SelectItem>
+                  <SelectItem value="Q3-2028">Q3 2028</SelectItem>
+                  <SelectItem value="Q4-2028">Q4 2028</SelectItem>
                 </SelectContent>
               </Select>
             </div>

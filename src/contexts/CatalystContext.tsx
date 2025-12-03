@@ -25,6 +25,10 @@ interface CatalystContextState {
   // Snapshot (for Strategy/OKR)
   snapshotId: string | null;
   setSnapshotId: (id: string | null) => void;
+  
+  // Delivery Platform (for Industry/Product context)
+  deliveryPlatform: string;
+  setDeliveryPlatform: (platform: string) => void;
 }
 
 const CatalystContext = createContext<CatalystContextState | undefined>(undefined);
@@ -38,6 +42,7 @@ interface StoredContext {
   teamIds: string[];
   piIds: string[];
   snapshotId: string | null;
+  deliveryPlatform: string;
 }
 
 export function CatalystContextProvider({ children }: { children: ReactNode }) {
@@ -61,6 +66,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       teamIds: [],
       piIds: [],
       snapshotId: null,
+      deliveryPlatform: 'Senaei Platform',
     };
   };
   
@@ -72,6 +78,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [teamIds, setTeamIds] = useState<string[]>(initialState.teamIds);
   const [piIds, setPiIds] = useState<string[]>(initialState.piIds);
   const [snapshotId, setSnapshotId] = useState<string | null>(initialState.snapshotId);
+  const [deliveryPlatform, setDeliveryPlatform] = useState<string>(initialState.deliveryPlatform || 'Senaei Platform');
   
   // Sync state to localStorage
   useEffect(() => {
@@ -82,6 +89,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       teamIds,
       piIds,
       snapshotId,
+      deliveryPlatform,
     };
     
     try {
@@ -89,7 +97,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Failed to save context to localStorage:', error);
     }
-  }, [tier, portfolioId, programId, teamIds, piIds, snapshotId]);
+  }, [tier, portfolioId, programId, teamIds, piIds, snapshotId, deliveryPlatform]);
   
   // Sync to URL params for shareability
   useEffect(() => {
@@ -126,6 +134,8 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     setPiIds,
     snapshotId,
     setSnapshotId,
+    deliveryPlatform,
+    setDeliveryPlatform,
   };
   
   return (

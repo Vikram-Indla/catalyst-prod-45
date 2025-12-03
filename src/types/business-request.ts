@@ -126,6 +126,9 @@ export interface BusinessRequest {
   rank: number | null;
   rank_override_justification: string | null;
   
+  // Planning
+  planned_quarter: string | null;
+  
   // Metadata
   created_at: string;
   updated_at: string;

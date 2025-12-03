@@ -49,11 +49,11 @@ export const ColumnsDropdown = ({ columns, onChange }: ColumnsDropdownProps) => 
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground rounded transition-colors"
+        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-9 px-3 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
         onClick={() => setIsOpen(!isOpen)}
       >
         <Columns3 className="w-4 h-4" />
-        Columns Shown
+        Columns
       </button>
 
       {isOpen && (

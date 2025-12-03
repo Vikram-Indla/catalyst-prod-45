@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, Box, ListTree, Map, TrendingUp } from 'lucide-react';
@@ -16,6 +15,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useCatalystContext } from '@/contexts/CatalystContext';
 
 interface ProductRoomSidebarProps {
   expanded: boolean;
@@ -31,20 +31,23 @@ const menuItems = [
 ];
 
 const deliveryPlatformOptions = [
-  { value: 'senaei-platform', label: 'Senaei Platform' },
-  { value: 'innovation-platform', label: 'Innovation Platform' },
-  { value: 'tahommena', label: 'Tahommena' },
-  { value: 'compass', label: 'Compass' },
-  { value: 'mini-apps', label: 'Mini Apps' },
-  { value: 'website', label: 'Website' },
+  { value: 'Senaei Platform', label: 'Senaei Platform' },
+  { value: 'Innovation Platform', label: 'Innovation Platform' },
+  { value: 'Tahommena', label: 'Tahommena' },
+  { value: 'Compass', label: 'Compass' },
+  { value: 'Mini Apps', label: 'Mini Apps' },
+  { value: 'Website', label: 'Website' },
 ];
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [selectedPlatform, setSelectedPlatform] = useState('senaei-platform');
+  const { deliveryPlatform, setDeliveryPlatform } = useCatalystContext();
 
   const isActive = (path: string) => location.pathname === path;
+
+  // Get the label for the currently selected platform
+  const selectedPlatformLabel = deliveryPlatformOptions.find(p => p.value === deliveryPlatform)?.label || deliveryPlatform;
 
   return (
     <TooltipProvider>
@@ -64,7 +67,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-foreground">Product</span>
-                <span className="text-xs text-muted-foreground">Senaei Platform</span>
+                <span className="text-xs text-muted-foreground">{selectedPlatformLabel}</span>
               </div>
             </div>
           ) : (
@@ -88,7 +91,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
               Delivery Platform
             </span>
-            <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
+            <Select value={deliveryPlatform} onValueChange={setDeliveryPlatform}>
               <SelectTrigger className="mt-2 w-full">
                 <SelectValue />
               </SelectTrigger>

@@ -77,7 +77,7 @@ export function useCreateBusinessRequest() {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (data: CreateBusinessRequestFormData) => {
+    mutationFn: async (data: CreateBusinessRequestFormData & { delivery_platform?: string; planned_quarter?: string }) => {
       // Generate request key in MDT-XXX format
       const requestKey = await generateRequestKey();
       
@@ -93,6 +93,8 @@ export function useCreateBusinessRequest() {
           requestor: data.requestor || null,
           business_justification: data.business_justification || null,
           request_key: requestKey,
+          delivery_platform: data.delivery_platform || null,
+          planned_quarter: data.planned_quarter || null,
         }])
         .select()
         .single();
