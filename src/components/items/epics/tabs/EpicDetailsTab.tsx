@@ -116,6 +116,15 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     },
   });
 
+  // Fetch process steps from database
+  const { data: processSteps } = useQuery({
+    queryKey: ['process-steps'],
+    queryFn: async () => {
+      const { data } = await supabase.from('process_steps').select('id, name, sort_order').order('sort_order');
+      return data || [];
+    },
+  });
+
   // Fetch assigned PIs for this epic
   const { data: epicPIs } = useQuery({
     queryKey: ['epic-pis', epic.id],
@@ -209,6 +218,20 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         .or(`from_feature_id.in.(${featureIds.join(',')}),to_feature_id.in.(${featureIds.join(',')})`);
       
       return count || 0;
+    },
+  });
+
+  // Fetch linked risks for this epic
+  const { data: linkedRisks } = useQuery({
+    queryKey: ['epic-linked-risks', epic.id],
+    queryFn: async () => {
+      const result = await (supabase
+        .from('risks' as any)
+        .select('id, title, status, impact, occurrence')
+        .eq('related_entity_type', 'Epic')
+        .eq('related_entity_id', epic.id)
+        .is('deleted_at', null) as any);
+      return result.data || [];
     },
   });
 
@@ -320,47 +343,40 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>State</Label>
+              <Label className="text-sm font-medium">State</Label>
               <Select
-              value={formData.state} 
-              onValueChange={(value) => handleFieldChange('state', value)}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="funnel">1 - Funnel</SelectItem>
-                <SelectItem value="analyzing">2 - Analyzing</SelectItem>
-                <SelectItem value="portfolio_backlog">3 - Portfolio Backlog</SelectItem>
-                <SelectItem value="implementing">4 - Implementing</SelectItem>
-                <SelectItem value="validating_in_production">5 - Validating in Production</SelectItem>
-                <SelectItem value="done">6 - Done</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+                value={formData.state} 
+                onValueChange={(value) => handleFieldChange('state', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="not_started">1 - Not Started</SelectItem>
+                  <SelectItem value="in_progress">2 - In Progress</SelectItem>
+                  <SelectItem value="accepted">3 - Accepted</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div>
-            <Label>Process Step</Label>
-            <Select 
-              value={formData.process_step_id || 'none'} 
-              onValueChange={(value) => handleFieldChange('process_step_id', value === 'none' ? null : value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select process step" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">None</SelectItem>
-                <SelectItem value="ideation">Ideation</SelectItem>
-                <SelectItem value="discovery">Discovery</SelectItem>
-                <SelectItem value="analysis">Analysis</SelectItem>
-                <SelectItem value="design">Design</SelectItem>
-                <SelectItem value="development">Development</SelectItem>
-                <SelectItem value="testing">Testing</SelectItem>
-                <SelectItem value="deployment">Deployment</SelectItem>
-              </SelectContent>
-            </Select>
+            <div>
+              <Label className="text-sm font-medium">Process Step</Label>
+              <Select 
+                value={formData.process_step_id || 'none'} 
+                onValueChange={(value) => handleFieldChange('process_step_id', value === 'none' ? null : value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select process step" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {processSteps?.map((step: any) => (
+                    <SelectItem key={step.id} value={step.id}>{step.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-        </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -858,13 +874,13 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         <>
           {/* Features Collapsible Section - per Jira Align spec */}
           <Collapsible open={featuresOpen} onOpenChange={setFeaturesOpen}>
-            <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
-              <ChevronRight className={`h-4 w-4 transition-transform ${featuresOpen ? 'rotate-90' : ''}`} />
-              <span className="font-medium">Features</span>
-              <Badge variant="secondary" className="ml-auto">{childProgress?.totalFeatures || 0}</Badge>
+            <CollapsibleTrigger className="flex items-center gap-2 w-full py-3 hover:bg-muted/50 rounded px-2 border-b border-border">
+              <ChevronRight className={`h-4 w-4 transition-transform text-muted-foreground ${featuresOpen ? 'rotate-90' : ''}`} />
+              <span className="text-sm font-medium text-foreground">Features</span>
+              <Badge variant="secondary" className="ml-auto text-xs">{childProgress?.totalFeatures || 0}</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="pl-6 space-y-3 pt-2">
+              <div className="pl-6 space-y-3 pt-3 pb-2">
                 {/* Inline Search to Add Feature */}
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -876,12 +892,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                       setShowFeatureSuggestions(true);
                     }}
                     onFocus={() => setShowFeatureSuggestions(true)}
-                    className="pl-9 pr-16"
+                    className="pl-9 pr-16 text-sm"
                   />
                   {featureSearch.length >= 2 && (
                     <Button 
                       size="sm" 
-                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 bg-brand-gold hover:bg-brand-gold-hover"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 bg-brand-gold hover:bg-brand-gold-hover text-xs"
                       onClick={() => {
                         if (availableFeatures && availableFeatures.length > 0) {
                           linkFeatureMutation.mutate(availableFeatures[0].id);
@@ -895,73 +911,52 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
                   
                   {/* Autocomplete Suggestions */}
                   {showFeatureSuggestions && featureSearch.length >= 2 && availableFeatures && availableFeatures.length > 0 && (
-                    <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-background border rounded-md shadow-lg max-h-[200px] overflow-auto">
+                    <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-card border rounded-md shadow-lg max-h-[200px] overflow-auto">
                       {availableFeatures.map((feature: any) => (
                         <div
                           key={feature.id}
-                          className="flex items-center justify-between px-3 py-2 hover:bg-muted cursor-pointer text-sm"
-                          onClick={() => {
-                            linkFeatureMutation.mutate(feature.id);
-                          }}
+                          className="flex items-center justify-between px-3 py-2 hover:bg-muted cursor-pointer"
+                          onClick={() => linkFeatureMutation.mutate(feature.id)}
                         >
                           <div className="flex-1 min-w-0">
-                            <span className="font-medium">{feature.name}</span>
-                            <span className="text-muted-foreground ml-2">({feature.display_id || 'No ID'})</span>
+                            <span className="text-sm font-medium text-foreground">{feature.name}</span>
+                            <span className="text-xs text-muted-foreground ml-2">({feature.display_id || 'No ID'})</span>
                           </div>
-                          <Badge variant="outline" className="ml-2">{feature.status || 'funnel'}</Badge>
+                          <Badge variant="outline" className="ml-2 text-xs">{feature.status || 'funnel'}</Badge>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
                 
-                {/* Linked Features Table */}
+                {/* Linked Features as Cards */}
                 {childProgress?.features && childProgress.features.length > 0 && (
-                  <div className="border rounded">
-                    <div className="grid grid-cols-[1fr_80px_80px_100px_40px] gap-2 p-2 bg-muted/50 text-xs font-medium text-muted-foreground border-b">
-                      <div>Title</div>
-                      <div>Points</div>
-                      <div>Status</div>
-                      <div>Team</div>
-                      <div></div>
-                    </div>
-                    <ScrollArea className="max-h-[200px]">
-                      {childProgress.features.map((feature: any) => {
-                        const pct = feature.progress_pct || 0;
-                        
-                        return (
-                          <TooltipProvider key={feature.id}>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="grid grid-cols-[1fr_80px_80px_100px_40px] gap-2 p-2 border-b hover:bg-muted/30 items-center">
-                                  <div className="text-sm truncate">{feature.name}</div>
-                                  <div className="text-sm">{feature.estimate_points || 0}</div>
-                                  <Badge variant="outline" className="text-xs w-fit">{feature.status || 'funnel'}</Badge>
-                                  <div className="text-sm text-muted-foreground truncate">
-                                    {feature.teams?.name || '—'}
-                                  </div>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6 text-muted-foreground hover:text-destructive"
-                                    onClick={() => unlinkFeatureMutation.mutate(feature.id)}
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent side="right" className="w-64 p-3">
-                                <div className="space-y-2">
-                                  <div className="font-medium">{feature.name}</div>
-                                  <Progress value={pct} className="h-2" />
-                                  <div className="text-xs text-muted-foreground">{pct}% complete</div>
-                                </div>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        );
-                      })}
-                    </ScrollArea>
+                  <div className="space-y-2">
+                    {childProgress.features.map((feature: any) => {
+                      const pct = feature.progress_pct || 0;
+                      
+                      return (
+                        <div key={feature.id} className="flex items-center gap-3 p-3 bg-card border rounded-md hover:border-brand-gold/50 transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-foreground truncate">{feature.name}</div>
+                            <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                              <span>{feature.estimate_points || 0} pts</span>
+                              <Badge variant="outline" className="text-xs h-5">{feature.status || 'funnel'}</Badge>
+                              {feature.teams?.name && <span>{feature.teams.name}</span>}
+                            </div>
+                            <Progress value={pct} className="h-1.5 mt-2" />
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive shrink-0"
+                            onClick={() => unlinkFeatureMutation.mutate(feature.id)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
                 
@@ -974,16 +969,21 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
           {/* Acceptance Criteria Collapsible Section */}
           <Collapsible open={acceptanceCriteriaOpen} onOpenChange={setAcceptanceCriteriaOpen}>
-            <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
-              <ChevronRight className={`h-4 w-4 transition-transform ${acceptanceCriteriaOpen ? 'rotate-90' : ''}`} />
-              <span className="font-medium">Acceptance Criteria</span>
-              <Badge variant="secondary" className="ml-auto">0</Badge>
+            <CollapsibleTrigger className="flex items-center gap-2 w-full py-3 hover:bg-muted/50 rounded px-2 border-b border-border">
+              <ChevronRight className={`h-4 w-4 transition-transform text-muted-foreground ${acceptanceCriteriaOpen ? 'rotate-90' : ''}`} />
+              <span className="text-sm font-medium text-foreground">Acceptance Criteria</span>
+              <Badge variant="secondary" className="ml-auto text-xs">0</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="pl-6 py-2 space-y-2">
+              <div className="pl-6 py-3 space-y-3">
                 <div className="text-sm text-muted-foreground">No acceptance criteria defined</div>
-                <Button variant="outline" size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs"
+                  onClick={() => toast.info('Acceptance criteria functionality coming soon')}
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1.5" />
                   Add
                 </Button>
               </div>
@@ -992,16 +992,39 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
           {/* Risks Collapsible Section */}
           <Collapsible open={risksOpen} onOpenChange={setRisksOpen}>
-            <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
-              <ChevronRight className={`h-4 w-4 transition-transform ${risksOpen ? 'rotate-90' : ''}`} />
-              <span className="font-medium">Risks</span>
-              <Badge variant="secondary" className="ml-auto">0</Badge>
+            <CollapsibleTrigger className="flex items-center gap-2 w-full py-3 hover:bg-muted/50 rounded px-2 border-b border-border">
+              <ChevronRight className={`h-4 w-4 transition-transform text-muted-foreground ${risksOpen ? 'rotate-90' : ''}`} />
+              <span className="text-sm font-medium text-foreground">Risks</span>
+              <Badge variant="secondary" className="ml-auto text-xs">{linkedRisks?.length || 0}</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="pl-6 py-2 space-y-2">
-                <div className="text-sm text-muted-foreground">No risks linked</div>
-                <Button variant="outline" size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
+              <div className="pl-6 py-3 space-y-3">
+                {linkedRisks && linkedRisks.length > 0 ? (
+                  <div className="space-y-2">
+                    {linkedRisks.map((risk: any) => (
+                      <div key={risk.id} className="flex items-center gap-3 p-3 bg-card border rounded-md">
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-foreground">{risk.title}</div>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                            <Badge variant={risk.status === 'Open' ? 'destructive' : 'secondary'} className="text-xs h-5">
+                              {risk.status}
+                            </Badge>
+                            <span>Impact: {risk.impact}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground">No risks linked</div>
+                )}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs"
+                  onClick={() => toast.info('Risk linking functionality coming soon')}
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1.5" />
                   Add
                 </Button>
               </div>
@@ -1010,20 +1033,25 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
           {/* Dependencies Collapsible Section */}
           <Collapsible open={dependenciesOpen} onOpenChange={setDependenciesOpen}>
-            <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
-              <ChevronRight className={`h-4 w-4 transition-transform ${dependenciesOpen ? 'rotate-90' : ''}`} />
-              <span className="font-medium">Dependencies</span>
-              <Badge variant="secondary" className="ml-auto">{dependenciesCount || 0}</Badge>
+            <CollapsibleTrigger className="flex items-center gap-2 w-full py-3 hover:bg-muted/50 rounded px-2 border-b border-border">
+              <ChevronRight className={`h-4 w-4 transition-transform text-muted-foreground ${dependenciesOpen ? 'rotate-90' : ''}`} />
+              <span className="text-sm font-medium text-foreground">Dependencies</span>
+              <Badge variant="secondary" className="ml-auto text-xs">{dependenciesCount || 0}</Badge>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <div className="pl-6 py-2 space-y-2">
+              <div className="pl-6 py-3 space-y-3">
                 <div className="text-sm text-muted-foreground">
                   {dependenciesCount && dependenciesCount > 0 
                     ? `${dependenciesCount} dependencies linked through features`
                     : 'No dependencies linked'}
                 </div>
-                <Button variant="outline" size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-xs"
+                  onClick={() => toast.info('Dependency linking functionality coming soon')}
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1.5" />
                   Add
                 </Button>
               </div>
