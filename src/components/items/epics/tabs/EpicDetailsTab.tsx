@@ -10,10 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Card, CardContent } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { HealthBadge } from '@/components/shared/HealthBadge';
-import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink, Loader2 } from 'lucide-react';
+import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink, Loader2, X, ChevronRight, Search } from 'lucide-react';
 import { WSJFInlineScores } from '@/components/wsjf';
-import { FeatureStatusModal } from '../modals/FeatureStatusModal';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
 import { AddFeatureDialog } from '../dialogs/AddFeatureDialog';
@@ -24,10 +26,15 @@ interface EpicDetailsTabProps {
 }
 
 export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
-  const [featureStatusOpen, setFeatureStatusOpen] = useState(false);
   const [addPIOpen, setAddPIOpen] = useState(false);
   const [addProgramOpen, setAddProgramOpen] = useState(false);
   const [addFeatureOpen, setAddFeatureOpen] = useState(false);
+  const [hideDetails, setHideDetails] = useState(false);
+  const [featuresOpen, setFeaturesOpen] = useState(false);
+  const [acceptanceCriteriaOpen, setAcceptanceCriteriaOpen] = useState(false);
+  const [risksOpen, setRisksOpen] = useState(false);
+  const [featureSearch, setFeatureSearch] = useState('');
+  const [newTag, setNewTag] = useState('');
   const queryClient = useQueryClient();
 
   // Local state for all editable fields
@@ -143,8 +150,11 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         .from('features')
         .select(`
           id, 
+          name,
+          display_id,
           status, 
           progress_pct,
+          estimate_points,
           stories:stories(id, status, estimate_points)
         `)
         .eq('epic_id', epic.id);
@@ -157,7 +167,8 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           featuresDelivered: 0,
           totalStoryPoints: 0,
           acceptedStoryPoints: 0,
-          progressPct: 0 
+          progressPct: 0,
+          features: []
         };
       }
 
@@ -166,8 +177,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
       const featuresInDelivery = features.filter(f => 
         ['dev_complete', 'test_complete', 'implementing'].includes(f.status || '')
       ).length;
-      // Features delivered = done status (same as accepted for now, since no 'released' status)
-      const featuresDelivered = 0; // No released status in schema
+      const featuresDelivered = 0;
 
       // Calculate story points
       let totalStoryPoints = 0;
@@ -194,6 +204,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         totalStoryPoints,
         acceptedStoryPoints,
         progressPct: Math.round(avgProgress),
+        features,
       };
     },
   });
@@ -753,89 +764,151 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         </CardContent>
       </Card>
 
-      {/* Progress & Children Section - per Jira Align spec */}
-      <Card className="border border-border/60 rounded-lg">
-        <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-foreground">Progress & Children</h3>
-        
-          {/* Story Points Progress */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">Story Points Accepted</span>
-              <span className="text-muted-foreground">
-                {childProgress?.acceptedStoryPoints || 0} of {childProgress?.totalStoryPoints || 0}
-              </span>
-            </div>
-            <Progress 
-              value={childProgress?.totalStoryPoints ? 
-                (childProgress.acceptedStoryPoints / childProgress.totalStoryPoints) * 100 : 0} 
-              className="h-2 bg-muted"
-            />
-          </div>
+      {/* Hide Details Toggle */}
+      <div className="border-t border-dashed pt-2">
+        <button
+          onClick={() => setHideDetails(!hideDetails)}
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          {hideDetails ? '+ Show Details' : '- Hide Details'}
+        </button>
+      </div>
 
-          {/* Features Accepted */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">Features Accepted</span>
-              <span className="text-muted-foreground">
-                {childProgress?.featuresAccepted || 0} of {childProgress?.totalFeatures || 0}
-              </span>
-            </div>
-            <Progress 
-              value={childProgress?.totalFeatures ? 
-                (childProgress.featuresAccepted / childProgress.totalFeatures) * 100 : 0} 
-              className="h-2 bg-muted"
-            />
-          </div>
+      {!hideDetails && (
+        <>
+          {/* Features Collapsible Section - per Jira Align spec */}
+          <Collapsible open={featuresOpen} onOpenChange={setFeaturesOpen}>
+            <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
+              <ChevronRight className={`h-4 w-4 transition-transform ${featuresOpen ? 'rotate-90' : ''}`} />
+              <span className="font-medium">Features ({childProgress?.totalFeatures || 0})</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="pl-6 space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search existing Features (type the ID, External ID or Name)"
+                    value={featureSearch}
+                    onChange={(e) => setFeatureSearch(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+                
+                <div className="border rounded">
+                  <div className="grid grid-cols-[60px_80px_1fr_150px] gap-2 p-2 bg-muted/50 text-xs font-medium text-muted-foreground border-b">
+                    <div>ID</div>
+                    <div>Ext ID</div>
+                    <div>Title</div>
+                    <div>Progress</div>
+                  </div>
+                  <ScrollArea className="max-h-[250px]">
+                    {childProgress?.features?.filter((f: any) =>
+                      f.name.toLowerCase().includes(featureSearch.toLowerCase()) ||
+                      f.display_id?.toLowerCase().includes(featureSearch.toLowerCase())
+                    ).map((feature: any) => {
+                      const stories = feature.stories || [];
+                      const acceptedPts = stories.filter((s: any) => s.status === 'done')
+                        .reduce((sum: number, s: any) => sum + (s.estimate_points || 0), 0);
+                      const totalPts = stories.reduce((sum: number, s: any) => sum + (s.estimate_points || 0), 0);
+                      const pct = totalPts > 0 ? Math.round((acceptedPts / totalPts) * 100) : 0;
+                      const isLate = pct < 30 && feature.status !== 'done';
+                      
+                      return (
+                        <TooltipProvider key={feature.id}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="grid grid-cols-[60px_80px_1fr_150px] gap-2 p-2 border-b hover:bg-muted/30 cursor-pointer items-center">
+                                <div className="text-sm">{feature.display_id || feature.id.slice(0, 4)}</div>
+                                <div className="text-sm text-muted-foreground">—</div>
+                                <div className="text-sm truncate">{feature.name}</div>
+                                <Progress value={pct} className="h-2" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="w-72 p-0">
+                              <div className="bg-[#1a1a1a] text-white rounded-lg overflow-hidden">
+                                <div className={`${isLate ? 'bg-red-500' : 'bg-green-500'} px-3 py-1`}>
+                                  <span className="font-bold">{isLate ? 'Late' : 'On Track'}</span>
+                                </div>
+                                <div className="p-3 space-y-2">
+                                  <p className="text-xs text-gray-300">
+                                    The Feature is in {feature.status || 'funnel'}
+                                  </p>
+                                  <div>
+                                    <span className="font-bold">{pct}% Done</span>
+                                    <span className="text-xs text-gray-400 ml-1">(based on story points)</span>
+                                  </div>
+                                  <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                      <Progress value={pct} className="h-1.5 flex-1" />
+                                      <span className="text-xs">{acceptedPts} of {totalPts} Story Points</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Progress value={(stories.filter((s: any) => s.status === 'done').length / Math.max(stories.length, 1)) * 100} className="h-1.5 flex-1" />
+                                      <span className="text-xs">{stories.filter((s: any) => s.status === 'done').length} of {stories.length} Stories</span>
+                                    </div>
+                                  </div>
+                                  <div className="pt-2 border-t border-gray-600">
+                                    <span className="font-bold">Scope</span>
+                                    <p className="text-xs text-gray-400">Estimate: {feature.estimate_points || 0} points</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      );
+                    })}
+                    {(!childProgress?.features || childProgress.features.length === 0) && (
+                      <div className="p-4 text-center text-sm text-muted-foreground">
+                        No features found
+                      </div>
+                    )}
+                  </ScrollArea>
+                </div>
+                
+                <Button variant="outline" size="sm" onClick={() => setAddFeatureOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Feature
+                </Button>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
-          {/* Features in Delivery */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">Features in Delivery</span>
-              <span className="text-muted-foreground">
-                {childProgress?.featuresInDelivery || 0} of {childProgress?.totalFeatures || 0}
-              </span>
-            </div>
-            <Progress 
-              value={childProgress?.totalFeatures ? 
-                (childProgress.featuresInDelivery / childProgress.totalFeatures) * 100 : 0} 
-              className="h-2 bg-muted"
-            />
-          </div>
+          {/* Acceptance Criteria Collapsible Section */}
+          <Collapsible open={acceptanceCriteriaOpen} onOpenChange={setAcceptanceCriteriaOpen}>
+            <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
+              <ChevronRight className={`h-4 w-4 transition-transform ${acceptanceCriteriaOpen ? 'rotate-90' : ''}`} />
+              <span className="font-medium">Acceptance Criteria (0)</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="pl-6 py-2 text-sm text-muted-foreground">
+                No acceptance criteria defined
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
-          {/* Features Delivered */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="font-medium">Features Delivered</span>
-              <span className="text-muted-foreground">
-                {childProgress?.featuresDelivered || 0} of {childProgress?.totalFeatures || 0}
-              </span>
-            </div>
-            <Progress 
-              value={childProgress?.totalFeatures ? 
-                (childProgress.featuresDelivered / childProgress.totalFeatures) * 100 : 0} 
-              className="h-2 bg-muted"
-            />
-          </div>
+          {/* Risks Collapsible Section */}
+          <Collapsible open={risksOpen} onOpenChange={setRisksOpen}>
+            <CollapsibleTrigger className="flex items-center gap-2 w-full py-2 hover:bg-muted/50 rounded px-2">
+              <ChevronRight className={`h-4 w-4 transition-transform ${risksOpen ? 'rotate-90' : ''}`} />
+              <span className="font-medium">Risks (0)</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <div className="pl-6 py-2 text-sm text-muted-foreground">
+                No risks linked
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
 
-          <div className="space-y-2 pt-2">
-            <Button variant="outline" className="w-full" onClick={() => setAddFeatureOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Feature
+          {/* Add Button */}
+          <div className="flex justify-end pt-2">
+            <Button variant="ghost" size="sm" className="text-muted-foreground">
+              <Plus className="h-4 w-4 mr-1" />
+              Add
             </Button>
-            <Button variant="outline" className="w-full" onClick={() => setFeatureStatusOpen(true)}>
-              <ExternalLink className="h-4 w-4 mr-2" />
-              View Feature Status Details
-            </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      <FeatureStatusModal
-        epicId={epic.id}
-        open={featureStatusOpen}
-        onOpenChange={setFeatureStatusOpen}
-      />
+        </>
+      )}
 
       <AddPIDialog
         epicId={epic.id}
