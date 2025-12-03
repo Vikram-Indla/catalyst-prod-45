@@ -278,9 +278,11 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
       estimate = parseFloat(value) || 0;
     }
     
+    // Database constraint: if team_id is set, program_id must be NULL
+    // Only one scope level allowed: PI-only, program-only, or team-only
     updateForecastMutation.mutate({
       piId: selectedPiId,
-      programId,
+      programId: teamId ? undefined : programId, // Clear programId if team is specified
       teamId,
       estimate,
       unit,
