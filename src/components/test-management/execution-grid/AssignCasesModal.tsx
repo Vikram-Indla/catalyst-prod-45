@@ -160,7 +160,7 @@ export const AssignCasesModal: React.FC<AssignCasesModalProps> = ({
           <Button
             onClick={handleAssign}
             disabled={isLoading || (!selectedTesterId && !distributeEvenly)}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
           >
             {isLoading ? 'Assigning...' : 'Assign Cases'}
           </Button>

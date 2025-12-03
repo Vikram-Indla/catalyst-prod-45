@@ -161,7 +161,7 @@ export const EditSharedStepModal: React.FC<EditSharedStepModalProps> = ({
             <Button
               type="submit"
               disabled={updateMutation.isPending}
-              className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+              className="bg-brand-gold text-white hover:bg-brand-gold-hover"
             >
               {updateMutation.isPending ? (
                 <>Updating...</>

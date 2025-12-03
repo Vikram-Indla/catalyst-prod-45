@@ -142,7 +142,7 @@ export const FolderPanel: React.FC<FolderPanelProps> = ({
           <Button
             size="sm"
             onClick={handleCreateFolder}
-            className="h-7 px-3 bg-brand-gold hover:bg-brand-gold-hover text-brand-dark font-semibold"
+            className="h-7 px-3 bg-brand-gold hover:bg-brand-gold-hover text-white font-semibold"
           >
             <Plus className="h-3.5 w-3.5 mr-1" />
             Create

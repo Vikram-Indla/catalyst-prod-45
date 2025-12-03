@@ -421,7 +421,7 @@ export const AdvancedImportWizard: React.FC<AdvancedImportWizardProps> = ({
               <div
                 className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
                   getStepIndex(step) >= idx
-                    ? 'bg-brand-gold text-brand-dark'
+                    ? 'bg-brand-gold text-white'
                     : 'bg-muted text-muted-foreground'
                 }`}
               >
@@ -464,7 +464,7 @@ export const AdvancedImportWizard: React.FC<AdvancedImportWizardProps> = ({
           {step === 'upload' && <div />}
           
           {step === 'mapping' && (
-            <Button onClick={handleValidate} className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark">
+            <Button onClick={handleValidate} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
               Validate
               <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
@@ -473,14 +473,14 @@ export const AdvancedImportWizard: React.FC<AdvancedImportWizardProps> = ({
             <Button
               onClick={() => setStep('options')}
               disabled={(validation?.errorCount || 0) > 0}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               Continue
               <ArrowRight className="h-4 w-4 ml-1" />
             </Button>
           )}
           {step === 'options' && (
-            <Button onClick={handleImport} className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark">
+            <Button onClick={handleImport} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
               Start Import
               <ArrowRight className="h-4 w-4 ml-1" />
             </Button>

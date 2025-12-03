@@ -471,14 +471,14 @@ export function IdeaGroupSetupDialog({
               <Button 
                 onClick={() => handleSave(false)} 
                 disabled={updateGroup.isPending}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
               >
                 Save
               </Button>
               <Button 
                 onClick={() => handleSave(true)} 
                 disabled={updateGroup.isPending}
-                className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+                className="bg-brand-gold hover:bg-brand-gold-hover text-white"
               >
                 Save & Close
               </Button>

@@ -79,7 +79,7 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
       {/* Score WSJF Button - opens canonical modal */}
       <Button 
         onClick={() => setWsjfModalOpen(true)}
-        className="w-full bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+        className="w-full bg-brand-gold text-white hover:bg-brand-gold-hover"
       >
         <Calculator className="h-4 w-4 mr-2" />
         Score WSJF

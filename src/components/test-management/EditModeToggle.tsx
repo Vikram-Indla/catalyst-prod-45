@@ -17,7 +17,7 @@ export const EditModeToggle: React.FC<EditModeToggleProps> = ({ isActive, onTogg
             variant={isActive ? 'default' : 'outline'}
             size="sm"
             onClick={onToggle}
-            className={isActive ? 'bg-brand-gold text-brand-dark hover:bg-brand-gold/90' : ''}
+            className={isActive ? 'bg-brand-gold text-white hover:bg-brand-gold/90' : ''}
           >
             <Edit2 className="h-4 w-4" />
           </Button>

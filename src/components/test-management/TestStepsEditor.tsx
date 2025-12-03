@@ -171,7 +171,7 @@ export const TestStepsEditor: React.FC<TestStepsEditorProps> = ({ testCaseId }) 
                     <Button
                       size="sm"
                       onClick={() => handleUpdateStep(step.id)}
-                      className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+                      className="bg-brand-gold text-white hover:bg-brand-gold-hover"
                     >
                       Save
                     </Button>

@@ -159,7 +159,7 @@ export function ConvertToWorkItemDialog({
           <Button 
             onClick={handleConvert} 
             disabled={isConverting}
-            className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+            className="bg-brand-gold text-white hover:bg-brand-gold-hover"
           >
             {isConverting ? 'Converting...' : `Create ${workItemType}`}
           </Button>

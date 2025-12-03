@@ -269,7 +269,7 @@ export const JiraTestPanel: React.FC<JiraTestPanelProps> = ({
             <Button
               onClick={handleLinkIssue}
               disabled={isProcessing || !issueKeyToLink.trim()}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               {isProcessing ? 'Linking...' : 'Link Issue'}
             </Button>
@@ -303,7 +303,7 @@ export const JiraTestPanel: React.FC<JiraTestPanelProps> = ({
             <Button
               onClick={handleCreateDefect}
               disabled={isProcessing || !defectSummary.trim()}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               {isProcessing ? 'Creating...' : 'Create & Link'}
             </Button>

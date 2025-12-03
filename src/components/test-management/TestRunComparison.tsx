@@ -138,7 +138,7 @@ export const TestRunComparison: React.FC<TestRunComparisonProps> = ({
             <button
               onClick={handleCompare}
               disabled={!run1Id || !run2Id || isLoading}
-              className="w-full sm:w-auto px-4 py-2 bg-brand-gold hover:bg-brand-gold-hover text-brand-dark rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              className="w-full sm:w-auto px-4 py-2 bg-brand-gold hover:bg-brand-gold-hover text-white rounded-md font-medium disabled:opacity-50 disabled:cursor-not-allowed mt-6"
             >
               {isLoading ? 'Comparing...' : 'Compare'}
             </button>

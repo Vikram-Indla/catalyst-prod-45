@@ -140,7 +140,7 @@ export const WorkItemLink: React.FC<WorkItemLinkProps> = ({
               size="sm"
               onClick={handleLink}
               disabled={updateMutation.isPending}
-              className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+              className="bg-brand-gold text-white hover:bg-brand-gold-hover"
             >
               Link
             </Button>

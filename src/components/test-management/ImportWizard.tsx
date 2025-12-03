@@ -135,7 +135,7 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({ isOpen, onClose }) =
             {[1, 2, 3].map((s) => (
               <React.Fragment key={s}>
                 <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 ${
-                  s < step ? 'bg-brand-gold border-brand-gold text-brand-dark' :
+                  s < step ? 'bg-brand-gold border-brand-gold text-white' :
                   s === step ? 'border-brand-gold text-brand-gold' :
                   'border-border text-muted-foreground'
                 }`}>
@@ -249,7 +249,7 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({ isOpen, onClose }) =
               <Button
                 onClick={() => setStep(step + 1)}
                 disabled={!canProceed()}
-                className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+                className="bg-brand-gold text-white hover:bg-brand-gold-hover"
               >
                 Next
                 <ChevronRight className="h-4 w-4 ml-2" />
@@ -258,7 +258,7 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({ isOpen, onClose }) =
               <Button
                 onClick={handleImport}
                 disabled={importMutation.isPending || !canProceed()}
-                className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+                className="bg-brand-gold text-white hover:bg-brand-gold-hover"
               >
                 {importMutation.isPending ? (
                   <>

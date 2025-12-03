@@ -241,7 +241,7 @@ export const CloneTestCaseModal: React.FC<CloneTestCaseModalProps> = ({
             </Button>
             <Button
               type="submit"
-              className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+              className="bg-brand-gold text-white hover:bg-brand-gold-hover"
               disabled={isLoading}
             >
               {isLoading ? 'Cloning...' : 'Clone Test Case'}

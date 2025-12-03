@@ -18,7 +18,7 @@ export function QuickCreateDropdown() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button className="bg-brand-gold hover:bg-brand-gold/90 text-brand-dark">
+          <Button className="bg-brand-gold hover:bg-brand-gold-hover text-white">
             <Plus className="h-4 w-4 mr-2" />
             Create
           </Button>

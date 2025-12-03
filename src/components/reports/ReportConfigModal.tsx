@@ -124,7 +124,7 @@ export function ReportConfigModal({
           <Button
             onClick={() => generateMutation.mutate()}
             disabled={generateMutation.isPending}
-            className="bg-brand-gold hover:bg-brand-gold/90 text-brand-dark"
+            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
           >
             {generateMutation.isPending && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

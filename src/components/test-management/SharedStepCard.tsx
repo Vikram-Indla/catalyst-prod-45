@@ -23,7 +23,7 @@ export const SharedStepCard: React.FC<SharedStepCardProps> = ({
       return <Badge variant="secondary" className="text-xs">Unused</Badge>;
     }
     if (step.usage_count >= 10) {
-      return <Badge className="bg-brand-gold text-brand-dark text-xs">High Usage</Badge>;
+      return <Badge className="bg-brand-gold text-white text-xs">High Usage</Badge>;
     }
     return <Badge variant="outline" className="text-xs">{step.usage_count} test cases</Badge>;
   };

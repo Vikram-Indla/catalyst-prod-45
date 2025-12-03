@@ -267,7 +267,7 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({
           <Button
             onClick={handleImport}
             disabled={!file || previewData.length === 0 || importMutation.isPending}
-            className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+            className="bg-brand-gold text-white hover:bg-brand-gold-hover"
           >
             {importMutation.isPending ? 'Importing...' : `Import ${previewData.length} Row${previewData.length !== 1 ? 's' : ''}`}
           </Button>

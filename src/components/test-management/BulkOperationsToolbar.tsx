@@ -194,7 +194,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
   return (
     <>
       <div className="flex items-center gap-3 p-3 bg-brand-gold/10 border border-brand-gold/30 rounded-lg">
-        <Badge className="bg-brand-gold text-brand-dark">
+        <Badge className="bg-brand-gold text-white">
           {selectedCount} selected
         </Badge>
         
@@ -309,7 +309,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
             <Button
               onClick={handleMove}
               disabled={isLoading || !selectedFolderId}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               {isLoading ? 'Moving...' : 'Move'}
             </Button>
@@ -347,7 +347,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
             <Button
               onClick={handleCopy}
               disabled={isLoading || !selectedFolderId}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               {isLoading ? 'Copying...' : 'Copy'}
             </Button>
@@ -378,7 +378,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
             <Button
               onClick={handleTag}
               disabled={isLoading || !tagInput.trim()}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               {isLoading ? 'Adding...' : 'Add Tags'}
             </Button>
@@ -416,7 +416,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
             <Button
               onClick={handleAssign}
               disabled={isLoading || !selectedAssigneeId}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               {isLoading ? 'Assigning...' : 'Assign'}
             </Button>
@@ -454,7 +454,7 @@ export const BulkOperationsToolbar: React.FC<BulkOperationsToolbarProps> = ({
             <Button
               onClick={handleAddToCycle}
               disabled={isLoading || !selectedCycleId}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               {isLoading ? 'Adding...' : 'Add to Cycle'}
             </Button>

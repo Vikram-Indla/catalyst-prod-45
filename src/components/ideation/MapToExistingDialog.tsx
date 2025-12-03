@@ -175,7 +175,7 @@ export function MapToExistingDialog({
           <Button 
             onClick={handleMap} 
             disabled={isMapping || !selectedId}
-            className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+            className="bg-brand-gold text-white hover:bg-brand-gold-hover"
           >
             {isMapping ? 'Mapping...' : `Map to ${workItemType}`}
           </Button>

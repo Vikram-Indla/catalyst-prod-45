@@ -145,7 +145,7 @@ export const CreateFolderModal: React.FC<CreateFolderModalProps> = ({
             <Button 
               type="submit" 
               disabled={isSubmitting || !name.trim()}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-brand-dark"
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
             >
               {isSubmitting ? 'Creating...' : 'Create Folder'}
             </Button>
