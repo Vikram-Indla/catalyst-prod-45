@@ -131,17 +131,17 @@ function DiamondChart({ scores, averages }: { scores: Record<string, number>; av
           strokeWidth="2"
         />
 
-        {/* Your epic polygon */}
+        {/* Your epic polygon - Brand Gold */}
         <polygon
           points={yourEpicPoints.map(p => `${p.x},${p.y}`).join(' ')}
-          fill="rgba(14, 165, 166, 0.3)"
-          stroke="#0ea5a6"
+          fill="rgba(198, 156, 109, 0.3)"
+          stroke="#c69c6d"
           strokeWidth="2"
         />
 
         {/* Points */}
         {yourEpicPoints.map((p, i) => (
-          <circle key={`epic-${i}`} cx={p.x} cy={p.y} r="4" fill="#0ea5a6" />
+          <circle key={`epic-${i}`} cx={p.x} cy={p.y} r="4" fill="#c69c6d" />
         ))}
       </svg>
 
@@ -184,7 +184,7 @@ function ValueEngineeringStepper({ currentStage }: { currentStage: string }) {
           <div 
             className={`h-10 flex items-center justify-center text-sm font-medium transition-colors
               ${index <= currentIndex 
-                ? 'bg-[#0ea5a6] text-white' 
+                ? 'bg-brand-gold text-[#1a1a1a]' 
                 : 'bg-muted text-muted-foreground'}
               ${index === 0 ? 'rounded-l-lg' : ''}
               ${index === stages.length - 1 ? 'rounded-r-lg' : ''}
@@ -244,109 +244,120 @@ function ROIAnalysisModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl h-[85vh] p-0 overflow-hidden">
+      <DialogContent className="max-w-6xl h-[90vh] p-0 overflow-hidden">
         <div className="flex h-full">
-          {/* Left Panel - Epic List */}
-          <div className="w-[380px] bg-[#1a1a2e] text-white flex flex-col">
-            <div className="p-4 border-b border-white/10">
-              <div className="bg-[#0ea5a6] text-white text-sm px-3 py-2 rounded mb-4">
+          {/* Left Panel - Epic List (Brand Colors: Gold & Black) */}
+          <div className="w-[380px] bg-[#1a1a1a] text-white flex flex-col">
+            <div className="p-4 border-b border-brand-gold/20">
+              <div className="bg-brand-gold text-[#1a1a1a] text-sm px-3 py-2 rounded mb-4 font-medium">
                 Results are being displayed according to your context menu
               </div>
-              <h3 className="text-lg font-semibold">Epic Ranked By ROI Score</h3>
+              <h3 className="text-lg font-semibold text-white">Epic Ranked By ROI Score</h3>
             </div>
             <div className="flex-1 overflow-y-auto">
-              {sortedEpics.map((e) => (
-                <div
-                  key={e.id}
-                  onClick={() => setSelectedEpicId(e.id)}
-                  className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors border-b border-white/5
-                    ${e.id === selectedEpicId ? 'bg-[#0ea5a6]' : 'hover:bg-white/5'}`}
-                >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-5 h-5 rounded bg-[#0ea5a6] flex items-center justify-center text-xs">✓</div>
-                    <span className="text-sm truncate">{e.epic_key || e.id.slice(0, 8)} : {e.name}</span>
-                  </div>
-                  <span className="text-sm font-medium whitespace-nowrap ml-2">Score {e.score || 0}</span>
+              {sortedEpics.length === 0 ? (
+                <div className="p-4 text-sm text-white/60 text-center">
+                  No epics with ROI scores found
                 </div>
-              ))}
+              ) : (
+                sortedEpics.map((e) => (
+                  <div
+                    key={e.id}
+                    onClick={() => setSelectedEpicId(e.id)}
+                    className={`flex items-center justify-between px-4 py-3 cursor-pointer transition-colors border-b border-white/5
+                      ${e.id === selectedEpicId ? 'bg-brand-gold text-[#1a1a1a]' : 'hover:bg-white/10'}`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-5 h-5 rounded flex items-center justify-center text-xs font-medium
+                        ${e.id === selectedEpicId ? 'bg-[#1a1a1a] text-brand-gold' : 'bg-brand-gold text-[#1a1a1a]'}`}>
+                        ✓
+                      </div>
+                      <span className="text-sm truncate">{e.epic_key || e.id.slice(0, 8)} : {e.name}</span>
+                    </div>
+                    <span className="text-sm font-medium whitespace-nowrap ml-2">Score {e.score || 0}</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
           {/* Right Panel - Analysis */}
-          <div className="flex-1 bg-background p-8 overflow-y-auto">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-semibold text-foreground mb-2">ROI Score Analysis</h2>
-              <h3 className="text-xl text-foreground">{selectedEpic.name}</h3>
-              <div className="flex items-center justify-center gap-6 mt-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-[#0ea5a6]" />
-                  <span className="text-sm text-muted-foreground">Your Epic</span>
+          <div className="flex-1 bg-background flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto p-8 pb-12">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl font-semibold text-foreground mb-2">ROI Score Analysis</h2>
+                <h3 className="text-xl text-foreground">{selectedEpic.name}</h3>
+                <div className="flex items-center justify-center gap-6 mt-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-brand-gold" />
+                    <span className="text-sm text-muted-foreground">Your Epic</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-orange-500" />
+                    <span className="text-sm text-muted-foreground">Average Score</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-orange-500" />
-                  <span className="text-sm text-muted-foreground">Average Score</span>
+              </div>
+
+              {/* Chart and Score */}
+              <div className="flex items-center justify-center gap-12 mb-10">
+                {/* Value Score Card */}
+                <div className="bg-card border border-border rounded-lg p-6 text-center min-w-[200px] shadow-sm">
+                  <p className="text-sm text-muted-foreground mb-2">Value Score:</p>
+                  <p className="text-5xl font-bold text-brand-gold mb-3">{valueScore}</p>
+                  <p className="text-sm text-muted-foreground mb-3">(Average: {avgScore})</p>
+                  {percentDiff !== 0 && (
+                    <p className="text-xs text-foreground leading-relaxed">
+                      That's <span className={`font-semibold ${percentDiff > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                        {Math.abs(percentDiff)}% {percentDiff > 0 ? 'Higher' : 'Lower'}
+                      </span> than other associated Epics that are using this score card.
+                    </p>
+                  )}
+                </div>
+
+                {/* Diamond Chart */}
+                <div className="px-20 py-10">
+                  <DiamondChart scores={fieldScores} averages={averages} />
                 </div>
               </div>
-            </div>
 
-            {/* Chart and Score */}
-            <div className="flex items-center justify-center gap-12 mb-8">
-              {/* Value Score Card */}
-              <div className="bg-card border border-border rounded-lg p-6 text-center min-w-[180px]">
-                <p className="text-sm text-muted-foreground mb-1">Value Score:</p>
-                <p className="text-5xl font-bold text-[#0ea5a6] mb-2">{valueScore}</p>
-                <p className="text-xs text-muted-foreground mb-2">(Average: {avgScore})</p>
-                {percentDiff !== 0 && (
-                  <p className="text-xs text-foreground">
-                    That's <span className={`font-semibold ${percentDiff > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                      {Math.abs(percentDiff)}% {percentDiff > 0 ? 'Higher' : 'Lower'}
-                    </span> than other associated Epics that are using this score card.
-                  </p>
-                )}
+              {/* Navigation */}
+              <div className="flex items-center justify-center gap-8 mb-10">
+                <button 
+                  onClick={goToPrev} 
+                  disabled={currentIndex === 0}
+                  className="p-2 rounded-full hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronLeft className="w-8 h-8" />
+                </button>
+                <div className="w-64 h-1 bg-muted rounded-full" />
+                <button 
+                  onClick={goToNext}
+                  disabled={currentIndex === sortedEpics.length - 1}
+                  className="p-2 rounded-full hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  <ChevronRight className="w-8 h-8" />
+                </button>
               </div>
 
-              {/* Diamond Chart */}
-              <div className="px-20 py-10">
-                <DiamondChart scores={fieldScores} averages={averages} />
+              {/* Individual Scores */}
+              <div className="text-center mb-8">
+                <h4 className="text-lg font-semibold text-foreground">Individual Scores</h4>
+                <p className="text-sm text-muted-foreground">Here's how the Epic did on each question.</p>
               </div>
-            </div>
 
-            {/* Navigation */}
-            <div className="flex items-center justify-center gap-8 mb-8">
-              <button 
-                onClick={goToPrev} 
-                disabled={currentIndex === 0}
-                className="p-2 rounded-full hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronLeft className="w-8 h-8" />
-              </button>
-              <div className="w-64 h-1 bg-muted rounded-full" />
-              <button 
-                onClick={goToNext}
-                disabled={currentIndex === sortedEpics.length - 1}
-                className="p-2 rounded-full hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <ChevronRight className="w-8 h-8" />
-              </button>
-            </div>
-
-            {/* Individual Scores */}
-            <div className="text-center mb-6">
-              <h4 className="text-lg font-semibold text-foreground">Individual Scores</h4>
-              <p className="text-sm text-muted-foreground">Here's how the Epic did on each question.</p>
-            </div>
-
-            <div className="flex justify-center gap-4">
-              {ROI_FIELDS.map((field) => (
-                <IndividualScoreCard
-                  key={field.id}
-                  number={field.number}
-                  label={field.label}
-                  score={fieldScores[field.id] || 66}
-                  level={getOptionFromScore(fieldScores[field.id], field.scoreType)}
-                  average={averages[field.id] || 50}
-                />
-              ))}
+              <div className="flex justify-center gap-4 pb-8">
+                {ROI_FIELDS.map((field) => (
+                  <IndividualScoreCard
+                    key={field.id}
+                    number={field.number}
+                    label={field.label}
+                    score={fieldScores[field.id] || 66}
+                    level={getOptionFromScore(fieldScores[field.id], field.scoreType)}
+                    average={averages[field.id] || 50}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
