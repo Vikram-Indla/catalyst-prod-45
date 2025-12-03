@@ -276,6 +276,27 @@ export function validateFolderName(name: string): { valid: boolean; error?: stri
 }
 
 /**
+ * Move folder to new parent
+ */
+export async function moveFolder(
+  folderId: string,
+  newParentId: string | null
+): Promise<void> {
+  // Check for circular reference
+  const isCircular = await checkCircularReference(folderId, newParentId);
+  if (isCircular) {
+    throw new Error('Cannot move folder: would create circular reference');
+  }
+
+  const { error } = await supabase
+    .from('test_folders')
+    .update({ parent_folder_id: newParentId })
+    .eq('id', folderId);
+
+  if (error) throw error;
+}
+
+/**
  * Check if moving folder would create circular reference
  */
 export async function checkCircularReference(
