@@ -1,16 +1,33 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CalendarIcon, Lock, Unlock, Upload } from 'lucide-react';
+import { CalendarIcon, Lock, Unlock, Upload, X, FileText } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { RichTextEditor } from '../RichTextEditor';
+
+// Allowed document MIME types
+const ALLOWED_FILE_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain',
+  'text/csv',
+];
+
+const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv'];
+const MAX_FILES = 5;
+const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes
 
 // Delivery Track Parent Options
 const DELIVERY_TRACK_PARENTS = [
@@ -34,11 +51,13 @@ interface DemandDetailsTabProps {
 export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
   const [targetDateLocked, setTargetDateLocked] = useState(false);
   const [lockedByUser, setLockedByUser] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = 'Current User'; // In real app, get from auth context
+
+  const attachments: File[] = data.attachments || [];
 
   const handleLockToggle = () => {
     if (targetDateLocked) {
-      // Trying to unlock - check if same user
       if (lockedByUser && lockedByUser !== currentUser) {
         toast.error(`Cannot unlock. This date was locked by ${lockedByUser}`);
         return;
@@ -47,7 +66,6 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
       setLockedByUser(null);
       toast.info('Target Completion Date unlocked');
     } else {
-      // Trying to lock - validate dates are populated
       if (!data.impl_start_date) {
         toast.error('Cannot lock: Initiation Date must be populated first');
         return;
@@ -60,6 +78,58 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
       setLockedByUser(currentUser);
       toast.success(`Target Completion Date locked by ${currentUser}`);
     }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    
+    // Check file count limit
+    if (attachments.length + files.length > MAX_FILES) {
+      toast.error(`Maximum ${MAX_FILES} files allowed`);
+      return;
+    }
+
+    const validFiles: File[] = [];
+    let totalSize = attachments.reduce((sum, f) => sum + f.size, 0);
+
+    for (const file of files) {
+      // Check file type
+      const extension = '.' + file.name.split('.').pop()?.toLowerCase();
+      if (!ALLOWED_FILE_TYPES.includes(file.type) && !ALLOWED_EXTENSIONS.includes(extension)) {
+        toast.error(`"${file.name}" is not a supported document type`);
+        continue;
+      }
+
+      // Check total size
+      if (totalSize + file.size > MAX_FILE_SIZE) {
+        toast.error(`Total file size cannot exceed 20MB`);
+        break;
+      }
+
+      validFiles.push(file);
+      totalSize += file.size;
+    }
+
+    if (validFiles.length > 0) {
+      onChange('attachments', [...attachments, ...validFiles]);
+      toast.success(`${validFiles.length} file(s) added`);
+    }
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeAttachment = (index: number) => {
+    const newAttachments = attachments.filter((_, i) => i !== index);
+    onChange('attachments', newAttachments);
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   };
 
   const selectedTrackParent = data.delivery_track_parent || '';
@@ -86,21 +156,64 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
 
           <div>
             <Label className="text-sm font-medium">Description</Label>
-            <Textarea
+            <p className="text-xs text-muted-foreground mb-1.5">Provide a detailed description (up to 2,000 words)</p>
+            <RichTextEditor
               value={data.description || ''}
-              onChange={(e) => onChange('description', e.target.value)}
+              onChange={(value) => onChange('description', value)}
               placeholder="Describe the demand in detail..."
-              className="mt-1.5 min-h-[100px] resize-none"
+              className="mt-1"
             />
           </div>
 
           <div>
-            <Label className="text-sm font-medium">Attachments</Label>
-            <div className="mt-1.5">
-              <Button variant="outline" className="w-full justify-start text-muted-foreground">
+            <div className="flex items-baseline gap-2">
+              <Label className="text-sm font-medium">Attachments</Label>
+              <span className="text-xs text-muted-foreground">(Max 5 files, 20MB total. Documents only: PDF, DOC, XLS, PPT, TXT, CSV)</span>
+            </div>
+            <div className="mt-1.5 space-y-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept={ALLOWED_EXTENSIONS.join(',')}
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+              <Button 
+                variant="outline" 
+                className="w-full justify-start text-muted-foreground"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={attachments.length >= MAX_FILES}
+              >
                 <Upload className="mr-2 h-4 w-4" />
-                Upload Files...
+                {attachments.length >= MAX_FILES ? 'Maximum files reached' : 'Upload Files...'}
               </Button>
+
+              {/* File List */}
+              {attachments.length > 0 && (
+                <div className="space-y-2 mt-2">
+                  {attachments.map((file, index) => (
+                    <div 
+                      key={index}
+                      className="flex items-center justify-between p-2 bg-muted/50 rounded-md border border-border/40"
+                    >
+                      <div className="flex items-center gap-2 min-w-0">
+                        <FileText className="h-4 w-4 text-brand-gold shrink-0" />
+                        <span className="text-sm truncate">{file.name}</span>
+                        <span className="text-xs text-muted-foreground shrink-0">({formatFileSize(file.size)})</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+                        onClick={() => removeAttachment(index)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
