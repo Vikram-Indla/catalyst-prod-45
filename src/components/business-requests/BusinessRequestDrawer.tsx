@@ -1,11 +1,32 @@
-import { useState, useEffect } from 'react';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { useState, useEffect, useRef } from 'react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Edit, Save } from 'lucide-react';
-import { useBusinessRequest, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
-import { BusinessRequest, PROCESS_STEPS, HEALTH_OPTIONS } from '@/types/business-request';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger,
+  DropdownMenuSeparator 
+} from '@/components/ui/dropdown-menu';
+import { 
+  X, 
+  Pencil, 
+  Link as LinkIcon, 
+  ChevronDown, 
+  Maximize2, 
+  Minimize2,
+  MoreVertical,
+  MessageSquare,
+  Bell,
+  BellOff,
+  Trash2,
+  Copy,
+  History
+} from 'lucide-react';
+import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest } from '@/hooks/useBusinessRequests';
+import { BusinessRequest } from '@/types/business-request';
 import { OverviewTab } from './drawer-tabs/OverviewTab';
 import { PortfolioTab } from './drawer-tabs/PortfolioTab';
 import { TechnicalTab } from './drawer-tabs/TechnicalTab';
@@ -15,6 +36,7 @@ import { ReadinessTab } from './drawer-tabs/ReadinessTab';
 import { ImplementationTab } from './drawer-tabs/ImplementationTab';
 import { SupportTab } from './drawer-tabs/SupportTab';
 import { OnHoldTab } from './drawer-tabs/OnHoldTab';
+import { toast } from 'sonner';
 
 interface BusinessRequestDrawerProps {
   isOpen: boolean;
@@ -25,209 +47,288 @@ interface BusinessRequestDrawerProps {
 export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRequestDrawerProps) {
   const { data: request, isLoading } = useBusinessRequest(requestId);
   const updateMutation = useUpdateBusinessRequest();
-  const [isEditMode, setIsEditMode] = useState(false);
+  const deleteMutation = useDeleteBusinessRequest();
+  
+  const [activeTab, setActiveTab] = useState('overview');
   const [formData, setFormData] = useState<Partial<BusinessRequest>>({});
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
+  // Sync form data when request changes
   useEffect(() => {
     if (request) {
       setFormData(request);
+      setEditedName(request.title || '');
     }
   }, [request]);
 
   const handleFieldChange = (field: keyof BusinessRequest, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setHasChanges(true);
+    // Auto-save on field change
+    if (requestId) {
+      updateMutation.mutate({ id: requestId, data: { [field]: value } });
+    }
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!requestId) return;
-    await updateMutation.mutateAsync({ id: requestId, data: formData });
-    setIsEditMode(false);
+    updateMutation.mutate({ id: requestId, data: formData });
+    setHasChanges(false);
+    toast.success('Business request saved');
   };
 
-  const handleClose = () => {
-    setIsEditMode(false);
+  const handleSaveAndClose = () => {
+    handleSave();
     onClose();
   };
 
-  const getProcessStepStyle = (step: string) => {
-    const found = PROCESS_STEPS.find(s => s.value === step);
-    return found?.color || 'bg-gray-100 text-gray-600';
+  const handleClose = () => {
+    setHasChanges(false);
+    onClose();
   };
 
-  const getHealthStyle = (health: string) => {
-    const found = HEALTH_OPTIONS.find(h => h.value === health);
-    return found?.color || 'bg-gray-100 text-gray-600';
+  // Copy link handler
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/industry?request=${requestId}`;
+    navigator.clipboard.writeText(url);
+    toast.success('Link copied to clipboard');
   };
+
+  // Edit name handlers
+  const handleStartEditName = () => {
+    setIsEditingName(true);
+    setEditedName(request?.title || '');
+    setTimeout(() => nameInputRef.current?.focus(), 0);
+  };
+
+  const handleSaveName = () => {
+    if (editedName.trim() && editedName !== request?.title && requestId) {
+      updateMutation.mutate({ id: requestId, data: { title: editedName.trim() } });
+      setIsEditingName(false);
+    } else {
+      setIsEditingName(false);
+    }
+  };
+
+  const handleNameKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveName();
+    } else if (e.key === 'Escape') {
+      setIsEditingName(false);
+      setEditedName(request?.title || '');
+    }
+  };
+
+  // Toggle expand/collapse
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  // More options handlers
+  const handleAdditionalOption = (action: string) => {
+    switch (action) {
+      case 'duplicate':
+        if (request && requestId) {
+          // Create duplicate
+          toast.info('Duplicate functionality coming soon');
+        }
+        break;
+      case 'delete':
+        if (requestId) {
+          deleteMutation.mutate(requestId, {
+            onSuccess: () => {
+              onClose();
+            }
+          });
+        }
+        break;
+      case 'audit-log':
+        toast.info('Audit log functionality coming soon');
+        break;
+    }
+  };
+
+  // Get drawer width classes based on expanded state
+  const drawerWidthClass = isExpanded 
+    ? 'w-full sm:max-w-full' 
+    : 'w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw]';
 
   if (!isOpen) return null;
 
   return (
-    <Sheet open={isOpen} onOpenChange={handleClose}>
-      <SheetContent 
-        side="right" 
-        className="w-full sm:max-w-[680px] p-0 flex flex-col bg-[#feffff] overflow-hidden"
-      >
-        {/* Gold Bar */}
-        <div className="h-1 bg-brand-gold flex-shrink-0" />
-
-        {/* Header */}
-        <div className="px-6 py-5 border-b border-[#e5e5e5] flex-shrink-0">
-          <div className="flex items-start justify-between">
-            <div className="flex-1 min-w-0 pr-4">
-              <h2 className="text-xl font-semibold text-[#1a1a1a] truncate">
-                {request?.title || 'Loading...'}
-              </h2>
-              <p className="text-sm text-[#6b7280] font-mono mt-1">
-                {request?.request_key || ''}
-              </p>
-            </div>
-            <Button variant="ghost" size="icon" onClick={handleClose} className="flex-shrink-0">
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <Tabs defaultValue="overview" className="flex-1 flex flex-col min-h-0">
-          <div className="border-b border-[#e5e5e5] px-6 flex-shrink-0 overflow-x-auto">
-            <TabsList className="h-auto bg-transparent p-0 gap-0 flex-wrap">
-              {['Overview', 'Portfolio', 'Technical', 'Estimation', 'Approval', 'Readiness', 'Implementation', 'Support', 'On Hold'].map((tab) => (
-                <TabsTrigger
-                  key={tab}
-                  value={tab.toLowerCase().replace(' ', '-')}
-                  className="px-4 py-3 text-sm text-[#6b7280] border-b-2 border-transparent rounded-none data-[state=active]:text-[#1a1a1a] data-[state=active]:font-medium data-[state=active]:border-brand-gold data-[state=active]:bg-transparent hover:text-[#1a1a1a]"
+    <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+      <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden`}>
+        <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0">
+          {/* Top row: Request ID with copy link, action buttons */}
+          <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/10 rounded text-sm">
+                <span className="text-primary font-medium">{request?.request_key || 'Loading...'}</span>
+                <button
+                  onClick={handleCopyLink}
+                  className="text-muted-foreground hover:text-primary transition-colors p-0.5"
+                  title="Copy link"
                 >
-                  {tab}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </div>
-
-          {/* Content Area */}
-          <div className="flex-1 overflow-y-auto">
-            <div className="p-6 space-y-6">
-              {/* Edit Button & Global Fields */}
-              <div className="space-y-4">
-                <Button
-                  onClick={() => isEditMode ? handleSave() : setIsEditMode(true)}
-                  className={isEditMode 
-                    ? "w-full bg-brand-gold text-white hover:bg-brand-gold-hover" 
-                    : "w-full bg-brand-gold text-white hover:bg-brand-gold-hover"
-                  }
-                  disabled={updateMutation.isPending}
-                >
-                  {isEditMode ? (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
-                    </>
-                  ) : (
-                    <>
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit Request
-                    </>
-                  )}
-                </Button>
-
-                {/* Process Step */}
-                <div>
-                  <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Process Step</label>
-                  {isEditMode ? (
-                    <Select
-                      value={formData.process_step || 'new_demand'}
-                      onValueChange={(value) => handleFieldChange('process_step', value)}
-                    >
-                      <SelectTrigger className="border-[#e5e5e5]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {PROCESS_STEPS.map((step) => (
-                          <SelectItem key={step.value} value={step.value}>
-                            {step.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getProcessStepStyle(formData.process_step || 'new_demand')}`}>
-                      {PROCESS_STEPS.find(s => s.value === formData.process_step)?.label || 'New Demand'}
-                    </span>
-                  )}
-                </div>
-
-                {/* Health */}
-                <div>
-                  <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Health</label>
-                  {isEditMode ? (
-                    <Select
-                      value={formData.health || 'green'}
-                      onValueChange={(value) => handleFieldChange('health', value)}
-                    >
-                      <SelectTrigger className="border-[#e5e5e5]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {HEALTH_OPTIONS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  ) : (
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getHealthStyle(formData.health || 'green')}`}>
-                      {formData.health || 'green'}
-                    </span>
-                  )}
-                </div>
+                  <LinkIcon className="h-3.5 w-3.5" />
+                </button>
               </div>
-
-              {/* Tab Contents */}
-              <TabsContent value="overview" className="m-0 mt-4">
-                <OverviewTab data={formData} isEditMode={isEditMode} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="portfolio" className="m-0 mt-4">
-                <PortfolioTab data={formData} isEditMode={isEditMode} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="technical" className="m-0 mt-4">
-                <TechnicalTab data={formData} isEditMode={isEditMode} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="estimation" className="m-0 mt-4">
-                <EstimationTab data={formData} isEditMode={isEditMode} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="approval" className="m-0 mt-4">
-                <ApprovalTab data={formData} isEditMode={isEditMode} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="readiness" className="m-0 mt-4">
-                <ReadinessTab data={formData} isEditMode={isEditMode} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="implementation" className="m-0 mt-4">
-                <ImplementationTab data={formData} isEditMode={isEditMode} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="support" className="m-0 mt-4">
-                <SupportTab data={formData} isEditMode={isEditMode} onChange={handleFieldChange} />
-              </TabsContent>
-              <TabsContent value="on-hold" className="m-0 mt-4">
-                <OnHoldTab data={formData} isEditMode={isEditMode} onChange={handleFieldChange} />
-              </TabsContent>
+            </div>
+            
+            {/* Action buttons row */}
+            <div className="flex items-center gap-2">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-3 text-sm font-medium"
+                  >
+                    Save
+                    <ChevronDown className="h-3.5 w-3.5 ml-1" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-popover">
+                  <DropdownMenuItem onSelect={handleSave}>
+                    Save
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={handleSaveAndClose}>
+                    Save & Close
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleSaveAndClose}
+                className="h-8 px-3 text-sm font-medium bg-primary hover:bg-primary/90"
+              >
+                Save & Close
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleExpand}
+                className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                title={isExpanded ? 'Collapse' : 'Expand'}
+              >
+                {isExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+              </Button>
+              
+              <SheetClose asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                  <X className="h-4 w-4" />
+                </Button>
+              </SheetClose>
             </div>
           </div>
-
-          {/* Footer */}
-          {isEditMode && (
-            <div className="px-6 py-4 border-t border-[#e5e5e5] flex justify-end gap-3 flex-shrink-0">
-              <Button variant="outline" onClick={() => setIsEditMode(false)} className="border-[#e5e5e5]">
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSave}
-                disabled={updateMutation.isPending}
-                className="bg-brand-gold text-white hover:bg-brand-gold-hover"
-              >
-                {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
-              </Button>
+          
+          {/* Second row: Editable title with pen icon */}
+          <div className="px-5 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2 flex-1 min-w-0 group">
+              {isEditingName ? (
+                <Input
+                  ref={nameInputRef}
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  onBlur={handleSaveName}
+                  onKeyDown={handleNameKeyDown}
+                  className="text-lg font-semibold h-auto py-1 px-2 border-primary/50 focus:border-primary"
+                />
+              ) : (
+                <>
+                  <SheetTitle className="executive-drawer-title truncate text-lg">
+                    {request?.title || 'Loading...'}
+                  </SheetTitle>
+                  <button
+                    onClick={handleStartEditName}
+                    className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-primary transition-all p-1"
+                    title="Edit name"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                </>
+              )}
             </div>
-          )}
+            
+            {/* More options dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/50">
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 bg-popover">
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('duplicate')}>
+                  <Copy className="h-4 w-4 mr-2" />
+                  Duplicate Request
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleAdditionalOption('audit-log')}>
+                  <History className="h-4 w-4 mr-2" />
+                  View Audit Log
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem 
+                  onSelect={() => handleAdditionalOption('delete')}
+                  className="text-destructive focus:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Request
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <SheetDescription className="sr-only">Business request details panel</SheetDescription>
+        </SheetHeader>
+
+        {/* Tabs with horizontal scroll */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+          <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b h-auto shrink-0 overflow-x-auto flex-nowrap bg-[#feffff]">
+            <TabsTrigger value="overview" className="executive-tab">Overview</TabsTrigger>
+            <TabsTrigger value="portfolio" className="executive-tab">Portfolio</TabsTrigger>
+            <TabsTrigger value="technical" className="executive-tab">Technical</TabsTrigger>
+            <TabsTrigger value="estimation" className="executive-tab">Estimation</TabsTrigger>
+            <TabsTrigger value="approval" className="executive-tab">Approval</TabsTrigger>
+            <TabsTrigger value="readiness" className="executive-tab">Readiness</TabsTrigger>
+            <TabsTrigger value="implementation" className="executive-tab">Implementation</TabsTrigger>
+            <TabsTrigger value="support" className="executive-tab">Support</TabsTrigger>
+            <TabsTrigger value="on-hold" className="executive-tab">On Hold</TabsTrigger>
+          </TabsList>
+
+          <div className="executive-drawer-content flex-1 overflow-y-auto">
+            <TabsContent value="overview" className="m-0 focus-visible:outline-none">
+              <OverviewTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="portfolio" className="m-0 focus-visible:outline-none">
+              <PortfolioTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="technical" className="m-0 focus-visible:outline-none">
+              <TechnicalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="estimation" className="m-0 focus-visible:outline-none">
+              <EstimationTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="approval" className="m-0 focus-visible:outline-none">
+              <ApprovalTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="readiness" className="m-0 focus-visible:outline-none">
+              <ReadinessTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="implementation" className="m-0 focus-visible:outline-none">
+              <ImplementationTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="support" className="m-0 focus-visible:outline-none">
+              <SupportTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="on-hold" className="m-0 focus-visible:outline-none">
+              <OnHoldTab data={formData} isEditMode={true} onChange={handleFieldChange} />
+            </TabsContent>
+          </div>
         </Tabs>
       </SheetContent>
     </Sheet>

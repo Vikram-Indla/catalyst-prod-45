@@ -1,5 +1,7 @@
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent } from '@/components/ui/card';
 import { BusinessRequest, RISK_RATING_OPTIONS, DELIVERY_PLATFORM_OPTIONS, DELIVERY_TRACK_OPTIONS } from '@/types/business-request';
 
 interface PortfolioTabProps {
@@ -10,102 +12,96 @@ interface PortfolioTabProps {
 
 export function PortfolioTab({ data, isEditMode, onChange }: PortfolioTabProps) {
   return (
-    <div className="space-y-4">
-      {/* Business Justification */}
-      <div>
-        <label className="text-sm font-medium text-[#1a1a1a] block mb-2">
-          Business Justification {isEditMode && <span className="text-red-500">*</span>}
-        </label>
-        <Textarea
-          value={data.business_justification || ''}
-          onChange={(e) => onChange('business_justification', e.target.value)}
-          disabled={!isEditMode}
-          placeholder="Enter business justification..."
-          className="border-[#e5e5e5] focus:border-brand-gold disabled:bg-[#f9fafb] disabled:text-[#6b7280] min-h-[100px]"
-        />
-      </div>
+    <div className="space-y-6 p-5">
+      {/* Portfolio Assessment Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Portfolio Assessment</h3>
+          
+          <div>
+            <Label className="text-sm font-medium">Dependencies</Label>
+            <Textarea
+              value={data.dependencies || ''}
+              onChange={(e) => onChange('dependencies', e.target.value)}
+              placeholder="List dependencies..."
+              className="min-h-[80px] resize-none"
+            />
+          </div>
 
-      {/* Dependencies */}
-      <div>
-        <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Dependencies</label>
-        <Textarea
-          value={data.dependencies || ''}
-          onChange={(e) => onChange('dependencies', e.target.value)}
-          disabled={!isEditMode}
-          placeholder="List dependencies..."
-          className="border-[#e5e5e5] focus:border-brand-gold disabled:bg-[#f9fafb] disabled:text-[#6b7280] min-h-[80px]"
-        />
-      </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Risk Rating</Label>
+              <Select
+                value={data.risk_rating || ''}
+                onValueChange={(value) => onChange('risk_rating', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {RISK_RATING_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div />
+          </div>
 
-      {/* Risk Rating */}
-      <div>
-        <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Risk Rating</label>
-        <Select
-          value={data.risk_rating || ''}
-          onValueChange={(value) => onChange('risk_rating', value)}
-          disabled={!isEditMode}
-        >
-          <SelectTrigger className="border-[#e5e5e5] disabled:bg-[#f9fafb]">
-            <SelectValue placeholder="Select..." />
-          </SelectTrigger>
-          <SelectContent>
-            {RISK_RATING_OPTIONS.map((opt) => (
-              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          <div>
+            <Label className="text-sm font-medium">Portfolio Comments</Label>
+            <Textarea
+              value={data.portfolio_comments || ''}
+              onChange={(e) => onChange('portfolio_comments', e.target.value)}
+              placeholder="Add comments..."
+              className="min-h-[80px] resize-none"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Comments */}
-      <div>
-        <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Comments</label>
-        <Textarea
-          value={data.portfolio_comments || ''}
-          onChange={(e) => onChange('portfolio_comments', e.target.value)}
-          disabled={!isEditMode}
-          placeholder="Add comments..."
-          className="border-[#e5e5e5] focus:border-brand-gold disabled:bg-[#f9fafb] disabled:text-[#6b7280] min-h-[80px]"
-        />
-      </div>
+      {/* Delivery Configuration Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-foreground">Delivery Configuration</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Delivery Platform</Label>
+              <Select
+                value={data.delivery_platform || ''}
+                onValueChange={(value) => onChange('delivery_platform', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {DELIVERY_PLATFORM_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-      {/* Delivery Platform & Track */}
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Delivery Platform</label>
-          <Select
-            value={data.delivery_platform || ''}
-            onValueChange={(value) => onChange('delivery_platform', value)}
-            disabled={!isEditMode}
-          >
-            <SelectTrigger className="border-[#e5e5e5] disabled:bg-[#f9fafb]">
-              <SelectValue placeholder="Select..." />
-            </SelectTrigger>
-            <SelectContent>
-              {DELIVERY_PLATFORM_OPTIONS.map((opt) => (
-                <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div>
-          <label className="text-sm font-medium text-[#1a1a1a] block mb-2">Delivery Track</label>
-          <Select
-            value={data.delivery_track || ''}
-            onValueChange={(value) => onChange('delivery_track', value)}
-            disabled={!isEditMode}
-          >
-            <SelectTrigger className="border-[#e5e5e5] disabled:bg-[#f9fafb]">
-              <SelectValue placeholder="Select..." />
-            </SelectTrigger>
-            <SelectContent>
-              {DELIVERY_TRACK_OPTIONS.map((opt) => (
-                <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
+            <div>
+              <Label className="text-sm font-medium">Delivery Track</Label>
+              <Select
+                value={data.delivery_track || ''}
+                onValueChange={(value) => onChange('delivery_track', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {DELIVERY_TRACK_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
