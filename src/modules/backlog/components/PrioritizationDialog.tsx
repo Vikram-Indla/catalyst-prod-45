@@ -39,21 +39,37 @@ export function PrioritizationDialog({
 
   const updateWsjfMutation = useMutation({
     mutationFn: async () => {
-      const score = parseFloat(wsjfScore);
-      const updates = selectedItems.map(id =>
-        supabase
+      // Don't include wsjf_score - it's a computed column
+      const updates = selectedItems.map(async (id) => {
+        // Check if record exists
+        const { data: existing } = await supabase
           .from('epic_wsjf')
-          .upsert({
-            epic_id: id,
-            business_value: businessValue,
-            time_value: timeCriticality,
-            rroe_value: riskReduction,
-            job_size: jobSize,
-            wsjf_score: score,
-          }, {
-            onConflict: 'epic_id',
-          })
-      );
+          .select('id')
+          .eq('epic_id', id)
+          .maybeSingle();
+        
+        if (existing) {
+          return supabase
+            .from('epic_wsjf')
+            .update({
+              business_value: businessValue,
+              time_value: timeCriticality,
+              rroe_value: riskReduction,
+              job_size: jobSize,
+            })
+            .eq('epic_id', id);
+        } else {
+          return supabase
+            .from('epic_wsjf')
+            .insert({
+              epic_id: id,
+              business_value: businessValue,
+              time_value: timeCriticality,
+              rroe_value: riskReduction,
+              job_size: jobSize,
+            });
+        }
+      });
       await Promise.all(updates);
     },
     onSuccess: () => {

@@ -119,6 +119,18 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     },
   });
 
+  // Fetch additional programs for this epic
+  const { data: additionalPrograms } = useQuery({
+    queryKey: ['epic-additional-programs', epic.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('epic_programs')
+        .select('program_id, programs(id, name)')
+        .eq('epic_id', epic.id);
+      return data || [];
+    },
+  });
+
   // Fetch child features and their progress
   const { data: childProgress } = useQuery({
     queryKey: ['epic-child-progress', epic.id],
@@ -343,8 +355,18 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
               <Plus className="h-3 w-3" />
             </Button>
           </Label>
-          <div className="mt-2 text-sm text-muted-foreground">
-            No additional programs assigned
+          <div className="mt-2">
+            {additionalPrograms && additionalPrograms.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {additionalPrograms.map((ap: any) => (
+                  <Badge key={ap.program_id} variant="secondary">
+                    {ap.programs?.name || 'Unknown Program'}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <span className="text-sm text-muted-foreground">No additional programs assigned</span>
+            )}
           </div>
         </div>
 

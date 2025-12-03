@@ -127,22 +127,45 @@ export function WSJFScoringModal({
       const wsjfScore = calculateWSJF();
       
       if (workItemType === 'epic' && piId) {
-        const { error } = await supabase
+        // First try to update existing record
+        const { data: existing } = await supabase
           .from('epic_wsjf')
-          .upsert({
-            epic_id: workItemId,
-            pi_id: piId,
-            business_value: localValues.business_value,
-            time_value: localValues.time_value,
-            rroe_value: localValues.rroe_value,
-            job_size: localValues.job_size,
-            wsjf_score: wsjfScore,
-          }, {
-            onConflict: 'epic_id,pi_id',
-          });
+          .select('id')
+          .eq('epic_id', workItemId)
+          .eq('pi_id', piId)
+          .maybeSingle();
         
-        if (error) throw error;
+        if (existing) {
+          // Update existing record (don't include wsjf_score - it's computed)
+          const { error } = await supabase
+            .from('epic_wsjf')
+            .update({
+              business_value: localValues.business_value,
+              time_value: localValues.time_value,
+              rroe_value: localValues.rroe_value,
+              job_size: localValues.job_size,
+            })
+            .eq('epic_id', workItemId)
+            .eq('pi_id', piId);
+          
+          if (error) throw error;
+        } else {
+          // Insert new record (don't include wsjf_score - it's computed)
+          const { error } = await supabase
+            .from('epic_wsjf')
+            .insert({
+              epic_id: workItemId,
+              pi_id: piId,
+              business_value: localValues.business_value,
+              time_value: localValues.time_value,
+              rroe_value: localValues.rroe_value,
+              job_size: localValues.job_size,
+            });
+          
+          if (error) throw error;
+        }
       } else if (workItemType === 'feature') {
+        // Features table has wsjf_score as a regular column (not generated)
         const { error } = await supabase
           .from('features')
           .update({

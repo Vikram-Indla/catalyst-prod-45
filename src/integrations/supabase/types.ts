@@ -1193,6 +1193,42 @@ export type Database = {
           },
         ]
       }
+      epic_programs: {
+        Row: {
+          created_at: string | null
+          epic_id: string
+          id: string
+          program_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          epic_id: string
+          id?: string
+          program_id: string
+        }
+        Update: {
+          created_at?: string | null
+          epic_id?: string
+          id?: string
+          program_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_programs_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "epic_programs_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       epic_report_templates: {
         Row: {
           columns_json: Json | null
