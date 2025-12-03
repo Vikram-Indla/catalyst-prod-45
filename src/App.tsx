@@ -161,6 +161,8 @@ import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
 import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
 import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
+import BusinessRequests from "./pages/enterprise/BusinessRequests";
+import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
 import TeamComingSoon from "./pages/team/ComingSoon";
 import TeamStoriesPage from "./pages/team/TeamStoriesPage";
 import SelfTest from "./pages/dev/SelfTest";
@@ -229,6 +231,10 @@ const App = () => (
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/kanban-boards" element={<KanbanBoardsPage />} />
+              <Route path="/enterprise/business-requests" element={<BusinessRequests />} />
+              
+              {/* Mining */}
+              <Route path="/mining" element={<MiningComingSoon />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
