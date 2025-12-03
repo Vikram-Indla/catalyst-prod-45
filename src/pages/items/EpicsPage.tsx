@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
@@ -495,7 +496,7 @@ export default function EpicsPage() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
+      <div className="border-b bg-card px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)]">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Epics</h1>
@@ -612,7 +613,7 @@ export default function EpicsPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="px-6 py-4 border-b">
+      <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s4)] border-b">
         <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-sm">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -630,7 +631,7 @@ export default function EpicsPage() {
       </div>
 
       {/* Table/Kanban View */}
-      <div className="flex-1 overflow-auto px-6 py-4">
+      <div className="flex-1 overflow-auto px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
         {viewMode === 'kanban' ? (
           <>
             {kanbanSubView === 'state' && (
@@ -666,8 +667,9 @@ export default function EpicsPage() {
             )}
           </>
         ) : (
-          <div className="border rounded-lg">
-            <Table>
+          <Card>
+            <CardContent className="p-0">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12">
@@ -719,7 +721,8 @@ export default function EpicsPage() {
                 </TableBody>
               )}
             </Table>
-          </div>
+            </CardContent>
+          </Card>
         )}
       </div>
 
