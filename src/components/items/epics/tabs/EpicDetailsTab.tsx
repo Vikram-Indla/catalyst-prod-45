@@ -782,12 +782,53 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
 
         <div>
           <Label>Tags</Label>
-          <Input 
-            value={formData.tags}
-            onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-            onBlur={() => handleTextBlur('tags')}
-            placeholder="Enter tags separated by commas" 
-          />
+          <div className="flex flex-wrap gap-2 p-2 min-h-[42px] border rounded-md bg-background">
+            {/* Existing Tags as Chips */}
+            {formData.tags && formData.tags.split(',').filter(t => t.trim()).map((tag, index) => (
+              <Badge 
+                key={index} 
+                variant="secondary" 
+                className="flex items-center gap-1 px-2 py-1 bg-brand-gold/10 text-brand-gold border-brand-gold/20"
+              >
+                {tag.trim()}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentTags = formData.tags.split(',').filter(t => t.trim());
+                    const newTags = currentTags.filter((_, i) => i !== index);
+                    const newTagsString = newTags.join(', ');
+                    setFormData(prev => ({ ...prev, tags: newTagsString }));
+                    updateMutation.mutate({ tags: newTagsString });
+                  }}
+                  className="ml-1 hover:text-destructive"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+            {/* Input to Add New Tag */}
+            <Input
+              className="flex-1 min-w-[120px] h-7 border-0 shadow-none focus-visible:ring-0 p-0 text-sm"
+              placeholder="Type and press Enter to add tag..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const input = e.currentTarget;
+                  const newTag = input.value.trim();
+                  if (newTag && !newTag.startsWith('j:')) {
+                    const currentTags = formData.tags ? formData.tags.split(',').filter(t => t.trim()) : [];
+                    if (!currentTags.includes(newTag)) {
+                      const newTagsString = [...currentTags, newTag].join(', ');
+                      setFormData(prev => ({ ...prev, tags: newTagsString }));
+                      updateMutation.mutate({ tags: newTagsString });
+                    }
+                    input.value = '';
+                  }
+                }
+              }}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">Press Enter to add. Tags sync as labels across work items.</p>
         </div>
 
         <div>
