@@ -282,14 +282,14 @@ export function BusinessScoreTab({ data, onChange }: BusinessScoreTabProps) {
             <CardContent className="p-4">
               <div className="flex gap-3">
                 <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-                <div className="space-y-2 text-sm text-blue-800">
-                  <p className="font-medium">This Business Score combines:</p>
-                  <ul className="list-disc list-inside space-y-1 text-blue-700">
-                    <li>Business Value (45% weight)</li>
-                    <li>Executive Urgency (35% weight)</li>
-                    <li>Implementation Simplicity (20% weight)</li>
-                  </ul>
-                  <p className="text-blue-600 pt-1">
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">This Business Score combines:</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-blue-700">
+                    <span>• Business Value (45% weight)</span>
+                    <span>• Executive Urgency (35% weight)</span>
+                    <span>• Implementation Simplicity (20% weight)</span>
+                  </div>
+                  <p className="text-blue-600 mt-2">
                     Use it to compare and rank demands in your backlog.
                   </p>
                 </div>
