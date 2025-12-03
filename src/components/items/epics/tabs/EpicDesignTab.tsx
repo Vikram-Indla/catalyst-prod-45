@@ -5,7 +5,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Plus, Trash2, ExternalLink, FileImage, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -16,6 +25,7 @@ interface EpicDesignTabProps {
 export function EpicDesignTab({ epic }: EpicDesignTabProps) {
   const queryClient = useQueryClient();
   const [newDesignItem, setNewDesignItem] = useState({ title: '', url: '', type: 'link' as 'link' | 'file', description: '' });
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
 
   const { data: designItems } = useQuery({
     queryKey: ['epic-design', epic.id],
@@ -64,6 +74,13 @@ export function EpicDesignTab({ epic }: EpicDesignTabProps) {
       return;
     }
     createMutation.mutate(newDesignItem);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteItemId) {
+      deleteMutation.mutate(deleteItemId);
+      setDeleteItemId(null);
+    }
   };
 
   return (
@@ -162,11 +179,7 @@ export function EpicDesignTab({ epic }: EpicDesignTabProps) {
                   size="sm"
                   variant="ghost"
                   className="text-[#6b6b6b] hover:bg-[rgba(198,156,109,0.08)] hover:text-[#1a1a1a]"
-                  onClick={() => {
-                    if (confirm('Delete this design item?')) {
-                      deleteMutation.mutate(item.id);
-                    }
-                  }}
+                  onClick={() => setDeleteItemId(item.id)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -179,6 +192,22 @@ export function EpicDesignTab({ epic }: EpicDesignTabProps) {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={!!deleteItemId} onOpenChange={(open) => !open && setDeleteItemId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Design Item</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this design item? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
