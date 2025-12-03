@@ -449,7 +449,7 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
     <div className="p-6 space-y-6">
       {/* WSJF Info Banner */}
       {estimationSystem === 'wsjf' && (
-        <Alert className="bg-muted/50 border-brand-gold/30">
+        <Alert className="executive-card border-brand-gold/30">
           <Info className="h-4 w-4 text-brand-gold" />
           <AlertDescription className="text-sm">
             <strong>WSJF is for prioritisation, not effort estimation.</strong> The Job Size from the WSJF tab can be used as an effort proxy for forecasting.
