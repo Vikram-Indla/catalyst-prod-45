@@ -24,10 +24,10 @@ interface ProductRoomSidebarProps {
 }
 
 const menuItems = [
-  { title: 'Product Room', path: '/industry', icon: Box },
-  { title: 'Backlog', path: '/industry', icon: ListTree },
-  { title: 'Roadmaps', path: '/industry/roadmaps', icon: Map },
-  { title: 'Reports', path: '/industry/reports', icon: TrendingUp },
+  { title: 'Product Room', path: '/industry', icon: Box, exact: true },
+  { title: 'Backlog', path: '/industry', icon: ListTree, exact: true },
+  { title: 'Roadmaps', path: '/industry/roadmaps', icon: Map, exact: false },
+  { title: 'Reports', path: '/industry/reports', icon: TrendingUp, exact: false },
 ];
 
 const deliveryPlatformOptions = [
@@ -44,7 +44,10 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
   const navigate = useNavigate();
   const { deliveryPlatform, setDeliveryPlatform } = useCatalystContext();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string, exact: boolean = false) => {
+    if (exact) return location.pathname === path;
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
 
   // Get the label for the currently selected platform
   const selectedPlatformLabel = deliveryPlatformOptions.find(p => p.value === deliveryPlatform)?.label || deliveryPlatform;
@@ -110,11 +113,11 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
         <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
           {menuItems.map((item) => {
             const Icon = item.icon;
-            const active = isActive(item.path);
+            const active = isActive(item.path, item.exact);
 
             if (!expanded) {
               return (
-                <Tooltip key={item.path}>
+                <Tooltip key={item.title}>
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
@@ -122,7 +125,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                       onClick={() => navigate(item.path)}
                       className={cn(
                         'w-full h-10 flex items-center justify-center',
-                        active && 'bg-brand-gold/10 text-brand-gold'
+                        active && 'bg-brand-gold-pale text-brand-gold'
                       )}
                     >
                       <Icon className="h-5 w-5" />
@@ -137,12 +140,12 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
 
             return (
               <Button
-                key={item.path}
+                key={item.title}
                 variant="ghost"
                 onClick={() => navigate(item.path)}
                 className={cn(
                   'w-full justify-start gap-3 h-10',
-                  active && 'bg-brand-gold/10 text-brand-gold'
+                  active && 'bg-brand-gold-pale text-brand-gold'
                 )}
               >
                 <Icon className="h-5 w-5" />
