@@ -149,7 +149,7 @@ export default function Themes() {
               placeholder="Search themes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 border-border bg-card shadow-sm"
             />
           </div>
           <ListScreenToolbar
