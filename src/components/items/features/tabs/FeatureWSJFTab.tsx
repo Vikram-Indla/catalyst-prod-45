@@ -3,9 +3,11 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Calculator, Info } from 'lucide-react';
+import { Calculator, Info, TrendingUp } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { WSJFScoringModal } from '@/components/wsjf';
 
 interface FeatureWSJFTabProps {
   feature: any;
@@ -16,6 +18,7 @@ const WSJF_VALUES = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100];
 export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [wsjfModalOpen, setWsjfModalOpen] = useState(false);
 
   const updateWSJFMutation = useMutation({
     mutationFn: async (updates: any) => {
@@ -72,6 +75,15 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
           Higher scores indicate higher priority.
         </AlertDescription>
       </Alert>
+
+      {/* Score WSJF Button - opens canonical modal */}
+      <Button 
+        onClick={() => setWsjfModalOpen(true)}
+        className="w-full bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
+      >
+        <Calculator className="h-4 w-4 mr-2" />
+        Score WSJF
+      </Button>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
@@ -194,6 +206,17 @@ export function FeatureWSJFTab({ feature }: FeatureWSJFTabProps) {
           Set all WSJF values to calculate the score
         </div>
       )}
+
+      {/* WSJF Scoring Modal - Jira Align pattern */}
+      <WSJFScoringModal
+        open={wsjfModalOpen}
+        onOpenChange={setWsjfModalOpen}
+        workItemId={feature.id}
+        workItemType="feature"
+        workItemTitle={feature.name}
+        workItemKey={feature.display_id}
+        onSuccess={() => setWsjfModalOpen(false)}
+      />
     </div>
   );
 }

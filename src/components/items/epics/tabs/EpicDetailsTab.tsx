@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Link as LinkIcon, Lock, Unlock, Plus, ExternalLink, Loader2 } from 'lucide-react';
+import { WSJFInlineScores } from '@/components/wsjf';
 import { FeatureStatusModal } from '../modals/FeatureStatusModal';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
@@ -370,6 +371,20 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             Add PI
           </Button>
         </div>
+
+        {/* PI-WSJF Prioritization Scores - per Jira Align EpicWSJFFields-2.png */}
+        {epicPIs && epicPIs.length > 0 && (
+          <div>
+            <Label>WSJF Prioritization</Label>
+            <div className="mt-2">
+              <WSJFInlineScores 
+                epicId={epic.id} 
+                epicTitle={epic.name}
+                epicKey={epic.epic_key}
+              />
+            </div>
+          </div>
+        )}
 
         <div>
           <Label>Owner</Label>
