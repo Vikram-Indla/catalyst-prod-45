@@ -7,6 +7,7 @@ import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
 import { ProgramRoomSidebar } from './ProgramRoomSidebar';
 import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
+import { ProductRoomSidebar } from './ProductRoomSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 
@@ -44,6 +45,9 @@ function CatalystShellContent() {
     }
   }, [defaultPIId, selectedPI]);
 
+  // Check if on product/industry route
+  const isProductRoute = location.pathname.startsWith('/industry');
+
   // Automatically set tier based on current route
   useEffect(() => {
     const path = location.pathname;
@@ -79,7 +83,12 @@ function CatalystShellContent() {
           {/* No sidebar for Home route */}
           {location.pathname !== '/home' && (
             <>
-              {tier === 'enterprise' ? (
+              {isProductRoute ? (
+                <ProductRoomSidebar
+                  expanded={sidebarExpanded}
+                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                />
+              ) : tier === 'enterprise' ? (
                 <LeftContextPanel />
               ) : tier === 'program' ? (
                 <ProgramRoomSidebar
