@@ -172,32 +172,6 @@ function IndividualScoreCard({ number, label, score, level, average }: {
   );
 }
 
-// Value Engineering Stepper
-function ValueEngineeringStepper({ currentStage }: { currentStage: string }) {
-  const stages = ['Hypothesize', 'Bet', 'Pivot/Persevere'];
-  const currentIndex = stages.indexOf(currentStage);
-
-  return (
-    <div className="flex items-center w-full">
-      {stages.map((stage, index) => (
-        <div key={stage} className="flex-1 relative">
-          <div 
-            className={`h-10 flex items-center justify-center text-sm font-medium transition-colors
-              ${index <= currentIndex 
-                ? 'bg-brand-gold text-[#1a1a1a]' 
-                : 'bg-muted text-muted-foreground'}
-              ${index === 0 ? 'rounded-l-lg' : ''}
-              ${index === stages.length - 1 ? 'rounded-r-lg' : ''}
-            `}
-          >
-            {stage}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
 // ROI Analysis Modal
 function ROIAnalysisModal({ 
   isOpen, 
@@ -444,17 +418,11 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
       if (!field) return;
 
       const score = SCORE_MAPS[field.scoreType][value as keyof typeof SCORE_MAPS.benefit];
-      
-      const currentCost = field.dbField === 'cost_score' ? score : (roiScores?.cost_score ?? 100);
-      const currentProfit = field.dbField === 'profit_potential_score' ? score : (roiScores?.profit_potential_score ?? 100);
-      const currentTime = field.dbField === 'time_to_market_score' ? score : (roiScores?.time_to_market_score ?? 100);
-      const currentRisk = field.dbField === 'development_risks_score' ? score : (roiScores?.development_risks_score ?? 100);
-      
-      const calculatedValueScore = Math.round((currentCost + currentProfit + currentTime + currentRisk) / 4 * 10) / 10;
 
+      // Don't include value_score as it's a generated column
       const { error } = await supabase
         .from('epic_roi_scores')
-        .upsert({ epic_id: epic.id, [field.dbField]: score, value_score: calculatedValueScore }, { onConflict: 'epic_id' });
+        .upsert({ epic_id: epic.id, [field.dbField]: score }, { onConflict: 'epic_id' });
       if (error) throw error;
     },
     onSuccess: () => {
@@ -462,7 +430,7 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
       queryClient.invalidateQueries({ queryKey: ['all-epics-roi-scores'] });
       toast.success('Score updated');
     },
-    onError: () => toast.error('Failed to update score')
+    onError: (e: any) => toast.error('Failed to update score: ' + e.message)
   });
 
   const handleFieldChange = (fieldId: string, value: string) => {
@@ -547,12 +515,12 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
         {/* Right - Value Score Summary */}
         <div className="space-y-4">
           <Card className="border border-border/60">
-            <CardContent className="p-5 text-center">
-              <p className="text-sm text-muted-foreground mb-1">Value Score:</p>
-              <p className="text-5xl font-bold text-[#0ea5a6] mb-1">{valueScore}</p>
-              <p className="text-xs text-muted-foreground mb-2">(Average: {avgScore})</p>
+            <CardContent className="p-6 text-center">
+              <p className="text-sm text-muted-foreground mb-2">Value Score:</p>
+              <p className="text-5xl font-bold text-brand-gold mb-2">{valueScore}</p>
+              <p className="text-sm text-muted-foreground mb-3">(Average: {avgScore})</p>
               {percentDiff !== 0 && (
-                <p className="text-xs text-foreground mb-4">
+                <p className="text-sm text-foreground mb-6">
                   That's <span className={`font-semibold ${percentDiff > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                     {Math.abs(percentDiff)}% {percentDiff > 0 ? 'Higher' : 'Lower'}
                   </span> than other associated Epics that are using this score card.
@@ -560,7 +528,7 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
               )}
               
               {/* Progress Metrics */}
-              <div className="text-left text-xs text-muted-foreground space-y-1 mb-4 border-t pt-3">
+              <div className="text-left text-sm text-muted-foreground space-y-2 mb-6 border-t pt-4">
                 <div className="flex justify-between">
                   <span>Story points accepted</span>
                   <span className="text-foreground">— of —</span>
@@ -580,7 +548,7 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
               </div>
 
               <Button 
-                className="w-full bg-[#0ea5a6] hover:bg-[#0d9495] text-white"
+                className="w-full bg-brand-gold hover:bg-brand-gold-hover text-[#1a1a1a] font-medium"
                 onClick={() => setShowAnalysis(true)}
               >
                 <BarChart3 className="w-4 h-4 mr-2" />
@@ -590,18 +558,6 @@ export function EpicValueTab({ epic }: EpicValueTabProps) {
           </Card>
         </div>
       </div>
-
-      {/* Value Engineering Section */}
-      <Card className="border border-border/60">
-        <CardContent className="p-5">
-          <h3 className="text-base font-semibold text-foreground mb-4">Value Engineering</h3>
-          <ValueEngineeringStepper currentStage="Hypothesize" />
-          <Button className="mt-4 bg-[#0ea5a6] hover:bg-[#0d9495] text-white">
-            <BarChart3 className="w-4 h-4 mr-2" />
-            Analyze
-          </Button>
-        </CardContent>
-      </Card>
 
       {/* ROI Analysis Modal */}
       <ROIAnalysisModal
