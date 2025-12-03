@@ -181,22 +181,27 @@ export default function EstimationSettings() {
               <CardHeader>
                 <CardTitle>Epic Estimation</CardTitle>
                 <CardDescription>
-                  Configure estimation methods for epics and capabilities
+                  Configure default estimation method for epics
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label>Estimation Method</Label>
-                  <Select defaultValue="swag">
+                  <Label>Default Estimation System</Label>
+                  <Select defaultValue="points">
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="swag">SWAG (T-Shirt Sizing)</SelectItem>
-                      <SelectItem value="story-points">Story Points</SelectItem>
-                      <SelectItem value="hours">Hours</SelectItem>
+                      <SelectItem value="points">Points (Fibonacci)</SelectItem>
+                      <SelectItem value="wsjf">WSJF (Prioritisation)</SelectItem>
+                      <SelectItem value="tshirt">T-Shirt Sizing</SelectItem>
+                      <SelectItem value="team_weeks">Team Weeks</SelectItem>
+                      <SelectItem value="member_weeks">Member Weeks</SelectItem>
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This sets the default estimation system when creating new epics
+                  </p>
                 </div>
 
                 <div className="flex items-center justify-between">
@@ -204,6 +209,45 @@ export default function EstimationSettings() {
                     <Label>Auto-calculate from child items</Label>
                     <p className="text-sm text-muted-foreground">
                       Automatically sum child estimates to parent total
+                    </p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Feature Estimation</CardTitle>
+                <CardDescription>
+                  Configure default estimation method for features
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label>Default Estimation Method</Label>
+                  <Select defaultValue="points">
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="points">Points (Fibonacci)</SelectItem>
+                      <SelectItem value="wsjf">WSJF (Prioritisation)</SelectItem>
+                      <SelectItem value="tshirt">T-Shirt Sizing</SelectItem>
+                      <SelectItem value="team_weeks">Team Weeks</SelectItem>
+                      <SelectItem value="member_weeks">Member Weeks</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    This sets the default estimation method when creating new features
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label>Auto-calculate from stories</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Automatically sum story estimates to feature total
                     </p>
                   </div>
                   <Switch defaultChecked />

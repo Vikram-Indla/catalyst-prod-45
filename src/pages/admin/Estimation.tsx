@@ -75,18 +75,22 @@ export default function Estimation() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label>Estimation Method</Label>
-              <Select defaultValue="swag">
+              <Label>Default Estimation System</Label>
+              <Select defaultValue="points">
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="swag">SWAG (T-Shirt Sizing)</SelectItem>
-                  <SelectItem value="story-points">Story Points</SelectItem>
-                  <SelectItem value="hours">Hours</SelectItem>
-                  <SelectItem value="days">Days</SelectItem>
+                  <SelectItem value="points">Points (Fibonacci)</SelectItem>
+                  <SelectItem value="wsjf">WSJF (Prioritisation)</SelectItem>
+                  <SelectItem value="tshirt">T-Shirt Sizing</SelectItem>
+                  <SelectItem value="team_weeks">Team Weeks</SelectItem>
+                  <SelectItem value="member_weeks">Member Weeks</SelectItem>
                 </SelectContent>
               </Select>
+              <p className="text-xs text-muted-foreground mt-1">
+                This sets the default estimation system when creating new epics
+              </p>
             </div>
 
             <div className="flex items-center justify-between">
@@ -100,19 +104,19 @@ export default function Estimation() {
             </div>
 
             <div className="space-y-2">
-              <Label>SWAG Scale</Label>
-              <div className="grid grid-cols-2 gap-2">
+              <Label>T-Shirt Size Conversions (Team Weeks)</Label>
+              <div className="grid grid-cols-3 gap-2">
                 <div className="space-y-1">
                   <Label className="text-xs">XS</Label>
                   <Input type="number" defaultValue="1" />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">S</Label>
-                  <Input type="number" defaultValue="3" />
+                  <Input type="number" defaultValue="2" />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">M</Label>
-                  <Input type="number" defaultValue="5" />
+                  <Input type="number" defaultValue="4" />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">L</Label>
@@ -120,13 +124,16 @@ export default function Estimation() {
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">XL</Label>
-                  <Input type="number" defaultValue="13" />
+                  <Input type="number" defaultValue="16" />
                 </div>
                 <div className="space-y-1">
                   <Label className="text-xs">XXL</Label>
-                  <Input type="number" defaultValue="21" />
+                  <Input type="number" defaultValue="32" />
                 </div>
               </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Conversion values from T-Shirt sizes to Team Weeks
+              </p>
             </div>
           </CardContent>
         </Card>

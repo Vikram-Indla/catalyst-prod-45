@@ -46,10 +46,11 @@ export function FeatureFinancialsTab({ feature, formData, updateField }: Feature
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="points">Story Points</SelectItem>
-            <SelectItem value="team-weeks">Team Weeks</SelectItem>
-            <SelectItem value="member-weeks">Member Weeks</SelectItem>
-            <SelectItem value="tshirt">T-Shirt Sizes</SelectItem>
+            <SelectItem value="points">Points</SelectItem>
+            <SelectItem value="wsjf">WSJF</SelectItem>
+            <SelectItem value="tshirt">T-Shirt Sizing</SelectItem>
+            <SelectItem value="team_weeks">Team Weeks</SelectItem>
+            <SelectItem value="member_weeks">Member Weeks</SelectItem>
           </SelectContent>
         </Select>
       </div>

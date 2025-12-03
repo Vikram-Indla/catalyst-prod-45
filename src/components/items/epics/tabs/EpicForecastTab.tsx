@@ -13,5 +13,14 @@ export function EpicForecastTab({ epic }: EpicForecastTabProps) {
     );
   }
 
-  return <ForecastTab workItemId={epic.id} workItemType="epic" />;
+  // Pass the estimation system from the epic to the ForecastTab
+  const estimationSystem = epic.estimation_system || 'points';
+
+  return (
+    <ForecastTab 
+      workItemId={epic.id} 
+      workItemType="epic" 
+      estimationSystem={estimationSystem}
+    />
+  );
 }

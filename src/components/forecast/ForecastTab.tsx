@@ -6,19 +6,75 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { useCapacityWarnings } from '@/hooks/useCapacityWarnings';
 import { AlertTriangle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
+// Estimation system constants
+const FIBONACCI_VALUES = [1, 2, 3, 5, 8, 13, 21, 34, 55, 89];
+
+const TSHIRT_OPTIONS = [
+  { value: 'xs', label: 'XS', teamWeeks: 1 },
+  { value: 's', label: 'S', teamWeeks: 2 },
+  { value: 'm', label: 'M', teamWeeks: 4 },
+  { value: 'l', label: 'L', teamWeeks: 8 },
+  { value: 'xl', label: 'XL', teamWeeks: 16 },
+  { value: 'xxl', label: 'XXL', teamWeeks: 32 },
+];
+
+type EstimationSystem = 'points' | 'wsjf' | 'tshirt' | 'team_weeks' | 'member_weeks';
+
 interface ForecastTabProps {
   workItemId: string;
   workItemType: 'epic' | 'feature';
+  estimationSystem?: EstimationSystem;
 }
 
-export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
+// Helper to get unit label based on estimation system
+const getUnitLabel = (system: EstimationSystem): string => {
+  switch (system) {
+    case 'points':
+    case 'wsjf':
+      return 'PTS';
+    case 'tshirt':
+      return 'T-Shirt';
+    case 'team_weeks':
+      return 'TW';
+    case 'member_weeks':
+      return 'MW';
+    default:
+      return 'PTS';
+  }
+};
+
+// Helper to get estimate label based on estimation system
+const getEstimateLabel = (system: EstimationSystem): string => {
+  switch (system) {
+    case 'points':
+      return 'PI Estimate (Points)';
+    case 'wsjf':
+      return 'PI Estimate (Job Size)';
+    case 'tshirt':
+      return 'PI Estimate (T-Shirt Size)';
+    case 'team_weeks':
+      return 'PI Estimate (Team Weeks)';
+    case 'member_weeks':
+      return 'PI Estimate (Member Weeks)';
+    default:
+      return 'PI Estimate';
+  }
+};
+
+// Get T-Shirt conversion display
+const getTShirtConversion = (value: string): string => {
+  const option = TSHIRT_OPTIONS.find(o => o.value === value);
+  return option ? `≈ ${option.teamWeeks} Team Weeks` : '';
+};
+
+export function ForecastTab({ workItemId, workItemType, estimationSystem = 'points' }: ForecastTabProps) {
   const queryClient = useQueryClient();
   const [selectedPiId, setSelectedPiId] = useState<string>('');
   const [expandedPrograms, setExpandedPrograms] = useState<Set<string>>(new Set());
@@ -93,11 +149,15 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
       programId,
       teamId,
       estimate,
+      unit,
+      tshirtValue,
     }: {
       piId: string;
       programId?: string;
       teamId?: string;
       estimate: number;
+      unit: string;
+      tshirtValue?: string;
     }) => {
       const { data, error } = await supabase
         .from('forecast_entries')
@@ -108,7 +168,7 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
           program_id: programId,
           team_id: teamId,
           estimate,
-          unit: 'points',
+          unit,
           updated_by: (await supabase.auth.getUser()).data.user?.id,
         }, {
           onConflict: 'work_item_id,work_item_type,pi_id,program_id,team_id',
@@ -164,25 +224,167 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
   ) => {
     if (!selectedPiId) return;
     
-    const estimate = parseFloat(value) || 0;
+    let estimate: number;
+    let unit = getUnitLabel(estimationSystem).toLowerCase();
+    
+    if (estimationSystem === 'tshirt') {
+      // For T-Shirt, convert to team weeks for storage
+      const option = TSHIRT_OPTIONS.find(o => o.value === value);
+      estimate = option?.teamWeeks || 0;
+      unit = 'team_weeks';
+    } else {
+      estimate = parseFloat(value) || 0;
+    }
     
     updateForecastMutation.mutate({
       piId: selectedPiId,
       programId,
       teamId,
       estimate,
+      unit,
+      tshirtValue: estimationSystem === 'tshirt' ? value : undefined,
     });
   };
 
+  // Render the appropriate input based on estimation system
+  const renderEstimateInput = (programId: string, teamId: string) => {
+    const currentValue = getForecastValue(programId, teamId);
+    
+    switch (estimationSystem) {
+      case 'points':
+        return (
+          <div className="flex items-center gap-2">
+            <Select
+              value={currentValue || undefined}
+              onValueChange={(value) => handleEstimateChange(programId, teamId, value)}
+            >
+              <SelectTrigger className="w-24 h-8 text-sm">
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent>
+                {FIBONACCI_VALUES.map(v => (
+                  <SelectItem key={v} value={v.toString()}>{v}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-xs text-muted-foreground w-8">PTS</span>
+          </div>
+        );
+        
+      case 'tshirt':
+        // Find the T-Shirt value from the stored team weeks
+        const tshirtOption = TSHIRT_OPTIONS.find(o => o.teamWeeks === parseFloat(currentValue));
+        return (
+          <div className="flex items-center gap-2">
+            <Select
+              value={tshirtOption?.value || undefined}
+              onValueChange={(value) => handleEstimateChange(programId, teamId, value)}
+            >
+              <SelectTrigger className="w-24 h-8 text-sm">
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent>
+                {TSHIRT_OPTIONS.map(o => (
+                  <SelectItem key={o.value} value={o.value}>
+                    {o.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <span className="text-xs text-muted-foreground w-16">
+              {tshirtOption ? `≈ ${tshirtOption.teamWeeks} TW` : ''}
+            </span>
+          </div>
+        );
+        
+      case 'team_weeks':
+        return (
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min="0"
+              step="0.5"
+              value={currentValue}
+              onChange={(e) => handleEstimateChange(programId, teamId, e.target.value)}
+              placeholder="Estimate"
+              className="w-24 h-8 text-sm"
+            />
+            <span className="text-xs text-muted-foreground w-8">TW</span>
+          </div>
+        );
+        
+      case 'member_weeks':
+        return (
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min="0"
+              step="1"
+              value={currentValue}
+              onChange={(e) => handleEstimateChange(programId, teamId, e.target.value)}
+              placeholder="Estimate"
+              className="w-24 h-8 text-sm"
+            />
+            <span className="text-xs text-muted-foreground w-8">MW</span>
+          </div>
+        );
+        
+      case 'wsjf':
+        return (
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min="0"
+              step="1"
+              value={currentValue}
+              onChange={(e) => handleEstimateChange(programId, teamId, e.target.value)}
+              placeholder="Job Size"
+              className="w-24 h-8 text-sm"
+            />
+            <span className="text-xs text-muted-foreground w-8">PTS</span>
+          </div>
+        );
+        
+      default:
+        return (
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              min="0"
+              step="0.5"
+              value={currentValue}
+              onChange={(e) => handleEstimateChange(programId, teamId, e.target.value)}
+              placeholder="Estimate"
+              className="w-24 h-8 text-sm"
+            />
+            <span className="text-xs text-muted-foreground w-8">PTS</span>
+          </div>
+        );
+    }
+  };
+
+  const unitLabel = getUnitLabel(estimationSystem);
+
   return (
     <div className="p-6 space-y-6">
+      {/* WSJF Info Banner */}
+      {estimationSystem === 'wsjf' && (
+        <Alert className="bg-muted/50 border-brand-gold/30">
+          <Info className="h-4 w-4 text-brand-gold" />
+          <AlertDescription className="text-sm">
+            <strong>WSJF is for prioritisation, not effort estimation.</strong> The Job Size from the WSJF tab can be used as an effort proxy for forecasting.
+            Visit the WSJF tab to calculate priority scores.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Program Increments Section */}
       <div className="space-y-4">
         <h3 className="text-base font-semibold">Program Increments</h3>
         
         <div className="flex items-center gap-4">
           <div className="flex-1">
-            <Label className="text-sm mb-2">Estimate for</Label>
+            <Label className="text-sm mb-2">{getEstimateLabel(estimationSystem)}</Label>
             <Select 
               value={selectedPiId || undefined} 
               onValueChange={(value) => setSelectedPiId(value || '')}
@@ -204,7 +406,9 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
             <Button variant="outline" size="sm" disabled>
               + Sum all
             </Button>
-            <div className="text-lg font-semibold">{getTotalEstimate()} <span className="text-sm text-muted-foreground">PTS</span></div>
+            <div className="text-lg font-semibold">
+              {getTotalEstimate()} <span className="text-sm text-muted-foreground">{unitLabel}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -220,7 +424,7 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
                 <li key={warning.teamId}>
                   <span className="font-medium">{warning.teamName}</span>: 
                   {warning.overallocation > 0 
-                    ? ` Overallocated by ${warning.overallocation} points (${Math.round(warning.percentUsed)}% capacity used)`
+                    ? ` Overallocated by ${warning.overallocation} ${unitLabel.toLowerCase()} (${Math.round(warning.percentUsed)}% capacity used)`
                     : ` At ${Math.round(warning.percentUsed)}% capacity`
                   }
                 </li>
@@ -266,18 +470,7 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
                               {programTeams.map(team => (
                                 <div key={team.id} className="p-3 pl-10 flex items-center justify-between hover:bg-muted/30">
                                   <Label className="text-sm">{team.name}</Label>
-                                  <div className="flex items-center gap-2">
-                                    <Input
-                                      type="number"
-                                      min="0"
-                                      step="0.5"
-                                      value={getForecastValue(program.id, team.id)}
-                                      onChange={(e) => handleEstimateChange(program.id, team.id, e.target.value)}
-                                      placeholder="Estimate"
-                                      className="w-24 h-8 text-sm"
-                                    />
-                                    <span className="text-xs text-muted-foreground w-8">PTS</span>
-                                  </div>
+                                  {renderEstimateInput(program.id, team.id)}
                                 </div>
                               ))}
                             </div>
@@ -287,7 +480,7 @@ export function ForecastTab({ workItemId, workItemType }: ForecastTabProps) {
                           <div className="p-3 pl-10 bg-muted/30 border-t flex items-center justify-between">
                             <Label className="text-sm font-semibold">Program Estimate</Label>
                             <div className="text-lg font-bold text-brand-gold">
-                              {getProgramTotal(program.id)} <span className="text-sm text-muted-foreground">PTS</span>
+                              {getProgramTotal(program.id)} <span className="text-sm text-muted-foreground">{unitLabel}</span>
                             </div>
                           </div>
                         </div>
