@@ -806,6 +806,41 @@ export type Database = {
         }
         Relationships: []
       }
+      epic_acceptance_criteria: {
+        Row: {
+          created_at: string
+          description: string
+          epic_id: string
+          id: string
+          is_met: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          epic_id: string
+          id?: string
+          is_met?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          epic_id?: string
+          id?: string
+          is_met?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "epic_acceptance_criteria_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       epic_benefits: {
         Row: {
           created_at: string
