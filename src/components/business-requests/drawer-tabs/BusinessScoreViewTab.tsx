@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
-import { Info, AlertTriangle, Zap } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BusinessRequest } from '@/types/business-request';
 
@@ -11,12 +11,6 @@ const SCORE_OPTIONS = Array.from({ length: 11 }, (_, i) => i);
 
 // Rank options 1-20
 const RANK_OPTIONS = Array.from({ length: 20 }, (_, i) => i + 1);
-
-// Quarter options
-const QUARTER_OPTIONS = [
-  'Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024',
-  'Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025',
-];
 
 // Get rank based on score
 const getRank = (score: number): { label: string; color: string } => {
@@ -39,20 +33,7 @@ interface BusinessScoreViewTabProps {
   onChange: (field: string, value: any) => void;
 }
 
-// Check if demand details are complete
-const isDemandDetailsComplete = (data: any): boolean => {
-  return !!(
-    data.title && data.title.length >= 5 &&
-    data.description &&
-    data.requestor &&
-    data.start_date &&
-    data.impl_start_date &&
-    data.end_date
-  );
-};
-
 export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabProps) {
-  const demandComplete = isDemandDetailsComplete(data);
   const executiveUrgency = data.executive_urgency ?? 0;
   const businessValue = data.business_value ?? 0;
   const complexity = data.complexity_score ?? 0;
@@ -84,115 +65,6 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
 
   return (
     <div className="space-y-6 p-5">
-      {/* Warning Banner when Demand Details incomplete */}
-      {!demandComplete && (
-        <Card className="border-2 border-amber-400 rounded-lg bg-amber-50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h4 className="font-bold text-amber-800 text-lg">Complete Demand Details First</h4>
-                <p className="text-sm text-amber-700">
-                  Please fill in all required fields in the Demand Details tab before scoring this demand.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Priority Banner for High Scores */}
-      {demandComplete && businessScore >= 90 && (
-        <Card className="border-2 border-green-500 rounded-lg bg-green-50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-                <Zap className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h4 className="font-bold text-green-800 text-lg">MUST-DO NOW</h4>
-                <p className="text-sm text-green-700">
-                  This demand has scored {businessScore}/100 and should be prioritized immediately for execution.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {demandComplete && businessScore >= 75 && businessScore < 90 && (
-        <Card className="border-2 border-emerald-500 rounded-lg bg-emerald-50">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h4 className="font-bold text-emerald-800 text-lg">HIGH PRIORITY</h4>
-                <p className="text-sm text-emerald-700">
-                  This demand has scored {businessScore}/100 and should be considered as a high priority item.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Rank & Planned Quarter Section */}
-      <Card className="border border-border/60 rounded-lg bg-card">
-        <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">
-            Ranking & Planning
-          </h3>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-sm font-medium">Manual Rank (1-20)</Label>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                1 = Highest priority. Default based on business score.
-              </p>
-              <Select
-                value={String(data.rank || calculatedDefaultRank)}
-                onValueChange={(value) => onChange('rank', parseInt(value))}
-                disabled={!demandComplete}
-              >
-                <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
-                  {RANK_OPTIONS.map((opt) => (
-                    <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Label className="text-sm font-medium">Planned Quarter</Label>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Target quarter for implementation
-              </p>
-              <Select
-                value={data.planned_quarter || ''}
-                onValueChange={(value) => onChange('planned_quarter', value)}
-                disabled={!demandComplete}
-              >
-                <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
-                  <SelectValue placeholder="Select quarter..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
-                  {QUARTER_OPTIONS.map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <div className="grid grid-cols-2 gap-6">
         {/* Left Column - Inputs */}
         <div className="space-y-6">
@@ -213,9 +85,8 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
                   <Select
                     value={String(executiveUrgency)}
                     onValueChange={(value) => onChange('executive_urgency', parseInt(value))}
-                    disabled={!demandComplete}
                   >
-                    <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
+                    <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border shadow-lg z-50">
@@ -243,9 +114,8 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
                   <Select
                     value={String(businessValue)}
                     onValueChange={(value) => onChange('business_value', parseInt(value))}
-                    disabled={!demandComplete}
                   >
-                    <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
+                    <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border shadow-lg z-50">
@@ -273,9 +143,8 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
                   <Select
                     value={String(complexity)}
                     onValueChange={(value) => onChange('complexity_score', parseInt(value))}
-                    disabled={!demandComplete}
                   >
-                    <SelectTrigger className={cn("mt-2 w-full", !demandComplete && "opacity-50 cursor-not-allowed")}>
+                    <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-popover border shadow-lg z-50">
@@ -290,6 +159,35 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
                   getScoreColor(normalizedSimplicity * 100)
                 )}>
                   {Math.round(normalizedSimplicity * 100)}
+                </div>
+              </div>
+
+              {/* Forced Rank - moved here as item 4 */}
+              <div className="flex items-center gap-4 pt-4 border-t border-border/40">
+                <div className="flex-1">
+                  <Label className="text-sm font-medium">4. Forced Rank (1-20)</Label>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    1 = Highest priority. Default based on business score.
+                  </p>
+                  <Select
+                    value={String(data.rank || calculatedDefaultRank)}
+                    onValueChange={(value) => onChange('rank', parseInt(value))}
+                  >
+                    <SelectTrigger className="mt-2 w-full">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-popover border shadow-lg z-50">
+                      {RANK_OPTIONS.map((opt) => (
+                        <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className={cn(
+                  "w-14 h-14 rounded-full border-4 flex items-center justify-center font-bold text-lg shrink-0",
+                  "border-brand-gold text-brand-gold"
+                )}>
+                  {data.rank || calculatedDefaultRank}
                 </div>
               </div>
             </CardContent>
