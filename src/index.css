@@ -706,8 +706,8 @@ h3 {
 .executive-tab {
   color: hsl(var(--text-tertiary));               /* N500 - muted tab text */
   font-weight: 500;
-  font-size: 14px;
-  padding: 12px 12px;                             /* space.150 x space.150 */
+  font-size: 13px;                                /* SM size per design system */
+  padding: 10px 12px;                             /* Reduced padding */
   border-bottom: 2px solid transparent;
   border-radius: 0;
   background: transparent;
