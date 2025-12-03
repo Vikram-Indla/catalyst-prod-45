@@ -359,24 +359,59 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
         </CardContent>
       </Card>
 
-      {/* Delivery Track Section - Single field only */}
+      {/* Delivery Context Section */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Delivery Track</h3>
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Delivery Context</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Delivery Track</Label>
+              <Select
+                value={data.delivery_track_parent || data.track || ''}
+                onValueChange={(value) => onChange('delivery_track_parent', value)}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select track..." />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  {DELIVERY_TRACK_OPTIONS.map((opt) => (
+                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="text-sm font-medium">Delivery Platform</Label>
+              <Input
+                value={data.delivery_platform || ''}
+                disabled
+                placeholder="Auto-populated from context"
+                className="mt-1.5 bg-muted/50"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Read-only (populated from side panel selection)</p>
+            </div>
+          </div>
           
           <div>
-            <Label className="text-sm font-medium">Delivery Track</Label>
+            <Label className="text-sm font-medium">Planned Quarter</Label>
             <Select
-              value={data.delivery_track_parent || data.track || ''}
-              onValueChange={(value) => onChange('delivery_track_parent', value)}
+              value={data.planned_quarter || ''}
+              onValueChange={(value) => onChange('planned_quarter', value)}
             >
-              <SelectTrigger className="mt-1.5">
-                <SelectValue placeholder="Select track..." />
+              <SelectTrigger className="mt-1.5 max-w-xs">
+                <SelectValue placeholder="Select quarter..." />
               </SelectTrigger>
               <SelectContent className="bg-popover border shadow-lg z-50">
-                {DELIVERY_TRACK_OPTIONS.map((opt) => (
-                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                ))}
+                <SelectItem value="Q1-2024">Q1 2024</SelectItem>
+                <SelectItem value="Q2-2024">Q2 2024</SelectItem>
+                <SelectItem value="Q3-2024">Q3 2024</SelectItem>
+                <SelectItem value="Q4-2024">Q4 2024</SelectItem>
+                <SelectItem value="Q1-2025">Q1 2025</SelectItem>
+                <SelectItem value="Q2-2025">Q2 2025</SelectItem>
+                <SelectItem value="Q3-2025">Q3 2025</SelectItem>
+                <SelectItem value="Q4-2025">Q4 2025</SelectItem>
               </SelectContent>
             </Select>
           </div>

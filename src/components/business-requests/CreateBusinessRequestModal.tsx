@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { X, Save } from 'lucide-react';
+import { X, Save, CheckCircle } from 'lucide-react';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { toast } from 'sonner';
 import { DemandDetailsTab } from './create-tabs/DemandDetailsTab';
@@ -22,6 +22,8 @@ const initialFormData: Record<string, any> = {
   impl_start_date: null,
   end_date: null,
   attachments: [],
+  delivery_platform: '', // Read-only from side panel
+  planned_quarter: '',
   // Entity Services
   efs_domain: '',
   efs_service: '',
@@ -37,6 +39,7 @@ const initialFormData: Record<string, any> = {
 export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
   const [formData, setFormData] = useState<Record<string, any>>(initialFormData);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -58,25 +61,48 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       start_date: formData.start_date,
       end_date: formData.end_date,
       impl_start_date: formData.impl_start_date,
+      delivery_platform: formData.delivery_platform,
     };
 
     await createMutation.mutateAsync(requestData as any);
-    setFormData(initialFormData);
-    onClose();
+    setShowSuccessMessage(true);
+    
+    // Hide success message and close after 2 seconds
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+      setFormData(initialFormData);
+      onClose();
+    }, 2500);
   };
 
   const handleClose = () => {
+    setShowSuccessMessage(false);
     setFormData(initialFormData);
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[900px] max-h-[90vh] p-0 flex flex-col bg-[#feffff] overflow-hidden">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] p-0 flex flex-col bg-[#feffff] overflow-hidden [&>button]:hidden">
         {/* Gold Bar */}
         <div className="h-1 bg-brand-gold flex-shrink-0" />
 
-        {/* Header */}
+        {/* Success Message Overlay */}
+        {showSuccessMessage && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/95">
+            <div className="text-center space-y-4 px-8 py-10 animate-in fade-in-0 zoom-in-95">
+              <div className="w-16 h-16 mx-auto rounded-full bg-green-100 flex items-center justify-center">
+                <CheckCircle className="h-10 w-10 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-[#1a1a1a]">Request Submitted</h3>
+              <p className="text-[#6b7280] max-w-sm">
+                Your business request is submitted for review and prioritization.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Header - Only one close button at top right */}
         <div className="px-6 py-5 border-b border-[#e5e5e5] flex-shrink-0">
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0 pr-4">
@@ -105,7 +131,7 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
           </Button>
           <Button 
             onClick={handleSave}
-            disabled={createMutation.isPending}
+            disabled={createMutation.isPending || showSuccessMessage}
             className="bg-brand-gold text-white hover:bg-brand-gold-hover"
           >
             <Save className="h-4 w-4 mr-2" />

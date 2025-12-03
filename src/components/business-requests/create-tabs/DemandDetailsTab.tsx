@@ -585,18 +585,42 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
         </Card>
       </Collapsible>
 
-      {/* Usage Guidance */}
-      <Card className="border border-blue-200 rounded-lg bg-blue-50/50">
-        <CardContent className="p-4">
-          <div className="flex gap-3">
-            <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-            <div className="space-y-2 text-sm text-blue-800">
-              <p className="font-medium">Usage Guidance:</p>
-              <ul className="list-disc list-inside space-y-1 text-blue-700">
-                <li>If the demand is related to a <strong>FACTORY</strong> (license, site, environment, customs, labor, incentives), choose the domain under EFS – Factory Services.</li>
-                <li>If the demand affects <strong>COMMERCIAL REGISTRY</strong>, fill ECS – Commercial Registry.</li>
-                <li>If the demand targets <strong>INVESTOR</strong> incentives or competitiveness (Saudi or Non-Saudi), fill the relevant IS fields.</li>
-              </ul>
+      {/* Delivery Context Section */}
+      <Card className="border border-border/60 rounded-lg bg-card">
+        <CardContent className="p-5 space-y-4">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Delivery Context</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Delivery Platform</Label>
+              <Input
+                value={data.delivery_platform || ''}
+                disabled
+                placeholder="Auto-populated from context"
+                className="mt-1.5 bg-muted/50"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Read-only (populated from side panel selection)</p>
+            </div>
+            <div>
+              <Label className="text-sm font-medium">Planned Quarter</Label>
+              <Select
+                value={data.planned_quarter || ''}
+                onValueChange={(value) => onChange('planned_quarter', value)}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select quarter..." />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  <SelectItem value="Q1-2024">Q1 2024</SelectItem>
+                  <SelectItem value="Q2-2024">Q2 2024</SelectItem>
+                  <SelectItem value="Q3-2024">Q3 2024</SelectItem>
+                  <SelectItem value="Q4-2024">Q4 2024</SelectItem>
+                  <SelectItem value="Q1-2025">Q1 2025</SelectItem>
+                  <SelectItem value="Q2-2025">Q2 2025</SelectItem>
+                  <SelectItem value="Q3-2025">Q3 2025</SelectItem>
+                  <SelectItem value="Q4-2025">Q4 2025</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
