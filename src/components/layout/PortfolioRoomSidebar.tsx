@@ -45,7 +45,7 @@ type MenuItem =
 
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Portfolio Room', icon: LayoutDashboard, path: '/portfolio/:portfolioId/room' },
-  { id: 'themes', label: 'Themes', icon: FolderTree, path: '/portfolio/:portfolioId/backlog?type=theme' },
+  { id: 'themes', label: 'Themes', icon: FolderTree, path: '/themes' },
   { id: 'epics', label: 'Epics', icon: Diamond, path: '/epics' },
   { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Target, path: '/portfolio/:portfolioId/objective-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/portfolio/:portfolioId/work-tree' },
