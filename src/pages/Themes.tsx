@@ -9,6 +9,7 @@ import { ListScreenToolbar } from '@/components/shared/ListScreenToolbar';
 import { ThemeDialog } from '@/components/forms/ThemeDialog';
 import { ImportDialog } from '@/components/shared/ImportDialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Edit } from 'lucide-react';
 import { exportToCSV } from '@/lib/exportUtils';
@@ -162,10 +163,11 @@ export default function Themes() {
         />
 
         {/* Data Grid */}
-        <div className="flex-1 border rounded-lg overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
+        <Card className="flex-1 overflow-hidden">
+          <CardContent className="p-0 h-full overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/30">
                 <TableHead className="w-12">
                   <Checkbox
                     checked={selectedRows.length === themes?.length && themes.length > 0}
@@ -223,7 +225,8 @@ export default function Themes() {
               )}
             </TableBody>
           </Table>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Right Details Panel */}
