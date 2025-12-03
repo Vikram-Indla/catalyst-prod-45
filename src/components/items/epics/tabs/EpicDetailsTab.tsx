@@ -360,7 +360,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             {additionalPrograms && additionalPrograms.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {additionalPrograms.map((ap: any) => (
-                  <Badge key={ap.program_id} variant="secondary">
+                  <Badge key={ap.program_id} variant="outline" className="bg-white border-brand-gold">
                     {ap.programs?.name || 'Unknown Program'}
                   </Badge>
                 ))}
@@ -376,7 +376,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           <div className="flex flex-wrap gap-2 mt-2">
             {epicPIs && epicPIs.length > 0 ? (
               epicPIs.map((epi: any) => (
-                <Badge key={epi.pi_id} variant="secondary">
+                <Badge key={epi.pi_id} variant="outline" className="bg-white border-brand-gold">
                   {epi.program_increments?.name || epi.pi_id}
                 </Badge>
               ))
