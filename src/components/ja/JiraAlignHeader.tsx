@@ -45,12 +45,12 @@ export function CatalystHeader() {
   const navItems = [
     { label: "Home", path: "/home" },
     { label: "Enterprise", path: "/enterprise/business-requests" },
-    { label: "Industry", hasDropdown: true },
-    { label: "Mining", path: "/mining" },
     { label: "Product", hasDropdown: true },
     { label: "Portfolio", hasDropdown: true },
     { label: "Program", hasDropdown: true },
     { label: "Team", hasDropdown: true, path: "/teams" },
+    { label: "Industry", hasDropdown: true },
+    { label: "Mining", path: "/mining" },
     { label: "Custom Rooms", hasDropdown: true },
     { label: "Starred", hasDropdown: true },
   ];
