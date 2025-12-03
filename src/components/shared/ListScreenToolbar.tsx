@@ -62,28 +62,28 @@ export function ListScreenToolbar({
 
       <div className="flex items-center gap-2">
         {onBulkEdit && shouldShowBulkEdit && (
-          <Button variant="outline" size="sm" onClick={onBulkEdit} disabled={selectedCount === 0}>
+          <Button variant="secondary" size="sm" onClick={onBulkEdit} disabled={selectedCount === 0} className="border border-border">
             <Edit3 className="h-4 w-4 mr-2" />
             Bulk Edit
           </Button>
         )}
         
         {onImport && shouldShowImport && (
-          <Button variant="outline" size="sm" onClick={onImport}>
+          <Button variant="secondary" size="sm" onClick={onImport} className="border border-border">
             <Upload className="h-4 w-4 mr-2" />
             Import
           </Button>
         )}
         
         {onColumnChooser && (
-          <Button variant="outline" size="sm" onClick={onColumnChooser}>
+          <Button variant="secondary" size="sm" onClick={onColumnChooser} className="border border-border">
             <Settings2 className="h-4 w-4 mr-2" />
             Columns
           </Button>
         )}
         
         {onExport && (
-          <Button variant="outline" size="sm" onClick={onExport}>
+          <Button variant="secondary" size="sm" onClick={onExport} className="border border-border">
             <Download className="h-4 w-4 mr-2" />
             Export
           </Button>
