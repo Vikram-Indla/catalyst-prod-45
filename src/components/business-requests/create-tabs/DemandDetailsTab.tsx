@@ -7,20 +7,10 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { CalendarIcon, Lock, Upload } from 'lucide-react';
+import { CalendarIcon, Lock, Unlock, Upload } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-
-// Delivery Platform Options
-const DELIVERY_PLATFORMS = [
-  'Senaei Platform',
-  'Innovation Platform',
-  'Tahommena',
-  'Compass',
-  'Mini Apps',
-  'Website',
-];
 
 // Delivery Track Parent Options
 const DELIVERY_TRACK_PARENTS = [
@@ -43,14 +33,32 @@ interface DemandDetailsTabProps {
 
 export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
   const [targetDateLocked, setTargetDateLocked] = useState(false);
+  const [lockedByUser, setLockedByUser] = useState<string | null>(null);
+  const currentUser = 'Current User'; // In real app, get from auth context
 
   const handleLockToggle = () => {
     if (targetDateLocked) {
+      // Trying to unlock - check if same user
+      if (lockedByUser && lockedByUser !== currentUser) {
+        toast.error(`Cannot unlock. This date was locked by ${lockedByUser}`);
+        return;
+      }
       setTargetDateLocked(false);
+      setLockedByUser(null);
       toast.info('Target Completion Date unlocked');
     } else {
+      // Trying to lock - validate dates are populated
+      if (!data.impl_start_date) {
+        toast.error('Cannot lock: Initiation Date must be populated first');
+        return;
+      }
+      if (!data.end_date) {
+        toast.error('Cannot lock: Target Completion Date must be populated first');
+        return;
+      }
       setTargetDateLocked(true);
-      toast.info('Target Completion Date locked by Current User');
+      setLockedByUser(currentUser);
+      toast.success(`Target Completion Date locked by ${currentUser}`);
     }
   };
 
@@ -116,7 +124,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 <SelectTrigger className="mt-1.5">
                   <SelectValue placeholder="Select assignee..." />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border shadow-lg z-50">
                   <SelectItem value="admin">Admin</SelectItem>
                   <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="analyst">Business Analyst</SelectItem>
@@ -125,36 +133,11 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
               </Select>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Delivery Context Section */}
-      <Card className="border border-border/60 rounded-lg bg-card">
-        <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Delivery Context</h3>
-          
-          <div>
-            <Label className="text-sm font-medium">
-              Delivery Platform <span className="text-destructive">*</span>
-            </Label>
-            <Select
-              value={data.platform || ''}
-              onValueChange={(value) => onChange('platform', value)}
-            >
-              <SelectTrigger className="mt-1.5">
-                <SelectValue placeholder="Select platform..." />
-              </SelectTrigger>
-              <SelectContent>
-                {DELIVERY_PLATFORMS.map((opt) => (
-                  <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+          {/* Delivery Track moved to Basic Information */}
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border/40">
             <div>
-              <Label className="text-sm font-medium">Delivery Track (Parent)</Label>
+              <Label className="text-sm font-medium">Delivery Track</Label>
               <Select
                 value={data.delivery_track_parent || ''}
                 onValueChange={(value) => {
@@ -165,7 +148,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 <SelectTrigger className="mt-1.5">
                   <SelectValue placeholder="Select track..." />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border shadow-lg z-50">
                   {DELIVERY_TRACK_PARENTS.map((opt) => (
                     <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                   ))}
@@ -183,7 +166,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                 <SelectTrigger className="mt-1.5">
                   <SelectValue placeholder={selectedTrackParent ? "Select..." : "Select parent first"} />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border shadow-lg z-50">
                   {childOptions.map((opt) => (
                     <SelectItem key={opt} value={opt}>{opt}</SelectItem>
                   ))}
@@ -290,10 +273,14 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
                     "shrink-0",
                     targetDateLocked && "bg-muted border-brand-gold text-brand-gold"
                   )}
+                  title={targetDateLocked ? `Locked by ${lockedByUser}` : 'Click to lock date'}
                 >
-                  <Lock className="h-4 w-4" />
+                  {targetDateLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
                 </Button>
               </div>
+              {targetDateLocked && lockedByUser && (
+                <p className="text-xs text-muted-foreground mt-1">Locked by {lockedByUser}</p>
+              )}
             </div>
           </div>
         </CardContent>
