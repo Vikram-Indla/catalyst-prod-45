@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -58,7 +58,7 @@ interface EpicDetailsPanelProps {
   onClose: () => void;
 }
 
-export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps) {
+export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetailsPanelProps) {
   const [activeTab, setActiveTab] = useState('details');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -68,6 +68,26 @@ export function EpicDetailsPanel({ epic, open, onClose }: EpicDetailsPanelProps)
   
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  // Fetch fresh epic data to ensure we have latest estimation_system and other fields
+  const { data: freshEpic } = useQuery({
+    queryKey: ['epic-detail', initialEpic?.id],
+    queryFn: async () => {
+      if (!initialEpic?.id) return null;
+      const { data, error } = await supabase
+        .from('epics')
+        .select('*')
+        .eq('id', initialEpic.id)
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!initialEpic?.id && open,
+  });
+
+  // Use fresh data if available, otherwise fall back to initial prop
+  const epic = freshEpic || initialEpic;
 
   // Duplicate mutation
   const duplicateMutation = useMutation({

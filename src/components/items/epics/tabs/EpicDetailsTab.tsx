@@ -191,6 +191,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epics'] });
+      queryClient.invalidateQueries({ queryKey: ['epic-detail', epic.id] });
       toast.success('Epic updated');
     },
     onError: () => {
