@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -11,6 +10,9 @@ import { useToast } from '@/hooks/use-toast';
 import { usePermission } from '@/hooks/usePermission';
 import { WSJFBadge } from '@/components/shared/WSJFBadge';
 import { TrendingUp, Save } from 'lucide-react';
+
+// Fibonacci scale per Jira Align spec
+const FIBONACCI_VALUES = [0, 1, 2, 3, 5, 8, 13, 20, 40, 100];
 
 interface WSJFPrioritizationDialogProps {
   open: boolean;
@@ -172,44 +174,64 @@ export function WSJFPrioritizationDialog({ open, onOpenChange, epicIds, onSucces
                 <TableCell className="text-sm font-mono">{epic.epic_key || epic.id.slice(0, 8)}</TableCell>
                 <TableCell className="font-medium">{epic.name}</TableCell>
                 <TableCell>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={epic.business_value}
-                    onChange={(e) => updateEpicWSJF(epic.id, 'business_value', Number(e.target.value))}
-                    className="w-20"
-                  />
+                  <Select
+                    value={epic.business_value.toString()}
+                    onValueChange={(v) => updateEpicWSJF(epic.id, 'business_value', Number(v))}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FIBONACCI_VALUES.map(val => (
+                        <SelectItem key={val} value={val.toString()}>{val}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={epic.time_criticality}
-                    onChange={(e) => updateEpicWSJF(epic.id, 'time_criticality', Number(e.target.value))}
-                    className="w-20"
-                  />
+                  <Select
+                    value={epic.time_criticality.toString()}
+                    onValueChange={(v) => updateEpicWSJF(epic.id, 'time_criticality', Number(v))}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FIBONACCI_VALUES.map(val => (
+                        <SelectItem key={val} value={val.toString()}>{val}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="10"
-                    value={epic.risk_reduction}
-                    onChange={(e) => updateEpicWSJF(epic.id, 'risk_reduction', Number(e.target.value))}
-                    className="w-20"
-                  />
+                  <Select
+                    value={epic.risk_reduction.toString()}
+                    onValueChange={(v) => updateEpicWSJF(epic.id, 'risk_reduction', Number(v))}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FIBONACCI_VALUES.map(val => (
+                        <SelectItem key={val} value={val.toString()}>{val}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="20"
-                    value={epic.job_size}
-                    onChange={(e) => updateEpicWSJF(epic.id, 'job_size', Number(e.target.value))}
-                    className="w-20"
-                  />
+                  <Select
+                    value={epic.job_size.toString()}
+                    onValueChange={(v) => updateEpicWSJF(epic.id, 'job_size', Number(v))}
+                  >
+                    <SelectTrigger className="w-20">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {FIBONACCI_VALUES.filter(v => v > 0).map(val => (
+                        <SelectItem key={val} value={val.toString()}>{val}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </TableCell>
                 <TableCell>
                   <WSJFBadge

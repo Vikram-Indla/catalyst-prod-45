@@ -5,7 +5,7 @@ import { TrendingUp } from 'lucide-react';
 /**
  * WSJF Badge Component
  * Displays WSJF score with color coding based on value
- * Source: Catalyst WSJF calculation standards
+ * Source: Catalyst WSJF calculation standards / Jira Align
  */
 
 interface WSJFBadgeProps {
@@ -14,6 +14,7 @@ interface WSJFBadgeProps {
   timeCriticality?: number;
   riskReduction?: number;
   jobSize?: number;
+  onClick?: () => void;
 }
 
 export function WSJFBadge({ 
@@ -21,18 +22,19 @@ export function WSJFBadge({
   businessValue, 
   timeCriticality, 
   riskReduction, 
-  jobSize 
+  jobSize,
+  onClick,
 }: WSJFBadgeProps) {
   if (!score || score === 0) {
     return (
-      <Badge variant="outline" className="text-xs">
+      <Badge variant="outline" className="text-xs cursor-pointer" onClick={onClick}>
         No WSJF
       </Badge>
     );
   }
   
   // Color code based on WSJF score thresholds
-  const getVariant = () => {
+  const getVariant = (): 'default' | 'secondary' | 'outline' => {
     if (score >= 50) return 'default'; // High priority
     if (score >= 20) return 'secondary'; // Medium priority
     return 'outline'; // Low priority
@@ -59,9 +61,13 @@ export function WSJFBadge({
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Badge variant={variant} className="text-xs gap-1">
+          <Badge 
+            variant={variant} 
+            className="text-xs gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={onClick}
+          >
             <TrendingUp className="h-3 w-3" />
-            {score.toFixed(1)}
+            {score.toFixed(2)}
           </Badge>
         </TooltipTrigger>
         {tooltipContent && (
