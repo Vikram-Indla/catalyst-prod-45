@@ -16,6 +16,7 @@ import { PortfolioSelectorDropdown } from "./PortfolioSelectorDropdown";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
 import { TeamSelectorDropdown } from "./TeamSelectorDropdown";
 import { StarredDropdown } from "./StarredDropdown";
+import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
 import { MobileNavigationMenu } from "./MobileNavigationMenu";
 import { TestsDropdown } from "./TestsDropdown";
 import {
@@ -75,8 +76,6 @@ export function CatalystHeader() {
     { label: "Portfolio", hasDropdown: true },
     { label: "Program", hasDropdown: true },
     { label: "Team", hasDropdown: true, path: "/teams" },
-    { label: "Industry", hasDropdown: true },
-    { label: "Mining", path: "/mining" },
     { label: "Custom Rooms", hasDropdown: true },
     { label: "Starred", hasDropdown: true },
   ];
@@ -100,7 +99,26 @@ export function CatalystHeader() {
           <nav className="hidden md:flex items-center gap-1 flex-1 justify-center max-w-4xl">
             {navItems.map((item) => (
               <div key={item.label}>
-                {item.label === "Portfolio" ? (
+                {item.label === "Product" ? (
+                  <Popover
+                    open={activeDropdown === item.label}
+                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                  >
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                      >
+                        {item.label}
+                        <ChevronDown className="ml-1 h-3 w-3" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                      <ProductSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                    </PopoverContent>
+                  </Popover>
+                ) : item.label === "Portfolio" ? (
                   <Popover
                     open={activeDropdown === item.label}
                     onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
