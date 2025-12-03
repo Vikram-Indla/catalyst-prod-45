@@ -78,6 +78,7 @@ export function EpicIntakeTab({ epic }: EpicIntakeTabProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['epic-intake', epic.id] });
+      toast.success('Saved');
     },
     onError: (error) => {
       console.error('Failed to save intake response:', error);
