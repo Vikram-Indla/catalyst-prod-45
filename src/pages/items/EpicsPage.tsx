@@ -65,7 +65,7 @@ export default function EpicsPage() {
   const [viewMode, setViewMode] = useState<'list' | 'kanban' | 'process-flow' | 'custom'>('list');
   const [kanbanSubView, setKanbanSubView] = useState<'state' | 'process' | 'custom'>('state');
   const [columnsToShow, setColumnsToShow] = useState([
-    'rank', 'name', 'theme', 'program', 'state', 'health', 'dates', 'owner'
+    'rank', 'name', 'theme', 'program', 'state', 'health', 'dates', 'owner', 'estimate'
   ]);
 
   const availableColumns = [
