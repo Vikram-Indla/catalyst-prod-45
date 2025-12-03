@@ -1,29 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 interface EpicIntakeTabProps {
   epic: any;
 }
 
+// Default Form fields per Jira Align specification
+const INTAKE_FIELDS = [
+  { id: 'justification', label: 'Justification', number: 1 },
+  { id: 'department', label: 'Department', number: 2 },
+  { id: 'requestor', label: 'Requestor', number: 3 },
+  { id: 'reviewer', label: 'Reviewer', number: 4 },
+  { id: 'approver', label: 'Approver', number: 5 },
+];
+
 export function EpicIntakeTab({ epic }: EpicIntakeTabProps) {
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState({
-    business_justification: '',
-    expected_value: '',
-    target_market: '',
-    priority: 'medium',
-    dependencies: '',
-    risks: '',
-    assumptions: ''
+  const [formData, setFormData] = useState<Record<string, string>>({
+    justification: '',
+    department: '',
+    requestor: '',
+    reviewer: '',
+    approver: '',
   });
 
+  // Fetch existing intake responses
   const { data: intakeData } = useQuery({
     queryKey: ['epic-intake', epic.id],
     queryFn: async () => {
@@ -35,144 +40,95 @@ export function EpicIntakeTab({ epic }: EpicIntakeTabProps) {
       if (error) throw error;
       
       // Convert array to object
-      const responses: any = {};
+      const responses: Record<string, string> = {};
       data?.forEach((item: any) => {
-        responses[item.field_id] = item.value;
-      });
-      
-      setFormData({
-        business_justification: responses['business_justification'] || '',
-        expected_value: responses['expected_value'] || '',
-        target_market: responses['target_market'] || '',
-        priority: responses['priority'] || 'medium',
-        dependencies: responses['dependencies'] || '',
-        risks: responses['risks'] || '',
-        assumptions: responses['assumptions'] || ''
+        responses[item.field_id] = item.value || '';
       });
       
       return responses;
     }
   });
 
-  const saveMutation = useMutation({
-    mutationFn: async () => {
-      // Delete existing responses
-      await supabase
-        .from('epic_intake_responses')
-        .delete()
-        .eq('epic_id', epic.id);
-      
-      // Insert new responses
-      const responses = Object.entries(formData).map(([field_id, value]) => ({
-        epic_id: epic.id,
-        field_id,
-        value
+  // Initialize form data from fetched data
+  useEffect(() => {
+    if (intakeData) {
+      setFormData(prev => ({
+        ...prev,
+        ...intakeData
       }));
-      
-      const { error } = await supabase
+    }
+  }, [intakeData]);
+
+  // Save mutation for individual field
+  const saveMutation = useMutation({
+    mutationFn: async ({ fieldId, value }: { fieldId: string; value: string }) => {
+      // Check if response exists
+      const { data: existing } = await supabase
         .from('epic_intake_responses')
-        .insert(responses);
+        .select('id')
+        .eq('epic_id', epic.id)
+        .eq('field_id', fieldId)
+        .single();
       
-      if (error) throw error;
+      if (existing) {
+        const { error } = await supabase
+          .from('epic_intake_responses')
+          .update({ value })
+          .eq('id', existing.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('epic_intake_responses')
+          .insert({ epic_id: epic.id, field_id: fieldId, value });
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['epic-intake'] });
-      toast.success('Intake responses saved');
+      queryClient.invalidateQueries({ queryKey: ['epic-intake', epic.id] });
+    },
+    onError: () => {
+      toast.error('Failed to save');
     }
   });
 
-  const handleSave = () => {
-    saveMutation.mutate();
+  const handleFieldChange = (fieldId: string, value: string) => {
+    setFormData(prev => ({ ...prev, [fieldId]: value }));
+  };
+
+  const handleFieldBlur = (fieldId: string) => {
+    const currentValue = formData[fieldId] || '';
+    const savedValue = intakeData?.[fieldId] || '';
+    
+    if (currentValue !== savedValue) {
+      saveMutation.mutate({ fieldId, value: currentValue });
+    }
   };
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-muted-foreground mb-4">
-        Intake form fields for capturing epic requirements and business context
+      {/* Default Form Header */}
+      <div className="border-b pb-3">
+        <h3 className="text-base font-semibold text-foreground">Default Form</h3>
       </div>
 
-      <div>
-        <Label>Business Justification</Label>
-        <Textarea
-          rows={4}
-          placeholder="Enter business justification"
-          className="mt-2"
-          value={formData.business_justification}
-          onChange={(e) => setFormData({ ...formData, business_justification: e.target.value })}
-        />
+      {/* Intake Form Fields */}
+      <div className="space-y-6">
+        {INTAKE_FIELDS.map((field) => (
+          <div key={field.id}>
+            <Label className="text-sm text-muted-foreground">
+              {field.number}. {field.label}
+            </Label>
+            <Textarea
+              value={formData[field.id] || ''}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+              onBlur={() => handleFieldBlur(field.id)}
+              rows={4}
+              className="mt-1.5 resize-y"
+              placeholder=""
+            />
+          </div>
+        ))}
       </div>
-
-      <div>
-        <Label>Expected Business Value</Label>
-        <Input 
-          type="text" 
-          placeholder="Describe expected value"
-          value={formData.expected_value}
-          onChange={(e) => setFormData({ ...formData, expected_value: e.target.value })}
-        />
-      </div>
-
-      <div>
-        <Label>Target Market/Customer Segment</Label>
-        <Input 
-          type="text" 
-          placeholder="Enter target market"
-          value={formData.target_market}
-          onChange={(e) => setFormData({ ...formData, target_market: e.target.value })}
-        />
-      </div>
-
-      <div>
-        <Label>Priority</Label>
-        <Select value={formData.priority} onValueChange={(v) => setFormData({ ...formData, priority: v })}>
-          <SelectTrigger>
-            <SelectValue placeholder="Select priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="critical">Critical</SelectItem>
-            <SelectItem value="high">High</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="low">Low</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label>Dependencies</Label>
-        <Textarea
-          rows={3}
-          placeholder="List dependencies"
-          className="mt-2"
-          value={formData.dependencies}
-          onChange={(e) => setFormData({ ...formData, dependencies: e.target.value })}
-        />
-      </div>
-
-      <div>
-        <Label>Risks</Label>
-        <Textarea
-          rows={3}
-          placeholder="Identify risks"
-          className="mt-2"
-          value={formData.risks}
-          onChange={(e) => setFormData({ ...formData, risks: e.target.value })}
-        />
-      </div>
-
-      <div>
-        <Label>Assumptions</Label>
-        <Textarea
-          rows={3}
-          placeholder="Document assumptions"
-          className="mt-2"
-          value={formData.assumptions}
-          onChange={(e) => setFormData({ ...formData, assumptions: e.target.value })}
-        />
-      </div>
-
-      <Button onClick={handleSave} disabled={saveMutation.isPending}>
-        Save Intake Responses
-      </Button>
     </div>
   );
 }
