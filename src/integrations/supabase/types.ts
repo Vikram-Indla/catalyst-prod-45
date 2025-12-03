@@ -231,6 +231,186 @@ export type Database = {
         }
         Relationships: []
       }
+      business_requests: {
+        Row: {
+          acceptance_criteria: string | null
+          approval_date: string | null
+          approval_decision: string | null
+          approval_inputs: string | null
+          approval_remarks: string | null
+          approved_budget_ceiling: number | null
+          approver_name: string | null
+          business_justification: string | null
+          complexity: string | null
+          created_at: string
+          created_by: string | null
+          delivery_platform: string | null
+          delivery_track: string | null
+          dependencies: string | null
+          description: string | null
+          end_date: string | null
+          environment_dependency: string | null
+          estimated_cost: number | null
+          estimated_cost_sar: number | null
+          estimated_effort: string | null
+          estimation_dependencies: string | null
+          estimation_notes: string | null
+          estimation_risk_rating: string | null
+          expected_resume_date: string | null
+          functional_spec_link: string | null
+          health: string | null
+          id: string
+          impl_start_date: string | null
+          impl_target_end_date: string | null
+          implementation_outcome: string | null
+          implementation_owner: string | null
+          integration_required: boolean | null
+          integration_systems: string[] | null
+          jira_epic_link: string | null
+          key_risks_remarks: string | null
+          on_hold_comment: string | null
+          on_hold_reason: string | null
+          outcome_summary: string | null
+          platform: string | null
+          portfolio_comments: string | null
+          portfolio_decision: string | null
+          process_step: string | null
+          proposed_solution: string | null
+          qa_remarks: string | null
+          readiness_checklist: Json | null
+          request_key: string | null
+          requestor: string | null
+          resolution_category: string | null
+          risk_rating: string | null
+          start_date: string | null
+          support_owner: string | null
+          support_remarks: string | null
+          technical_validator: string | null
+          title: string
+          track: string | null
+          updated_at: string
+          urgency: string | null
+        }
+        Insert: {
+          acceptance_criteria?: string | null
+          approval_date?: string | null
+          approval_decision?: string | null
+          approval_inputs?: string | null
+          approval_remarks?: string | null
+          approved_budget_ceiling?: number | null
+          approver_name?: string | null
+          business_justification?: string | null
+          complexity?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivery_platform?: string | null
+          delivery_track?: string | null
+          dependencies?: string | null
+          description?: string | null
+          end_date?: string | null
+          environment_dependency?: string | null
+          estimated_cost?: number | null
+          estimated_cost_sar?: number | null
+          estimated_effort?: string | null
+          estimation_dependencies?: string | null
+          estimation_notes?: string | null
+          estimation_risk_rating?: string | null
+          expected_resume_date?: string | null
+          functional_spec_link?: string | null
+          health?: string | null
+          id?: string
+          impl_start_date?: string | null
+          impl_target_end_date?: string | null
+          implementation_outcome?: string | null
+          implementation_owner?: string | null
+          integration_required?: boolean | null
+          integration_systems?: string[] | null
+          jira_epic_link?: string | null
+          key_risks_remarks?: string | null
+          on_hold_comment?: string | null
+          on_hold_reason?: string | null
+          outcome_summary?: string | null
+          platform?: string | null
+          portfolio_comments?: string | null
+          portfolio_decision?: string | null
+          process_step?: string | null
+          proposed_solution?: string | null
+          qa_remarks?: string | null
+          readiness_checklist?: Json | null
+          request_key?: string | null
+          requestor?: string | null
+          resolution_category?: string | null
+          risk_rating?: string | null
+          start_date?: string | null
+          support_owner?: string | null
+          support_remarks?: string | null
+          technical_validator?: string | null
+          title: string
+          track?: string | null
+          updated_at?: string
+          urgency?: string | null
+        }
+        Update: {
+          acceptance_criteria?: string | null
+          approval_date?: string | null
+          approval_decision?: string | null
+          approval_inputs?: string | null
+          approval_remarks?: string | null
+          approved_budget_ceiling?: number | null
+          approver_name?: string | null
+          business_justification?: string | null
+          complexity?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivery_platform?: string | null
+          delivery_track?: string | null
+          dependencies?: string | null
+          description?: string | null
+          end_date?: string | null
+          environment_dependency?: string | null
+          estimated_cost?: number | null
+          estimated_cost_sar?: number | null
+          estimated_effort?: string | null
+          estimation_dependencies?: string | null
+          estimation_notes?: string | null
+          estimation_risk_rating?: string | null
+          expected_resume_date?: string | null
+          functional_spec_link?: string | null
+          health?: string | null
+          id?: string
+          impl_start_date?: string | null
+          impl_target_end_date?: string | null
+          implementation_outcome?: string | null
+          implementation_owner?: string | null
+          integration_required?: boolean | null
+          integration_systems?: string[] | null
+          jira_epic_link?: string | null
+          key_risks_remarks?: string | null
+          on_hold_comment?: string | null
+          on_hold_reason?: string | null
+          outcome_summary?: string | null
+          platform?: string | null
+          portfolio_comments?: string | null
+          portfolio_decision?: string | null
+          process_step?: string | null
+          proposed_solution?: string | null
+          qa_remarks?: string | null
+          readiness_checklist?: Json | null
+          request_key?: string | null
+          requestor?: string | null
+          resolution_category?: string | null
+          risk_rating?: string | null
+          start_date?: string | null
+          support_owner?: string | null
+          support_remarks?: string | null
+          technical_validator?: string | null
+          title?: string
+          track?: string | null
+          updated_at?: string
+          urgency?: string | null
+        }
+        Relationships: []
+      }
       capacity_allocations: {
         Row: {
           actual_capacity_points: number | null
