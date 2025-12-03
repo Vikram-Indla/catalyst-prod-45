@@ -30,17 +30,19 @@ const menuItems = [
   { title: 'Reports', path: '/industry/reports', icon: TrendingUp },
 ];
 
-const digitalTransformationOptions = [
-  { value: 'digital-maturity', label: 'Digital Maturity' },
-  { value: 'enhancements', label: 'Enhancements' },
-  { value: 'entities', label: 'Entities' },
-  { value: 'projects', label: 'Projects' },
+const deliveryPlatformOptions = [
+  { value: 'senaei-platform', label: 'Senaei Platform' },
+  { value: 'innovation-platform', label: 'Innovation Platform' },
+  { value: 'tahommena', label: 'Tahommena' },
+  { value: 'compass', label: 'Compass' },
+  { value: 'mini-apps', label: 'Mini Apps' },
+  { value: 'website', label: 'Website' },
 ];
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const [selectedTransformation, setSelectedTransformation] = useState('digital-maturity');
+  const [selectedPlatform, setSelectedPlatform] = useState('senaei-platform');
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -62,7 +64,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-foreground">Product</span>
-                <span className="text-xs text-muted-foreground">Digital Transformation</span>
+                <span className="text-xs text-muted-foreground">Senaei Platform</span>
               </div>
             </div>
           ) : (
@@ -80,18 +82,18 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           </Button>
         </div>
 
-        {/* Digital Transformation Selector */}
+        {/* Delivery Platform Selector */}
         {expanded && (
           <div className="p-4 border-b">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Digital Transformation
+            <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
+              Delivery Platform
             </span>
-            <Select value={selectedTransformation} onValueChange={setSelectedTransformation}>
+            <Select value={selectedPlatform} onValueChange={setSelectedPlatform}>
               <SelectTrigger className="mt-2 w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-popover border shadow-lg z-50">
-                {digitalTransformationOptions.map((option) => (
+                {deliveryPlatformOptions.map((option) => (
                   <SelectItem key={option.value} value={option.value}>
                     {option.label}
                   </SelectItem>
