@@ -159,23 +159,65 @@ export function ForecastTab({ workItemId, workItemType, estimationSystem = 'poin
       unit: string;
       tshirtValue?: string;
     }) => {
-      const { data, error } = await supabase
+      const userId = (await supabase.auth.getUser()).data.user?.id;
+      
+      // Build query for existing entry
+      let query = supabase
         .from('forecast_entries')
-        .upsert({
-          work_item_id: workItemId,
-          work_item_type: workItemType,
-          pi_id: piId,
-          program_id: programId,
-          team_id: teamId,
-          estimate,
-          unit,
-          updated_by: (await supabase.auth.getUser()).data.user?.id,
-        }, {
-          onConflict: 'work_item_id,work_item_type,pi_id,program_id,team_id',
-        });
+        .select('id')
+        .eq('work_item_id', workItemId)
+        .eq('work_item_type', workItemType)
+        .eq('pi_id', piId);
+      
+      // Handle nullable columns
+      if (programId) {
+        query = query.eq('program_id', programId);
+      } else {
+        query = query.is('program_id', null);
+      }
+      
+      if (teamId) {
+        query = query.eq('team_id', teamId);
+      } else {
+        query = query.is('team_id', null);
+      }
 
-      if (error) throw error;
-      return data;
+      const { data: existing } = await query.maybeSingle();
+
+      if (existing) {
+        // Update existing
+        const { data, error } = await supabase
+          .from('forecast_entries')
+          .update({
+            estimate,
+            unit,
+            updated_by: userId,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', existing.id)
+          .select();
+
+        if (error) throw error;
+        return data;
+      } else {
+        // Insert new
+        const { data, error } = await supabase
+          .from('forecast_entries')
+          .insert({
+            work_item_id: workItemId,
+            work_item_type: workItemType,
+            pi_id: piId,
+            program_id: programId || null,
+            team_id: teamId || null,
+            estimate,
+            unit,
+            updated_by: userId,
+          })
+          .select();
+
+        if (error) throw error;
+        return data;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['forecast-entries'] });
