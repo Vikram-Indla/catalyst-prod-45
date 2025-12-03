@@ -290,7 +290,7 @@ export default function EpicBacklog() {
                 disabled={selectedEpicIds.length === 0}
               >
                 <TrendingUp className="h-4 w-4" />
-                <span className="hidden md:inline">Bottom-Up</span>
+                <span className="hidden md:inline">Bottom-Up {selectedEpicIds.length > 0 && `(${selectedEpicIds.length})`}</span>
               </Button>
               <Button 
                 variant="ghost" 
@@ -398,6 +398,7 @@ export default function EpicBacklog() {
                     onRefetch={refetch}
                     onManageLabels={() => setLabelsDialogOpen(true)}
                     visibleColumns={visibleColumns}
+                    onSelectEpics={setSelectedEpicIds}
                   />
                 </div>
               )}
@@ -493,12 +494,13 @@ export default function EpicBacklog() {
 
           {unassignedExpanded && unassignedEpics && unassignedEpics.length > 0 && (
             <div className="border rounded-lg bg-card overflow-hidden">
-              <EpicBacklogListView
+            <EpicBacklogListView
                 epics={unassignedEpics}
                 onEpicSelect={setSelectedEpic}
                 onRefetch={refetch}
                 onManageLabels={() => setLabelsDialogOpen(true)}
                 visibleColumns={visibleColumns}
+                onSelectEpics={(ids) => setSelectedEpicIds(prev => [...new Set([...prev, ...ids])])}
               />
             </div>
           )}
@@ -553,6 +555,13 @@ export default function EpicBacklog() {
           refetch();
           toast({ title: 'WSJF scores updated', description: 'Epic prioritization has been updated' });
         }}
+      />
+
+      {/* Bottom-Up Estimate Dialog */}
+      <EnhancedBottomUpDialog
+        open={bottomUpEstimateOpen}
+        onOpenChange={setBottomUpEstimateOpen}
+        epicIds={selectedEpicIds}
       />
     </div>
   );

@@ -122,7 +122,15 @@ export function PortfolioRoomSidebar({
     const resolvedPath = path.includes(':portfolioId') 
       ? path.replace(':portfolioId', portfolioId)
       : path;
-    navigate(resolvedPath + (selectedPI ? `?pi=${selectedPI}` : ''));
+    
+    // Handle query params properly - check if path already has query params
+    let finalPath = resolvedPath;
+    if (selectedPI) {
+      const separator = resolvedPath.includes('?') ? '&' : '?';
+      finalPath = resolvedPath + separator + `pi=${selectedPI}`;
+    }
+    
+    navigate(finalPath);
   };
 
   const isActive = (path?: string) => {
