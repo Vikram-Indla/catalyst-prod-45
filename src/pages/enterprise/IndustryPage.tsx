@@ -45,7 +45,7 @@ export default function IndustryPage() {
   const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [columnSort, setColumnSort] = useState<ColumnSort>({ columnId: 'rank', direction: 'asc' });
-  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
+  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(true);
   const [filters, setFilters] = useState<FiltersState>({
     deliveryPlatform: 'all',
     processSteps: [],

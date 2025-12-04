@@ -66,7 +66,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       teamIds: [],
       piIds: [],
       snapshotId: null,
-      deliveryPlatform: 'Senaei Platform',
+      deliveryPlatform: 'all',
     };
   };
   
@@ -78,7 +78,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [teamIds, setTeamIds] = useState<string[]>(initialState.teamIds);
   const [piIds, setPiIds] = useState<string[]>(initialState.piIds);
   const [snapshotId, setSnapshotId] = useState<string | null>(initialState.snapshotId);
-  const [deliveryPlatform, setDeliveryPlatform] = useState<string>(initialState.deliveryPlatform || 'Senaei Platform');
+  const [deliveryPlatform, setDeliveryPlatform] = useState<string>(initialState.deliveryPlatform || 'all');
   
   // Sync state to localStorage
   useEffect(() => {

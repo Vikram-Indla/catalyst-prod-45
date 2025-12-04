@@ -31,6 +31,7 @@ const menuItems = [
 ];
 
 const deliveryPlatformOptions = [
+  { value: 'all', label: 'All Platforms' },
   { value: 'Senaei Platform', label: 'Senaei Platform' },
   { value: 'Innovation Platform', label: 'Innovation Platform' },
   { value: 'Tahommena', label: 'Tahommena' },
