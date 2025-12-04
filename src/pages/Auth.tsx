@@ -105,48 +105,9 @@ export default function Auth() {
                 </div>
               ))}
             </div>
-
-            {/* Integration Badges */}
-            <div className="mt-8 pt-6" style={{ borderTop: "1px solid rgba(198, 156, 109, 0.15)" }}>
-              <p className="mb-4" style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.75rem",
-                color: "rgba(254, 255, 255, 0.4)",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em"
-              }}>
-                Integrated with
-              </p>
-              <div className="flex items-center gap-6">
-                {/* Jira */}
-                <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M11.53 2c0 2.4 1.97 4.35 4.35 4.35h1.78v1.7c0 2.4 1.94 4.34 4.34 4.35V2.84a.84.84 0 00-.84-.84H11.53z" fill="#c69c6d"/>
-                    <path d="M6.77 6.8a4.36 4.36 0 004.34 4.38h1.8v1.7c0 2.4 1.93 4.35 4.33 4.37V7.63a.84.84 0 00-.83-.83H6.77z" fill="#c69c6d" opacity="0.7"/>
-                    <path d="M2 11.6c0 2.4 1.95 4.34 4.35 4.36h1.78v1.71c0 2.4 1.94 4.34 4.34 4.34v-9.57a.84.84 0 00-.84-.84H2z" fill="#c69c6d" opacity="0.5"/>
-                  </svg>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.85rem", color: "rgba(254, 255, 255, 0.5)" }}>Jira</span>
-                </div>
-                {/* Atlassian */}
-                <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M7.93 11.24c-.17-.2-.44-.18-.57.06l-4.29 8.5c-.12.23-.02.42.23.42h6.18c.17 0 .35-.1.43-.28.93-2.2.36-5.58-2-8.7z" fill="#c69c6d" opacity="0.6"/>
-                    <path d="M11.47 3.78c-2.36 3.6-2.53 7.74-.46 11.47l2.77 4.95c.11.2.32.3.54.3h6.18c.25 0 .35-.19.23-.42L12.07 3.84c-.12-.23-.43-.25-.6-.06z" fill="#c69c6d"/>
-                  </svg>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.85rem", color: "rgba(254, 255, 255, 0.5)" }}>Atlassian</span>
-                </div>
-                {/* Confluence */}
-                <div className="flex items-center gap-2 opacity-60 hover:opacity-100 transition-opacity">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M2.74 17.65c-.15.23-.09.36.02.52l2.43 3.19c.12.17.33.19.5.06 0 0 3.55-2.74 7.31-2.74 3.76 0 7.31 2.74 7.31 2.74.17.13.38.11.5-.06l2.43-3.19c.11-.16.17-.29.02-.52 0 0-3.13-4.35-10.26-4.35s-10.26 4.35-10.26 4.35z" fill="#c69c6d" opacity="0.6"/>
-                    <path d="M21.26 6.35c.15-.23.09-.36-.02-.52l-2.43-3.19c-.12-.17-.33-.19-.5-.06 0 0-3.55 2.74-7.31 2.74-3.76 0-7.31-2.74-7.31-2.74-.17-.13-.38-.11-.5.06L.76 5.83c-.11.16-.17.29-.02.52 0 0 3.13 4.35 10.26 4.35s10.26-4.35 10.26-4.35z" fill="#c69c6d"/>
-                  </svg>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.85rem", color: "rgba(254, 255, 255, 0.5)" }}>Confluence</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
+
         {/* Footer */}
         <div className="absolute bottom-6 sm:bottom-8 md:bottom-12 left-6 sm:left-8 md:left-12 lg:left-16 z-10">
           {/* Decorative Lines */}
