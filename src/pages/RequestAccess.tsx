@@ -545,16 +545,6 @@ export default function RequestAccess() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
           {/* Main Form */}
           <main className="bg-white border border-[#E5E7EB] rounded-2xl shadow-[0_6px_16px_rgba(15,23,42,0.06)]">
-            <div className="p-5 sm:p-6 border-b border-[#E5E7EB] flex flex-col sm:flex-row items-start justify-between gap-4">
-              <div>
-                <h2 className="text-lg font-bold tracking-tight text-[#111827] m-0">{t.cardTitle}</h2>
-                <p className="text-sm text-[#6B7280] mt-2 leading-relaxed">{t.cardSub}</p>
-              </div>
-              <span className="inline-flex items-center gap-2 text-xs font-bold px-3 py-2 rounded-full bg-[#C8A566]/15 text-[#0F172A] border border-[#C8A566]/25 whitespace-nowrap shrink-0">
-                {t.badge}
-              </span>
-            </div>
-
             <div className="p-5 sm:p-6">
               {/* Step 1: Request Details */}
               {currentStep === 0 && (
@@ -591,7 +581,7 @@ export default function RequestAccess() {
                     />
                     <div className="flex justify-between items-center gap-2 text-xs text-[#6B7280]">
                       <span>{t.descHint}</span>
-                      <span>{formData.description.length} chars</span>
+                      <span>{formData.description.trim() ? formData.description.trim().split(/\s+/).length : 0} words</span>
                     </div>
                     {errors.description && <p className="text-xs font-bold text-[#B42318]">{errors.description}</p>}
                   </div>
