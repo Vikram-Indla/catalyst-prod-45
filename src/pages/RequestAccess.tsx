@@ -1,74 +1,180 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, Download, Mail, ArrowLeft, Upload, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle2, Download, ArrowLeft, Upload, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 
+// Translations
+const translations = {
+  en: {
+    pageTitle: 'Submit a Demand Request',
+    backToLogin: 'Back to Login',
+    langSwitch: 'AR',
+    step1: 'Request Details',
+    step2: 'Requester Information',
+    step3: 'Attachments',
+    step4: 'Review & Submit',
+    cardTitle: 'External Business Request',
+    cardSub: "Please provide clear details. You'll receive a reference number after submission.",
+    badge: 'Secure external intake',
+    summaryLabel: 'Summary',
+    summaryPlaceholder: 'Brief title for your request',
+    summaryHint: 'Example: "Enable bulk export for investor licenses dashboard".',
+    summaryError: 'Summary is required (min 5 characters).',
+    descLabel: 'Description',
+    descPlaceholder: 'Provide enough details for the business request (50 words minimum)',
+    descHint: 'Tip: include objective, impacted users, urgency, and expected outcome.',
+    descError: 'Description is required.',
+    platformLabel: 'Delivery Platform',
+    platformPlaceholder: 'Select platform…',
+    platformHint: 'Choose the delivery platform that will implement this request.',
+    platformError: 'Delivery Platform is required.',
+    requestedByLabel: 'Requested by',
+    requestedByPlaceholder: 'Enter your full name',
+    requestedByError: 'Your name is required.',
+    emailLabel: 'Email',
+    emailPlaceholder: 'name@mim.gov.sa',
+    emailError: 'Valid @mim.gov.sa email is required.',
+    deptLabel: 'Department',
+    deptPlaceholder: 'Select department…',
+    deptError: 'Department is required.',
+    ownerLabel: 'Business Owner',
+    ownerPlaceholder: 'Enter business owner name',
+    ownerError: 'Business Owner is required.',
+    requesterHint: 'Make sure requester details are correct to receive updates and reference number.',
+    attachLabel: 'Attachments (optional)',
+    attachDrop: 'Drop files here',
+    attachHint: 'Max 5 files, 20MB total. Allowed: PDF, DOC, XLS, PPT, TXT, CSV.',
+    browseFiles: 'Browse files',
+    reviewTitle: 'Review your details',
+    reviewHint: 'Review your details before submitting. You will receive a reference number after successful submission.',
+    privacyHint: 'By submitting, you confirm the information provided is accurate.',
+    back: 'Back',
+    saveDraft: 'Save Draft',
+    continue: 'Continue',
+    submit: 'Submit Request',
+    sidebarBadge: 'What happens next',
+    sidebarTitle: 'After you submit',
+    sidebarText: "You'll receive a reference number and confirmation email. Your request will be reviewed and routed to the relevant IT delivery platform.",
+    responseTitle: 'Expected response',
+    responseText: 'Initial triage in 1–3 business days.',
+    confTitle: 'Confidentiality',
+    confText: 'External submission. Do not include sensitive personal data unless required.',
+    helpTitle: 'Need help?',
+    helpText: 'support@mim.gov.sa',
+    successTitle: 'Your demand has been successfully logged',
+    successText: 'The MIM Demand Team has received your request. We will keep you informed of its progress and reach out if any additional information is required.',
+    thankYou: 'Thank you for submitting your request.',
+    downloadPdf: 'Download Confirmation (PDF)',
+    editForm: 'Edit Form Again',
+    requestId: 'Your Request ID',
+    required: '*',
+  },
+  ar: {
+    pageTitle: 'تقديم طلب عمل',
+    backToLogin: 'العودة لتسجيل الدخول',
+    langSwitch: 'EN',
+    step1: 'تفاصيل الطلب',
+    step2: 'معلومات مقدم الطلب',
+    step3: 'المرفقات',
+    step4: 'المراجعة والإرسال',
+    cardTitle: 'طلب عمل خارجي',
+    cardSub: 'يرجى تقديم تفاصيل واضحة. ستتلقى رقم مرجعي بعد التقديم.',
+    badge: 'استلام آمن خارجي',
+    summaryLabel: 'الملخص',
+    summaryPlaceholder: 'عنوان موجز لطلبك',
+    summaryHint: 'مثال: "تفعيل التصدير المجمع للوحة تراخيص المستثمرين".',
+    summaryError: 'الملخص مطلوب (5 أحرف على الأقل).',
+    descLabel: 'الوصف',
+    descPlaceholder: 'قدم تفاصيل كافية لطلب العمل (50 كلمة كحد أدنى)',
+    descHint: 'نصيحة: اذكر الهدف، المستخدمين المتأثرين، الاستعجال، والنتيجة المتوقعة.',
+    descError: 'الوصف مطلوب.',
+    platformLabel: 'منصة التسليم',
+    platformPlaceholder: 'اختر المنصة…',
+    platformHint: 'اختر منصة التسليم التي ستنفذ هذا الطلب.',
+    platformError: 'منصة التسليم مطلوبة.',
+    requestedByLabel: 'مقدم الطلب',
+    requestedByPlaceholder: 'أدخل اسمك الكامل',
+    requestedByError: 'اسمك مطلوب.',
+    emailLabel: 'البريد الإلكتروني',
+    emailPlaceholder: 'name@mim.gov.sa',
+    emailError: 'مطلوب بريد إلكتروني صالح من @mim.gov.sa.',
+    deptLabel: 'القسم',
+    deptPlaceholder: 'اختر القسم…',
+    deptError: 'القسم مطلوب.',
+    ownerLabel: 'مالك العمل',
+    ownerPlaceholder: 'أدخل اسم مالك العمل',
+    ownerError: 'مالك العمل مطلوب.',
+    requesterHint: 'تأكد من صحة بيانات مقدم الطلب لتلقي التحديثات والرقم المرجعي.',
+    attachLabel: 'المرفقات (اختياري)',
+    attachDrop: 'أفلت الملفات هنا',
+    attachHint: 'الحد الأقصى 5 ملفات، 20 ميجابايت. المسموح: PDF, DOC, XLS, PPT, TXT, CSV.',
+    browseFiles: 'تصفح الملفات',
+    reviewTitle: 'مراجعة التفاصيل',
+    reviewHint: 'راجع تفاصيلك قبل الإرسال. ستتلقى رقم مرجعي بعد الإرسال بنجاح.',
+    privacyHint: 'بالإرسال، تؤكد أن المعلومات المقدمة دقيقة.',
+    back: 'رجوع',
+    saveDraft: 'حفظ كمسودة',
+    continue: 'متابعة',
+    submit: 'إرسال الطلب',
+    sidebarBadge: 'ماذا يحدث بعد ذلك',
+    sidebarTitle: 'بعد الإرسال',
+    sidebarText: 'ستتلقى رقم مرجعي وبريد تأكيد. سيتم مراجعة طلبك وتوجيهه إلى منصة التسليم المناسبة.',
+    responseTitle: 'الاستجابة المتوقعة',
+    responseText: 'الفرز الأولي في 1-3 أيام عمل.',
+    confTitle: 'السرية',
+    confText: 'تقديم خارجي. لا تقم بتضمين بيانات شخصية حساسة إلا إذا لزم الأمر.',
+    helpTitle: 'تحتاج مساعدة؟',
+    helpText: 'support@mim.gov.sa',
+    successTitle: 'تم تسجيل طلبك بنجاح',
+    successText: 'استلم فريق MIM للطلبات طلبك. سنبقيك على اطلاع بتقدمه وسنتواصل معك إذا لزم الأمر.',
+    thankYou: 'شكراً لتقديم طلبك.',
+    downloadPdf: 'تحميل التأكيد (PDF)',
+    editForm: 'تعديل النموذج',
+    requestId: 'رقم طلبك',
+    required: '*',
+  }
+};
+
 // Department options
 const DEPARTMENTS = [
-  'Information Technology',
-  'Operations',
-  'Finance',
-  'Human Resources',
-  'Marketing',
-  'Sales',
-  'Legal',
-  'Strategy',
-  'Customer Service',
-  'Other'
+  { en: 'Information Technology', ar: 'تقنية المعلومات' },
+  { en: 'Operations', ar: 'العمليات' },
+  { en: 'Finance', ar: 'المالية' },
+  { en: 'Human Resources', ar: 'الموارد البشرية' },
+  { en: 'Business', ar: 'الأعمال' },
+  { en: 'Strategy', ar: 'الاستراتيجية' },
+  { en: 'Other', ar: 'أخرى' }
 ];
 
 // Delivery Platform options
 const DELIVERY_PLATFORMS = [
-  'Senaei Platform',
-  'Innovation Platform',
-  'Tahommena',
-  'Compass',
-  'Mini Apps',
-  'Website'
+  { en: 'Investor Journey', ar: 'رحلة المستثمر' },
+  { en: 'Catalyst', ar: 'كاتاليست' },
+  { en: 'RHQ Services', ar: 'خدمات المقر الإقليمي' },
+  { en: 'Senaei Platform', ar: 'منصة صناعي' },
+  { en: 'Other', ar: 'أخرى' }
 ];
-
-// Entity Services - EFS options
-const EFS_PARENT_OPTIONS = [
-  'License Models',
-  'Site Location',
-  'Environment Service',
-  'Customs Exemptions',
-  'Chemical Permits',
-  'Labor Enablement',
-  'Incentives & Enablers',
-  'Competitiveness'
-];
-
-const EFS_CHILD_OPTIONS: Record<string, string[]> = {
-  'License Models': ['Industrial License', 'Commercial License', 'Service License'],
-  'Site Location': ['Industrial City', 'Free Zone', 'Special Economic Zone'],
-  'Environment Service': ['Environmental Permit', 'Waste Management', 'Emissions Control'],
-  'Customs Exemptions': ['Import Duty Waiver', 'Export Facilitation', 'Temporary Import'],
-  'Chemical Permits': ['Storage Permit', 'Transport Permit', 'Usage Authorization'],
-  'Labor Enablement': ['Work Visa Processing', 'Labor Quota', 'Training Programs'],
-  'Incentives & Enablers': ['Tax Incentives', 'Land Allocation', 'Utility Subsidies'],
-  'Competitiveness': ['Quality Certification', 'Export Support', 'R&D Grants']
-};
-
-// ECS options
-const ECS_OPTIONS = ['CR with Industry ISIC', 'CR without Industry ISIC'];
-
-// IS options
-const IS_SAUDI_OPTIONS = ['Incentives & Enablers', 'Competitiveness'];
-const IS_NON_SAUDI_OPTIONS = ['Incentives & Enablers'];
 
 export default function RequestAccess() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Language state
+  const [lang, setLang] = useState<'en' | 'ar'>('en');
+  const t = translations[lang];
+  const isRTL = lang === 'ar';
+  
+  // Step state
+  const [currentStep, setCurrentStep] = useState(0);
+  const steps = [t.step1, t.step2, t.step3, t.step4];
   
   // Form state
   const [formData, setFormData] = useState({
@@ -79,73 +185,55 @@ export default function RequestAccess() {
     email: '',
     department: '',
     businessOwner: '',
-    efsParent: '',
-    efsChild: '',
-    ecsOption: '',
-    isSaudiCategory: '',
-    isNonSaudiCategory: '',
   });
   
   // Attachments
   const [attachments, setAttachments] = useState<File[]>([]);
   
-  // Entity Services expanded by default
-  const [entityServicesOpen, setEntityServicesOpen] = useState(true);
-  
-  // Human verification
-  const [captchaNum1] = useState(() => Math.floor(Math.random() * 10) + 1);
-  const [captchaNum2] = useState(() => Math.floor(Math.random() * 10) + 1);
-  const [captchaAnswer, setCaptchaAnswer] = useState('');
-  
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
   const [ticketNumber, setTicketNumber] = useState('');
-  const [emailInput, setEmailInput] = useState('');
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const validateEmail = (email: string) => {
-    if (!email.trim()) return 'Email is required';
-    if (!email.endsWith('@mim.gov.sa')) return 'Only @mim.gov.sa email addresses are allowed';
-    if (!/^[^\s@]+@mim\.gov\.sa$/.test(email)) return 'Invalid email format';
+    if (!email.trim()) return t.emailError;
+    if (!email.endsWith('@mim.gov.sa')) return t.emailError;
+    if (!/^[^\s@]+@mim\.gov\.sa$/.test(email)) return t.emailError;
     return '';
   };
 
-  const validateForm = () => {
+  const validateStep = (step: number) => {
     const newErrors: Record<string, string> = {};
     
-    if (!formData.summary.trim() || formData.summary.length < 5) {
-      newErrors.summary = 'Summary must be at least 5 characters';
-    }
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
-    }
-    if (!formData.deliveryPlatform) {
-      newErrors.deliveryPlatform = 'Delivery platform is required';
-    }
-    if (!formData.department) {
-      newErrors.department = 'Department is required';
-    }
-    if (!formData.businessOwner.trim()) {
-      newErrors.businessOwner = 'Business owner is required';
-    }
-    if (!formData.reporter.trim()) {
-      newErrors.reporter = 'Name is required';
+    if (step === 0) {
+      if (!formData.summary.trim() || formData.summary.length < 5) {
+        newErrors.summary = t.summaryError;
+      }
+      if (!formData.description.trim()) {
+        newErrors.description = t.descError;
+      }
+      if (!formData.deliveryPlatform) {
+        newErrors.deliveryPlatform = t.platformError;
+      }
     }
     
-    // Email validation
-    const emailError = validateEmail(formData.email);
-    if (emailError) {
-      newErrors.email = emailError;
-    }
-    
-    // CAPTCHA validation
-    const correctAnswer = captchaNum1 + captchaNum2;
-    if (parseInt(captchaAnswer) !== correctAnswer) {
-      newErrors.captcha = 'Incorrect answer. Please try again.';
+    if (step === 1) {
+      if (!formData.reporter.trim()) {
+        newErrors.reporter = t.requestedByError;
+      }
+      const emailError = validateEmail(formData.email);
+      if (emailError) {
+        newErrors.email = emailError;
+      }
+      if (!formData.department) {
+        newErrors.department = t.deptError;
+      }
+      if (!formData.businessOwner.trim()) {
+        newErrors.businessOwner = t.ownerError;
+      }
     }
     
     setErrors(newErrors);
@@ -188,11 +276,30 @@ export default function RequestAccess() {
     setAttachments(attachments.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) {
-      toast({ title: 'Please fix the errors', description: 'Some required fields are missing or invalid', variant: 'destructive' });
+  const handleNext = () => {
+    if (currentStep < 3) {
+      if (!validateStep(currentStep)) {
+        toast({ title: 'Please fix the errors', variant: 'destructive' });
+        return;
+      }
+      setCurrentStep(currentStep + 1);
+    } else {
+      handleSubmit();
+    }
+  };
+
+  const handleBack = () => {
+    if (currentStep === 0) {
+      navigate('/auth');
+    } else {
+      setCurrentStep(currentStep - 1);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!validateStep(0) || !validateStep(1)) {
+      setCurrentStep(0);
+      toast({ title: 'Please fix the errors', variant: 'destructive' });
       return;
     }
     
@@ -206,7 +313,7 @@ export default function RequestAccess() {
           description: formData.description,
           delivery_platform: formData.deliveryPlatform,
           requestor: formData.reporter,
-          process_step: 'new_request',
+          process_step: 'REQUEST RECEIVED',
           health: 'green',
           platform: 'Web',
           complexity: 'Medium',
@@ -231,19 +338,16 @@ export default function RequestAccess() {
     const { jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     
-    // Header
     doc.setFillColor(26, 26, 26);
     doc.rect(0, 0, 210, 35, 'F');
     doc.setTextColor(254, 255, 255);
     doc.setFontSize(22);
     doc.text('Demand Request Confirmation', 15, 22);
     
-    // Ticket number
     doc.setFontSize(12);
     doc.setTextColor(198, 156, 109);
     doc.text(`Ticket: ${ticketNumber}`, 15, 30);
     
-    // Content
     doc.setTextColor(26, 26, 26);
     doc.setFontSize(14);
     doc.text('Request Details', 15, 50);
@@ -272,7 +376,6 @@ export default function RequestAccess() {
     doc.text(`Email: ${formData.email}`, 15, yPos);
     yPos += lineHeight * 2;
     
-    // Footer message
     yPos += 10;
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
@@ -282,7 +385,6 @@ export default function RequestAccess() {
     yPos += 6;
     doc.text('Thank you for submitting your request.', 15, yPos);
     
-    // Page number
     doc.setFontSize(8);
     doc.text(`Generated: ${format(new Date(), 'dd/MM/yyyy HH:mm')}`, 15, 285);
     doc.text('Catalyst - MIM Demand Management', 150, 285);
@@ -290,100 +392,68 @@ export default function RequestAccess() {
     doc.save(`${ticketNumber}-demand-request.pdf`);
   };
 
-  const handleSendEmail = async () => {
-    if (!emailInput.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput)) {
-      toast({ title: 'Invalid email', description: 'Please enter a valid email address', variant: 'destructive' });
-      return;
-    }
-    
-    setIsSendingEmail(true);
-    
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast({ title: 'Email sent', description: `Confirmation sent to ${emailInput}` });
-      setEmailInput('');
-    } catch (error) {
-      toast({ title: 'Failed to send email', variant: 'destructive' });
-    } finally {
-      setIsSendingEmail(false);
-    }
+  const resetForm = () => {
+    setSubmissionSuccess(false);
+    setTicketNumber('');
+    setCurrentStep(0);
+    setFormData({
+      summary: '',
+      description: '',
+      deliveryPlatform: '',
+      reporter: '',
+      email: '',
+      department: '',
+      businessOwner: '',
+    });
+    setAttachments([]);
+    setErrors({});
   };
 
   // Success screen
   if (submissionSuccess) {
     return (
-      <div className="min-h-screen bg-[#fafafa] flex items-center justify-center p-4">
+      <div className={cn("min-h-screen bg-[#F6F7F9] flex items-center justify-center p-4", isRTL && "rtl")} dir={isRTL ? 'rtl' : 'ltr'}>
         <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl p-8 text-center">
-          {/* Success Icon */}
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#c69c6d]/10 flex items-center justify-center">
-            <CheckCircle2 className="w-10 h-10 text-[#c69c6d]" />
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-[#C8A566]/10 flex items-center justify-center">
+            <CheckCircle2 className="w-10 h-10 text-[#C8A566]" />
           </div>
           
-          {/* Ticket Number */}
           <div className="mb-6">
-            <p className="text-sm text-muted-foreground mb-2">Your Request ID</p>
-            <p className="text-3xl font-semibold text-[#1a1a1a]" style={{ fontFamily: "'Playfair Display', serif" }}>
+            <p className="text-sm text-[#6B7280] mb-2">{t.requestId}</p>
+            <p className="text-3xl font-bold text-[#0F172A]" style={{ fontFamily: "'Playfair Display', serif" }}>
               {ticketNumber}
             </p>
           </div>
           
-          {/* Success Message */}
-          <div className="mb-8 text-[#1a1a1a]/80 leading-relaxed" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            <p className="text-lg font-medium mb-2">Your demand has been successfully logged</p>
-            <p className="text-sm">
-              The MIM Demand Team has received your request. We will keep you informed of its progress and reach out if any additional information is required.
-            </p>
-            <p className="text-sm mt-2 text-[#c69c6d] font-medium">
-              Thank you for submitting your request.
-            </p>
+          <div className="mb-8 text-[#111827]/80 leading-relaxed">
+            <p className="text-lg font-semibold mb-2">{t.successTitle}</p>
+            <p className="text-sm">{t.successText}</p>
+            <p className="text-sm mt-2 text-[#C8A566] font-medium">{t.thankYou}</p>
           </div>
           
-          {/* Actions */}
           <div className="space-y-4">
-            {/* Download PDF */}
             <Button 
               onClick={handleDownloadPDF}
-              className="w-full bg-[#c69c6d] hover:bg-[#b8905f] text-white"
+              className="w-full bg-[#C8A566] hover:bg-[#b8955a] text-[#101010] font-bold"
             >
               <Download className="w-4 h-4 mr-2" />
-              Download Confirmation (PDF)
+              {t.downloadPdf}
             </Button>
             
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-4 border-t">
               <Button 
                 variant="outline" 
                 onClick={() => navigate('/auth')}
-                className="flex-1 border-[#c69c6d] text-[#c69c6d] hover:bg-[#c69c6d]/10"
+                className="flex-1 border-[#C8A566] text-[#C8A566] hover:bg-[#C8A566]/10 font-semibold"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Login
+                {t.backToLogin}
               </Button>
               <Button 
-                onClick={() => {
-                  setSubmissionSuccess(false);
-                  setTicketNumber('');
-                  setFormData({
-                    summary: '',
-                    description: '',
-                    deliveryPlatform: '',
-                    reporter: '',
-                    email: '',
-                    department: '',
-                    businessOwner: '',
-                    efsParent: '',
-                    efsChild: '',
-                    ecsOption: '',
-                    isSaudiCategory: '',
-                    isNonSaudiCategory: '',
-                  });
-                  setAttachments([]);
-                  setCaptchaAnswer('');
-                  setErrors({});
-                }}
-                className="flex-1 bg-[#c69c6d] hover:bg-[#b8905f] text-white"
+                onClick={resetForm}
+                className="flex-1 bg-[#C8A566] hover:bg-[#b8955a] text-[#101010] font-bold"
               >
-                Edit Form Again
+                {t.editForm}
               </Button>
             </div>
           </div>
@@ -393,399 +463,370 @@ export default function RequestAccess() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
-      {/* Header with Title */}
-      <header className="bg-[#1a1a1a] sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            {/* Catalyst Logo */}
+    <div className={cn("min-h-screen bg-[#F6F7F9]", isRTL && "rtl")} dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Header */}
+      <header className="bg-gradient-to-b from-[#121212] to-[#101010] text-white border-b border-white/5">
+        <div className="max-w-[1100px] mx-auto px-6 py-3.5 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
             <span 
-              className="font-semibold whitespace-nowrap cursor-pointer"
-              style={{ 
-                fontSize: '20px', 
-                lineHeight: '24px', 
-                letterSpacing: '-0.02em',
-              }}
+              className="font-bold whitespace-nowrap cursor-pointer"
+              style={{ fontSize: '20px', lineHeight: '24px', letterSpacing: '-0.02em' }}
               onClick={() => navigate('/auth')}
             >
               <span className="text-white">Cata</span>
-              <span className="text-[#c69c6d]">lyst</span>
+              <span className="text-[#C8A566]">lyst</span>
             </span>
-            
-            {/* Divider */}
-            <div className="w-px h-6 bg-white/20" />
-            
-            {/* Page Title */}
-            <h1 className="text-white font-medium text-base sm:text-lg">
-              Submit a Demand Request
-            </h1>
+            <div className="w-px h-5 bg-white/10 hidden sm:block" />
+            <span className="text-sm text-white/85 hidden sm:block">{t.pageTitle}</span>
           </div>
-          
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/auth')}
-            className="text-white/70 hover:text-white hover:bg-white/10"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            <span className="hidden sm:inline">Back to Login</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => navigate('/auth')}
+              className="bg-transparent border-0 text-white/90 font-semibold text-sm px-3 py-2 rounded-lg hover:bg-white/5"
+            >
+              ← {t.backToLogin}
+            </button>
+            <button 
+              onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+              className="border border-white/20 bg-transparent text-white px-3 py-2 rounded-xl font-semibold text-sm hover:border-white/40"
+            >
+              {t.langSwitch}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Section 1: Request Details */}
-          <section className="bg-white rounded-xl border border-[#e5e5e5] p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-[#c69c6d] uppercase tracking-wider mb-6">
-              Request Details
-            </h2>
-            
-            <div className="space-y-5">
-              {/* Summary */}
-              <div>
-                <Label htmlFor="summary" className="text-[#1a1a1a] font-medium">
-                  Summary <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="summary"
-                  value={formData.summary}
-                  onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                  placeholder="Brief title for your request"
-                  className={cn("mt-1.5", errors.summary && "border-red-500")}
-                />
-                {errors.summary && <p className="text-sm text-red-500 mt-1">{errors.summary}</p>}
-              </div>
-              
-              {/* Description */}
-              <div>
-                <Label htmlFor="description" className="text-[#1a1a1a] font-medium">
-                  Description <span className="text-red-500">*</span>
-                </Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Provide enough details for the business request (50 words)"
-                  className={cn("mt-1.5 min-h-[120px]", errors.description && "border-red-500")}
-                />
-                {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description}</p>}
-              </div>
-              
-              {/* Delivery Platform */}
-              <div>
-                <Label className="text-[#1a1a1a] font-medium">
-                  Delivery Platform <span className="text-red-500">*</span>
-                </Label>
-                <Select 
-                  value={formData.deliveryPlatform} 
-                  onValueChange={(value) => setFormData({ ...formData, deliveryPlatform: value })}
-                >
-                  <SelectTrigger className={cn("mt-1.5", errors.deliveryPlatform && "border-red-500")}>
-                    <SelectValue placeholder="Select platform..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {DELIVERY_PLATFORMS.map((platform) => (
-                      <SelectItem key={platform} value={platform}>{platform}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.deliveryPlatform && <p className="text-sm text-red-500 mt-1">{errors.deliveryPlatform}</p>}
-              </div>
-            </div>
-          </section>
+      <div className="max-w-[1100px] mx-auto px-4 sm:px-6 py-6">
+        {/* Stepper */}
+        <div className="flex gap-2 flex-wrap p-3.5 bg-white border border-[#E5E7EB] rounded-2xl shadow-sm mb-5">
+          {steps.map((step, idx) => (
+            <button
+              key={idx}
+              onClick={() => idx <= currentStep && setCurrentStep(idx)}
+              className={cn(
+                "flex items-center gap-2.5 px-3 py-2.5 rounded-full border text-sm cursor-pointer select-none transition-all",
+                idx === currentStep 
+                  ? "border-[#C8A566]/45 shadow-[0_0_0_4px_rgba(200,165,102,0.12)]" 
+                  : "border-[#E5E7EB] bg-white",
+                idx < currentStep && "border-[#067647]/30"
+              )}
+            >
+              <span className={cn(
+                "w-5.5 h-5.5 rounded-full flex items-center justify-center border text-xs font-bold",
+                idx === currentStep 
+                  ? "border-[#C8A566]/55 bg-[#C8A566]/10 text-[#0F172A]"
+                  : idx < currentStep
+                    ? "border-[#067647]/45 bg-[#067647]/10 text-[#067647]"
+                    : "border-[#E5E7EB] text-[#6B7280]"
+              )}>
+                {idx < currentStep ? <Check className="w-3 h-3" /> : idx + 1}
+              </span>
+              <span className="hidden sm:inline">{step}</span>
+            </button>
+          ))}
+        </div>
 
-          {/* Section 2: Requester Information */}
-          <section className="bg-white rounded-xl border border-[#e5e5e5] p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-[#c69c6d] uppercase tracking-wider mb-6">
-              Requester Information
-            </h2>
-            
-            <div className="space-y-5">
-              {/* Requested By & Email */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="reporter" className="text-[#1a1a1a] font-medium">
-                    Requested by <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="reporter"
-                    value={formData.reporter}
-                    onChange={(e) => setFormData({ ...formData, reporter: e.target.value })}
-                    placeholder="Enter your full name"
-                    className={cn("mt-1.5", errors.reporter && "border-red-500")}
-                  />
-                  {errors.reporter && <p className="text-sm text-red-500 mt-1">{errors.reporter}</p>}
-                </div>
-                
-                <div>
-                  <Label htmlFor="email" className="text-[#1a1a1a] font-medium">
-                    Email <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="name@mim.gov.sa"
-                    className={cn("mt-1.5", errors.email && "border-red-500")}
-                  />
-                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 items-start">
+          {/* Main Form */}
+          <main className="bg-white border border-[#E5E7EB] rounded-2xl shadow-[0_6px_16px_rgba(15,23,42,0.06)]">
+            <div className="p-4.5 border-b border-[#E5E7EB] flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-base font-extrabold tracking-tight text-[#111827] m-0">{t.cardTitle}</h2>
+                <p className="text-[13px] text-[#6B7280] mt-1.5 leading-snug">{t.cardSub}</p>
               </div>
-              
-              {/* Department & Business Owner */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-[#1a1a1a] font-medium">
-                    Department <span className="text-red-500">*</span>
-                  </Label>
-                  <Select 
-                    value={formData.department} 
-                    onValueChange={(value) => setFormData({ ...formData, department: value })}
-                  >
-                    <SelectTrigger className={cn("mt-1.5", errors.department && "border-red-500")}>
-                      <SelectValue placeholder="Select department..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {DEPARTMENTS.map((dept) => (
-                        <SelectItem key={dept} value={dept}>{dept}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.department && <p className="text-sm text-red-500 mt-1">{errors.department}</p>}
-                </div>
-                
-                <div>
-                  <Label htmlFor="businessOwner" className="text-[#1a1a1a] font-medium">
-                    Business Owner <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="businessOwner"
-                    value={formData.businessOwner}
-                    onChange={(e) => setFormData({ ...formData, businessOwner: e.target.value })}
-                    placeholder="Enter business owner name"
-                    className={cn("mt-1.5", errors.businessOwner && "border-red-500")}
-                  />
-                  {errors.businessOwner && <p className="text-sm text-red-500 mt-1">{errors.businessOwner}</p>}
-                </div>
-              </div>
+              <span className="inline-flex items-center gap-2 text-xs font-black px-2.5 py-2 rounded-full bg-[#C8A566]/15 text-[#0F172A] border border-[#C8A566]/25">
+                {t.badge}
+              </span>
             </div>
-          </section>
 
-          {/* Section 3: Attachments */}
-          <section className="bg-white rounded-xl border border-[#e5e5e5] p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-[#c69c6d] uppercase tracking-wider mb-6">
-              Attachments
-            </h2>
-            
-            <div>
-              <Label className="text-[#1a1a1a] font-medium">
-                Supporting Documents <span className="text-muted-foreground text-sm font-normal">(Max 5 files, 20MB total. PDF, DOC, XLS, PPT, TXT, CSV)</span>
-              </Label>
-              <div className="mt-1.5">
-                <label className="flex items-center gap-3 px-4 py-3 bg-[#f5f5f5] border border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:bg-[#efefef] transition-colors">
-                  <Upload className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-muted-foreground">Upload Files...</span>
-                  <input
-                    type="file"
-                    multiple
-                    onChange={handleFileUpload}
-                    className="hidden"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
-                    disabled={attachments.length >= 5}
-                  />
-                </label>
-                
-                {attachments.length > 0 && (
-                  <div className="mt-3 space-y-2">
-                    {attachments.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between bg-[#f9f9f9] px-3 py-2 rounded-lg">
-                        <span className="text-sm truncate">{file.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="h-6 w-6"
-                            onClick={() => removeAttachment(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+            <div className="p-4.5">
+              {/* Step 1: Request Details */}
+              {currentStep === 0 && (
+                <div className="space-y-4">
+                  <div className={cn("space-y-1.5", errors.summary && "has-error")}>
+                    <Label className="text-[13px] font-bold text-[#111827]">
+                      {t.summaryLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
+                    </Label>
+                    <Input
+                      value={formData.summary}
+                      onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
+                      placeholder={t.summaryPlaceholder}
+                      className={cn(
+                        "h-11 rounded-xl border-[#E5E7EB] focus:border-[#C8A566]/70 focus:ring-[0_0_0_4px_rgba(200,165,102,0.25)]",
+                        errors.summary && "border-[#B42318]/55 bg-gradient-to-b from-[#B42318]/5 to-transparent"
+                      )}
+                    />
+                    <p className="text-xs text-[#6B7280]">{t.summaryHint}</p>
+                    {errors.summary && <p className="text-xs font-bold text-[#B42318]">{errors.summary}</p>}
                   </div>
-                )}
-              </div>
-            </div>
-          </section>
 
-          {/* Section 4: Entity & Individual Services (Expanded by default, Optional) */}
-          <Collapsible open={entityServicesOpen} onOpenChange={setEntityServicesOpen}>
-            <section className="bg-white rounded-xl border border-[#e5e5e5] shadow-sm overflow-hidden">
-              <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#fafafa] transition-colors">
-                <h2 className="text-sm font-semibold text-[#c69c6d] uppercase tracking-wider">
-                  Entity & Individual Services <span className="text-muted-foreground font-normal normal-case">(Optional)</span>
-                </h2>
-                {entityServicesOpen ? (
-                  <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                )}
-              </CollapsibleTrigger>
-              
-              <CollapsibleContent>
-                <div className="px-6 pb-6 space-y-6">
-                  {/* EFS Section */}
-                  <div>
-                    <p className="text-sm font-medium text-[#1a1a1a] mb-3">EFS (Entity Factory Services)</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-muted-foreground text-sm">Service Category</Label>
-                        <Select 
-                          value={formData.efsParent} 
-                          onValueChange={(value) => setFormData({ ...formData, efsParent: value, efsChild: '' })}
-                        >
-                          <SelectTrigger className="mt-1.5">
-                            <SelectValue placeholder="Select category..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {EFS_PARENT_OPTIONS.map((opt) => (
-                              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div>
-                        <Label className="text-muted-foreground text-sm">Specific Service</Label>
-                        <Select 
-                          value={formData.efsChild} 
-                          onValueChange={(value) => setFormData({ ...formData, efsChild: value })}
-                          disabled={!formData.efsParent}
-                        >
-                          <SelectTrigger className="mt-1.5">
-                            <SelectValue placeholder="Select service..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {(EFS_CHILD_OPTIONS[formData.efsParent] || []).map((opt) => (
-                              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                  <div className={cn("space-y-1.5", errors.description && "has-error")}>
+                    <Label className="text-[13px] font-bold text-[#111827]">
+                      {t.descLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
+                    </Label>
+                    <Textarea
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder={t.descPlaceholder}
+                      className={cn(
+                        "min-h-[120px] rounded-xl border-[#E5E7EB] resize-y leading-5 focus:border-[#C8A566]/70",
+                        errors.description && "border-[#B42318]/55 bg-gradient-to-b from-[#B42318]/5 to-transparent"
+                      )}
+                    />
+                    <div className="flex justify-between items-center gap-2 text-xs text-[#6B7280]">
+                      <span>{t.descHint}</span>
+                      <span>{formData.description.length} chars</span>
                     </div>
+                    {errors.description && <p className="text-xs font-bold text-[#B42318]">{errors.description}</p>}
                   </div>
-                  
-                  {/* ECS Section */}
-                  <div>
-                    <p className="text-sm font-medium text-[#1a1a1a] mb-3">ECS (Commercial Registry)</p>
-                    <Select 
-                      value={formData.ecsOption} 
-                      onValueChange={(value) => setFormData({ ...formData, ecsOption: value })}
-                    >
-                      <SelectTrigger className="max-w-sm">
-                        <SelectValue placeholder="Select option..." />
+
+                  <div className={cn("space-y-1.5", errors.deliveryPlatform && "has-error")}>
+                    <Label className="text-[13px] font-bold text-[#111827]">
+                      {t.platformLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
+                    </Label>
+                    <Select value={formData.deliveryPlatform} onValueChange={(v) => setFormData({ ...formData, deliveryPlatform: v })}>
+                      <SelectTrigger className={cn(
+                        "h-11 rounded-xl border-[#E5E7EB]",
+                        errors.deliveryPlatform && "border-[#B42318]/55"
+                      )}>
+                        <SelectValue placeholder={t.platformPlaceholder} />
                       </SelectTrigger>
                       <SelectContent>
-                        {ECS_OPTIONS.map((opt) => (
-                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                        {DELIVERY_PLATFORMS.map((p) => (
+                          <SelectItem key={p.en} value={p.en}>{lang === 'en' ? p.en : p.ar}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                  </div>
-                  
-                  {/* IS Section */}
-                  <div>
-                    <p className="text-sm font-medium text-[#1a1a1a] mb-3">IS (Individual Services)</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <Label className="text-muted-foreground text-sm">Saudi Category</Label>
-                        <Select 
-                          value={formData.isSaudiCategory} 
-                          onValueChange={(value) => setFormData({ ...formData, isSaudiCategory: value })}
-                        >
-                          <SelectTrigger className="mt-1.5">
-                            <SelectValue placeholder="Select category..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {IS_SAUDI_OPTIONS.map((opt) => (
-                              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div>
-                        <Label className="text-muted-foreground text-sm">Non-Saudi Category</Label>
-                        <Select 
-                          value={formData.isNonSaudiCategory} 
-                          onValueChange={(value) => setFormData({ ...formData, isNonSaudiCategory: value })}
-                        >
-                          <SelectTrigger className="mt-1.5">
-                            <SelectValue placeholder="Select category..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {IS_NON_SAUDI_OPTIONS.map((opt) => (
-                              <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
+                    <p className="text-xs text-[#6B7280]">{t.platformHint}</p>
+                    {errors.deliveryPlatform && <p className="text-xs font-bold text-[#B42318]">{errors.deliveryPlatform}</p>}
                   </div>
                 </div>
-              </CollapsibleContent>
-            </section>
-          </Collapsible>
+              )}
 
-          {/* Section 5: Human Verification */}
-          <section className="bg-white rounded-xl border border-[#e5e5e5] p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-[#c69c6d] uppercase tracking-wider mb-4">
-              Verification
-            </h2>
-            
-            <div className="flex items-center gap-4">
-              <div className="bg-[#f5f5f5] px-4 py-2 rounded-lg">
-                <span className="text-lg font-semibold text-[#1a1a1a]">
-                  {captchaNum1} + {captchaNum2} = ?
-                </span>
-              </div>
-              <Input
-                type="number"
-                value={captchaAnswer}
-                onChange={(e) => setCaptchaAnswer(e.target.value)}
-                placeholder="Your answer"
-                className={cn("w-32", errors.captcha && "border-red-500")}
-              />
-              {errors.captcha && <p className="text-sm text-red-500">{errors.captcha}</p>}
+              {/* Step 2: Requester Information */}
+              {currentStep === 1 && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className={cn("space-y-1.5", errors.reporter && "has-error")}>
+                      <Label className="text-[13px] font-bold text-[#111827]">
+                        {t.requestedByLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
+                      </Label>
+                      <Input
+                        value={formData.reporter}
+                        onChange={(e) => setFormData({ ...formData, reporter: e.target.value })}
+                        placeholder={t.requestedByPlaceholder}
+                        className={cn(
+                          "h-11 rounded-xl border-[#E5E7EB]",
+                          errors.reporter && "border-[#B42318]/55"
+                        )}
+                      />
+                      {errors.reporter && <p className="text-xs font-bold text-[#B42318]">{errors.reporter}</p>}
+                    </div>
+
+                    <div className={cn("space-y-1.5", errors.email && "has-error")}>
+                      <Label className="text-[13px] font-bold text-[#111827]">
+                        {t.emailLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
+                      </Label>
+                      <Input
+                        type="email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        placeholder={t.emailPlaceholder}
+                        className={cn(
+                          "h-11 rounded-xl border-[#E5E7EB]",
+                          errors.email && "border-[#B42318]/55"
+                        )}
+                      />
+                      {errors.email && <p className="text-xs font-bold text-[#B42318]">{errors.email}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className={cn("space-y-1.5", errors.department && "has-error")}>
+                      <Label className="text-[13px] font-bold text-[#111827]">
+                        {t.deptLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
+                      </Label>
+                      <Select value={formData.department} onValueChange={(v) => setFormData({ ...formData, department: v })}>
+                        <SelectTrigger className={cn(
+                          "h-11 rounded-xl border-[#E5E7EB]",
+                          errors.department && "border-[#B42318]/55"
+                        )}>
+                          <SelectValue placeholder={t.deptPlaceholder} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {DEPARTMENTS.map((d) => (
+                            <SelectItem key={d.en} value={d.en}>{lang === 'en' ? d.en : d.ar}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {errors.department && <p className="text-xs font-bold text-[#B42318]">{errors.department}</p>}
+                    </div>
+
+                    <div className={cn("space-y-1.5", errors.businessOwner && "has-error")}>
+                      <Label className="text-[13px] font-bold text-[#111827]">
+                        {t.ownerLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
+                      </Label>
+                      <Input
+                        value={formData.businessOwner}
+                        onChange={(e) => setFormData({ ...formData, businessOwner: e.target.value })}
+                        placeholder={t.ownerPlaceholder}
+                        className={cn(
+                          "h-11 rounded-xl border-[#E5E7EB]",
+                          errors.businessOwner && "border-[#B42318]/55"
+                        )}
+                      />
+                      {errors.businessOwner && <p className="text-xs font-bold text-[#B42318]">{errors.businessOwner}</p>}
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-[#6B7280]">{t.requesterHint}</p>
+                </div>
+              )}
+
+              {/* Step 3: Attachments */}
+              {currentStep === 2 && (
+                <div className="space-y-4">
+                  <Label className="text-[13px] font-bold text-[#111827]">{t.attachLabel}</Label>
+                  <div className="border-2 border-dashed border-[#111827]/15 rounded-2xl p-3.5 bg-gradient-to-b from-[#C8A566]/5 to-transparent flex items-center justify-between gap-3">
+                    <div>
+                      <strong className="text-[13px]">{t.attachDrop}</strong>
+                      <small className="block text-[#6B7280] mt-1 text-xs">{t.attachHint}</small>
+                    </div>
+                    <div>
+                      <input
+                        type="file"
+                        multiple
+                        onChange={handleFileUpload}
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
+                        className="hidden"
+                        id="file-upload"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById('file-upload')?.click()}
+                        className="rounded-xl font-bold text-[13px]"
+                      >
+                        {t.browseFiles}
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {attachments.length > 0 && (
+                    <div className="space-y-2 mt-3">
+                      {attachments.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
+                          <span className="truncate">{file.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#6B7280]">{Math.round(file.size / 1024)} KB</span>
+                            <button onClick={() => removeAttachment(index)} className="text-[#B42318] hover:bg-[#B42318]/10 p-1 rounded">
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Step 4: Review */}
+              {currentStep === 3 && (
+                <div className="space-y-4">
+                  <p className="text-[13px] text-[#6B7280] leading-snug">{t.reviewHint}</p>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
+                      <strong>{t.summaryLabel}:</strong>
+                      <span className="text-[#6B7280] truncate">{formData.summary || '—'}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
+                      <strong>{t.platformLabel}:</strong>
+                      <span className="text-[#6B7280]">{formData.deliveryPlatform || '—'}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
+                      <strong>{t.requestedByLabel}:</strong>
+                      <span className="text-[#6B7280]">{formData.reporter || '—'}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
+                      <strong>{t.emailLabel}:</strong>
+                      <span className="text-[#6B7280]">{formData.email || '—'}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
+                      <strong>{t.deptLabel}:</strong>
+                      <span className="text-[#6B7280]">{formData.department || '—'}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
+                      <strong>{t.ownerLabel}:</strong>
+                      <span className="text-[#6B7280]">{formData.businessOwner || '—'}</span>
+                    </div>
+                    {attachments.length > 0 && (
+                      <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
+                        <strong>{t.attachLabel}:</strong>
+                        <span className="text-[#6B7280]">{attachments.length} file(s)</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-[#6B7280] mt-3">{t.privacyHint}</p>
+                </div>
+              )}
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Please solve this simple math problem to verify you're human
-            </p>
-          </section>
 
-          {/* Submit Button */}
-          <div className="flex justify-end gap-3 pt-4">
-            <Button 
-              type="button" 
-              variant="outline"
-              onClick={() => navigate('/auth')}
-            >
-              Cancel
-            </Button>
-            <Button 
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-[#c69c6d] hover:bg-[#b8905f] text-white px-8"
-            >
-              {isSubmitting ? 'Submitting...' : 'Submit Request'}
-            </Button>
-          </div>
-        </form>
-      </main>
+            {/* Actions */}
+            <div className="flex justify-between gap-3 p-3.5 border-t border-[#E5E7EB] bg-white rounded-b-2xl sticky bottom-0">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={handleBack}
+                className="text-[#6B7280] font-semibold"
+              >
+                {currentStep === 0 ? t.backToLogin : t.back}
+              </Button>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="hidden sm:flex rounded-xl font-bold"
+                >
+                  {t.saveDraft}
+                </Button>
+                <Button
+                  onClick={handleNext}
+                  disabled={isSubmitting}
+                  className="bg-[#C8A566] hover:bg-[#b8955a] text-[#101010] font-bold rounded-xl"
+                >
+                  {isSubmitting ? 'Submitting...' : currentStep === 3 ? t.submit : t.continue}
+                </Button>
+              </div>
+            </div>
+          </main>
+
+          {/* Sidebar */}
+          <aside className="bg-white border border-[#E5E7EB] rounded-2xl shadow-sm p-4 sticky top-5 hidden lg:block">
+            <span className="inline-flex items-center gap-2 text-xs font-black px-2.5 py-2 rounded-full bg-[#C8A566]/15 text-[#0F172A] border border-[#C8A566]/25 mb-3">
+              {t.sidebarBadge}
+            </span>
+            <h3 className="font-black text-sm m-0 mb-2">{t.sidebarTitle}</h3>
+            <p className="text-[13px] text-[#6B7280] leading-snug mb-3">{t.sidebarText}</p>
+
+            <div className="border border-[#E5E7EB] rounded-xl p-3 bg-[#111827]/[0.02] mt-3">
+              <h3 className="font-black text-sm m-0 mb-1">{t.responseTitle}</h3>
+              <p className="text-[13px] text-[#6B7280] m-0">{t.responseText}</p>
+            </div>
+
+            <div className="border border-[#E5E7EB] rounded-xl p-3 bg-[#111827]/[0.02] mt-3">
+              <h3 className="font-black text-sm m-0 mb-1">{t.confTitle}</h3>
+              <p className="text-[13px] text-[#6B7280] m-0">{t.confText}</p>
+            </div>
+
+            <div className="border border-[#E5E7EB] rounded-xl p-3 bg-[#111827]/[0.02] mt-3">
+              <h3 className="font-black text-sm m-0 mb-1">{t.helpTitle}</h3>
+              <p className="text-[13px] text-[#6B7280] m-0">{t.helpText}</p>
+            </div>
+          </aside>
+        </div>
+      </div>
     </div>
   );
 }
