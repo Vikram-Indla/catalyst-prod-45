@@ -114,7 +114,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
   };
 
   const getHeaderSubtitle = () => {
-    if (deliveryPlatforms.length === 0) return 'All Platforms';
+    if (deliveryPlatforms.length === 0) return 'Business Demand';
     if (deliveryPlatforms.length === 1) {
       return deliveryPlatformOptions.find(p => p.value === deliveryPlatforms[0])?.label || deliveryPlatforms[0];
     }
