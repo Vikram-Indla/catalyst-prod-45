@@ -74,7 +74,7 @@ export default function Auth() {
                 { Icon: FolderKanban, label: "Project Management" },
                 { Icon: GitBranch, label: "Dependency Management" },
                 { Icon: Rocket, label: "Release Management" },
-                { Icon: AlertTriangle, label: "Incident Management" },
+                { Icon: AlertTriangle, label: "Capacity Management" },
               ].map((item, index) => (
                 <div 
                   key={index}
