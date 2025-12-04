@@ -118,29 +118,29 @@ function SleekGadget({ title, subtitle, icon: Icon, collapsedContent, expandedCo
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="bg-brand-dark rounded-2xl overflow-hidden shadow-lg border border-brand-gold/20">
+    <div className="bg-brand-dark rounded-xl sm:rounded-2xl overflow-hidden shadow-lg border border-brand-gold/20">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/5 transition-colors"
+        className="w-full px-3 sm:px-5 py-3 sm:py-4 flex items-center justify-between hover:bg-white/5 transition-colors"
       >
-        <div className="flex items-center gap-4">
-          <div className="p-2 rounded-lg bg-brand-gold/20">
-            <Icon className="w-5 h-5 text-brand-gold" />
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="p-1.5 sm:p-2 rounded-lg bg-brand-gold/20">
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-brand-gold" />
           </div>
-          <div className="text-left">
-            <h3 className="text-sm font-semibold text-white">{title}</h3>
-            {subtitle && <p className="text-xs text-white/50">{subtitle}</p>}
+          <div className="text-start">
+            <h3 className="text-xs sm:text-sm font-semibold text-white">{title}</h3>
+            {subtitle && <p className="text-[10px] sm:text-xs text-white/50">{subtitle}</p>}
           </div>
         </div>
         
-        <div className="flex items-center gap-4">
-          {collapsedContent}
-          <ChevronDown className={cn('w-5 h-5 text-white/50 transition-transform', isOpen && 'rotate-180')} />
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="hidden xs:flex items-center">{collapsedContent}</div>
+          <ChevronDown className={cn('w-4 h-4 sm:w-5 sm:h-5 text-white/50 transition-transform', isOpen && 'rotate-180')} />
         </div>
       </button>
 
       {isOpen && (
-        <div className="px-5 pb-5 border-t border-white/10">
+        <div className="px-3 sm:px-5 pb-4 sm:pb-5 border-t border-white/10">
           {expandedContent}
         </div>
       )}
@@ -148,68 +148,159 @@ function SleekGadget({ title, subtitle, icon: Icon, collapsedContent, expandedCo
   );
 }
 
+// Translations
+const translations = {
+  en: {
+    greeting: 'Good Morning',
+    greetingAr: 'صباح الخير',
+    businessDemandSummary: 'Business Demand Summary',
+    monthlyOverview: 'Monthly Overview',
+    performancePulse: 'Performance Pulse',
+    cpiTrend: '8-Week CPI Trend & Dimensions',
+    quarterDelivery: 'Quarter Delivery Tracking',
+    deliveryMilestones: 'Delivery Milestones',
+    recentCompletions: 'Recent Completions',
+    rejectionInsights: 'Rejection Insights',
+    analysis: 'Analysis',
+    recoveryPlan: 'Recovery Plan',
+    actionRequired: 'Action Required',
+    trendingTickets: 'Trending Tickets',
+    highPriority: 'High Priority',
+    requiresAttention: 'Requires Attention',
+    criticalItems: 'Critical Items',
+    approvedQueue: 'Approved Queue',
+    readyForImplementation: 'Ready for Implementation',
+    backlogTrend: 'Backlog Trend',
+    sixWeekGrowth: '6-Week Growth',
+    askAI: 'Ask AI',
+    aiAssistant: 'AI Analytics Assistant',
+    askQuestion: 'Ask a question...',
+    statusOverview: 'Status Overview',
+    tickets: 'tickets',
+    requests: 'requests',
+    total: 'Total',
+    onTrack: 'On Track',
+    atRisk: 'At Risk',
+    delayed: 'Delayed',
+    week: 'Week',
+    month: 'Month',
+    quarter: 'Quarter',
+    year: 'Year',
+    performanceDimensions: 'Performance Dimensions',
+  },
+  ar: {
+    greeting: 'صباح الخير',
+    greetingAr: 'Good Morning',
+    businessDemandSummary: 'ملخص الطلب التجاري',
+    monthlyOverview: 'نظرة عامة شهرية',
+    performancePulse: 'نبض الأداء',
+    cpiTrend: 'اتجاه مؤشر الأداء 8 أسابيع',
+    quarterDelivery: 'تتبع التسليم الربع سنوي',
+    deliveryMilestones: 'معالم التسليم',
+    recentCompletions: 'الإنجازات الأخيرة',
+    rejectionInsights: 'رؤى الرفض',
+    analysis: 'التحليل',
+    recoveryPlan: 'خطة الاسترداد',
+    actionRequired: 'إجراء مطلوب',
+    trendingTickets: 'التذاكر الرائجة',
+    highPriority: 'أولوية عالية',
+    requiresAttention: 'يتطلب الاهتمام',
+    criticalItems: 'عناصر حرجة',
+    approvedQueue: 'قائمة الانتظار المعتمدة',
+    readyForImplementation: 'جاهز للتنفيذ',
+    backlogTrend: 'اتجاه الأعمال المتراكمة',
+    sixWeekGrowth: 'نمو 6 أسابيع',
+    askAI: 'اسأل الذكاء الاصطناعي',
+    aiAssistant: 'مساعد التحليلات الذكي',
+    askQuestion: 'اطرح سؤالاً...',
+    statusOverview: 'نظرة عامة على الحالة',
+    tickets: 'تذاكر',
+    requests: 'طلبات',
+    total: 'الإجمالي',
+    onTrack: 'على المسار',
+    atRisk: 'في خطر',
+    delayed: 'متأخر',
+    week: 'أسبوع',
+    month: 'شهر',
+    quarter: 'ربع سنة',
+    year: 'سنة',
+    performanceDimensions: 'أبعاد الأداء',
+  }
+};
+
 export default function DemandSummaryPage() {
   const [activePeriod, setActivePeriod] = useState('Month');
   const [expandedRecovery, setExpandedRecovery] = useState<string | null>(null);
   const [expandedTrending, setExpandedTrending] = useState<string | null>(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
+  const [isArabic, setIsArabic] = useState(false);
+
+  const t = isArabic ? translations.ar : translations.en;
 
   const currentScore = weeklyScores[weeklyScores.length - 1];
   const prevScore = weeklyScores[weeklyScores.length - 2];
   const trend = currentScore - prevScore;
   const sentiment = getSentiment(currentScore);
 
+  const periodOptions = isArabic 
+    ? [{ key: 'Week', label: t.week }, { key: 'Month', label: t.month }, { key: 'Quarter', label: t.quarter }, { key: 'Year', label: t.year }]
+    : [{ key: 'Week', label: 'Week' }, { key: 'Month', label: 'Month' }, { key: 'Quarter', label: 'Quarter' }, { key: 'Year', label: 'Year' }];
+
   return (
-    <div className="min-h-screen bg-background" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className={cn("min-h-screen bg-background", isArabic && "rtl")} style={{ fontFamily: "'Inter', sans-serif" }} dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <header className="bg-card border-b border-border px-6 py-4 sticky top-0 z-50">
-        <div className="max-w-[1400px] mx-auto flex justify-between items-center flex-wrap gap-4">
+      <header className="bg-card border-b border-border px-4 sm:px-6 py-3 sm:py-4 sticky top-0 z-50">
+        <div className="max-w-[1400px] mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-4">
           <div>
-            <p className="text-xs text-brand-gold font-medium">صباح الخير</p>
-            <h1 className="text-[22px] font-bold text-foreground">Good Morning, <span className="text-brand-gold">Khalid</span></h1>
+            <p className="text-xs text-brand-gold font-medium">{isArabic ? 'Good Morning' : 'صباح الخير'}</p>
+            <h1 className="text-lg sm:text-[22px] font-bold text-foreground">{t.greeting}, <span className="text-brand-gold">خالد</span></h1>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="flex items-center gap-1.5 px-3.5 py-2 bg-muted border border-border rounded-lg text-xs font-medium text-muted-foreground hover:bg-brand-gold/10 hover:border-brand-gold/30 transition-colors">
-              <Globe className="w-4 h-4" /> EN | عربي
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <button 
+              onClick={() => setIsArabic(!isArabic)}
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 bg-muted border-2 border-brand-gold rounded-lg text-xs font-medium text-foreground hover:bg-brand-gold/10 transition-colors"
+            >
+              <Globe className="w-4 h-4 text-brand-gold" />
+              <span>{isArabic ? 'EN | عربي' : 'عربي | EN'}</span>
             </button>
             <div className="flex bg-muted rounded-lg p-0.5">
-              {['Week', 'Month', 'Quarter', 'Year'].map((p) => (
-                <button key={p} onClick={() => setActivePeriod(p)} className={cn('px-3 py-1.5 rounded-md text-xs font-medium transition-all', activePeriod === p ? 'bg-brand-dark text-white' : 'text-muted-foreground hover:bg-border')}>{p}</button>
+              {periodOptions.map((p) => (
+                <button key={p.key} onClick={() => setActivePeriod(p.key)} className={cn('px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all', activePeriod === p.key ? 'bg-brand-dark text-white' : 'text-muted-foreground hover:bg-border')}>{p.label}</button>
               ))}
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-[1400px] mx-auto px-6 py-6 space-y-4">
+      <main className="max-w-[1400px] mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-3 sm:space-y-4">
         {/* Business Demand Summary - TOP (includes Status Overview) */}
         <SleekGadget
-          title="Business Demand Summary"
-          subtitle="Monthly Overview"
+          title={t.businessDemandSummary}
+          subtitle={t.monthlyOverview}
           icon={BarChart3}
           defaultOpen={true}
           collapsedContent={
-            <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 bg-amber-500/20 text-amber-400 text-[10px] font-semibold rounded">CPI 72</span>
-              <span className="text-white/60 text-xs">47 requests • 152 tickets</span>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="px-2 sm:px-2.5 py-1 bg-amber-500/20 text-amber-400 text-[10px] font-semibold rounded">CPI 72</span>
+              <span className="text-white/60 text-[10px] sm:text-xs">47 {t.requests} • 152 {t.tickets}</span>
             </div>
           }
           expandedContent={
             <>
               {/* Demand Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 pt-4">
                 {demandCards.map((card, i) => (
-                  <div key={i} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                  <div key={i} className="bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10">
                     <div className="flex justify-between items-start mb-2">
                       <span className="text-[10px] font-semibold text-brand-gold uppercase tracking-wider">{card.label}</span>
-                      <span className="text-brand-gold text-xs cursor-pointer hover:text-brand-gold-hover">→</span>
+                      <span className="text-brand-gold text-xs cursor-pointer hover:text-brand-gold-hover">{isArabic ? '←' : '→'}</span>
                     </div>
                     <div className="text-white mb-1">
-                      <span className={cn('font-mono text-xl font-bold', card.metricStyle === 'up' && 'text-success', card.metricStyle === 'down' && 'text-destructive')}>{card.metric}</span>
-                      <span className="text-sm ml-1">{card.headline}</span>
+                      <span className={cn('font-mono text-lg sm:text-xl font-bold', card.metricStyle === 'up' && 'text-success', card.metricStyle === 'down' && 'text-destructive')}>{card.metric}</span>
+                      <span className="text-xs sm:text-sm ms-1">{card.headline}</span>
                     </div>
-                    <p className="text-[11px] text-white/50">{card.detail}</p>
+                    <p className="text-[10px] sm:text-[11px] text-white/50">{card.detail}</p>
                   </div>
                 ))}
               </div>
@@ -217,8 +308,8 @@ export default function DemandSummaryPage() {
               {/* Status Overview */}
               <div className="border-t border-white/10 pt-4 mt-4">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">Status Overview</span>
-                  <span className="text-white/50 text-xs">152 tickets</span>
+                  <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">{t.statusOverview}</span>
+                  <span className="text-white/50 text-xs">152 {t.tickets}</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {statuses.map((s, i) => (
@@ -242,16 +333,16 @@ export default function DemandSummaryPage() {
 
         {/* Performance Pulse + CPI Combined */}
         <SleekGadget
-          title="Performance Pulse"
-          subtitle="8-Week CPI Trend & Dimensions"
+          title={t.performancePulse}
+          subtitle={t.cpiTrend}
           icon={Zap}
           collapsedContent={
-            <div className="flex items-center gap-3">
-              <div className={cn('px-3 py-1.5 rounded-lg flex items-center gap-2', sentiment.className)}>
-                <span className="font-mono font-bold text-white text-lg">{currentScore}</span>
-                <span className="text-white/80 text-[10px] font-medium uppercase">{sentiment.label}</span>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className={cn('px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg flex items-center gap-1 sm:gap-2', sentiment.className)}>
+                <span className="font-mono font-bold text-white text-sm sm:text-lg">{currentScore}</span>
+                <span className="text-white/80 text-[8px] sm:text-[10px] font-medium uppercase">{sentiment.label}</span>
               </div>
-              <div className={cn('text-xs font-medium', trend >= 0 ? 'text-success' : 'text-destructive')}>
+              <div className={cn('text-[10px] sm:text-xs font-medium', trend >= 0 ? 'text-success' : 'text-destructive')}>
                 {trend >= 0 ? '+' : ''}{trend} pts
               </div>
               <div className="hidden sm:flex items-end gap-0.5 h-6">
@@ -266,25 +357,25 @@ export default function DemandSummaryPage() {
           expandedContent={
             <>
               {/* Weekly Trend */}
-              <div className="flex justify-between items-center flex-wrap gap-3 py-4">
-                <div className="flex gap-5 flex-wrap text-[11px] text-white/50">
-                  <span>Trending: <strong className="text-success ml-1">+1 pts</strong></span>
-                  <span>Best: <strong className="text-white ml-1">19-OCT (82)</strong></span>
-                  <span>Lowest: <strong className="text-white ml-1">16-NOV (68)</strong></span>
+              <div className="flex justify-between items-center flex-wrap gap-3 py-3 sm:py-4">
+                <div className="flex gap-3 sm:gap-5 flex-wrap text-[10px] sm:text-[11px] text-white/50">
+                  <span>Trending: <strong className="text-success ms-1">+1 pts</strong></span>
+                  <span>Best: <strong className="text-white ms-1">19-OCT (82)</strong></span>
+                  <span>Lowest: <strong className="text-white ms-1">16-NOV (68)</strong></span>
                 </div>
               </div>
-              <div className="flex items-end justify-center gap-1 mb-4">
+              <div className="flex items-end justify-center gap-0.5 sm:gap-1 mb-4 overflow-x-auto pb-2">
                 {weeklyScores.slice(-8).map((score, index) => {
-                  const totalWeeks = 8; const minSize = 60; const maxSize = 95;
+                  const totalWeeks = 8; const minSize = 40; const maxSize = 70;
                   const size = minSize + ((maxSize - minSize) / (totalWeeks - 1)) * index;
                   const isCurrentWeek = index === totalWeeks - 1;
                   const opacity = isCurrentWeek ? 1.0 : (0.45 + (0.45 * (index / (totalWeeks - 1))));
                   const s = getSentiment(score);
                   const dateIndex = weekDates.length - totalWeeks + index;
                   return (
-                    <div key={index} className="flex flex-col items-center cursor-pointer transition-transform hover:scale-105" style={{ width: size, height: size + 20, opacity }}>
-                      <span className="text-[8px] font-semibold mb-1 text-white/40">{weekDates[dateIndex]}</span>
-                      <div className={cn('rounded-lg flex flex-col items-center justify-center', s.className)} style={{ width: size, height: size, border: isCurrentWeek ? '3px solid white' : 'none' }}>
+                    <div key={index} className="flex flex-col items-center cursor-pointer transition-transform hover:scale-105 flex-shrink-0" style={{ width: size, height: size + 16, opacity }}>
+                      <span className="text-[7px] sm:text-[8px] font-semibold mb-1 text-white/40">{weekDates[dateIndex]}</span>
+                      <div className={cn('rounded-lg flex flex-col items-center justify-center', s.className)} style={{ width: size, height: size, border: isCurrentWeek ? '2px solid white' : 'none' }}>
                         <span className="font-mono font-bold text-white" style={{ fontSize: size * 0.28 }}>{score}</span>
                         <span className="text-white font-semibold uppercase" style={{ fontSize: size * 0.11 }}>{s.label}</span>
                       </div>
@@ -295,21 +386,21 @@ export default function DemandSummaryPage() {
               
               {/* CPI Dimensions */}
               <div className="border-t border-white/10 pt-4 mt-2">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">Performance Dimensions</span>
+                <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+                  <span className="text-[10px] sm:text-xs font-semibold text-white/70 uppercase tracking-wider">{t.performanceDimensions}</span>
                   <div className="flex items-center gap-2">
-                    <div className="text-2xl font-bold text-white">72</div>
+                    <div className="text-xl sm:text-2xl font-bold text-white">72</div>
                     <span className="px-2 py-0.5 bg-amber-500 text-white text-[10px] font-medium rounded">AMBER</span>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
                   {dimensions.map((d, i) => (
-                    <div key={i} className="bg-white/5 rounded-lg p-2.5 border border-white/10">
+                    <div key={i} className="bg-white/5 rounded-lg p-2 sm:p-2.5 border border-white/10">
                       <div className="flex justify-between items-center mb-1.5">
-                        <span className="text-[10px] text-white/50 truncate">{d.key}</span>
-                        <span className={cn('font-mono text-xs font-bold', getScoreColor(d.score))}>{d.score}</span>
+                        <span className="text-[9px] sm:text-[10px] text-white/50 truncate">{d.key}</span>
+                        <span className={cn('font-mono text-[10px] sm:text-xs font-bold', getScoreColor(d.score))}>{d.score}</span>
                       </div>
-                      <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-1 sm:h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <div className={cn('h-full rounded-full', getScoreBg(d.score))} style={{ width: `${d.score}%` }} />
                       </div>
                     </div>
@@ -322,28 +413,28 @@ export default function DemandSummaryPage() {
 
         {/* Quarter Delivery Tracking */}
         <SleekGadget
-          title="Quarter Delivery Tracking"
+          title={t.quarterDelivery}
           subtitle="Q4 2024 & Q1 2025"
           icon={Calendar}
           collapsedContent={
-            <div className="flex items-center gap-3">
-              <span className="text-white/60 text-xs">69 total</span>
-              <div className="flex items-center gap-1">
-                <span className="px-2 py-0.5 bg-success/20 text-success text-[10px] font-medium rounded">50 on track</span>
-                <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-medium rounded">12 at risk</span>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="text-white/60 text-[10px] sm:text-xs">69 {t.total.toLowerCase()}</span>
+              <div className="hidden sm:flex items-center gap-1">
+                <span className="px-2 py-0.5 bg-success/20 text-success text-[10px] font-medium rounded">50 {t.onTrack.toLowerCase()}</span>
+                <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[10px] font-medium rounded">12 {t.atRisk.toLowerCase()}</span>
               </div>
             </div>
           }
           expandedContent={
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 pt-4">
               {quarterData.map((q, i) => (
-                <div key={i} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  <h4 className="font-semibold text-[14px] text-white mb-3">{q.title}</h4>
-                  <div className="grid grid-cols-4 gap-2">
-                    <div className="text-center p-2 bg-white/5 rounded"><div className="text-lg font-bold text-white">{q.total}</div><div className="text-[10px] text-white/50">Total</div></div>
-                    <div className="text-center p-2 bg-success/20 rounded"><div className="text-lg font-bold text-success">{q.onTrack}</div><div className="text-[10px] text-success">On Track</div></div>
-                    <div className="text-center p-2 bg-amber-500/20 rounded"><div className="text-lg font-bold text-amber-400">{q.atRisk}</div><div className="text-[10px] text-amber-400">At Risk</div></div>
-                    <div className="text-center p-2 bg-destructive/20 rounded"><div className="text-lg font-bold text-destructive">{q.delayed}</div><div className="text-[10px] text-destructive">Delayed</div></div>
+                <div key={i} className="bg-white/5 rounded-lg p-3 sm:p-4 border border-white/10">
+                  <h4 className="font-semibold text-[13px] sm:text-[14px] text-white mb-3">{q.title}</h4>
+                  <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
+                    <div className="text-center p-1.5 sm:p-2 bg-white/5 rounded"><div className="text-base sm:text-lg font-bold text-white">{q.total}</div><div className="text-[9px] sm:text-[10px] text-white/50">{t.total}</div></div>
+                    <div className="text-center p-1.5 sm:p-2 bg-success/20 rounded"><div className="text-base sm:text-lg font-bold text-success">{q.onTrack}</div><div className="text-[9px] sm:text-[10px] text-success">{t.onTrack}</div></div>
+                    <div className="text-center p-1.5 sm:p-2 bg-amber-500/20 rounded"><div className="text-base sm:text-lg font-bold text-amber-400">{q.atRisk}</div><div className="text-[9px] sm:text-[10px] text-amber-400">{t.atRisk}</div></div>
+                    <div className="text-center p-1.5 sm:p-2 bg-destructive/20 rounded"><div className="text-base sm:text-lg font-bold text-destructive">{q.delayed}</div><div className="text-[9px] sm:text-[10px] text-destructive">{t.delayed}</div></div>
                   </div>
                 </div>
               ))}
@@ -354,8 +445,8 @@ export default function DemandSummaryPage() {
 
         {/* Delivery Milestones */}
         <SleekGadget
-          title="Delivery Milestones"
-          subtitle="Recent Completions"
+          title={t.deliveryMilestones}
+          subtitle={t.recentCompletions}
           icon={Trophy}
           collapsedContent={
             <div className="flex items-center gap-2">
@@ -365,28 +456,28 @@ export default function DemandSummaryPage() {
           }
           expandedContent={
             <div className="pt-4 overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Status</th>
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">ID</th>
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Summary</th>
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Requested By</th>
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Value</th>
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Cycle</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Status</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">ID</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Summary</th>
+                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Requested By</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Value</th>
+                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Cycle</th>
                   </tr>
                 </thead>
                 <tbody>
                   {deliveryData.map((d, i) => (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5">
-                      <td className="py-2 px-2">
-                        <span className={cn('px-2 py-0.5 rounded text-[10px] font-medium', d.type === 'implemented' ? 'bg-success/20 text-success' : 'bg-brand-gold/20 text-brand-gold')}>{d.type}</span>
+                      <td className="py-2 px-1.5 sm:px-2">
+                        <span className={cn('px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-medium', d.type === 'implemented' ? 'bg-success/20 text-success' : 'bg-brand-gold/20 text-brand-gold')}>{d.type}</span>
                       </td>
-                      <td className="py-2 px-2 font-mono text-xs text-brand-gold">{d.id}</td>
-                      <td className="py-2 px-2 text-white">{d.title}</td>
-                      <td className="py-2 px-2 text-white/60">{d.requester}</td>
-                      <td className="py-2 px-2 font-mono text-white">{d.value}</td>
-                      <td className="py-2 px-2 text-white/60">{d.cycle}</td>
+                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] sm:text-xs text-brand-gold">{d.id}</td>
+                      <td className="py-2 px-1.5 sm:px-2 text-white text-xs sm:text-sm">{d.title}</td>
+                      <td className="hidden sm:table-cell py-2 px-2 text-white/60">{d.requester}</td>
+                      <td className="py-2 px-1.5 sm:px-2 font-mono text-white text-xs sm:text-sm">{d.value}</td>
+                      <td className="hidden sm:table-cell py-2 px-2 text-white/60">{d.cycle}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -397,35 +488,35 @@ export default function DemandSummaryPage() {
 
         {/* Rejection Insights */}
         <SleekGadget
-          title="Rejection Insights"
-          subtitle="Analysis"
+          title={t.rejectionInsights}
+          subtitle={t.analysis}
           icon={XCircle}
           collapsedContent={
             <div className="flex items-center gap-2">
               <span className="px-2 py-0.5 bg-destructive/20 text-destructive text-[10px] font-medium rounded">5 rejected</span>
-              <span className="text-white/60 text-xs">8.5% rate</span>
+              <span className="text-white/60 text-[10px] sm:text-xs">8.5% rate</span>
             </div>
           }
           expandedContent={
             <div className="pt-4 overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-xs sm:text-sm">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">ID</th>
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Title</th>
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Requester</th>
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Reason</th>
-                    <th className="text-left py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Date</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">ID</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Title</th>
+                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Requester</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Reason</th>
+                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Date</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rejectionData.map((r, i) => (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5">
-                      <td className="py-2 px-2 font-mono text-xs text-brand-gold">{r.id}</td>
-                      <td className="py-2 px-2 text-white">{r.title}</td>
-                      <td className="py-2 px-2 text-white/60">{r.requester}</td>
-                      <td className="py-2 px-2"><span className="px-2 py-0.5 bg-destructive/20 text-destructive rounded text-[10px] font-medium">{r.reason}</span></td>
-                      <td className="py-2 px-2 text-white/60">{r.date}</td>
+                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] sm:text-xs text-brand-gold">{r.id}</td>
+                      <td className="py-2 px-1.5 sm:px-2 text-white text-xs sm:text-sm">{r.title}</td>
+                      <td className="hidden sm:table-cell py-2 px-2 text-white/60">{r.requester}</td>
+                      <td className="py-2 px-1.5 sm:px-2"><span className="px-1.5 sm:px-2 py-0.5 bg-destructive/20 text-destructive rounded text-[9px] sm:text-[10px] font-medium">{r.reason}</span></td>
+                      <td className="hidden sm:table-cell py-2 px-2 text-white/60">{r.date}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -436,31 +527,31 @@ export default function DemandSummaryPage() {
 
         {/* Recovery Plan */}
         <SleekGadget
-          title="Recovery Plan"
-          subtitle="Action Required"
+          title={t.recoveryPlan}
+          subtitle={t.actionRequired}
           icon={Wrench}
           collapsedContent={
-            <span className="px-2 py-0.5 bg-destructive/20 text-destructive text-[10px] font-medium rounded">3 at risk</span>
+            <span className="px-2 py-0.5 bg-destructive/20 text-destructive text-[10px] font-medium rounded">3 {t.atRisk.toLowerCase()}</span>
           }
           expandedContent={
             <div className="pt-4 space-y-2">
               {recoveryData.map((r) => (
                 <div key={r.id} className="border border-white/10 rounded-lg overflow-hidden">
-                  <button onClick={() => setExpandedRecovery(expandedRecovery === r.id ? null : r.id)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-left">
+                  <button onClick={() => setExpandedRecovery(expandedRecovery === r.id ? null : r.id)} className="w-full flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-white/5 text-start">
                     <span className="px-2 py-0.5 bg-destructive/20 text-destructive text-[10px] font-bold rounded">#{r.rank}</span>
-                    <span className="font-mono text-xs text-brand-gold">{r.id}</span>
-                    <span className="font-medium text-white flex-1">{r.title}</span>
+                    <span className="font-mono text-[10px] sm:text-xs text-brand-gold">{r.id}</span>
+                    <span className="font-medium text-white flex-1 text-xs sm:text-sm">{r.title}</span>
                     <ChevronDown className={cn('w-4 h-4 text-white/50 transition-transform', expandedRecovery === r.id && 'rotate-180')} />
                   </button>
                   {expandedRecovery === r.id && (
-                    <div className="px-4 pb-4 bg-white/5 border-t border-white/10">
+                    <div className="px-3 sm:px-4 pb-3 sm:pb-4 bg-white/5 border-t border-white/10">
                       <div className="mb-3 pt-3">
                         <div className="text-[10px] font-semibold text-white/50 uppercase mb-1">Risk Reason</div>
-                        <p className="text-sm text-white/70">{r.riskReason}</p>
+                        <p className="text-xs sm:text-sm text-white/70">{r.riskReason}</p>
                       </div>
-                      <div className="bg-brand-gold/10 rounded-lg p-3 border-l-4 border-brand-gold">
+                      <div className="bg-brand-gold/10 rounded-lg p-2.5 sm:p-3 border-s-4 border-brand-gold">
                         <div className="text-[10px] font-semibold text-brand-gold uppercase mb-1">Recommended Action</div>
-                        <p className="text-sm text-white">{r.action}</p>
+                        <p className="text-xs sm:text-sm text-white">{r.action}</p>
                       </div>
                     </div>
                   )}
@@ -472,28 +563,28 @@ export default function DemandSummaryPage() {
 
         {/* Trending Tickets */}
         <SleekGadget
-          title="Trending Tickets"
-          subtitle="High Priority"
+          title={t.trendingTickets}
+          subtitle={t.highPriority}
           icon={Flame}
           collapsedContent={
-            <span className="text-white/60 text-xs">Top 3</span>
+            <span className="text-white/60 text-[10px] sm:text-xs">Top 3</span>
           }
           expandedContent={
             <div className="pt-4 space-y-2">
-              {trendingTickets.map((t) => (
-                <div key={t.id} className="border border-white/10 rounded-lg overflow-hidden">
-                  <button onClick={() => setExpandedTrending(expandedTrending === t.id ? null : t.id)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 text-left">
-                    <span className="px-2 py-0.5 bg-brand-gold/20 text-brand-gold text-[10px] font-bold rounded">#{t.rank}</span>
-                    <span className="font-mono text-xs text-brand-gold">{t.id}</span>
-                    <span className="font-medium text-white flex-1">{t.title}</span>
-                    <ChevronDown className={cn('w-4 h-4 text-white/50 transition-transform', expandedTrending === t.id && 'rotate-180')} />
+              {trendingTickets.map((ticket) => (
+                <div key={ticket.id} className="border border-white/10 rounded-lg overflow-hidden">
+                  <button onClick={() => setExpandedTrending(expandedTrending === ticket.id ? null : ticket.id)} className="w-full flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-white/5 text-start">
+                    <span className="px-2 py-0.5 bg-brand-gold/20 text-brand-gold text-[10px] font-bold rounded">#{ticket.rank}</span>
+                    <span className="font-mono text-[10px] sm:text-xs text-brand-gold">{ticket.id}</span>
+                    <span className="font-medium text-white flex-1 text-xs sm:text-sm">{ticket.title}</span>
+                    <ChevronDown className={cn('w-4 h-4 text-white/50 transition-transform', expandedTrending === ticket.id && 'rotate-180')} />
                   </button>
-                  {expandedTrending === t.id && (
-                    <div className="px-4 pb-4 bg-white/5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3">
-                      <div><div className="text-[10px] text-white/50">Department</div><div className="text-sm font-medium text-white">{t.dept}</div></div>
-                      <div><div className="text-[10px] text-white/50">Ageing</div><div className="text-sm font-medium text-white">{t.ageing} days</div></div>
-                      <div><div className="text-[10px] text-white/50">Go-Live</div><div className="text-sm font-medium text-destructive">{t.goLive} days</div></div>
-                      <div><div className="text-[10px] text-white/50">Status</div><div className="text-sm font-medium text-white">{t.status}</div></div>
+                  {expandedTrending === ticket.id && (
+                    <div className="px-3 sm:px-4 pb-3 sm:pb-4 bg-white/5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-3">
+                      <div><div className="text-[9px] sm:text-[10px] text-white/50">Department</div><div className="text-xs sm:text-sm font-medium text-white">{ticket.dept}</div></div>
+                      <div><div className="text-[9px] sm:text-[10px] text-white/50">Ageing</div><div className="text-xs sm:text-sm font-medium text-white">{ticket.ageing} days</div></div>
+                      <div><div className="text-[9px] sm:text-[10px] text-white/50">Go-Live</div><div className="text-xs sm:text-sm font-medium text-destructive">{ticket.goLive} days</div></div>
+                      <div><div className="text-[9px] sm:text-[10px] text-white/50">Status</div><div className="text-xs sm:text-sm font-medium text-white">{ticket.status}</div></div>
                     </div>
                   )}
                 </div>
@@ -504,21 +595,21 @@ export default function DemandSummaryPage() {
 
         {/* Requires Attention */}
         <SleekGadget
-          title="Requires Attention"
-          subtitle="Critical Items"
+          title={t.requiresAttention}
+          subtitle={t.criticalItems}
           icon={AlertTriangle}
           collapsedContent={
             <span className="px-2 py-0.5 bg-destructive/20 text-destructive text-[10px] font-medium rounded">2 critical</span>
           }
           expandedContent={
             <div className="pt-4 space-y-2">
-              {attentionTickets.map((t) => (
-                <div key={t.id} className="flex items-center gap-3 px-4 py-3 bg-destructive/10 rounded-lg border border-destructive/20">
-                  <span className="px-2 py-0.5 bg-white/10 text-destructive text-[10px] font-bold rounded">#{t.rank}</span>
-                  <span className="font-mono text-xs text-brand-gold">{t.id}</span>
-                  <span className="font-medium text-white flex-1">{t.title}</span>
-                  <span className="text-xs text-white/60">{t.dept}</span>
-                  <span className="text-xs font-bold text-destructive">{t.ageing} days</span>
+              {attentionTickets.map((ticket) => (
+                <div key={ticket.id} className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-destructive/10 rounded-lg border border-destructive/20">
+                  <span className="px-2 py-0.5 bg-white/10 text-destructive text-[10px] font-bold rounded">#{ticket.rank}</span>
+                  <span className="font-mono text-[10px] sm:text-xs text-brand-gold">{ticket.id}</span>
+                  <span className="font-medium text-white flex-1 text-xs sm:text-sm">{ticket.title}</span>
+                  <span className="text-[10px] sm:text-xs text-white/60">{ticket.dept}</span>
+                  <span className="text-[10px] sm:text-xs font-bold text-destructive">{ticket.ageing} days</span>
                 </div>
               ))}
             </div>
@@ -527,21 +618,21 @@ export default function DemandSummaryPage() {
 
         {/* Approved Queue */}
         <SleekGadget
-          title="Approved Queue"
-          subtitle="Ready for Implementation"
+          title={t.approvedQueue}
+          subtitle={t.readyForImplementation}
           icon={CheckCircle}
           collapsedContent={
             <span className="px-2 py-0.5 bg-success/20 text-success text-[10px] font-medium rounded">2 ready</span>
           }
           expandedContent={
             <div className="pt-4 space-y-2">
-              {approvedTickets.map((t) => (
-                <div key={t.id} className="flex items-center gap-3 px-4 py-3 bg-success/10 rounded-lg border border-success/20">
-                  <span className="px-2 py-0.5 bg-white/10 text-success text-[10px] font-bold rounded">#{t.rank}</span>
-                  <span className="font-mono text-xs text-brand-gold">{t.id}</span>
-                  <span className="font-medium text-white flex-1">{t.title}</span>
-                  <span className="text-xs text-white/60">{t.dept}</span>
-                  <span className="text-xs font-bold text-success">{t.ageing} days</span>
+              {approvedTickets.map((ticket) => (
+                <div key={ticket.id} className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-success/10 rounded-lg border border-success/20">
+                  <span className="px-2 py-0.5 bg-white/10 text-success text-[10px] font-bold rounded">#{ticket.rank}</span>
+                  <span className="font-mono text-xs text-brand-gold">{ticket.id}</span>
+                  <span className="font-medium text-white flex-1 text-sm">{ticket.title}</span>
+                  <span className="text-xs text-white/60">{ticket.dept}</span>
+                  <span className="text-xs font-bold text-success">{ticket.ageing} days</span>
                 </div>
               ))}
             </div>
@@ -550,8 +641,8 @@ export default function DemandSummaryPage() {
 
         {/* Backlog Trend */}
         <SleekGadget
-          title="Backlog Trend"
-          subtitle="6-Week Growth"
+          title={t.backlogTrend}
+          subtitle={t.sixWeekGrowth}
           icon={TrendingUp}
           collapsedContent={
             <div className="flex items-center gap-2">
@@ -562,21 +653,21 @@ export default function DemandSummaryPage() {
           expandedContent={
             <div className="pt-4">
               <div className="flex items-center gap-4 mb-4">
-                <div className="text-4xl font-bold text-white">139</div>
+                <div className="text-3xl sm:text-4xl font-bold text-white">139</div>
                 <div>
                   <div className="text-sm font-medium text-destructive">+56% over 6 weeks</div>
                   <div className="text-xs text-white/50">From 89 → 139</div>
                 </div>
               </div>
-              <div className="flex items-end gap-2 h-32">
+              <div className="flex items-end gap-1 sm:gap-2 h-24 sm:h-32">
                 {backlogData.map((b, i) => {
                   const maxVal = Math.max(...backlogData.map(d => d.value));
                   const height = (b.value / maxVal) * 100;
                   return (
                     <div key={i} className="flex-1 flex flex-col items-center">
                       <div className="w-full bg-brand-gold rounded-t" style={{ height: `${height}%` }} />
-                      <div className="text-[10px] text-white/50 mt-1">{b.week}</div>
-                      <div className="text-xs font-medium text-white">{b.value}</div>
+                      <div className="text-[9px] sm:text-[10px] text-white/50 mt-1">{b.week}</div>
+                      <div className="text-[10px] sm:text-xs font-medium text-white">{b.value}</div>
                     </div>
                   );
                 })}
@@ -587,44 +678,60 @@ export default function DemandSummaryPage() {
       </main>
 
       {/* AI Chat Button */}
-      <button onClick={() => setChatOpen(true)} className="fixed bottom-6 right-6 bg-brand-gold text-brand-dark px-5 py-3 rounded-full font-semibold flex items-center gap-2 shadow-lg hover:bg-brand-gold-hover hover:scale-105 transition-all z-50">
-        <Sparkles className="w-5 h-5" />Ask AI
+      <button 
+        onClick={() => setChatOpen(true)} 
+        className={cn(
+          "fixed bottom-4 sm:bottom-6 bg-brand-gold text-brand-dark px-4 sm:px-5 py-2.5 sm:py-3 rounded-full font-semibold flex items-center gap-2 shadow-lg hover:bg-brand-gold-hover hover:scale-105 transition-all z-50",
+          isArabic ? "left-4 sm:left-6" : "right-4 sm:right-6"
+        )}
+      >
+        <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+        <span className="text-sm sm:text-base">{t.askAI}</span>
       </button>
 
       {/* AI Chat Panel */}
       {chatOpen && (
-        <div className="fixed inset-y-0 right-0 w-[400px] bg-brand-dark shadow-2xl z-50 flex flex-col border-l border-brand-gold/20">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div className={cn(
+          "fixed inset-y-0 w-full sm:w-[400px] bg-brand-dark shadow-2xl z-50 flex flex-col",
+          isArabic ? "left-0 border-e border-brand-gold/20" : "right-0 border-s border-brand-gold/20"
+        )}>
+          <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b border-white/10">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-brand-gold" />
-              <span className="font-semibold text-white">AI Analytics Assistant</span>
+              <span className="font-semibold text-white text-sm sm:text-base">{t.aiAssistant}</span>
             </div>
-            <button onClick={() => setChatOpen(false)} className="p-1 hover:bg-white/10 rounded">
+            <button onClick={() => setChatOpen(false)} className="p-1.5 hover:bg-white/10 rounded">
               <X className="w-5 h-5 text-white/60" />
             </button>
           </div>
-          <div className="flex-1 p-4 overflow-y-auto">
+          <div className="flex-1 p-3 sm:p-4 overflow-y-auto">
             <div className="bg-white/5 text-white rounded-lg p-3 mb-4 text-sm border border-white/10">
-              Hello! I'm your analytics assistant. I can help you understand your dashboard metrics, identify risks, and suggest actions. What would you like to know?
+              {isArabic 
+                ? 'مرحبًا! أنا مساعدك التحليلي. يمكنني مساعدتك في فهم مقاييس لوحة التحكم، وتحديد المخاطر، واقتراح الإجراءات. ماذا تريد أن تعرف؟'
+                : "Hello! I'm your analytics assistant. I can help you understand your dashboard metrics, identify risks, and suggest actions. What would you like to know?"
+              }
             </div>
             <div className="space-y-2 mb-4">
-              {['Why did CPI change this week?', 'Which tickets are most at risk?', 'What should I focus on today?', 'Explain the backlog growth'].map((q, i) => (
-                <button key={i} className="w-full text-left px-3 py-2 bg-white/5 rounded-lg text-sm text-white/70 hover:bg-brand-gold/10 hover:text-white transition-colors border border-white/10">
+              {(isArabic 
+                ? ['لماذا تغير مؤشر الأداء هذا الأسبوع؟', 'ما هي التذاكر الأكثر عرضة للخطر؟', 'على ماذا يجب أن أركز اليوم؟', 'اشرح نمو الأعمال المتراكمة']
+                : ['Why did CPI change this week?', 'Which tickets are most at risk?', 'What should I focus on today?', 'Explain the backlog growth']
+              ).map((q, i) => (
+                <button key={i} className="w-full text-start px-3 py-2 bg-white/5 rounded-lg text-sm text-white/70 hover:bg-brand-gold/10 hover:text-white transition-colors border border-white/10">
                   {q}
                 </button>
               ))}
             </div>
           </div>
-          <div className="p-4 border-t border-white/10">
+          <div className="p-3 sm:p-4 border-t border-white/10">
             <div className="flex gap-2">
               <input
                 type="text"
                 value={chatMessage}
                 onChange={(e) => setChatMessage(e.target.value)}
-                placeholder="Ask a question..."
-                className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-white/40 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+                placeholder={t.askQuestion}
+                className="flex-1 px-3 sm:px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder-white/40 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
               />
-              <button className="px-4 py-2 bg-brand-gold text-brand-dark rounded-lg hover:bg-brand-gold-hover transition-colors">
+              <button className="px-3 sm:px-4 py-2 bg-brand-gold text-brand-dark rounded-lg hover:bg-brand-gold-hover transition-colors">
                 <Send className="w-4 h-4" />
               </button>
             </div>
