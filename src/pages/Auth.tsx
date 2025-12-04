@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { Loader2, Briefcase, Package, CalendarDays, GitMerge, Link2, TriangleAlert } from "lucide-react";
+import { Loader2, Briefcase, Package, CalendarDays, GitMerge, Link2, TriangleAlert, FlaskConical } from "lucide-react";
+import { IntegrationBadge } from "@/components/brand/IntegrationBadge";
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,12 +70,12 @@ export default function Auth() {
           }}>
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               {[
-                { Icon: Briefcase, label: "Portfolio Management" },
-                { Icon: Package, label: "Product Management" },
-                { Icon: CalendarDays, label: "Project Management" },
-                { Icon: GitMerge, label: "Dependency Management" },
-                { Icon: Link2, label: "Release Schedule" },
+                { Icon: FlaskConical, label: "Test Management" },
                 { Icon: TriangleAlert, label: "Capacity Management" },
+                { Icon: Package, label: "Product Management" },
+                { Icon: GitMerge, label: "Dependency Management" },
+                { Icon: Briefcase, label: "Portfolio Management" },
+                { Icon: Link2, label: "Release Schedule" },
               ].map((item, index) => (
                 <div 
                   key={index}
@@ -338,6 +339,9 @@ export default function Auth() {
               </button>
             </p>
           </div>
+
+          {/* Jira Integration Badge */}
+          <IntegrationBadge />
         </div>
       </div>
 
