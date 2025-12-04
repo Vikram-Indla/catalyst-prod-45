@@ -3,13 +3,38 @@ import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, Download, ArrowLeft, Upload, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
+
+// Description template with section hints
+const DESCRIPTION_TEMPLATE_EN = `<p><strong>Business Need:</strong></p>
+<p><br></p>
+<p><strong>Detailed Description:</strong></p>
+<p><br></p>
+<p><strong>Delivery Urgency:</strong></p>
+<p><br></p>
+<p><strong>Justification:</strong></p>
+<p><br></p>`;
+
+const DESCRIPTION_TEMPLATE_AR = `<p><strong>الحاجة التجارية:</strong></p>
+<p><br></p>
+<p><strong>الوصف التفصيلي:</strong></p>
+<p><br></p>
+<p><strong>أولوية التسليم:</strong></p>
+<p><br></p>
+<p><strong>المبرر:</strong></p>
+<p><br></p>`;
+
+// Helper to count words from HTML
+const countWordsFromHtml = (html: string) => {
+  const text = html.replace(/<[^>]*>/g, ' ').replace(/&nbsp;/g, ' ').trim();
+  return text ? text.split(/\s+/).filter(w => w.length > 0).length : 0;
+};
 
 // Translations
 const translations = {
@@ -570,18 +595,18 @@ export default function RequestAccess() {
                     <Label className="text-[13px] font-bold text-[#111827]">
                       {t.descLabel}<span className="text-[#B42318] ml-1">{t.required}</span>
                     </Label>
-                    <Textarea
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    <RichTextEditor
+                      value={formData.description || (lang === 'ar' ? DESCRIPTION_TEMPLATE_AR : DESCRIPTION_TEMPLATE_EN)}
+                      onChange={(value) => setFormData({ ...formData, description: value })}
                       placeholder={t.descPlaceholder}
                       className={cn(
-                        "min-h-[120px] rounded-xl border-[#E5E7EB] resize-y leading-5 focus:border-[#C8A566]/70",
-                        errors.description && "border-[#B42318]/55 bg-gradient-to-b from-[#B42318]/5 to-transparent"
+                        "min-h-[200px] rounded-xl border border-[#E5E7EB] focus-within:border-[#C8A566]/70",
+                        errors.description && "border-[#B42318]/55"
                       )}
                     />
                     <div className="flex justify-between items-center gap-2 text-xs text-[#6B7280]">
                       <span>{t.descHint}</span>
-                      <span>{formData.description.trim() ? formData.description.trim().split(/\s+/).length : 0} words</span>
+                      <span>{countWordsFromHtml(formData.description)} words</span>
                     </div>
                     {errors.description && <p className="text-xs font-bold text-[#B42318]">{errors.description}</p>}
                   </div>
