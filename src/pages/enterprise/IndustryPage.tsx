@@ -9,6 +9,8 @@ import { CreateBusinessRequestModal } from '@/components/business-requests/Creat
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { RankUpdateNotification } from '@/components/business-requests/RankUpdateNotification';
 import { SimpleColumnHeader, SortDirection } from '@/components/business-requests/SimpleColumnHeader';
+import { BusinessRequestsKanbanView } from '@/components/business-requests/BusinessRequestsKanbanView';
+import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
@@ -78,6 +80,7 @@ export default function IndustryPage() {
   const [columns, setColumns] = useState<ColumnConfig[]>(DEFAULT_COLUMNS);
   const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [columnSort, setColumnSort] = useState<ColumnSort>({
     columnId: 'rank',
     direction: 'asc'
@@ -357,11 +360,13 @@ export default function IndustryPage() {
               </Button>
             </div>}
 
+          <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
+
           <Button variant="outline" size="sm" className="border-border">
             <Upload className="h-4 w-4 mr-2" />
             Import
           </Button>
-          <ColumnsDropdown columns={columns} onChange={setColumns} />
+          {viewMode === 'list' && <ColumnsDropdown columns={columns} onChange={setColumns} />}
           <Button variant="outline" size="sm" onClick={handleExport} className="border-border">
             <Download className="h-4 w-4 mr-2" />
             Export
@@ -371,9 +376,17 @@ export default function IndustryPage() {
 
       {/* Main Content with Side Panel */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Table Area */}
+        {/* Content Area */}
         <div className="flex-1 overflow-auto p-4 sm:p-6 relative">
-          {isLoading ? <div className="text-center py-8 text-muted-foreground">Loading...</div> : sortedRequests.length > 0 ? <Card className="overflow-hidden relative">
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading...</div>
+          ) : viewMode === 'kanban' ? (
+            <BusinessRequestsKanbanView 
+              requests={sortedRequests} 
+              onRequestSelect={setSelectedRequestId} 
+            />
+          ) : sortedRequests.length > 0 ? (
+            <Card className="overflow-hidden relative">
               {/* Column Headers - Simple Sort Only */}
               <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative">
                 <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
@@ -466,9 +479,12 @@ export default function IndustryPage() {
               {totalPages > 1 && <div className="px-4 py-2 bg-muted/30 border-t text-xs text-muted-foreground">
                   Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
                 </div>}
-            </Card> : <div className="text-center py-8 text-muted-foreground">
+            </Card>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
               {activeFilterCount > 0 ? 'No requests match the current filters' : 'No industry requests found'}
-            </div>}
+            </div>
+          )}
         </div>
       </div>
 
