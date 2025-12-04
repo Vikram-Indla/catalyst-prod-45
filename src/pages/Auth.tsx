@@ -8,6 +8,7 @@ export default function Auth() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [userType, setUserType] = useState<"existing" | "external">("existing");
   const {
     signIn
   } = useAuth();
@@ -178,257 +179,272 @@ export default function Auth() {
           </h1>
         </div>
 
-        {/* Split Container - Two Equal Columns */}
-        <div className="w-full max-w-4xl mx-auto relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12" style={{ marginTop: "clamp(100px, 16vh, 140px)" }}>
+        {/* Main Container */}
+        <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(100px, 16vh, 140px)" }}>
           
-          {/* Left Column - Sign In */}
-          <div className="flex flex-col">
-            <h2 className="text-center mb-2" style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(1.3rem, 2.5vw, 1.6rem)",
-              fontWeight: 500,
-              color: "#1a1a1a"
-            }}>
-              Existing User
-            </h2>
-            <p className="text-center mb-6" style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "clamp(0.85rem, 1.5vw, 0.95rem)",
-              color: "rgba(26, 26, 26, 0.55)"
-            }}>
-              Sign in to your account
-            </p>
-
-            {/* Login Form */}
-            <form onSubmit={handleSignIn} className="space-y-4">
-              {/* Email Field */}
-              <div>
-                <label htmlFor="email" className="block mb-1.5" style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.8rem",
-                  fontWeight: 500,
-                  color: "#1a1a1a"
-                }}>
-                  Email Address
-                </label>
-                <input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@company.com" required className="w-full transition-all outline-none" style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  padding: "12px 16px",
-                  border: "2px solid rgba(26, 26, 26, 0.1)",
-                  borderRadius: "10px",
-                  fontSize: "0.95rem",
-                  backgroundColor: "#feffff"
-                }} onFocus={e => {
-                  e.target.style.borderColor = "#c69c6d";
-                  e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
-                }} onBlur={e => {
-                  e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
-                  e.target.style.boxShadow = "none";
-                }} />
-              </div>
-
-              {/* Password Field */}
-              <div>
-                <label htmlFor="password" className="block mb-1.5" style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.8rem",
-                  fontWeight: 500,
-                  color: "#1a1a1a"
-                }}>
-                  Password
-                </label>
-                <input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" required className="w-full transition-all outline-none" style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  padding: "12px 16px",
-                  border: "2px solid rgba(26, 26, 26, 0.1)",
-                  borderRadius: "10px",
-                  fontSize: "0.95rem",
-                  backgroundColor: "#feffff"
-                }} onFocus={e => {
-                  e.target.style.borderColor = "#c69c6d";
-                  e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
-                }} onBlur={e => {
-                  e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
-                  e.target.style.boxShadow = "none";
-                }} />
-              </div>
-
-              {/* Form Options Row */}
-              <div className="flex items-center justify-between">
-                {/* Remember Me */}
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all" style={{
-                    borderColor: "rgba(26, 26, 26, 0.2)",
-                    backgroundColor: rememberMe ? "#c69c6d" : "transparent",
-                    backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
-                    backgroundSize: "100% 100%",
-                    backgroundPosition: "center",
-                    backgroundRepeat: "no-repeat"
-                  }} />
-                  <span style={{
-                    fontFamily: "'DM Sans', sans-serif",
-                    fontSize: "0.8rem",
-                    color: "rgba(26, 26, 26, 0.7)"
-                  }}>
-                    Remember me
-                  </span>
-                </label>
-
-                {/* Forgot Password */}
-                <button type="button" className="transition-colors" style={{
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: "0.8rem",
-                  color: "#c69c6d",
-                  fontWeight: 500
-                }} onMouseEnter={e => {
-                  e.currentTarget.style.color = "#1a1a1a";
-                }} onMouseLeave={e => {
-                  e.currentTarget.style.color = "#c69c6d";
-                }}>
-                  Forgot password?
-                </button>
-              </div>
-
-              {/* Sign In Button */}
-              <button type="submit" disabled={isLoading} className="w-full relative overflow-hidden transition-all duration-300 group" style={{
+          {/* User Type Selector */}
+          <div className="mb-8">
+            <select
+              value={userType}
+              onChange={(e) => setUserType(e.target.value as "existing" | "external")}
+              className="w-full transition-all outline-none cursor-pointer appearance-none"
+              style={{
                 fontFamily: "'DM Sans', sans-serif",
-                padding: "14px",
-                backgroundColor: "#1a1a1a",
-                color: "#feffff",
-                fontWeight: 600,
+                padding: "14px 20px",
+                paddingRight: "48px",
+                border: "2px solid rgba(26, 26, 26, 0.1)",
                 borderRadius: "10px",
-                fontSize: "0.95rem",
-                border: "none",
-                cursor: isLoading ? "not-allowed" : "pointer"
-              }} onMouseEnter={e => {
-                if (!isLoading) {
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 6px 20px rgba(26, 26, 26, 0.2)";
-                }
-              }} onMouseLeave={e => {
-                if (!isLoading) {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }
+                fontSize: "1rem",
+                fontWeight: 500,
+                backgroundColor: "#feffff",
+                color: "#1a1a1a",
+                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23c69c6d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+                backgroundPosition: "right 16px center",
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "20px",
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#c69c6d";
+                e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
+                e.target.style.boxShadow = "none";
+              }}
+            >
+              <option value="existing">Existing User</option>
+              <option value="external">External User</option>
+            </select>
+          </div>
+
+          {/* Conditional Content */}
+          {userType === "existing" ? (
+            <>
+              {/* Login Header */}
+              <h2 className="text-center mb-2" style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
+                fontWeight: 500,
+                color: "#1a1a1a"
               }}>
-                <span className="relative flex items-center justify-center gap-2">
-                  {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Sign In
-                </span>
-              </button>
-            </form>
-
-            {/* Jira Badge under login */}
-            <div className="mt-6">
-              <IntegrationBadge />
-            </div>
-          </div>
-
-          {/* Vertical Divider */}
-          <div className="hidden md:flex items-center justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[70%]">
-            <div className="w-px h-full" style={{ backgroundColor: "rgba(26, 26, 26, 0.1)" }} />
-            <div className="absolute bg-[#feffff] px-3 py-2" style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.75rem",
-              color: "rgba(26, 26, 26, 0.4)",
-              fontWeight: 500
-            }}>OR</div>
-          </div>
-
-          {/* Horizontal Divider for Mobile */}
-          <div className="md:hidden flex items-center gap-4">
-            <div className="flex-1 h-px" style={{ backgroundColor: "rgba(26, 26, 26, 0.1)" }} />
-            <span style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "0.75rem",
-              color: "rgba(26, 26, 26, 0.4)",
-              fontWeight: 500
-            }}>OR</span>
-            <div className="flex-1 h-px" style={{ backgroundColor: "rgba(26, 26, 26, 0.1)" }} />
-          </div>
-
-          {/* Right Column - Submit Demand Request */}
-          <div className="flex flex-col">
-            <h2 className="text-center mb-2" style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(1.3rem, 2.5vw, 1.6rem)",
-              fontWeight: 500,
-              color: "#1a1a1a"
-            }}>
-              External User
-            </h2>
-            <p className="text-center mb-6" style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "clamp(0.85rem, 1.5vw, 0.95rem)",
-              color: "rgba(26, 26, 26, 0.55)"
-            }}>
-              Submit a new demand request
-            </p>
-
-            {/* Request Card */}
-            <div className="flex-1 flex flex-col items-center justify-center p-6 rounded-xl" style={{
-              backgroundColor: "rgba(198, 156, 109, 0.04)",
-              border: "1px solid rgba(198, 156, 109, 0.15)"
-            }}>
-              {/* Icon */}
-              <div className="mb-4 p-4 rounded-full" style={{
-                backgroundColor: "rgba(198, 156, 109, 0.1)"
-              }}>
-                <FileText className="w-8 h-8" style={{ color: "#c69c6d" }} />
-              </div>
-
-              {/* Description */}
-              <p className="text-center mb-6 max-w-xs" style={{
+                Welcome back
+              </h2>
+              <p className="text-center mb-6" style={{
                 fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.9rem",
-                color: "rgba(26, 26, 26, 0.65)",
-                lineHeight: 1.6
+                fontSize: "clamp(0.9rem, 2vw, 1rem)",
+                color: "rgba(26, 26, 26, 0.55)"
               }}>
-                No account needed. Submit your business demand request and our team will review it promptly.
+                Enter your credentials to access your account
               </p>
 
-              {/* Submit Button - Outlined Gold */}
-              <button 
-                type="button" 
-                onClick={() => navigate('/request-access')}
-                className="w-full transition-all duration-300"
-                style={{
+              {/* Login Form */}
+              <form onSubmit={handleSignIn} className="space-y-4">
+                {/* Email Field */}
+                <div>
+                  <label htmlFor="email" className="block mb-1.5" style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    color: "#1a1a1a"
+                  }}>
+                    Email Address
+                  </label>
+                  <input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@company.com" required className="w-full transition-all outline-none" style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    padding: "14px 18px",
+                    border: "2px solid rgba(26, 26, 26, 0.1)",
+                    borderRadius: "10px",
+                    fontSize: "1rem",
+                    backgroundColor: "#feffff"
+                  }} onFocus={e => {
+                    e.target.style.borderColor = "#c69c6d";
+                    e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
+                  }} onBlur={e => {
+                    e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
+                    e.target.style.boxShadow = "none";
+                  }} />
+                </div>
+
+                {/* Password Field */}
+                <div>
+                  <label htmlFor="password" className="block mb-1.5" style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    color: "#1a1a1a"
+                  }}>
+                    Password
+                  </label>
+                  <input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" required className="w-full transition-all outline-none" style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    padding: "14px 18px",
+                    border: "2px solid rgba(26, 26, 26, 0.1)",
+                    borderRadius: "10px",
+                    fontSize: "1rem",
+                    backgroundColor: "#feffff"
+                  }} onFocus={e => {
+                    e.target.style.borderColor = "#c69c6d";
+                    e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
+                  }} onBlur={e => {
+                    e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
+                    e.target.style.boxShadow = "none";
+                  }} />
+                </div>
+
+                {/* Form Options Row */}
+                <div className="flex items-center justify-between">
+                  {/* Remember Me */}
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all" style={{
+                      borderColor: "rgba(26, 26, 26, 0.2)",
+                      backgroundColor: rememberMe ? "#c69c6d" : "transparent",
+                      backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
+                      backgroundSize: "100% 100%",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat"
+                    }} />
+                    <span style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "0.875rem",
+                      color: "rgba(26, 26, 26, 0.7)"
+                    }}>
+                      Remember me
+                    </span>
+                  </label>
+
+                  {/* Forgot Password */}
+                  <button type="button" className="transition-colors" style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    fontSize: "0.875rem",
+                    color: "#c69c6d",
+                    fontWeight: 500
+                  }} onMouseEnter={e => {
+                    e.currentTarget.style.color = "#1a1a1a";
+                  }} onMouseLeave={e => {
+                    e.currentTarget.style.color = "#c69c6d";
+                  }}>
+                    Forgot password?
+                  </button>
+                </div>
+
+                {/* Sign In Button */}
+                <button type="submit" disabled={isLoading} className="w-full relative overflow-hidden transition-all duration-300" style={{
                   fontFamily: "'DM Sans', sans-serif",
-                  padding: "14px 24px",
-                  backgroundColor: "transparent",
-                  color: "#c69c6d",
+                  padding: "16px",
+                  backgroundColor: "#1a1a1a",
+                  color: "#feffff",
                   fontWeight: 600,
                   borderRadius: "10px",
-                  fontSize: "0.95rem",
-                  border: "2px solid #c69c6d",
-                  cursor: "pointer"
-                }}
-                onMouseEnter={e => {
-                  e.currentTarget.style.backgroundColor = "#c69c6d";
-                  e.currentTarget.style.color = "#feffff";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                  e.currentTarget.style.boxShadow = "0 6px 20px rgba(198, 156, 109, 0.3)";
-                }}
-                onMouseLeave={e => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = "#c69c6d";
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "none";
-                }}
-              >
-                Log Demand Request
-              </button>
+                  fontSize: "1rem",
+                  border: "none",
+                  cursor: isLoading ? "not-allowed" : "pointer"
+                }} onMouseEnter={e => {
+                  if (!isLoading) {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(26, 26, 26, 0.2)";
+                  }
+                }} onMouseLeave={e => {
+                  if (!isLoading) {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }
+                }}>
+                  <span className="relative flex items-center justify-center gap-2">
+                    {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                    Sign In
+                  </span>
+                </button>
+              </form>
 
-              {/* Info text */}
-              <p className="mt-4 text-center" style={{
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: "0.75rem",
-                color: "rgba(26, 26, 26, 0.4)"
+              {/* Jira Badge under login */}
+              <div className="mt-6">
+                <IntegrationBadge />
+              </div>
+            </>
+          ) : (
+            <>
+              {/* External User Header */}
+              <h2 className="text-center mb-2" style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
+                fontWeight: 500,
+                color: "#1a1a1a"
               }}>
-                Ticket ID will be generated upon submission
+                Submit a Request
+              </h2>
+              <p className="text-center mb-6" style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: "clamp(0.9rem, 2vw, 1rem)",
+                color: "rgba(26, 26, 26, 0.55)"
+              }}>
+                Log your business demand without an account
               </p>
-            </div>
-          </div>
+
+              {/* Request Card */}
+              <div className="flex flex-col items-center p-8 rounded-xl" style={{
+                backgroundColor: "rgba(198, 156, 109, 0.04)",
+                border: "1px solid rgba(198, 156, 109, 0.15)"
+              }}>
+                {/* Icon */}
+                <div className="mb-5 p-4 rounded-full" style={{
+                  backgroundColor: "rgba(198, 156, 109, 0.1)"
+                }}>
+                  <FileText className="w-10 h-10" style={{ color: "#c69c6d" }} />
+                </div>
+
+                {/* Description */}
+                <p className="text-center mb-6" style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "1rem",
+                  color: "rgba(26, 26, 26, 0.65)",
+                  lineHeight: 1.7
+                }}>
+                  No account needed. Submit your business demand request and our team will review it promptly.
+                </p>
+
+                {/* Submit Button - Outlined Gold */}
+                <button 
+                  type="button" 
+                  onClick={() => navigate('/request-access')}
+                  className="w-full transition-all duration-300"
+                  style={{
+                    fontFamily: "'DM Sans', sans-serif",
+                    padding: "16px 24px",
+                    backgroundColor: "transparent",
+                    color: "#c69c6d",
+                    fontWeight: 600,
+                    borderRadius: "10px",
+                    fontSize: "1rem",
+                    border: "2px solid #c69c6d",
+                    cursor: "pointer"
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.backgroundColor = "#c69c6d";
+                    e.currentTarget.style.color = "#feffff";
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 6px 20px rgba(198, 156, 109, 0.3)";
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.color = "#c69c6d";
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  Log Demand Request
+                </button>
+
+                {/* Info text */}
+                <p className="mt-4 text-center" style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: "0.8rem",
+                  color: "rgba(26, 26, 26, 0.4)"
+                }}>
+                  Ticket ID will be generated upon submission
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
 
