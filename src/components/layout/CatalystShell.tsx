@@ -15,7 +15,7 @@ function CatalystShellContent() {
   const location = useLocation();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
   const { tier, setTier } = useCatalystContext();
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   
   // Extract IDs from URL params
   const currentProgramId = params.programId || null;
