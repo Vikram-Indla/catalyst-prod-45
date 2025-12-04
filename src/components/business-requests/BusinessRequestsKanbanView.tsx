@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Star, User, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -21,6 +21,7 @@ interface BusinessRequest {
   delivery_platform: string | null;
   business_owner?: string | null;
   end_date?: string | null;
+  updated_at?: string | null;
 }
 
 interface BusinessRequestsKanbanViewProps {
@@ -105,6 +106,19 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect }: Busine
       return format(new Date(date), 'MMM dd, yyyy');
     } catch {
       return date;
+    }
+  };
+
+  const getTimeInStatus = (updatedAt: string | null | undefined) => {
+    if (!updatedAt) return null;
+    try {
+      const updated = new Date(updatedAt);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - updated.getTime());
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    } catch {
+      return null;
     }
   };
 
@@ -214,6 +228,20 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect }: Busine
                                         <User className="h-3 w-3" />
                                         <span className="truncate">{request.business_owner}</span>
                                       </div>
+                                    )}
+
+                                    {getTimeInStatus(request.updated_at) !== null && (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-help">
+                                            <Clock className="h-3 w-3" />
+                                            <span>{getTimeInStatus(request.updated_at)}d in status</span>
+                                          </div>
+                                        </TooltipTrigger>
+                                        <TooltipContent side="top" className="text-xs">
+                                          Time in current status: {getTimeInStatus(request.updated_at)} days
+                                        </TooltipContent>
+                                      </Tooltip>
                                     )}
 
                                     <div className="flex items-center justify-between pt-1 border-t border-border/30">
