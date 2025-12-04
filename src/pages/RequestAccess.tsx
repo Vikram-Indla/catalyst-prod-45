@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle2, Download, Mail, ArrowLeft, Upload, X, Calendar, ChevronDown, ChevronUp, Lock } from 'lucide-react';
+import { CheckCircle2, Download, Mail, ArrowLeft, Upload, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { generateReportPDF, downloadPDF } from '@/utils/pdfGenerator';
 
 // Department options
 const DEPARTMENTS = [
@@ -78,12 +75,8 @@ export default function RequestAccess() {
     summary: '',
     description: '',
     deliveryPlatform: '',
-    businessAskDate: null as Date | null,
-    initiationDate: null as Date | null,
-    targetCompletionDate: null as Date | null,
-    isDateLocked: false,
     reporter: '',
-    assignee: '',
+    email: '',
     department: '',
     businessOwner: '',
     efsParent: '',
@@ -96,8 +89,8 @@ export default function RequestAccess() {
   // Attachments
   const [attachments, setAttachments] = useState<File[]>([]);
   
-  // Collapsible sections
-  const [entityServicesOpen, setEntityServicesOpen] = useState(false);
+  // Entity Services expanded by default
+  const [entityServicesOpen, setEntityServicesOpen] = useState(true);
   
   // Human verification
   const [captchaNum1] = useState(() => Math.floor(Math.random() * 10) + 1);
@@ -113,6 +106,13 @@ export default function RequestAccess() {
 
   // Validation
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateEmail = (email: string) => {
+    if (!email.trim()) return 'Email is required';
+    if (!email.endsWith('@mim.gov.sa')) return 'Only @mim.gov.sa email addresses are allowed';
+    if (!/^[^\s@]+@mim\.gov\.sa$/.test(email)) return 'Invalid email format';
+    return '';
+  };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -133,7 +133,13 @@ export default function RequestAccess() {
       newErrors.businessOwner = 'Business owner is required';
     }
     if (!formData.reporter.trim()) {
-      newErrors.reporter = 'Your name is required';
+      newErrors.reporter = 'Name is required';
+    }
+    
+    // Email validation
+    const emailError = validateEmail(formData.email);
+    if (emailError) {
+      newErrors.email = emailError;
     }
     
     // CAPTCHA validation
@@ -222,15 +228,6 @@ export default function RequestAccess() {
   };
 
   const handleDownloadPDF = async () => {
-    const reportData = {
-      totalTests: 0,
-      passedTests: 0,
-      failedTests: 0,
-      notRunTests: 0,
-      passRate: 0,
-    };
-    
-    // Create custom PDF for demand request
     const { jsPDF } = await import('jspdf');
     const doc = new jsPDF();
     
@@ -270,20 +267,13 @@ export default function RequestAccess() {
     yPos += lineHeight;
     doc.text(`Business Owner: ${formData.businessOwner}`, 15, yPos);
     yPos += lineHeight;
-    doc.text(`Reporter: ${formData.reporter}`, 15, yPos);
+    doc.text(`Requested By: ${formData.reporter}`, 15, yPos);
+    yPos += lineHeight;
+    doc.text(`Email: ${formData.email}`, 15, yPos);
     yPos += lineHeight * 2;
     
-    if (formData.businessAskDate) {
-      doc.text(`Business Ask Date: ${format(formData.businessAskDate, 'dd/MM/yyyy')}`, 15, yPos);
-      yPos += lineHeight;
-    }
-    if (formData.targetCompletionDate) {
-      doc.text(`Target Completion Date: ${format(formData.targetCompletionDate, 'dd/MM/yyyy')}`, 15, yPos);
-      yPos += lineHeight;
-    }
-    
     // Footer message
-    yPos += 15;
+    yPos += 10;
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
     doc.text('This request has been logged with the MIM Demand Team.', 15, yPos);
@@ -309,7 +299,6 @@ export default function RequestAccess() {
     setIsSendingEmail(true);
     
     try {
-      // Simulate email sending (in production, call edge function)
       await new Promise(resolve => setTimeout(resolve, 1000));
       toast({ title: 'Email sent', description: `Confirmation sent to ${emailInput}` });
       setEmailInput('');
@@ -399,39 +388,46 @@ export default function RequestAccess() {
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
-      {/* Header */}
-      <header className="bg-white border-b border-[#e5e5e5] sticky top-0 z-50">
+      {/* Header with Title */}
+      <header className="bg-[#1a1a1a] sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img 
-              src="/lovable-uploads/0c0ef072-d7d2-4e70-be14-e1c67534f7ee.png" 
-              alt="Catalyst" 
-              className="h-10"
-            />
+          <div className="flex items-center gap-4">
+            {/* Catalyst Logo */}
+            <span 
+              className="font-semibold whitespace-nowrap cursor-pointer"
+              style={{ 
+                fontSize: '20px', 
+                lineHeight: '24px', 
+                letterSpacing: '-0.02em',
+              }}
+              onClick={() => navigate('/auth')}
+            >
+              <span className="text-white">Cata</span>
+              <span className="text-[#c69c6d]">lyst</span>
+            </span>
+            
+            {/* Divider */}
+            <div className="w-px h-6 bg-white/20" />
+            
+            {/* Page Title */}
+            <h1 className="text-white font-medium text-base sm:text-lg">
+              Submit a Demand Request
+            </h1>
           </div>
+          
           <Button 
             variant="ghost" 
             onClick={() => navigate('/auth')}
-            className="text-muted-foreground hover:text-[#1a1a1a]"
+            className="text-white/70 hover:text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Login
+            <span className="hidden sm:inline">Back to Login</span>
           </Button>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-        {/* Page Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-semibold text-[#1a1a1a] mb-2" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Submit a Demand Request
-          </h1>
-          <p className="text-muted-foreground" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-            Complete the form below to submit your business requirement for review and prioritization
-          </p>
-        </div>
-
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Section 1: Request Details */}
           <section className="bg-white rounded-xl border border-[#e5e5e5] p-6 shadow-sm">
@@ -464,7 +460,7 @@ export default function RequestAccess() {
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Detailed description of your business requirement..."
+                  placeholder="Provide enough details for the business request (50 words)"
                   className={cn("mt-1.5 min-h-[120px]", errors.description && "border-red-500")}
                 />
                 {errors.description && <p className="text-sm text-red-500 mt-1">{errors.description}</p>}
@@ -493,156 +489,18 @@ export default function RequestAccess() {
             </div>
           </section>
 
-          {/* Section 2: Timeline */}
+          {/* Section 2: Requester Information */}
           <section className="bg-white rounded-xl border border-[#e5e5e5] p-6 shadow-sm">
             <h2 className="text-sm font-semibold text-[#c69c6d] uppercase tracking-wider mb-6">
-              Timeline
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Business Ask Date */}
-              <div>
-                <Label className="text-[#1a1a1a] font-medium">Business Ask Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn("w-full mt-1.5 justify-start text-left font-normal", !formData.businessAskDate && "text-muted-foreground")}
-                    >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      {formData.businessAskDate ? format(formData.businessAskDate, 'dd/MM/yyyy') : 'dd/mm/yyyy'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={formData.businessAskDate || undefined}
-                      onSelect={(date) => setFormData({ ...formData, businessAskDate: date || null })}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              
-              {/* Initiation Date */}
-              <div>
-                <Label className="text-[#1a1a1a] font-medium">Initiation Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn("w-full mt-1.5 justify-start text-left font-normal", !formData.initiationDate && "text-muted-foreground")}
-                    >
-                      <Calendar className="mr-2 h-4 w-4" />
-                      {formData.initiationDate ? format(formData.initiationDate, 'dd/MM/yyyy') : 'dd/mm/yyyy'}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <CalendarComponent
-                      mode="single"
-                      selected={formData.initiationDate || undefined}
-                      onSelect={(date) => setFormData({ ...formData, initiationDate: date || null })}
-                      initialFocus
-                      className="pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-              
-              {/* Target Completion Date */}
-              <div>
-                <Label className="text-[#1a1a1a] font-medium">Target Completion Date</Label>
-                <div className="flex gap-2 mt-1.5">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn("flex-1 justify-start text-left font-normal", !formData.targetCompletionDate && "text-muted-foreground")}
-                      >
-                        <Calendar className="mr-2 h-4 w-4" />
-                        {formData.targetCompletionDate ? format(formData.targetCompletionDate, 'dd/MM/yyyy') : 'dd/mm/yyyy'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <CalendarComponent
-                        mode="single"
-                        selected={formData.targetCompletionDate || undefined}
-                        onSelect={(date) => setFormData({ ...formData, targetCompletionDate: date || null })}
-                        initialFocus
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setFormData({ ...formData, isDateLocked: !formData.isDateLocked })}
-                    className={cn(formData.isDateLocked && "bg-[#c69c6d]/10 border-[#c69c6d]")}
-                  >
-                    <Lock className={cn("h-4 w-4", formData.isDateLocked && "text-[#c69c6d]")} />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Section 3: Attachments & Assignment */}
-          <section className="bg-white rounded-xl border border-[#e5e5e5] p-6 shadow-sm">
-            <h2 className="text-sm font-semibold text-[#c69c6d] uppercase tracking-wider mb-6">
-              Attachments & Assignment
+              Requester Information
             </h2>
             
             <div className="space-y-5">
-              {/* Attachments */}
-              <div>
-                <Label className="text-[#1a1a1a] font-medium">
-                  Attachments <span className="text-muted-foreground text-sm font-normal">(Max 5 files, 20MB total. Documents only: PDF, DOC, XLS, PPT, TXT, CSV)</span>
-                </Label>
-                <div className="mt-1.5">
-                  <label className="flex items-center gap-3 px-4 py-3 bg-[#f5f5f5] border border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:bg-[#efefef] transition-colors">
-                    <Upload className="w-5 h-5 text-muted-foreground" />
-                    <span className="text-muted-foreground">Upload Files...</span>
-                    <input
-                      type="file"
-                      multiple
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
-                      disabled={attachments.length >= 5}
-                    />
-                  </label>
-                  
-                  {attachments.length > 0 && (
-                    <div className="mt-3 space-y-2">
-                      {attachments.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between bg-[#f9f9f9] px-3 py-2 rounded-lg">
-                          <span className="text-sm truncate">{file.name}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6"
-                              onClick={() => removeAttachment(index)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Reporter & Assignee */}
+              {/* Requested By & Email */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="reporter" className="text-[#1a1a1a] font-medium">
-                    Your Name <span className="text-red-500">*</span>
+                    Requested by <span className="text-red-500">*</span>
                   </Label>
                   <Input
                     id="reporter"
@@ -655,14 +513,18 @@ export default function RequestAccess() {
                 </div>
                 
                 <div>
-                  <Label htmlFor="assignee" className="text-[#1a1a1a] font-medium">Preferred Assignee</Label>
+                  <Label htmlFor="email" className="text-[#1a1a1a] font-medium">
+                    Email <span className="text-red-500">*</span>
+                  </Label>
                   <Input
-                    id="assignee"
-                    value={formData.assignee}
-                    onChange={(e) => setFormData({ ...formData, assignee: e.target.value })}
-                    placeholder="Select assignee (optional)"
-                    className="mt-1.5"
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="name@mim.gov.sa"
+                    className={cn("mt-1.5", errors.email && "border-red-500")}
                   />
+                  {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
                 </div>
               </div>
               
@@ -705,12 +567,61 @@ export default function RequestAccess() {
             </div>
           </section>
 
-          {/* Section 4: Entity & Individual Services (Collapsible) */}
+          {/* Section 3: Attachments */}
+          <section className="bg-white rounded-xl border border-[#e5e5e5] p-6 shadow-sm">
+            <h2 className="text-sm font-semibold text-[#c69c6d] uppercase tracking-wider mb-6">
+              Attachments
+            </h2>
+            
+            <div>
+              <Label className="text-[#1a1a1a] font-medium">
+                Supporting Documents <span className="text-muted-foreground text-sm font-normal">(Max 5 files, 20MB total. PDF, DOC, XLS, PPT, TXT, CSV)</span>
+              </Label>
+              <div className="mt-1.5">
+                <label className="flex items-center gap-3 px-4 py-3 bg-[#f5f5f5] border border-dashed border-[#d5d5d5] rounded-lg cursor-pointer hover:bg-[#efefef] transition-colors">
+                  <Upload className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-muted-foreground">Upload Files...</span>
+                  <input
+                    type="file"
+                    multiple
+                    onChange={handleFileUpload}
+                    className="hidden"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
+                    disabled={attachments.length >= 5}
+                  />
+                </label>
+                
+                {attachments.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    {attachments.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between bg-[#f9f9f9] px-3 py-2 rounded-lg">
+                        <span className="text-sm truncate">{file.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(1)} KB</span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => removeAttachment(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* Section 4: Entity & Individual Services (Expanded by default, Optional) */}
           <Collapsible open={entityServicesOpen} onOpenChange={setEntityServicesOpen}>
             <section className="bg-white rounded-xl border border-[#e5e5e5] shadow-sm overflow-hidden">
               <CollapsibleTrigger className="w-full px-6 py-4 flex items-center justify-between hover:bg-[#fafafa] transition-colors">
                 <h2 className="text-sm font-semibold text-[#c69c6d] uppercase tracking-wider">
-                  Entity & Individual Services
+                  Entity & Individual Services <span className="text-muted-foreground font-normal normal-case">(Optional)</span>
                 </h2>
                 {entityServicesOpen ? (
                   <ChevronUp className="h-5 w-5 text-muted-foreground" />
