@@ -244,6 +244,7 @@ export default function DemandSummaryPage() {
           title="Business Demand Summary"
           subtitle="Monthly Overview"
           icon={BarChart3}
+          defaultOpen={true}
           collapsedContent={
             <div className="flex items-center gap-3">
               <span className="px-2.5 py-1 bg-amber-500/20 text-amber-400 text-[10px] font-semibold rounded">CPI 72</span>
