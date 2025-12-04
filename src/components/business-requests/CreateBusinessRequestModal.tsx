@@ -58,6 +58,26 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
       toast.error('Summary is required and must be at least 5 characters');
       return;
     }
+    if (!formData.description || formData.description.trim().length === 0) {
+      toast.error('Description is required');
+      return;
+    }
+    if (!formData.requestor) {
+      toast.error('Assignee is required');
+      return;
+    }
+    if (!formData.department) {
+      toast.error('Department is required');
+      return;
+    }
+    if (!formData.business_owner || formData.business_owner.trim().length === 0) {
+      toast.error('Business Owner is required');
+      return;
+    }
+    if (!formData.delivery_platform) {
+      toast.error('Delivery Platform is required');
+      return;
+    }
 
     // Map form data to API format
     const requestData = {

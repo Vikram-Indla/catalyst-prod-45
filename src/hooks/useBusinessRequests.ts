@@ -4,7 +4,7 @@ import { BusinessRequest, CreateBusinessRequestFormData, ReadinessChecklist } fr
 import { useToast } from '@/hooks/use-toast';
 import { Json } from '@/integrations/supabase/types';
 
-// Helper to generate MDT-XXX format request key
+// Helper to generate MIM-XXX format request key
 const generateRequestKey = async (): Promise<string> => {
   // Get count of existing requests to generate next number
   const { count, error } = await supabase
@@ -15,12 +15,12 @@ const generateRequestKey = async (): Promise<string> => {
     console.error('Error getting request count:', error);
     // Fallback to random 3-digit number
     const randomNum = Math.floor(Math.random() * 900) + 100;
-    return `MDT-${randomNum}`;
+    return `MIM-${randomNum}`;
   }
   
   // Generate next sequential number, padded to 3 digits
   const nextNum = ((count || 0) + 1).toString().padStart(3, '0');
-  return `MDT-${nextNum}`;
+  return `MIM-${nextNum}`;
 };
 
 // Helper to transform DB row to BusinessRequest
