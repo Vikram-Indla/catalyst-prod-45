@@ -82,6 +82,7 @@ export default function Auth() {
                   className="flex items-center gap-3 group"
                   style={{
                     padding: "10px 0",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   <item.Icon 
