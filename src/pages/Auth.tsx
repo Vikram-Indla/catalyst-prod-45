@@ -182,39 +182,48 @@ export default function Auth() {
         {/* Main Container */}
         <div className="w-full max-w-md mx-auto relative z-10" style={{ marginTop: "clamp(100px, 16vh, 140px)" }}>
           
-          {/* User Type Selector */}
-          <div className="mb-8">
-            <select
-              value={userType}
-              onChange={(e) => setUserType(e.target.value as "existing" | "external")}
-              className="w-full transition-all outline-none cursor-pointer appearance-none"
-              style={{
-                fontFamily: "'DM Sans', sans-serif",
-                padding: "14px 20px",
-                paddingRight: "48px",
-                border: "2px solid rgba(26, 26, 26, 0.1)",
-                borderRadius: "10px",
-                fontSize: "1rem",
-                fontWeight: 500,
-                backgroundColor: "#feffff",
-                color: "#1a1a1a",
-                backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23c69c6d' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
-                backgroundPosition: "right 16px center",
-                backgroundRepeat: "no-repeat",
-                backgroundSize: "20px",
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = "#c69c6d";
-                e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
-                e.target.style.boxShadow = "none";
-              }}
-            >
-              <option value="existing">Existing User</option>
-              <option value="external">External User</option>
-            </select>
+          {/* User Type Selector - Segmented Pills */}
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex rounded-full p-1" style={{
+              backgroundColor: "rgba(26, 26, 26, 0.05)"
+            }}>
+              <button
+                type="button"
+                onClick={() => setUserType("existing")}
+                className="transition-all duration-200"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  padding: "10px 24px",
+                  borderRadius: "9999px",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  border: "none",
+                  cursor: "pointer",
+                  backgroundColor: userType === "existing" ? "#1a1a1a" : "transparent",
+                  color: userType === "existing" ? "#feffff" : "rgba(26, 26, 26, 0.6)",
+                }}
+              >
+                Existing User
+              </button>
+              <button
+                type="button"
+                onClick={() => setUserType("external")}
+                className="transition-all duration-200"
+                style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  padding: "10px 24px",
+                  borderRadius: "9999px",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  border: "none",
+                  cursor: "pointer",
+                  backgroundColor: userType === "external" ? "#1a1a1a" : "transparent",
+                  color: userType === "external" ? "#feffff" : "rgba(26, 26, 26, 0.6)",
+                }}
+              >
+                External User
+              </button>
+            </div>
           </div>
 
           {/* Conditional Content */}
