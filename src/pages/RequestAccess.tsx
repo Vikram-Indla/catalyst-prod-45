@@ -349,37 +349,43 @@ export default function RequestAccess() {
               Download Confirmation (PDF)
             </Button>
             
-            {/* Email Section */}
-            <div className="pt-4 border-t">
-              <p className="text-sm text-muted-foreground mb-3">Share confirmation via email</p>
-              <div className="flex gap-2">
-                <Input
-                  type="email"
-                  placeholder="Enter email address"
-                  value={emailInput}
-                  onChange={(e) => setEmailInput(e.target.value)}
-                  className="flex-1"
-                />
-                <Button 
-                  onClick={handleSendEmail}
-                  disabled={isSendingEmail}
-                  variant="outline"
-                  className="border-[#c69c6d] text-[#c69c6d] hover:bg-[#c69c6d]/10"
-                >
-                  <Mail className="w-4 h-4" />
-                </Button>
-              </div>
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-4 border-t">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/auth')}
+                className="flex-1 border-[#c69c6d] text-[#c69c6d] hover:bg-[#c69c6d]/10"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Login
+              </Button>
+              <Button 
+                onClick={() => {
+                  setSubmissionSuccess(false);
+                  setTicketNumber('');
+                  setFormData({
+                    summary: '',
+                    description: '',
+                    deliveryPlatform: '',
+                    reporter: '',
+                    email: '',
+                    department: '',
+                    businessOwner: '',
+                    efsParent: '',
+                    efsChild: '',
+                    ecsOption: '',
+                    isSaudiCategory: '',
+                    isNonSaudiCategory: '',
+                  });
+                  setAttachments([]);
+                  setCaptchaAnswer('');
+                  setErrors({});
+                }}
+                className="flex-1 bg-[#c69c6d] hover:bg-[#b8905f] text-white"
+              >
+                Edit Form Again
+              </Button>
             </div>
-            
-            {/* Back to Login */}
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/auth')}
-              className="w-full mt-4 text-muted-foreground hover:text-[#1a1a1a]"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Login
-            </Button>
           </div>
         </div>
       </div>
