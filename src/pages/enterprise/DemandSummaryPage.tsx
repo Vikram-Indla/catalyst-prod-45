@@ -183,63 +183,7 @@ export default function DemandSummaryPage() {
       </header>
 
       <main className="max-w-[1400px] mx-auto px-6 py-6 space-y-4">
-        {/* Performance Pulse */}
-        <SleekGadget
-          title="Performance Pulse"
-          subtitle="8-Week CPI Trend"
-          icon={Zap}
-          collapsedContent={
-            <div className="flex items-center gap-3">
-              <div className={cn('px-3 py-1.5 rounded-lg flex items-center gap-2', sentiment.className)}>
-                <span className="font-mono font-bold text-white text-lg">{currentScore}</span>
-                <span className="text-white/80 text-[10px] font-medium uppercase">{sentiment.label}</span>
-              </div>
-              <div className={cn('text-xs font-medium', trend >= 0 ? 'text-success' : 'text-destructive')}>
-                {trend >= 0 ? '+' : ''}{trend} pts
-              </div>
-              <div className="hidden sm:flex items-end gap-0.5 h-6">
-                {weeklyScores.slice(-8).map((score, i) => {
-                  const height = (score / 100) * 24;
-                  const s = getSentiment(score);
-                  return <div key={i} className={cn('w-1.5 rounded-sm', s.className)} style={{ height, opacity: 0.4 + (i * 0.08) }} />;
-                })}
-              </div>
-            </div>
-          }
-          expandedContent={
-            <>
-              <div className="flex justify-between items-center flex-wrap gap-3 py-4">
-                <div className="flex gap-5 flex-wrap text-[11px] text-white/50">
-                  <span>Trending: <strong className="text-success ml-1">+1 pts</strong></span>
-                  <span>Best: <strong className="text-white ml-1">19-OCT (82)</strong></span>
-                  <span>Lowest: <strong className="text-white ml-1">16-NOV (68)</strong></span>
-                </div>
-              </div>
-              <div className="flex items-end justify-center gap-1 mb-3">
-                {weeklyScores.slice(-8).map((score, index) => {
-                  const totalWeeks = 8; const minSize = 60; const maxSize = 95;
-                  const size = minSize + ((maxSize - minSize) / (totalWeeks - 1)) * index;
-                  const isCurrentWeek = index === totalWeeks - 1;
-                  const opacity = isCurrentWeek ? 1.0 : (0.45 + (0.45 * (index / (totalWeeks - 1))));
-                  const s = getSentiment(score);
-                  const dateIndex = weekDates.length - totalWeeks + index;
-                  return (
-                    <div key={index} className="flex flex-col items-center cursor-pointer transition-transform hover:scale-105" style={{ width: size, height: size + 20, opacity }}>
-                      <span className="text-[8px] font-semibold mb-1 text-white/40">{weekDates[dateIndex]}</span>
-                      <div className={cn('rounded-lg flex flex-col items-center justify-center', s.className)} style={{ width: size, height: size, border: isCurrentWeek ? '3px solid white' : 'none' }}>
-                        <span className="font-mono font-bold text-white" style={{ fontSize: size * 0.28 }}>{score}</span>
-                        <span className="text-white font-semibold uppercase" style={{ fontSize: size * 0.11 }}>{s.label}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-              <p className="text-center text-white/40 text-[11px] italic">Hover over each week to view CPI score and date details</p>
-            </>
-          }
-        />
-
-        {/* Business Demand Summary */}
+        {/* Business Demand Summary - TOP */}
         <SleekGadget
           title="Business Demand Summary"
           subtitle="Monthly Overview"
@@ -270,6 +214,86 @@ export default function DemandSummaryPage() {
           }
         />
 
+        {/* Performance Pulse + CPI Combined */}
+        <SleekGadget
+          title="Performance Pulse"
+          subtitle="8-Week CPI Trend & Dimensions"
+          icon={Zap}
+          collapsedContent={
+            <div className="flex items-center gap-3">
+              <div className={cn('px-3 py-1.5 rounded-lg flex items-center gap-2', sentiment.className)}>
+                <span className="font-mono font-bold text-white text-lg">{currentScore}</span>
+                <span className="text-white/80 text-[10px] font-medium uppercase">{sentiment.label}</span>
+              </div>
+              <div className={cn('text-xs font-medium', trend >= 0 ? 'text-success' : 'text-destructive')}>
+                {trend >= 0 ? '+' : ''}{trend} pts
+              </div>
+              <div className="hidden sm:flex items-end gap-0.5 h-6">
+                {weeklyScores.slice(-8).map((score, i) => {
+                  const height = (score / 100) * 24;
+                  const s = getSentiment(score);
+                  return <div key={i} className={cn('w-1.5 rounded-sm', s.className)} style={{ height, opacity: 0.4 + (i * 0.08) }} />;
+                })}
+              </div>
+            </div>
+          }
+          expandedContent={
+            <>
+              {/* Weekly Trend */}
+              <div className="flex justify-between items-center flex-wrap gap-3 py-4">
+                <div className="flex gap-5 flex-wrap text-[11px] text-white/50">
+                  <span>Trending: <strong className="text-success ml-1">+1 pts</strong></span>
+                  <span>Best: <strong className="text-white ml-1">19-OCT (82)</strong></span>
+                  <span>Lowest: <strong className="text-white ml-1">16-NOV (68)</strong></span>
+                </div>
+              </div>
+              <div className="flex items-end justify-center gap-1 mb-4">
+                {weeklyScores.slice(-8).map((score, index) => {
+                  const totalWeeks = 8; const minSize = 60; const maxSize = 95;
+                  const size = minSize + ((maxSize - minSize) / (totalWeeks - 1)) * index;
+                  const isCurrentWeek = index === totalWeeks - 1;
+                  const opacity = isCurrentWeek ? 1.0 : (0.45 + (0.45 * (index / (totalWeeks - 1))));
+                  const s = getSentiment(score);
+                  const dateIndex = weekDates.length - totalWeeks + index;
+                  return (
+                    <div key={index} className="flex flex-col items-center cursor-pointer transition-transform hover:scale-105" style={{ width: size, height: size + 20, opacity }}>
+                      <span className="text-[8px] font-semibold mb-1 text-white/40">{weekDates[dateIndex]}</span>
+                      <div className={cn('rounded-lg flex flex-col items-center justify-center', s.className)} style={{ width: size, height: size, border: isCurrentWeek ? '3px solid white' : 'none' }}>
+                        <span className="font-mono font-bold text-white" style={{ fontSize: size * 0.28 }}>{score}</span>
+                        <span className="text-white font-semibold uppercase" style={{ fontSize: size * 0.11 }}>{s.label}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* CPI Dimensions */}
+              <div className="border-t border-white/10 pt-4 mt-2">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">Performance Dimensions</span>
+                  <div className="flex items-center gap-2">
+                    <div className="text-2xl font-bold text-white">72</div>
+                    <span className="px-2 py-0.5 bg-amber-500 text-white text-[10px] font-medium rounded">AMBER</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+                  {dimensions.map((d, i) => (
+                    <div key={i} className="bg-white/5 rounded-lg p-2.5 border border-white/10">
+                      <div className="flex justify-between items-center mb-1.5">
+                        <span className="text-[10px] text-white/50 truncate">{d.key}</span>
+                        <span className={cn('font-mono text-xs font-bold', getScoreColor(d.score))}>{d.score}</span>
+                      </div>
+                      <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                        <div className={cn('h-full rounded-full', getScoreBg(d.score))} style={{ width: `${d.score}%` }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          }
+        />
+
         {/* Quarter Delivery Tracking */}
         <SleekGadget
           title="Quarter Delivery Tracking"
@@ -297,46 +321,6 @@ export default function DemandSummaryPage() {
                   </div>
                 </div>
               ))}
-            </div>
-          }
-        />
-
-        {/* Catalyst Performance Index */}
-        <SleekGadget
-          title="Catalyst Performance Index"
-          subtitle="7 Dimensions"
-          icon={BarChart3}
-          collapsedContent={
-            <div className="flex items-center gap-3">
-              <div className="px-3 py-1.5 bg-amber-500 rounded-lg flex items-center gap-2">
-                <span className="font-mono font-bold text-white text-lg">72</span>
-                <span className="text-white/80 text-[10px] font-medium uppercase">AMBER</span>
-              </div>
-              <span className="text-success text-xs font-medium">+5 pts</span>
-            </div>
-          }
-          expandedContent={
-            <div className="pt-4">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="text-4xl font-bold text-white">72</div>
-                <div>
-                  <div className="text-sm font-medium text-amber-400">AMBER</div>
-                  <div className="text-xs text-white/50">+5 pts from last week</div>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {dimensions.map((d, i) => (
-                  <div key={i} className="bg-white/5 rounded-lg p-3 border border-white/10">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs text-white/60">{d.key}</span>
-                      <span className={cn('font-mono font-bold', getScoreColor(d.score))}>{d.score}</span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div className={cn('h-full rounded-full', getScoreBg(d.score))} style={{ width: `${d.score}%` }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           }
         />
