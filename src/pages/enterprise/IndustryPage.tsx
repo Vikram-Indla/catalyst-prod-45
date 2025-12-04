@@ -171,7 +171,7 @@ export default function IndustryPage() {
     const step = PROCESS_STEPS.find(s => s.value === status);
     if (!step) return <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">{status}</span>;
     return (
-      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${step.color}`}>
+      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-foreground">
         {step.label}
       </span>
     );

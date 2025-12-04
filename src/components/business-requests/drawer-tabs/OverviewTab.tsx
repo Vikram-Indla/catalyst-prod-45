@@ -49,7 +49,7 @@ export function OverviewTab({ data, isEditMode, onChange, hideProcessStepHealth 
                   <SelectContent>
                     {PROCESS_STEPS.map((step) => (
                       <SelectItem key={step.value} value={step.value}>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${step.color}`}>
+                        <span className="text-sm">
                           {step.label}
                         </span>
                       </SelectItem>

@@ -2,16 +2,16 @@ import { z } from 'zod';
 
 // Process Step Options - matches workflow diagram
 export const PROCESS_STEPS = [
-  { value: 'new_demand', label: 'NEW DEMAND', color: 'bg-blue-500 text-white' },
-  { value: 'portfolio_review', label: 'PORTFOLIO REVIEW', color: 'bg-purple-500 text-white' },
-  { value: 'technical_validation', label: 'TECHNICAL VALIDATION', color: 'bg-indigo-500 text-white' },
-  { value: 'estimation', label: 'ESTIMATION', color: 'bg-orange-500 text-white' },
-  { value: 'demand_approved', label: 'DEMAND APPROVED', color: 'bg-green-500 text-white' },
-  { value: 'ready_for_dev', label: 'READY FOR DEV', color: 'bg-teal-500 text-white' },
-  { value: 'under_implementation', label: 'UNDER IMPLEMENTATION', color: 'bg-cyan-500 text-white' },
-  { value: 'implementation_review', label: 'IMPLEMENTATION REVIEW', color: 'bg-amber-500 text-white' },
-  { value: 'in_support_done', label: 'IN SUPPORT / DONE', color: 'bg-emerald-600 text-white' },
-  { value: 'on_hold_cancel', label: 'ON HOLD / CANCEL', color: 'bg-red-500 text-white' },
+  { value: 'new_demand', label: 'NEW DEMAND' },
+  { value: 'portfolio_review', label: 'PORTFOLIO REVIEW' },
+  { value: 'technical_validation', label: 'TECHNICAL VALIDATION' },
+  { value: 'estimation', label: 'ESTIMATION' },
+  { value: 'demand_approved', label: 'DEMAND APPROVED' },
+  { value: 'ready_for_dev', label: 'READY FOR DEV' },
+  { value: 'under_implementation', label: 'UNDER IMPLEMENTATION' },
+  { value: 'implementation_review', label: 'IMPLEMENTATION REVIEW' },
+  { value: 'in_support_done', label: 'IN SUPPORT / DONE' },
+  { value: 'on_hold_cancel', label: 'ON HOLD / CANCEL' },
 ] as const;
 
 // Health Options
