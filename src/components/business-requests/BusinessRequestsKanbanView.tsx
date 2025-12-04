@@ -23,16 +23,18 @@ interface BusinessRequestsKanbanViewProps {
   onRequestSelect: (id: string) => void;
 }
 
-// Kanban columns based on the process step statuses from image 4
+// Kanban columns matching the PROCESS_STEPS from the database
 const KANBAN_COLUMNS = [
-  { id: 'request_received', label: 'Request Received', color: 'bg-[#4a4a4a]' },
-  { id: 'under_study', label: 'Under Study', color: 'bg-[#c4c4c4]' },
-  { id: 'in_progress', label: 'In Progress', color: 'bg-[#5c4b8a]' },
-  { id: 'awaiting_business_response', label: 'Awaiting Business Response', color: 'bg-[#a0a0a0]' },
-  { id: 'reopen', label: 'Reopen', color: 'bg-[#4ecdc4]' },
-  { id: 'on_hold', label: 'On Hold', color: 'bg-[#c9a0a0]' },
-  { id: 'closed', label: 'Closed', color: 'bg-[#1a1a1a]' },
-  { id: 'completed', label: 'Completed', color: 'bg-[#6abf4b]' },
+  { id: 'new_demand', label: 'New Demand', color: 'bg-[#4a4a4a]' },
+  { id: 'portfolio_review', label: 'Portfolio Review', color: 'bg-[#c4c4c4]' },
+  { id: 'technical_validation', label: 'Technical Validation', color: 'bg-[#5c4b8a]' },
+  { id: 'estimation', label: 'Estimation', color: 'bg-[#a0a0a0]' },
+  { id: 'demand_approved', label: 'Demand Approved', color: 'bg-[#4ecdc4]' },
+  { id: 'ready_for_dev', label: 'Ready for Dev', color: 'bg-[#6abf4b]' },
+  { id: 'under_implementation', label: 'Under Implementation', color: 'bg-[#f4a261]' },
+  { id: 'implementation_review', label: 'Implementation Review', color: 'bg-[#e76f51]' },
+  { id: 'in_support_done', label: 'In Support / Done', color: 'bg-[#2a9d8f]' },
+  { id: 'on_hold_cancel', label: 'On Hold / Cancel', color: 'bg-[#c9a0a0]' },
 ];
 
 export function BusinessRequestsKanbanView({ requests, onRequestSelect }: BusinessRequestsKanbanViewProps) {
