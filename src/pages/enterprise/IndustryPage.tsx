@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusine
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { RankUpdateNotification } from '@/components/business-requests/RankUpdateNotification';
+import { TableColumnHeader, SortDirection, FilterOption } from '@/components/business-requests/TableColumnHeader';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
@@ -16,7 +17,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
-// Default columns configuration per screenshot
+// Default columns configuration
 const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'request_key', label: 'Request ID', visible: true, default: true },
   { id: 'rank', label: 'Rank', visible: true, default: true },
@@ -30,6 +31,15 @@ const DEFAULT_COLUMNS: ColumnConfig[] = [
 
 const ITEMS_PER_PAGE = 20;
 
+interface ColumnSort {
+  columnId: string;
+  direction: SortDirection;
+}
+
+interface ColumnFilters {
+  [columnId: string]: string[];
+}
+
 export default function IndustryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -38,6 +48,8 @@ export default function IndustryPage() {
   const [columns, setColumns] = useState<ColumnConfig[]>(DEFAULT_COLUMNS);
   const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [columnSort, setColumnSort] = useState<ColumnSort>({ columnId: 'rank', direction: 'asc' });
+  const [columnFilters, setColumnFilters] = useState<ColumnFilters>({});
   const [notification, setNotification] = useState<{
     show: boolean;
     oldRank: number;
@@ -60,7 +72,6 @@ export default function IndustryPage() {
       
       if (error) throw error;
       
-      // Group by entity_id
       const counts: Record<string, { count: number; files: { name: string; path: string }[] }> = {};
       data?.forEach(att => {
         if (!counts[att.entity_id]) {
@@ -73,33 +84,165 @@ export default function IndustryPage() {
     }
   });
 
-  // Sort requests by rank or business_score
+  // Generate filter options from data
+  const filterOptions = useMemo(() => {
+    if (!requests) return {};
+    
+    const options: Record<string, FilterOption[]> = {};
+    
+    // Process Step options
+    const processStepCounts: Record<string, number> = {};
+    requests.forEach((r: any) => {
+      const step = r.process_step || 'Unassigned';
+      processStepCounts[step] = (processStepCounts[step] || 0) + 1;
+    });
+    options['process_step'] = Object.entries(processStepCounts).map(([value, count]) => ({
+      value,
+      label: PROCESS_STEPS.find(s => s.value === value)?.label || value,
+      count
+    }));
+
+    // Planned Quarter options
+    const quarterCounts: Record<string, number> = {};
+    requests.forEach((r: any) => {
+      const q = r.planned_quarter || 'Unassigned';
+      quarterCounts[q] = (quarterCounts[q] || 0) + 1;
+    });
+    options['planned_quarter'] = Object.entries(quarterCounts).map(([value, count]) => ({
+      value,
+      label: value,
+      count
+    }));
+
+    // Business Score ranges
+    options['business_score'] = [
+      { value: '90-100', label: 'MUST-DO NOW (90-100)', count: requests.filter((r: any) => r.business_score >= 90).length },
+      { value: '75-89', label: 'HIGH (75-89)', count: requests.filter((r: any) => r.business_score >= 75 && r.business_score < 90).length },
+      { value: '60-74', label: 'MEDIUM (60-74)', count: requests.filter((r: any) => r.business_score >= 60 && r.business_score < 75).length },
+      { value: '40-59', label: 'LOW (40-59)', count: requests.filter((r: any) => r.business_score >= 40 && r.business_score < 60).length },
+      { value: '0-39', label: 'BACKLOG (0-39)', count: requests.filter((r: any) => r.business_score < 40).length },
+    ];
+
+    // Attachments
+    options['attachments'] = [
+      { value: 'has', label: 'Has Attachments', count: requests.filter((r: any) => attachmentCounts?.[r.id]?.count > 0).length },
+      { value: 'none', label: 'No Attachments', count: requests.filter((r: any) => !attachmentCounts?.[r.id]?.count).length },
+    ];
+
+    return options;
+  }, [requests, attachmentCounts]);
+
+  // Apply sorting and filtering
   useEffect(() => {
-    if (requests && requests.length > 0) {
-      const sorted = [...requests].sort((a: any, b: any) => {
-        // If both have explicit ranks, sort by rank
-        if (a.rank !== null && b.rank !== null) {
-          return a.rank - b.rank;
-        }
-        // Otherwise sort by business_score descending
-        return (b.business_score || 0) - (a.business_score || 0);
-      });
-      // Assign sequential ranks to ensure no duplicates
-      const withRanks = sorted.map((req, idx) => ({
-        ...req,
-        rank: req.rank ?? idx + 1
-      }));
-      setSortedRequests(withRanks);
-    } else {
+    if (!requests || requests.length === 0) {
       setSortedRequests([]);
+      return;
     }
-  }, [requests]);
+
+    let filtered = [...requests];
+
+    // Apply filters
+    Object.entries(columnFilters).forEach(([columnId, values]) => {
+      if (values.length === 0) return;
+
+      filtered = filtered.filter((req: any) => {
+        if (columnId === 'business_score') {
+          const score = req.business_score || 0;
+          return values.some(range => {
+            const [min, max] = range.split('-').map(Number);
+            return score >= min && score <= max;
+          });
+        }
+        if (columnId === 'attachments') {
+          const hasAtt = attachmentCounts?.[req.id]?.count > 0;
+          return values.some(v => (v === 'has' && hasAtt) || (v === 'none' && !hasAtt));
+        }
+        if (columnId === 'process_step') {
+          return values.includes(req.process_step || 'Unassigned');
+        }
+        if (columnId === 'planned_quarter') {
+          return values.includes(req.planned_quarter || 'Unassigned');
+        }
+        return true;
+      });
+    });
+
+    // Apply sorting
+    const sorted = [...filtered].sort((a: any, b: any) => {
+      const { columnId, direction } = columnSort;
+      if (!direction) return 0;
+
+      let aVal: any, bVal: any;
+
+      switch (columnId) {
+        case 'rank':
+          aVal = a.rank ?? 999;
+          bVal = b.rank ?? 999;
+          break;
+        case 'business_score':
+          aVal = a.business_score ?? 0;
+          bVal = b.business_score ?? 0;
+          break;
+        case 'title':
+          aVal = a.title?.toLowerCase() ?? '';
+          bVal = b.title?.toLowerCase() ?? '';
+          break;
+        case 'request_key':
+          aVal = a.request_key ?? '';
+          bVal = b.request_key ?? '';
+          break;
+        case 'process_step':
+          aVal = a.process_step ?? '';
+          bVal = b.process_step ?? '';
+          break;
+        case 'planned_quarter':
+          aVal = a.planned_quarter ?? '';
+          bVal = b.planned_quarter ?? '';
+          break;
+        case 'end_date':
+          aVal = a.end_date ? new Date(a.end_date).getTime() : 0;
+          bVal = b.end_date ? new Date(b.end_date).getTime() : 0;
+          break;
+        default:
+          return 0;
+      }
+
+      if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+      if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    // Assign sequential ranks
+    const withRanks = sorted.map((req, idx) => ({
+      ...req,
+      rank: req.rank ?? idx + 1
+    }));
+
+    setSortedRequests(withRanks);
+  }, [requests, columnSort, columnFilters, attachmentCounts]);
 
   // Pagination calculations
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedRequests = sortedRequests.slice(startIndex, endIndex);
+
+  const handleSort = (columnId: string) => {
+    setColumnSort(prev => ({
+      columnId,
+      direction: prev.columnId === columnId
+        ? prev.direction === 'asc' ? 'desc' : prev.direction === 'desc' ? null : 'asc'
+        : 'asc'
+    }));
+  };
+
+  const handleFilter = (columnId: string, values: string[]) => {
+    setColumnFilters(prev => ({
+      ...prev,
+      [columnId]: values
+    }));
+    setCurrentPage(1);
+  };
 
   const getStatusBadge = (status: string) => {
     const step = PROCESS_STEPS.find(s => s.value === status);
@@ -141,15 +284,9 @@ export default function IndustryPage() {
     return columns.find(c => c.id === columnId)?.visible ?? false;
   };
 
-  // Calculate deserved rank based on business score (higher score = lower rank number = better position)
   const getDeservedRank = (businessScore: number | null | undefined, allRequests: any[]) => {
     if (businessScore === null || businessScore === undefined) return allRequests.length;
-    
-    // Sort by business score descending to find position
-    const sortedByScore = [...allRequests].sort((a, b) => 
-      (b.business_score || 0) - (a.business_score || 0)
-    );
-    
+    const sortedByScore = [...allRequests].sort((a, b) => (b.business_score || 0) - (a.business_score || 0));
     const position = sortedByScore.findIndex(r => (r.business_score || 0) <= businessScore);
     return position === -1 ? allRequests.length : position + 1;
   };
@@ -162,7 +299,6 @@ export default function IndustryPage() {
     
     if (sourceIndex === destIndex) return;
 
-    // Calculate actual indices in the full list (accounting for pagination)
     const actualSourceIndex = startIndex + sourceIndex;
     const actualDestIndex = startIndex + destIndex;
 
@@ -175,7 +311,6 @@ export default function IndustryPage() {
     const businessScore = movedItem.business_score;
     const deservedRank = getDeservedRank(businessScore, sortedRequests);
 
-    // Update ALL ranks sequentially - no duplicates allowed
     const updatedRequests = reordered.map((req, index) => ({
       ...req,
       rank: index + 1
@@ -183,13 +318,11 @@ export default function IndustryPage() {
 
     setSortedRequests(updatedRequests);
 
-    // Collect all affected items
     const affectedItems = updatedRequests.filter((req, idx) => {
       const original = sortedRequests.find(r => r.id === req.id);
       return original?.rank !== idx + 1;
     });
 
-    // Batch update - use Promise.all to avoid multiple re-renders
     try {
       await Promise.all(
         affectedItems.map(item =>
@@ -200,7 +333,6 @@ export default function IndustryPage() {
         )
       );
 
-      // Only show notification if moving to a BETTER position than business score deserves
       const isMovingAboveDeserved = newRank < deservedRank;
       
       if (isMovingAboveDeserved) {
@@ -241,7 +373,6 @@ export default function IndustryPage() {
     const attachments = attachmentCounts?.[requestId];
     if (!attachments || attachments.files.length === 0) return;
 
-    // Download each file
     for (const file of attachments.files) {
       const { data } = await supabase.storage
         .from('attachments')
@@ -264,6 +395,9 @@ export default function IndustryPage() {
     setNotification(prev => ({ ...prev, show: false }));
   }, []);
 
+  // Count active filters
+  const activeFilterCount = Object.values(columnFilters).reduce((acc, vals) => acc + vals.length, 0);
+
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
@@ -280,7 +414,7 @@ export default function IndustryPage() {
         </div>
       </div>
 
-      {/* Search & Toolbar on same line */}
+      {/* Search & Toolbar */}
       <div className="flex items-center justify-between gap-4 px-4 sm:px-6 py-3 border-b bg-card">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -292,9 +426,18 @@ export default function IndustryPage() {
           />
         </div>
 
-        {/* Toolbar - right aligned with pagination */}
         <div className="flex items-center gap-2">
-          {/* Pagination controls */}
+          {activeFilterCount > 0 && (
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setColumnFilters({})}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              Clear {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
+            </Button>
+          )}
+
           {totalPages > 1 && (
             <div className="flex items-center gap-1 border-r pr-3 border-border">
               <Button
@@ -337,13 +480,12 @@ export default function IndustryPage() {
         </div>
       </div>
 
-      {/* Card List with Drag & Drop */}
+      {/* Table */}
       <div className="flex-1 overflow-auto p-4 sm:p-6 relative">
         {isLoading ? (
           <div className="text-center py-8 text-muted-foreground">Loading...</div>
         ) : sortedRequests.length > 0 ? (
           <Card className="overflow-hidden relative">
-            {/* Rank Update Notification - Centered in Table */}
             <RankUpdateNotification
               show={notification.show}
               oldRank={notification.oldRank}
@@ -352,18 +494,119 @@ export default function IndustryPage() {
               onClose={closeNotification}
             />
 
-            {/* Column Headers */}
-            <div className="flex items-center gap-4 px-4 py-2 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              <div className="w-5" /> {/* Drag handle space */}
-              <div className="w-5" /> {/* Checkbox space */}
-              {isColumnVisible('request_key') && <div className="w-24 shrink-0">Request ID</div>}
-              {isColumnVisible('rank') && <div className="w-12 shrink-0 text-center">Rank</div>}
-              {isColumnVisible('title') && <div className="flex-1 min-w-0">Summary</div>}
-              {isColumnVisible('process_step') && <div className="w-36 shrink-0">Process Step</div>}
-              {isColumnVisible('business_score') && <div className="w-24 shrink-0 text-center">Score</div>}
-              {isColumnVisible('planned_quarter') && <div className="w-20 shrink-0">Quarter</div>}
-              {isColumnVisible('end_date') && <div className="w-24 shrink-0">Target Date</div>}
-              {isColumnVisible('attachments') && <div className="w-24 shrink-0 text-center">Attachments</div>}
+            {/* Column Headers with Sort & Filter */}
+            <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              <div className="w-5" />
+              <div className="w-5" />
+              {isColumnVisible('request_key') && (
+                <div className="w-24 shrink-0">
+                  <TableColumnHeader
+                    label="Request ID"
+                    columnId="request_key"
+                    sortDirection={columnSort.columnId === 'request_key' ? columnSort.direction : null}
+                    activeFilters={columnFilters['request_key'] || []}
+                    filterOptions={[]}
+                    filterable={false}
+                    onSort={handleSort}
+                    onFilter={handleFilter}
+                  />
+                </div>
+              )}
+              {isColumnVisible('rank') && (
+                <div className="w-12 shrink-0 text-center">
+                  <TableColumnHeader
+                    label="Rank"
+                    columnId="rank"
+                    sortDirection={columnSort.columnId === 'rank' ? columnSort.direction : null}
+                    activeFilters={[]}
+                    filterOptions={[]}
+                    filterable={false}
+                    onSort={handleSort}
+                    onFilter={handleFilter}
+                  />
+                </div>
+              )}
+              {isColumnVisible('title') && (
+                <div className="flex-1 min-w-0">
+                  <TableColumnHeader
+                    label="Summary"
+                    columnId="title"
+                    sortDirection={columnSort.columnId === 'title' ? columnSort.direction : null}
+                    activeFilters={[]}
+                    filterOptions={[]}
+                    filterable={false}
+                    onSort={handleSort}
+                    onFilter={handleFilter}
+                  />
+                </div>
+              )}
+              {isColumnVisible('process_step') && (
+                <div className="w-36 shrink-0">
+                  <TableColumnHeader
+                    label="Process Step"
+                    columnId="process_step"
+                    sortDirection={columnSort.columnId === 'process_step' ? columnSort.direction : null}
+                    activeFilters={columnFilters['process_step'] || []}
+                    filterOptions={filterOptions['process_step'] || []}
+                    onSort={handleSort}
+                    onFilter={handleFilter}
+                  />
+                </div>
+              )}
+              {isColumnVisible('business_score') && (
+                <div className="w-24 shrink-0 text-center">
+                  <TableColumnHeader
+                    label="Score"
+                    columnId="business_score"
+                    sortDirection={columnSort.columnId === 'business_score' ? columnSort.direction : null}
+                    activeFilters={columnFilters['business_score'] || []}
+                    filterOptions={filterOptions['business_score'] || []}
+                    onSort={handleSort}
+                    onFilter={handleFilter}
+                  />
+                </div>
+              )}
+              {isColumnVisible('planned_quarter') && (
+                <div className="w-20 shrink-0">
+                  <TableColumnHeader
+                    label="Quarter"
+                    columnId="planned_quarter"
+                    sortDirection={columnSort.columnId === 'planned_quarter' ? columnSort.direction : null}
+                    activeFilters={columnFilters['planned_quarter'] || []}
+                    filterOptions={filterOptions['planned_quarter'] || []}
+                    onSort={handleSort}
+                    onFilter={handleFilter}
+                  />
+                </div>
+              )}
+              {isColumnVisible('end_date') && (
+                <div className="w-24 shrink-0">
+                  <TableColumnHeader
+                    label="Target Date"
+                    columnId="end_date"
+                    sortDirection={columnSort.columnId === 'end_date' ? columnSort.direction : null}
+                    activeFilters={[]}
+                    filterOptions={[]}
+                    filterable={false}
+                    onSort={handleSort}
+                    onFilter={handleFilter}
+                  />
+                </div>
+              )}
+              {isColumnVisible('attachments') && (
+                <div className="w-24 shrink-0 text-center">
+                  <TableColumnHeader
+                    label="Files"
+                    columnId="attachments"
+                    sortable={false}
+                    sortDirection={null}
+                    activeFilters={columnFilters['attachments'] || []}
+                    filterOptions={filterOptions['attachments'] || []}
+                    onSort={handleSort}
+                    onFilter={handleFilter}
+                  />
+                </div>
+              )}
             </div>
 
             <DragDropContext onDragEnd={handleDragEnd}>
@@ -387,7 +630,6 @@ export default function IndustryPage() {
                               } ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`}
                               onClick={() => setSelectedRequestId(request.id)}
                             >
-                              {/* Drag Handle */}
                               <div
                                 {...provided.dragHandleProps}
                                 className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
@@ -396,7 +638,6 @@ export default function IndustryPage() {
                                 <GripVertical className="h-4 w-4" />
                               </div>
                               
-                              {/* Checkbox */}
                               <div onClick={(e) => e.stopPropagation()}>
                                 <Checkbox 
                                   checked={selectedRows.includes(request.id)}
@@ -405,56 +646,48 @@ export default function IndustryPage() {
                                 />
                               </div>
 
-                              {/* Request ID */}
                               {isColumnVisible('request_key') && (
                                 <div className="w-24 shrink-0">
                                   <span className="text-sm text-brand-gold">{request.request_key || '-'}</span>
                                 </div>
                               )}
 
-                              {/* Rank */}
                               {isColumnVisible('rank') && (
                                 <div className="w-12 shrink-0 text-center">
                                   <span className="text-sm text-foreground">{request.rank || startIndex + index + 1}</span>
                                 </div>
                               )}
 
-                              {/* Summary */}
                               {isColumnVisible('title') && (
                                 <div className="flex-1 min-w-0">
                                   <span className="text-sm text-foreground truncate block">{request.title}</span>
                                 </div>
                               )}
 
-                              {/* Process Step */}
                               {isColumnVisible('process_step') && (
                                 <div className="w-36 shrink-0">
                                   {getStatusBadge(request.process_step)}
                                 </div>
                               )}
 
-                              {/* Business Score */}
                               {isColumnVisible('business_score') && (
                                 <div className="w-24 shrink-0 text-center">
                                   {getBusinessScoreBadge(request.business_score)}
                                 </div>
                               )}
 
-                              {/* Planned Quarter */}
                               {isColumnVisible('planned_quarter') && (
                                 <div className="w-20 shrink-0 text-sm text-muted-foreground">
                                   {request.planned_quarter || '-'}
                                 </div>
                               )}
 
-                              {/* Target Completion */}
                               {isColumnVisible('end_date') && (
                                 <div className="w-24 shrink-0 text-sm text-muted-foreground">
                                   {formatDate(request.end_date)}
                                 </div>
                               )}
 
-                              {/* Attachments */}
                               {isColumnVisible('attachments') && (
                                 <div className="w-24 shrink-0 text-center">
                                   {hasAttachments ? (
@@ -481,7 +714,6 @@ export default function IndustryPage() {
               </Droppable>
             </DragDropContext>
 
-            {/* Bottom pagination info */}
             {totalPages > 1 && (
               <div className="px-4 py-2 bg-muted/30 border-t text-xs text-muted-foreground">
                 Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
@@ -490,18 +722,16 @@ export default function IndustryPage() {
           </Card>
         ) : (
           <div className="text-center py-8 text-muted-foreground">
-            No industry requests found
+            {activeFilterCount > 0 ? 'No requests match the current filters' : 'No industry requests found'}
           </div>
         )}
       </div>
 
-      {/* Create Modal */}
       <CreateBusinessRequestModal 
         isOpen={createModalOpen} 
         onClose={() => setCreateModalOpen(false)} 
       />
 
-      {/* View/Edit Drawer */}
       <BusinessRequestDrawer
         isOpen={!!selectedRequestId}
         onClose={() => setSelectedRequestId(null)}
