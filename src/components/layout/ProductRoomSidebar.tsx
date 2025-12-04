@@ -13,7 +13,7 @@ interface ProductRoomSidebarProps {
   className?: string;
 }
 const menuItems = [{
-  title: 'Product Room',
+  title: 'Demand Summary',
   path: '/industry',
   icon: Box,
   exact: true
