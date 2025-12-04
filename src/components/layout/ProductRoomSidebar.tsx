@@ -58,63 +58,67 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
   const [processStepOpen, setProcessStepOpen] = useState(false);
   const [quarterOpen, setQuarterOpen] = useState(false);
 
+  // Ensure filters have default values (handles stale localStorage)
+  const deliveryPlatforms = industryFilters?.deliveryPlatforms || [];
+  const processSteps = industryFilters?.processSteps || [];
+  const quarters = industryFilters?.quarters || [];
+
   const isActive = (path: string, exact: boolean = false) => {
     if (exact) return location.pathname === path;
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   const handleDeliveryPlatformToggle = (value: string) => {
-    const newPlatforms = industryFilters.deliveryPlatforms.includes(value)
-      ? industryFilters.deliveryPlatforms.filter(p => p !== value)
-      : [...industryFilters.deliveryPlatforms, value];
-    setIndustryFilters({ ...industryFilters, deliveryPlatforms: newPlatforms });
+    const newPlatforms = deliveryPlatforms.includes(value)
+      ? deliveryPlatforms.filter(p => p !== value)
+      : [...deliveryPlatforms, value];
+    setIndustryFilters({ ...industryFilters, deliveryPlatforms: newPlatforms, processSteps, quarters });
   };
 
   const handleProcessStepToggle = (value: string) => {
-    const newSteps = industryFilters.processSteps.includes(value)
-      ? industryFilters.processSteps.filter(s => s !== value)
-      : [...industryFilters.processSteps, value];
-    setIndustryFilters({ ...industryFilters, processSteps: newSteps });
+    const newSteps = processSteps.includes(value)
+      ? processSteps.filter(s => s !== value)
+      : [...processSteps, value];
+    setIndustryFilters({ ...industryFilters, deliveryPlatforms, processSteps: newSteps, quarters });
   };
 
   const handleQuarterToggle = (value: string) => {
-    const newQuarters = industryFilters.quarters.includes(value)
-      ? industryFilters.quarters.filter(q => q !== value)
-      : [...industryFilters.quarters, value];
-    setIndustryFilters({ ...industryFilters, quarters: newQuarters });
+    const newQuarters = quarters.includes(value)
+      ? quarters.filter(q => q !== value)
+      : [...quarters, value];
+    setIndustryFilters({ ...industryFilters, deliveryPlatforms, processSteps, quarters: newQuarters });
   };
 
   const getDeliveryPlatformDisplayText = () => {
-    if (industryFilters.deliveryPlatforms.length === 0) return 'All Platforms';
-    if (industryFilters.deliveryPlatforms.length === 1) {
-      return deliveryPlatformOptions.find(p => p.value === industryFilters.deliveryPlatforms[0])?.label || industryFilters.deliveryPlatforms[0];
+    if (deliveryPlatforms.length === 0) return 'All Platforms';
+    if (deliveryPlatforms.length === 1) {
+      return deliveryPlatformOptions.find(p => p.value === deliveryPlatforms[0])?.label || deliveryPlatforms[0];
     }
-    return `${industryFilters.deliveryPlatforms.length} selected`;
+    return `${deliveryPlatforms.length} selected`;
   };
 
   const getProcessStepDisplayText = () => {
-    if (industryFilters.processSteps.length === 0) return 'All Steps';
-    if (industryFilters.processSteps.length === 1) {
-      return PROCESS_STEPS.find(s => s.value === industryFilters.processSteps[0])?.label || industryFilters.processSteps[0];
+    if (processSteps.length === 0) return 'All Steps';
+    if (processSteps.length === 1) {
+      return PROCESS_STEPS.find(s => s.value === processSteps[0])?.label || processSteps[0];
     }
-    return `${industryFilters.processSteps.length} selected`;
+    return `${processSteps.length} selected`;
   };
 
   const getQuarterDisplayText = () => {
-    if (industryFilters.quarters.length === 0) return 'All Quarters';
-    if (industryFilters.quarters.length === 1) {
-      return quarterOptions.find(q => q.value === industryFilters.quarters[0])?.label || industryFilters.quarters[0];
+    if (quarters.length === 0) return 'All Quarters';
+    if (quarters.length === 1) {
+      return quarterOptions.find(q => q.value === quarters[0])?.label || quarters[0];
     }
-    return `${industryFilters.quarters.length} selected`;
+    return `${quarters.length} selected`;
   };
 
-  // Get display for header subtitle
   const getHeaderSubtitle = () => {
-    if (industryFilters.deliveryPlatforms.length === 0) return 'All Platforms';
-    if (industryFilters.deliveryPlatforms.length === 1) {
-      return deliveryPlatformOptions.find(p => p.value === industryFilters.deliveryPlatforms[0])?.label || industryFilters.deliveryPlatforms[0];
+    if (deliveryPlatforms.length === 0) return 'All Platforms';
+    if (deliveryPlatforms.length === 1) {
+      return deliveryPlatformOptions.find(p => p.value === deliveryPlatforms[0])?.label || deliveryPlatforms[0];
     }
-    return `${industryFilters.deliveryPlatforms.length} platforms`;
+    return `${deliveryPlatforms.length} platforms`;
   };
 
   return (
@@ -185,11 +189,11 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                         >
                           <div className={cn(
                             "h-4 w-4 border rounded flex items-center justify-center",
-                            industryFilters.deliveryPlatforms.includes(platform.value) 
+                            deliveryPlatforms.includes(platform.value) 
                               ? "bg-brand-gold border-brand-gold" 
                               : "border-border"
                           )}>
-                            {industryFilters.deliveryPlatforms.includes(platform.value) && (
+                            {deliveryPlatforms.includes(platform.value) && (
                               <Check className="h-3 w-3 text-white" />
                             )}
                           </div>
@@ -197,13 +201,13 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                         </div>
                       ))}
                     </div>
-                    {industryFilters.deliveryPlatforms.length > 0 && (
+                    {deliveryPlatforms.length > 0 && (
                       <div className="border-t p-2">
                         <Button
                           variant="ghost"
                           size="sm"
                           className="w-full text-xs"
-                          onClick={() => setIndustryFilters({ ...industryFilters, deliveryPlatforms: [] })}
+                          onClick={() => setIndustryFilters({ ...industryFilters, deliveryPlatforms: [], processSteps, quarters })}
                         >
                           Clear all
                         </Button>
@@ -240,11 +244,11 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                         >
                           <div className={cn(
                             "h-4 w-4 border rounded flex items-center justify-center",
-                            industryFilters.processSteps.includes(step.value) 
+                            processSteps.includes(step.value) 
                               ? "bg-brand-gold border-brand-gold" 
                               : "border-border"
                           )}>
-                            {industryFilters.processSteps.includes(step.value) && (
+                            {processSteps.includes(step.value) && (
                               <Check className="h-3 w-3 text-white" />
                             )}
                           </div>
@@ -252,13 +256,13 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                         </div>
                       ))}
                     </div>
-                    {industryFilters.processSteps.length > 0 && (
+                    {processSteps.length > 0 && (
                       <div className="border-t p-2">
                         <Button
                           variant="ghost"
                           size="sm"
                           className="w-full text-xs"
-                          onClick={() => setIndustryFilters({ ...industryFilters, processSteps: [] })}
+                          onClick={() => setIndustryFilters({ ...industryFilters, deliveryPlatforms, processSteps: [], quarters })}
                         >
                           Clear all
                         </Button>
@@ -295,11 +299,11 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                         >
                           <div className={cn(
                             "h-4 w-4 border rounded flex items-center justify-center",
-                            industryFilters.quarters.includes(quarter.value) 
+                            quarters.includes(quarter.value) 
                               ? "bg-brand-gold border-brand-gold" 
                               : "border-border"
                           )}>
-                            {industryFilters.quarters.includes(quarter.value) && (
+                            {quarters.includes(quarter.value) && (
                               <Check className="h-3 w-3 text-white" />
                             )}
                           </div>
@@ -307,13 +311,13 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                         </div>
                       ))}
                     </div>
-                    {industryFilters.quarters.length > 0 && (
+                    {quarters.length > 0 && (
                       <div className="border-t p-2">
                         <Button
                           variant="ghost"
                           size="sm"
                           className="w-full text-xs"
-                          onClick={() => setIndustryFilters({ ...industryFilters, quarters: [] })}
+                          onClick={() => setIndustryFilters({ ...industryFilters, deliveryPlatforms, processSteps, quarters: [] })}
                         >
                           Clear all
                         </Button>
