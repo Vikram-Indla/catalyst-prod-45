@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -518,7 +518,13 @@ export default function IndustryPage() {
                                 )}
 
                                 {isColumnVisible('rank') && (
-                                  <div className="w-12 shrink-0 text-center">
+                                  <div className="w-12 shrink-0 text-center relative">
+                                    {(request.rank || startIndex + index + 1) <= 10 && (
+                                      <Star 
+                                        className="absolute -top-1 -right-1 h-3 w-3 text-rose-400/80 fill-rose-400/60" 
+                                        strokeWidth={1.5}
+                                      />
+                                    )}
                                     <span className="text-sm text-foreground">{request.rank || startIndex + index + 1}</span>
                                   </div>
                                 )}
