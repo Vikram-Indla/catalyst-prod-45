@@ -4,8 +4,11 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Star } from 'lucide-react';
+import { Star, User, Calendar } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { format } from 'date-fns';
 
 interface BusinessRequest {
   id: string;
@@ -14,8 +17,9 @@ interface BusinessRequest {
   process_step: string;
   business_score: number | null;
   rank: number | null;
-  planned_quarter: string | null;
   delivery_platform: string | null;
+  business_owner?: string | null;
+  end_date?: string | null;
 }
 
 interface BusinessRequestsKanbanViewProps {
@@ -78,97 +82,132 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect }: Busine
     );
   };
 
+  const formatTargetDate = (date: string | null | undefined) => {
+    if (!date) return null;
+    try {
+      return format(new Date(date), 'MMM dd, yyyy');
+    } catch {
+      return date;
+    }
+  };
+
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 overflow-x-auto pb-4">
-        {KANBAN_COLUMNS.map(column => {
-          const columnRequests = getRequestsByStatus(column.id);
-          return (
-            <div key={column.id} className="flex-shrink-0 w-[280px]">
-              <Card className="h-full">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className={cn("w-3 h-3 rounded-full", column.color)} />
-                      <CardTitle className="text-sm font-medium">{column.label}</CardTitle>
-                    </div>
-                    <Badge variant="secondary" className="rounded-full">
-                      {columnRequests.length}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <Droppable droppableId={column.id}>
-                  {(provided, snapshot) => (
-                    <CardContent
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className={cn(
-                        "space-y-2 min-h-[200px] transition-colors",
-                        snapshot.isDraggingOver && "bg-accent/5"
-                      )}
-                    >
-                      {columnRequests.map((request, index) => (
-                        <Draggable key={request.id} draggableId={request.id} index={index}>
-                          {(provided, snapshot) => (
-                            <Card
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className={cn(
-                                "cursor-pointer hover:shadow-md transition-shadow",
-                                snapshot.isDragging && "shadow-lg rotate-2"
-                              )}
-                              onClick={() => onRequestSelect(request.id)}
-                            >
-                              <CardContent className="p-3 space-y-2">
-                                <div className="flex items-start justify-between gap-2">
-                                  <span className="text-sm font-medium line-clamp-2">{request.title}</span>
-                                  {request.rank && request.rank <= 10 && (
-                                    <Star className="h-3 w-3 text-red-400 fill-red-400 shrink-0" />
-                                  )}
-                                </div>
-                                
-                                {request.request_key && (
-                                  <div className="text-xs text-brand-gold font-mono">
-                                    {request.request_key.startsWith('MIM-') 
-                                      ? request.request_key 
-                                      : `MIM-${String(request.request_key).padStart(3, '0')}`}
-                                  </div>
-                                )}
-
-                                {request.delivery_platform && (
-                                  <div className="text-xs text-muted-foreground truncate">
-                                    {request.delivery_platform}
-                                  </div>
-                                )}
-
-                                <div className="flex items-center justify-between">
-                                  {request.business_score !== null && getBusinessScoreBadge(request.business_score)}
-                                  {request.planned_quarter && (
-                                    <span className="text-xs text-muted-foreground">
-                                      {request.planned_quarter}
-                                    </span>
-                                  )}
-                                </div>
-                              </CardContent>
-                            </Card>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                      {columnRequests.length === 0 && (
-                        <div className="text-center py-8 text-sm text-muted-foreground">
-                          Drop requests here
+    <TooltipProvider delayDuration={200}>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <ScrollArea className="w-full h-[calc(100vh-220px)]">
+          <div className="flex gap-4 pb-4 pr-4">
+            {KANBAN_COLUMNS.map(column => {
+              const columnRequests = getRequestsByStatus(column.id);
+              return (
+                <div key={column.id} className="flex-shrink-0 w-[300px]">
+                  <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50">
+                    <CardHeader className="pb-3 sticky top-0 bg-card/95 backdrop-blur-sm z-10 border-b border-border/30">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={cn("w-3 h-3 rounded-full shadow-sm", column.color)} />
+                          <CardTitle className="text-sm font-semibold tracking-tight">{column.label}</CardTitle>
                         </div>
+                        <Badge variant="secondary" className="rounded-full text-xs font-medium px-2.5 py-0.5 bg-muted/80">
+                          {columnRequests.length}
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <Droppable droppableId={column.id}>
+                      {(provided, snapshot) => (
+                        <CardContent
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className={cn(
+                            "space-y-3 min-h-[400px] max-h-[calc(100vh-320px)] overflow-y-auto transition-colors p-3",
+                            snapshot.isDraggingOver && "bg-accent/10"
+                          )}
+                        >
+                          {columnRequests.map((request, index) => (
+                            <Draggable key={request.id} draggableId={request.id} index={index}>
+                              {(provided, snapshot) => (
+                                <Card
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  {...provided.dragHandleProps}
+                                  className={cn(
+                                    "cursor-pointer hover:shadow-lg hover:border-brand-gold/30 transition-all duration-200 bg-card border-border/60",
+                                    snapshot.isDragging && "shadow-xl rotate-1 border-brand-gold/50"
+                                  )}
+                                  onClick={() => onRequestSelect(request.id)}
+                                >
+                                  <CardContent className="p-4 space-y-3">
+                                    <div className="flex items-start justify-between gap-2">
+                                      <span className="text-sm font-medium line-clamp-2 text-foreground/90">{request.title}</span>
+                                      {request.rank && request.rank <= 10 && (
+                                        <Star className="h-3.5 w-3.5 text-red-400 fill-red-400 shrink-0" />
+                                      )}
+                                    </div>
+                                    
+                                    {request.request_key && (
+                                      <div className="text-xs text-brand-gold font-mono font-medium">
+                                        {request.request_key.startsWith('MIM-') 
+                                          ? request.request_key 
+                                          : `MIM-${String(request.request_key).padStart(3, '0')}`}
+                                      </div>
+                                    )}
+
+                                    {request.business_owner && (
+                                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                        <User className="h-3 w-3" />
+                                        <span className="truncate">{request.business_owner}</span>
+                                      </div>
+                                    )}
+
+                                    <div className="flex items-center justify-between pt-1 border-t border-border/30">
+                                      {request.business_score !== null ? (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <span className="cursor-help">
+                                              {getBusinessScoreBadge(request.business_score)}
+                                            </span>
+                                          </TooltipTrigger>
+                                          <TooltipContent side="top" className="text-xs">
+                                            Business Score: {request.business_score}/100
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      ) : <span />}
+                                      
+                                      {request.end_date && (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <div className="flex items-center gap-1 text-xs text-muted-foreground cursor-help">
+                                              <Calendar className="h-3 w-3" />
+                                              <span>{formatTargetDate(request.end_date)}</span>
+                                            </div>
+                                          </TooltipTrigger>
+                                          <TooltipContent side="top" className="text-xs">
+                                            Target Completion Date
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      )}
+                                    </div>
+                                  </CardContent>
+                                </Card>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                          {columnRequests.length === 0 && (
+                            <div className="text-center py-12 text-sm text-muted-foreground/60 italic">
+                              Drop requests here
+                            </div>
+                          )}
+                        </CardContent>
                       )}
-                    </CardContent>
-                  )}
-                </Droppable>
-              </Card>
-            </div>
-          );
-        })}
-      </div>
-    </DragDropContext>
+                    </Droppable>
+                  </Card>
+                </div>
+              );
+            })}
+          </div>
+          <ScrollBar orientation="horizontal" className="h-2.5" />
+        </ScrollArea>
+      </DragDropContext>
+    </TooltipProvider>
   );
 }
