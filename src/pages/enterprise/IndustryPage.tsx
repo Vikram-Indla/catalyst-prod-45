@@ -227,14 +227,9 @@ export default function IndustryPage() {
 
         {/* Toolbar - right aligned with pagination */}
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={handleBulkEdit} className="border-border">
-            <Pencil className="h-4 w-4 mr-2" />
-            Bulk Edit
-          </Button>
-          
           {/* Pagination controls */}
           {totalPages > 1 && (
-            <div className="flex items-center gap-1 mx-2 border-l border-r px-3 border-border">
+            <div className="flex items-center gap-1 border-r pr-3 border-border">
               <Button
                 variant="ghost"
                 size="sm"
@@ -259,6 +254,10 @@ export default function IndustryPage() {
             </div>
           )}
 
+          <Button variant="outline" size="sm" onClick={handleBulkEdit} className="border-border">
+            <Pencil className="h-4 w-4 mr-2" />
+            Bulk Edit
+          </Button>
           <Button variant="outline" size="sm" className="border-border">
             <Upload className="h-4 w-4 mr-2" />
             Import

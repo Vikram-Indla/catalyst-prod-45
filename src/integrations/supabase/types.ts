@@ -241,6 +241,7 @@ export type Database = {
           approved_budget_ceiling: number | null
           approver_name: string | null
           business_justification: string | null
+          business_score: number | null
           complexity: string | null
           created_at: string
           created_by: string | null
@@ -303,6 +304,7 @@ export type Database = {
           approved_budget_ceiling?: number | null
           approver_name?: string | null
           business_justification?: string | null
+          business_score?: number | null
           complexity?: string | null
           created_at?: string
           created_by?: string | null
@@ -365,6 +367,7 @@ export type Database = {
           approved_budget_ceiling?: number | null
           approver_name?: string | null
           business_justification?: string | null
+          business_score?: number | null
           complexity?: string | null
           created_at?: string
           created_by?: string | null
