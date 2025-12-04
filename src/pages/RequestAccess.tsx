@@ -489,19 +489,20 @@ export default function RequestAccess() {
 
   return (
     <div className={cn("min-h-screen bg-[#F6F7F9]", isRTL && "rtl")} dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* Header - Gold branded */}
-      <header className="bg-gradient-to-r from-[#C8A566] via-[#D4B57A] to-[#C8A566] shadow-lg">
+      {/* Header - Dark with Catalyst branding */}
+      <header className="bg-[#1A1A1A]">
         <div className="max-w-[1200px] mx-auto px-6 py-4 flex items-center justify-between gap-6">
-          {/* Logo - Larger and prominent */}
+          {/* Logo - Cata (white) + lyst (gold) */}
           <div 
-            className="cursor-pointer flex items-center gap-1"
+            className="cursor-pointer flex items-center"
             onClick={() => navigate('/auth')}
           >
             <span 
-              className="font-black tracking-tight text-[#1A1A1A]"
-              style={{ fontSize: '32px', lineHeight: '1', fontFamily: "'Playfair Display', serif" }}
+              className="font-semibold whitespace-nowrap"
+              style={{ fontSize: '24px', lineHeight: '1', letterSpacing: '-0.02em' }}
             >
-              Catalyst
+              <span className="text-white">Cata</span>
+              <span className="text-[#C8A566]">lyst</span>
             </span>
           </div>
           
@@ -509,14 +510,14 @@ export default function RequestAccess() {
           <div className="flex items-center gap-3">
             <button 
               onClick={() => navigate('/auth')}
-              className="bg-[#1A1A1A]/10 hover:bg-[#1A1A1A]/20 text-[#1A1A1A] font-semibold text-sm px-4 py-2.5 rounded-xl transition-colors flex items-center gap-2"
+              className="border border-white/20 bg-transparent text-white font-medium text-sm px-4 py-2.5 rounded-xl hover:bg-white/10 transition-colors flex items-center gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
               <span className="hidden sm:inline">{t.backToLogin}</span>
             </button>
             <button 
               onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
-              className="bg-[#1A1A1A] text-white px-4 py-2.5 rounded-xl font-bold text-sm hover:bg-[#2A2A2A] transition-colors min-w-[50px]"
+              className="bg-[#C8A566] text-[#1A1A1A] px-4 py-2.5 rounded-xl font-bold text-sm hover:bg-[#D4B57A] transition-colors min-w-[50px]"
             >
               {t.langSwitch}
             </button>
