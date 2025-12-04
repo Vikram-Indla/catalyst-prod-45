@@ -125,20 +125,23 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
     <TooltipProvider>
       <aside
         className={cn(
-          'h-full border-r bg-card flex flex-col transition-all duration-300 overflow-hidden relative',
+          'h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col',
           expanded ? 'w-64' : 'w-16',
           className
         )}
       >
-        {/* Toggle Button - Positioned at edge */}
-        <Button
-          variant="outline"
-          size="icon"
+        {/* Toggle Handle */}
+        <button
           onClick={onToggle}
-          className="absolute -right-3 top-6 z-10 h-6 w-6 rounded-full border bg-background shadow-sm hover:bg-muted"
+          className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
+          aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
         >
-          {expanded ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
-        </Button>
+          {expanded ? (
+            <ChevronLeft className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          )}
+        </button>
 
         {/* Header */}
         <div className="p-4 border-b flex items-center shrink-0">
