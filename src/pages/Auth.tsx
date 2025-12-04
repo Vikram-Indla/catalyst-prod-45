@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { Loader2, Briefcase, Package, FolderKanban, GitBranch, Rocket, AlertTriangle } from "lucide-react";
+import { Loader2, Briefcase, Package, CalendarDays, GitMerge, Link2, TriangleAlert } from "lucide-react";
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -71,10 +71,10 @@ export default function Auth() {
               {[
                 { Icon: Briefcase, label: "Portfolio Management" },
                 { Icon: Package, label: "Product Management" },
-                { Icon: FolderKanban, label: "Project Management" },
-                { Icon: GitBranch, label: "Dependency Management" },
-                { Icon: Rocket, label: "Release Management" },
-                { Icon: AlertTriangle, label: "Capacity Management" },
+                { Icon: CalendarDays, label: "Project Management" },
+                { Icon: GitMerge, label: "Dependency Management" },
+                { Icon: Link2, label: "Release Schedule" },
+                { Icon: TriangleAlert, label: "Capacity Management" },
               ].map((item, index) => (
                 <div 
                   key={index}
