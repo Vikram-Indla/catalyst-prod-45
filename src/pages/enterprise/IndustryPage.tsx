@@ -209,25 +209,25 @@ export default function IndustryPage() {
           
           {/* Pagination controls */}
           {totalPages > 1 && (
-            <div className="flex items-center gap-1 mx-2">
+            <div className="flex items-center gap-1 mx-2 border-l border-r px-3 border-border">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="h-8 w-8 p-0 border-border"
+                className="h-8 w-8 p-0"
               >
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <span className="text-sm text-muted-foreground px-2">
-                {currentPage} / {totalPages}
+              <span className="text-sm text-foreground px-2 whitespace-nowrap">
+                Page {currentPage} of {totalPages}
               </span>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="h-8 w-8 p-0 border-border"
+                className="h-8 w-8 p-0"
               >
                 <ChevronRight className="h-4 w-4" />
               </Button>
