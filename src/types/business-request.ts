@@ -1,17 +1,15 @@
 import { z } from 'zod';
 
-// Process Step Options - matches workflow diagram
+// Process Step Options - synchronized with Kanban columns
 export const PROCESS_STEPS = [
-  { value: 'new_demand', label: 'NEW DEMAND' },
-  { value: 'portfolio_review', label: 'PORTFOLIO REVIEW' },
-  { value: 'technical_validation', label: 'TECHNICAL VALIDATION' },
-  { value: 'estimation', label: 'ESTIMATION' },
-  { value: 'demand_approved', label: 'DEMAND APPROVED' },
-  { value: 'ready_for_dev', label: 'READY FOR DEV' },
-  { value: 'under_implementation', label: 'UNDER IMPLEMENTATION' },
-  { value: 'implementation_review', label: 'IMPLEMENTATION REVIEW' },
-  { value: 'in_support_done', label: 'IN SUPPORT / DONE' },
-  { value: 'on_hold_cancel', label: 'ON HOLD / CANCEL' },
+  { value: 'new_request', label: 'NEW REQUEST', color: 'bg-[#4a4a4a]' },
+  { value: 'under_analysis', label: 'UNDER ANALYSIS', color: 'bg-[#c4c4c4]' },
+  { value: 'in_progress', label: 'IN PROGRESS', color: 'bg-[#5c4b8a]' },
+  { value: 'awaiting_business_response', label: 'AWAITING BUSINESS RESPONSE', color: 'bg-[#a0a0a0]' },
+  { value: 'on_hold', label: 'ON HOLD', color: 'bg-[#c9a0a0]' },
+  { value: 'approved', label: 'APPROVED', color: 'bg-[#6abf4b]' },
+  { value: 'implemented', label: 'IMPLEMENTED', color: 'bg-[#1a1a1a]' },
+  { value: 'rejected', label: 'REJECTED', color: 'bg-[#e74c3c]' },
 ] as const;
 
 // Health Options

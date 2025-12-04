@@ -29,17 +29,14 @@ interface BusinessRequestsKanbanViewProps {
   onRequestSelect: (id: string) => void;
 }
 
-// 8 official process steps
-const KANBAN_COLUMNS = [
-  { id: 'new_request', label: 'New Request', color: 'bg-[#4a4a4a]' },
-  { id: 'under_analysis', label: 'Under Analysis', color: 'bg-[#c4c4c4]' },
-  { id: 'in_progress', label: 'In Progress', color: 'bg-[#5c4b8a]' },
-  { id: 'awaiting_business_response', label: 'Awaiting Business Response', color: 'bg-[#a0a0a0]' },
-  { id: 'on_hold', label: 'On Hold', color: 'bg-[#c9a0a0]' },
-  { id: 'approved', label: 'Approved', color: 'bg-[#6abf4b]' },
-  { id: 'implemented', label: 'Implemented', color: 'bg-[#1a1a1a]' },
-  { id: 'rejected', label: 'Rejected', color: 'bg-[#e74c3c]' },
-];
+import { PROCESS_STEPS } from '@/types/business-request';
+
+// Use the centralized PROCESS_STEPS as Kanban columns
+const KANBAN_COLUMNS = PROCESS_STEPS.map(step => ({
+  id: step.value,
+  label: step.label,
+  color: step.color,
+}));
 
 export function BusinessRequestsKanbanView({ requests, onRequestSelect }: BusinessRequestsKanbanViewProps) {
   const queryClient = useQueryClient();
