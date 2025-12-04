@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
-import { Loader2 } from "lucide-react";
+import { Loader2, Briefcase, Package, FolderKanban, GitBranch, Rocket, AlertTriangle } from "lucide-react";
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,12 +69,12 @@ export default function Auth() {
           }}>
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               {[
-                { icon: "◆", label: "Portfolio Management" },
-                { icon: "◆", label: "Product Management" },
-                { icon: "◆", label: "Project Management" },
-                { icon: "◆", label: "Dependency Management" },
-                { icon: "◆", label: "Release Management" },
-                { icon: "◆", label: "Incident Management" },
+                { Icon: Briefcase, label: "Portfolio Management" },
+                { Icon: Package, label: "Product Management" },
+                { Icon: FolderKanban, label: "Project Management" },
+                { Icon: GitBranch, label: "Dependency Management" },
+                { Icon: Rocket, label: "Release Management" },
+                { Icon: AlertTriangle, label: "Incident Management" },
               ].map((item, index) => (
                 <div 
                   key={index}
@@ -83,15 +83,13 @@ export default function Auth() {
                     padding: "8px 0",
                   }}
                 >
-                  <span 
-                    className="transition-transform duration-300 group-hover:scale-125"
+                  <item.Icon 
+                    className="transition-transform duration-300 group-hover:scale-110"
                     style={{
                       color: "#c69c6d",
-                      fontSize: "0.6rem",
                     }}
-                  >
-                    {item.icon}
-                  </span>
+                    size={16}
+                  />
                   <span 
                     className="transition-colors duration-300 group-hover:text-[#c69c6d]"
                     style={{
