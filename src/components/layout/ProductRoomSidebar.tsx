@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight, Box, ListTree, Map, TrendingUp, ChevronDown, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Box, ListTree, Map, ChevronDown, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -27,7 +27,6 @@ const menuItems = [
   { title: 'Product Room', path: '/industry', icon: Box, exact: true },
   { title: 'Backlog', path: '/industry', icon: ListTree, exact: true },
   { title: 'Roadmaps', path: '/industry/roadmaps', icon: Map, exact: false },
-  { title: 'Reports', path: '/industry/reports', icon: TrendingUp, exact: false },
 ];
 
 const deliveryPlatformOptions = [
