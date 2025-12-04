@@ -1,15 +1,8 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight, Box, ListTree, Map, TrendingUp, Calendar, ChevronDown, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Box, ListTree, Map, TrendingUp, ChevronDown, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Tooltip,
   TooltipContent,
@@ -21,8 +14,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { PROCESS_STEPS } from '@/types/business-request';
 
@@ -40,7 +31,6 @@ const menuItems = [
 ];
 
 const deliveryPlatformOptions = [
-  { value: 'all', label: 'All Platforms' },
   { value: 'Senaei Platform', label: 'Senaei Platform' },
   { value: 'Innovation Platform', label: 'Innovation Platform' },
   { value: 'Tahommena', label: 'Tahommena' },
@@ -63,7 +53,8 @@ const quarterOptions = [
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { deliveryPlatform, setDeliveryPlatform, industryFilters, setIndustryFilters } = useCatalystContext();
+  const { industryFilters, setIndustryFilters } = useCatalystContext();
+  const [deliveryPlatformOpen, setDeliveryPlatformOpen] = useState(false);
   const [processStepOpen, setProcessStepOpen] = useState(false);
   const [quarterOpen, setQuarterOpen] = useState(false);
 
@@ -72,7 +63,12 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
     return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
-  const selectedPlatformLabel = deliveryPlatformOptions.find(p => p.value === deliveryPlatform)?.label || deliveryPlatform;
+  const handleDeliveryPlatformToggle = (value: string) => {
+    const newPlatforms = industryFilters.deliveryPlatforms.includes(value)
+      ? industryFilters.deliveryPlatforms.filter(p => p !== value)
+      : [...industryFilters.deliveryPlatforms, value];
+    setIndustryFilters({ ...industryFilters, deliveryPlatforms: newPlatforms });
+  };
 
   const handleProcessStepToggle = (value: string) => {
     const newSteps = industryFilters.processSteps.includes(value)
@@ -88,8 +84,12 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
     setIndustryFilters({ ...industryFilters, quarters: newQuarters });
   };
 
-  const handleDateChange = (field: 'dateFrom' | 'dateTo', value: string) => {
-    setIndustryFilters({ ...industryFilters, [field]: value });
+  const getDeliveryPlatformDisplayText = () => {
+    if (industryFilters.deliveryPlatforms.length === 0) return 'All Platforms';
+    if (industryFilters.deliveryPlatforms.length === 1) {
+      return deliveryPlatformOptions.find(p => p.value === industryFilters.deliveryPlatforms[0])?.label || industryFilters.deliveryPlatforms[0];
+    }
+    return `${industryFilters.deliveryPlatforms.length} selected`;
   };
 
   const getProcessStepDisplayText = () => {
@@ -106,6 +106,15 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
       return quarterOptions.find(q => q.value === industryFilters.quarters[0])?.label || industryFilters.quarters[0];
     }
     return `${industryFilters.quarters.length} selected`;
+  };
+
+  // Get display for header subtitle
+  const getHeaderSubtitle = () => {
+    if (industryFilters.deliveryPlatforms.length === 0) return 'All Platforms';
+    if (industryFilters.deliveryPlatforms.length === 1) {
+      return deliveryPlatformOptions.find(p => p.value === industryFilters.deliveryPlatforms[0])?.label || industryFilters.deliveryPlatforms[0];
+    }
+    return `${industryFilters.deliveryPlatforms.length} platforms`;
   };
 
   return (
@@ -126,7 +135,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
               </div>
               <div className="flex flex-col">
                 <span className="font-semibold text-foreground">Product</span>
-                <span className="text-xs text-muted-foreground">{selectedPlatformLabel}</span>
+                <span className="text-xs text-muted-foreground">{getHeaderSubtitle()}</span>
               </div>
             </div>
           ) : (
@@ -149,23 +158,59 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           {/* Filter Dropdowns - Only when expanded */}
           {expanded && (
             <div className="p-4 border-b space-y-4">
-              {/* Delivery Platform */}
+              {/* Delivery Platform Multi-select */}
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
                   Delivery Platform
                 </span>
-                <Select value={deliveryPlatform} onValueChange={setDeliveryPlatform}>
-                  <SelectTrigger className="w-full bg-background">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
-                    {deliveryPlatformOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Popover open={deliveryPlatformOpen} onOpenChange={setDeliveryPlatformOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={deliveryPlatformOpen}
+                      className="w-full justify-between bg-background font-normal"
+                    >
+                      <span className="truncate">{getDeliveryPlatformDisplayText()}</span>
+                      <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 p-0 bg-popover border shadow-lg z-50" align="start">
+                    <div className="max-h-60 overflow-auto">
+                      {deliveryPlatformOptions.map((platform) => (
+                        <div
+                          key={platform.value}
+                          className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-muted/50"
+                          onClick={() => handleDeliveryPlatformToggle(platform.value)}
+                        >
+                          <div className={cn(
+                            "h-4 w-4 border rounded flex items-center justify-center",
+                            industryFilters.deliveryPlatforms.includes(platform.value) 
+                              ? "bg-brand-gold border-brand-gold" 
+                              : "border-border"
+                          )}>
+                            {industryFilters.deliveryPlatforms.includes(platform.value) && (
+                              <Check className="h-3 w-3 text-white" />
+                            )}
+                          </div>
+                          <span className="text-sm">{platform.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {industryFilters.deliveryPlatforms.length > 0 && (
+                      <div className="border-t p-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full text-xs"
+                          onClick={() => setIndustryFilters({ ...industryFilters, deliveryPlatforms: [] })}
+                        >
+                          Clear all
+                        </Button>
+                      </div>
+                    )}
+                  </PopoverContent>
+                </Popover>
               </div>
 
               {/* Process Step Multi-select Listbox */}
@@ -276,43 +321,6 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                     )}
                   </PopoverContent>
                 </Popover>
-              </div>
-
-              {/* Target Date Range */}
-              <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
-                  Target Date Range
-                </span>
-                <div className="space-y-2">
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="date"
-                      value={industryFilters.dateFrom}
-                      onChange={(e) => handleDateChange('dateFrom', e.target.value)}
-                      placeholder="From"
-                      className="pl-9 bg-background text-sm"
-                    />
-                  </div>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="date"
-                      value={industryFilters.dateTo}
-                      onChange={(e) => handleDateChange('dateTo', e.target.value)}
-                      placeholder="To"
-                      className="pl-9 bg-background text-sm"
-                    />
-                  </div>
-                </div>
-                {(industryFilters.dateFrom || industryFilters.dateTo) && (
-                  <button
-                    onClick={() => setIndustryFilters({ ...industryFilters, dateFrom: '', dateTo: '' })}
-                    className="text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    Clear dates
-                  </button>
-                )}
               </div>
             </div>
           )}

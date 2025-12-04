@@ -1,18 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, Save, CheckCircle } from 'lucide-react';
 import { useCreateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { toast } from 'sonner';
 import { DemandDetailsTab } from './create-tabs/DemandDetailsTab';
-import { useCatalystContext } from '@/contexts/CatalystContext';
 
 interface CreateBusinessRequestModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const getInitialFormData = (deliveryPlatform: string): Record<string, any> => ({
+const getInitialFormData = (): Record<string, any> => ({
   title: '',
   description: '',
   platform: '',
@@ -23,7 +22,7 @@ const getInitialFormData = (deliveryPlatform: string): Record<string, any> => ({
   impl_start_date: null,
   end_date: null,
   attachments: [],
-  delivery_platform: deliveryPlatform, // Auto-populated from context
+  delivery_platform: '',
   planned_quarter: '',
   // Entity Services
   efs_domain: '',
@@ -39,14 +38,8 @@ const getInitialFormData = (deliveryPlatform: string): Record<string, any> => ({
 
 export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRequestModalProps) {
   const createMutation = useCreateBusinessRequest();
-  const { deliveryPlatform } = useCatalystContext();
-  const [formData, setFormData] = useState<Record<string, any>>(getInitialFormData(deliveryPlatform));
+  const [formData, setFormData] = useState<Record<string, any>>(getInitialFormData());
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-
-  // Update delivery_platform when context changes
-  useEffect(() => {
-    setFormData(prev => ({ ...prev, delivery_platform: deliveryPlatform }));
-  }, [deliveryPlatform]);
 
   const handleFieldChange = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -98,14 +91,14 @@ export function CreateBusinessRequestModal({ isOpen, onClose }: CreateBusinessRe
     // Hide success message and close after 2 seconds
     setTimeout(() => {
       setShowSuccessMessage(false);
-      setFormData(getInitialFormData(deliveryPlatform));
+      setFormData(getInitialFormData());
       onClose();
     }, 2500);
   };
 
   const handleClose = () => {
     setShowSuccessMessage(false);
-    setFormData(getInitialFormData(deliveryPlatform));
+    setFormData(getInitialFormData());
     onClose();
   };
 
