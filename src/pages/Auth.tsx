@@ -63,77 +63,49 @@ export default function Auth() {
           lineHeight: 1.8
         }}>Transform how your organization manages demand and delivery with intelligent workflows and real-time insights.</p>
 
-          {/* Stats Section */}
-          <div className="grid grid-cols-3 gap-4 sm:gap-8 md:gap-16 pt-8 sm:pt-12" style={{
-          borderTop: "1px solid rgba(198, 156, 109, 0.25)"
-        }}>
-            {/* Stat 1 */}
-            <div className="text-center">
-              <div style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(2rem, 4vw, 2.75rem)",
-              color: "#c69c6d",
-              fontWeight: 500
-            }}>
-                98%
-              </div>
-              <div style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
-              color: "rgba(254, 255, 255, 0.7)",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              fontWeight: 500,
-              whiteSpace: "nowrap"
-            }}>
-                EFFICIENCY
-              </div>
-            </div>
-
-            {/* Stat 2 */}
-            <div className="text-center">
-              <div style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(2rem, 4vw, 2.75rem)",
-              color: "#c69c6d",
-              fontWeight: 500
-            }}>
-                10+
-              </div>
-              <div style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
-              color: "rgba(254, 255, 255, 0.7)",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              fontWeight: 500,
-              whiteSpace: "nowrap"
-            }}>
-                INTEGRATIONS
-              </div>
-            </div>
-
-            {/* Stat 3 */}
-            <div className="text-center">
-              <div style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(2rem, 4vw, 2.75rem)",
-              color: "#c69c6d",
-              fontWeight: 500
-            }}>
-                20+
-              </div>
-              <div style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: "clamp(0.7rem, 1.5vw, 0.9rem)",
-              color: "rgba(254, 255, 255, 0.7)",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              fontWeight: 500,
-              whiteSpace: "nowrap"
-            }}>
-                AI INSIGHTS
-              </div>
+          {/* Capabilities Section */}
+          <div className="pt-8 sm:pt-12" style={{
+            borderTop: "1px solid rgba(198, 156, 109, 0.25)"
+          }}>
+            <div className="grid grid-cols-2 gap-x-8 gap-y-4">
+              {[
+                { icon: "◆", label: "Portfolio Management" },
+                { icon: "◆", label: "Product Management" },
+                { icon: "◆", label: "Project Management" },
+                { icon: "◆", label: "Dependency Management" },
+                { icon: "◆", label: "Release Management" },
+                { icon: "◆", label: "Incident Management" },
+              ].map((item, index) => (
+                <div 
+                  key={index}
+                  className="flex items-center gap-3 group"
+                  style={{
+                    padding: "8px 0",
+                  }}
+                >
+                  <span 
+                    className="transition-transform duration-300 group-hover:scale-125"
+                    style={{
+                      color: "#c69c6d",
+                      fontSize: "0.6rem",
+                    }}
+                  >
+                    {item.icon}
+                  </span>
+                  <span 
+                    className="transition-colors duration-300 group-hover:text-[#c69c6d]"
+                    style={{
+                      fontFamily: "'DM Sans', sans-serif",
+                      fontSize: "clamp(0.85rem, 1.8vw, 1rem)",
+                      color: "rgba(254, 255, 255, 0.8)",
+                      fontWeight: 500,
+                      letterSpacing: "0.02em",
+                    }}
+                  >
+                    {item.label}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
