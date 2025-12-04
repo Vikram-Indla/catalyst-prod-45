@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, TrendingUp, AlertTriangle, Target, Sparkles } from 'lucide-react';
+import { ChevronDown, ChevronUp, TrendingUp, AlertTriangle, Target, Sparkles, Lightbulb, Flame, Trophy, Wrench, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 // Sample data
 const weeklyData = [
@@ -30,6 +31,64 @@ const demandCards = [
   { label: 'BLOCKED ITEMS', headline: '17 tickets need action', detail: '10 awaiting response. 7 on hold.' },
   { label: 'ON-HOLD RISK', headline: '8.9% on-hold rate', detail: 'Above 5% target. Save ~5 days/ticket.' },
   { label: 'MONTH-END TARGETS', headline: '5 due this month', detail: '3 on track. 2 need acceleration.' },
+];
+
+const insightPills = [
+  { label: 'Avg Cycle Time', value: '18 days', trend: 'down' },
+  { label: 'Approval Rate', value: '87%', trend: 'up' },
+  { label: 'On-Hold Rate', value: '8.9%', trend: 'up' },
+  { label: 'Blocked Items', value: '17', trend: 'down' },
+  { label: 'New This Week', value: '12', trend: 'up' },
+  { label: 'Closed This Week', value: '8', trend: 'up' },
+];
+
+const trendingTickets = [
+  { id: 'MIM-042', title: 'Platform Integration Request', priority: 'critical', trend: '+3 days' },
+  { id: 'MIM-038', title: 'API Gateway Enhancement', priority: 'high', trend: '+2 days' },
+  { id: 'MIM-051', title: 'Dashboard Analytics', priority: 'medium', trend: '+1 day' },
+  { id: 'MIM-047', title: 'Security Audit Response', priority: 'critical', trend: '+5 days' },
+];
+
+const attentionItems = [
+  { id: 'MIM-033', reason: 'Awaiting business response > 7 days', action: 'Follow Up' },
+  { id: 'MIM-029', reason: 'On hold without expected resume date', action: 'Update' },
+  { id: 'MIM-045', reason: 'Critical priority stalled', action: 'Escalate' },
+];
+
+const milestones = {
+  approved: [
+    { name: 'Q4 Release Package', value: 'Dec 15' },
+    { name: 'Security Compliance', value: 'Dec 10' },
+    { name: 'Platform Migration', value: 'Dec 20' },
+    { name: 'API v2 Launch', value: 'Dec 8' },
+    { name: 'Mobile App Update', value: 'Dec 12' },
+  ],
+  implemented: [
+    { name: 'SSO Integration', value: 'Nov 28' },
+    { name: 'Dashboard Redesign', value: 'Nov 25' },
+    { name: 'Performance Optimization', value: 'Nov 30' },
+  ],
+};
+
+const rejectedTickets = [
+  { id: 'MIM-018', title: 'Legacy System Enhancement', reason: 'Out of scope' },
+  { id: 'MIM-022', title: 'Custom Report Builder', reason: 'Duplicate request' },
+  { id: 'MIM-025', title: 'Third-party Integration', reason: 'Budget constraints' },
+  { id: 'MIM-031', title: 'Manual Process Automation', reason: 'Low priority' },
+  { id: 'MIM-035', title: 'Data Export Feature', reason: 'Already exists' },
+];
+
+const recoveryItems = [
+  { 
+    title: 'Platform Integration Delay', 
+    severity: 'high',
+    actions: ['Assign additional resources', 'Daily sync with vendor', 'Escalate blockers immediately']
+  },
+  { 
+    title: 'Security Audit Backlog', 
+    severity: 'medium',
+    actions: ['Prioritize critical findings', 'Schedule remediation sessions', 'Update stakeholders weekly']
+  },
 ];
 
 const getSentiment = (score: number) => {
@@ -73,35 +132,28 @@ function CollapsibleSection({ title, subtitle, icon, children, defaultOpen = fal
   );
 }
 
-function PerformancePulse() {
+function PerformancePulseContent() {
   const total = weeklyData.length;
   const best = weeklyData.reduce((a, b) => a.score > b.score ? a : b);
   const lowest = weeklyData.reduce((a, b) => a.score < b.score ? a : b);
   const trend = weeklyData[total - 1].score - weeklyData[total - 2].score;
 
   return (
-    <Card className="p-6 mb-4">
-      <div className="flex justify-between items-center flex-wrap gap-4">
-        <div className="flex items-center gap-3">
-          <span className="text-brand-gold text-2xl">⚡</span>
-          <h2 className="text-xl font-semibold text-foreground">Performance Pulse</h2>
-          <span className="text-muted-foreground text-sm">8-Week Trend</span>
+    <>
+      <div className="flex justify-end gap-8 text-sm mb-4">
+        <div className="text-center">
+          <span className="text-muted-foreground block text-xs">Trending:</span>
+          <span className={cn("font-semibold", trend >= 0 ? "text-emerald-600" : "text-red-600")}>
+            {trend >= 0 ? '+' : ''}{trend} pts
+          </span>
         </div>
-        <div className="flex gap-8 text-sm">
-          <div className="text-center">
-            <span className="text-muted-foreground block text-xs">Trending:</span>
-            <span className={cn("font-semibold", trend >= 0 ? "text-emerald-600" : "text-red-600")}>
-              {trend >= 0 ? '+' : ''}{trend} pts
-            </span>
-          </div>
-          <div className="text-center">
-            <span className="text-muted-foreground block text-xs">Best:</span>
-            <span className="font-semibold text-foreground">{best.date} ({best.score})</span>
-          </div>
-          <div className="text-center">
-            <span className="text-muted-foreground block text-xs">Lowest:</span>
-            <span className="font-semibold text-foreground">{lowest.date} ({lowest.score})</span>
-          </div>
+        <div className="text-center">
+          <span className="text-muted-foreground block text-xs">Best:</span>
+          <span className="font-semibold text-foreground">{best.date} ({best.score})</span>
+        </div>
+        <div className="text-center">
+          <span className="text-muted-foreground block text-xs">Lowest:</span>
+          <span className="font-semibold text-foreground">{lowest.date} ({lowest.score})</span>
         </div>
       </div>
 
@@ -146,7 +198,7 @@ function PerformancePulse() {
       <p className="text-center text-muted-foreground text-sm italic">
         Click any week to drill into detailed metrics
       </p>
-    </Card>
+    </>
   );
 }
 
@@ -193,6 +245,62 @@ function CPIBreakdown() {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function InsightPills() {
+  return (
+    <div className="flex flex-wrap gap-3">
+      {insightPills.map((pill, index) => (
+        <div key={index} className="bg-muted/30 border border-border rounded-full px-4 py-2 flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">{pill.label}:</span>
+          <span className="font-semibold text-foreground">{pill.value}</span>
+          <span className={cn("text-sm", pill.trend === 'up' ? 'text-emerald-600' : 'text-red-600')}>
+            {pill.trend === 'up' ? '↑' : '↓'}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TrendingTickets() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      {trendingTickets.map((ticket, index) => (
+        <div key={index} className="bg-muted/30 border border-border rounded-lg p-4">
+          <div className="flex justify-between items-start mb-2">
+            <span className="text-brand-gold text-xs font-semibold">{ticket.id}</span>
+            <span className={cn(
+              "text-xs font-semibold px-2 py-0.5 rounded",
+              ticket.priority === 'critical' && 'bg-red-500 text-white',
+              ticket.priority === 'high' && 'bg-amber-500 text-white',
+              ticket.priority === 'medium' && 'bg-blue-500 text-white'
+            )}>{ticket.priority.toUpperCase()}</span>
+          </div>
+          <div className="text-sm font-medium text-foreground mb-1">{ticket.title}</div>
+          <div className="text-xs text-red-600">{ticket.trend} overdue</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RequiresAttention() {
+  return (
+    <div className="space-y-3">
+      {attentionItems.map((item, index) => (
+        <div key={index} className="flex justify-between items-center p-4 bg-muted/30 border border-border rounded-lg">
+          <div>
+            <span className="text-brand-gold text-xs font-semibold">{item.id}</span>
+            <div className="text-sm text-foreground mt-1">{item.reason}</div>
+          </div>
+          <Button size="sm" className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover">
+            {item.action}
+          </Button>
+        </div>
+      ))}
     </div>
   );
 }
@@ -254,6 +362,35 @@ function BacklogTrend() {
   );
 }
 
+function DeliveryMilestones() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h4 className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Approved ({milestones.approved.length})</h4>
+        <div className="space-y-2">
+          {milestones.approved.map((item, index) => (
+            <div key={index} className="bg-muted/30 border border-border rounded-lg p-3 flex justify-between">
+              <span className="text-sm text-foreground">{item.name}</span>
+              <span className="text-sm font-semibold text-emerald-600">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <h4 className="text-xs text-muted-foreground uppercase tracking-wider mb-3">Implemented ({milestones.implemented.length})</h4>
+        <div className="space-y-2">
+          {milestones.implemented.map((item, index) => (
+            <div key={index} className="bg-muted/30 border border-border rounded-lg p-3 flex justify-between">
+              <span className="text-sm text-foreground">{item.name}</span>
+              <span className="text-sm font-semibold text-emerald-600">{item.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GoodNews() {
   const items = [
     { icon: '🎉', headline: '3 epics delivered', desc: 'Ahead of schedule' },
@@ -271,6 +408,69 @@ function GoodNews() {
           <div className="text-2xl mb-2">{item.icon}</div>
           <div className="text-sm font-semibold text-foreground mb-1">{item.headline}</div>
           <div className="text-xs text-muted-foreground">{item.desc}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RejectionInsights() {
+  return (
+    <div className="space-y-3">
+      {rejectedTickets.map((ticket, index) => (
+        <div key={index} className="flex justify-between items-center p-3 border-b border-border last:border-0">
+          <div>
+            <span className="text-brand-gold text-xs font-semibold">{ticket.id}</span>
+            <div className="text-sm text-foreground">{ticket.title}</div>
+          </div>
+          <span className="text-xs text-muted-foreground">{ticket.reason}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RecoveryPlan() {
+  const [openItems, setOpenItems] = useState<number[]>([]);
+
+  const toggleItem = (index: number) => {
+    setOpenItems(prev => 
+      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
+    );
+  };
+
+  return (
+    <div className="space-y-3">
+      {recoveryItems.map((item, index) => (
+        <div key={index} className="bg-muted/30 border border-border rounded-lg overflow-hidden">
+          <div 
+            className="flex justify-between items-center p-4 cursor-pointer hover:bg-muted/50"
+            onClick={() => toggleItem(index)}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-foreground">{item.title}</span>
+              <span className={cn(
+                "text-xs font-semibold px-2 py-0.5 rounded",
+                item.severity === 'high' && 'bg-red-500 text-white',
+                item.severity === 'medium' && 'bg-amber-500 text-white'
+              )}>{item.severity.toUpperCase()}</span>
+            </div>
+            {openItems.includes(index) ? (
+              <ChevronUp className="w-4 h-4 text-muted-foreground" />
+            ) : (
+              <ChevronDown className="w-4 h-4 text-muted-foreground" />
+            )}
+          </div>
+          {openItems.includes(index) && (
+            <div className="px-4 pb-4 space-y-2">
+              {item.actions.map((action, actionIndex) => (
+                <div key={actionIndex} className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span className="text-brand-gold">→</span>
+                  {action}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ))}
     </div>
@@ -297,9 +497,17 @@ export default function DemandSummaryPage() {
           </div>
         </header>
 
-        {/* Always Visible Sections */}
-        <PerformancePulse />
+        {/* Always Visible: Business Demand Summary */}
         <BusinessDemandSummary />
+
+        {/* Collapsible: Performance Pulse */}
+        <CollapsibleSection 
+          title="Performance Pulse" 
+          subtitle="8-Week Trend"
+          icon="⚡"
+        >
+          <PerformancePulseContent />
+        </CollapsibleSection>
 
         {/* Collapsible Sections */}
         <CollapsibleSection 
@@ -319,11 +527,39 @@ export default function DemandSummaryPage() {
         </CollapsibleSection>
 
         <CollapsibleSection 
-          title="Backlog Trend" 
-          subtitle="8-Week Growth"
+          title="Insight Pills" 
+          icon={<Lightbulb className="w-6 h-6" />}
+        >
+          <InsightPills />
+        </CollapsibleSection>
+
+        <CollapsibleSection 
+          title="Trending Tickets" 
+          icon={<Flame className="w-6 h-6" />}
+        >
+          <TrendingTickets />
+        </CollapsibleSection>
+
+        <CollapsibleSection 
+          title="Requires Attention" 
           icon={<AlertTriangle className="w-6 h-6" />}
         >
+          <RequiresAttention />
+        </CollapsibleSection>
+
+        <CollapsibleSection 
+          title="Backlog Trend" 
+          subtitle="8-Week Growth"
+          icon="📈"
+        >
           <BacklogTrend />
+        </CollapsibleSection>
+
+        <CollapsibleSection 
+          title="Delivery Milestones" 
+          icon={<Trophy className="w-6 h-6" />}
+        >
+          <DeliveryMilestones />
         </CollapsibleSection>
 
         <CollapsibleSection 
@@ -332,6 +568,20 @@ export default function DemandSummaryPage() {
           icon="🎉"
         >
           <GoodNews />
+        </CollapsibleSection>
+
+        <CollapsibleSection 
+          title="Rejection Insights" 
+          icon={<X className="w-6 h-6" />}
+        >
+          <RejectionInsights />
+        </CollapsibleSection>
+
+        <CollapsibleSection 
+          title="Recovery Plan" 
+          icon={<Wrench className="w-6 h-6" />}
+        >
+          <RecoveryPlan />
         </CollapsibleSection>
 
         {/* AI Chat Button */}
