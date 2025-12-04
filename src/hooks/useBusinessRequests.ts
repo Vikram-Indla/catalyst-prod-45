@@ -44,8 +44,9 @@ export function useBusinessRequests(searchQuery?: string) {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (searchQuery) {
-        query = query.ilike('title', `%${searchQuery}%`);
+      if (searchQuery && searchQuery.trim()) {
+        // Search in both title and request_key for partial matches
+        query = query.or(`title.ilike.%${searchQuery}%,request_key.ilike.%${searchQuery}%`);
       }
 
       const { data, error } = await query;

@@ -121,9 +121,9 @@ export function TableColumnHeader({
             <Filter className={cn("h-3 w-3", hasActiveFilters ? "text-brand-gold" : "text-muted-foreground/60")} />
           </button>
 
-          {/* Filter Dropdown */}
+          {/* Filter Dropdown - positioned to stay within viewport */}
           {isFilterOpen && (
-            <div className="absolute top-full left-0 mt-1 w-56 bg-card border border-border rounded-lg shadow-xl z-50 overflow-hidden">
+            <div className="absolute top-full right-0 mt-1 w-56 bg-card border border-border rounded-lg shadow-xl z-50 overflow-hidden">
               {/* Search */}
               <div className="p-2 border-b border-border">
                 <Input
