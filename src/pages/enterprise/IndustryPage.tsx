@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Star } from 'lucide-react';
+import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -282,13 +282,6 @@ export default function IndustryPage() {
     }
   };
 
-  const handleBulkEdit = () => {
-    if (selectedRows.length === 0) {
-      toast({ title: 'No items selected', description: 'Please select items to bulk edit', variant: 'destructive' });
-      return;
-    }
-    toast({ title: 'Bulk Edit', description: `${selectedRows.length} items selected for editing` });
-  };
 
   const toggleRowSelection = (id: string) => {
     setSelectedRows(prev => 
@@ -373,16 +366,6 @@ export default function IndustryPage() {
             </div>
           )}
 
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleBulkEdit} 
-            disabled={selectedRows.length === 0}
-            className="border-border"
-          >
-            <Pencil className="h-4 w-4 mr-2" />
-            Bulk Edit
-          </Button>
           <Button variant="outline" size="sm" className="border-border">
             <Upload className="h-4 w-4 mr-2" />
             Import
