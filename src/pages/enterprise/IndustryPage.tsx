@@ -323,7 +323,7 @@ export default function IndustryPage() {
       <div className="border-b bg-card px-4 sm:px-6 py-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Industry</h1>
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Demand Intake</h1>
             <p className="text-sm text-muted-foreground">Industry-specific demand requests</p>
           </div>
           <Button onClick={() => setCreateModalOpen(true)} className="bg-brand-gold text-white hover:bg-brand-gold-hover">
