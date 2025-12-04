@@ -28,25 +28,25 @@ export function RankUpdateNotification({
   if (!show) return null;
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
+    <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 z-50">
       <div 
-        className="pointer-events-auto bg-gradient-to-r from-brand-gold/95 to-brand-gold-hover/95 backdrop-blur-sm text-white px-6 py-4 rounded-xl shadow-2xl border border-brand-gold-hover/50 max-w-md animate-in fade-in zoom-in-95 duration-300"
+        className="bg-gradient-to-r from-brand-gold/95 to-brand-gold-hover/95 backdrop-blur-sm text-white px-4 py-3 rounded-lg shadow-lg border border-brand-gold-hover/50 animate-in fade-in zoom-in-95 duration-300 whitespace-nowrap"
         style={{
-          boxShadow: '0 20px 60px -15px rgba(198, 156, 109, 0.5), 0 10px 30px -10px rgba(26, 26, 26, 0.3)'
+          boxShadow: '0 10px 30px -10px rgba(198, 156, 109, 0.5)'
         }}
       >
-        <div className="flex items-start gap-4">
+        <div className="flex items-center gap-3">
           {/* Alarm Icon */}
-          <div className="flex-shrink-0 p-2 bg-white/20 rounded-lg">
-            <AlarmClock className="h-6 w-6 text-white" />
+          <div className="flex-shrink-0 p-1.5 bg-white/20 rounded-md">
+            <AlarmClock className="h-4 w-4 text-white" />
           </div>
           
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <h4 className="text-base font-semibold text-white mb-1">
+            <h4 className="text-sm font-semibold text-white">
               Priority Update
             </h4>
-            <p className="text-sm text-white/90 leading-relaxed">
+            <p className="text-xs text-white/90">
               Rank updated from <span className="font-bold">{oldRank}</span> to <span className="font-bold">{newRank}</span>, Score <span className="font-bold">{score ?? 'N/A'}</span>, All users notified.
             </p>
           </div>
@@ -56,7 +56,7 @@ export function RankUpdateNotification({
             onClick={onClose}
             className="flex-shrink-0 p-1 hover:bg-white/20 rounded-full transition-colors"
           >
-            <X className="h-4 w-4 text-white/80" />
+            <X className="h-3 w-3 text-white/80" />
           </button>
         </div>
       </div>
