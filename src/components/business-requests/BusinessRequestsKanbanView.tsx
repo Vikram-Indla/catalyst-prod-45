@@ -42,7 +42,10 @@ const KANBAN_COLUMNS = [
 
 export function BusinessRequestsKanbanView({ requests, onRequestSelect }: BusinessRequestsKanbanViewProps) {
   const queryClient = useQueryClient();
-  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
+  // All columns collapsed by default except 'in_progress'
+  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(
+    new Set(['new_request', 'under_analysis', 'awaiting_business_response', 'on_hold', 'approved', 'implemented', 'rejected'])
+  );
 
   const toggleColumnCollapse = (columnId: string) => {
     setCollapsedColumns(prev => {
