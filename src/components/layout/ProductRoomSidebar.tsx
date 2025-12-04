@@ -125,13 +125,23 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
     <TooltipProvider>
       <aside
         className={cn(
-          'h-full border-r bg-card flex flex-col transition-all duration-300 overflow-hidden',
+          'h-full border-r bg-card flex flex-col transition-all duration-300 overflow-hidden relative',
           expanded ? 'w-64' : 'w-16',
           className
         )}
       >
+        {/* Toggle Button - Positioned at edge */}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={onToggle}
+          className="absolute -right-3 top-6 z-10 h-6 w-6 rounded-full border bg-background shadow-sm hover:bg-muted"
+        >
+          {expanded ? <ChevronLeft className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+        </Button>
+
         {/* Header */}
-        <div className="p-4 border-b flex items-center justify-between shrink-0">
+        <div className="p-4 border-b flex items-center shrink-0">
           {expanded ? (
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm">
@@ -147,14 +157,6 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
               PR
             </div>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggle}
-            className={cn('h-8 w-8', !expanded && 'mx-auto mt-2')}
-          >
-            {expanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-          </Button>
         </div>
 
         {/* Scrollable content area */}
