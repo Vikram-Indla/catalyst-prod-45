@@ -1,17 +1,15 @@
 import { z } from 'zod';
 
-// Process Step Options
+// Process Step Options - matches workflow diagram
 export const PROCESS_STEPS = [
-  { value: 'new_demand', label: 'New Demand', color: 'bg-gray-100 text-gray-600' },
-  { value: 'portfolio_review', label: 'Portfolio Review', color: 'bg-blue-100 text-blue-700' },
-  { value: 'technical_validation', label: 'Technical Validation', color: 'bg-purple-100 text-purple-700' },
-  { value: 'estimate', label: 'Estimate', color: 'bg-orange-100 text-orange-700' },
-  { value: 'demand_approved', label: 'Demand Approved', color: 'bg-green-100 text-green-700' },
-  { value: 'ready_for_development', label: 'Ready for Development', color: 'bg-teal-100 text-teal-700' },
-  { value: 'under_implementation', label: 'Under Implementation', color: 'bg-indigo-100 text-indigo-700' },
-  { value: 'implementation_review', label: 'Implementation Review', color: 'bg-amber-100 text-amber-700' },
-  { value: 'in_support_done', label: 'In Support / Done', color: 'bg-emerald-100 text-emerald-700' },
-  { value: 'on_hold_cancel', label: 'On Hold / Cancel', color: 'bg-red-100 text-red-600' },
+  { value: 'request_received', label: 'REQUEST RECEIVED', color: 'bg-gray-600 text-white' },
+  { value: 'under_study', label: 'UNDER STUDY', color: 'bg-gray-300 text-gray-800' },
+  { value: 'in_progress', label: 'IN PROGRESS', color: 'bg-purple-600 text-white' },
+  { value: 'awaiting_business_response', label: 'AWAITING BUSINESS RESPONSE', color: 'bg-gray-400 text-gray-800' },
+  { value: 'reopen', label: 'REOPEN', color: 'bg-cyan-400 text-gray-800' },
+  { value: 'on_hold', label: 'ON HOLD', color: 'bg-rose-300 text-gray-800' },
+  { value: 'closed', label: 'CLOSED', color: 'bg-gray-900 text-white' },
+  { value: 'completed', label: 'COMPLETED', color: 'bg-green-500 text-white' },
 ] as const;
 
 // Health Options

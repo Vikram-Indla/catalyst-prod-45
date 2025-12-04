@@ -26,8 +26,16 @@ const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'business_score', label: 'Business Score', visible: true, default: true },
   { id: 'planned_quarter', label: 'Planned Quarter', visible: true, default: true },
   { id: 'end_date', label: 'Target Completion', visible: true, default: true },
-  { id: 'created_at', label: 'Created Date', visible: true, default: true },
+  { id: 'ageing', label: 'Ageing', visible: true, default: true },
 ];
+
+const calculateAgeing = (createdAt: string | null): number => {
+  if (!createdAt) return 0;
+  const created = new Date(createdAt);
+  const now = new Date();
+  const diffTime = Math.abs(now.getTime() - created.getTime());
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
 
 const ITEMS_PER_PAGE = 20;
 
@@ -123,9 +131,9 @@ export default function IndustryPage() {
           aVal = a.end_date ? new Date(a.end_date).getTime() : 0;
           bVal = b.end_date ? new Date(b.end_date).getTime() : 0;
           break;
-        case 'created_at':
-          aVal = a.created_at ? new Date(a.created_at).getTime() : 0;
-          bVal = b.created_at ? new Date(b.created_at).getTime() : 0;
+        case 'ageing':
+          aVal = a.created_at ? calculateAgeing(a.created_at) : 0;
+          bVal = b.created_at ? calculateAgeing(b.created_at) : 0;
           break;
         default:
           return 0;
@@ -476,12 +484,12 @@ export default function IndustryPage() {
                     />
                   </div>
                 )}
-                {isColumnVisible('created_at') && (
-                  <div className="w-36 shrink-0">
+                {isColumnVisible('ageing') && (
+                  <div className="w-20 shrink-0 text-center">
                     <SimpleColumnHeader
-                      label="Created Date"
-                      columnId="created_at"
-                      sortDirection={columnSort.columnId === 'created_at' ? columnSort.direction : null}
+                      label="Ageing"
+                      columnId="ageing"
+                      sortDirection={columnSort.columnId === 'ageing' ? columnSort.direction : null}
                       onSort={handleSort}
                     />
                   </div>
@@ -579,9 +587,9 @@ export default function IndustryPage() {
                                   </div>
                                 )}
 
-                                {isColumnVisible('created_at') && (
-                                  <div className="w-36 shrink-0 text-sm text-muted-foreground">
-                                    {formatDateTime(request.created_at)}
+                                {isColumnVisible('ageing') && (
+                                  <div className="w-20 shrink-0 text-center text-sm text-muted-foreground">
+                                    {calculateAgeing(request.created_at)} days
                                   </div>
                                 )}
                               </div>
