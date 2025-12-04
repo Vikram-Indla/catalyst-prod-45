@@ -202,7 +202,9 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
           </div>
 
           <div>
-            <Label className="text-sm font-medium">Description</Label>
+            <Label className="text-sm font-medium">
+              Description <span className="text-destructive">*</span>
+            </Label>
             <p className="text-xs text-muted-foreground mb-1.5">Provide a detailed description (up to 2,000 words)</p>
             <RichTextEditor
               value={data.description || ''}
@@ -391,7 +393,9 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
             </div>
 
             <div>
-              <Label className="text-sm font-medium">Assignee</Label>
+              <Label className="text-sm font-medium">
+                Assignee <span className="text-destructive">*</span>
+              </Label>
               <Select
                 value={data.requestor || ''}
                 onValueChange={(value) => onChange('requestor', value)}
@@ -411,7 +415,9 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm font-medium">Department</Label>
+              <Label className="text-sm font-medium">
+                Department <span className="text-destructive">*</span>
+              </Label>
               <Select
                 value={data.department || ''}
                 onValueChange={(value) => onChange('department', value)}
@@ -432,7 +438,9 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
             </div>
 
             <div>
-              <Label className="text-sm font-medium">Business Owner</Label>
+              <Label className="text-sm font-medium">
+                Business Owner <span className="text-destructive">*</span>
+              </Label>
               <Input
                 value={data.business_owner || ''}
                 onChange={(e) => onChange('business_owner', e.target.value)}
@@ -592,14 +600,23 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-sm font-medium">Delivery Platform</Label>
-              <Input
+              <Label className="text-sm font-medium">
+                Delivery Platform <span className="text-destructive">*</span>
+              </Label>
+              <Select
                 value={data.delivery_platform || ''}
-                disabled
-                placeholder="Auto-populated from context"
-                className="mt-1.5 bg-muted/50"
-              />
-              <p className="text-xs text-muted-foreground mt-1">Read-only (populated from side panel selection)</p>
+                onValueChange={(value) => onChange('delivery_platform', value)}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select platform..." />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  <SelectItem value="Senaei Platform">Senaei Platform</SelectItem>
+                  <SelectItem value="MIM Platform">MIM Platform</SelectItem>
+                  <SelectItem value="Enterprise Platform">Enterprise Platform</SelectItem>
+                  <SelectItem value="Digital Platform">Digital Platform</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label className="text-sm font-medium">Planned Quarter</Label>
