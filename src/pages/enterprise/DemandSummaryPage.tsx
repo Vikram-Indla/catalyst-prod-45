@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, TrendingUp, AlertTriangle, Clock, Target, Sparkles
-} from 'lucide-react';
+import { ChevronDown, ChevronUp, TrendingUp, AlertTriangle, Target, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
 
 // Sample data
 const weeklyData = [
@@ -34,7 +34,7 @@ const demandCards = [
 
 const getSentiment = (score: number) => {
   if (score >= 80) return { label: 'ON TRACK', color: 'bg-emerald-500' };
-  if (score >= 60) return { label: 'MONITOR', color: 'bg-amber-500' };
+  if (score >= 60) return { label: 'MONITOR', color: 'bg-brand-gold' };
   return { label: 'ACTION', color: 'bg-red-500' };
 };
 
@@ -50,26 +50,26 @@ function CollapsibleSection({ title, subtitle, icon, children, defaultOpen = fal
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="bg-[#242424] rounded-xl p-6 mb-4">
+    <Card className="p-6 mb-4">
       <div 
         className="flex justify-between items-center cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className="flex items-center gap-3">
           <span className="text-brand-gold text-2xl">{icon}</span>
-          <h2 className="text-xl font-semibold text-[#f8f6f3]">{title}</h2>
-          {subtitle && <span className="text-[#a0a0a0] text-sm">{subtitle}</span>}
+          <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+          {subtitle && <span className="text-muted-foreground text-sm">{subtitle}</span>}
         </div>
         <div className="flex items-center gap-4">
           {isOpen ? (
-            <ChevronUp className="w-5 h-5 text-[#a0a0a0]" />
+            <ChevronUp className="w-5 h-5 text-muted-foreground" />
           ) : (
-            <ChevronDown className="w-5 h-5 text-[#a0a0a0]" />
+            <ChevronDown className="w-5 h-5 text-muted-foreground" />
           )}
         </div>
       </div>
       {isOpen && <div className="mt-5">{children}</div>}
-    </div>
+    </Card>
   );
 }
 
@@ -80,27 +80,27 @@ function PerformancePulse() {
   const trend = weeklyData[total - 1].score - weeklyData[total - 2].score;
 
   return (
-    <div className="bg-[#242424] rounded-xl p-6 mb-4">
-      <div className="flex justify-between items-center">
+    <Card className="p-6 mb-4">
+      <div className="flex justify-between items-center flex-wrap gap-4">
         <div className="flex items-center gap-3">
           <span className="text-brand-gold text-2xl">⚡</span>
-          <h2 className="text-xl font-semibold text-[#f8f6f3]">Performance Pulse</h2>
-          <span className="text-[#a0a0a0] text-sm">8-Week Trend</span>
+          <h2 className="text-xl font-semibold text-foreground">Performance Pulse</h2>
+          <span className="text-muted-foreground text-sm">8-Week Trend</span>
         </div>
         <div className="flex gap-8 text-sm">
           <div className="text-center">
-            <span className="text-[#a0a0a0] block text-xs">Trending:</span>
-            <span className={cn("font-semibold", trend >= 0 ? "text-emerald-500" : "text-red-500")}>
+            <span className="text-muted-foreground block text-xs">Trending:</span>
+            <span className={cn("font-semibold", trend >= 0 ? "text-emerald-600" : "text-red-600")}>
               {trend >= 0 ? '+' : ''}{trend} pts
             </span>
           </div>
           <div className="text-center">
-            <span className="text-[#a0a0a0] block text-xs">Best:</span>
-            <span className="font-semibold text-[#f8f6f3]">{best.date} ({best.score})</span>
+            <span className="text-muted-foreground block text-xs">Best:</span>
+            <span className="font-semibold text-foreground">{best.date} ({best.score})</span>
           </div>
           <div className="text-center">
-            <span className="text-[#a0a0a0] block text-xs">Lowest:</span>
-            <span className="font-semibold text-[#f8f6f3]">{lowest.date} ({lowest.score})</span>
+            <span className="text-muted-foreground block text-xs">Lowest:</span>
+            <span className="font-semibold text-foreground">{lowest.date} ({lowest.score})</span>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@ function PerformancePulse() {
       <div className="flex items-end justify-center gap-1 my-6">
         {weeklyData.map((week, index) => {
           const size = 60 + ((95 - 60) / (total - 1)) * index;
-          const opacity = index === total - 1 ? 1 : 0.45 + (0.45 * (index / (total - 1)));
+          const opacity = index === total - 1 ? 1 : 0.5 + (0.5 * (index / (total - 1)));
           const sentiment = getSentiment(week.score);
           const isLast = index === total - 1;
 
@@ -119,8 +119,8 @@ function PerformancePulse() {
                 className={cn(
                   "rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all duration-200",
                   sentiment.color,
-                  isLast && "ring-[3px] ring-white shadow-[0_0_15px_rgba(255,255,255,0.15)]",
-                  "hover:scale-[1.08] hover:ring-2 hover:ring-white hover:z-10"
+                  isLast && "ring-[3px] ring-brand-dark shadow-lg",
+                  "hover:scale-[1.08] hover:ring-2 hover:ring-brand-dark hover:z-10"
                 )}
                 style={{ 
                   width: `${size}px`, 
@@ -128,14 +128,14 @@ function PerformancePulse() {
                   opacity: opacity
                 }}
               >
-                <span className="text-[9px] text-white/80 uppercase">{week.date}</span>
+                <span className="text-[9px] text-white/90 uppercase font-medium">{week.date}</span>
                 <span className="text-[10px] font-bold text-white uppercase">{sentiment.label}</span>
                 
                 {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-[#333] border border-[#444] rounded-lg px-4 py-3 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50">
-                  <div className="text-[10px] text-[#a0a0a0] uppercase tracking-wider">CPI Score</div>
-                  <div className="text-3xl font-bold text-[#f8f6f3]">{week.score}</div>
-                  <div className="text-xs text-[#a0a0a0] mt-1">{week.date}</div>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 bg-card border border-border rounded-lg px-4 py-3 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 shadow-lg">
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider">CPI Score</div>
+                  <div className="text-3xl font-bold text-foreground">{week.score}</div>
+                  <div className="text-xs text-muted-foreground mt-1">{week.date}</div>
                 </div>
               </div>
             </div>
@@ -143,33 +143,33 @@ function PerformancePulse() {
         })}
       </div>
 
-      <p className="text-center text-[#a0a0a0] text-sm italic">
+      <p className="text-center text-muted-foreground text-sm italic">
         Click any week to drill into detailed metrics
       </p>
-    </div>
+    </Card>
   );
 }
 
 function BusinessDemandSummary() {
   return (
-    <div className="bg-[#242424] rounded-xl p-6 mb-4">
+    <Card className="p-6 mb-4">
       <div className="flex items-center gap-3 mb-5">
         <span className="text-brand-gold text-2xl">📊</span>
-        <h2 className="text-xl font-semibold text-[#f8f6f3]">Business Demand Summary</h2>
+        <h2 className="text-xl font-semibold text-foreground">Business Demand Summary</h2>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {demandCards.map((card, index) => (
-          <div key={index} className="bg-[#1a1a1a] border border-[#333] rounded-lg p-5">
+          <div key={index} className="bg-muted/30 border border-border rounded-lg p-5">
             <div className="text-brand-gold text-xs font-semibold uppercase tracking-wider mb-2">
               {card.label}
             </div>
-            <div className="text-lg font-bold text-[#f8f6f3] mb-2">{card.headline}</div>
-            <div className="text-[#a0a0a0] text-sm">{card.detail}</div>
+            <div className="text-lg font-bold text-foreground mb-2">{card.headline}</div>
+            <div className="text-muted-foreground text-sm">{card.detail}</div>
           </div>
         ))}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -181,10 +181,10 @@ function CPIBreakdown() {
         return (
           <div key={index} className="mb-3">
             <div className="flex justify-between mb-1 text-sm">
-              <span className="text-[#f8f6f3]">{dim.name}</span>
-              <span className="font-semibold text-[#f8f6f3]">{dim.score}</span>
+              <span className="text-foreground">{dim.name}</span>
+              <span className="font-semibold text-foreground">{dim.score}</span>
             </div>
-            <div className="h-1.5 bg-[#333] rounded-full overflow-hidden">
+            <div className="h-1.5 bg-muted rounded-full overflow-hidden">
               <div 
                 className={cn("h-full rounded-full transition-all", sentiment.color)}
                 style={{ width: `${dim.score}%` }}
@@ -204,17 +204,17 @@ function QuarterDelivery() {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {quarters.map((q, index) => (
-        <div key={index} className="bg-[#1a1a1a] rounded-lg p-5">
-          <h3 className="text-base font-semibold text-[#f8f6f3] mb-2">{q.name}</h3>
-          <div className="text-[#a0a0a0] text-sm mb-3">{q.total} items total</div>
+        <div key={index} className="bg-muted/30 border border-border rounded-lg p-5">
+          <h3 className="text-base font-semibold text-foreground mb-2">{q.name}</h3>
+          <div className="text-muted-foreground text-sm mb-3">{q.total} items total</div>
           <div className="h-2 rounded-full flex overflow-hidden mb-2">
             <div className="bg-emerald-500" style={{ width: `${(q.onTrack / q.total) * 100}%` }} />
             <div className="bg-amber-500" style={{ width: `${(q.atRisk / q.total) * 100}%` }} />
             <div className="bg-red-500" style={{ width: `${(q.delayed / q.total) * 100}%` }} />
           </div>
-          <div className="flex gap-4 text-xs text-[#a0a0a0]">
+          <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-emerald-500" /> On Track ({q.onTrack})
             </span>
@@ -238,8 +238,8 @@ function BacklogTrend() {
   return (
     <div className="flex items-center gap-6">
       <div>
-        <div className="text-5xl font-bold text-[#f8f6f3]">139</div>
-        <div className="text-red-500 text-lg font-semibold">+56% from 89</div>
+        <div className="text-5xl font-bold text-foreground">139</div>
+        <div className="text-red-600 text-lg font-semibold">+56% from 89</div>
       </div>
       <div className="flex-1 h-16 flex items-end gap-2">
         {bars.map((value, index) => (
@@ -262,15 +262,15 @@ function GoodNews() {
   ];
 
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
       {items.map((item, index) => (
         <div 
           key={index} 
-          className="bg-gradient-to-br from-emerald-900/30 to-[#1a1a1a] border border-emerald-500/20 rounded-lg p-4"
+          className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4"
         >
           <div className="text-2xl mb-2">{item.icon}</div>
-          <div className="text-sm font-semibold text-[#f8f6f3] mb-1">{item.headline}</div>
-          <div className="text-xs text-[#a0a0a0]">{item.desc}</div>
+          <div className="text-sm font-semibold text-foreground mb-1">{item.headline}</div>
+          <div className="text-xs text-muted-foreground">{item.desc}</div>
         </div>
       ))}
     </div>
@@ -279,21 +279,21 @@ function GoodNews() {
 
 export default function DemandSummaryPage() {
   return (
-    <div className="min-h-full bg-[#1a1a1a]">
+    <div className="min-h-full bg-background">
       <div className="max-w-6xl mx-auto p-6">
         {/* Header */}
-        <header className="flex justify-between items-center py-5 border-b border-[#333] mb-6">
+        <header className="flex justify-between items-center py-5 border-b border-border mb-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-wider text-[#f8f6f3]">
+            <h1 className="text-3xl font-bold tracking-wider text-foreground">
               <span className="text-brand-gold">C</span>ATALYST
             </h1>
-            <p className="text-[#a0a0a0] text-xs tracking-widest">ANALYTICS DASHBOARD</p>
+            <p className="text-muted-foreground text-xs tracking-widest uppercase">Analytics Dashboard</p>
           </div>
           <div className="flex items-center gap-5">
-            <button className="bg-[#333] text-[#f8f6f3] px-4 py-2 rounded-md text-sm">
+            <button className="bg-muted text-foreground px-4 py-2 rounded-md text-sm border border-border hover:bg-muted/80 transition-colors">
               EN | عربي
             </button>
-            <span className="text-brand-gold text-sm">Updated: Just now</span>
+            <span className="text-brand-gold text-sm font-medium">Updated: Just now</span>
           </div>
         </header>
 
@@ -335,7 +335,7 @@ export default function DemandSummaryPage() {
         </CollapsibleSection>
 
         {/* AI Chat Button */}
-        <button className="fixed bottom-6 right-6 bg-brand-gold text-[#1a1a1a] px-6 py-3 rounded-full font-semibold flex items-center gap-2 shadow-[0_4px_20px_rgba(198,156,109,0.3)] hover:scale-105 transition-transform">
+        <button className="fixed bottom-6 right-6 bg-brand-gold text-brand-dark px-6 py-3 rounded-full font-semibold flex items-center gap-2 shadow-lg hover:bg-brand-gold-hover transition-all hover:scale-105">
           <Sparkles className="w-5 h-5" />
           Ask AI
         </button>
