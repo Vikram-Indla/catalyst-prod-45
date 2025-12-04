@@ -3,12 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Paperclip } from 'lucide-react';
+import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Paperclip, Filter, SlidersHorizontal } from 'lucide-react';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { RankUpdateNotification } from '@/components/business-requests/RankUpdateNotification';
-import { TableColumnHeader, SortDirection, FilterOption } from '@/components/business-requests/TableColumnHeader';
+import { IndustryFiltersPanel, FiltersState } from '@/components/business-requests/IndustryFiltersPanel';
+import { SimpleColumnHeader, SortDirection } from '@/components/business-requests/SimpleColumnHeader';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
@@ -17,7 +18,6 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery } from '@tanstack/react-query';
 
-// Default columns configuration
 const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'request_key', label: 'Request ID', visible: true, default: true },
   { id: 'rank', label: 'Rank', visible: true, default: true },
@@ -36,10 +36,6 @@ interface ColumnSort {
   direction: SortDirection;
 }
 
-interface ColumnFilters {
-  [columnId: string]: string[];
-}
-
 export default function IndustryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -49,7 +45,14 @@ export default function IndustryPage() {
   const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [columnSort, setColumnSort] = useState<ColumnSort>({ columnId: 'rank', direction: 'asc' });
-  const [columnFilters, setColumnFilters] = useState<ColumnFilters>({});
+  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(false);
+  const [filters, setFilters] = useState<FiltersState>({
+    deliveryPlatform: 'all',
+    processSteps: [],
+    quarters: [],
+    dateFrom: '',
+    dateTo: ''
+  });
   const [notification, setNotification] = useState<{
     show: boolean;
     oldRank: number;
@@ -61,7 +64,7 @@ export default function IndustryPage() {
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
   const updateRequest = useUpdateBusinessRequest();
 
-  // Fetch attachments counts for all business requests
+  // Fetch attachments counts
   const { data: attachmentCounts } = useQuery({
     queryKey: ['business-request-attachments'],
     queryFn: async () => {
@@ -86,51 +89,30 @@ export default function IndustryPage() {
 
   // Generate filter options from data
   const filterOptions = useMemo(() => {
-    if (!requests) return {};
+    if (!requests) return { deliveryPlatforms: [], quarters: [] };
     
-    const options: Record<string, FilterOption[]> = {};
-    
-    // Process Step options
-    const processStepCounts: Record<string, number> = {};
+    // Delivery Platform options
+    const platformCounts: Record<string, number> = {};
     requests.forEach((r: any) => {
-      const step = r.process_step || 'Unassigned';
-      processStepCounts[step] = (processStepCounts[step] || 0) + 1;
+      const platform = r.delivery_platform || 'Unassigned';
+      platformCounts[platform] = (platformCounts[platform] || 0) + 1;
     });
-    options['process_step'] = Object.entries(processStepCounts).map(([value, count]) => ({
-      value,
-      label: PROCESS_STEPS.find(s => s.value === value)?.label || value,
-      count
-    }));
+    const deliveryPlatforms = Object.entries(platformCounts)
+      .filter(([key]) => key !== 'Unassigned')
+      .map(([value, count]) => ({ value, label: value, count }));
 
-    // Planned Quarter options
+    // Quarter options
     const quarterCounts: Record<string, number> = {};
     requests.forEach((r: any) => {
       const q = r.planned_quarter || 'Unassigned';
       quarterCounts[q] = (quarterCounts[q] || 0) + 1;
     });
-    options['planned_quarter'] = Object.entries(quarterCounts).map(([value, count]) => ({
-      value,
-      label: value,
-      count
-    }));
+    const quarters = Object.entries(quarterCounts)
+      .filter(([key]) => key !== 'Unassigned')
+      .map(([value, count]) => ({ value, label: value, count }));
 
-    // Business Score ranges
-    options['business_score'] = [
-      { value: '90-100', label: 'MUST-DO NOW (90-100)', count: requests.filter((r: any) => r.business_score >= 90).length },
-      { value: '75-89', label: 'HIGH (75-89)', count: requests.filter((r: any) => r.business_score >= 75 && r.business_score < 90).length },
-      { value: '60-74', label: 'MEDIUM (60-74)', count: requests.filter((r: any) => r.business_score >= 60 && r.business_score < 75).length },
-      { value: '40-59', label: 'LOW (40-59)', count: requests.filter((r: any) => r.business_score >= 40 && r.business_score < 60).length },
-      { value: '0-39', label: 'BACKLOG (0-39)', count: requests.filter((r: any) => r.business_score < 40).length },
-    ];
-
-    // Attachments
-    options['attachments'] = [
-      { value: 'has', label: 'Has Attachments', count: requests.filter((r: any) => attachmentCounts?.[r.id]?.count > 0).length },
-      { value: 'none', label: 'No Attachments', count: requests.filter((r: any) => !attachmentCounts?.[r.id]?.count).length },
-    ];
-
-    return options;
-  }, [requests, attachmentCounts]);
+    return { deliveryPlatforms, quarters };
+  }, [requests]);
 
   // Apply sorting and filtering
   useEffect(() => {
@@ -141,31 +123,28 @@ export default function IndustryPage() {
 
     let filtered = [...requests];
 
-    // Apply filters
-    Object.entries(columnFilters).forEach(([columnId, values]) => {
-      if (values.length === 0) return;
+    // Apply side panel filters
+    if (filters.deliveryPlatform !== 'all') {
+      filtered = filtered.filter((r: any) => r.delivery_platform === filters.deliveryPlatform);
+    }
 
-      filtered = filtered.filter((req: any) => {
-        if (columnId === 'business_score') {
-          const score = req.business_score || 0;
-          return values.some(range => {
-            const [min, max] = range.split('-').map(Number);
-            return score >= min && score <= max;
-          });
-        }
-        if (columnId === 'attachments') {
-          const hasAtt = attachmentCounts?.[req.id]?.count > 0;
-          return values.some(v => (v === 'has' && hasAtt) || (v === 'none' && !hasAtt));
-        }
-        if (columnId === 'process_step') {
-          return values.includes(req.process_step || 'Unassigned');
-        }
-        if (columnId === 'planned_quarter') {
-          return values.includes(req.planned_quarter || 'Unassigned');
-        }
-        return true;
-      });
-    });
+    if (filters.processSteps.length > 0) {
+      filtered = filtered.filter((r: any) => filters.processSteps.includes(r.process_step));
+    }
+
+    if (filters.quarters.length > 0) {
+      filtered = filtered.filter((r: any) => filters.quarters.includes(r.planned_quarter));
+    }
+
+    if (filters.dateFrom) {
+      const fromDate = new Date(filters.dateFrom);
+      filtered = filtered.filter((r: any) => r.end_date && new Date(r.end_date) >= fromDate);
+    }
+
+    if (filters.dateTo) {
+      const toDate = new Date(filters.dateTo);
+      filtered = filtered.filter((r: any) => r.end_date && new Date(r.end_date) <= toDate);
+    }
 
     // Apply sorting
     const sorted = [...filtered].sort((a: any, b: any) => {
@@ -212,14 +191,13 @@ export default function IndustryPage() {
       return 0;
     });
 
-    // Assign sequential ranks
     const withRanks = sorted.map((req, idx) => ({
       ...req,
       rank: req.rank ?? idx + 1
     }));
 
     setSortedRequests(withRanks);
-  }, [requests, columnSort, columnFilters, attachmentCounts]);
+  }, [requests, columnSort, filters]);
 
   // Pagination calculations
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
@@ -234,14 +212,6 @@ export default function IndustryPage() {
         ? prev.direction === 'asc' ? 'desc' : prev.direction === 'desc' ? null : 'asc'
         : 'asc'
     }));
-  };
-
-  const handleFilter = (columnId: string, values: string[]) => {
-    setColumnFilters(prev => ({
-      ...prev,
-      [columnId]: values
-    }));
-    setCurrentPage(1);
   };
 
   const getStatusBadge = (status: string) => {
@@ -396,7 +366,12 @@ export default function IndustryPage() {
   }, []);
 
   // Count active filters
-  const activeFilterCount = Object.values(columnFilters).reduce((acc, vals) => acc + vals.length, 0);
+  const activeFilterCount = 
+    (filters.deliveryPlatform !== 'all' ? 1 : 0) +
+    filters.processSteps.length +
+    filters.quarters.length +
+    (filters.dateFrom ? 1 : 0) +
+    (filters.dateTo ? 1 : 0);
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -427,19 +402,23 @@ export default function IndustryPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          {activeFilterCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => setColumnFilters({})}
-              className="text-xs text-muted-foreground hover:text-foreground"
-            >
-              Clear {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''}
-            </Button>
-          )}
+          <Button 
+            variant={isFiltersPanelOpen ? "default" : "outline"} 
+            size="sm" 
+            onClick={() => setIsFiltersPanelOpen(!isFiltersPanelOpen)}
+            className={isFiltersPanelOpen ? "bg-brand-gold hover:bg-brand-gold-hover text-white" : "border-border"}
+          >
+            <SlidersHorizontal className="h-4 w-4 mr-2" />
+            Filters
+            {activeFilterCount > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-white/20 text-white">
+                {activeFilterCount}
+              </span>
+            )}
+          </Button>
 
           {totalPages > 1 && (
-            <div className="flex items-center gap-1 border-r pr-3 border-border">
+            <div className="flex items-center gap-1 border-l border-r px-3 border-border">
               <Button
                 variant="ghost"
                 size="sm"
@@ -480,251 +459,230 @@ export default function IndustryPage() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto p-4 sm:p-6 relative">
-        {isLoading ? (
-          <div className="text-center py-8 text-muted-foreground">Loading...</div>
-        ) : sortedRequests.length > 0 ? (
-          <Card className="overflow-hidden relative">
-            <RankUpdateNotification
-              show={notification.show}
-              oldRank={notification.oldRank}
-              newRank={notification.newRank}
-              score={notification.score}
-              onClose={closeNotification}
-            />
+      {/* Main Content with Side Panel */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Table Area */}
+        <div className="flex-1 overflow-auto p-4 sm:p-6 relative">
+          {isLoading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading...</div>
+          ) : sortedRequests.length > 0 ? (
+            <Card className="overflow-hidden relative">
+              <RankUpdateNotification
+                show={notification.show}
+                oldRank={notification.oldRank}
+                newRank={notification.newRank}
+                score={notification.score}
+                onClose={closeNotification}
+              />
 
-            {/* Column Headers with Sort & Filter */}
-            <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
-              <div className="w-5" />
-              <div className="w-5" />
-              {isColumnVisible('request_key') && (
-                <div className="w-24 shrink-0">
-                  <TableColumnHeader
-                    label="Request ID"
-                    columnId="request_key"
-                    sortDirection={columnSort.columnId === 'request_key' ? columnSort.direction : null}
-                    activeFilters={columnFilters['request_key'] || []}
-                    filterOptions={[]}
-                    filterable={false}
-                    onSort={handleSort}
-                    onFilter={handleFilter}
-                  />
-                </div>
-              )}
-              {isColumnVisible('rank') && (
-                <div className="w-12 shrink-0 text-center">
-                  <TableColumnHeader
-                    label="Rank"
-                    columnId="rank"
-                    sortDirection={columnSort.columnId === 'rank' ? columnSort.direction : null}
-                    activeFilters={[]}
-                    filterOptions={[]}
-                    filterable={false}
-                    onSort={handleSort}
-                    onFilter={handleFilter}
-                  />
-                </div>
-              )}
-              {isColumnVisible('title') && (
-                <div className="flex-1 min-w-0">
-                  <TableColumnHeader
-                    label="Summary"
-                    columnId="title"
-                    sortDirection={columnSort.columnId === 'title' ? columnSort.direction : null}
-                    activeFilters={[]}
-                    filterOptions={[]}
-                    filterable={false}
-                    onSort={handleSort}
-                    onFilter={handleFilter}
-                  />
-                </div>
-              )}
-              {isColumnVisible('process_step') && (
-                <div className="w-36 shrink-0">
-                  <TableColumnHeader
-                    label="Process Step"
-                    columnId="process_step"
-                    sortDirection={columnSort.columnId === 'process_step' ? columnSort.direction : null}
-                    activeFilters={columnFilters['process_step'] || []}
-                    filterOptions={filterOptions['process_step'] || []}
-                    onSort={handleSort}
-                    onFilter={handleFilter}
-                  />
-                </div>
-              )}
-              {isColumnVisible('business_score') && (
-                <div className="w-24 shrink-0 text-center">
-                  <TableColumnHeader
-                    label="Score"
-                    columnId="business_score"
-                    sortDirection={columnSort.columnId === 'business_score' ? columnSort.direction : null}
-                    activeFilters={columnFilters['business_score'] || []}
-                    filterOptions={filterOptions['business_score'] || []}
-                    onSort={handleSort}
-                    onFilter={handleFilter}
-                  />
-                </div>
-              )}
-              {isColumnVisible('planned_quarter') && (
-                <div className="w-20 shrink-0">
-                  <TableColumnHeader
-                    label="Quarter"
-                    columnId="planned_quarter"
-                    sortDirection={columnSort.columnId === 'planned_quarter' ? columnSort.direction : null}
-                    activeFilters={columnFilters['planned_quarter'] || []}
-                    filterOptions={filterOptions['planned_quarter'] || []}
-                    onSort={handleSort}
-                    onFilter={handleFilter}
-                  />
-                </div>
-              )}
-              {isColumnVisible('end_date') && (
-                <div className="w-24 shrink-0">
-                  <TableColumnHeader
-                    label="Target Date"
-                    columnId="end_date"
-                    sortDirection={columnSort.columnId === 'end_date' ? columnSort.direction : null}
-                    activeFilters={[]}
-                    filterOptions={[]}
-                    filterable={false}
-                    onSort={handleSort}
-                    onFilter={handleFilter}
-                  />
-                </div>
-              )}
-              {isColumnVisible('attachments') && (
-                <div className="w-24 shrink-0 text-center">
-                  <TableColumnHeader
-                    label="Files"
-                    columnId="attachments"
-                    sortable={false}
-                    sortDirection={null}
-                    activeFilters={columnFilters['attachments'] || []}
-                    filterOptions={filterOptions['attachments'] || []}
-                    onSort={handleSort}
-                    onFilter={handleFilter}
-                  />
-                </div>
-              )}
-            </div>
-
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="requests">
-                {(provided) => (
-                  <div 
-                    {...provided.droppableProps} 
-                    ref={provided.innerRef}
-                  >
-                    {paginatedRequests.map((request: any, index: number) => {
-                      const hasAttachments = attachmentCounts?.[request.id]?.count > 0;
-                      
-                      return (
-                        <Draggable key={request.id} draggableId={request.id} index={index}>
-                          {(provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors ${
-                                snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''
-                              } ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`}
-                              onClick={() => setSelectedRequestId(request.id)}
-                            >
-                              <div
-                                {...provided.dragHandleProps}
-                                className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <GripVertical className="h-4 w-4" />
-                              </div>
-                              
-                              <div onClick={(e) => e.stopPropagation()}>
-                                <Checkbox 
-                                  checked={selectedRows.includes(request.id)}
-                                  onCheckedChange={() => toggleRowSelection(request.id)}
-                                  className="h-4 w-4"
-                                />
-                              </div>
-
-                              {isColumnVisible('request_key') && (
-                                <div className="w-24 shrink-0">
-                                  <span className="text-sm text-brand-gold">{request.request_key || '-'}</span>
-                                </div>
-                              )}
-
-                              {isColumnVisible('rank') && (
-                                <div className="w-12 shrink-0 text-center">
-                                  <span className="text-sm text-foreground">{request.rank || startIndex + index + 1}</span>
-                                </div>
-                              )}
-
-                              {isColumnVisible('title') && (
-                                <div className="flex-1 min-w-0">
-                                  <span className="text-sm text-foreground truncate block">{request.title}</span>
-                                </div>
-                              )}
-
-                              {isColumnVisible('process_step') && (
-                                <div className="w-36 shrink-0">
-                                  {getStatusBadge(request.process_step)}
-                                </div>
-                              )}
-
-                              {isColumnVisible('business_score') && (
-                                <div className="w-24 shrink-0 text-center">
-                                  {getBusinessScoreBadge(request.business_score)}
-                                </div>
-                              )}
-
-                              {isColumnVisible('planned_quarter') && (
-                                <div className="w-20 shrink-0 text-sm text-muted-foreground">
-                                  {request.planned_quarter || '-'}
-                                </div>
-                              )}
-
-                              {isColumnVisible('end_date') && (
-                                <div className="w-24 shrink-0 text-sm text-muted-foreground">
-                                  {formatDate(request.end_date)}
-                                </div>
-                              )}
-
-                              {isColumnVisible('attachments') && (
-                                <div className="w-24 shrink-0 text-center">
-                                  {hasAttachments ? (
-                                    <button
-                                      onClick={(e) => handleDownloadAttachments(e, request.id)}
-                                      className="inline-flex items-center gap-1 text-sm text-brand-gold hover:text-brand-gold-hover hover:underline font-medium"
-                                    >
-                                      <Paperclip className="h-3.5 w-3.5" />
-                                      View
-                                    </button>
-                                  ) : (
-                                    <span className="text-muted-foreground text-xs">-</span>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </Draggable>
-                      );
-                    })}
-                    {provided.placeholder}
+              {/* Column Headers - Simple Sort Only */}
+              <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                <div className="w-5" />
+                <div className="w-5" />
+                {isColumnVisible('request_key') && (
+                  <div className="w-24 shrink-0">
+                    <SimpleColumnHeader
+                      label="Request ID"
+                      columnId="request_key"
+                      sortDirection={columnSort.columnId === 'request_key' ? columnSort.direction : null}
+                      onSort={handleSort}
+                    />
                   </div>
                 )}
-              </Droppable>
-            </DragDropContext>
-
-            {totalPages > 1 && (
-              <div className="px-4 py-2 bg-muted/30 border-t text-xs text-muted-foreground">
-                Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
+                {isColumnVisible('rank') && (
+                  <div className="w-12 shrink-0 text-center">
+                    <SimpleColumnHeader
+                      label="Rank"
+                      columnId="rank"
+                      sortDirection={columnSort.columnId === 'rank' ? columnSort.direction : null}
+                      onSort={handleSort}
+                    />
+                  </div>
+                )}
+                {isColumnVisible('title') && (
+                  <div className="flex-1 min-w-0">
+                    <SimpleColumnHeader
+                      label="Summary"
+                      columnId="title"
+                      sortDirection={columnSort.columnId === 'title' ? columnSort.direction : null}
+                      onSort={handleSort}
+                    />
+                  </div>
+                )}
+                {isColumnVisible('process_step') && (
+                  <div className="w-36 shrink-0">
+                    <SimpleColumnHeader
+                      label="Process Step"
+                      columnId="process_step"
+                      sortDirection={columnSort.columnId === 'process_step' ? columnSort.direction : null}
+                      onSort={handleSort}
+                    />
+                  </div>
+                )}
+                {isColumnVisible('business_score') && (
+                  <div className="w-24 shrink-0 text-center">
+                    <SimpleColumnHeader
+                      label="Score"
+                      columnId="business_score"
+                      sortDirection={columnSort.columnId === 'business_score' ? columnSort.direction : null}
+                      onSort={handleSort}
+                    />
+                  </div>
+                )}
+                {isColumnVisible('planned_quarter') && (
+                  <div className="w-20 shrink-0">
+                    <SimpleColumnHeader
+                      label="Quarter"
+                      columnId="planned_quarter"
+                      sortDirection={columnSort.columnId === 'planned_quarter' ? columnSort.direction : null}
+                      onSort={handleSort}
+                    />
+                  </div>
+                )}
+                {isColumnVisible('end_date') && (
+                  <div className="w-24 shrink-0">
+                    <SimpleColumnHeader
+                      label="Target Date"
+                      columnId="end_date"
+                      sortDirection={columnSort.columnId === 'end_date' ? columnSort.direction : null}
+                      onSort={handleSort}
+                    />
+                  </div>
+                )}
+                {isColumnVisible('attachments') && (
+                  <div className="w-24 shrink-0 text-center">
+                    <span>Files</span>
+                  </div>
+                )}
               </div>
-            )}
-          </Card>
-        ) : (
-          <div className="text-center py-8 text-muted-foreground">
-            {activeFilterCount > 0 ? 'No requests match the current filters' : 'No industry requests found'}
-          </div>
-        )}
+
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="requests">
+                  {(provided) => (
+                    <div 
+                      {...provided.droppableProps} 
+                      ref={provided.innerRef}
+                    >
+                      {paginatedRequests.map((request: any, index: number) => {
+                        const hasAttachments = attachmentCounts?.[request.id]?.count > 0;
+                        
+                        return (
+                          <Draggable key={request.id} draggableId={request.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors ${
+                                  snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''
+                                } ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`}
+                                onClick={() => setSelectedRequestId(request.id)}
+                              >
+                                <div
+                                  {...provided.dragHandleProps}
+                                  className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <GripVertical className="h-4 w-4" />
+                                </div>
+                                
+                                <div onClick={(e) => e.stopPropagation()}>
+                                  <Checkbox 
+                                    checked={selectedRows.includes(request.id)}
+                                    onCheckedChange={() => toggleRowSelection(request.id)}
+                                    className="h-4 w-4"
+                                  />
+                                </div>
+
+                                {isColumnVisible('request_key') && (
+                                  <div className="w-24 shrink-0">
+                                    <span className="text-sm text-brand-gold">{request.request_key || '-'}</span>
+                                  </div>
+                                )}
+
+                                {isColumnVisible('rank') && (
+                                  <div className="w-12 shrink-0 text-center">
+                                    <span className="text-sm text-foreground">{request.rank || startIndex + index + 1}</span>
+                                  </div>
+                                )}
+
+                                {isColumnVisible('title') && (
+                                  <div className="flex-1 min-w-0">
+                                    <span className="text-sm text-foreground truncate block">{request.title}</span>
+                                  </div>
+                                )}
+
+                                {isColumnVisible('process_step') && (
+                                  <div className="w-36 shrink-0">
+                                    {getStatusBadge(request.process_step)}
+                                  </div>
+                                )}
+
+                                {isColumnVisible('business_score') && (
+                                  <div className="w-24 shrink-0 text-center">
+                                    {getBusinessScoreBadge(request.business_score)}
+                                  </div>
+                                )}
+
+                                {isColumnVisible('planned_quarter') && (
+                                  <div className="w-20 shrink-0 text-sm text-muted-foreground">
+                                    {request.planned_quarter || '-'}
+                                  </div>
+                                )}
+
+                                {isColumnVisible('end_date') && (
+                                  <div className="w-24 shrink-0 text-sm text-muted-foreground">
+                                    {formatDate(request.end_date)}
+                                  </div>
+                                )}
+
+                                {isColumnVisible('attachments') && (
+                                  <div className="w-24 shrink-0 text-center">
+                                    {hasAttachments ? (
+                                      <button
+                                        onClick={(e) => handleDownloadAttachments(e, request.id)}
+                                        className="inline-flex items-center gap-1 text-sm text-brand-gold hover:text-brand-gold-hover hover:underline font-medium"
+                                      >
+                                        <Paperclip className="h-3.5 w-3.5" />
+                                        View
+                                      </button>
+                                    ) : (
+                                      <span className="text-muted-foreground text-xs">-</span>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </Draggable>
+                        );
+                      })}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+
+              {totalPages > 1 && (
+                <div className="px-4 py-2 bg-muted/30 border-t text-xs text-muted-foreground">
+                  Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
+                </div>
+              )}
+            </Card>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              {activeFilterCount > 0 ? 'No requests match the current filters' : 'No industry requests found'}
+            </div>
+          )}
+        </div>
+
+        {/* Filters Side Panel */}
+        <IndustryFiltersPanel
+          isOpen={isFiltersPanelOpen}
+          onClose={() => setIsFiltersPanelOpen(false)}
+          filters={filters}
+          onFiltersChange={setFilters}
+          deliveryPlatformOptions={filterOptions.deliveryPlatforms}
+          quarterOptions={filterOptions.quarters}
+        />
       </div>
 
       <CreateBusinessRequestModal 
