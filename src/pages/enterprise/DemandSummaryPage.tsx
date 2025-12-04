@@ -6,19 +6,31 @@ import { cn } from '@/lib/utils';
 const weeklyScores = [58, 61, 64, 67, 69, 82, 80, 74, 70, 68, 71, 72];
 const weekDates = ['07-SEP', '14-SEP', '21-SEP', '28-SEP', '05-OCT', '12-OCT', '19-OCT', '26-OCT', '02-NOV', '09-NOV', '16-NOV', '23-NOV'];
 
-const demandCards = [
+const demandCardsEn = [
   { label: 'Demand Volume', metric: '47', metricStyle: 'up', headline: 'new requests this month', detail: 'Throughput healthy at 18-day average cycle. Volume up 12% from last month.' },
   { label: 'Blocked Items', metric: '17', metricStyle: 'neutral', headline: 'tickets need action', detail: '10 awaiting business response. 7 on hold with blockers.' },
   { label: 'On-Hold Risk', metric: '8.9%', metricStyle: 'down', headline: 'on-hold rate', detail: 'Above 5% target. Clearing blockers could save ~5 days per ticket.' },
   { label: 'Month-End Targets', metric: '5', metricStyle: 'neutral', headline: 'due this month', detail: '3 on track. 2 need acceleration to meet committed dates.' }
 ];
 
-const quarterData = [
+const demandCardsAr = [
+  { label: 'حجم الطلب', metric: '47', metricStyle: 'up', headline: 'طلب جديد هذا الشهر', detail: 'الإنتاجية صحية بمعدل 18 يوم. زيادة 12% عن الشهر الماضي.' },
+  { label: 'العناصر المعلقة', metric: '17', metricStyle: 'neutral', headline: 'تذاكر تحتاج إجراء', detail: '10 في انتظار رد الأعمال. 7 معلقة بعوائق.' },
+  { label: 'مخاطر التعليق', metric: '8.9%', metricStyle: 'down', headline: 'معدل التعليق', detail: 'أعلى من هدف 5%. إزالة العوائق قد توفر ~5 أيام لكل تذكرة.' },
+  { label: 'أهداف نهاية الشهر', metric: '5', metricStyle: 'neutral', headline: 'مستحقة هذا الشهر', detail: '3 على المسار. 2 تحتاج تسريع للوفاء بالمواعيد.' }
+];
+
+const quarterDataEn = [
   { quarter: 'Q4 2024', title: 'Q4 2024 Delivery', total: 24, onTrack: 18, atRisk: 4, delayed: 2 },
   { quarter: 'Q1 2025', title: 'Q1 2025 Pipeline', total: 45, onTrack: 32, atRisk: 8, delayed: 5 }
 ];
 
-const dimensions = [
+const quarterDataAr = [
+  { quarter: 'Q4 2024', title: 'تسليم الربع الرابع 2024', total: 24, onTrack: 18, atRisk: 4, delayed: 2 },
+  { quarter: 'Q1 2025', title: 'خط أنابيب الربع الأول 2025', total: 45, onTrack: 32, atRisk: 8, delayed: 5 }
+];
+
+const dimensionsEn = [
   { key: 'Rank Execution', score: 78 },
   { key: 'Value Realization', score: 62 },
   { key: 'Ageing Health', score: 58 },
@@ -28,7 +40,17 @@ const dimensions = [
   { key: 'Conversion Rate', score: 68 }
 ];
 
-const statuses = [
+const dimensionsAr = [
+  { key: 'تنفيذ الترتيب', score: 78 },
+  { key: 'تحقيق القيمة', score: 62 },
+  { key: 'صحة التقادم', score: 58 },
+  { key: 'التحكم بالتعليق', score: 72 },
+  { key: 'كفاءة الموافقة', score: 85 },
+  { key: 'توازن خط الأنابيب', score: 76 },
+  { key: 'معدل التحويل', score: 68 }
+];
+
+const statusesEn = [
   { name: 'New Request', count: 11, color: 'bg-gray-500' },
   { name: 'Under Analysis', count: 17, color: 'bg-gray-400' },
   { name: 'In Progress', count: 31, color: 'bg-violet-500' },
@@ -39,7 +61,18 @@ const statuses = [
   { name: 'Rejected', count: 5, color: 'bg-destructive' }
 ];
 
-const deliveryData = [
+const statusesAr = [
+  { name: 'طلب جديد', count: 11, color: 'bg-gray-500' },
+  { name: 'قيد التحليل', count: 17, color: 'bg-gray-400' },
+  { name: 'قيد التنفيذ', count: 31, color: 'bg-violet-500' },
+  { name: 'في انتظار الرد', count: 10, color: 'bg-gray-500' },
+  { name: 'معلق', count: 7, color: 'bg-rose-400' },
+  { name: 'معتمد', count: 12, color: 'bg-brand-gold' },
+  { name: 'منفذ', count: 59, color: 'bg-success' },
+  { name: 'مرفوض', count: 5, color: 'bg-destructive' }
+];
+
+const deliveryDataEn = [
   { id: 'REQ-4401', title: 'Email Notification System', requester: 'Khalid Mansour', cycle: '21 days', value: 120, type: 'implemented' },
   { id: 'REQ-4389', title: 'Report Scheduler', requester: 'Maria Santos', cycle: '18 days', value: 95, type: 'implemented' },
   { id: 'REQ-4356', title: 'SSO for Partner Portal', requester: 'Ali Mahmoud', cycle: '25 days', value: 150, type: 'implemented' },
@@ -47,7 +80,15 @@ const deliveryData = [
   { id: 'REQ-4456', title: 'Security Monitoring Dashboard', requester: 'Nadia Rashid', cycle: '8 days', value: 85, type: 'approved' }
 ];
 
-const rejectionData = [
+const deliveryDataAr = [
+  { id: 'REQ-4401', title: 'نظام إشعارات البريد الإلكتروني', requester: 'خالد منصور', cycle: '21 يوم', value: 120, type: 'منفذ' },
+  { id: 'REQ-4389', title: 'جدولة التقارير', requester: 'ماريا سانتوس', cycle: '18 يوم', value: 95, type: 'منفذ' },
+  { id: 'REQ-4356', title: 'تسجيل دخول موحد لبوابة الشركاء', requester: 'علي محمود', cycle: '25 يوم', value: 150, type: 'منفذ' },
+  { id: 'REQ-4478', title: 'تكامل Salesforce', requester: 'عمر فاروق', cycle: '14 يوم', value: 110, type: 'معتمد' },
+  { id: 'REQ-4456', title: 'لوحة مراقبة الأمان', requester: 'نادية راشد', cycle: '8 أيام', value: 85, type: 'معتمد' }
+];
+
+const rejectionDataEn = [
   { id: 'REQ-4312', title: 'Custom Report Builder', requester: 'Ahmed Hassan', reason: 'Duplicate', date: 'Nov 28' },
   { id: 'REQ-4298', title: 'Legacy CRM Export', requester: 'Fatima Al-Rashid', reason: 'Duplicate', date: 'Nov 25' },
   { id: 'REQ-4287', title: 'Manual Inventory Sync', requester: 'Hassan Ibrahim', reason: 'Out of scope', date: 'Nov 22' },
@@ -55,26 +96,56 @@ const rejectionData = [
   { id: 'REQ-4251', title: 'Ad-hoc Notifications', requester: 'Yusuf Ahmed', reason: 'No justification', date: 'Nov 15' }
 ];
 
-const recoveryData = [
+const rejectionDataAr = [
+  { id: 'REQ-4312', title: 'منشئ التقارير المخصصة', requester: 'أحمد حسن', reason: 'مكرر', date: '28 نوفمبر' },
+  { id: 'REQ-4298', title: 'تصدير نظام CRM القديم', requester: 'فاطمة الراشد', reason: 'مكرر', date: '25 نوفمبر' },
+  { id: 'REQ-4287', title: 'مزامنة المخزون يدوياً', requester: 'حسن إبراهيم', reason: 'خارج النطاق', date: '22 نوفمبر' },
+  { id: 'REQ-4265', title: 'منشئ القوالب المخصصة', requester: 'ليلى محمد', reason: 'خارج النطاق', date: '18 نوفمبر' },
+  { id: 'REQ-4251', title: 'إشعارات فورية', requester: 'يوسف أحمد', reason: 'بدون تبرير', date: '15 نوفمبر' }
+];
+
+const recoveryDataEn = [
   { id: 'REQ-4521', rank: 1, title: 'Payment Gateway Integration', riskReason: 'This ticket has only 6 days until go-live and is still in progress. Critical delivery risk.', action: 'Start daily standups with the team. Pre-book UAT slots and ensure all dependencies are cleared immediately.' },
   { id: 'REQ-4489', rank: 2, title: 'Dashboard Performance', riskReason: 'This ticket is blocked waiting for business response for 5 days. Stakeholder delay.', action: 'Send a final reminder today. If no response by end of day, escalate directly to the project sponsor.' },
   { id: 'REQ-3421', rank: 12, title: 'Legacy System Integration', riskReason: 'This ticket has been aging for 67 days and is blocked on vendor API availability.', action: 'Get management involved to unblock the vendor dependency. Schedule a call with the vendor within 48 hours.' }
 ];
 
-const trendingTickets = [
+const recoveryDataAr = [
+  { id: 'REQ-4521', rank: 1, title: 'تكامل بوابة الدفع', riskReason: 'هذه التذكرة لديها 6 أيام فقط حتى الإطلاق ولا تزال قيد التنفيذ. مخاطر تسليم حرجة.', action: 'ابدأ اجتماعات يومية مع الفريق. احجز مسبقاً فترات اختبار القبول وتأكد من إزالة جميع التبعيات فوراً.' },
+  { id: 'REQ-4489', rank: 2, title: 'أداء لوحة التحكم', riskReason: 'هذه التذكرة معلقة في انتظار رد الأعمال منذ 5 أيام. تأخير من أصحاب المصلحة.', action: 'أرسل تذكيراً نهائياً اليوم. إذا لم يكن هناك رد بنهاية اليوم، صعّد مباشرة إلى راعي المشروع.' },
+  { id: 'REQ-3421', rank: 12, title: 'تكامل النظام القديم', riskReason: 'هذه التذكرة قيد الانتظار منذ 67 يوماً ومعلقة على توفر واجهة برمجة المورد.', action: 'أشرك الإدارة لإزالة عائق المورد. حدد موعداً للاتصال بالمورد خلال 48 ساعة.' }
+];
+
+const trendingTicketsEn = [
   { id: 'REQ-4521', rank: 1, title: 'Payment Gateway Integration', dept: 'Operations', ageing: 14, status: 'In Progress', goLive: 6 },
   { id: 'REQ-4489', rank: 2, title: 'Dashboard Performance', dept: 'IT', ageing: 18, status: 'Awaiting Response', goLive: 11 },
   { id: 'REQ-4534', rank: 3, title: 'Mobile SSO Implementation', dept: 'Security', ageing: 8, status: 'Under Analysis', goLive: 16 }
 ];
 
-const attentionTickets = [
+const trendingTicketsAr = [
+  { id: 'REQ-4521', rank: 1, title: 'تكامل بوابة الدفع', dept: 'العمليات', ageing: 14, status: 'قيد التنفيذ', goLive: 6 },
+  { id: 'REQ-4489', rank: 2, title: 'أداء لوحة التحكم', dept: 'تقنية المعلومات', ageing: 18, status: 'في انتظار الرد', goLive: 11 },
+  { id: 'REQ-4534', rank: 3, title: 'تنفيذ تسجيل الدخول الموحد للجوال', dept: 'الأمن', ageing: 8, status: 'قيد التحليل', goLive: 16 }
+];
+
+const attentionTicketsEn = [
   { id: 'REQ-3421', rank: 12, title: 'Legacy System Integration', dept: 'Infrastructure', ageing: 67, status: 'On Hold' },
   { id: 'REQ-3512', rank: 18, title: 'Vendor Portal Access', dept: 'Procurement', ageing: 52, status: 'Awaiting Response' }
 ];
 
-const approvedTickets = [
+const attentionTicketsAr = [
+  { id: 'REQ-3421', rank: 12, title: 'تكامل النظام القديم', dept: 'البنية التحتية', ageing: 67, status: 'معلق' },
+  { id: 'REQ-3512', rank: 18, title: 'الوصول لبوابة الموردين', dept: 'المشتريات', ageing: 52, status: 'في انتظار الرد' }
+];
+
+const approvedTicketsEn = [
   { id: 'REQ-4478', rank: 4, title: 'Salesforce Integration', dept: 'Sales', ageing: 14, status: 'Approved' },
   { id: 'REQ-4456', rank: 6, title: 'Security Monitoring Dashboard', dept: 'Security', ageing: 8, status: 'Approved' }
+];
+
+const approvedTicketsAr = [
+  { id: 'REQ-4478', rank: 4, title: 'تكامل Salesforce', dept: 'المبيعات', ageing: 14, status: 'معتمد' },
+  { id: 'REQ-4456', rank: 6, title: 'لوحة مراقبة الأمان', dept: 'الأمن', ageing: 8, status: 'معتمد' }
 ];
 
 const backlogData = [
@@ -237,6 +308,19 @@ export default function DemandSummaryPage() {
   const [isArabic, setIsArabic] = useState(false);
 
   const t = isArabic ? translations.ar : translations.en;
+  
+  // Language-specific data
+  const demandCards = isArabic ? demandCardsAr : demandCardsEn;
+  const quarterData = isArabic ? quarterDataAr : quarterDataEn;
+  const dimensions = isArabic ? dimensionsAr : dimensionsEn;
+  const statuses = isArabic ? statusesAr : statusesEn;
+  const deliveryData = isArabic ? deliveryDataAr : deliveryDataEn;
+  const rejectionData = isArabic ? rejectionDataAr : rejectionDataEn;
+  const recoveryData = isArabic ? recoveryDataAr : recoveryDataEn;
+  const trendingTickets = isArabic ? trendingTicketsAr : trendingTicketsEn;
+  const attentionTickets = isArabic ? attentionTicketsAr : attentionTicketsEn;
+  const approvedTickets = isArabic ? approvedTicketsAr : approvedTicketsEn;
+  const userName = isArabic ? 'خالد' : 'Khalid';
 
   const currentScore = weeklyScores[weeklyScores.length - 1];
   const prevScore = weeklyScores[weeklyScores.length - 2];
@@ -254,7 +338,7 @@ export default function DemandSummaryPage() {
         <div className="max-w-[1400px] mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-4">
           <div>
             <p className="text-xs text-brand-gold font-medium">{isArabic ? 'Good Morning' : 'صباح الخير'}</p>
-            <h1 className="text-lg sm:text-[22px] font-bold text-foreground">{t.greeting}, <span className="text-brand-gold">خالد</span></h1>
+            <h1 className="text-lg sm:text-[22px] font-bold text-foreground">{t.greeting}, <span className="text-brand-gold">{userName}</span></h1>
           </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button 
@@ -450,34 +534,34 @@ export default function DemandSummaryPage() {
           icon={Trophy}
           collapsedContent={
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 bg-success/20 text-success text-[10px] font-medium rounded">3 implemented</span>
-              <span className="px-2 py-0.5 bg-brand-gold/20 text-brand-gold text-[10px] font-medium rounded">2 approved</span>
+              <span className="px-2 py-0.5 bg-success/20 text-success text-[10px] font-medium rounded">{isArabic ? '3 منفذ' : '3 implemented'}</span>
+              <span className="px-2 py-0.5 bg-brand-gold/20 text-brand-gold text-[10px] font-medium rounded">{isArabic ? '2 معتمد' : '2 approved'}</span>
             </div>
           }
           expandedContent={
             <div className="pt-4 overflow-x-auto">
-              <table className="w-full text-xs sm:text-sm">
+              <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Status</th>
-                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">ID</th>
-                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Summary</th>
-                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Requested By</th>
-                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Value</th>
-                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Cycle</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'الحالة' : 'Status'}</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'المعرف' : 'ID'}</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'الملخص' : 'Summary'}</th>
+                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'مقدم الطلب' : 'Requested By'}</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'القيمة' : 'Value'}</th>
+                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'الدورة' : 'Cycle'}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {deliveryData.map((d, i) => (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5">
                       <td className="py-2 px-1.5 sm:px-2">
-                        <span className={cn('px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-medium', d.type === 'implemented' ? 'bg-success/20 text-success' : 'bg-brand-gold/20 text-brand-gold')}>{d.type}</span>
+                        <span className={cn('px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[10px] font-medium', (d.type === 'implemented' || d.type === 'منفذ') ? 'bg-success/20 text-success' : 'bg-brand-gold/20 text-brand-gold')}>{d.type}</span>
                       </td>
-                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] sm:text-xs text-brand-gold">{d.id}</td>
-                      <td className="py-2 px-1.5 sm:px-2 text-white text-xs sm:text-sm">{d.title}</td>
-                      <td className="hidden sm:table-cell py-2 px-2 text-white/60">{d.requester}</td>
-                      <td className="py-2 px-1.5 sm:px-2 font-mono text-white text-xs sm:text-sm">{d.value}</td>
-                      <td className="hidden sm:table-cell py-2 px-2 text-white/60">{d.cycle}</td>
+                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] text-brand-gold">{d.id}</td>
+                      <td className="py-2 px-1.5 sm:px-2 text-white text-xs">{d.title}</td>
+                      <td className="hidden sm:table-cell py-2 px-2 text-white/60 text-xs">{d.requester}</td>
+                      <td className="py-2 px-1.5 sm:px-2 font-mono text-white text-xs">{d.value}</td>
+                      <td className="hidden sm:table-cell py-2 px-2 text-white/60 text-xs">{d.cycle}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -493,30 +577,30 @@ export default function DemandSummaryPage() {
           icon={XCircle}
           collapsedContent={
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 bg-destructive/20 text-destructive text-[10px] font-medium rounded">5 rejected</span>
-              <span className="text-white/60 text-[10px] sm:text-xs">8.5% rate</span>
+              <span className="px-2 py-0.5 bg-destructive/20 text-destructive text-[10px] font-medium rounded">{isArabic ? '5 مرفوض' : '5 rejected'}</span>
+              <span className="text-white/60 text-[10px]">{isArabic ? 'معدل 8.5%' : '8.5% rate'}</span>
             </div>
           }
           expandedContent={
             <div className="pt-4 overflow-x-auto">
-              <table className="w-full text-xs sm:text-sm">
+              <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">ID</th>
-                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Title</th>
-                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Requester</th>
-                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">Reason</th>
-                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">Date</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'المعرف' : 'ID'}</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'العنوان' : 'Title'}</th>
+                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'مقدم الطلب' : 'Requester'}</th>
+                    <th className="text-start py-2 px-1.5 sm:px-2 text-[9px] sm:text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'السبب' : 'Reason'}</th>
+                    <th className="hidden sm:table-cell text-start py-2 px-2 text-[10px] font-semibold text-white/50 uppercase">{isArabic ? 'التاريخ' : 'Date'}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rejectionData.map((r, i) => (
                     <tr key={i} className="border-b border-white/5 hover:bg-white/5">
-                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] sm:text-xs text-brand-gold">{r.id}</td>
-                      <td className="py-2 px-1.5 sm:px-2 text-white text-xs sm:text-sm">{r.title}</td>
-                      <td className="hidden sm:table-cell py-2 px-2 text-white/60">{r.requester}</td>
+                      <td className="py-2 px-1.5 sm:px-2 font-mono text-[10px] text-brand-gold">{r.id}</td>
+                      <td className="py-2 px-1.5 sm:px-2 text-white text-xs">{r.title}</td>
+                      <td className="hidden sm:table-cell py-2 px-2 text-white/60 text-xs">{r.requester}</td>
                       <td className="py-2 px-1.5 sm:px-2"><span className="px-1.5 sm:px-2 py-0.5 bg-destructive/20 text-destructive rounded text-[9px] sm:text-[10px] font-medium">{r.reason}</span></td>
-                      <td className="hidden sm:table-cell py-2 px-2 text-white/60">{r.date}</td>
+                      <td className="hidden sm:table-cell py-2 px-2 text-white/60 text-xs">{r.date}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -537,21 +621,21 @@ export default function DemandSummaryPage() {
             <div className="pt-4 space-y-2">
               {recoveryData.map((r) => (
                 <div key={r.id} className="border border-white/10 rounded-lg overflow-hidden">
-                  <button onClick={() => setExpandedRecovery(expandedRecovery === r.id ? null : r.id)} className="w-full flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-white/5 text-start">
-                    <span className="px-2 py-0.5 bg-destructive/20 text-destructive text-[10px] font-bold rounded">#{r.rank}</span>
-                    <span className="font-mono text-[10px] sm:text-xs text-brand-gold">{r.id}</span>
-                    <span className="font-medium text-white flex-1 text-xs sm:text-sm">{r.title}</span>
+                  <button onClick={() => setExpandedRecovery(expandedRecovery === r.id ? null : r.id)} className="w-full flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-white/5 text-start">
+                    <span className="px-1.5 py-0.5 bg-destructive/20 text-destructive text-[10px] font-bold rounded">#{r.rank}</span>
+                    <span className="font-mono text-[10px] text-brand-gold">{r.id}</span>
+                    <span className="font-medium text-white flex-1 text-xs">{r.title}</span>
                     <ChevronDown className={cn('w-4 h-4 text-white/50 transition-transform', expandedRecovery === r.id && 'rotate-180')} />
                   </button>
                   {expandedRecovery === r.id && (
                     <div className="px-3 sm:px-4 pb-3 sm:pb-4 bg-white/5 border-t border-white/10">
                       <div className="mb-3 pt-3">
-                        <div className="text-[10px] font-semibold text-white/50 uppercase mb-1">Risk Reason</div>
-                        <p className="text-xs sm:text-sm text-white/70">{r.riskReason}</p>
+                        <div className="text-[10px] font-semibold text-white/50 uppercase mb-1">{isArabic ? 'سبب المخاطرة' : 'Risk Reason'}</div>
+                        <p className="text-xs text-white/70">{r.riskReason}</p>
                       </div>
                       <div className="bg-brand-gold/10 rounded-lg p-2.5 sm:p-3 border-s-4 border-brand-gold">
-                        <div className="text-[10px] font-semibold text-brand-gold uppercase mb-1">Recommended Action</div>
-                        <p className="text-xs sm:text-sm text-white">{r.action}</p>
+                        <div className="text-[10px] font-semibold text-brand-gold uppercase mb-1">{isArabic ? 'الإجراء الموصى به' : 'Recommended Action'}</div>
+                        <p className="text-xs text-white">{r.action}</p>
                       </div>
                     </div>
                   )}
@@ -573,18 +657,18 @@ export default function DemandSummaryPage() {
             <div className="pt-4 space-y-2">
               {trendingTickets.map((ticket) => (
                 <div key={ticket.id} className="border border-white/10 rounded-lg overflow-hidden">
-                  <button onClick={() => setExpandedTrending(expandedTrending === ticket.id ? null : ticket.id)} className="w-full flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 hover:bg-white/5 text-start">
-                    <span className="px-2 py-0.5 bg-brand-gold/20 text-brand-gold text-[10px] font-bold rounded">#{ticket.rank}</span>
-                    <span className="font-mono text-[10px] sm:text-xs text-brand-gold">{ticket.id}</span>
-                    <span className="font-medium text-white flex-1 text-xs sm:text-sm">{ticket.title}</span>
+                  <button onClick={() => setExpandedTrending(expandedTrending === ticket.id ? null : ticket.id)} className="w-full flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-white/5 text-start">
+                    <span className="px-1.5 py-0.5 bg-brand-gold/20 text-brand-gold text-[10px] font-bold rounded">#{ticket.rank}</span>
+                    <span className="font-mono text-[10px] text-brand-gold">{ticket.id}</span>
+                    <span className="font-medium text-white flex-1 text-xs">{ticket.title}</span>
                     <ChevronDown className={cn('w-4 h-4 text-white/50 transition-transform', expandedTrending === ticket.id && 'rotate-180')} />
                   </button>
                   {expandedTrending === ticket.id && (
                     <div className="px-3 sm:px-4 pb-3 sm:pb-4 bg-white/5 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 pt-3">
-                      <div><div className="text-[9px] sm:text-[10px] text-white/50">Department</div><div className="text-xs sm:text-sm font-medium text-white">{ticket.dept}</div></div>
-                      <div><div className="text-[9px] sm:text-[10px] text-white/50">Ageing</div><div className="text-xs sm:text-sm font-medium text-white">{ticket.ageing} days</div></div>
-                      <div><div className="text-[9px] sm:text-[10px] text-white/50">Go-Live</div><div className="text-xs sm:text-sm font-medium text-destructive">{ticket.goLive} days</div></div>
-                      <div><div className="text-[9px] sm:text-[10px] text-white/50">Status</div><div className="text-xs sm:text-sm font-medium text-white">{ticket.status}</div></div>
+                      <div><div className="text-[9px] sm:text-[10px] text-white/50">{isArabic ? 'القسم' : 'Department'}</div><div className="text-xs font-medium text-white">{ticket.dept}</div></div>
+                      <div><div className="text-[9px] sm:text-[10px] text-white/50">{isArabic ? 'التقادم' : 'Ageing'}</div><div className="text-xs font-medium text-white">{ticket.ageing} {isArabic ? 'يوم' : 'days'}</div></div>
+                      <div><div className="text-[9px] sm:text-[10px] text-white/50">{isArabic ? 'الإطلاق' : 'Go-Live'}</div><div className="text-xs font-medium text-destructive">{ticket.goLive} {isArabic ? 'يوم' : 'days'}</div></div>
+                      <div><div className="text-[9px] sm:text-[10px] text-white/50">{isArabic ? 'الحالة' : 'Status'}</div><div className="text-xs font-medium text-white">{ticket.status}</div></div>
                     </div>
                   )}
                 </div>
@@ -604,12 +688,12 @@ export default function DemandSummaryPage() {
           expandedContent={
             <div className="pt-4 space-y-2">
               {attentionTickets.map((ticket) => (
-                <div key={ticket.id} className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-destructive/10 rounded-lg border border-destructive/20">
-                  <span className="px-2 py-0.5 bg-white/10 text-destructive text-[10px] font-bold rounded">#{ticket.rank}</span>
-                  <span className="font-mono text-[10px] sm:text-xs text-brand-gold">{ticket.id}</span>
-                  <span className="font-medium text-white flex-1 text-xs sm:text-sm">{ticket.title}</span>
-                  <span className="text-[10px] sm:text-xs text-white/60">{ticket.dept}</span>
-                  <span className="text-[10px] sm:text-xs font-bold text-destructive">{ticket.ageing} days</span>
+                <div key={ticket.id} className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 bg-destructive/10 rounded-lg border border-destructive/20">
+                  <span className="px-1.5 py-0.5 bg-white/10 text-destructive text-[10px] font-bold rounded">#{ticket.rank}</span>
+                  <span className="font-mono text-[10px] text-brand-gold">{ticket.id}</span>
+                  <span className="font-medium text-white flex-1 text-xs">{ticket.title}</span>
+                  <span className="text-[10px] text-white/60">{ticket.dept}</span>
+                  <span className="text-[10px] font-bold text-destructive">{ticket.ageing} {isArabic ? 'يوم' : 'days'}</span>
                 </div>
               ))}
             </div>
@@ -622,17 +706,17 @@ export default function DemandSummaryPage() {
           subtitle={t.readyForImplementation}
           icon={CheckCircle}
           collapsedContent={
-            <span className="px-2 py-0.5 bg-success/20 text-success text-[10px] font-medium rounded">2 ready</span>
+            <span className="px-2 py-0.5 bg-success/20 text-success text-[10px] font-medium rounded">2 {isArabic ? 'جاهز' : 'ready'}</span>
           }
           expandedContent={
             <div className="pt-4 space-y-2">
               {approvedTickets.map((ticket) => (
-                <div key={ticket.id} className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 bg-success/10 rounded-lg border border-success/20">
-                  <span className="px-2 py-0.5 bg-white/10 text-success text-[10px] font-bold rounded">#{ticket.rank}</span>
-                  <span className="font-mono text-xs text-brand-gold">{ticket.id}</span>
-                  <span className="font-medium text-white flex-1 text-sm">{ticket.title}</span>
-                  <span className="text-xs text-white/60">{ticket.dept}</span>
-                  <span className="text-xs font-bold text-success">{ticket.ageing} days</span>
+                <div key={ticket.id} className="flex flex-wrap items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 sm:py-2.5 bg-success/10 rounded-lg border border-success/20">
+                  <span className="px-1.5 py-0.5 bg-white/10 text-success text-[10px] font-bold rounded">#{ticket.rank}</span>
+                  <span className="font-mono text-[10px] text-brand-gold">{ticket.id}</span>
+                  <span className="font-medium text-white flex-1 text-xs">{ticket.title}</span>
+                  <span className="text-[10px] text-white/60">{ticket.dept}</span>
+                  <span className="text-[10px] font-bold text-success">{ticket.ageing} {isArabic ? 'يوم' : 'days'}</span>
                 </div>
               ))}
             </div>
@@ -655,8 +739,8 @@ export default function DemandSummaryPage() {
               <div className="flex items-center gap-4 mb-4">
                 <div className="text-3xl sm:text-4xl font-bold text-white">139</div>
                 <div>
-                  <div className="text-sm font-medium text-destructive">+56% over 6 weeks</div>
-                  <div className="text-xs text-white/50">From 89 → 139</div>
+                  <div className="text-xs font-medium text-destructive">{isArabic ? '+56% خلال 6 أسابيع' : '+56% over 6 weeks'}</div>
+                  <div className="text-[10px] text-white/50">{isArabic ? 'من 89 ← 139' : 'From 89 → 139'}</div>
                 </div>
               </div>
               <div className="flex items-end gap-1 sm:gap-2 h-24 sm:h-32">
@@ -666,8 +750,8 @@ export default function DemandSummaryPage() {
                   return (
                     <div key={i} className="flex-1 flex flex-col items-center">
                       <div className="w-full bg-brand-gold rounded-t" style={{ height: `${height}%` }} />
-                      <div className="text-[9px] sm:text-[10px] text-white/50 mt-1">{b.week}</div>
-                      <div className="text-[10px] sm:text-xs font-medium text-white">{b.value}</div>
+                      <div className="text-[9px] sm:text-[10px] text-white/50 mt-1">{isArabic ? `أ${i + 1}` : b.week}</div>
+                      <div className="text-[10px] font-medium text-white">{b.value}</div>
                     </div>
                   );
                 })}
