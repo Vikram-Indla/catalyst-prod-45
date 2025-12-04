@@ -183,7 +183,7 @@ export default function DemandSummaryPage() {
       </header>
 
       <main className="max-w-[1400px] mx-auto px-6 py-6 space-y-4">
-        {/* Business Demand Summary - TOP */}
+        {/* Business Demand Summary - TOP (includes Status Overview) */}
         <SleekGadget
           title="Business Demand Summary"
           subtitle="Monthly Overview"
@@ -192,25 +192,51 @@ export default function DemandSummaryPage() {
           collapsedContent={
             <div className="flex items-center gap-3">
               <span className="px-2.5 py-1 bg-amber-500/20 text-amber-400 text-[10px] font-semibold rounded">CPI 72</span>
-              <span className="text-white/60 text-xs">47 requests</span>
+              <span className="text-white/60 text-xs">47 requests • 152 tickets</span>
             </div>
           }
           expandedContent={
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
-              {demandCards.map((card, i) => (
-                <div key={i} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-[10px] font-semibold text-brand-gold uppercase tracking-wider">{card.label}</span>
-                    <span className="text-brand-gold text-xs cursor-pointer hover:text-brand-gold-hover">→</span>
+            <>
+              {/* Demand Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
+                {demandCards.map((card, i) => (
+                  <div key={i} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <div className="flex justify-between items-start mb-2">
+                      <span className="text-[10px] font-semibold text-brand-gold uppercase tracking-wider">{card.label}</span>
+                      <span className="text-brand-gold text-xs cursor-pointer hover:text-brand-gold-hover">→</span>
+                    </div>
+                    <div className="text-white mb-1">
+                      <span className={cn('font-mono text-xl font-bold', card.metricStyle === 'up' && 'text-success', card.metricStyle === 'down' && 'text-destructive')}>{card.metric}</span>
+                      <span className="text-sm ml-1">{card.headline}</span>
+                    </div>
+                    <p className="text-[11px] text-white/50">{card.detail}</p>
                   </div>
-                  <div className="text-white mb-1">
-                    <span className={cn('font-mono text-xl font-bold', card.metricStyle === 'up' && 'text-success', card.metricStyle === 'down' && 'text-destructive')}>{card.metric}</span>
-                    <span className="text-sm ml-1">{card.headline}</span>
-                  </div>
-                  <p className="text-[11px] text-white/50">{card.detail}</p>
+                ))}
+              </div>
+              
+              {/* Status Overview */}
+              <div className="border-t border-white/10 pt-4 mt-4">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-white/70 uppercase tracking-wider">Status Overview</span>
+                  <span className="text-white/50 text-xs">152 tickets</span>
                 </div>
-              ))}
-            </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {statuses.map((s, i) => (
+                    <div key={i} className={cn('bg-white/5 rounded-lg p-2.5 border-l-4 border border-white/10', 
+                      s.color === 'bg-gray-500' ? 'border-l-gray-500' : 
+                      s.color === 'bg-gray-400' ? 'border-l-gray-400' : 
+                      s.color === 'bg-violet-500' ? 'border-l-violet-500' : 
+                      s.color === 'bg-rose-400' ? 'border-l-rose-400' : 
+                      s.color === 'bg-brand-gold' ? 'border-l-brand-gold' : 
+                      s.color === 'bg-success' ? 'border-l-success' : 'border-l-destructive'
+                    )}>
+                      <div className="text-lg font-bold text-white">{s.count}</div>
+                      <div className="text-[10px] text-white/50">{s.name}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
           }
         />
 
@@ -325,39 +351,6 @@ export default function DemandSummaryPage() {
           }
         />
 
-        {/* Status Overview */}
-        <SleekGadget
-          title="Status Overview"
-          subtitle="All Tickets"
-          icon={Tag}
-          collapsedContent={
-            <div className="flex items-center gap-3">
-              <span className="text-white/60 text-xs">152 tickets</span>
-              <div className="hidden sm:flex items-center gap-1">
-                {statuses.slice(0, 4).map((s, i) => (
-                  <div key={i} className={cn('w-2 h-2 rounded-full', s.color)} />
-                ))}
-              </div>
-            </div>
-          }
-          expandedContent={
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
-              {statuses.map((s, i) => (
-                <div key={i} className={cn('bg-white/5 rounded-lg p-3 border-l-4 border border-white/10', 
-                  s.color === 'bg-gray-500' ? 'border-l-gray-500' : 
-                  s.color === 'bg-gray-400' ? 'border-l-gray-400' : 
-                  s.color === 'bg-violet-500' ? 'border-l-violet-500' : 
-                  s.color === 'bg-rose-400' ? 'border-l-rose-400' : 
-                  s.color === 'bg-brand-gold' ? 'border-l-brand-gold' : 
-                  s.color === 'bg-success' ? 'border-l-success' : 'border-l-destructive'
-                )}>
-                  <div className="text-2xl font-bold text-white">{s.count}</div>
-                  <div className="text-xs text-white/50">{s.name}</div>
-                </div>
-              ))}
-            </div>
-          }
-        />
 
         {/* Delivery Milestones */}
         <SleekGadget
