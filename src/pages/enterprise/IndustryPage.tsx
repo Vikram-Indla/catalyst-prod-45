@@ -518,14 +518,16 @@ export default function IndustryPage() {
                                 )}
 
                                 {isColumnVisible('rank') && (
-                                  <div className="w-12 shrink-0 text-center relative">
-                                    {(request.rank || startIndex + index + 1) <= 10 && (
-                                      <Star 
-                                        className="absolute -top-1 -right-1 h-3 w-3 text-rose-400/80 fill-rose-400/60" 
-                                        strokeWidth={1.5}
-                                      />
-                                    )}
-                                    <span className="text-sm text-foreground">{request.rank || startIndex + index + 1}</span>
+                                  <div className="w-12 shrink-0 text-center">
+                                    <span className="text-sm text-foreground inline-flex items-start gap-0.5">
+                                      {(request.rank || startIndex + index + 1) <= 10 && (
+                                        <Star 
+                                          className="h-2 w-2 text-red-400 fill-red-400 -mt-0.5" 
+                                          strokeWidth={1}
+                                        />
+                                      )}
+                                      {request.rank || startIndex + index + 1}
+                                    </span>
                                   </div>
                                 )}
 
