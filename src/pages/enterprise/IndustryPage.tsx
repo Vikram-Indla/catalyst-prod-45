@@ -1,17 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Paperclip } from 'lucide-react';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
+import { RankUpdateNotification } from '@/components/business-requests/RankUpdateNotification';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 // Default columns configuration per screenshot
 const DEFAULT_COLUMNS: ColumnConfig[] = [
@@ -22,6 +25,7 @@ const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'business_score', label: 'Business Score', visible: true, default: true },
   { id: 'planned_quarter', label: 'Planned Quarter', visible: true, default: true },
   { id: 'end_date', label: 'Target Completion', visible: true, default: true },
+  { id: 'attachments', label: 'Attachments', visible: true, default: true },
 ];
 
 const ITEMS_PER_PAGE = 20;
@@ -34,10 +38,40 @@ export default function IndustryPage() {
   const [columns, setColumns] = useState<ColumnConfig[]>(DEFAULT_COLUMNS);
   const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [notification, setNotification] = useState<{
+    show: boolean;
+    oldRank: number;
+    newRank: number;
+    score: number | null;
+  }>({ show: false, oldRank: 0, newRank: 0, score: null });
   const { toast } = useToast();
 
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
   const updateRequest = useUpdateBusinessRequest();
+
+  // Fetch attachments counts for all business requests
+  const { data: attachmentCounts } = useQuery({
+    queryKey: ['business-request-attachments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('attachments')
+        .select('entity_id, file_name, file_path')
+        .eq('entity_type', 'business_request');
+      
+      if (error) throw error;
+      
+      // Group by entity_id
+      const counts: Record<string, { count: number; files: { name: string; path: string }[] }> = {};
+      data?.forEach(att => {
+        if (!counts[att.entity_id]) {
+          counts[att.entity_id] = { count: 0, files: [] };
+        }
+        counts[att.entity_id].count++;
+        counts[att.entity_id].files.push({ name: att.file_name, path: att.file_path });
+      });
+      return counts;
+    }
+  });
 
   // Sort requests by rank or business_score
   useEffect(() => {
@@ -149,31 +183,36 @@ export default function IndustryPage() {
 
     setSortedRequests(updatedRequests);
 
-    // Update all affected items in database
+    // Collect all affected items
     const affectedItems = updatedRequests.filter((req, idx) => {
       const original = sortedRequests.find(r => r.id === req.id);
       return original?.rank !== idx + 1;
     });
 
-    // Batch update ranks in database
-    for (const item of affectedItems) {
-      await updateRequest.mutateAsync({
-        id: item.id,
-        data: { rank: item.rank }
-      });
-    }
+    // Batch update - use Promise.all to avoid multiple re-renders
+    try {
+      await Promise.all(
+        affectedItems.map(item =>
+          supabase
+            .from('business_requests')
+            .update({ rank: item.rank })
+            .eq('id', item.id)
+        )
+      );
 
-    // Only show warning if moving to a BETTER position than business score deserves
-    // (newRank < deservedRank means moving UP to a better position than deserved)
-    const isMovingAboveDeserved = newRank < deservedRank;
-    
-    if (isMovingAboveDeserved) {
-      toast({
-        title: '⚠️ Rank Override Warning',
-        description: `Rank updated from ${oldRank} to ${newRank}. Business Score: ${businessScore ?? 'N/A'} (deserved position: ${deservedRank}). This manual adjustment overrides the automated prioritization.`,
-        variant: 'destructive',
-        duration: 4000,
-      });
+      // Only show notification if moving to a BETTER position than business score deserves
+      const isMovingAboveDeserved = newRank < deservedRank;
+      
+      if (isMovingAboveDeserved) {
+        setNotification({
+          show: true,
+          oldRank,
+          newRank,
+          score: businessScore
+        });
+      }
+    } catch (error) {
+      console.error('Failed to update ranks:', error);
     }
   };
 
@@ -196,6 +235,34 @@ export default function IndustryPage() {
       setCurrentPage(page);
     }
   };
+
+  const handleDownloadAttachments = async (e: React.MouseEvent, requestId: string) => {
+    e.stopPropagation();
+    const attachments = attachmentCounts?.[requestId];
+    if (!attachments || attachments.files.length === 0) return;
+
+    // Download each file
+    for (const file of attachments.files) {
+      const { data } = await supabase.storage
+        .from('attachments')
+        .download(file.path);
+      
+      if (data) {
+        const url = URL.createObjectURL(data);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+    }
+  };
+
+  const closeNotification = useCallback(() => {
+    setNotification(prev => ({ ...prev, show: false }));
+  }, []);
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -271,11 +338,20 @@ export default function IndustryPage() {
       </div>
 
       {/* Card List with Drag & Drop */}
-      <div className="flex-1 overflow-auto p-4 sm:p-6">
+      <div className="flex-1 overflow-auto p-4 sm:p-6 relative">
         {isLoading ? (
           <div className="text-center py-8 text-muted-foreground">Loading...</div>
         ) : sortedRequests.length > 0 ? (
-          <Card className="overflow-hidden">
+          <Card className="overflow-hidden relative">
+            {/* Rank Update Notification - Centered in Table */}
+            <RankUpdateNotification
+              show={notification.show}
+              oldRank={notification.oldRank}
+              newRank={notification.newRank}
+              score={notification.score}
+              onClose={closeNotification}
+            />
+
             {/* Column Headers */}
             <div className="flex items-center gap-4 px-4 py-2 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
               <div className="w-5" /> {/* Drag handle space */}
@@ -287,6 +363,7 @@ export default function IndustryPage() {
               {isColumnVisible('business_score') && <div className="w-24 shrink-0 text-center">Score</div>}
               {isColumnVisible('planned_quarter') && <div className="w-20 shrink-0">Quarter</div>}
               {isColumnVisible('end_date') && <div className="w-24 shrink-0">Target Date</div>}
+              {isColumnVisible('attachments') && <div className="w-24 shrink-0 text-center">Attachments</div>}
             </div>
 
             <DragDropContext onDragEnd={handleDragEnd}>
@@ -296,87 +373,108 @@ export default function IndustryPage() {
                     {...provided.droppableProps} 
                     ref={provided.innerRef}
                   >
-                    {paginatedRequests.map((request: any, index: number) => (
-                      <Draggable key={request.id} draggableId={request.id} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors ${
-                              snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''
-                            } ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`}
-                            onClick={() => setSelectedRequestId(request.id)}
-                          >
-                            {/* Drag Handle */}
+                    {paginatedRequests.map((request: any, index: number) => {
+                      const hasAttachments = attachmentCounts?.[request.id]?.count > 0;
+                      
+                      return (
+                        <Draggable key={request.id} draggableId={request.id} index={index}>
+                          {(provided, snapshot) => (
                             <div
-                              {...provided.dragHandleProps}
-                              className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
-                              onClick={(e) => e.stopPropagation()}
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors ${
+                                snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''
+                              } ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`}
+                              onClick={() => setSelectedRequestId(request.id)}
                             >
-                              <GripVertical className="h-4 w-4" />
+                              {/* Drag Handle */}
+                              <div
+                                {...provided.dragHandleProps}
+                                className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <GripVertical className="h-4 w-4" />
+                              </div>
+                              
+                              {/* Checkbox */}
+                              <div onClick={(e) => e.stopPropagation()}>
+                                <Checkbox 
+                                  checked={selectedRows.includes(request.id)}
+                                  onCheckedChange={() => toggleRowSelection(request.id)}
+                                  className="h-4 w-4"
+                                />
+                              </div>
+
+                              {/* Request ID */}
+                              {isColumnVisible('request_key') && (
+                                <div className="w-24 shrink-0">
+                                  <span className="text-sm text-brand-gold">{request.request_key || '-'}</span>
+                                </div>
+                              )}
+
+                              {/* Rank */}
+                              {isColumnVisible('rank') && (
+                                <div className="w-12 shrink-0 text-center">
+                                  <span className="text-sm text-foreground">{request.rank || startIndex + index + 1}</span>
+                                </div>
+                              )}
+
+                              {/* Summary */}
+                              {isColumnVisible('title') && (
+                                <div className="flex-1 min-w-0">
+                                  <span className="text-sm text-foreground truncate block">{request.title}</span>
+                                </div>
+                              )}
+
+                              {/* Process Step */}
+                              {isColumnVisible('process_step') && (
+                                <div className="w-36 shrink-0">
+                                  {getStatusBadge(request.process_step)}
+                                </div>
+                              )}
+
+                              {/* Business Score */}
+                              {isColumnVisible('business_score') && (
+                                <div className="w-24 shrink-0 text-center">
+                                  {getBusinessScoreBadge(request.business_score)}
+                                </div>
+                              )}
+
+                              {/* Planned Quarter */}
+                              {isColumnVisible('planned_quarter') && (
+                                <div className="w-20 shrink-0 text-sm text-muted-foreground">
+                                  {request.planned_quarter || '-'}
+                                </div>
+                              )}
+
+                              {/* Target Completion */}
+                              {isColumnVisible('end_date') && (
+                                <div className="w-24 shrink-0 text-sm text-muted-foreground">
+                                  {formatDate(request.end_date)}
+                                </div>
+                              )}
+
+                              {/* Attachments */}
+                              {isColumnVisible('attachments') && (
+                                <div className="w-24 shrink-0 text-center">
+                                  {hasAttachments ? (
+                                    <button
+                                      onClick={(e) => handleDownloadAttachments(e, request.id)}
+                                      className="inline-flex items-center gap-1 text-sm text-brand-gold hover:text-brand-gold-hover hover:underline font-medium"
+                                    >
+                                      <Paperclip className="h-3.5 w-3.5" />
+                                      View
+                                    </button>
+                                  ) : (
+                                    <span className="text-muted-foreground text-xs">-</span>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                            
-                            {/* Checkbox */}
-                            <div onClick={(e) => e.stopPropagation()}>
-                              <Checkbox 
-                                checked={selectedRows.includes(request.id)}
-                                onCheckedChange={() => toggleRowSelection(request.id)}
-                                className="h-4 w-4"
-                              />
-                            </div>
-
-                            {/* Request ID */}
-                            {isColumnVisible('request_key') && (
-                              <div className="w-24 shrink-0">
-                                <span className="text-sm text-brand-gold">{request.request_key || '-'}</span>
-                              </div>
-                            )}
-
-                            {/* Rank */}
-                            {isColumnVisible('rank') && (
-                              <div className="w-12 shrink-0 text-center">
-                                <span className="text-sm text-foreground">{request.rank || startIndex + index + 1}</span>
-                              </div>
-                            )}
-
-                            {/* Summary */}
-                            {isColumnVisible('title') && (
-                              <div className="flex-1 min-w-0">
-                                <span className="text-sm text-foreground truncate block">{request.title}</span>
-                              </div>
-                            )}
-
-                            {/* Process Step */}
-                            {isColumnVisible('process_step') && (
-                              <div className="w-36 shrink-0">
-                                {getStatusBadge(request.process_step)}
-                              </div>
-                            )}
-
-                            {/* Business Score */}
-                            {isColumnVisible('business_score') && (
-                              <div className="w-24 shrink-0 text-center">
-                                {getBusinessScoreBadge(request.business_score)}
-                              </div>
-                            )}
-
-                            {/* Planned Quarter */}
-                            {isColumnVisible('planned_quarter') && (
-                              <div className="w-20 shrink-0 text-sm text-muted-foreground">
-                                {request.planned_quarter || '-'}
-                              </div>
-                            )}
-
-                            {/* Target Completion */}
-                            {isColumnVisible('end_date') && (
-                              <div className="w-24 shrink-0 text-sm text-muted-foreground">
-                                {formatDate(request.end_date)}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
+                          )}
+                        </Draggable>
+                      );
+                    })}
                     {provided.placeholder}
                   </div>
                 )}
