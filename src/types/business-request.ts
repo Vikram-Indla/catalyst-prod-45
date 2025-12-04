@@ -2,14 +2,14 @@ import { z } from 'zod';
 
 // Process Step Options - synchronized with Kanban columns
 export const PROCESS_STEPS = [
-  { value: 'new_request', label: 'NEW REQUEST', color: 'bg-[#4a4a4a]' },
-  { value: 'under_analysis', label: 'UNDER ANALYSIS', color: 'bg-[#c4c4c4]' },
-  { value: 'in_progress', label: 'IN PROGRESS', color: 'bg-[#5c4b8a]' },
-  { value: 'awaiting_business_response', label: 'AWAITING BUSINESS RESPONSE', color: 'bg-[#a0a0a0]' },
-  { value: 'on_hold', label: 'ON HOLD', color: 'bg-[#c9a0a0]' },
-  { value: 'approved', label: 'APPROVED', color: 'bg-[#6abf4b]' },
-  { value: 'implemented', label: 'IMPLEMENTED', color: 'bg-[#1a1a1a]' },
-  { value: 'rejected', label: 'REJECTED', color: 'bg-[#e74c3c]' },
+  { value: 'new_request', label: 'New Request', color: 'bg-[#4a4a4a]' },
+  { value: 'under_analysis', label: 'Under Analysis', color: 'bg-[#c4c4c4]' },
+  { value: 'in_progress', label: 'In Progress', color: 'bg-[#5c4b8a]' },
+  { value: 'awaiting_business_response', label: 'Awaiting Business Response', color: 'bg-[#a0a0a0]' },
+  { value: 'on_hold', label: 'On Hold', color: 'bg-[#c9a0a0]' },
+  { value: 'approved', label: 'Approved', color: 'bg-[#6abf4b]' },
+  { value: 'implemented', label: 'Implemented', color: 'bg-[#1a1a1a]' },
+  { value: 'rejected', label: 'Rejected', color: 'bg-[#e74c3c]' },
 ] as const;
 
 // Health Options
