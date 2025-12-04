@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Paperclip } from 'lucide-react';
+import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -15,7 +15,6 @@ import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 
 const DEFAULT_COLUMNS: ColumnConfig[] = [
@@ -26,7 +25,7 @@ const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'business_score', label: 'Business Score', visible: true, default: true },
   { id: 'planned_quarter', label: 'Planned Quarter', visible: true, default: true },
   { id: 'end_date', label: 'Target Completion', visible: true, default: true },
-  { id: 'attachments', label: 'Attachments', visible: true, default: true },
+  { id: 'created_at', label: 'Created Date', visible: true, default: true },
 ];
 
 const ITEMS_PER_PAGE = 20;
@@ -52,36 +51,12 @@ export default function IndustryPage() {
     score: number | null;
   }>({ show: false, oldRank: 0, newRank: 0, score: null });
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
   // Use context for filters
-  const { deliveryPlatform, industryFilters } = useCatalystContext();
+  const { industryFilters } = useCatalystContext();
 
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
   const updateRequest = useUpdateBusinessRequest();
-
-  // Fetch attachments counts
-  const { data: attachmentCounts } = useQuery({
-    queryKey: ['business-request-attachments'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('attachments')
-        .select('entity_id, file_name, file_path')
-        .eq('entity_type', 'business_request');
-      
-      if (error) throw error;
-      
-      const counts: Record<string, { count: number; files: { name: string; path: string }[] }> = {};
-      data?.forEach(att => {
-        if (!counts[att.entity_id]) {
-          counts[att.entity_id] = { count: 0, files: [] };
-        }
-        counts[att.entity_id].count++;
-        counts[att.entity_id].files.push({ name: att.file_name, path: att.file_path });
-      });
-      return counts;
-    }
-  });
 
   // Apply sorting and filtering using context filters
   useEffect(() => {
@@ -93,8 +68,8 @@ export default function IndustryPage() {
     let filtered = [...requests];
 
     // Apply delivery platform filter from context
-    if (deliveryPlatform !== 'all') {
-      filtered = filtered.filter((r: any) => r.delivery_platform === deliveryPlatform);
+    if (industryFilters.deliveryPlatforms.length > 0) {
+      filtered = filtered.filter((r: any) => industryFilters.deliveryPlatforms.includes(r.delivery_platform));
     }
 
     // Apply process steps filter from context
@@ -105,17 +80,6 @@ export default function IndustryPage() {
     // Apply quarters filter from context
     if (industryFilters.quarters.length > 0) {
       filtered = filtered.filter((r: any) => industryFilters.quarters.includes(r.planned_quarter));
-    }
-
-    // Apply date range filter from context
-    if (industryFilters.dateFrom) {
-      const fromDate = new Date(industryFilters.dateFrom);
-      filtered = filtered.filter((r: any) => r.end_date && new Date(r.end_date) >= fromDate);
-    }
-
-    if (industryFilters.dateTo) {
-      const toDate = new Date(industryFilters.dateTo);
-      filtered = filtered.filter((r: any) => r.end_date && new Date(r.end_date) <= toDate);
     }
 
     // Apply sorting
@@ -154,6 +118,10 @@ export default function IndustryPage() {
           aVal = a.end_date ? new Date(a.end_date).getTime() : 0;
           bVal = b.end_date ? new Date(b.end_date).getTime() : 0;
           break;
+        case 'created_at':
+          aVal = a.created_at ? new Date(a.created_at).getTime() : 0;
+          bVal = b.created_at ? new Date(b.created_at).getTime() : 0;
+          break;
         default:
           return 0;
       }
@@ -169,7 +137,7 @@ export default function IndustryPage() {
     }));
 
     setSortedRequests(withRanks);
-  }, [requests, columnSort, deliveryPlatform, industryFilters]);
+  }, [requests, columnSort, industryFilters]);
 
   // Pagination calculations
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
@@ -215,9 +183,15 @@ export default function IndustryPage() {
     return new Date(dateStr).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
   };
 
+  const formatDateTime = (dateStr: string | null) => {
+    if (!dateStr) return '-';
+    const date = new Date(dateStr);
+    return `${date.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`;
+  };
+
   const handleExport = () => {
     if (requests && requests.length > 0) {
-      exportToCSV(requests, 'industry-requests', ['request_key', 'title', 'process_step', 'planned_quarter', 'end_date']);
+      exportToCSV(requests, 'industry-requests', ['request_key', 'title', 'process_step', 'planned_quarter', 'end_date', 'created_at']);
       toast({ title: 'Requests exported successfully' });
     }
   };
@@ -310,40 +284,15 @@ export default function IndustryPage() {
     }
   };
 
-  const handleDownloadAttachments = async (e: React.MouseEvent, requestId: string) => {
-    e.stopPropagation();
-    const attachments = attachmentCounts?.[requestId];
-    if (!attachments || attachments.files.length === 0) return;
-
-    for (const file of attachments.files) {
-      const { data } = await supabase.storage
-        .from('attachments')
-        .download(file.path);
-      
-      if (data) {
-        const url = URL.createObjectURL(data);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = file.name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-    }
-  };
-
   const closeNotification = useCallback(() => {
     setNotification(prev => ({ ...prev, show: false }));
   }, []);
 
   // Count active filters from context
   const activeFilterCount = 
-    (deliveryPlatform !== 'all' ? 1 : 0) +
+    industryFilters.deliveryPlatforms.length +
     industryFilters.processSteps.length +
-    industryFilters.quarters.length +
-    (industryFilters.dateFrom ? 1 : 0) +
-    (industryFilters.dateTo ? 1 : 0);
+    industryFilters.quarters.length;
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -512,9 +461,14 @@ export default function IndustryPage() {
                     />
                   </div>
                 )}
-                {isColumnVisible('attachments') && (
-                  <div className="w-24 shrink-0 text-center">
-                    <span>Files</span>
+                {isColumnVisible('created_at') && (
+                  <div className="w-36 shrink-0">
+                    <SimpleColumnHeader
+                      label="Created Date"
+                      columnId="created_at"
+                      sortDirection={columnSort.columnId === 'created_at' ? columnSort.direction : null}
+                      onSort={handleSort}
+                    />
                   </div>
                 )}
               </div>
@@ -527,8 +481,6 @@ export default function IndustryPage() {
                       ref={provided.innerRef}
                     >
                       {paginatedRequests.map((request: any, index: number) => {
-                        const hasAttachments = attachmentCounts?.[request.id]?.count > 0;
-                        
                         return (
                           <Draggable key={request.id} draggableId={request.id} index={index}>
                             {(provided, snapshot) => (
@@ -598,19 +550,9 @@ export default function IndustryPage() {
                                   </div>
                                 )}
 
-                                {isColumnVisible('attachments') && (
-                                  <div className="w-24 shrink-0 text-center">
-                                    {hasAttachments ? (
-                                      <button
-                                        onClick={(e) => handleDownloadAttachments(e, request.id)}
-                                        className="inline-flex items-center gap-1 text-sm text-brand-gold hover:text-brand-gold-hover hover:underline font-medium"
-                                      >
-                                        <Paperclip className="h-3.5 w-3.5" />
-                                        View
-                                      </button>
-                                    ) : (
-                                      <span className="text-muted-foreground text-xs">-</span>
-                                    )}
+                                {isColumnVisible('created_at') && (
+                                  <div className="w-36 shrink-0 text-sm text-muted-foreground">
+                                    {formatDateTime(request.created_at)}
                                   </div>
                                 )}
                               </div>
