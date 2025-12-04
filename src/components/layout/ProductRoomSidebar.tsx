@@ -14,7 +14,7 @@ interface ProductRoomSidebarProps {
 }
 const menuItems = [{
   title: 'Demand Summary',
-  path: '/industry',
+  path: '/industry/demand-summary',
   icon: Box,
   exact: true
 }, {

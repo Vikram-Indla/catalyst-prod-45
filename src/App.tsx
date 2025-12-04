@@ -164,6 +164,7 @@ import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
 import BusinessRequests from "./pages/enterprise/BusinessRequests";
 import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
 import IndustryPage from "./pages/enterprise/IndustryPage";
+import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import RequestAccess from "./pages/RequestAccess";
 import TeamComingSoon from "./pages/team/ComingSoon";
@@ -242,6 +243,7 @@ const App = () => (
               
               {/* Industry */}
               <Route path="/industry" element={<IndustryPage />} />
+              <Route path="/industry/demand-summary" element={<DemandSummaryPage />} />
               <Route path="/industry/roadmaps" element={<IndustryComingSoon />} />
               <Route path="/industry/reports" element={<IndustryComingSoon />} />
               
