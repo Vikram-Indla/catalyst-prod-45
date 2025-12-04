@@ -356,9 +356,6 @@ export default function Auth() {
             fontFamily: "'DM Sans', sans-serif",
             fontSize: "0.95rem"
           }}>
-              <span style={{
-              color: "rgba(26, 26, 26, 0.6)"
-            }}>Can't you login?</span>{" "}
               <button type="button" className="transition-colors" style={{
               color: "#c69c6d",
               fontWeight: 600
@@ -367,7 +364,7 @@ export default function Auth() {
             }} onMouseLeave={e => {
               e.currentTarget.style.color = "#c69c6d";
             }} onClick={() => navigate('/request-access')}>
-                Request access
+                Log demand request?
               </button>
             </p>
           </div>
