@@ -52,8 +52,11 @@ export default function IndustryPage() {
   }>({ show: false, oldRank: 0, newRank: 0, score: null });
   const { toast } = useToast();
 
-  // Use context for filters
+  // Use context for filters with defensive defaults
   const { industryFilters } = useCatalystContext();
+  const deliveryPlatforms = industryFilters?.deliveryPlatforms || [];
+  const processSteps = industryFilters?.processSteps || [];
+  const quarters = industryFilters?.quarters || [];
 
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
   const updateRequest = useUpdateBusinessRequest();
@@ -68,18 +71,18 @@ export default function IndustryPage() {
     let filtered = [...requests];
 
     // Apply delivery platform filter from context
-    if (industryFilters.deliveryPlatforms.length > 0) {
-      filtered = filtered.filter((r: any) => industryFilters.deliveryPlatforms.includes(r.delivery_platform));
+    if (deliveryPlatforms.length > 0) {
+      filtered = filtered.filter((r: any) => deliveryPlatforms.includes(r.delivery_platform));
     }
 
     // Apply process steps filter from context
-    if (industryFilters.processSteps.length > 0) {
-      filtered = filtered.filter((r: any) => industryFilters.processSteps.includes(r.process_step));
+    if (processSteps.length > 0) {
+      filtered = filtered.filter((r: any) => processSteps.includes(r.process_step));
     }
 
     // Apply quarters filter from context
-    if (industryFilters.quarters.length > 0) {
-      filtered = filtered.filter((r: any) => industryFilters.quarters.includes(r.planned_quarter));
+    if (quarters.length > 0) {
+      filtered = filtered.filter((r: any) => quarters.includes(r.planned_quarter));
     }
 
     // Apply sorting
@@ -137,7 +140,7 @@ export default function IndustryPage() {
     }));
 
     setSortedRequests(withRanks);
-  }, [requests, columnSort, industryFilters]);
+  }, [requests, columnSort, deliveryPlatforms, processSteps, quarters]);
 
   // Pagination calculations
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
@@ -290,9 +293,9 @@ export default function IndustryPage() {
 
   // Count active filters from context
   const activeFilterCount = 
-    industryFilters.deliveryPlatforms.length +
-    industryFilters.processSteps.length +
-    industryFilters.quarters.length;
+    deliveryPlatforms.length +
+    processSteps.length +
+    quarters.length;
 
   return (
     <div className="h-full flex flex-col bg-background">
