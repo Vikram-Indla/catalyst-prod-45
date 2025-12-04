@@ -16,6 +16,7 @@ import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropd
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase } from '@/integrations/supabase/client';
 import { useCatalystContext } from '@/contexts/CatalystContext';
+import { useQueryClient } from '@tanstack/react-query';
 
 const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'request_key', label: 'Request ID', visible: true, default: true },
@@ -51,6 +52,7 @@ export default function IndustryPage() {
     score: number | null;
   }>({ show: false, oldRank: 0, newRank: 0, score: null });
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Use context for filters with defensive defaults
   const { industryFilters } = useCatalystContext();
@@ -252,6 +254,9 @@ export default function IndustryPage() {
         )
       );
 
+      // Invalidate queries to refetch with persisted ranks
+      await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+
       const isMovingAboveDeserved = newRank < deservedRank;
       
       if (isMovingAboveDeserved) {
@@ -264,6 +269,8 @@ export default function IndustryPage() {
       }
     } catch (error) {
       console.error('Failed to update ranks:', error);
+      // Revert local state on error by refetching
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
     }
   };
 
