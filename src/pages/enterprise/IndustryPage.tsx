@@ -107,6 +107,19 @@ export default function IndustryPage() {
     return columns.find(c => c.id === columnId)?.visible ?? false;
   };
 
+  // Calculate deserved rank based on business score (higher score = lower rank number = better position)
+  const getDeservedRank = (businessScore: number | null | undefined, allRequests: any[]) => {
+    if (businessScore === null || businessScore === undefined) return allRequests.length;
+    
+    // Sort by business score descending to find position
+    const sortedByScore = [...allRequests].sort((a, b) => 
+      (b.business_score || 0) - (a.business_score || 0)
+    );
+    
+    const position = sortedByScore.findIndex(r => (r.business_score || 0) <= businessScore);
+    return position === -1 ? allRequests.length : position + 1;
+  };
+
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
     
@@ -120,8 +133,13 @@ export default function IndustryPage() {
     const actualDestIndex = startIndex + destIndex;
 
     const reordered = Array.from(sortedRequests);
-    const [removed] = reordered.splice(actualSourceIndex, 1);
-    reordered.splice(actualDestIndex, 0, removed);
+    const [movedItem] = reordered.splice(actualSourceIndex, 1);
+    reordered.splice(actualDestIndex, 0, movedItem);
+
+    const oldRank = movedItem.rank || actualSourceIndex + 1;
+    const newRank = actualDestIndex + 1;
+    const businessScore = movedItem.business_score;
+    const deservedRank = getDeservedRank(businessScore, sortedRequests);
 
     // Update ALL ranks sequentially - no duplicates allowed
     const updatedRequests = reordered.map((req, index) => ({
@@ -145,11 +163,18 @@ export default function IndustryPage() {
       });
     }
 
-    toast({
-      title: 'Priority Adjustment Notice',
-      description: `The request has been repositioned to rank ${actualDestIndex + 1}. Please note: manual ranking adjustments will supersede the automated business score prioritization.`,
-      variant: 'default',
-    });
+    // Only show warning if moving to a BETTER position than business score deserves
+    // (newRank < deservedRank means moving UP to a better position than deserved)
+    const isMovingAboveDeserved = newRank < deservedRank;
+    
+    if (isMovingAboveDeserved) {
+      toast({
+        title: '⚠️ Rank Override Warning',
+        description: `Rank updated from ${oldRank} to ${newRank}. Business Score: ${businessScore ?? 'N/A'} (deserved position: ${deservedRank}). This manual adjustment overrides the automated prioritization.`,
+        variant: 'destructive',
+        duration: 4000,
+      });
+    }
   };
 
   const handleBulkEdit = () => {
