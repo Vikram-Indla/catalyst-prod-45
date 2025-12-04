@@ -100,6 +100,7 @@ const translations = {
     downloadPdf: 'Download Confirmation (PDF)',
     editForm: 'Edit Form Again',
     requestId: 'Your Request ID',
+    progressTitle: 'Progress',
     required: '*',
   },
   ar: {
@@ -164,6 +165,7 @@ const translations = {
     downloadPdf: 'تحميل التأكيد (PDF)',
     editForm: 'تعديل النموذج',
     requestId: 'رقم طلبك',
+    progressTitle: 'التقدم',
     required: '*',
   }
 };
@@ -518,51 +520,18 @@ export default function RequestAccess() {
         </div>
       </header>
 
-      {/* Page Title + Stepper Section */}
+      {/* Page Title Section */}
       <div className="bg-white border-b border-[#E5E7EB] shadow-sm">
         <div className="max-w-[1200px] mx-auto px-6 py-5">
-          <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] mb-5">{t.pageTitle}</h1>
-          
-          {/* Wizard Stepper */}
-          <div className="flex gap-2 sm:gap-3 flex-wrap">
-            {steps.map((step, idx) => (
-              <button
-                key={idx}
-                onClick={() => idx <= currentStep && setCurrentStep(idx)}
-                className={cn(
-                  "flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-full border text-sm cursor-pointer select-none transition-all",
-                  idx === currentStep 
-                    ? "border-[#C8A566] bg-[#C8A566]/10 shadow-[0_0_0_3px_rgba(200,165,102,0.15)]" 
-                    : "border-[#E5E7EB] bg-white hover:bg-gray-50",
-                  idx < currentStep && "border-[#067647]/40 bg-[#067647]/5"
-                )}
-              >
-                <span className={cn(
-                  "w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center border-2 text-xs font-bold shrink-0",
-                  idx === currentStep 
-                    ? "border-[#C8A566] bg-[#C8A566] text-white"
-                    : idx < currentStep
-                      ? "border-[#067647] bg-[#067647] text-white"
-                      : "border-[#D1D5DB] text-[#6B7280] bg-white"
-                )}>
-                  {idx < currentStep ? <Check className="w-3 h-3" /> : idx + 1}
-                </span>
-                <span className={cn(
-                  "whitespace-nowrap text-sm",
-                  idx === currentStep ? "text-[#1A1A1A] font-semibold" : "text-[#6B7280]",
-                  idx < currentStep && "text-[#067647]"
-                )}>
-                  {step}
-                </span>
-              </button>
-            ))}
-          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A1A]">{t.pageTitle}</h1>
         </div>
       </div>
 
-      <div className="max-w-[900px] mx-auto px-4 sm:px-6 py-6">
-          {/* Main Form */}
-          <main className="bg-white border border-[#E5E7EB] rounded-2xl shadow-[0_6px_16px_rgba(15,23,42,0.06)]">
+      {/* Main Content with Sidebar Stepper */}
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6">
+        <div className="flex gap-6">
+          {/* Left: Form Content */}
+          <main className="flex-1 bg-white border border-[#E5E7EB] rounded-2xl shadow-[0_6px_16px_rgba(15,23,42,0.06)]">
             <div className="p-5 sm:p-6">
               {/* Step 1: Request Details */}
               {currentStep === 0 && (
@@ -825,6 +794,48 @@ export default function RequestAccess() {
               </div>
             </div>
           </main>
+
+          {/* Right: Vertical Stepper */}
+          <aside className="hidden lg:block w-[260px] shrink-0">
+            <div className="bg-white border border-[#E5E7EB] rounded-2xl shadow-[0_6px_16px_rgba(15,23,42,0.06)] p-5 sticky top-6">
+              <h3 className="text-sm font-bold text-[#1A1A1A] mb-4">{t.progressTitle || 'Progress'}</h3>
+              <div className="space-y-1">
+                {steps.map((step, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => idx <= currentStep && setCurrentStep(idx)}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-left cursor-pointer select-none transition-all",
+                      idx === currentStep 
+                        ? "bg-[#C8A566]/10 border border-[#C8A566]" 
+                        : idx < currentStep
+                          ? "bg-[#067647]/5 border border-transparent"
+                          : "bg-transparent border border-transparent hover:bg-gray-50"
+                    )}
+                  >
+                    <span className={cn(
+                      "w-7 h-7 rounded-full flex items-center justify-center border-2 text-xs font-bold shrink-0",
+                      idx === currentStep 
+                        ? "border-[#C8A566] bg-[#C8A566] text-white"
+                        : idx < currentStep
+                          ? "border-[#067647] bg-[#067647] text-white"
+                          : "border-[#D1D5DB] text-[#6B7280] bg-white"
+                    )}>
+                      {idx < currentStep ? <Check className="w-3.5 h-3.5" /> : idx + 1}
+                    </span>
+                    <span className={cn(
+                      "text-sm",
+                      idx === currentStep ? "text-[#1A1A1A] font-semibold" : "text-[#6B7280]",
+                      idx < currentStep && "text-[#067647] font-medium"
+                    )}>
+                      {step}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );
