@@ -87,8 +87,19 @@ export function CatalystHeader() {
           {/* Mobile Menu and Logo */}
           <div className="flex items-center gap-2 shrink-0">
             <MobileNavigationMenu />
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/home')}>
-              <span className="font-extrabold text-xl tracking-tight whitespace-nowrap">
+            <div 
+              className="flex items-center cursor-pointer max-w-[140px] h-14"
+              onClick={() => navigate('/home')}
+            >
+              <span 
+                className="font-semibold whitespace-nowrap"
+                style={{ 
+                  fontSize: '20px', 
+                  lineHeight: '24px', 
+                  letterSpacing: '-0.02em',
+                  marginTop: '-1px' // baseline alignment nudge
+                }}
+              >
                 <span className="text-foreground">Cata</span>
                 <span className="text-brand-gold">lyst</span>
               </span>
