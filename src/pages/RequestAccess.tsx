@@ -467,7 +467,7 @@ export default function RequestAccess() {
               {t.downloadPdf}
             </Button>
             
-            <div className="flex gap-3 pt-4 border-t">
+            <div className="flex pt-4 border-t">
               <Button 
                 variant="outline" 
                 onClick={() => navigate('/auth')}
@@ -475,12 +475,6 @@ export default function RequestAccess() {
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 {t.backToLogin}
-              </Button>
-              <Button 
-                onClick={resetForm}
-                className="flex-1 bg-[#C8A566] hover:bg-[#b8955a] text-[#101010] font-bold"
-              >
-                {t.editForm}
               </Button>
             </div>
           </div>
