@@ -124,8 +124,54 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
   const selectedDomain = data.efs_domain || '';
   const serviceOptions = EFS_SERVICES[selectedDomain] || [];
 
+  // Generate rank display value
+  const currentRank = data.rank;
+  const displayRank = currentRank === null || currentRank === undefined ? 'Auto' : currentRank;
+
+  const handleForcedRankChange = (value: string) => {
+    if (value === 'auto') {
+      onChange('rank', null);
+    } else {
+      onChange('rank', parseInt(value));
+    }
+  };
+
   return (
     <div className="space-y-6 p-5">
+      {/* Forced Rank Section - Distinct visual */}
+      <Card className="border-2 border-brand-gold/30 rounded-lg bg-gradient-to-r from-brand-gold/5 to-transparent">
+        <CardContent className="p-5">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex-1 space-y-2">
+              <h3 className="text-sm font-bold text-foreground">Forced Rank (1-20)</h3>
+              <p className="text-xs text-muted-foreground">
+                1 = Highest priority. Default based on business score.
+              </p>
+              <Select
+                value={currentRank === null || currentRank === undefined ? 'auto' : String(currentRank)}
+                onValueChange={handleForcedRankChange}
+              >
+                <SelectTrigger className="mt-1.5 w-full border-brand-gold/50 focus:border-brand-gold">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  <SelectItem value="auto">Auto</SelectItem>
+                  {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+                    <SelectItem key={num} value={String(num)}>{num}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {/* Circular rank badge */}
+            <div className="shrink-0 w-14 h-14 rounded-full border-2 border-brand-gold flex items-center justify-center">
+              <span className="text-lg font-bold text-brand-gold">
+                {displayRank === 'Auto' ? 'A' : displayRank}
+              </span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Process Step Section (Health removed) */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
