@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, TrendingUp, AlertTriangle, Target, Sparkles, Lightbulb, Flame, Trophy, Wrench, X } from 'lucide-react';
+import { ChevronDown, ChevronUp, TrendingUp, AlertTriangle, Target, Sparkles, Lightbulb, Flame, Trophy, Wrench, X, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -490,8 +490,8 @@ export default function DemandSummaryPage() {
             <p className="text-muted-foreground text-xs tracking-widest uppercase">Analytics Dashboard</p>
           </div>
           <div className="flex items-center gap-5">
-            <button className="bg-muted text-foreground px-4 py-2 rounded-md text-sm border border-border hover:bg-muted/80 transition-colors">
-              EN | عربي
+            <button className="p-2 rounded-md hover:bg-muted transition-colors" title="Switch Language">
+              <Globe className="w-5 h-5 text-muted-foreground" />
             </button>
             <span className="text-brand-gold text-sm font-medium">Updated: Just now</span>
           </div>
