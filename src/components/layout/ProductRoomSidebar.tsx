@@ -174,8 +174,32 @@ export function ProductRoomSidebar({
 
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto">
-          {/* Filter Dropdowns - Only when expanded */}
-          {expanded && <div className="p-4 border-b space-y-4">
+          {/* Navigation Menu - On Top */}
+          <nav className="p-2 space-y-1">
+            {menuItems.map(item => {
+            const Icon = item.icon;
+            const active = isActive(item.path, item.exact);
+            if (!expanded) {
+              return <Tooltip key={item.title}>
+                    <TooltipTrigger asChild>
+                      <Button variant="ghost" size="icon" onClick={() => navigate(item.path)} className={cn('w-full h-10 flex items-center justify-center', active && 'bg-brand-gold-pale text-brand-gold')}>
+                        <Icon className="h-5 w-5" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="bg-popover border">
+                      {item.title}
+                    </TooltipContent>
+                  </Tooltip>;
+            }
+            return <Button key={item.title} variant="ghost" onClick={() => navigate(item.path)} className={cn('w-full justify-start gap-3 h-10', active && 'bg-brand-gold-pale text-brand-gold')}>
+                  <Icon className="h-5 w-5" />
+                  <span>{item.title}</span>
+                </Button>;
+          })}
+          </nav>
+
+          {/* Filter Dropdowns - Below menu items */}
+          {expanded && <div className="p-4 border-t space-y-4">
               {/* Delivery Platform Multi-select */}
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
@@ -281,30 +305,6 @@ export function ProductRoomSidebar({
                 </Popover>
               </div>
             </div>}
-
-          {/* Navigation Menu */}
-          <nav className="p-2 space-y-1">
-            {menuItems.map(item => {
-            const Icon = item.icon;
-            const active = isActive(item.path, item.exact);
-            if (!expanded) {
-              return <Tooltip key={item.title}>
-                    <TooltipTrigger asChild>
-                      <Button variant="ghost" size="icon" onClick={() => navigate(item.path)} className={cn('w-full h-10 flex items-center justify-center', active && 'bg-brand-gold-pale text-brand-gold')}>
-                        <Icon className="h-5 w-5" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" className="bg-popover border">
-                      {item.title}
-                    </TooltipContent>
-                  </Tooltip>;
-            }
-            return <Button key={item.title} variant="ghost" onClick={() => navigate(item.path)} className={cn('w-full justify-start gap-3 h-10', active && 'bg-brand-gold-pale text-brand-gold')}>
-                  <Icon className="h-5 w-5" />
-                  <span>{item.title}</span>
-                </Button>;
-          })}
-          </nav>
         </div>
       </aside>
     </TooltipProvider>;
