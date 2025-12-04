@@ -111,7 +111,8 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect }: Busine
   return (
     <TooltipProvider delayDuration={200}>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <ScrollArea className="w-full h-[calc(100vh-220px)]">
+        <div className="text-xs text-muted-foreground/60 mb-2 italic">Click any column to expand</div>
+        <ScrollArea className="w-full h-[calc(100vh-240px)]">
           <div className="flex gap-3 pb-4 pr-4">
             {KANBAN_COLUMNS.map(column => {
               const columnRequests = getRequestsByStatus(column.id);
