@@ -70,18 +70,18 @@ export default function Auth() {
           }}>
             <div className="grid grid-cols-2 gap-x-8 gap-y-4">
               {[
-                { Icon: FlaskConical, label: "Test Management" },
+                { Icon: Briefcase, label: "Portfolio Management" },
+                { Icon: GitMerge, label: "Dependency Management" },
                 { Icon: TriangleAlert, label: "Capacity Management" },
                 { Icon: Package, label: "Product Management" },
-                { Icon: GitMerge, label: "Dependency Management" },
-                { Icon: Briefcase, label: "Portfolio Management" },
+                { Icon: FlaskConical, label: "Test Management" },
                 { Icon: Link2, label: "Release Schedule" },
               ].map((item, index) => (
                 <div 
                   key={index}
                   className="flex items-center gap-3 group"
                   style={{
-                    padding: "8px 0",
+                    padding: "10px 0",
                   }}
                 >
                   <item.Icon 
@@ -89,16 +89,17 @@ export default function Auth() {
                     style={{
                       color: "#c69c6d",
                     }}
-                    size={16}
+                    size={18}
+                    strokeWidth={1.5}
                   />
                   <span 
                     className="transition-colors duration-300 group-hover:text-[#c69c6d]"
                     style={{
                       fontFamily: "'DM Sans', sans-serif",
-                      fontSize: "clamp(0.85rem, 1.8vw, 1rem)",
-                      color: "rgba(254, 255, 255, 0.8)",
+                      fontSize: "1rem",
+                      color: "rgba(254, 255, 255, 0.85)",
                       fontWeight: 500,
-                      letterSpacing: "0.02em",
+                      letterSpacing: "0.01em",
                     }}
                   >
                     {item.label}
