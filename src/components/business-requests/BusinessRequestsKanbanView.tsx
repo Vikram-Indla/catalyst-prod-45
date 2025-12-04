@@ -23,16 +23,16 @@ interface BusinessRequestsKanbanViewProps {
   onRequestSelect: (id: string) => void;
 }
 
-// 8 official process steps per the workflow diagram
+// 8 official process steps
 const KANBAN_COLUMNS = [
-  { id: 'request_received', label: 'Request Received', color: 'bg-[#4a4a4a]' },
-  { id: 'under_study', label: 'Under Study', color: 'bg-[#c4c4c4]' },
+  { id: 'new_request', label: 'New Request', color: 'bg-[#4a4a4a]' },
+  { id: 'under_analysis', label: 'Under Analysis', color: 'bg-[#c4c4c4]' },
   { id: 'in_progress', label: 'In Progress', color: 'bg-[#5c4b8a]' },
   { id: 'awaiting_business_response', label: 'Awaiting Business Response', color: 'bg-[#a0a0a0]' },
-  { id: 'reopen', label: 'Reopen', color: 'bg-[#4ecdc4]' },
   { id: 'on_hold', label: 'On Hold', color: 'bg-[#c9a0a0]' },
-  { id: 'closed', label: 'Closed', color: 'bg-[#1a1a1a]' },
-  { id: 'completed', label: 'Completed', color: 'bg-[#6abf4b]' },
+  { id: 'approved', label: 'Approved', color: 'bg-[#6abf4b]' },
+  { id: 'implemented', label: 'Implemented', color: 'bg-[#1a1a1a]' },
+  { id: 'rejected', label: 'Rejected', color: 'bg-[#e74c3c]' },
 ];
 
 export function BusinessRequestsKanbanView({ requests, onRequestSelect }: BusinessRequestsKanbanViewProps) {
