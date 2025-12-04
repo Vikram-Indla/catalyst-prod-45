@@ -3,6 +3,13 @@ import { useSearchParams } from 'react-router-dom';
 
 export type TierType = 'enterprise' | 'portfolio' | 'program' | 'team';
 
+export interface IndustryFilters {
+  processSteps: string[];
+  quarters: string[];
+  dateFrom: string;
+  dateTo: string;
+}
+
 interface CatalystContextState {
   // Current tier
   tier: TierType;
@@ -29,6 +36,10 @@ interface CatalystContextState {
   // Delivery Platform (for Industry/Product context)
   deliveryPlatform: string;
   setDeliveryPlatform: (platform: string) => void;
+  
+  // Industry Filters
+  industryFilters: IndustryFilters;
+  setIndustryFilters: (filters: IndustryFilters) => void;
 }
 
 const CatalystContext = createContext<CatalystContextState | undefined>(undefined);
@@ -43,7 +54,15 @@ interface StoredContext {
   piIds: string[];
   snapshotId: string | null;
   deliveryPlatform: string;
+  industryFilters?: IndustryFilters;
 }
+
+const DEFAULT_INDUSTRY_FILTERS: IndustryFilters = {
+  processSteps: [],
+  quarters: [],
+  dateFrom: '',
+  dateTo: ''
+};
 
 export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,6 +86,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       piIds: [],
       snapshotId: null,
       deliveryPlatform: 'all',
+      industryFilters: DEFAULT_INDUSTRY_FILTERS,
     };
   };
   
@@ -79,6 +99,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [piIds, setPiIds] = useState<string[]>(initialState.piIds);
   const [snapshotId, setSnapshotId] = useState<string | null>(initialState.snapshotId);
   const [deliveryPlatform, setDeliveryPlatform] = useState<string>(initialState.deliveryPlatform || 'all');
+  const [industryFilters, setIndustryFilters] = useState<IndustryFilters>(initialState.industryFilters || DEFAULT_INDUSTRY_FILTERS);
   
   // Sync state to localStorage
   useEffect(() => {
@@ -90,6 +111,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       piIds,
       snapshotId,
       deliveryPlatform,
+      industryFilters,
     };
     
     try {
@@ -97,7 +119,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Failed to save context to localStorage:', error);
     }
-  }, [tier, portfolioId, programId, teamIds, piIds, snapshotId, deliveryPlatform]);
+  }, [tier, portfolioId, programId, teamIds, piIds, snapshotId, deliveryPlatform, industryFilters]);
   
   // Sync to URL params for shareability
   useEffect(() => {
@@ -136,6 +158,8 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     setSnapshotId,
     deliveryPlatform,
     setDeliveryPlatform,
+    industryFilters,
+    setIndustryFilters,
   };
   
   return (

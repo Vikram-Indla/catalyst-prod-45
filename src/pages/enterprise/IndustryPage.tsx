@@ -3,12 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Paperclip, Filter, SlidersHorizontal } from 'lucide-react';
+import { Plus, Search, Pencil, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Paperclip } from 'lucide-react';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { RankUpdateNotification } from '@/components/business-requests/RankUpdateNotification';
-import { IndustryFiltersPanel, FiltersState } from '@/components/business-requests/IndustryFiltersPanel';
 import { SimpleColumnHeader, SortDirection } from '@/components/business-requests/SimpleColumnHeader';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { exportToCSV } from '@/lib/exportUtils';
@@ -16,7 +15,8 @@ import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCatalystContext } from '@/contexts/CatalystContext';
 
 const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'request_key', label: 'Request ID', visible: true, default: true },
@@ -45,14 +45,6 @@ export default function IndustryPage() {
   const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [columnSort, setColumnSort] = useState<ColumnSort>({ columnId: 'rank', direction: 'asc' });
-  const [isFiltersPanelOpen, setIsFiltersPanelOpen] = useState(true);
-  const [filters, setFilters] = useState<FiltersState>({
-    deliveryPlatform: 'all',
-    processSteps: [],
-    quarters: [],
-    dateFrom: '',
-    dateTo: ''
-  });
   const [notification, setNotification] = useState<{
     show: boolean;
     oldRank: number;
@@ -60,6 +52,10 @@ export default function IndustryPage() {
     score: number | null;
   }>({ show: false, oldRank: 0, newRank: 0, score: null });
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Use context for filters
+  const { deliveryPlatform, industryFilters } = useCatalystContext();
 
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
   const updateRequest = useUpdateBusinessRequest();
@@ -87,34 +83,7 @@ export default function IndustryPage() {
     }
   });
 
-  // Generate filter options from data
-  const filterOptions = useMemo(() => {
-    if (!requests) return { deliveryPlatforms: [], quarters: [] };
-    
-    // Delivery Platform options
-    const platformCounts: Record<string, number> = {};
-    requests.forEach((r: any) => {
-      const platform = r.delivery_platform || 'Unassigned';
-      platformCounts[platform] = (platformCounts[platform] || 0) + 1;
-    });
-    const deliveryPlatforms = Object.entries(platformCounts)
-      .filter(([key]) => key !== 'Unassigned')
-      .map(([value, count]) => ({ value, label: value, count }));
-
-    // Quarter options
-    const quarterCounts: Record<string, number> = {};
-    requests.forEach((r: any) => {
-      const q = r.planned_quarter || 'Unassigned';
-      quarterCounts[q] = (quarterCounts[q] || 0) + 1;
-    });
-    const quarters = Object.entries(quarterCounts)
-      .filter(([key]) => key !== 'Unassigned')
-      .map(([value, count]) => ({ value, label: value, count }));
-
-    return { deliveryPlatforms, quarters };
-  }, [requests]);
-
-  // Apply sorting and filtering
+  // Apply sorting and filtering using context filters
   useEffect(() => {
     if (!requests || requests.length === 0) {
       setSortedRequests([]);
@@ -123,26 +92,29 @@ export default function IndustryPage() {
 
     let filtered = [...requests];
 
-    // Apply side panel filters
-    if (filters.deliveryPlatform !== 'all') {
-      filtered = filtered.filter((r: any) => r.delivery_platform === filters.deliveryPlatform);
+    // Apply delivery platform filter from context
+    if (deliveryPlatform !== 'all') {
+      filtered = filtered.filter((r: any) => r.delivery_platform === deliveryPlatform);
     }
 
-    if (filters.processSteps.length > 0) {
-      filtered = filtered.filter((r: any) => filters.processSteps.includes(r.process_step));
+    // Apply process steps filter from context
+    if (industryFilters.processSteps.length > 0) {
+      filtered = filtered.filter((r: any) => industryFilters.processSteps.includes(r.process_step));
     }
 
-    if (filters.quarters.length > 0) {
-      filtered = filtered.filter((r: any) => filters.quarters.includes(r.planned_quarter));
+    // Apply quarters filter from context
+    if (industryFilters.quarters.length > 0) {
+      filtered = filtered.filter((r: any) => industryFilters.quarters.includes(r.planned_quarter));
     }
 
-    if (filters.dateFrom) {
-      const fromDate = new Date(filters.dateFrom);
+    // Apply date range filter from context
+    if (industryFilters.dateFrom) {
+      const fromDate = new Date(industryFilters.dateFrom);
       filtered = filtered.filter((r: any) => r.end_date && new Date(r.end_date) >= fromDate);
     }
 
-    if (filters.dateTo) {
-      const toDate = new Date(filters.dateTo);
+    if (industryFilters.dateTo) {
+      const toDate = new Date(industryFilters.dateTo);
       filtered = filtered.filter((r: any) => r.end_date && new Date(r.end_date) <= toDate);
     }
 
@@ -197,7 +169,7 @@ export default function IndustryPage() {
     }));
 
     setSortedRequests(withRanks);
-  }, [requests, columnSort, filters]);
+  }, [requests, columnSort, deliveryPlatform, industryFilters]);
 
   // Pagination calculations
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
@@ -365,13 +337,13 @@ export default function IndustryPage() {
     setNotification(prev => ({ ...prev, show: false }));
   }, []);
 
-  // Count active filters
+  // Count active filters from context
   const activeFilterCount = 
-    (filters.deliveryPlatform !== 'all' ? 1 : 0) +
-    filters.processSteps.length +
-    filters.quarters.length +
-    (filters.dateFrom ? 1 : 0) +
-    (filters.dateTo ? 1 : 0);
+    (deliveryPlatform !== 'all' ? 1 : 0) +
+    industryFilters.processSteps.length +
+    industryFilters.quarters.length +
+    (industryFilters.dateFrom ? 1 : 0) +
+    (industryFilters.dateTo ? 1 : 0);
 
   return (
     <div className="h-full flex flex-col bg-background">
@@ -402,20 +374,11 @@ export default function IndustryPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button 
-            variant={isFiltersPanelOpen ? "default" : "outline"} 
-            size="sm" 
-            onClick={() => setIsFiltersPanelOpen(!isFiltersPanelOpen)}
-            className={isFiltersPanelOpen ? "bg-brand-gold hover:bg-brand-gold-hover text-white" : "border-border"}
-          >
-            <SlidersHorizontal className="h-4 w-4 mr-2" />
-            Filters
-            {activeFilterCount > 0 && (
-              <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-white/20 text-white">
-                {activeFilterCount}
-              </span>
-            )}
-          </Button>
+          {activeFilterCount > 0 && (
+            <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">
+              {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} applied
+            </span>
+          )}
 
           {totalPages > 1 && (
             <div className="flex items-center gap-1 border-l border-r px-3 border-border">
@@ -673,16 +636,6 @@ export default function IndustryPage() {
             </div>
           )}
         </div>
-
-        {/* Filters Side Panel */}
-        <IndustryFiltersPanel
-          isOpen={isFiltersPanelOpen}
-          onClose={() => setIsFiltersPanelOpen(false)}
-          filters={filters}
-          onFiltersChange={setFilters}
-          deliveryPlatformOptions={filterOptions.deliveryPlatforms}
-          quarterOptions={filterOptions.quarters}
-        />
       </div>
 
       <CreateBusinessRequestModal 

@@ -124,6 +124,50 @@ export function useUpdateBusinessRequest() {
         updateData.readiness_checklist = data.readiness_checklist as unknown as Json;
       }
       
+      // Handle forced rank update - need to shift other items
+      if (data.rank !== undefined) {
+        const newRank = data.rank;
+        
+        if (newRank !== null) {
+          // Get current item's old rank
+          const { data: currentItem } = await supabase
+            .from('business_requests')
+            .select('rank')
+            .eq('id', id)
+            .single();
+          
+          const oldRank = currentItem?.rank;
+          
+          // Get all items that need to be shifted
+          const { data: allItems } = await supabase
+            .from('business_requests')
+            .select('id, rank')
+            .not('id', 'eq', id)
+            .not('rank', 'is', null)
+            .order('rank', { ascending: true });
+          
+          if (allItems && allItems.length > 0) {
+            // Shift items to make room for the forced rank
+            const itemsToUpdate: { id: string; rank: number }[] = [];
+            
+            for (const item of allItems) {
+              if (item.rank !== null && item.rank >= newRank) {
+                // Shift item down by 1
+                itemsToUpdate.push({ id: item.id, rank: item.rank + 1 });
+              }
+            }
+            
+            // Update shifted items
+            for (const item of itemsToUpdate) {
+              await supabase
+                .from('business_requests')
+                .update({ rank: item.rank })
+                .eq('id', item.id);
+            }
+          }
+        }
+      }
+      
       const { data: result, error } = await supabase
         .from('business_requests')
         .update(updateData)
@@ -133,10 +177,13 @@ export function useUpdateBusinessRequest() {
       if (error) throw error;
       return result;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       queryClient.invalidateQueries({ queryKey: ['business-request'] });
-      toast({ title: 'Business request updated successfully' });
+      // Only show toast for non-rank updates or explicit saves
+      if (variables.data.rank === undefined) {
+        toast({ title: 'Business request updated successfully' });
+      }
     },
     onError: (error) => {
       toast({ title: 'Failed to update business request', description: error.message, variant: 'destructive' });
