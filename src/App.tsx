@@ -165,6 +165,7 @@ import BusinessRequests from "./pages/enterprise/BusinessRequests";
 import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
 import IndustryPage from "./pages/enterprise/IndustryPage";
 import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
+import RequestAccess from "./pages/RequestAccess";
 import TeamComingSoon from "./pages/team/ComingSoon";
 import TeamStoriesPage from "./pages/team/TeamStoriesPage";
 import SelfTest from "./pages/dev/SelfTest";
@@ -205,6 +206,7 @@ const App = () => (
               <Routes>
               <Route path="/" element={<Navigate to="/home" replace />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/request-access" element={<RequestAccess />} />
               
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>

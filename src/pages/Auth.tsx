@@ -366,7 +366,7 @@ export default function Auth() {
               e.currentTarget.style.color = "#1a1a1a";
             }} onMouseLeave={e => {
               e.currentTarget.style.color = "#c69c6d";
-            }}>
+            }} onClick={() => navigate('/request-access')}>
                 Request access
               </button>
             </p>
