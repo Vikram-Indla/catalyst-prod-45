@@ -199,10 +199,10 @@ export function ProductRoomSidebar({
           </nav>
 
           {/* Filter Dropdowns - Below menu items */}
-          {expanded && <div className="p-4 border-t space-y-4">
+          {expanded && <div className="px-4 pt-6 pb-4 space-y-4">
               {/* Delivery Platform Multi-select */}
               <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
+                <span className="text-sm font-medium text-foreground">
                   Delivery Platform
                 </span>
                 <Popover open={deliveryPlatformOpen} onOpenChange={setDeliveryPlatformOpen}>
@@ -237,7 +237,7 @@ export function ProductRoomSidebar({
 
               {/* Process Step Multi-select Listbox */}
               <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
+                <span className="text-sm font-medium text-foreground">
                   Process Step
                 </span>
                 <Popover open={processStepOpen} onOpenChange={setProcessStepOpen}>
@@ -272,7 +272,7 @@ export function ProductRoomSidebar({
 
               {/* Quarter Multi-select Listbox */}
               <div className="space-y-1.5">
-                <span className="text-xs font-semibold text-brand-gold uppercase tracking-wider">
+                <span className="text-sm font-medium text-foreground">
                   Quarter
                 </span>
                 <Popover open={quarterOpen} onOpenChange={setQuarterOpen}>
