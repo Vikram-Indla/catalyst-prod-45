@@ -365,7 +365,13 @@ export default function IndustryPage() {
             </div>
           )}
 
-          <Button variant="outline" size="sm" onClick={handleBulkEdit} className="border-border">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleBulkEdit} 
+            disabled={selectedRows.length === 0}
+            className="border-border"
+          >
             <Pencil className="h-4 w-4 mr-2" />
             Bulk Edit
           </Button>
@@ -389,16 +395,15 @@ export default function IndustryPage() {
             <div className="text-center py-8 text-muted-foreground">Loading...</div>
           ) : sortedRequests.length > 0 ? (
             <Card className="overflow-hidden relative">
-              <RankUpdateNotification
-                show={notification.show}
-                oldRank={notification.oldRank}
-                newRank={notification.newRank}
-                score={notification.score}
-                onClose={closeNotification}
-              />
-
               {/* Column Headers - Simple Sort Only */}
-              <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative">
+                <RankUpdateNotification
+                  show={notification.show}
+                  oldRank={notification.oldRank}
+                  newRank={notification.newRank}
+                  score={notification.score}
+                  onClose={closeNotification}
+                />
                 <div className="w-5" />
                 <div className="w-5" />
                 {isColumnVisible('request_key') && (
@@ -520,7 +525,13 @@ export default function IndustryPage() {
 
                                 {isColumnVisible('request_key') && (
                                   <div className="w-24 shrink-0">
-                                    <span className="text-sm text-brand-gold">{request.request_key || '-'}</span>
+                                    <span className="text-sm text-brand-gold">
+                                      {request.request_key 
+                                        ? request.request_key.startsWith('MIM-') 
+                                          ? request.request_key 
+                                          : `MIM-${String(request.request_key).padStart(3, '0')}`
+                                        : '-'}
+                                    </span>
                                   </div>
                                 )}
 
