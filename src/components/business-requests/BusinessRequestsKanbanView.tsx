@@ -1,10 +1,11 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Star, User, Calendar } from 'lucide-react';
+import { Star, User, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -41,6 +42,19 @@ const KANBAN_COLUMNS = [
 
 export function BusinessRequestsKanbanView({ requests, onRequestSelect }: BusinessRequestsKanbanViewProps) {
   const queryClient = useQueryClient();
+  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set());
+
+  const toggleColumnCollapse = (columnId: string) => {
+    setCollapsedColumns(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(columnId)) {
+        newSet.delete(columnId);
+      } else {
+        newSet.add(columnId);
+      }
+      return newSet;
+    });
+  };
 
   const handleDragEnd = async (result: DropResult) => {
     if (!result.destination) return;
@@ -95,15 +109,55 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect }: Busine
     <TooltipProvider delayDuration={200}>
       <DragDropContext onDragEnd={handleDragEnd}>
         <ScrollArea className="w-full h-[calc(100vh-220px)]">
-          <div className="flex gap-4 pb-4 pr-4">
+          <div className="flex gap-3 pb-4 pr-4">
             {KANBAN_COLUMNS.map(column => {
               const columnRequests = getRequestsByStatus(column.id);
+              const isCollapsed = collapsedColumns.has(column.id);
+              
+              if (isCollapsed) {
+                return (
+                  <div 
+                    key={column.id} 
+                    className="flex-shrink-0 w-12 cursor-pointer group"
+                    onClick={() => toggleColumnCollapse(column.id)}
+                  >
+                    <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-brand-gold/30 transition-colors">
+                      <div className="h-full flex flex-col items-center py-4">
+                        <div className={cn("w-3 h-3 rounded-full shadow-sm mb-3", column.color)} />
+                        <Badge variant="secondary" className="rounded-full text-xs font-medium px-2 py-0.5 bg-muted/80 mb-3">
+                          {columnRequests.length}
+                        </Badge>
+                        <div className="flex-1 flex items-center justify-center">
+                          <span 
+                            className="text-sm font-semibold tracking-tight text-foreground/80 whitespace-nowrap"
+                            style={{ 
+                              writingMode: 'vertical-rl',
+                              textOrientation: 'mixed',
+                              transform: 'rotate(180deg)'
+                            }}
+                          >
+                            {column.label}
+                          </span>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground mt-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </Card>
+                  </div>
+                );
+              }
+
               return (
                 <div key={column.id} className="flex-shrink-0 w-[300px]">
                   <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50">
                     <CardHeader className="pb-3 sticky top-0 bg-card/95 backdrop-blur-sm z-10 border-b border-border/30">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
+                          <button 
+                            onClick={() => toggleColumnCollapse(column.id)}
+                            className="p-0.5 hover:bg-muted/50 rounded transition-colors"
+                          >
+                            <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+                          </button>
                           <div className={cn("w-3 h-3 rounded-full shadow-sm", column.color)} />
                           <CardTitle className="text-sm font-semibold tracking-tight">{column.label}</CardTitle>
                         </div>
