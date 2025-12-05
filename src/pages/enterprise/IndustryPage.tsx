@@ -669,21 +669,6 @@ export default function IndustryPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Pagination controls - ahead of filters */}
-              {totalPages > 1 && (
-                <div className="flex items-center gap-1 border-r px-3 border-border">
-                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
-                    {currentPage} / {totalPages}
-                  </span>
-                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="h-8 w-8 p-0">
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -698,10 +683,26 @@ export default function IndustryPage() {
                   </span>
                 )}
               </Button>
+              {viewMode === 'list' && <ColumnsDropdown columns={columns} onChange={handleColumnsChange} />}
               <Button variant="outline" size="sm" onClick={handleExport} className="border-border">
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
+              
+              {/* Pagination controls beside view toggle */}
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1 border-l border-r px-3 border-border">
+                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="h-8 w-8 p-0">
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
 
               <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
             </div>
@@ -761,6 +762,19 @@ export default function IndustryPage() {
                       
                       {/* Flex fill to extend row */}
                       <div className="flex-1 h-10 min-w-0" />
+                      
+                      {/* Add column button - fixed cell at end */}
+                      <div className="flex items-center justify-center h-10 border-l border-[#E4E6EB] shrink-0" style={{ width: '48px', minWidth: '48px' }}>
+                        <ColumnsDropdown
+                          columns={columns}
+                          onChange={handleColumnsChange}
+                          trigger={
+                            <button className="h-8 w-8 flex items-center justify-center text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#FAFBFC] rounded transition-colors">
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          }
+                        />
+                      </div>
                     </div>
 
                     {/* Table Body Rows */}
@@ -975,6 +989,9 @@ export default function IndustryPage() {
                             
                             {/* Flex fill to extend row */}
                             <div className="flex-1 h-11 min-w-0" />
+                            
+                            {/* Empty cell matching header + button */}
+                            <div className="h-11 border-l border-[#E4E6EB] shrink-0" style={{ width: '48px', minWidth: '48px' }} />
                           </div>
                         );
                       })}
