@@ -6,10 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConfluenceEditor } from '@/components/knowledge-hub/editor';
 import { DocumentVersionHistory } from '@/components/knowledge-hub';
+import { DocumentComments } from '@/components/knowledge-hub/DocumentComments';
+import { DocumentLabels } from '@/components/knowledge-hub/DocumentLabels';
+import { DocumentAttachments } from '@/components/knowledge-hub/DocumentAttachments';
+import { DocumentExport } from '@/components/knowledge-hub/DocumentExport';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-
 export default function KnowledgeHubDocumentPage() {
   const { documentId } = useParams<{ documentId: string }>();
   const navigate = useNavigate();
@@ -209,6 +212,8 @@ export default function KnowledgeHubDocumentPage() {
               </>
             ) : (
               <>
+                {/* Export - Source: https://support.atlassian.com/confluence-cloud/docs/export-content-from-confluence-cloud/ */}
+                <DocumentExport title={title} content={content} />
                 <Button variant="outline" onClick={() => setShowVersionHistory(true)}>
                   <History className="h-4 w-4 mr-2" />
                   History
@@ -237,15 +242,34 @@ export default function KnowledgeHubDocumentPage() {
         </div>
       </div>
 
-      {/* Editor/Viewer */}
+      {/* Content Area */}
       <div className="flex-1 overflow-auto p-6">
-        <div className="max-w-4xl mx-auto">
-          <ConfluenceEditor
-            content={content}
-            onChange={handleContentChange}
-            editable={isEditing}
-            placeholder="Start writing your documentation..."
-          />
+        <div className="max-w-6xl mx-auto">
+          <div className="flex gap-6">
+            {/* Main Editor */}
+            <div className="flex-1 min-w-0">
+              <ConfluenceEditor
+                content={content}
+                onChange={handleContentChange}
+                editable={isEditing}
+                placeholder="Start writing your documentation..."
+              />
+            </div>
+
+            {/* Sidebar - Labels, Attachments, Comments */}
+            {!isEditing && documentId && (
+              <div className="w-80 flex-shrink-0 space-y-6">
+                {/* Labels - Source: https://support.atlassian.com/confluence-cloud/docs/use-labels-to-categorize-spaces/ */}
+                <DocumentLabels documentId={documentId} />
+                
+                {/* Attachments - Source: https://support.atlassian.com/confluence-cloud/docs/upload-and-manage-files/ */}
+                <DocumentAttachments documentId={documentId} />
+
+                {/* Comments - Source: https://support.atlassian.com/confluence-cloud/docs/collaborate-on-content/ */}
+                <DocumentComments documentId={documentId} />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
