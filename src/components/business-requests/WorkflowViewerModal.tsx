@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { GitBranch, ArrowRight, Pause, Clock, Check, XCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -106,12 +105,6 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onS
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="link" className="h-auto p-0 text-xs text-brand-gold hover:text-brand-gold/80">
-          <GitBranch className="h-3 w-3 mr-1" />
-          Workflow History
-        </Button>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-2xl bg-card">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
