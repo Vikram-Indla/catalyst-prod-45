@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Plus, Search, FolderOpen, FileText, Clock } from 'lucide-react';
+import { BookOpen, Plus, Search, FolderOpen, FileText, Clock, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateDocumentDialog } from '@/components/knowledge-hub/CreateDocumentDialog';
 import { CreateSpaceDialog } from '@/components/knowledge-hub/CreateSpaceDialog';
+import { DocumentFavorite, useFavoriteDocuments } from '@/components/knowledge-hub/DocumentFavorite';
 
 export default function KnowledgeHubPage() {
   const navigate = useNavigate();
@@ -17,6 +18,9 @@ export default function KnowledgeHubPage() {
   const [search, setSearch] = useState('');
   const [createDocOpen, setCreateDocOpen] = useState(false);
   const [createSpaceOpen, setCreateSpaceOpen] = useState(false);
+
+  // Fetch favorites
+  const { data: favorites, isLoading: favoritesLoading } = useFavoriteDocuments();
 
   // Fetch spaces
   const { data: spaces, isLoading: spacesLoading } = useQuery({
@@ -98,6 +102,35 @@ export default function KnowledgeHubPage() {
       {/* Content */}
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-6xl mx-auto space-y-8">
+          {/* Starred Documents Section - Source: https://support.atlassian.com/confluence-cloud/docs/save-and-remove-pages-from-your-favorites/ */}
+          {favorites && favorites.length > 0 && (
+            <section>
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Star className="h-5 w-5 text-brand-gold fill-brand-gold" />
+                Starred
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {favorites.slice(0, 6).map((fav: any) => (
+                  <Card 
+                    key={fav.id}
+                    className="p-4 hover:border-brand-gold/50 transition-colors cursor-pointer"
+                    onClick={() => navigate(`/knowledge-hub/documents/${fav.document?.id}`)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <Star className="h-4 w-4 text-brand-gold fill-brand-gold flex-shrink-0 mt-0.5" />
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-medium truncate">{fav.document?.title}</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Updated {new Date(fav.document?.updated_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Spaces Section */}
           <section>
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
@@ -173,10 +206,11 @@ export default function KnowledgeHubPage() {
                         </p>
                       </div>
                       {doc.linked_work_item_type && (
-                        <Badge variant="secondary" className="capitalize">
+                        <Badge variant="secondary" className="capitalize mr-2">
                           {doc.linked_work_item_type}
                         </Badge>
                       )}
+                      <DocumentFavorite documentId={doc.id} variant="icon" />
                     </div>
                   </Card>
                 ))}

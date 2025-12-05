@@ -10,4 +10,5 @@ export { DocumentExport } from './DocumentExport';
 export { DocumentWatchers } from './DocumentWatchers';
 export { DocumentRestrictions } from './DocumentRestrictions';
 export { MentionInput, CommentContent } from './MentionInput';
+export { DocumentFavorite, useFavoriteDocuments } from './DocumentFavorite';
 export * from './editor';
