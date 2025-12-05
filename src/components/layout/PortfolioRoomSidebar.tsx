@@ -102,6 +102,7 @@ export function PortfolioRoomSidebar({
   ];
 
   const morePagesSubMenu = [
+    { id: 'knowledge-hub', label: 'Knowledge Hub', path: '/knowledge-hub' },
     { id: 'assessments', label: 'Assessments', path: '/portfolio/:portfolioId/pages/assessments' },
     { id: 'metrics', label: 'Metrics', path: '/portfolio/:portfolioId/pages/metrics' },
     { id: 'meetings', label: 'Meetings', path: '/portfolio/:portfolioId/pages/meetings' },

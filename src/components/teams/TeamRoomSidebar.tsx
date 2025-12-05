@@ -99,6 +99,7 @@ const reportsSubMenu = [
 
 // More pages submenu
 const morePagesSubMenu = [
+  { id: 'knowledge-hub', label: 'Knowledge Hub', path: '/knowledge-hub' },
   { id: 'assessments', label: 'Assessments', path: '/team/:teamId/pages/assessments' },
   { id: 'definition-of-done', label: 'Definition of done', path: '/team/:teamId/pages/definition-of-done' },
   { id: 'lean-process', label: 'Lean process', path: '/team/:teamId/pages/lean-process' },
