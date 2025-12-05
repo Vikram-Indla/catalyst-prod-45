@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Star, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+// Native scroll used instead of ScrollArea for better horizontal/vertical scroll support
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
 
@@ -134,8 +134,8 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
     <TooltipProvider delayDuration={200}>
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="text-xs text-muted-foreground/60 mb-2 italic">Click any column to expand</div>
-        <ScrollArea className="w-full h-[calc(100vh-240px)]">
-          <div className="flex gap-3 pb-4 pr-4">
+        <div className="w-full h-[calc(100vh-240px)] overflow-auto">
+          <div className="flex gap-3 pb-4 pr-4 min-w-max">
             {KANBAN_COLUMNS.map(column => {
               const columnRequests = getRequestsByStatus(column.id);
               const isCollapsed = collapsedColumns.has(column.id);
@@ -174,8 +174,8 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
 
               return (
                 <div key={column.id} className="flex-shrink-0 w-[300px]">
-                  <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50">
-                    <CardHeader className="pb-3 sticky top-0 bg-card/95 backdrop-blur-sm z-10 border-b border-border/30">
+                  <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 flex flex-col max-h-[calc(100vh-280px)]">
+                    <CardHeader className="pb-3 bg-card/95 backdrop-blur-sm z-10 border-b border-border/30 flex-shrink-0">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <button 
@@ -198,7 +198,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
                           ref={provided.innerRef}
                           {...provided.droppableProps}
                           className={cn(
-                            "space-y-3 min-h-[400px] max-h-[calc(100vh-320px)] overflow-y-auto transition-colors p-3",
+                            "space-y-3 min-h-[200px] flex-1 overflow-y-auto transition-colors p-3",
                             snapshot.isDraggingOver && "bg-accent/10"
                           )}
                         >
@@ -299,8 +299,7 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
               );
             })}
           </div>
-          <ScrollBar orientation="horizontal" className="h-2.5" />
-        </ScrollArea>
+        </div>
       </DragDropContext>
     </TooltipProvider>
   );
