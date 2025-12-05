@@ -63,7 +63,7 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
       toast.info('Target Completion Date unlocked');
     } else {
       if (!data.impl_start_date) {
-        toast.error('Cannot lock: Initiation Date must be populated first');
+        toast.error('Cannot lock: Kickoff Date must be populated first');
         return;
       }
       if (!data.end_date) {
@@ -192,15 +192,17 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
             </div>
 
             <div>
-              <Label className="text-sm font-medium">Initiation Date</Label>
+              <Label className="text-sm font-medium">Kickoff Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
+                    disabled
                     className={cn(
-                      "w-full justify-start text-left font-normal mt-1.5",
+                      "w-full justify-start text-left font-normal mt-1.5 opacity-60 cursor-not-allowed",
                       !data.impl_start_date && "text-muted-foreground"
                     )}
+                    title="Available when status is Approved or later"
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {data.impl_start_date ? format(new Date(data.impl_start_date), 'dd/MM/yyyy') : 'dd/mm/yyyy'}
