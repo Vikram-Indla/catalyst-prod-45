@@ -2,7 +2,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PROCESS_STEPS } from '@/types/business-request';
+import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 
 interface IndustryFiltersDialogProps {
   open: boolean;
@@ -16,15 +16,6 @@ interface IndustryFiltersDialogProps {
   };
   onFiltersChange: (filters: IndustryFiltersDialogProps['filters']) => void;
 }
-
-const deliveryPlatformOptions = [
-  { value: 'Senaei Platform', label: 'Senaei Platform' },
-  { value: 'Innovation Platform', label: 'Innovation Platform' },
-  { value: 'Tahommena', label: 'Tahommena' },
-  { value: 'Compass', label: 'Compass' },
-  { value: 'Mini Apps', label: 'Mini Apps' },
-  { value: 'Website', label: 'Website' },
-];
 
 const quarterOptions = [
   { value: 'Q1-2025', label: 'Q1 2025' },
@@ -89,9 +80,9 @@ export function IndustryFiltersDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All platforms</SelectItem>
-                {deliveryPlatformOptions.map((platform) => (
+                {DELIVERY_PLATFORM_OPTIONS.map((platform) => (
                   <SelectItem key={platform.value} value={platform.value}>
-                    {platform.label}
+                    {platform.label.en}
                   </SelectItem>
                 ))}
               </SelectContent>

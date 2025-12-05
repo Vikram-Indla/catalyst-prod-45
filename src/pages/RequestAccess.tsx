@@ -10,6 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
+import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 
 // Description template with section hints
 const DESCRIPTION_TEMPLATE_EN = `<p><strong>Business Need:</strong></p>
@@ -181,14 +182,7 @@ const DEPARTMENTS = [
   { en: 'Other', ar: 'أخرى' }
 ];
 
-// Delivery Platform options
-const DELIVERY_PLATFORMS = [
-  { en: 'Investor Journey', ar: 'رحلة المستثمر' },
-  { en: 'Catalyst', ar: 'كاتاليست' },
-  { en: 'RHQ Services', ar: 'خدمات المقر الإقليمي' },
-  { en: 'Senaei Platform', ar: 'منصة صناعي' },
-  { en: 'Other', ar: 'أخرى' }
-];
+// Delivery Platform options - imported from business-request.ts (single source of truth)
 
 export default function RequestAccess() {
   const navigate = useNavigate();
@@ -582,8 +576,8 @@ export default function RequestAccess() {
                         <SelectValue placeholder={t.platformPlaceholder} />
                       </SelectTrigger>
                       <SelectContent>
-                        {DELIVERY_PLATFORMS.map((p) => (
-                          <SelectItem key={p.en} value={p.en}>{lang === 'en' ? p.en : p.ar}</SelectItem>
+                        {DELIVERY_PLATFORM_OPTIONS.map((p) => (
+                          <SelectItem key={p.value} value={p.value}>{lang === 'en' ? p.label.en : p.label.ar}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>

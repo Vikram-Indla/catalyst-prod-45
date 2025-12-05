@@ -4,16 +4,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ChevronDown, Check, X, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCatalystContext } from '@/contexts/CatalystContext';
-import { PROCESS_STEPS } from '@/types/business-request';
-
-const deliveryPlatformOptions = [
-  { value: 'Senaei Platform', label: 'Senaei Platform' },
-  { value: 'Innovation Platform', label: 'Innovation Platform' },
-  { value: 'Tahommena', label: 'Tahommena' },
-  { value: 'Compass', label: 'Compass' },
-  { value: 'Mini Apps', label: 'Mini Apps' },
-  { value: 'Website', label: 'Website' },
-];
+import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
 
 const quarterOptions = [
   { value: 'Q1-2025', label: 'Q1 2025' },
@@ -64,7 +55,7 @@ export function IndustryFilterBar() {
   const getDeliveryPlatformDisplayText = () => {
     if (deliveryPlatforms.length === 0) return 'Platform';
     if (deliveryPlatforms.length === 1) {
-      return deliveryPlatformOptions.find(p => p.value === deliveryPlatforms[0])?.label || deliveryPlatforms[0];
+      return DELIVERY_PLATFORM_OPTIONS.find(p => p.value === deliveryPlatforms[0])?.label.en || deliveryPlatforms[0];
     }
     return `${deliveryPlatforms.length} platforms`;
   };
@@ -108,7 +99,7 @@ export function IndustryFilterBar() {
         </PopoverTrigger>
         <PopoverContent className="w-52 p-0 bg-popover border shadow-lg z-50" align="start">
           <div className="max-h-60 overflow-auto">
-            {deliveryPlatformOptions.map(platform => (
+            {DELIVERY_PLATFORM_OPTIONS.map(platform => (
               <div
                 key={platform.value}
                 className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-muted/50"
@@ -120,7 +111,7 @@ export function IndustryFilterBar() {
                 )}>
                   {deliveryPlatforms.includes(platform.value) && <Check className="h-3 w-3 text-white" />}
                 </div>
-                <span className="text-sm">{platform.label}</span>
+                <span className="text-sm">{platform.label.en}</span>
               </div>
             ))}
           </div>
