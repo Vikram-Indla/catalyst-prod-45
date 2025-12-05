@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Edit, Clock, Folder, History } from 'lucide-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { ArrowLeft, Save, Edit, Clock, Folder, History, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -34,6 +34,22 @@ export default function KnowledgeHubDocumentPage() {
       return data;
     },
     enabled: !!documentId,
+  });
+
+  // Fetch space info if document has a space_id
+  const { data: space } = useQuery({
+    queryKey: ['kb-space', document?.space_id],
+    queryFn: async () => {
+      if (!document?.space_id) return null;
+      const { data, error } = await supabase
+        .from('kb_doc_spaces')
+        .select('*')
+        .eq('id', document.space_id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!document?.space_id,
   });
 
   useEffect(() => {
@@ -120,6 +136,30 @@ export default function KnowledgeHubDocumentPage() {
 
   return (
     <div className="h-full flex flex-col bg-background">
+      {/* Breadcrumb */}
+      <div className="border-b bg-muted/30 px-6 py-2">
+        <nav className="flex items-center gap-1 text-sm text-muted-foreground">
+          <Link to="/knowledge-hub" className="hover:text-foreground transition-colors">
+            Knowledge Hub
+          </Link>
+          {space && (
+            <>
+              <ChevronRight className="h-4 w-4" />
+              <Link 
+                to={`/knowledge-hub/spaces/${space.id}`} 
+                className="hover:text-foreground transition-colors"
+              >
+                {space.name}
+              </Link>
+            </>
+          )}
+          <ChevronRight className="h-4 w-4" />
+          <span className="text-foreground font-medium truncate max-w-[200px]">
+            {document.title}
+          </span>
+        </nav>
+      </div>
+
       {/* Header */}
       <div className="border-b bg-card px-6 py-4">
         <div className="flex items-center justify-between">
