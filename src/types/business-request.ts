@@ -131,9 +131,14 @@ export interface BusinessRequest {
   expected_resume_date: string | null;
   on_hold_comment: string | null;
   
-  // Ranking
+  // Ranking & Scoring
   rank: number | null;
   rank_override_justification: string | null;
+  is_force_ranked: boolean;
+  executive_urgency: number | null;
+  business_value: number | null;
+  complexity_score: number | null;
+  business_score: number | null;
   
   // Planning
   planned_quarter: string | null;
