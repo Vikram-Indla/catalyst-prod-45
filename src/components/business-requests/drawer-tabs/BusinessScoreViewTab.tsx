@@ -85,16 +85,29 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
     setJustification(data.rank_override_justification || '');
   }, [data.rank_override_justification]);
 
-  // Auto-save business_score when inputs change
-  useEffect(() => {
-    // Only update if the calculated score differs from stored value
-    if (data.business_score !== businessScore && (executiveUrgency > 0 || businessValue > 0 || complexity > 0)) {
-      onChange('business_score', businessScore);
-    }
-  }, [businessScore, data.business_score, executiveUrgency, businessValue, complexity, onChange]);
-
+  // Calculate the new business score when inputs change and save it
   const handleInputChange = (field: string, value: number) => {
     onChange(field, value);
+    
+    // Calculate new score based on updated value
+    let newUrgency = executiveUrgency;
+    let newBusinessValue = businessValue;
+    let newComplexity = complexity;
+    
+    if (field === 'executive_urgency') newUrgency = value;
+    if (field === 'business_value') newBusinessValue = value;
+    if (field === 'complexity_score') newComplexity = value;
+    
+    const normalizedUrg = newUrgency / 10;
+    const normalizedBV = newBusinessValue / 10;
+    const normalizedSimp = (10 - newComplexity) / 10;
+    
+    const newScore = Math.round(
+      (0.45 * normalizedBV + 0.35 * normalizedUrg + 0.20 * normalizedSimp) * 100
+    );
+    
+    // Save the calculated business score
+    onChange('business_score', newScore);
   };
 
   const handleRankChange = (value: string) => {
