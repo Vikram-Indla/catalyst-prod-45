@@ -39,10 +39,9 @@ interface BusinessScoreViewTabProps {
   onChange: (field: string, value: any) => void;
   requestId?: string;
   onDirtyChange?: (isDirty: boolean) => void;
-  hasUnsavedChanges?: boolean;
 }
 
-export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange, hasUnsavedChanges = false }: BusinessScoreViewTabProps) {
+export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange }: BusinessScoreViewTabProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -124,8 +123,13 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
 
   // Initialize refs when data changes - but skip if we just saved
   useEffect(() => {
+    // Skip reset if we just triggered a save - prevents state from reverting
     if (skipNextResetRef.current) {
       skipNextResetRef.current = false;
+      // Still update refs for next comparison, but don't reset UI state
+      originalRankRef.current = data.rank;
+      originalIsForceRankedRef.current = data.is_force_ranked === true;
+      prevRankRef.current = data.rank;
       return;
     }
     originalRankRef.current = data.rank;
@@ -370,8 +374,8 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
     setJustification(data.rank_override_justification || '');
   };
 
-  // Force rank is only enabled if scoring is complete AND no unsaved changes (or already force ranked)
-  const forceRankEnabled = (isScoringComplete && !hasUnsavedChanges) || isForceRanked;
+  // Force rank is only enabled if scoring is complete (inputs auto-save, so no need to check unsaved)
+  const forceRankEnabled = isScoringComplete || isForceRanked;
 
   // Determine the display value for the select
   const selectDisplayValue = pendingRank !== null ? String(pendingRank) : (isForceRanked ? String(data.rank) : 'auto');
@@ -523,12 +527,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
                 </div>
                 {!forceRankEnabled && !isForceRanked && (
                   <p className="text-[9px] text-muted-foreground mt-1.5 italic">
-                    {!isScoringComplete 
-                      ? 'Complete all inputs to enable'
-                      : hasUnsavedChanges 
-                        ? 'Save changes first to enable force ranking'
-                        : 'Complete all inputs to enable'
-                    }
+                    Complete all inputs to enable
                   </p>
                 )}
 
