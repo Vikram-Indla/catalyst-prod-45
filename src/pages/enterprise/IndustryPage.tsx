@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Equal, Flame, Clock, AlertTriangle } from 'lucide-react';
+import { IndustryFilterBar } from '@/components/business-requests/IndustryFilterBar';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -509,45 +510,45 @@ export default function IndustryPage() {
           </div>
         </div>
 
-        {/* Search & Toolbar */}
-        <div className="flex items-center justify-between gap-4 px-4 sm:px-6 py-3 border-b bg-card">
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search industry requests..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9 bg-white border-border" />
+        {/* Search & Filters Bar */}
+        <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 border-b bg-card">
+          {/* Row 1: Search + Actions */}
+          <div className="flex items-center justify-between gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search industry requests..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9 bg-white border-border" />
+            </div>
+
+            <div className="flex items-center gap-2">
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1 border-l border-r px-3 border-border">
+                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm text-foreground px-2 whitespace-nowrap">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="h-8 w-8 p-0">
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
+              <Button variant="outline" size="sm" className="border-border">
+                <Upload className="h-4 w-4 mr-2" />
+                Import
+              </Button>
+              {viewMode === 'list' && <ColumnsDropdown columns={columns} onChange={handleColumnsChange} />}
+              <Button variant="outline" size="sm" onClick={handleExport} className="border-border">
+                <Download className="h-4 w-4 mr-2" />
+                Export
+              </Button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {activeFilterCount > 0 && (
-              <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">
-                {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} applied
-              </span>
-            )}
-
-            {totalPages > 1 && (
-              <div className="flex items-center gap-1 border-l border-r px-3 border-border">
-                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <span className="text-sm text-foreground px-2 whitespace-nowrap">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="h-8 w-8 p-0">
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-
-            <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
-            <Button variant="outline" size="sm" className="border-border">
-              <Upload className="h-4 w-4 mr-2" />
-              Import
-            </Button>
-            {viewMode === 'list' && <ColumnsDropdown columns={columns} onChange={handleColumnsChange} />}
-            <Button variant="outline" size="sm" onClick={handleExport} className="border-border">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
-          </div>
+          {/* Row 2: Horizontal Filters */}
+          <IndustryFilterBar />
         </div>
 
         {/* Main Content */}
