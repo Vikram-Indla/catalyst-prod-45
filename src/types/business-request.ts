@@ -6,10 +6,9 @@ export const PROCESS_STEPS = [
   { value: 'under_study', label: 'Analysis', color: 'bg-[#c4c4c4]' },
   { value: 'in_progress', label: 'Active', color: 'bg-[#5c4b8a]' },
   { value: 'awaiting_business_response', label: 'Pending', color: 'bg-[#a0a0a0]' },
-  { value: 'reopen', label: 'Reopened', color: 'bg-[#f59e0b]' },
   { value: 'on_hold', label: 'Paused', color: 'bg-[#c9a0a0]' },
-  { value: 'closed', label: 'Closed', color: 'bg-[#1a1a1a]' },
-  { value: 'completed', label: 'Done', color: 'bg-[#6abf4b]' },
+  { value: 'implemented', label: 'Implemented', color: 'bg-[#1a1a1a]' },
+  { value: 'closed', label: 'Closed', color: 'bg-[#6abf4b]' },
 ] as const;
 
 // Health Options
