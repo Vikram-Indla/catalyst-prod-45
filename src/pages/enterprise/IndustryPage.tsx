@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Equal, Flame, Clock, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Flame, Clock, AlertTriangle } from 'lucide-react';
 import { IndustryFilterBar } from '@/components/business-requests/IndustryFilterBar';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
@@ -30,12 +30,13 @@ const COLUMN_DEFINITIONS: Record<string, { label: string; width: string }> = {
   title: { label: 'Summary', width: 'flex-1 min-w-0' },
   process_step: { label: 'Process Step', width: 'w-36' },
   business_score: { label: 'Score', width: 'w-20' },
+  submitted_date: { label: 'Submitted Date', width: 'w-28' },
   planned_quarter: { label: 'Quarter', width: 'w-24' },
   end_date: { label: 'Target Date', width: 'w-28' },
   ageing: { label: 'Ageing', width: 'w-20' },
 };
 
-const DEFAULT_COLUMN_ORDER = ['request_key', 'rank', 'title', 'process_step', 'business_score', 'planned_quarter', 'end_date', 'ageing'];
+const DEFAULT_COLUMN_ORDER = ['request_key', 'rank', 'title', 'process_step', 'business_score', 'submitted_date', 'planned_quarter', 'end_date', 'ageing'];
 
 const getDefaultColumns = (order: string[], visibility: Record<string, boolean>): ColumnConfig[] => {
   return order.map(id => ({
@@ -169,29 +170,19 @@ const sortByScoreWithTieBreaker = (items: any[]) => {
     });
   }
   
-  // No saved ranks - use business score cascade
+  // No saved ranks - use business score with submission date tie-breaker
   return [...items].sort((a, b) => {
     // 1. Primary: Business Score (descending)
     const scoreA = a.business_score ?? 0;
     const scoreB = b.business_score ?? 0;
     if (scoreB !== scoreA) return scoreB - scoreA;
     
-    // 2. Tie-breaker: Executive Urgency (descending)
-    const urgA = a.executive_urgency ?? 0;
-    const urgB = b.executive_urgency ?? 0;
-    if (urgB !== urgA) return urgB - urgA;
-    
-    // 3. Tie-breaker: Business Value (descending)
-    const bvA = a.business_value ?? 0;
-    const bvB = b.business_value ?? 0;
-    if (bvB !== bvA) return bvB - bvA;
-    
-    // 4. Tie-breaker: Created Date (FIFO - ascending)
+    // 2. Tie-breaker: Submission Date (FIFO - earlier wins)
     const dateA = new Date(a.created_at || 0).getTime();
     const dateB = new Date(b.created_at || 0).getTime();
     if (dateA !== dateB) return dateA - dateB;
     
-    // 5. Final fallback: Request ID (deterministic)
+    // 3. Final fallback: Request ID (deterministic)
     return (a.request_key ?? '').localeCompare(b.request_key ?? '');
   });
 };
@@ -235,6 +226,10 @@ const sortByColumn = (items: any[], columnId: string, direction: SortDirection) 
         aVal = a.created_at ? calculateAgeing(a.created_at) : 0;
         bVal = b.created_at ? calculateAgeing(b.created_at) : 0;
         break;
+      case 'submitted_date':
+        aVal = a.created_at ? new Date(a.created_at).getTime() : 0;
+        bVal = b.created_at ? new Date(b.created_at).getTime() : 0;
+        break;
       default:
         return 0;
     }
@@ -243,20 +238,6 @@ const sortByColumn = (items: any[], columnId: string, direction: SortDirection) 
     if (aVal > bVal) return direction === 'asc' ? 1 : -1;
     return 0;
   });
-};
-
-// Check if item has score tie with adjacent items
-const hasScoreTie = (item: any, allItems: any[], index: number): boolean => {
-  if (item.is_force_ranked) return false;
-  const prevItem = index > 0 ? allItems[index - 1] : null;
-  const nextItem = index < allItems.length - 1 ? allItems[index + 1] : null;
-  
-  const score = item.business_score ?? 0;
-  const prevScore = prevItem?.business_score ?? -1;
-  const nextScore = nextItem?.business_score ?? -1;
-  
-  return (prevScore === score && !prevItem?.is_force_ranked) || 
-         (nextScore === score && !nextItem?.is_force_ranked);
 };
 
 export default function IndustryPage() {
@@ -514,9 +495,6 @@ export default function IndustryPage() {
 
   const activeFilterCount = deliveryPlatforms.length + processSteps.length + quarters.length;
 
-  // Check if current sort is business logic (rank-based)
-  const isBusinessLogicSort = columnSort.columnId === 'rank' || !columnSort.direction;
-
   return (
     <TooltipProvider>
       <div className="h-full flex flex-col bg-background">
@@ -620,7 +598,6 @@ export default function IndustryPage() {
                           {paginatedRequests.map((request: any, index: number) => {
                           const globalIndex = startIndex + index;
                           const isForceRanked = request.is_force_ranked;
-                          const isTied = isBusinessLogicSort && hasScoreTie(request, sortedRequests, globalIndex);
                           const isExpanded = expandedRows.has(request.id);
                           const ageing = calculateAgeing(request.created_at);
                           const ageingInfo = getAgeingInfo(ageing);
@@ -647,17 +624,6 @@ export default function IndustryPage() {
                                 return (
                                   <div className="w-16 shrink-0 text-center">
                                     <span className="text-sm text-foreground inline-flex items-center gap-1 justify-center">
-                                      {isTied && (
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <Equal className="h-3 w-3 text-muted-foreground cursor-help" />
-                                          </TooltipTrigger>
-                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
-                                            <div className="font-medium">Score Tie Detected</div>
-                                            <div className="text-gray-300 mt-1">Rank determined by tie-breaker cascade: Urgency → Business Value → Submission Date</div>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      )}
                                       {isForceRanked && (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
@@ -685,6 +651,12 @@ export default function IndustryPage() {
                                 return <div className="w-36 shrink-0">{getStatusBadge(request.process_step)}</div>;
                               case 'business_score':
                                 return <div className="w-20 shrink-0 text-center">{getBusinessScoreBadge(request.business_score)}</div>;
+                              case 'submitted_date':
+                                return (
+                                  <div className="w-28 shrink-0">
+                                    <span className="text-sm text-muted-foreground">{formatDate(request.created_at)}</span>
+                                  </div>
+                                );
                               case 'planned_quarter':
                                 return (
                                   <div className="w-24 shrink-0">
@@ -806,10 +778,6 @@ export default function IndustryPage() {
                   <div className="flex items-center gap-1.5">
                     <Lock className="h-3 w-3" />
                     <span>Force-ranked</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Equal className="h-3 w-3" />
-                    <span>Score tie</span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Flame className="h-3 w-3 text-destructive" />
