@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   ArrowLeft, 
   Trash2, 
@@ -14,7 +15,9 @@ import {
   Upload, 
   X, 
   Download,
-  FileText 
+  FileText,
+  BookOpen,
+  Search
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -30,10 +33,11 @@ const LINK_TYPE_OPTIONS = [
   { value: 'design', label: 'Design' },
   { value: 'ticket', label: 'Ticket' },
   { value: 'reference', label: 'Reference' },
+  { value: 'knowledge-hub', label: 'Knowledge Hub' },
   { value: 'other', label: 'Other' },
 ];
 
-type FormView = 'selection' | 'external' | 'document';
+type FormView = 'selection' | 'external' | 'document' | 'knowledge-hub';
 
 interface LinksViewTabProps {
   requestId: string;
@@ -65,6 +69,31 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
   const [documentForm, setDocumentForm] = useState({
     title: '',
     files: [] as File[]
+  });
+
+  // Knowledge Hub form state
+  const [kbSearch, setKbSearch] = useState('');
+  const [selectedKbDoc, setSelectedKbDoc] = useState<{ id: string; title: string } | null>(null);
+
+  // Fetch Knowledge Hub documents
+  const { data: kbDocuments = [] } = useQuery({
+    queryKey: ['kb-documents-for-linking', kbSearch],
+    queryFn: async () => {
+      let query = supabase
+        .from('kb_documents')
+        .select('id, title, updated_at')
+        .order('updated_at', { ascending: false })
+        .limit(20);
+      
+      if (kbSearch) {
+        query = query.ilike('title', `%${kbSearch}%`);
+      }
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: formView === 'knowledge-hub'
   });
 
   const { data: links = [] } = useQuery({
@@ -176,6 +205,32 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
     }
   });
 
+  const createKbLinkMutation = useMutation({
+    mutationFn: async (doc: { id: string; title: string }) => {
+      const { error } = await supabase
+        .from('business_request_links')
+        .insert({ 
+          title: doc.title,
+          url: `/knowledge-hub/documents/${doc.id}`,
+          link_type: 'knowledge-hub',
+          business_request_id: requestId,
+          kind: 'knowledge-hub'
+        });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['business-request-links', requestId] });
+      toast.success('Knowledge Hub page linked');
+      setSelectedKbDoc(null);
+      setKbSearch('');
+      setFormView('selection');
+    },
+    onError: () => {
+      toast.error('Failed to link Knowledge Hub page');
+    }
+  });
+
   const handleAddExternalLink = () => {
     if (!externalForm.title || !externalForm.url) {
       toast.error('Title and URL are required');
@@ -246,6 +301,16 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
     setFormView('selection');
     setExternalForm({ title: '', url: '', link_type: 'documentation' });
     setDocumentForm({ title: '', files: [] });
+    setSelectedKbDoc(null);
+    setKbSearch('');
+  };
+
+  const handleLinkKbDoc = () => {
+    if (!selectedKbDoc) {
+      toast.error('Please select a Knowledge Hub page');
+      return;
+    }
+    createKbLinkMutation.mutate(selectedKbDoc);
   };
 
   return (
@@ -255,7 +320,7 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
         <h4 className="font-semibold text-[15px] text-foreground mb-4">Add New Link</h4>
         
         {formView === 'selection' && (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             {/* External Link Card */}
             <button
               className="p-6 border-2 border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/30 hover:bg-brand-gold/5 group"
@@ -278,6 +343,18 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
               </div>
               <div className="font-semibold text-[14px] text-foreground mb-1">Upload Documents</div>
               <div className="text-[12px] text-muted-foreground">Attach files up to 20MB each</div>
+            </button>
+
+            {/* Knowledge Hub Page Card */}
+            <button
+              className="p-6 border-2 border-border rounded-xl text-center cursor-pointer transition-all hover:border-brand-gold/30 hover:bg-brand-gold/5 group"
+              onClick={() => setFormView('knowledge-hub')}
+            >
+              <div className="w-[52px] h-[52px] mx-auto mb-3 flex items-center justify-center bg-muted/50 rounded-xl group-hover:bg-brand-gold group-hover:text-white transition-all">
+                <BookOpen className="h-6 w-6 text-muted-foreground group-hover:text-white" />
+              </div>
+              <div className="font-semibold text-[14px] text-foreground mb-1">Knowledge Hub</div>
+              <div className="text-[12px] text-muted-foreground">Link to a KB page</div>
             </button>
           </div>
         )}
@@ -426,6 +503,80 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
             </Button>
           </div>
         )}
+
+        {formView === 'knowledge-hub' && (
+          <div className="space-y-4 animate-fade-in">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-1.5 text-[13px] text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back
+            </button>
+
+            <div>
+              <Label className="text-[13px] font-medium text-foreground">Search Knowledge Hub</Label>
+              <div className="relative mt-1.5">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={kbSearch}
+                  onChange={(e) => setKbSearch(e.target.value)}
+                  placeholder="Search pages..."
+                  className="pl-9 h-10 bg-muted/30 border-border/60 focus:border-brand-gold focus:ring-brand-gold/15"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-[13px] font-medium text-foreground mb-2 block">Select a page</Label>
+              <ScrollArea className="h-[200px] border rounded-lg">
+                <div className="p-2 space-y-1">
+                  {kbDocuments.length > 0 ? (
+                    kbDocuments.map((doc: any) => (
+                      <button
+                        key={doc.id}
+                        onClick={() => setSelectedKbDoc({ id: doc.id, title: doc.title })}
+                        className={cn(
+                          "w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all",
+                          selectedKbDoc?.id === doc.id 
+                            ? "bg-brand-gold/10 border border-brand-gold" 
+                            : "hover:bg-muted/50"
+                        )}
+                      >
+                        <BookOpen className="h-4 w-4 text-brand-gold flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[13px] font-medium truncate">{doc.title}</div>
+                          <div className="text-[11px] text-muted-foreground">
+                            Updated {new Date(doc.updated_at).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-[13px] text-muted-foreground">
+                      {kbSearch ? 'No pages found' : 'No Knowledge Hub pages available'}
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
+
+            {selectedKbDoc && (
+              <div className="p-3 bg-brand-gold/5 border border-brand-gold/20 rounded-lg">
+                <div className="text-[12px] text-muted-foreground mb-1">Selected page:</div>
+                <div className="text-[13px] font-medium text-foreground">{selectedKbDoc.title}</div>
+              </div>
+            )}
+
+            <Button 
+              onClick={handleLinkKbDoc} 
+              disabled={createKbLinkMutation.isPending || !selectedKbDoc}
+              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            >
+              {createKbLinkMutation.isPending ? 'Linking...' : 'Link Page'}
+            </Button>
+          </div>
+        )}
       </Card>
 
       {/* Links List */}
@@ -453,6 +604,8 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
                   <div className="w-9 h-9 flex items-center justify-center bg-brand-gold/10 rounded-lg">
                     {link.kind === 'document' ? (
                       <FileText className="h-4 w-4 text-brand-gold" />
+                    ) : link.kind === 'knowledge-hub' ? (
+                      <BookOpen className="h-4 w-4 text-brand-gold" />
                     ) : (
                       <ExternalLink className="h-4 w-4 text-brand-gold" />
                     )}
@@ -463,6 +616,9 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
                     <div className="text-[13px] font-medium text-foreground truncate">{link.title}</div>
                     {link.kind === 'document' && link.file_name && (
                       <div className="text-[11px] text-muted-foreground truncate">{link.file_name}</div>
+                    )}
+                    {link.kind === 'knowledge-hub' && (
+                      <div className="text-[11px] text-muted-foreground truncate">Knowledge Hub Page</div>
                     )}
                   </div>
                   
