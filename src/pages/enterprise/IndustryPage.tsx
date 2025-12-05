@@ -805,7 +805,7 @@ export default function IndustryPage() {
                     {/* Column Headers - Sticky */}
                     <div className="sticky top-0 z-30 flex items-stretch h-10 px-4 bg-white border-b border-[#DFE1E6] text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide">
                       {/* Leading icons placeholder - fixed width */}
-                      <div className="flex items-center gap-2 mr-2 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
+                      <div className="h-full flex items-center gap-2 mr-2 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
                         <div className="w-8" /> {/* Drag */}
                         <div className="w-8" /> {/* Checkbox */}
                       </div>
@@ -821,7 +821,7 @@ export default function IndustryPage() {
                           <div 
                             key={col.id}
                             className={cn(
-                              "shrink-0 px-3.5 flex items-center gap-1 border-r border-[#E4E6EB] last:border-r-0",
+                              "h-full shrink-0 px-3.5 flex items-center gap-1 border-r border-[#E4E6EB] last:border-r-0",
                               isCentered && "justify-center"
                             )}
                             style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
@@ -955,7 +955,7 @@ export default function IndustryPage() {
                                   <div 
                                     key={col.id}
                                     className={cn(
-                                      "shrink-0 px-3.5 flex items-center min-w-0 border-r border-[#E4E6EB] last:border-r-0",
+                                      "h-full shrink-0 px-3.5 flex items-center min-w-0 border-r border-[#E4E6EB] last:border-r-0",
                                       isCentered && "justify-center"
                                     )}
                                     style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
@@ -979,7 +979,7 @@ export default function IndustryPage() {
                                         onClick={() => setSelectedRequestId(request.id)}
                                       >
                                         {/* Leading icons - fixed width matching header */}
-                                        <div className="flex items-center gap-2 mr-2 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
+                                        <div className="h-full flex items-center gap-2 mr-2 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
                                           <div {...provided.dragHandleProps} className="w-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground flex items-center justify-center" onClick={e => e.stopPropagation()}>
                                             <GripVertical className="h-4 w-4" />
                                           </div>
