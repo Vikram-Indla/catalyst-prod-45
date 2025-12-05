@@ -349,7 +349,8 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         onChange('rank_override_justification', justification.trim());
         
         prevRankRef.current = pendingRank;
-        setPendingRank(null);
+        // DO NOT clear pendingRank here - keep showing the saved value until data confirms
+        // The useEffect will handle state once data is confirmed
         
         // Force immediate refresh of ALL relevant queries
         await queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
