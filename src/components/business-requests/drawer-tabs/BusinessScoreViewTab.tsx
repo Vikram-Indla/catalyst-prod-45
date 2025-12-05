@@ -264,9 +264,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         setPendingRank(null);
         prevRankRef.current = null;
         
-        // Refresh table
-        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-        queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
+        // Force immediate refresh of table data
+        await queryClient.refetchQueries({ queryKey: ['business-requests'] });
+        await queryClient.refetchQueries({ queryKey: ['all-business-requests-for-rank'] });
         
         toast({ title: 'Rank updated', description: 'Switched to auto-calculated ranking.' });
       } catch (error) {
@@ -321,9 +321,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         prevRankRef.current = pendingRank;
         setPendingRank(null);
         
-        // Refresh table data
-        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-        queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
+        // Force immediate refresh of table data (not just invalidate)
+        await queryClient.refetchQueries({ queryKey: ['business-requests'] });
+        await queryClient.refetchQueries({ queryKey: ['all-business-requests-for-rank'] });
         
         toast({ 
           title: 'Rank saved', 
