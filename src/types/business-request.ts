@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
-// Process Step Options - synchronized with Kanban columns
+// Process Step Options - synchronized with Kanban columns (Finalized per governance)
 export const PROCESS_STEPS = [
-  { value: 'new_request', label: 'New Request', color: 'bg-[#4a4a4a]' },
-  { value: 'under_analysis', label: 'Under Analysis', color: 'bg-[#c4c4c4]' },
+  { value: 'request_received', label: 'Request Received', color: 'bg-[#4a4a4a]' },
+  { value: 'under_study', label: 'Under Study', color: 'bg-[#c4c4c4]' },
   { value: 'in_progress', label: 'In Progress', color: 'bg-[#5c4b8a]' },
   { value: 'awaiting_business_response', label: 'Awaiting Business Response', color: 'bg-[#a0a0a0]' },
+  { value: 'reopen', label: 'Reopen', color: 'bg-[#f59e0b]' },
   { value: 'on_hold', label: 'On Hold', color: 'bg-[#c9a0a0]' },
-  { value: 'approved', label: 'Approved', color: 'bg-[#6abf4b]' },
-  { value: 'implemented', label: 'Implemented', color: 'bg-[#1a1a1a]' },
-  { value: 'rejected', label: 'Rejected', color: 'bg-[#e74c3c]' },
+  { value: 'closed', label: 'Closed', color: 'bg-[#1a1a1a]' },
+  { value: 'completed', label: 'Completed', color: 'bg-[#6abf4b]' },
 ] as const;
 
 // Health Options
