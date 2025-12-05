@@ -292,7 +292,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         setPendingRank(null);
         prevRankRef.current = null;
         
-        // Force immediate refresh of table data
+        // Force immediate refresh of ALL relevant queries
+        await queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
+        await queryClient.refetchQueries({ queryKey: ['business-request', requestId] });
         await queryClient.refetchQueries({ queryKey: ['business-requests'] });
         await queryClient.refetchQueries({ queryKey: ['all-business-requests-for-rank'] });
         
@@ -349,7 +351,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         prevRankRef.current = pendingRank;
         setPendingRank(null);
         
-        // Force immediate refresh of table data (not just invalidate)
+        // Force immediate refresh of ALL relevant queries
+        await queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
+        await queryClient.refetchQueries({ queryKey: ['business-request', requestId] });
         await queryClient.refetchQueries({ queryKey: ['business-requests'] });
         await queryClient.refetchQueries({ queryKey: ['all-business-requests-for-rank'] });
         
