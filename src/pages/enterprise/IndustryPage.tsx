@@ -726,7 +726,7 @@ export default function IndustryPage() {
                   {/* Inner container with min-width */}
                   <div style={{ minWidth: '1400px' }}>
                     {/* Column Headers - Sticky */}
-                    <div className="flex sticky top-0 z-30 bg-white text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide border-b border-[#E4E6EB]">
+                    <div className="flex sticky top-0 z-30 bg-white text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-border">
                       {/* Checkbox placeholder - fixed width */}
                       <div className="flex items-center justify-center h-10 px-3 border-r border-[#E4E6EB]" style={{ width: '48px', minWidth: '48px' }}>
                         <div className="w-4" />
@@ -767,7 +767,7 @@ export default function IndustryPage() {
                           columns={columns}
                           onChange={handleColumnsChange}
                           trigger={
-                            <button className="h-8 w-8 flex items-center justify-center text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#FAFBFC] rounded transition-colors">
+                            <button className="h-8 w-8 flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-muted rounded transition-colors">
                               <Plus className="h-4 w-4" />
                             </button>
                           }
@@ -793,18 +793,18 @@ export default function IndustryPage() {
                               return (
                                 <button
                                   onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                                  className="text-[13px] text-[#172B4D] hover:text-[#0052CC] hover:underline font-medium transition-colors truncate"
+                                  className="text-sm text-text-primary hover:text-primary hover:underline font-medium transition-colors truncate"
                                 >
                                   {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
                                 </button>
                               );
                             case 'rank':
                               return (
-                                <span className="text-[14px] text-[#172B4D] inline-flex items-center gap-1">
+                                <span className="text-sm text-text-primary inline-flex items-center gap-1">
                                   {isForceRanked && (
                                     <Tooltip>
                                       <TooltipTrigger asChild>
-                                        <Lock className="h-3 w-3 text-[#97A0AF] cursor-help" />
+                                        <Lock className="h-3 w-3 text-text-muted cursor-help" />
                                       </TooltipTrigger>
                                       <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
                                         <div className="font-medium">Manually Prioritized</div>
@@ -816,7 +816,7 @@ export default function IndustryPage() {
                                 </span>
                               );
                             case 'title':
-                              return <span className="text-[14px] text-[#172B4D] truncate">{request.title}</span>;
+                              return <span className="text-sm text-text-primary truncate">{request.title}</span>;
                             case 'process_step':
                               return (
                                 <InlineEditableCell
@@ -831,7 +831,7 @@ export default function IndustryPage() {
                             case 'business_score':
                               return getBusinessScoreBadge(request);
                             case 'submitted_date':
-                              return <span className="text-[14px] text-[#5E6C84] truncate">{formatDate(request.created_at)}</span>;
+                              return <span className="text-sm text-text-secondary truncate">{formatDate(request.created_at)}</span>;
                             case 'planned_quarter':
                               return (
                                 <InlineEditableCell
@@ -842,7 +842,7 @@ export default function IndustryPage() {
                                   type="select"
                                   displayValue={
                                     <div className="flex items-center gap-1">
-                                      <span className="text-[14px] text-[#5E6C84] truncate">{request.planned_quarter || '-'}</span>
+                                      <span className="text-sm text-text-secondary truncate">{request.planned_quarter || '-'}</span>
                                       {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
@@ -865,7 +865,7 @@ export default function IndustryPage() {
                                   type="date"
                                   displayValue={
                                     <div className="flex items-center gap-1">
-                                      <span className="text-[14px] text-[#5E6C84] truncate">{request.end_date ? formatDate(request.end_date) : '-'}</span>
+                                      <span className="text-sm text-text-secondary truncate">{request.end_date ? formatDate(request.end_date) : '-'}</span>
                                       {targetInfo && (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
@@ -886,14 +886,14 @@ export default function IndustryPage() {
                                   requestId={request.id}
                                   onSave={handleInlineSave}
                                   type="select"
-                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.delivery_platform || '-'}</span>}
+                                  displayValue={<span className="text-sm text-text-secondary truncate">{request.delivery_platform || '-'}</span>}
                                 />
                               );
                             case 'ageing':
                               return (
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <span className={cn("inline-flex items-center gap-1 text-[14px] font-medium", ageingInfo.class)}>
+                                    <span className={cn("inline-flex items-center gap-1 text-sm font-medium", ageingInfo.class)}>
                                       {ageing}
                                     </span>
                                   </TooltipTrigger>
@@ -908,7 +908,7 @@ export default function IndustryPage() {
                                   requestId={request.id}
                                   onSave={handleInlineSave}
                                   type="user"
-                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.requestor || '-'}</span>}
+                                  displayValue={<span className="text-sm text-text-secondary truncate">{request.requestor || '-'}</span>}
                                 />
                               );
                             case 'business_owner':
@@ -919,7 +919,7 @@ export default function IndustryPage() {
                                   requestId={request.id}
                                   onSave={handleInlineSave}
                                   type="user"
-                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.business_owner || '-'}</span>}
+                                  displayValue={<span className="text-sm text-text-secondary truncate">{request.business_owner || '-'}</span>}
                                 />
                               );
                             case 'department':
@@ -930,7 +930,7 @@ export default function IndustryPage() {
                                   requestId={request.id}
                                   onSave={handleInlineSave}
                                   type="select"
-                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.department || '-'}</span>}
+                                  displayValue={<span className="text-sm text-text-secondary truncate">{request.department || '-'}</span>}
                                 />
                               );
                             case 'created_by':
@@ -941,7 +941,7 @@ export default function IndustryPage() {
                                   requestId={request.id}
                                   onSave={handleInlineSave}
                                   type="user"
-                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.created_by || '-'}</span>}
+                                  displayValue={<span className="text-sm text-text-secondary truncate">{request.created_by || '-'}</span>}
                                 />
                               );
                             default:
