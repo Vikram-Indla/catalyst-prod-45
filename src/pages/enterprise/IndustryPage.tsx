@@ -743,69 +743,69 @@ export default function IndustryPage() {
                 onExpandedChange={setKanbanExpanded}
               />
             ) : sortedRequests.length > 0 ? (
-            <Card className="flex-1 flex flex-col min-h-0 overflow-hidden border border-[#E4E6EB] rounded shadow-none">
-                {/* Single scroll container for header + body */}
+            <Card className="flex-1 flex flex-col min-h-0 overflow-hidden border border-border rounded shadow-none">
+                {/* Notification bar */}
+                <div className="sticky top-0 z-40">
+                  <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
+                </div>
+                
+                {/* Single scroll container for semantic table */}
                 <div className="flex-1 overflow-x-auto overflow-y-auto">
-                  {/* Notification bar */}
-                  <div className="sticky top-0 z-20">
-                    <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
-                  </div>
-                  
-                  {/* Inner container with min-width */}
-                  <div style={{ minWidth: '1400px' }}>
-                    {/* Column Headers - Sticky */}
-                    <div className="flex sticky top-0 z-30 bg-white text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-border">
-                      {/* Checkbox placeholder - fixed width */}
-                      <div className="flex items-center justify-center h-10 px-3 border-r border-[#E4E6EB]" style={{ width: '48px', minWidth: '48px' }}>
-                        <div className="w-4" />
-                      </div>
-                      
-                      {/* Column headers */}
-                      {columns.filter(col => col.visible).map((col) => {
-                        const colDef = COLUMN_DEFINITIONS[col.id];
-                        if (!colDef) return null;
-                        const width = columnWidths[col.id] || colDef.defaultWidth;
-                        const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
+                  <table className="min-w-full w-max border-separate border-spacing-0">
+                    {/* Table Header */}
+                    <thead className="sticky top-0 z-30 bg-card">
+                      <tr>
+                        {/* Checkbox header cell */}
+                        <th className="h-10 px-3 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-card" style={{ width: '48px', minWidth: '48px' }}>
+                          <div className="w-4" />
+                        </th>
                         
-                        return (
-                          <div 
-                            key={col.id}
-                            className={cn(
-                              "flex items-center h-10 px-3.5 border-r border-[#E4E6EB] shrink-0",
-                              isCentered && "justify-center"
-                            )}
-                            style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
-                          >
-                            <SimpleColumnHeader
-                              label={colDef.label}
-                              columnId={col.id}
-                              sortDirection={columnSort.columnId === col.id ? columnSort.direction : null}
-                              onSort={handleSort}
+                        {/* Column headers */}
+                        {columns.filter(col => col.visible).map((col, idx, arr) => {
+                          const colDef = COLUMN_DEFINITIONS[col.id];
+                          if (!colDef) return null;
+                          const width = columnWidths[col.id] || colDef.defaultWidth;
+                          const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
+                          
+                          return (
+                            <th 
+                              key={col.id}
+                              className={cn(
+                                "h-10 px-3.5 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-card",
+                                isCentered && "text-center"
+                              )}
+                              style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
+                            >
+                              <SimpleColumnHeader
+                                label={colDef.label}
+                                columnId={col.id}
+                                sortDirection={columnSort.columnId === col.id ? columnSort.direction : null}
+                                onSort={handleSort}
+                              />
+                            </th>
+                          );
+                        })}
+                        
+                        {/* Add column button header cell - sticky right */}
+                        <th className="h-10 border-b border-border bg-card sticky right-0 z-20" style={{ width: '48px', minWidth: '48px' }}>
+                          <div className="flex items-center justify-center">
+                            <ColumnsDropdown
+                              columns={columns}
+                              onChange={handleColumnsChange}
+                              trigger={
+                                <button className="h-8 w-8 flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-muted rounded transition-colors">
+                                  <Plus className="h-4 w-4" />
+                                </button>
+                              }
                             />
                           </div>
-                        );
-                      })}
-                      
-                      {/* Flex fill to extend row */}
-                      <div className="flex-1 h-10 min-w-0" />
-                      
-                      {/* Add column button - fixed cell at end */}
-                      <div className="flex items-center justify-center h-10 border-l border-[#E4E6EB] shrink-0" style={{ width: '48px', minWidth: '48px' }}>
-                        <ColumnsDropdown
-                          columns={columns}
-                          onChange={handleColumnsChange}
-                          trigger={
-                            <button className="h-8 w-8 flex items-center justify-center text-text-secondary hover:text-text-primary hover:bg-muted rounded transition-colors">
-                              <Plus className="h-4 w-4" />
-                            </button>
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    {/* Table Body Rows */}
-                    <div>
-                      {paginatedRequests.map((request: any, index: number) => {
+                        </th>
+                      </tr>
+                    </thead>
+                    
+                    {/* Table Body */}
+                    <tbody>
+                      {paginatedRequests.map((request: any) => {
                         const isForceRanked = request.is_force_ranked;
                         const ageing = calculateAgeing(request.created_at);
                         const ageingInfo = getAgeingInfo(ageing);
@@ -978,21 +978,27 @@ export default function IndustryPage() {
                         };
                         
                         return (
-                          <div 
+                          <tr 
                             key={request.id}
                             className={cn(
-                              "flex cursor-pointer transition-colors border-b border-[#E4E6EB]",
-                              "hover:bg-[#FAFBFC]",
-                              selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-white'
+                              "cursor-pointer transition-colors",
+                              "hover:bg-muted/50",
+                              selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-card'
                             )}
                             onClick={() => setSelectedRequestId(request.id)}
                           >
-                            {/* Checkbox - fixed width matching header */}
-                            <div className="flex items-center justify-center h-11 px-3 border-r border-[#E4E6EB] shrink-0" style={{ width: '48px', minWidth: '48px' }} onClick={e => e.stopPropagation()}>
-                              <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
-                            </div>
+                            {/* Checkbox cell */}
+                            <td 
+                              className="h-11 px-3 border-b border-r border-border bg-inherit"
+                              style={{ width: '48px', minWidth: '48px' }}
+                              onClick={e => e.stopPropagation()}
+                            >
+                              <div className="flex items-center justify-center">
+                                <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
+                              </div>
+                            </td>
 
-                            {/* Column values */}
+                            {/* Column value cells */}
                             {columns.filter(col => col.visible).map((col) => {
                               const colDef = COLUMN_DEFINITIONS[col.id];
                               if (!colDef) return null;
@@ -1000,29 +1006,31 @@ export default function IndustryPage() {
                               const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
                               
                               return (
-                                <div 
+                                <td 
                                   key={col.id}
                                   className={cn(
-                                    "flex items-center h-11 px-3.5 border-r border-[#E4E6EB] shrink-0 overflow-hidden",
-                                    isCentered && "justify-center"
+                                    "h-11 px-3.5 border-b border-r border-border overflow-hidden bg-inherit",
+                                    isCentered && "text-center"
                                   )}
                                   style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
                                 >
-                                  {renderColumnValue(col)}
-                                </div>
+                                  <div className={cn("flex items-center h-full", isCentered && "justify-center")}>
+                                    {renderColumnValue(col)}
+                                  </div>
+                                </td>
                               );
                             })}
                             
-                            {/* Flex fill to extend row to + button */}
-                            <div className="flex-1 h-11 min-w-0 border-r border-[#E4E6EB]" />
-                            
-                            {/* Empty cell matching header + button */}
-                            <div className="h-11 shrink-0" style={{ width: '48px', minWidth: '48px' }} />
-                          </div>
+                            {/* Empty action cell - sticky right to match header */}
+                            <td 
+                              className="h-11 border-b border-border bg-inherit sticky right-0 z-10"
+                              style={{ width: '48px', minWidth: '48px' }}
+                            />
+                          </tr>
                         );
                       })}
-                    </div>
-                  </div>
+                    </tbody>
+                  </table>
                 </div>
                 
                 {/* + Create Row - Always visible at bottom with prominent styling */}
