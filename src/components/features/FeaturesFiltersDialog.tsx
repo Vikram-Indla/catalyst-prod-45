@@ -137,7 +137,7 @@ export function FeaturesFiltersDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All epics</SelectItem>
-                {epics?.map((epic) => (
+                {epics?.filter((epic) => epic.id).map((epic) => (
                   <SelectItem key={epic.id} value={epic.id}>
                     {epic.name}
                   </SelectItem>
@@ -157,7 +157,7 @@ export function FeaturesFiltersDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All programs</SelectItem>
-                {programs?.map((program) => (
+                {programs?.filter((program) => program.id).map((program) => (
                   <SelectItem key={program.id} value={program.id}>
                     {program.name}
                   </SelectItem>
@@ -177,7 +177,7 @@ export function FeaturesFiltersDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All PIs</SelectItem>
-                {programIncrements?.map((pi) => (
+                {programIncrements?.filter((pi) => pi.id).map((pi) => (
                   <SelectItem key={pi.id} value={pi.id}>
                     {pi.name}
                   </SelectItem>
@@ -197,7 +197,7 @@ export function FeaturesFiltersDialog({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All iterations</SelectItem>
-                {iterations?.map((iteration) => (
+                {iterations?.filter((iteration) => iteration.id).map((iteration) => (
                   <SelectItem key={iteration.id} value={iteration.id}>
                     {iteration.name}
                   </SelectItem>

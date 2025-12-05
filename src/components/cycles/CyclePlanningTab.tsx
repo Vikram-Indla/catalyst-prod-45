@@ -194,7 +194,7 @@ export function CyclePlanningTab({
                         <SelectValue placeholder="Assign" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Unassigned</SelectItem>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
                         {users.map((u: any) => (
                           <SelectItem key={u.id} value={u.id}>
                             {u.email?.split('@')[0] || 'User'}
