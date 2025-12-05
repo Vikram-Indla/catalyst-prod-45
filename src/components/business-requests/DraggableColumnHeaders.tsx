@@ -3,10 +3,16 @@ import { GripVertical } from "lucide-react";
 import { SimpleColumnHeader, SortDirection } from "./SimpleColumnHeader";
 import { ColumnConfig } from "@/components/backlog/ColumnsDropdown";
 import { cn } from "@/lib/utils";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 interface ColumnDefinition {
   label: string;
-  width: string;
+  defaultWidth: number;
+  minWidth: number;
+}
+
+export interface ColumnWidths {
+  [key: string]: number;
 }
 
 interface DraggableColumnHeadersProps {
@@ -16,6 +22,8 @@ interface DraggableColumnHeadersProps {
   onSort: (columnId: string) => void;
   onReorder: (columns: ColumnConfig[]) => void;
   leadingContent?: React.ReactNode;
+  columnWidths: ColumnWidths;
+  onColumnResize: (columnId: string, width: number) => void;
 }
 
 export function DraggableColumnHeaders({
@@ -25,7 +33,13 @@ export function DraggableColumnHeaders({
   onSort,
   onReorder,
   leadingContent,
+  columnWidths,
+  onColumnResize,
 }: DraggableColumnHeadersProps) {
+  const [resizing, setResizing] = useState<string | null>(null);
+  const startXRef = useRef(0);
+  const startWidthRef = useRef(0);
+
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
     
@@ -51,10 +65,50 @@ export function DraggableColumnHeaders({
     onReorder(allColumns);
   };
 
+  const handleResizeMouseDown = useCallback((e: React.MouseEvent, columnId: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setResizing(columnId);
+    startXRef.current = e.clientX;
+    const colDef = columnDefinitions[columnId];
+    startWidthRef.current = columnWidths[columnId] || colDef?.defaultWidth || 100;
+  }, [columnWidths, columnDefinitions]);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!resizing) return;
+    
+    const delta = e.clientX - startXRef.current;
+    const colDef = columnDefinitions[resizing];
+    const minWidth = colDef?.minWidth || 50;
+    const newWidth = Math.max(minWidth, startWidthRef.current + delta);
+    
+    onColumnResize(resizing, newWidth);
+  }, [resizing, columnDefinitions, onColumnResize]);
+
+  const handleMouseUp = useCallback(() => {
+    setResizing(null);
+  }, []);
+
+  useEffect(() => {
+    if (resizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    }
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [resizing, handleMouseMove, handleMouseUp]);
+
   const visibleColumns = columns.filter(col => col.visible);
 
   return (
-    <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative shrink-0">
+    <div className="flex items-center gap-0 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative shrink-0">
       {leadingContent}
       
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -63,13 +117,14 @@ export function DraggableColumnHeaders({
             <div
               ref={provided.innerRef}
               {...provided.droppableProps}
-              className="flex items-center gap-4 flex-1"
+              className="flex items-center flex-1"
             >
               {visibleColumns.map((col, index) => {
                 const colDef = columnDefinitions[col.id];
                 if (!colDef) return null;
 
                 const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
+                const width = columnWidths[col.id] || colDef.defaultWidth;
 
                 return (
                   <Draggable key={col.id} draggableId={col.id} index={index}>
@@ -78,12 +133,16 @@ export function DraggableColumnHeaders({
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         className={cn(
-                          `${colDef.width} shrink-0 group`,
+                          "relative shrink-0 group",
                           isCentered && 'text-center',
                           snapshot.isDragging && 'bg-card shadow-lg rounded-md px-2 py-1 z-50 border border-brand-gold/30'
                         )}
+                        style={{ 
+                          width: `${width}px`,
+                          ...provided.draggableProps.style 
+                        }}
                       >
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 pr-2">
                           <div
                             {...provided.dragHandleProps}
                             className={cn(
@@ -100,6 +159,16 @@ export function DraggableColumnHeaders({
                             onSort={onSort}
                           />
                         </div>
+                        
+                        {/* Resize Handle */}
+                        <div
+                          className={cn(
+                            "absolute right-0 top-0 h-full w-1.5 cursor-col-resize z-10",
+                            "hover:bg-brand-gold/50 active:bg-brand-gold transition-colors",
+                            resizing === col.id && "bg-brand-gold"
+                          )}
+                          onMouseDown={(e) => handleResizeMouseDown(e, col.id)}
+                        />
                       </div>
                     )}
                   </Draggable>
@@ -112,4 +181,38 @@ export function DraggableColumnHeaders({
       </DragDropContext>
     </div>
   );
+}
+
+// Hook for managing column widths with localStorage persistence
+export function useColumnWidths(storageKey: string, defaultWidths: ColumnWidths) {
+  const [columnWidths, setColumnWidths] = useState<ColumnWidths>(() => {
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        return { ...defaultWidths, ...JSON.parse(saved) };
+      }
+    } catch (e) {
+      console.error('Failed to load column widths:', e);
+    }
+    return defaultWidths;
+  });
+
+  const handleColumnResize = useCallback((columnId: string, width: number) => {
+    setColumnWidths(prev => {
+      const newWidths = { ...prev, [columnId]: width };
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(newWidths));
+      } catch (e) {
+        console.error('Failed to save column widths:', e);
+      }
+      return newWidths;
+    });
+  }, [storageKey]);
+
+  const resetColumnWidths = useCallback(() => {
+    setColumnWidths(defaultWidths);
+    localStorage.removeItem(storageKey);
+  }, [storageKey, defaultWidths]);
+
+  return { columnWidths, handleColumnResize, resetColumnWidths };
 }
