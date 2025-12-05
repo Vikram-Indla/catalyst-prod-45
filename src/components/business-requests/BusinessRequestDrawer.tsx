@@ -38,7 +38,7 @@ import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
 import { LinksViewTab } from './drawer-tabs/LinksViewTab';
 import { DiscussionsViewTab } from './drawer-tabs/DiscussionsViewTab';
 import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
-import { StatusPipeline } from './StatusPipeline';
+import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -510,14 +510,19 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             <SheetDescription className="sr-only">Business request details panel</SheetDescription>
           </SheetHeader>
 
-          {/* Status Pipeline - Horizontal workflow stages */}
-          <div className="px-5 py-3 border-b border-border/30 bg-card shrink-0">
-            <StatusPipeline
-              currentStep={formData.process_step || 'request_received'}
+          {/* Workflow History link - compact header element */}
+          <div className="px-5 py-2 border-b border-border/30 bg-card shrink-0 flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span>Status:</span>
+              <span className="font-medium text-foreground capitalize">
+                {formData.process_step?.replace(/_/g, ' ') || 'New Request'}
+              </span>
+            </div>
+            <WorkflowViewerModal 
+              currentStep={formData.process_step || 'new_request'}
               requestId={requestId || ''}
               submittedDate={request?.created_at}
               onStepChange={(step) => handleFieldChange('process_step', step)}
-              compact
             />
           </div>
 
