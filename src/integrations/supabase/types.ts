@@ -4279,6 +4279,44 @@ export type Database = {
           },
         ]
       }
+      kb_document_restrictions: {
+        Row: {
+          created_at: string
+          created_by: string
+          document_id: string
+          entity_id: string
+          entity_type: string
+          id: string
+          restriction_type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          document_id: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          restriction_type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          restriction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_document_restrictions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kb_document_versions: {
         Row: {
           change_summary: string | null
@@ -4316,6 +4354,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "kb_document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_document_watchers: {
+        Row: {
+          created_at: string
+          document_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_document_watchers_document_id_fkey"
             columns: ["document_id"]
             isOneToOne: false
             referencedRelation: "kb_documents"
