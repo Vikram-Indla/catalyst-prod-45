@@ -197,21 +197,25 @@ function AccordionSection({
     <div className="border-b border-border">
       <button
         type="button"
-        className="flex items-center justify-between w-full px-4 sm:px-5 py-3.5 text-left hover:bg-muted/30 transition-colors"
+        className="flex items-center justify-between w-full px-4 sm:px-5 py-3.5 text-left hover:bg-muted/30 transition-colors duration-150"
         onClick={onToggle}
       >
         <span className="text-sm font-medium text-foreground">{title}</span>
         <ChevronUp className={cn(
-          "h-4 w-4 text-muted-foreground transition-transform duration-200",
+          "h-4 w-4 text-muted-foreground transition-transform duration-300 ease-out",
           !isOpen && "rotate-180"
         )} />
       </button>
-      <div className={cn(
-        "overflow-hidden transition-all duration-200",
-        isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-      )}>
-        <div className="px-4 sm:px-5 pb-4">
-          {children}
+      <div 
+        className={cn(
+          "grid transition-[grid-template-rows] duration-300 ease-out",
+          isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        )}
+      >
+        <div className="overflow-hidden">
+          <div className="px-4 sm:px-5 pb-4">
+            {children}
+          </div>
         </div>
       </div>
     </div>
@@ -423,7 +427,7 @@ export function FilterDemandsDialog({
         </TooltipProvider>
 
         {/* Filter Body */}
-        <div className="max-h-[50vh] sm:max-h-[400px] overflow-y-auto">
+        <div className="max-h-[50vh] sm:max-h-[400px] overflow-y-auto scroll-smooth overscroll-contain [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted/30 [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30">
           {/* Status & Workflow Section */}
           <AccordionSection 
             title="Status & Workflow" 
