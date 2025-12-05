@@ -71,6 +71,11 @@ export interface BusinessRequest {
   start_date: string | null;
   end_date: string | null;
   
+  // Assignment
+  department: string | null;
+  business_owner: string | null;
+  assignee: string | null;
+  
   // Process & Health
   process_step: string;
   health: string;
