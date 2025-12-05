@@ -1,5 +1,6 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { CatalystShell } from '@/components/layout/CatalystShell';
+import { SessionRedirect } from '@/components/routing/SessionRedirect';
 
 // Dev pages
 import SelfTest from '@/pages/dev/SelfTest';
@@ -39,7 +40,7 @@ export const router = createBrowserRouter([
     path: '/',
     element: <CatalystShell />,
     children: [
-      { index: true, element: <Navigate to="/home" replace /> },
+      { index: true, element: <SessionRedirect /> },
       { path: 'home', element: <Home /> },
       
       // Dev routes
