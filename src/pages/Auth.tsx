@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { Loader2, Briefcase, Package, GitMerge, Link2, TriangleAlert, FlaskConical, FileText } from "lucide-react";
@@ -11,16 +11,21 @@ export default function Auth() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState<"existing" | "external">("existing");
-  const {
-    signIn
-  } = useAuth();
+  const { signIn, user, loading } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect authenticated users to their last route
+  useEffect(() => {
+    if (!loading && user) {
+      const lastRoute = getLastRoute();
+      navigate(lastRoute, { replace: true });
+    }
+  }, [user, loading, navigate]);
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    const {
-      error
-    } = await signIn(email, password);
+    const { error } = await signIn(email, password);
     setIsLoading(false);
     if (!error) {
       // Redirect to last visited page or default to home
