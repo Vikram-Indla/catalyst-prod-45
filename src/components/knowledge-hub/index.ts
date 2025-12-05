@@ -7,4 +7,6 @@ export { DocumentComments } from './DocumentComments';
 export { DocumentLabels } from './DocumentLabels';
 export { DocumentAttachments } from './DocumentAttachments';
 export { DocumentExport } from './DocumentExport';
+export { DocumentWatchers } from './DocumentWatchers';
+export { DocumentRestrictions } from './DocumentRestrictions';
 export * from './editor';

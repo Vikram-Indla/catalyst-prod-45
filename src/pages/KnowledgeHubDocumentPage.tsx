@@ -10,9 +10,12 @@ import { DocumentComments } from '@/components/knowledge-hub/DocumentComments';
 import { DocumentLabels } from '@/components/knowledge-hub/DocumentLabels';
 import { DocumentAttachments } from '@/components/knowledge-hub/DocumentAttachments';
 import { DocumentExport } from '@/components/knowledge-hub/DocumentExport';
+import { DocumentWatchers } from '@/components/knowledge-hub/DocumentWatchers';
+import { DocumentRestrictions } from '@/components/knowledge-hub/DocumentRestrictions';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
 export default function KnowledgeHubDocumentPage() {
   const { documentId } = useParams<{ documentId: string }>();
   const navigate = useNavigate();
@@ -212,6 +215,10 @@ export default function KnowledgeHubDocumentPage() {
               </>
             ) : (
               <>
+                {/* Watchers - Source: https://support.atlassian.com/confluence-cloud/docs/watch-pages-spaces-and-blogs/ */}
+                {documentId && <DocumentWatchers documentId={documentId} />}
+                {/* Restrictions - Source: https://support.atlassian.com/confluence-cloud/docs/restrict-a-page-or-space/ */}
+                {documentId && <DocumentRestrictions documentId={documentId} />}
                 {/* Export - Source: https://support.atlassian.com/confluence-cloud/docs/export-content-from-confluence-cloud/ */}
                 <DocumentExport title={title} content={content} />
                 <Button variant="outline" onClick={() => setShowVersionHistory(true)}>
