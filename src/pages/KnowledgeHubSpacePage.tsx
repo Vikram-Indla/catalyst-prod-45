@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { CreateDocumentDialog } from '@/components/knowledge-hub/CreateDocumentDialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +32,7 @@ export default function KnowledgeHubSpacePage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [deleteDocId, setDeleteDocId] = useState<string | null>(null);
+  const [createDocOpen, setCreateDocOpen] = useState(false);
 
   // Fetch space details
   const { data: space, isLoading: spaceLoading } = useQuery({
@@ -65,30 +67,10 @@ export default function KnowledgeHubSpacePage() {
   });
 
   // Create document mutation
-  const createDocMutation = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase
-        .from('kb_documents')
-        .insert([{
-          title: 'Untitled Document',
-          content: '',
-          space_id: spaceId,
-          created_by: 'system',
-          updated_by: 'system',
-        }])
-        .select()
-        .single();
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['kb-space-docs', spaceId] });
-      navigate(`/knowledge-hub/documents/${data.id}`);
-    },
-    onError: () => {
-      toast.error('Failed to create document');
-    },
-  });
+  const handleDocSuccess = (docId: string) => {
+    queryClient.invalidateQueries({ queryKey: ['kb-space-docs', spaceId] });
+    navigate(`/knowledge-hub/documents/${docId}`);
+  };
 
   // Delete document mutation
   const deleteDocMutation = useMutation({
@@ -160,7 +142,7 @@ export default function KnowledgeHubSpacePage() {
               </div>
             </div>
           </div>
-          <Button onClick={() => createDocMutation.mutate()}>
+          <Button onClick={() => setCreateDocOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             New Document
           </Button>
@@ -239,7 +221,7 @@ export default function KnowledgeHubSpacePage() {
               <Button 
                 variant="outline" 
                 className="mt-4"
-                onClick={() => createDocMutation.mutate()}
+                onClick={() => setCreateDocOpen(true)}
               >
                 Create your first document
               </Button>
@@ -268,6 +250,14 @@ export default function KnowledgeHubSpacePage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create Document Dialog */}
+      <CreateDocumentDialog
+        open={createDocOpen}
+        onOpenChange={setCreateDocOpen}
+        onSuccess={handleDocSuccess}
+        defaultSpaceId={spaceId}
+      />
     </div>
   );
 }
