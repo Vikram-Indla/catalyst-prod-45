@@ -37,9 +37,16 @@ export default function KnowledgeHubDocumentPage() {
   useEffect(() => {
     if (document) {
       setTitle(document.title);
-      // content stores HTML string as JSON
+      // content can be JSON object or HTML string
       const contentValue = document.content;
-      setContent(typeof contentValue === 'string' ? contentValue : '');
+      if (typeof contentValue === 'object' && contentValue !== null) {
+        // It's a TipTap JSON structure, convert to string for the editor
+        setContent(JSON.stringify(contentValue));
+      } else if (typeof contentValue === 'string') {
+        setContent(contentValue);
+      } else {
+        setContent('');
+      }
     }
   }, [document]);
 
@@ -132,13 +139,19 @@ export default function KnowledgeHubDocumentPage() {
           <div className="flex items-center gap-2">
             {isEditing ? (
               <>
-                <Button 
+              <Button 
                   variant="outline" 
                   onClick={() => {
                     setIsEditing(false);
                     setTitle(document.title);
                     const contentValue = document.content;
-                    setContent(typeof contentValue === 'string' ? contentValue : '');
+                    if (typeof contentValue === 'object' && contentValue !== null) {
+                      setContent(JSON.stringify(contentValue));
+                    } else if (typeof contentValue === 'string') {
+                      setContent(contentValue);
+                    } else {
+                      setContent('');
+                    }
                     setHasChanges(false);
                   }}
                 >
