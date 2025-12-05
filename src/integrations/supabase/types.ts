@@ -4011,6 +4011,411 @@ export type Database = {
           },
         ]
       }
+      kb_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: string | null
+          resource_id: string
+          resource_type: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          resource_id: string
+          resource_type: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: string | null
+          resource_id?: string
+          resource_type?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      kb_doc_spaces: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          project_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          project_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          project_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_doc_spaces_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: true
+            referencedRelation: "kb_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_document_attachments: {
+        Row: {
+          document_id: string
+          file_path: string
+          file_size: number
+          filename: string
+          id: string
+          mime_type: string
+          uploaded_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          document_id: string
+          file_path: string
+          file_size: number
+          filename: string
+          id?: string
+          mime_type: string
+          uploaded_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          document_id?: string
+          file_path?: string
+          file_size?: number
+          filename?: string
+          id?: string
+          mime_type?: string
+          uploaded_at?: string
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_document_attachments_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_document_comments: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          document_id: string
+          id: string
+          parent_comment_id: string | null
+          resolved: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          document_id: string
+          id?: string
+          parent_comment_id?: string | null
+          resolved?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          document_id?: string
+          id?: string
+          parent_comment_id?: string | null
+          resolved?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_document_comments_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kb_document_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "kb_document_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_document_jira_issues: {
+        Row: {
+          cached_at: string
+          document_id: string
+          id: string
+          work_item_assignee: string | null
+          work_item_id: string
+          work_item_status: string
+          work_item_title: string
+          work_item_type: string
+        }
+        Insert: {
+          cached_at?: string
+          document_id: string
+          id?: string
+          work_item_assignee?: string | null
+          work_item_id: string
+          work_item_status: string
+          work_item_title: string
+          work_item_type: string
+        }
+        Update: {
+          cached_at?: string
+          document_id?: string
+          id?: string
+          work_item_assignee?: string | null
+          work_item_id?: string
+          work_item_status?: string
+          work_item_title?: string
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_document_jira_issues_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_document_labels: {
+        Row: {
+          created_at: string
+          document_id: string
+          id: string
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          id?: string
+          label: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          id?: string
+          label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_document_labels_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_document_page_properties: {
+        Row: {
+          created_at: string
+          document_id: string
+          id: string
+          property_key: string
+          property_type: string | null
+          property_value: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          id?: string
+          property_key: string
+          property_type?: string | null
+          property_value: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          id?: string
+          property_key?: string
+          property_type?: string | null
+          property_value?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_document_page_properties_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_document_versions: {
+        Row: {
+          change_summary: string | null
+          content: Json
+          content_text: string | null
+          created_at: string
+          created_by: string
+          document_id: string
+          id: string
+          title: string
+          version_number: number
+        }
+        Insert: {
+          change_summary?: string | null
+          content: Json
+          content_text?: string | null
+          created_at?: string
+          created_by: string
+          document_id: string
+          id?: string
+          title: string
+          version_number: number
+        }
+        Update: {
+          change_summary?: string | null
+          content?: Json
+          content_text?: string | null
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          id?: string
+          title?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_documents: {
+        Row: {
+          content: Json
+          content_text: string | null
+          created_at: string
+          created_by: string
+          id: string
+          linked_work_item_id: string | null
+          linked_work_item_type: string | null
+          parent_id: string | null
+          published_at: string | null
+          search_vector: unknown
+          space_id: string
+          title: string
+          updated_at: string
+          updated_by: string
+        }
+        Insert: {
+          content?: Json
+          content_text?: string | null
+          created_at?: string
+          created_by: string
+          id?: string
+          linked_work_item_id?: string | null
+          linked_work_item_type?: string | null
+          parent_id?: string | null
+          published_at?: string | null
+          search_vector?: unknown
+          space_id: string
+          title: string
+          updated_at?: string
+          updated_by: string
+        }
+        Update: {
+          content?: Json
+          content_text?: string | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          linked_work_item_id?: string | null
+          linked_work_item_type?: string | null
+          parent_id?: string | null
+          published_at?: string | null
+          search_vector?: unknown
+          space_id?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kb_documents_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "kb_documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kb_documents_space_id_fkey"
+            columns: ["space_id"]
+            isOneToOne: false
+            referencedRelation: "kb_doc_spaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kb_projects: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          key: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          key?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       key_result_checkins: {
         Row: {
           checked_in_at: string
@@ -9903,6 +10308,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      extract_kb_tiptap_text: { Args: { content: Json }; Returns: string }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -9915,6 +10321,8 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
       track_room_access: {
         Args: {
           p_pi_label?: string
