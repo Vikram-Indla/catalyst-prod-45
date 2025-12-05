@@ -135,43 +135,6 @@ const PROCESS_STEP_INFO: Record<string, { dotColor: string; description: string 
   'request_received': { dotColor: 'bg-sky-500', description: 'New request - pending triage' },
 };
 
-// Score tier information
-const getScoreInfo = (score: number | null | undefined): { colorClass: string; glowClass: string; tier: string; tooltip: string } => {
-  if (score === null || score === undefined) {
-    return { colorClass: 'bg-muted text-muted-foreground', glowClass: '', tier: 'N/A', tooltip: 'Score not calculated' };
-  }
-  
-  if (score >= 90) return { 
-    colorClass: 'bg-green-100 text-green-700 ring-1 ring-green-200', 
-    glowClass: 'shadow-sm shadow-green-200',
-    tier: 'Hot',
-    tooltip: `Score ${score}/100 = HOT priority\nTier: 90-100 (Top priority)`
-  };
-  if (score >= 75) return { 
-    colorClass: 'bg-emerald-100 text-emerald-700', 
-    glowClass: '',
-    tier: 'High',
-    tooltip: `Score ${score}/100 = HIGH priority\nTier: 75-89`
-  };
-  if (score >= 60) return { 
-    colorClass: 'bg-amber-100 text-amber-700', 
-    glowClass: '',
-    tier: 'Medium',
-    tooltip: `Score ${score}/100 = MEDIUM priority\nTier: 60-74`
-  };
-  if (score >= 40) return { 
-    colorClass: 'bg-orange-100 text-orange-700', 
-    glowClass: '',
-    tier: 'Low',
-    tooltip: `Score ${score}/100 = LOW priority\nTier: 40-59`
-  };
-  return { 
-    colorClass: 'bg-destructive/10 text-destructive', 
-    glowClass: '',
-    tier: 'Critical',
-    tooltip: `Score ${score}/100 = CRITICAL attention needed\nTier: 0-39 (Lowest priority)`
-  };
-};
 
 const ITEMS_PER_PAGE = 20;
 
@@ -410,23 +373,15 @@ export default function IndustryPage() {
   };
 
   const getBusinessScoreBadge = (score: number | null | undefined) => {
-    const info = getScoreInfo(score);
-    
     if (score === null || score === undefined) {
-      return <span className="text-muted-foreground text-xs">-</span>;
+      return <span className="text-muted-foreground text-sm">-</span>;
     }
     
+    // Plain text score - number speaks for itself
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className={`inline-flex items-center justify-center w-10 h-6 rounded-full text-xs font-semibold cursor-help ${info.colorClass} ${info.glowClass}`}>
-            {score}
-          </span>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs whitespace-pre-line">
-          {info.tooltip}
-        </TooltipContent>
-      </Tooltip>
+      <span className="text-sm font-medium text-foreground tabular-nums">
+        {score}
+      </span>
     );
   };
 
