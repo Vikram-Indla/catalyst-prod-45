@@ -469,11 +469,14 @@ export default function IndustryPage() {
       filtered = filtered.filter((r: any) => filters.department!.includes(r.department));
     }
     
-    // Business Owner filter
-    if (filters.businessOwner) {
-      filtered = filtered.filter((r: any) => 
-        r.business_owner?.toLowerCase().includes(filters.businessOwner!.toLowerCase())
-      );
+    // Business Owner filter (multi-select with string values)
+    if (filters.businessOwnerValues && filters.businessOwnerValues.length > 0) {
+      filtered = filtered.filter((r: any) => {
+        if (!r.business_owner) return false;
+        return filters.businessOwnerValues!.some(owner =>
+          r.business_owner.toLowerCase().includes(owner.toLowerCase())
+        );
+      });
     }
     
     // Reporter filter (multi-select with user IDs)

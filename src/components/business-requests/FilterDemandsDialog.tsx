@@ -11,6 +11,7 @@ import { format, subDays, addQuarters } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
 import { UserPicker } from '@/components/ui/user-picker';
+import { BusinessOwnerPicker } from '@/components/ui/business-owner-picker';
 
 export type SmartFilterType = 'myOpen' | 'highPriority' | 'newThisWeek' | 'overdue' | 'currentQuarter' | 'unassigned' | null;
 
@@ -27,7 +28,7 @@ export interface SmartFilters {
   submittedDateTo?: Date;
   ageing?: string[];
   department?: string[];
-  businessOwner?: string;
+  businessOwnerValues?: string[]; // Changed to array for multi-select
   reporterIds?: string[]; // Changed to array of user IDs for multi-select
   assigneeIds?: string[]; // Changed to array of user IDs for multi-select
   deliveryPlatform?: string[];
@@ -451,18 +452,11 @@ export function FilterDemandsDialog({
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Business Owner</label>
-                <Select
-                  value={localFilters.businessOwner || '__all__'}
-                  onValueChange={(value) => updateFilter('businessOwner', value === '__all__' ? undefined : value)}
-                >
-                  <SelectTrigger className="h-10 bg-white border-border">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white z-[100]">
-                    <SelectItem value="__all__">All</SelectItem>
-                    {user?.email && <SelectItem value={user.email}>Me</SelectItem>}
-                  </SelectContent>
-                </Select>
+                <BusinessOwnerPicker
+                  value={localFilters.businessOwnerValues || []}
+                  onChange={(value) => updateFilter('businessOwnerValues', value)}
+                  placeholder="Search business owners..."
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Assignee</label>
