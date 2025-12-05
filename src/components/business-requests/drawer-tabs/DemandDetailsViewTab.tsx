@@ -13,9 +13,11 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
+import { WorkflowViewerModal } from '../WorkflowViewerModal';
 import { 
   BusinessRequest, 
-  PROCESS_STEPS
+  PROCESS_STEPS,
+  DELIVERY_PLATFORM_OPTIONS
 } from '@/types/business-request';
 
 // Delivery Track Options
@@ -127,30 +129,42 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
 
   return (
     <div className="space-y-6 p-5">
-      {/* Process Step Section (Health removed) */}
+      {/* Process Step Section with Submitted Date */}
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Process Step</h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Process Step</h3>
+            <WorkflowViewerModal currentStep={data.process_step || 'request_received'} />
+          </div>
           
-          <div>
-            <Label className="text-sm font-medium">Process Step</Label>
-            <Select
-              value={data.process_step || 'new_demand'}
-              onValueChange={(value) => onChange('process_step', value)}
-            >
-              <SelectTrigger className="mt-1.5">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-popover border shadow-lg z-50">
-                {PROCESS_STEPS.map((step) => (
-                  <SelectItem key={step.value} value={step.value}>
-                    <span className="text-sm">
-                      {step.label}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-sm font-medium">Process Step</Label>
+              <Select
+                value={data.process_step || 'request_received'}
+                onValueChange={(value) => onChange('process_step', value)}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  {PROCESS_STEPS.map((step) => (
+                    <SelectItem key={step.value} value={step.value}>
+                      <span className="text-sm">
+                        {step.label}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label className="text-sm font-medium text-muted-foreground">Submitted Date</Label>
+              <div className="mt-1.5 px-3 py-2 border border-border rounded-md bg-muted/30 text-sm">
+                {data.created_at ? format(new Date(data.created_at), 'dd/MM/yyyy') : '-'}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -189,14 +203,6 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
       <Card className="border border-border/60 rounded-lg bg-card">
         <CardContent className="p-5 space-y-4">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Timeline</h3>
-          
-          {/* Submitted Date - Read-only */}
-          <div className="pb-3 border-b border-border/40">
-            <Label className="text-sm font-medium text-muted-foreground">Submitted Date</Label>
-            <p className="mt-1.5 text-sm font-medium text-foreground">
-              {data.created_at ? format(new Date(data.created_at), 'dd/MM/yyyy') : '-'}
-            </p>
-          </div>
           
           <div className="grid grid-cols-3 gap-4">
             <div>
@@ -388,13 +394,21 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
             
             <div>
               <Label className="text-sm font-medium">Delivery Platform</Label>
-              <Input
+              <Select
                 value={data.delivery_platform || ''}
-                disabled
-                placeholder="Auto-populated from context"
-                className="mt-1.5 bg-muted/50"
-              />
-              <p className="text-xs text-muted-foreground mt-1">Read-only</p>
+                onValueChange={(value) => onChange('delivery_platform', value)}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select platform..." />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border shadow-lg z-50">
+                  {DELIVERY_PLATFORM_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label.en}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             
             <div>
