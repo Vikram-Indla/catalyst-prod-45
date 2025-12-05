@@ -242,7 +242,9 @@ export type Database = {
           approver_name: string | null
           business_justification: string | null
           business_score: number | null
+          business_value: number | null
           complexity: string | null
+          complexity_score: number | null
           created_at: string
           created_by: string | null
           delivery_platform: string | null
@@ -257,6 +259,7 @@ export type Database = {
           estimation_dependencies: string | null
           estimation_notes: string | null
           estimation_risk_rating: string | null
+          executive_urgency: number | null
           expected_resume_date: string | null
           functional_spec_link: string | null
           health: string | null
@@ -305,7 +308,9 @@ export type Database = {
           approver_name?: string | null
           business_justification?: string | null
           business_score?: number | null
+          business_value?: number | null
           complexity?: string | null
+          complexity_score?: number | null
           created_at?: string
           created_by?: string | null
           delivery_platform?: string | null
@@ -320,6 +325,7 @@ export type Database = {
           estimation_dependencies?: string | null
           estimation_notes?: string | null
           estimation_risk_rating?: string | null
+          executive_urgency?: number | null
           expected_resume_date?: string | null
           functional_spec_link?: string | null
           health?: string | null
@@ -368,7 +374,9 @@ export type Database = {
           approver_name?: string | null
           business_justification?: string | null
           business_score?: number | null
+          business_value?: number | null
           complexity?: string | null
+          complexity_score?: number | null
           created_at?: string
           created_by?: string | null
           delivery_platform?: string | null
@@ -383,6 +391,7 @@ export type Database = {
           estimation_dependencies?: string | null
           estimation_notes?: string | null
           estimation_risk_rating?: string | null
+          executive_urgency?: number | null
           expected_resume_date?: string | null
           functional_spec_link?: string | null
           health?: string | null
@@ -9133,6 +9142,33 @@ export type Database = {
           updated_at?: string | null
           user_id?: string
           visible_columns?: Json
+        }
+        Relationships: []
+      }
+      user_industry_preferences: {
+        Row: {
+          column_order: string[] | null
+          column_visibility: Json | null
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          column_order?: string[] | null
+          column_visibility?: Json | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          column_order?: string[] | null
+          column_visibility?: Json | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
