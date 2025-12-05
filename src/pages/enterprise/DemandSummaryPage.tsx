@@ -51,41 +51,41 @@ const dimensionsAr = [
 ];
 
 const statusesEn = [
-  { name: 'New Request', count: 11, color: 'bg-gray-500' },
-  { name: 'Under Analysis', count: 17, color: 'bg-gray-400' },
+  { name: 'Request Received', count: 11, color: 'bg-gray-500' },
+  { name: 'Under Study', count: 17, color: 'bg-gray-400' },
   { name: 'In Progress', count: 31, color: 'bg-violet-500' },
-  { name: 'Awaiting Response', count: 10, color: 'bg-gray-500' },
+  { name: 'Awaiting Business Response', count: 10, color: 'bg-gray-500' },
+  { name: 'Reopen', count: 4, color: 'bg-amber-500' },
   { name: 'On Hold', count: 7, color: 'bg-rose-400' },
-  { name: 'Approved', count: 12, color: 'bg-brand-gold' },
-  { name: 'Implemented', count: 59, color: 'bg-success' },
-  { name: 'Rejected', count: 5, color: 'bg-destructive' }
+  { name: 'Closed', count: 59, color: 'bg-gray-800' },
+  { name: 'Completed', count: 12, color: 'bg-success' }
 ];
 
 const statusesAr = [
-  { name: 'طلب جديد', count: 11, color: 'bg-gray-500' },
-  { name: 'قيد التحليل', count: 17, color: 'bg-gray-400' },
+  { name: 'تم استلام الطلب', count: 11, color: 'bg-gray-500' },
+  { name: 'قيد الدراسة', count: 17, color: 'bg-gray-400' },
   { name: 'قيد التنفيذ', count: 31, color: 'bg-violet-500' },
-  { name: 'في انتظار الرد', count: 10, color: 'bg-gray-500' },
+  { name: 'في انتظار رد الأعمال', count: 10, color: 'bg-gray-500' },
+  { name: 'إعادة فتح', count: 4, color: 'bg-amber-500' },
   { name: 'معلق', count: 7, color: 'bg-rose-400' },
-  { name: 'معتمد', count: 12, color: 'bg-brand-gold' },
-  { name: 'منفذ', count: 59, color: 'bg-success' },
-  { name: 'مرفوض', count: 5, color: 'bg-destructive' }
+  { name: 'مغلق', count: 59, color: 'bg-gray-800' },
+  { name: 'مكتمل', count: 12, color: 'bg-success' }
 ];
 
 const deliveryDataEn = [
-  { id: 'REQ-4401', title: 'Email Notification System', requester: 'Khalid Mansour', cycle: '21 days', value: 120, type: 'implemented' },
-  { id: 'REQ-4389', title: 'Report Scheduler', requester: 'Maria Santos', cycle: '18 days', value: 95, type: 'implemented' },
-  { id: 'REQ-4356', title: 'SSO for Partner Portal', requester: 'Ali Mahmoud', cycle: '25 days', value: 150, type: 'implemented' },
-  { id: 'REQ-4478', title: 'Salesforce Integration', requester: 'Omar Farouk', cycle: '14 days', value: 110, type: 'approved' },
-  { id: 'REQ-4456', title: 'Security Monitoring Dashboard', requester: 'Nadia Rashid', cycle: '8 days', value: 85, type: 'approved' }
+  { id: 'REQ-4401', title: 'Email Notification System', requester: 'Khalid Mansour', cycle: '21 days', value: 120, type: 'completed' },
+  { id: 'REQ-4389', title: 'Report Scheduler', requester: 'Maria Santos', cycle: '18 days', value: 95, type: 'completed' },
+  { id: 'REQ-4356', title: 'SSO for Partner Portal', requester: 'Ali Mahmoud', cycle: '25 days', value: 150, type: 'completed' },
+  { id: 'REQ-4478', title: 'Salesforce Integration', requester: 'Omar Farouk', cycle: '14 days', value: 110, type: 'closed' },
+  { id: 'REQ-4456', title: 'Security Monitoring Dashboard', requester: 'Nadia Rashid', cycle: '8 days', value: 85, type: 'closed' }
 ];
 
 const deliveryDataAr = [
-  { id: 'REQ-4401', title: 'نظام إشعارات البريد الإلكتروني', requester: 'خالد منصور', cycle: '21 يوم', value: 120, type: 'منفذ' },
-  { id: 'REQ-4389', title: 'جدولة التقارير', requester: 'ماريا سانتوس', cycle: '18 يوم', value: 95, type: 'منفذ' },
-  { id: 'REQ-4356', title: 'تسجيل دخول موحد لبوابة الشركاء', requester: 'علي محمود', cycle: '25 يوم', value: 150, type: 'منفذ' },
-  { id: 'REQ-4478', title: 'تكامل Salesforce', requester: 'عمر فاروق', cycle: '14 يوم', value: 110, type: 'معتمد' },
-  { id: 'REQ-4456', title: 'لوحة مراقبة الأمان', requester: 'نادية راشد', cycle: '8 أيام', value: 85, type: 'معتمد' }
+  { id: 'REQ-4401', title: 'نظام إشعارات البريد الإلكتروني', requester: 'خالد منصور', cycle: '21 يوم', value: 120, type: 'مكتمل' },
+  { id: 'REQ-4389', title: 'جدولة التقارير', requester: 'ماريا سانتوس', cycle: '18 يوم', value: 95, type: 'مكتمل' },
+  { id: 'REQ-4356', title: 'تسجيل دخول موحد لبوابة الشركاء', requester: 'علي محمود', cycle: '25 يوم', value: 150, type: 'مكتمل' },
+  { id: 'REQ-4478', title: 'تكامل Salesforce', requester: 'عمر فاروق', cycle: '14 يوم', value: 110, type: 'مغلق' },
+  { id: 'REQ-4456', title: 'لوحة مراقبة الأمان', requester: 'نادية راشد', cycle: '8 أيام', value: 85, type: 'مغلق' }
 ];
 
 const rejectionDataEn = [

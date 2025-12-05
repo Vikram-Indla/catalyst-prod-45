@@ -340,7 +340,7 @@ export default function RequestAccess() {
           description: formData.description,
           delivery_platform: formData.deliveryPlatform,
           requestor: formData.reporter,
-          process_step: 'REQUEST RECEIVED',
+          process_step: 'request_received',
           health: 'green',
           platform: 'Web',
           complexity: 'Medium',
