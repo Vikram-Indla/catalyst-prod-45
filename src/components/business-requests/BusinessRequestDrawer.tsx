@@ -171,6 +171,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const [hasChanges, setHasChanges] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
+  const [workflowModalOpen, setWorkflowModalOpen] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Track if we initiated a data update (to avoid resetting hasChanges on refetch)
@@ -512,17 +513,22 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
           {/* Workflow History link - compact header element */}
           <div className="px-5 py-2 border-b border-border/30 bg-card shrink-0 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <button 
+              onClick={() => setWorkflowModalOpen(true)}
+              className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            >
               <span>Status:</span>
-              <span className="font-medium text-foreground capitalize">
+              <span className="font-medium text-brand-gold capitalize underline underline-offset-2">
                 {formData.process_step?.replace(/_/g, ' ') || 'New Request'}
               </span>
-            </div>
+            </button>
             <WorkflowViewerModal 
               currentStep={formData.process_step || 'new_request'}
               requestId={requestId || ''}
               submittedDate={request?.created_at}
               onStepChange={(step) => handleFieldChange('process_step', step)}
+              open={workflowModalOpen}
+              onOpenChange={setWorkflowModalOpen}
             />
           </div>
 
