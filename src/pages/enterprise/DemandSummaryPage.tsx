@@ -51,25 +51,25 @@ const dimensionsAr = [
 ];
 
 const statusesEn = [
-  { name: 'Request Received', count: 11, color: 'bg-gray-500' },
-  { name: 'Under Study', count: 17, color: 'bg-gray-400' },
-  { name: 'In Progress', count: 31, color: 'bg-violet-500' },
-  { name: 'Awaiting Business Response', count: 10, color: 'bg-gray-500' },
-  { name: 'Reopen', count: 4, color: 'bg-amber-500' },
-  { name: 'On Hold', count: 7, color: 'bg-rose-400' },
+  { name: 'Received', count: 11, color: 'bg-gray-500' },
+  { name: 'Analysis', count: 17, color: 'bg-gray-400' },
+  { name: 'Active', count: 31, color: 'bg-violet-500' },
+  { name: 'Pending', count: 10, color: 'bg-gray-500' },
+  { name: 'Reopened', count: 4, color: 'bg-amber-500' },
+  { name: 'Paused', count: 7, color: 'bg-rose-400' },
   { name: 'Closed', count: 59, color: 'bg-gray-800' },
-  { name: 'Completed', count: 12, color: 'bg-success' }
+  { name: 'Done', count: 12, color: 'bg-success' }
 ];
 
 const statusesAr = [
-  { name: 'تم استلام الطلب', count: 11, color: 'bg-gray-500' },
-  { name: 'قيد الدراسة', count: 17, color: 'bg-gray-400' },
-  { name: 'قيد التنفيذ', count: 31, color: 'bg-violet-500' },
-  { name: 'في انتظار رد الأعمال', count: 10, color: 'bg-gray-500' },
-  { name: 'إعادة فتح', count: 4, color: 'bg-amber-500' },
-  { name: 'معلق', count: 7, color: 'bg-rose-400' },
+  { name: 'مستلم', count: 11, color: 'bg-gray-500' },
+  { name: 'تحليل', count: 17, color: 'bg-gray-400' },
+  { name: 'نشط', count: 31, color: 'bg-violet-500' },
+  { name: 'معلق', count: 10, color: 'bg-gray-500' },
+  { name: 'أعيد فتحه', count: 4, color: 'bg-amber-500' },
+  { name: 'متوقف', count: 7, color: 'bg-rose-400' },
   { name: 'مغلق', count: 59, color: 'bg-gray-800' },
-  { name: 'مكتمل', count: 12, color: 'bg-success' }
+  { name: 'منجز', count: 12, color: 'bg-success' }
 ];
 
 const deliveryDataEn = [
