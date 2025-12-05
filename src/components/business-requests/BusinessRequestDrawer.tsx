@@ -167,17 +167,21 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     onClose();
   };
 
+
   const handleSaveAndClose = () => {
     if (!requestId) return;
+    
+    // Close dialog and drawer immediately
+    setShowUnsavedChangesDialog(false);
+    setHasChanges(false);
+    onClose();
+    
+    // Save in background
     updateMutation.mutate({ id: requestId, data: formData as Partial<BusinessRequest> }, {
       onSuccess: () => {
         setOriginalData(formData);
-        setHasChanges(false);
-        setShowUnsavedChangesDialog(false);
-        // Refresh table
         queryClient.invalidateQueries({ queryKey: ['business-requests'] });
         toast.success('Business request saved');
-        onClose();
       }
     });
   };
