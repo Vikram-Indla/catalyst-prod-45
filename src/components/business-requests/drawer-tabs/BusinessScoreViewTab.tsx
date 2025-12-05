@@ -59,7 +59,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
   const [pendingRank, setPendingRank] = useState<number | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isSavingRank, setIsSavingRank] = useState(false);
-  const [skipNextReset, setSkipNextReset] = useState(false);
+  const skipNextResetRef = useRef(false);
   const prevRankRef = useRef<number | null>(data.rank);
   const originalRankRef = useRef<number | null>(data.rank);
   const originalIsForceRankedRef = useRef<boolean>(data.is_force_ranked === true);
@@ -123,8 +123,8 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
 
   // Initialize refs when data changes - but skip if we just saved
   useEffect(() => {
-    if (skipNextReset) {
-      setSkipNextReset(false);
+    if (skipNextResetRef.current) {
+      skipNextResetRef.current = false;
       return;
     }
     originalRankRef.current = data.rank;
@@ -134,7 +134,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     // Only show justification if already force ranked with saved justification
     setShowJustification(data.is_force_ranked === true && !!data.rank_override_justification);
     setPendingRank(null);
-  }, [data.rank, data.is_force_ranked, data.rank_override_justification, skipNextReset]);
+  }, [data.rank, data.is_force_ranked, data.rank_override_justification]);
 
   const handleInputChange = async (field: string, value: number) => {
     if (isForceRanked) return;
@@ -264,7 +264,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     // Persist to database
     if (requestId) {
       setIsSavingRank(true);
-      setSkipNextReset(true); // Prevent useEffect from resetting state
+      skipNextResetRef.current = true; // Prevent useEffect from resetting state
       try {
         await supabase
           .from('business_requests')
@@ -294,7 +294,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         toast({ title: 'Rank updated', description: 'Switched to auto-calculated ranking.' });
       } catch (error) {
         console.error('Failed to switch to auto:', error);
-        setSkipNextReset(false); // Reset flag on error
+        skipNextResetRef.current = false; // Reset flag on error
         toast({ title: 'Error', description: 'Failed to update rank.', variant: 'destructive' });
       } finally {
         setIsSavingRank(false);
@@ -322,7 +322,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     // Persist to database
     if (requestId) {
       setIsSavingRank(true);
-      setSkipNextReset(true); // Prevent useEffect from resetting state
+      skipNextResetRef.current = true; // Prevent useEffect from resetting state
       try {
         await supabase
           .from('business_requests')
@@ -354,7 +354,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         });
       } catch (error) {
         console.error('Failed to save rank:', error);
-        setSkipNextReset(false); // Reset flag on error
+        skipNextResetRef.current = false; // Reset flag on error
         toast({ title: 'Error', description: 'Failed to save rank.', variant: 'destructive' });
       } finally {
         setIsSavingRank(false);
