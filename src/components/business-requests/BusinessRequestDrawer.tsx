@@ -75,15 +75,22 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
+  // Track if we initiated a data update (to avoid resetting hasChanges on refetch)
+  const [skipNextFormReset, setSkipNextFormReset] = useState(false);
+
   // Sync form data when request changes
   useEffect(() => {
     if (request) {
       setFormData(request);
       setOriginalData(request);
       setEditedName(request.title || '');
-      setHasChanges(false);
+      // Only reset hasChanges if we didn't just trigger this update ourselves
+      if (!skipNextFormReset) {
+        setHasChanges(false);
+      }
+      setSkipNextFormReset(false);
     }
-  }, [request]);
+  }, [request, skipNextFormReset]);
 
   // Check if data has changed
   const checkForChanges = useCallback((newData: Partial<BusinessRequest>) => {
@@ -112,11 +119,14 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     if (!hasChanges) {
       setHasChanges(true);
     }
+    // Prevent useEffect from resetting hasChanges when query refetches
+    setSkipNextFormReset(true);
   };
 
   const handleDirtyChange = (isDirty: boolean) => {
     if (isDirty) {
       setHasChanges(true);
+      setSkipNextFormReset(true);
     }
   };
 
