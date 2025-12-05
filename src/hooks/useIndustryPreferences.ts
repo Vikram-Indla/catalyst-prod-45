@@ -11,16 +11,37 @@ interface IndustryPreferences {
   updated_at: string;
 }
 
-const DEFAULT_COLUMN_ORDER = ['request_key', 'rank', 'title', 'process_step', 'business_score', 'planned_quarter', 'end_date', 'ageing'];
+const DEFAULT_COLUMN_ORDER = [
+  'request_key', 
+  'rank', 
+  'title', 
+  'process_step', 
+  'business_score', 
+  'submitted_date',
+  'planned_quarter', 
+  'end_date', 
+  'ageing',
+  'delivery_platform',
+  'requestor',
+  'business_owner',
+  'department',
+  'created_by'
+];
 const DEFAULT_COLUMN_VISIBILITY: Record<string, boolean> = {
   request_key: true,
   rank: true,
   title: true,
   process_step: true,
   business_score: true,
+  submitted_date: false,
   planned_quarter: true,
   end_date: true,
   ageing: true,
+  delivery_platform: false,
+  requestor: false,
+  business_owner: false,
+  department: false,
+  created_by: false,
 };
 
 export function useIndustryPreferences() {
