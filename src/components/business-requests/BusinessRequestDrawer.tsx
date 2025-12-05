@@ -408,6 +408,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   onChange={handleFieldChange} 
                   requestId={requestId || undefined}
                   onDirtyChange={handleDirtyChange}
+                  hasUnsavedChanges={hasChanges}
                 />
               </TabsContent>
               <TabsContent value="links" className="m-0 focus-visible:outline-none">

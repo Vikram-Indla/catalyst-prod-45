@@ -39,9 +39,10 @@ interface BusinessScoreViewTabProps {
   onChange: (field: string, value: any) => void;
   requestId?: string;
   onDirtyChange?: (isDirty: boolean) => void;
+  hasUnsavedChanges?: boolean;
 }
 
-export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange }: BusinessScoreViewTabProps) {
+export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange, hasUnsavedChanges = false }: BusinessScoreViewTabProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -369,8 +370,8 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     setJustification(data.rank_override_justification || '');
   };
 
-  // Force rank is only enabled if scoring is complete OR already force ranked
-  const forceRankEnabled = isScoringComplete || isForceRanked;
+  // Force rank is only enabled if scoring is complete AND no unsaved changes (or already force ranked)
+  const forceRankEnabled = (isScoringComplete && !hasUnsavedChanges) || isForceRanked;
 
   // Determine the display value for the select
   const selectDisplayValue = pendingRank !== null ? String(pendingRank) : (isForceRanked ? String(data.rank) : 'auto');
@@ -520,9 +521,14 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                     </span>
                   )}
                 </div>
-                {!isScoringComplete && !isForceRanked && (
+                {!forceRankEnabled && !isForceRanked && (
                   <p className="text-[9px] text-muted-foreground mt-1.5 italic">
-                    Complete all inputs to enable
+                    {!isScoringComplete 
+                      ? 'Complete all inputs to enable'
+                      : hasUnsavedChanges 
+                        ? 'Save changes first to enable force ranking'
+                        : 'Complete all inputs to enable'
+                    }
                   </p>
                 )}
 
