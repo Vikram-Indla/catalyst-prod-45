@@ -24,7 +24,19 @@ export const COMPLEXITY_OPTIONS = ['Low', 'Medium', 'High', 'Very High'];
 export const URGENCY_OPTIONS = ['Low', 'Normal', 'High', 'Critical'];
 export const TRACK_OPTIONS = ['Digital', 'Core Banking', 'Payments', 'Analytics', 'Infrastructure'];
 export const RISK_RATING_OPTIONS = ['Low', 'Medium', 'High', 'Critical'];
-export const DELIVERY_PLATFORM_OPTIONS = ['On-Premise', 'Cloud', 'Hybrid'];
+// Single source of truth for Delivery Platform options (used in both internal and external forms)
+export const DELIVERY_PLATFORM_OPTIONS = [
+  { value: 'Senaei Platform', label: { en: 'Senaei Platform', ar: 'منصة صناعي' } },
+  { value: 'Innovation Platform', label: { en: 'Innovation Platform', ar: 'منصة الابتكار' } },
+  { value: 'Tahommena', label: { en: 'Tahommena', ar: 'طموحنا' } },
+  { value: 'Compass', label: { en: 'Compass', ar: 'البوصلة' } },
+  { value: 'Mini Apps', label: { en: 'Mini Apps', ar: 'التطبيقات المصغرة' } },
+  { value: 'Website', label: { en: 'Website', ar: 'الموقع الإلكتروني' } },
+  { value: 'Investor Journey', label: { en: 'Investor Journey', ar: 'رحلة المستثمر' } },
+  { value: 'Catalyst', label: { en: 'Catalyst', ar: 'كاتاليست' } },
+  { value: 'RHQ Services', label: { en: 'RHQ Services', ar: 'خدمات المقر الإقليمي' } },
+  { value: 'Other', label: { en: 'Other', ar: 'أخرى' } },
+] as const;
 export const DELIVERY_TRACK_OPTIONS = ['Digital', 'Core Banking', 'Payments', 'Analytics'];
 export const INTEGRATION_SYSTEMS_OPTIONS = ['SAP', 'Salesforce', 'Oracle', 'Microsoft Dynamics', 'Custom API', 'Core Banking', 'Payment Gateway'];
 export const PORTFOLIO_DECISION_OPTIONS = ['Pending', 'Approve', 'Reject', 'Defer', 'Need More Info'];

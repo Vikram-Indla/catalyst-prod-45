@@ -77,7 +77,7 @@ export function PortfolioTab({ data, isEditMode, onChange }: PortfolioTabProps) 
                 </SelectTrigger>
                 <SelectContent>
                   {DELIVERY_PLATFORM_OPTIONS.map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label.en}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
