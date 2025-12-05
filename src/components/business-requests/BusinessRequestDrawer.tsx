@@ -76,7 +76,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Track if we initiated a data update (to avoid resetting hasChanges on refetch)
-  const [skipNextFormReset, setSkipNextFormReset] = useState(false);
+  // Using ref instead of state to avoid triggering useEffect re-runs
+  const skipNextFormResetRef = useRef(false);
 
   // Sync form data when request changes
   useEffect(() => {
@@ -85,12 +86,12 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
       setOriginalData(request);
       setEditedName(request.title || '');
       // Only reset hasChanges if we didn't just trigger this update ourselves
-      if (!skipNextFormReset) {
+      if (!skipNextFormResetRef.current) {
         setHasChanges(false);
       }
-      setSkipNextFormReset(false);
+      skipNextFormResetRef.current = false;
     }
-  }, [request, skipNextFormReset]);
+  }, [request]);
 
   // Check if data has changed
   const checkForChanges = useCallback((newData: Partial<BusinessRequest>) => {
@@ -120,13 +121,13 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
       setHasChanges(true);
     }
     // Prevent useEffect from resetting hasChanges when query refetches
-    setSkipNextFormReset(true);
+    skipNextFormResetRef.current = true;
   };
 
   const handleDirtyChange = (isDirty: boolean) => {
     if (isDirty) {
       setHasChanges(true);
-      setSkipNextFormReset(true);
+      skipNextFormResetRef.current = true;
     }
   };
 
