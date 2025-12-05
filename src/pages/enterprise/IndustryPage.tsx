@@ -10,6 +10,7 @@ import { CreateBusinessRequestModal } from '@/components/business-requests/Creat
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { RankUpdateNotification } from '@/components/business-requests/RankUpdateNotification';
 import { SimpleColumnHeader, SortDirection } from '@/components/business-requests/SimpleColumnHeader';
+import { DraggableColumnHeaders } from '@/components/business-requests/DraggableColumnHeaders';
 import { BusinessRequestsKanbanView } from '@/components/business-requests/BusinessRequestsKanbanView';
 import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
 import { PROCESS_STEPS } from '@/types/business-request';
@@ -619,33 +620,23 @@ export default function IndustryPage() {
             ) : viewMode === 'kanban' ? (
               <BusinessRequestsKanbanView requests={sortedRequests} onRequestSelect={setSelectedRequestId} />
             ) : sortedRequests.length > 0 ? (
-              <Card className="flex-1 flex flex-col min-h-0">
-                {/* Column Headers */}
-                <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative shrink-0">
-                  <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
-                  <div className="w-5" />
-                  <div className="w-5" />
-                  <div className="w-5" />
-                  {columns.map((col) => {
-                    if (!col.visible) return null;
-                    const colDef = COLUMN_DEFINITIONS[col.id];
-                    if (!colDef) return null;
-                    
-                    return (
-                      <div
-                        key={col.id}
-                        className={`${colDef.width} shrink-0 ${col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing' ? 'text-center' : ''}`}
-                      >
-                        <SimpleColumnHeader 
-                          label={colDef.label} 
-                          columnId={col.id} 
-                          sortDirection={columnSort.columnId === col.id ? columnSort.direction : null} 
-                          onSort={handleSort} 
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
+            <Card className="flex-1 flex flex-col min-h-0">
+                {/* Column Headers - Draggable */}
+                <DraggableColumnHeaders
+                  columns={columns}
+                  columnDefinitions={COLUMN_DEFINITIONS}
+                  columnSort={columnSort}
+                  onSort={handleSort}
+                  onReorder={handleColumnsChange}
+                  leadingContent={
+                    <>
+                      <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
+                      <div className="w-5" />
+                      <div className="w-5" />
+                      <div className="w-5" />
+                    </>
+                  }
+                />
 
                 {/* Rows - Single scroll container */}
                 <div className="flex-1 overflow-auto">
