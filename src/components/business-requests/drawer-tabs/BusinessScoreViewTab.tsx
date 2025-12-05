@@ -545,7 +545,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                         <Button
                           size="sm"
                           onClick={handleSaveJustificationAndRank}
-                          disabled={!justification.trim() || isSavingRank}
+                          disabled={isSavingRank}
                           className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
                         >
                           <Save className="h-3 w-3 mr-1" />
