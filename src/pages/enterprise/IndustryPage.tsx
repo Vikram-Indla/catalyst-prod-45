@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Flame, Clock, AlertTriangle } from 'lucide-react';
-import { IndustryFilterBar } from '@/components/business-requests/IndustryFilterBar';
+import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Flame, Clock, AlertTriangle, Filter } from 'lucide-react';
+import { IndustryFiltersDialog } from '@/components/business-requests/IndustryFiltersDialog';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -18,7 +18,6 @@ import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase } from '@/integrations/supabase/client';
-import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useIndustryPreferences } from '@/hooks/useIndustryPreferences';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -274,6 +273,14 @@ export default function IndustryPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
+  const [filters, setFilters] = useState<{
+    deliveryPlatform?: string;
+    processStep?: string;
+    quarter?: string;
+    assignee?: string;
+    businessOwner?: string;
+  }>({});
   const [columnSort, setColumnSort] = useState<ColumnSort>({
     columnId: 'rank',
     direction: 'asc'
@@ -325,11 +332,10 @@ export default function IndustryPage() {
     toast({ title: 'Column order saved' });
   }, [columnOrder, updateColumnOrder, toast]);
 
-  const { industryFilters } = useCatalystContext();
-  const deliveryPlatforms = industryFilters?.deliveryPlatforms || [];
-  const processSteps = industryFilters?.processSteps || [];
-  const quarters = industryFilters?.quarters || [];
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
+
+  // Calculate active filter count
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   // Apply sorting and filtering
   useEffect(() => {
@@ -340,14 +346,20 @@ export default function IndustryPage() {
     let filtered = [...requests];
 
     // Apply filters
-    if (deliveryPlatforms.length > 0) {
-      filtered = filtered.filter((r: any) => deliveryPlatforms.includes(r.delivery_platform));
+    if (filters.deliveryPlatform) {
+      filtered = filtered.filter((r: any) => r.delivery_platform === filters.deliveryPlatform);
     }
-    if (processSteps.length > 0) {
-      filtered = filtered.filter((r: any) => processSteps.includes(r.process_step));
+    if (filters.processStep) {
+      filtered = filtered.filter((r: any) => r.process_step === filters.processStep);
     }
-    if (quarters.length > 0) {
-      filtered = filtered.filter((r: any) => quarters.includes(r.planned_quarter));
+    if (filters.quarter) {
+      filtered = filtered.filter((r: any) => r.planned_quarter === filters.quarter);
+    }
+    if (filters.assignee) {
+      filtered = filtered.filter((r: any) => r.requestor === filters.assignee);
+    }
+    if (filters.businessOwner) {
+      filtered = filtered.filter((r: any) => r.business_owner === filters.businessOwner);
     }
 
     // Apply sorting based on selected column
@@ -367,7 +379,7 @@ export default function IndustryPage() {
     }));
     
     setSortedRequests(withRanks);
-  }, [requests, columnSort, deliveryPlatforms, processSteps, quarters]);
+  }, [requests, columnSort, filters]);
 
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -518,8 +530,6 @@ export default function IndustryPage() {
     setNotification(prev => ({ ...prev, show: false }));
   }, []);
 
-  const activeFilterCount = deliveryPlatforms.length + processSteps.length + quarters.length;
-
   return (
     <TooltipProvider>
       <div className="h-full flex flex-col bg-background">
@@ -562,6 +572,20 @@ export default function IndustryPage() {
               )}
 
               <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setFiltersDialogOpen(true)}
+                className={activeFilterCount > 0 ? "border-brand-gold text-brand-gold" : "border-border"}
+              >
+                <Filter className="h-4 w-4 mr-2" />
+                Filters
+                {activeFilterCount > 0 && (
+                  <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-brand-gold text-white">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </Button>
               <Button variant="outline" size="sm" className="border-border">
                 <Upload className="h-4 w-4 mr-2" />
                 Import
@@ -573,9 +597,6 @@ export default function IndustryPage() {
               </Button>
             </div>
           </div>
-
-          {/* Row 2: Horizontal Filters */}
-          <IndustryFilterBar />
         </div>
 
         {/* Main Content - Single scroll container to fix drag-drop */}
@@ -850,6 +871,12 @@ export default function IndustryPage() {
 
         <CreateBusinessRequestModal isOpen={createModalOpen} onClose={() => setCreateModalOpen(false)} />
         <BusinessRequestDrawer isOpen={!!selectedRequestId} onClose={() => setSelectedRequestId(null)} requestId={selectedRequestId} />
+        <IndustryFiltersDialog
+          open={filtersDialogOpen}
+          onOpenChange={setFiltersDialogOpen}
+          filters={filters}
+          onFiltersChange={setFilters}
+        />
       </div>
     </TooltipProvider>
   );
