@@ -165,44 +165,37 @@ interface ColumnSort {
 
 // Default sort: Use saved rank if available, otherwise sort by business score
 const sortByScoreWithTieBreaker = (items: any[]) => {
-  // Check if any items have saved ranks (from previous drag operations)
-  const hasAnyRanks = items.some(item => item.rank != null);
+  // Separate force-ranked items from auto-scored items
+  const forceRankedItems = items.filter(item => item.is_force_ranked === true && item.rank != null);
+  const autoScoredItems = items.filter(item => !(item.is_force_ranked === true && item.rank != null));
   
-  if (hasAnyRanks) {
-    // Sort by saved rank first, then by score for unranked items
-    return [...items].sort((a, b) => {
-      const aRank = a.rank;
-      const bRank = b.rank;
-      
-      // Both have ranks - sort by rank
-      if (aRank != null && bRank != null) {
-        return aRank - bRank;
-      }
-      
-      // Only one has rank - ranked item comes first at its position
-      if (aRank != null) return -1;
-      if (bRank != null) return 1;
-      
-      // Neither has rank - fall back to score
-      return (b.business_score ?? 0) - (a.business_score ?? 0);
-    });
-  }
-  
-  // No saved ranks - use business score with submission date tie-breaker
-  return [...items].sort((a, b) => {
-    // 1. Primary: Business Score (descending)
+  // Sort auto-scored items by score (descending), then by submission date (FIFO)
+  const sortedAutoItems = [...autoScoredItems].sort((a, b) => {
     const scoreA = a.business_score ?? 0;
     const scoreB = b.business_score ?? 0;
     if (scoreB !== scoreA) return scoreB - scoreA;
     
-    // 2. Tie-breaker: Submission Date (FIFO - earlier wins)
     const dateA = new Date(a.created_at || 0).getTime();
     const dateB = new Date(b.created_at || 0).getTime();
     if (dateA !== dateB) return dateA - dateB;
     
-    // 3. Final fallback: Request ID (deterministic)
     return (a.request_key ?? '').localeCompare(b.request_key ?? '');
   });
+  
+  // Sort force-ranked items by their rank (ascending)
+  const sortedForceRanked = [...forceRankedItems].sort((a, b) => (a.rank ?? 0) - (b.rank ?? 0));
+  
+  // Build final list: insert force-ranked items at their exact positions
+  const result: any[] = [...sortedAutoItems];
+  
+  for (const forceItem of sortedForceRanked) {
+    const targetPosition = (forceItem.rank ?? 1) - 1; // rank is 1-indexed, array is 0-indexed
+    // Clamp position to valid range
+    const insertAt = Math.max(0, Math.min(targetPosition, result.length));
+    result.splice(insertAt, 0, forceItem);
+  }
+  
+  return result;
 };
 
 // Generic column sort (for non-rank columns)
