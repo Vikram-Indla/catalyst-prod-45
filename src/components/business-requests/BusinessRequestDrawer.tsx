@@ -391,7 +391,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Get drawer width classes based on expanded state - reduced from 900px to 680px
   const drawerWidthClass = isExpanded 
     ? 'w-full sm:max-w-full' 
-    : 'w-full sm:w-[50vw] sm:max-w-[50vw]';
+    : 'w-full sm:w-[60vw] sm:max-w-[60vw]';
 
   if (!isOpen) return null;
 
@@ -512,7 +512,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
           </SheetHeader>
 
           {/* Workflow History link - compact header element */}
-          <div className="px-5 py-2 border-b border-border/30 bg-card shrink-0 flex items-center justify-between">
+          <div className="px-5 py-2 border-b border-border/30 bg-card shrink-0">
             <button 
               onClick={() => setWorkflowModalOpen(true)}
               className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
@@ -521,6 +521,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               <span className="font-medium text-brand-gold capitalize underline underline-offset-2">
                 {formData.process_step?.replace(/_/g, ' ') || 'New Request'}
               </span>
+              <span className="text-[10px] text-muted-foreground/70">(click to update)</span>
             </button>
             <WorkflowViewerModal 
               currentStep={formData.process_step || 'new_request'}
