@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Equal, Flame } from 'lucide-react';
+import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Equal, Flame, Clock, AlertTriangle } from 'lucide-react';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -53,23 +53,31 @@ const calculateAgeing = (createdAt: string | null): number => {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
-// Get ageing color class and tooltip based on days
-const getAgeingInfo = (days: number): { class: string; tooltip: string } => {
+// Get ageing color class, icon, and tooltip based on days (quiet default, loud exception pattern)
+const getAgeingInfo = (days: number): { class: string; tooltip: string; icon: 'flame' | 'alert' | 'clock' | null; label: string } => {
   if (days >= 30) return { 
     class: 'text-destructive font-medium', 
-    tooltip: `Critical aging: ${days} days old. Immediate escalation required (threshold: 30+ days)` 
+    icon: 'flame',
+    label: 'Critical',
+    tooltip: `${days} days old. Immediate escalation required (threshold: 30+ days)` 
   };
   if (days >= 15) return { 
     class: 'text-orange-600', 
-    tooltip: `Escalation recommended: ${days} days old (threshold: 15-29 days)` 
+    icon: 'alert',
+    label: 'Escalation',
+    tooltip: `${days} days old. Escalation recommended (threshold: 15-29 days)` 
   };
   if (days >= 8) return { 
     class: 'text-amber-600', 
-    tooltip: `Attention needed: ${days} days old (threshold: 8-14 days)` 
+    icon: 'clock',
+    label: 'Attention',
+    tooltip: `${days} days old. Attention needed (threshold: 8-14 days)` 
   };
   return { 
     class: 'text-muted-foreground', 
-    tooltip: `Normal: ${days} days old (within 7-day threshold)` 
+    icon: null,
+    label: 'Normal',
+    tooltip: `${days} days old (within 7-day threshold)` 
   };
 };
 
@@ -116,15 +124,15 @@ const getTargetDateInfo = (dateStr: string | null): { class: string; isOverdue: 
   };
 };
 
-// Process step semantic colors and descriptions
-const PROCESS_STEP_INFO: Record<string, { bg: string; text: string; description: string }> = {
-  'closed': { bg: 'bg-green-100', text: 'text-green-800', description: 'Work completed and closed' },
-  'in_progress': { bg: 'bg-blue-100', text: 'text-blue-800', description: 'Active work underway' },
-  'awaiting_business_response': { bg: 'bg-amber-100', text: 'text-amber-800', description: 'Blocked - waiting for business input' },
-  'under_study': { bg: 'bg-purple-100', text: 'text-purple-800', description: 'Analysis and feasibility assessment' },
-  'on_hold': { bg: 'bg-gray-200', text: 'text-gray-700', description: 'Paused - pending decision or dependency' },
-  'implemented': { bg: 'bg-gray-100', text: 'text-gray-600', description: 'Solution implemented and deployed' },
-  'request_received': { bg: 'bg-sky-100', text: 'text-sky-800', description: 'New request - pending triage' },
+// Process step: tiny dot color + neutral text (quiet default pattern)
+const PROCESS_STEP_INFO: Record<string, { dotColor: string; description: string }> = {
+  'closed': { dotColor: 'bg-green-500', description: 'Work completed and closed' },
+  'in_progress': { dotColor: 'bg-blue-500', description: 'Active work underway' },
+  'awaiting_business_response': { dotColor: 'bg-amber-500', description: 'Blocked - waiting for business input' },
+  'under_study': { dotColor: 'bg-purple-500', description: 'Analysis and feasibility assessment' },
+  'on_hold': { dotColor: 'bg-gray-400', description: 'Paused - pending decision or dependency' },
+  'implemented': { dotColor: 'bg-gray-500', description: 'Solution implemented and deployed' },
+  'request_received': { dotColor: 'bg-sky-500', description: 'New request - pending triage' },
 };
 
 // Score tier information
@@ -383,12 +391,13 @@ export default function IndustryPage() {
 
   const getStatusBadge = (status: string) => {
     const step = PROCESS_STEPS.find(s => s.value === status);
-    const info = PROCESS_STEP_INFO[status] || { bg: 'bg-muted', text: 'text-muted-foreground', description: 'Unknown status' };
+    const info = PROCESS_STEP_INFO[status] || { dotColor: 'bg-gray-400', description: 'Unknown status' };
     
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium cursor-help ${info.bg} ${info.text}`}>
+          <span className="inline-flex items-center gap-2 px-2 py-1 rounded text-xs font-medium cursor-help bg-muted/50 text-foreground">
+            <span className={`w-2 h-2 rounded-full shrink-0 ${info.dotColor}`} />
             {step?.label || status}
           </span>
         </TooltipTrigger>
@@ -664,7 +673,7 @@ export default function IndustryPage() {
                                   <div className="w-24 shrink-0">
                                     <button
                                       onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                                      className="text-sm text-brand-gold hover:text-brand-gold-hover hover:underline font-medium transition-colors"
+                                      className="text-sm text-muted-foreground hover:text-foreground hover:underline font-medium transition-colors"
                                     >
                                       {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
                                     </button>
@@ -749,11 +758,16 @@ export default function IndustryPage() {
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <span className={`text-sm inline-flex items-center gap-1 cursor-help ${ageingInfo.class}`}>
-                                          {ageing >= 30 && <Flame className="h-3 w-3" />}
+                                          {ageingInfo.icon === 'flame' && <Flame className="h-3 w-3" />}
+                                          {ageingInfo.icon === 'alert' && <AlertTriangle className="h-3 w-3" />}
+                                          {ageingInfo.icon === 'clock' && <Clock className="h-3 w-3" />}
                                           {ageing} days
                                         </span>
                                       </TooltipTrigger>
-                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs whitespace-normal">{ageingInfo.tooltip}</TooltipContent>
+                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs whitespace-normal">
+                                        <div className="font-medium">{ageingInfo.label}</div>
+                                        <div className="text-gray-300 mt-1">{ageingInfo.tooltip}</div>
+                                      </TooltipContent>
                                     </Tooltip>
                                   </div>
                                 );
