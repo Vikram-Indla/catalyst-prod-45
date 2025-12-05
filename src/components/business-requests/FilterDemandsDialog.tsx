@@ -439,45 +439,45 @@ export function FilterDemandsDialog({
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Reporter</label>
                 <Select
-                  value={localFilters.reporter || ''}
-                  onValueChange={(value) => updateFilter('reporter', value || undefined)}
+                  value={localFilters.reporter || '__all__'}
+                  onValueChange={(value) => updateFilter('reporter', value === '__all__' ? undefined : value)}
                 >
                   <SelectTrigger className="h-10 bg-white border-border">
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent className="bg-white z-[100]">
-                    <SelectItem value="">All</SelectItem>
-                    <SelectItem value={user?.email || ''}>Me</SelectItem>
+                    <SelectItem value="__all__">All</SelectItem>
+                    {user?.email && <SelectItem value={user.email}>Me</SelectItem>}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Business Owner</label>
                 <Select
-                  value={localFilters.businessOwner || ''}
-                  onValueChange={(value) => updateFilter('businessOwner', value || undefined)}
+                  value={localFilters.businessOwner || '__all__'}
+                  onValueChange={(value) => updateFilter('businessOwner', value === '__all__' ? undefined : value)}
                 >
                   <SelectTrigger className="h-10 bg-white border-border">
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent className="bg-white z-[100]">
-                    <SelectItem value="">All</SelectItem>
-                    <SelectItem value={user?.email || ''}>Me</SelectItem>
+                    <SelectItem value="__all__">All</SelectItem>
+                    {user?.email && <SelectItem value={user.email}>Me</SelectItem>}
                   </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Assignee</label>
                 <Select
-                  value={localFilters.assignee || ''}
-                  onValueChange={(value) => updateFilter('assignee', value || undefined)}
+                  value={localFilters.assignee || '__all__'}
+                  onValueChange={(value) => updateFilter('assignee', value === '__all__' ? undefined : value)}
                 >
                   <SelectTrigger className="h-10 bg-white border-border">
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent className="bg-white z-[100]">
-                    <SelectItem value="">All</SelectItem>
-                    <SelectItem value={user?.email || ''}>Me</SelectItem>
+                    <SelectItem value="__all__">All</SelectItem>
+                    {user?.email && <SelectItem value={user.email}>Me</SelectItem>}
                     <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
                   </SelectContent>
                 </Select>
