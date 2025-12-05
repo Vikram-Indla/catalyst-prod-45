@@ -775,24 +775,24 @@ export default function IndustryPage() {
             ) : sortedRequests.length > 0 ? (
             <Card className="flex-1 flex flex-col min-h-0 overflow-hidden">
                 {/* Single scroll container for header + body */}
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 overflow-x-auto overflow-y-auto">
                   {/* Notification bar */}
                   <div className="sticky top-0 z-20">
                     <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
                   </div>
                   
-                  {/* Inner table with min-width to enable horizontal scroll */}
-                  <div className="min-w-max">
+                  {/* Inner table with fixed min-width for horizontal scroll */}
+                  <div style={{ minWidth: '1200px' }}>
                     {/* Column Headers - Sticky */}
                     <div className="sticky top-0 z-30 flex items-center h-10 px-4 bg-card border-b text-xs font-medium text-muted-foreground uppercase tracking-wide shadow-sm">
-                      {/* Leading icons placeholder */}
-                      <div className="flex items-center shrink-0 gap-4 mr-2">
-                        <div className="w-5" /> {/* Expand */}
-                        <div className="w-5" /> {/* Drag */}
-                        <div className="w-5" /> {/* Checkbox */}
+                      {/* Leading icons placeholder - fixed width */}
+                      <div className="flex items-center gap-2 mr-2" style={{ width: '120px', minWidth: '120px' }}>
+                        <div className="w-8" /> {/* Expand */}
+                        <div className="w-8" /> {/* Drag */}
+                        <div className="w-8" /> {/* Checkbox */}
                       </div>
                       
-                      {/* Column headers - matching body widths */}
+                      {/* Column headers - using flex-grow for remaining space */}
                       {columns.filter(col => col.visible).map(col => {
                         const colDef = COLUMN_DEFINITIONS[col.id];
                         if (!colDef) return null;
@@ -806,7 +806,7 @@ export default function IndustryPage() {
                               "shrink-0 px-2 flex items-center gap-1",
                               isCentered && "justify-center"
                             )}
-                            style={{ width: `${width}px` }}
+                            style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
                           >
                             <SimpleColumnHeader
                               label={colDef.label}
@@ -940,7 +940,7 @@ export default function IndustryPage() {
                                       "shrink-0 px-2 flex items-center min-w-0",
                                       isCentered && "justify-center"
                                     )}
-                                    style={{ width: `${width}px` }}
+                                    style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
                                   >
                                     {cellContent}
                                   </div>
@@ -960,16 +960,16 @@ export default function IndustryPage() {
                                         onClick={() => setSelectedRequestId(request.id)}
                                       >
                                         {/* Leading icons - fixed width matching header */}
-                                        <div className="flex items-center shrink-0 gap-4 mr-2">
-                                          <button onClick={(e) => toggleRowExpansion(request.id, e)} className="w-5 flex items-center justify-center text-muted-foreground hover:text-foreground">
+                                        <div className="flex items-center gap-2 mr-2" style={{ width: '120px', minWidth: '120px' }}>
+                                          <button onClick={(e) => toggleRowExpansion(request.id, e)} className="w-8 flex items-center justify-center text-muted-foreground hover:text-foreground">
                                             {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRightIcon className="h-4 w-4" />}
                                           </button>
                                           
-                                          <div {...provided.dragHandleProps} className="w-5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
+                                          <div {...provided.dragHandleProps} className="w-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground flex items-center justify-center" onClick={e => e.stopPropagation()}>
                                             <GripVertical className="h-4 w-4" />
                                           </div>
                                           
-                                          <div className="w-5" onClick={e => e.stopPropagation()}>
+                                          <div className="w-8 flex items-center justify-center" onClick={e => e.stopPropagation()}>
                                             <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
                                           </div>
                                         </div>
@@ -979,7 +979,7 @@ export default function IndustryPage() {
                                       </div>
                                       
                                       {isExpanded && (
-                                        <div className="bg-muted/20 border-b px-4 py-3 ml-[76px]">
+                                        <div className="bg-muted/20 border-b px-4 py-3" style={{ marginLeft: '120px' }}>
                                           <div className="grid grid-cols-2 gap-4 text-sm">
                                             <div>
                                               <span className="text-muted-foreground font-medium">Description:</span>
