@@ -551,65 +551,49 @@ export default function IndustryPage() {
           <IndustryFilterBar />
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
-          <div className="flex-1 overflow-auto p-4 sm:p-6 relative">
+        {/* Main Content - Single scroll container to fix drag-drop */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 p-4 sm:p-6 min-h-0 flex flex-col">
             {isLoading ? (
               <div className="text-center py-8 text-muted-foreground">Loading...</div>
             ) : viewMode === 'kanban' ? (
               <BusinessRequestsKanbanView requests={sortedRequests} onRequestSelect={setSelectedRequestId} />
             ) : sortedRequests.length > 0 ? (
-              <Card className="overflow-hidden relative flex flex-col">
+              <Card className="flex-1 flex flex-col min-h-0">
                 {/* Column Headers */}
-                <DragDropContext onDragEnd={handleColumnDragEnd}>
-                  <Droppable droppableId="column-headers" direction="horizontal">
-                    {(provided) => (
-                      <div 
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative"
+                <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative shrink-0">
+                  <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
+                  <div className="w-5" />
+                  <div className="w-5" />
+                  <div className="w-5" />
+                  {columnOrder.map((colId) => {
+                    if (!isColumnVisible(colId)) return null;
+                    const colDef = COLUMN_DEFINITIONS[colId];
+                    if (!colDef) return null;
+                    
+                    return (
+                      <div
+                        key={colId}
+                        className={`${colDef.width} shrink-0 ${colId === 'rank' || colId === 'business_score' || colId === 'ageing' ? 'text-center' : ''}`}
                       >
-                        <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
-                        <div className="w-5" />
-                        <div className="w-5" />
-                        <div className="w-5" />
-                        {columnOrder.map((colId, index) => {
-                          if (!isColumnVisible(colId)) return null;
-                          const colDef = COLUMN_DEFINITIONS[colId];
-                          if (!colDef) return null;
-                          
-                          return (
-                            <Draggable key={colId} draggableId={`col-${colId}`} index={index}>
-                              {(provided, snapshot) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                  className={`${colDef.width} shrink-0 ${colId === 'rank' || colId === 'business_score' || colId === 'ageing' ? 'text-center' : ''} cursor-grab active:cursor-grabbing ${snapshot.isDragging ? 'bg-brand-gold/10 rounded px-2 shadow-sm' : ''}`}
-                                >
-                                  <SimpleColumnHeader 
-                                    label={colDef.label} 
-                                    columnId={colId} 
-                                    sortDirection={columnSort.columnId === colId ? columnSort.direction : null} 
-                                    onSort={handleSort} 
-                                  />
-                                </div>
-                              )}
-                            </Draggable>
-                          );
-                        })}
-                        {provided.placeholder}
+                        <SimpleColumnHeader 
+                          label={colDef.label} 
+                          columnId={colId} 
+                          sortDirection={columnSort.columnId === colId ? columnSort.direction : null} 
+                          onSort={handleSort} 
+                        />
                       </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
+                    );
+                  })}
+                </div>
 
-                {/* Rows */}
-                <DragDropContext onDragEnd={handleDragEnd}>
-                  <Droppable droppableId="requests">
-                    {provided => (
-                      <div {...provided.droppableProps} ref={provided.innerRef} className="flex-1">
-                        {paginatedRequests.map((request: any, index: number) => {
+                {/* Rows - Single scroll container */}
+                <div className="flex-1 overflow-auto">
+                  <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="requests">
+                      {provided => (
+                        <div {...provided.droppableProps} ref={provided.innerRef}>
+                          {paginatedRequests.map((request: any, index: number) => {
                           const globalIndex = startIndex + index;
                           const isForceRanked = request.is_force_ranked;
                           const isTied = isBusinessLogicSort && hasScoreTie(request, sortedRequests, globalIndex);
@@ -783,6 +767,7 @@ export default function IndustryPage() {
                     )}
                   </Droppable>
                 </DragDropContext>
+              </div>
 
                 {/* Pagination Footer */}
                 {totalPages > 1 && (
