@@ -26,20 +26,20 @@ import { useAuth } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
 const COLUMN_DEFINITIONS: Record<string, { label: string; defaultWidth: number; minWidth: number }> = {
-  request_key: { label: 'Request ID', defaultWidth: 96, minWidth: 80 },
-  rank: { label: 'Rank', defaultWidth: 64, minWidth: 50 },
-  title: { label: 'Summary', defaultWidth: 300, minWidth: 150 },
-  process_step: { label: 'Process Step', defaultWidth: 144, minWidth: 100 },
-  business_score: { label: 'Score', defaultWidth: 80, minWidth: 60 },
-  submitted_date: { label: 'Submitted Date', defaultWidth: 112, minWidth: 90 },
-  planned_quarter: { label: 'Quarter', defaultWidth: 96, minWidth: 80 },
-  end_date: { label: 'Target Date', defaultWidth: 112, minWidth: 90 },
-  ageing: { label: 'Ageing', defaultWidth: 80, minWidth: 60 },
-  delivery_platform: { label: 'Delivery Platform', defaultWidth: 128, minWidth: 100 },
-  requestor: { label: 'Assignee', defaultWidth: 112, minWidth: 80 },
-  business_owner: { label: 'Business Owner', defaultWidth: 112, minWidth: 80 },
-  department: { label: 'Department', defaultWidth: 112, minWidth: 80 },
-  created_by: { label: 'Reporter', defaultWidth: 112, minWidth: 80 },
+  request_key: { label: 'Request ID', defaultWidth: 100, minWidth: 90 },
+  rank: { label: 'Rank', defaultWidth: 70, minWidth: 60 },
+  title: { label: 'Summary', defaultWidth: 280, minWidth: 180 },
+  process_step: { label: 'Process Step', defaultWidth: 130, minWidth: 110 },
+  business_score: { label: 'Score', defaultWidth: 80, minWidth: 70 },
+  submitted_date: { label: 'Submitted Date', defaultWidth: 130, minWidth: 110 },
+  planned_quarter: { label: 'Quarter', defaultWidth: 110, minWidth: 90 },
+  end_date: { label: 'Target Date', defaultWidth: 120, minWidth: 100 },
+  ageing: { label: 'Ageing', defaultWidth: 100, minWidth: 80 },
+  delivery_platform: { label: 'Delivery Platform', defaultWidth: 140, minWidth: 120 },
+  requestor: { label: 'Assignee', defaultWidth: 130, minWidth: 100 },
+  business_owner: { label: 'Business Owner', defaultWidth: 150, minWidth: 120 },
+  department: { label: 'Department', defaultWidth: 130, minWidth: 100 },
+  created_by: { label: 'Reporter', defaultWidth: 130, minWidth: 100 },
 };
 
 const DEFAULT_COLUMN_WIDTHS: ColumnWidths = Object.fromEntries(
@@ -784,7 +784,7 @@ export default function IndustryPage() {
                   {/* Inner table with min-width to enable horizontal scroll */}
                   <div className="min-w-max">
                     {/* Column Headers - Sticky */}
-                    <div className="sticky top-0 z-10 flex items-center h-10 px-4 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                    <div className="sticky top-0 z-30 flex items-center h-10 px-4 bg-card border-b text-xs font-medium text-muted-foreground uppercase tracking-wide shadow-sm">
                       {/* Leading icons placeholder */}
                       <div className="flex items-center shrink-0 gap-4 mr-2">
                         <div className="w-5" /> {/* Expand */}
