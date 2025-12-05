@@ -42,13 +42,26 @@ const COLUMN_DEFINITIONS: Record<string, { label: string; width: string }> = {
 
 const DEFAULT_COLUMN_ORDER = ['request_key', 'rank', 'title', 'process_step', 'business_score', 'submitted_date', 'planned_quarter', 'end_date', 'ageing', 'delivery_platform', 'requestor', 'business_owner', 'department', 'created_by'];
 
-const getDefaultColumns = (order: string[], visibility: Record<string, boolean>): ColumnConfig[] => {
-  return order.map(id => ({
-    id,
-    label: COLUMN_DEFINITIONS[id]?.label || id,
-    visible: visibility[id] ?? true,
-    default: true,
-  }));
+const ALL_COLUMN_IDS = Object.keys(COLUMN_DEFINITIONS);
+
+const getDefaultColumns = (savedOrder: string[], savedVisibility: Record<string, boolean>): ColumnConfig[] => {
+  // Merge saved order with all available columns (add any missing columns at the end)
+  const orderSet = new Set(savedOrder);
+  const fullOrder = [...savedOrder];
+  ALL_COLUMN_IDS.forEach(id => {
+    if (!orderSet.has(id)) {
+      fullOrder.push(id);
+    }
+  });
+  
+  return fullOrder
+    .filter(id => COLUMN_DEFINITIONS[id]) // Only include valid columns
+    .map(id => ({
+      id,
+      label: COLUMN_DEFINITIONS[id]?.label || id,
+      visible: savedVisibility[id] ?? false, // Default to hidden for new columns
+      default: true,
+    }));
 };
 
 const calculateAgeing = (createdAt: string | null): number => {
