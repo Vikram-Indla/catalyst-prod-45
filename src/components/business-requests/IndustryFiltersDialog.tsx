@@ -44,21 +44,21 @@ export function IndustryFiltersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md bg-white">
         <DialogHeader>
-          <DialogTitle>Filter Requests</DialogTitle>
+          <DialogTitle className="text-foreground">Filter Requests</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Status</Label>
+            <Label className="text-foreground">Status</Label>
             <Select
               value={filters.processStep || 'all'}
               onValueChange={(value) => onFiltersChange({ ...filters, processStep: value === 'all' ? undefined : value })}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-border">
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">All statuses</SelectItem>
                 {PROCESS_STEPS.map((step) => (
                   <SelectItem key={step.value} value={step.value}>
@@ -70,15 +70,15 @@ export function IndustryFiltersDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Delivery Platform</Label>
+            <Label className="text-foreground">Delivery Platform</Label>
             <Select
               value={filters.deliveryPlatform || 'all'}
               onValueChange={(value) => onFiltersChange({ ...filters, deliveryPlatform: value === 'all' ? undefined : value })}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-border">
                 <SelectValue placeholder="All platforms" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">All platforms</SelectItem>
                 {DELIVERY_PLATFORM_OPTIONS.map((platform) => (
                   <SelectItem key={platform.value} value={platform.value}>
@@ -90,15 +90,15 @@ export function IndustryFiltersDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Quarter</Label>
+            <Label className="text-foreground">Quarter</Label>
             <Select
               value={filters.quarter || 'all'}
               onValueChange={(value) => onFiltersChange({ ...filters, quarter: value === 'all' ? undefined : value })}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-border">
                 <SelectValue placeholder="All quarters" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">All quarters</SelectItem>
                 {quarterOptions.map((quarter) => (
                   <SelectItem key={quarter.value} value={quarter.value}>
@@ -110,30 +110,30 @@ export function IndustryFiltersDialog({
           </div>
 
           <div className="space-y-2">
-            <Label>Assignee</Label>
+            <Label className="text-foreground">Assignee</Label>
             <Select
               value={filters.assignee || 'all'}
               onValueChange={(value) => onFiltersChange({ ...filters, assignee: value === 'all' ? undefined : value })}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-border">
                 <SelectValue placeholder="All assignees" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">All assignees</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label>Business Owner</Label>
+            <Label className="text-foreground">Business Owner</Label>
             <Select
               value={filters.businessOwner || 'all'}
               onValueChange={(value) => onFiltersChange({ ...filters, businessOwner: value === 'all' ? undefined : value })}
             >
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-border">
                 <SelectValue placeholder="All owners" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="all">All owners</SelectItem>
               </SelectContent>
             </Select>
