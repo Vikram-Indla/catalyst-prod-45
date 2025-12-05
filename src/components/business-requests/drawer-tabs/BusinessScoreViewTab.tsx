@@ -544,7 +544,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
                       onChange={(e) => setJustification(e.target.value)}
                       placeholder="Provide business justification for overriding the auto-calculated rank..."
                       className="min-h-[80px] text-sm resize-none"
-                      disabled={isSavingRank}
+                      disabled={isSavingRank || (isForceRanked && pendingRank === null)}
                     />
                     {pendingRank !== null && (
                       <div className="flex gap-2 pt-1">
