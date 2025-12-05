@@ -38,6 +38,7 @@ import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
 import { LinksViewTab } from './drawer-tabs/LinksViewTab';
 import { DiscussionsViewTab } from './drawer-tabs/DiscussionsViewTab';
 import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
+import { StatusPipeline } from './StatusPipeline';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -386,10 +387,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     }
   };
 
-  // Get drawer width classes based on expanded state
+  // Get drawer width classes based on expanded state - reduced from 900px to 680px
   const drawerWidthClass = isExpanded 
     ? 'w-full sm:max-w-full' 
-    : 'w-full sm:w-[700px] md:w-[800px] lg:w-[900px] sm:max-w-[90vw]';
+    : 'w-full sm:w-[600px] md:w-[680px] sm:max-w-[85vw]';
 
   if (!isOpen) return null;
 
@@ -508,6 +509,17 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             </div>
             <SheetDescription className="sr-only">Business request details panel</SheetDescription>
           </SheetHeader>
+
+          {/* Status Pipeline - Horizontal workflow stages */}
+          <div className="px-5 py-3 border-b border-border/30 bg-card shrink-0">
+            <StatusPipeline
+              currentStep={formData.process_step || 'request_received'}
+              requestId={requestId || ''}
+              submittedDate={request?.created_at}
+              onStepChange={(step) => handleFieldChange('process_step', step)}
+              compact
+            />
+          </div>
 
           {/* Tabs with horizontal scroll */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
