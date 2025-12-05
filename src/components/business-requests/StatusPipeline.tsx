@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { PROCESS_STEPS } from '@/types/business-request';
-import { Check, Pause, GitBranch } from 'lucide-react';
+import { Check, Pause, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
 
@@ -22,9 +22,11 @@ export function StatusPipeline({
   // Find current step index
   const currentIndex = PROCESS_STEPS.findIndex(s => s.value === currentStep);
   
-  // Filter out 'on_hold' from main flow (it's shown as special)
-  const mainSteps = PROCESS_STEPS.filter(s => s.value !== 'on_hold');
+  // Filter out orphan statuses from main flow (they're shown as special indicators)
+  const orphanStatuses = ['on_hold', 'rejected'];
+  const mainSteps = PROCESS_STEPS.filter(s => !orphanStatuses.includes(s.value));
   const isPaused = currentStep === 'on_hold';
+  const isRejected = currentStep === 'rejected';
 
   return (
     <div className="w-full">
@@ -103,11 +105,16 @@ export function StatusPipeline({
         "flex items-center justify-between mt-3",
         compact && "mt-2"
       )}>
-        {/* Paused indicator */}
+        {/* Orphan status indicators */}
         {isPaused ? (
           <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
             <Pause className="h-3 w-3 text-amber-600" />
-            <span className="text-xs font-medium text-amber-600">Paused</span>
+            <span className="text-xs font-medium text-amber-600">On-Hold</span>
+          </div>
+        ) : isRejected ? (
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-red-500/10 border border-red-500/30">
+            <XCircle className="h-3 w-3 text-red-600" />
+            <span className="text-xs font-medium text-red-600">Rejected</span>
           </div>
         ) : (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
