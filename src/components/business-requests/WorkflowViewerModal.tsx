@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { GitBranch, ChevronRight, Check } from 'lucide-react';
+import { GitBranch, ChevronRight, Check, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { useQuery } from '@tanstack/react-query';
@@ -13,13 +13,12 @@ interface WorkflowViewerModalProps {
   submittedDate?: string;
 }
 
-interface StepDate {
-  step: string;
-  date: string;
-}
+// Main workflow steps (excluding Paused which is optional from any step)
+const MAIN_WORKFLOW_STEPS = PROCESS_STEPS.filter(step => step.value !== 'on_hold');
 
 export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: WorkflowViewerModalProps) {
-  const currentIndex = PROCESS_STEPS.findIndex(step => step.value === currentStep);
+  const currentIndex = MAIN_WORKFLOW_STEPS.findIndex(step => step.value === currentStep);
+  const isPaused = currentStep === 'on_hold';
 
   // Fetch process_step change history from audit logs
   const { data: stepDates } = useQuery({
@@ -59,6 +58,8 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: W
     return format(new Date(stepDates[stepValue]), 'dd/MM/yyyy');
   };
 
+  const pausedDate = getStepDate('on_hold');
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -77,16 +78,16 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: W
         
         <div className="py-4">
           <div className="relative">
-            {PROCESS_STEPS.map((step, index) => {
-              const isCompleted = index < currentIndex;
-              const isCurrent = index === currentIndex;
-              const isUpcoming = index > currentIndex;
+            {MAIN_WORKFLOW_STEPS.map((step, index) => {
+              const isCompleted = !isPaused && index < currentIndex;
+              const isCurrent = !isPaused && index === currentIndex;
+              const isUpcoming = isPaused || index > currentIndex;
               const stepDate = getStepDate(step.value);
               
               return (
                 <div key={step.value} className="relative">
                   {/* Connector line */}
-                  {index < PROCESS_STEPS.length - 1 && (
+                  {index < MAIN_WORKFLOW_STEPS.length - 1 && (
                     <div 
                       className={cn(
                         "absolute left-4 top-8 w-0.5 h-8",
@@ -112,40 +113,75 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: W
                       )}
                     </div>
                     
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <p 
-                          className={cn(
-                            "text-sm font-medium",
-                            isCurrent && "text-brand-gold",
-                            isUpcoming && "text-muted-foreground"
-                          )}
-                        >
-                          {step.label}
-                        </p>
-                        {/* Show date if step has been reached */}
-                        {(isCompleted || isCurrent) && stepDate && (
-                          <span className="text-xs text-muted-foreground ml-2">
-                            {stepDate}
-                          </span>
+                    <div className="flex items-center gap-2">
+                      <p 
+                        className={cn(
+                          "text-sm font-medium",
+                          isCurrent && "text-brand-gold",
+                          isUpcoming && "text-muted-foreground"
                         )}
-                      </div>
-                      {isCurrent && (
-                        <p className="text-xs text-muted-foreground">Current step</p>
+                      >
+                        {step.label}
+                      </p>
+                      {/* Show date closer to label */}
+                      {(isCompleted || isCurrent) && stepDate && (
+                        <span className="text-xs text-muted-foreground">
+                          {stepDate}
+                        </span>
                       )}
                     </div>
 
+                    <div className="flex-1" />
+
                     {/* Allowed transitions indicator */}
-                    {isCurrent && index < PROCESS_STEPS.length - 1 && (
+                    {isCurrent && index < MAIN_WORKFLOW_STEPS.length - 1 && (
                       <div className="flex items-center text-xs text-muted-foreground">
                         <ChevronRight className="h-3 w-3" />
-                        <span>Can move to: {PROCESS_STEPS[index + 1]?.label}</span>
+                        <span>Can move to: {MAIN_WORKFLOW_STEPS[index + 1]?.label}</span>
                       </div>
+                    )}
+
+                    {isCurrent && (
+                      <span className="text-xs text-muted-foreground ml-2">Current step</span>
                     )}
                   </div>
                 </div>
               );
             })}
+          </div>
+
+          {/* Paused - Optional status note */}
+          <div className="mt-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-3">
+              <div 
+                className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 transition-colors",
+                  isPaused 
+                    ? "bg-amber-500/20 border-2 border-amber-500 text-amber-600" 
+                    : "bg-muted border border-dashed border-border text-muted-foreground"
+                )}
+              >
+                <Pause className="h-4 w-4" />
+              </div>
+              <div className="flex items-center gap-2">
+                <p className={cn(
+                  "text-sm font-medium",
+                  isPaused ? "text-amber-600" : "text-muted-foreground"
+                )}>
+                  Paused
+                </p>
+                {isPaused && pausedDate && (
+                  <span className="text-xs text-muted-foreground">{pausedDate}</span>
+                )}
+                {isPaused && (
+                  <span className="text-xs text-amber-600 ml-2">Current step</span>
+                )}
+              </div>
+              <div className="flex-1" />
+              <span className="text-xs text-muted-foreground italic">
+                Optional from any step
+              </span>
+            </div>
           </div>
         </div>
 
