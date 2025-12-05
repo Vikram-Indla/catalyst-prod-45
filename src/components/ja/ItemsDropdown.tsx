@@ -10,10 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Circle, Square, Hexagon, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, AlertCircle, FileCheck, Calendar, Package, Flag } from "lucide-react";
+import { Circle, Square, Hexagon, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, AlertCircle, FileCheck, Calendar, Package, Flag, Briefcase } from "lucide-react";
 
 const workItems = [
   { label: "Themes", icon: Circle, color: "text-workitem-theme", path: "/themes" },
+  { label: "Business Request", icon: Briefcase, color: "text-brand-gold", path: "/industry" },
   { label: "Epics", icon: Square, color: "text-workitem-epic", path: "/items/epics" },
   { label: "Features", icon: Box, color: "text-workitem-feature", path: "/features" },
   { label: "Stories", icon: FileText, color: "text-workitem-story", path: "/stories" },
