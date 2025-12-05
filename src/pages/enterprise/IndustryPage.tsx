@@ -822,7 +822,7 @@ export default function IndustryPage() {
                           <div 
                             key={col.id}
                             className={cn(
-                              "shrink-0 px-3 flex items-center gap-1 border-r border-[#E4E6EB] last:border-r-0",
+                              "shrink-0 px-3 flex items-center gap-1",
                               isCentered && "justify-center"
                             )}
                             style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
@@ -956,7 +956,7 @@ export default function IndustryPage() {
                                   <div 
                                     key={col.id}
                                     className={cn(
-                                      "shrink-0 px-3 flex items-center min-w-0 border-r border-[#E4E6EB] last:border-r-0",
+                                      "shrink-0 px-3 flex items-center min-w-0",
                                       isCentered && "justify-center"
                                     )}
                                     style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
