@@ -18,13 +18,13 @@ const SCORE_OPTIONS = Array.from({ length: 11 }, (_, i) => i);
 // Rank options 1-20
 const RANK_OPTIONS = Array.from({ length: 20 }, (_, i) => i + 1);
 
-// Get rank label based on score
+// Get rank label based on score - pill badge styling
 const getRankLabel = (score: number): { label: string; color: string } => {
-  if (score >= 90) return { label: 'Must-Do Now', color: 'text-green-700 bg-green-50 border-green-200' };
-  if (score >= 75) return { label: 'High', color: 'text-emerald-700 bg-emerald-50 border-emerald-200' };
-  if (score >= 60) return { label: 'Medium', color: 'text-amber-700 bg-amber-50 border-amber-200' };
-  if (score >= 40) return { label: 'Low', color: 'text-orange-700 bg-orange-50 border-orange-200' };
-  return { label: 'Backlog / Parked', color: 'text-red-700 bg-red-50 border-red-200' };
+  if (score >= 90) return { label: 'Must-Do Now', color: 'text-green-800 bg-green-100 border-green-300' };
+  if (score >= 75) return { label: 'High', color: 'text-emerald-800 bg-emerald-100 border-emerald-300' };
+  if (score >= 60) return { label: 'Medium', color: 'text-amber-800 bg-amber-100 border-amber-300' };
+  if (score >= 40) return { label: 'Low', color: 'text-orange-800 bg-orange-100 border-orange-300' };
+  return { label: 'Backlog / Parked', color: 'text-red-800 bg-red-100 border-red-300' };
 };
 
 // Get score circle color - simplified
@@ -608,13 +608,13 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
             <div className="flex justify-center">
               {isScoringComplete ? (
                 <span className={cn(
-                  "inline-flex px-2.5 py-1 rounded text-[11px] font-medium border",
+                  "inline-flex px-4 py-1.5 rounded-full text-xs font-semibold border shadow-sm",
                   rankInfo.color
                 )}>
                   {rankInfo.label}
                 </span>
               ) : (
-                <span className="inline-flex px-2.5 py-1 rounded text-[11px] font-medium border border-muted-foreground/20 text-muted-foreground/60 bg-muted/30">
+                <span className="inline-flex px-4 py-1.5 rounded-full text-xs font-semibold border border-muted-foreground/20 text-muted-foreground/60 bg-muted/30">
                   Not Scored
                 </span>
               )}
