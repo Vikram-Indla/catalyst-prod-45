@@ -654,7 +654,6 @@ export default function IndustryPage() {
                       <div {...provided.droppableProps} ref={provided.innerRef} className="flex-1">
                         {paginatedRequests.map((request: any, index: number) => {
                           const globalIndex = startIndex + index;
-                          const isTop10 = isBusinessLogicSort && (request.displayRank || globalIndex + 1) <= 10;
                           const isForceRanked = request.is_force_ranked;
                           const isTied = isBusinessLogicSort && hasScoreTie(request, sortedRequests, globalIndex);
                           const isExpanded = expandedRows.has(request.id);
@@ -746,10 +745,7 @@ export default function IndustryPage() {
                                   <div className="w-28 shrink-0">
                                     <Tooltip>
                                       <TooltipTrigger asChild>
-                                        <div className="flex items-center gap-1 cursor-help">
-                                          {targetInfo.isOverdue && <span className="text-destructive">⚠️</span>}
-                                          <span className={`text-sm ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
-                                        </div>
+                                        <span className={`text-sm cursor-help ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
                                       </TooltipTrigger>
                                       <TooltipContent side="top" className="bg-brand-dark text-white text-xs">{targetInfo.tooltip}</TooltipContent>
                                     </Tooltip>
@@ -779,22 +775,11 @@ export default function IndustryPage() {
                               {(provided, snapshot) => (
                                 <div ref={provided.innerRef} {...provided.draggableProps}>
                                   <div 
-                                    className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors relative
+                                    className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors
                                       ${snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''}
-                                      ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}
-                                      ${isTop10 ? 'bg-brand-gold/[0.03]' : ''}`}
+                                      ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`}
                                     onClick={() => setSelectedRequestId(request.id)}
                                   >
-                                    {isTop10 && (
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-brand-gold cursor-help" />
-                                        </TooltipTrigger>
-                                        <TooltipContent side="right" className="bg-brand-dark text-white text-xs">
-                                          Top 10 Priority Queue (Rank {request.displayRank})
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    )}
                                     
                                     <button onClick={(e) => toggleRowExpansion(request.id, e)} className="w-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
                                       {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRightIcon className="h-4 w-4" />}
@@ -847,10 +832,6 @@ export default function IndustryPage() {
                 {/* Legend Bar */}
                 <div className="px-4 py-2 bg-muted/50 border-t flex items-center gap-6 text-xs text-muted-foreground">
                   <span className="font-medium text-foreground">Legend:</span>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-1 h-4 bg-brand-gold rounded" />
-                    <span>Top 10 Priority</span>
-                  </div>
                   <div className="flex items-center gap-1.5">
                     <Lock className="h-3 w-3" />
                     <span>Force-ranked</span>
