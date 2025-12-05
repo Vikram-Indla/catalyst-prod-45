@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/auth";
 import { Loader2, Briefcase, Package, GitMerge, Link2, TriangleAlert, FlaskConical, FileText } from "lucide-react";
 import { IntegrationBadge } from "@/components/brand/IntegrationBadge";
+import { getLastRoute, clearLastRoute } from "@/hooks/useSessionPersistence";
+
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +23,10 @@ export default function Auth() {
     } = await signIn(email, password);
     setIsLoading(false);
     if (!error) {
-      navigate("/home");
+      // Redirect to last visited page or default to home
+      const lastRoute = getLastRoute();
+      clearLastRoute(); // Clear after use to prevent stale redirects
+      navigate(lastRoute);
     }
   };
   return <div className="min-h-screen flex flex-col lg:flex-row">

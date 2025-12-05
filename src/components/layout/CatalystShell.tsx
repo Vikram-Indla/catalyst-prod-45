@@ -10,8 +10,11 @@ import { LeftContextPanel } from './LeftContextPanel';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
+import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 
 function CatalystShellContent() {
+  // Track last visited route for session persistence
+  useTrackLastRoute();
   const location = useLocation();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
   const { tier, setTier } = useCatalystContext();
