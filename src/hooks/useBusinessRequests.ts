@@ -285,10 +285,8 @@ export function useUpdateBusinessRequest() {
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       queryClient.invalidateQueries({ queryKey: ['business-request'] });
       queryClient.invalidateQueries({ queryKey: ['business-request-audit'] });
-      // Only show toast for non-rank updates or explicit saves
-      if (variables.data.rank === undefined) {
-        toast({ title: 'Business request updated successfully' });
-      }
+      queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
+      // Removed auto-toast - let components handle their own notifications
     },
     onError: (error) => {
       toast({ title: 'Failed to update business request', description: error.message, variant: 'destructive' });

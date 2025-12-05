@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
@@ -43,17 +43,21 @@ interface BusinessScoreViewTabProps {
 export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScoreViewTabProps) {
   const { toast } = useToast();
   
-  // When force ranked, inputs should show 0 (disabled)
+  // Track if force ranked
   const isForceRanked = data.is_force_ranked === true && data.rank !== null && data.rank !== undefined;
   
-  const executiveUrgency = isForceRanked ? 0 : (data.executive_urgency ?? 0);
-  const businessValue = isForceRanked ? 0 : (data.business_value ?? 0);
-  const complexity = isForceRanked ? 0 : (data.complexity_score ?? 0);
+  // Get actual values from data (preserved even when force ranked)
+  const executiveUrgency = data.executive_urgency ?? 0;
+  const businessValue = data.business_value ?? 0;
+  const complexity = data.complexity_score ?? 0;
 
   // Local state
   const [justification, setJustification] = useState(data.rank_override_justification || '');
-  const [showJustification, setShowJustification] = useState(false);
+  const [showJustification, setShowJustification] = useState(isForceRanked);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  
+  // Track previous rank for comparison
+  const prevRankRef = useRef<number | null>(data.rank);
 
   // Check user role for forced rank access
   const { data: userRole } = useQuery({
@@ -92,29 +96,25 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
     return userRole.includes('admin') || userRole.includes('program_manager');
   }, [userRole]);
 
-  // Calculate normalized values (0 when force ranked)
+  // Calculate normalized values
   const normalizedUrgency = executiveUrgency / 10;
   const normalizedBusinessValue = businessValue / 10;
   const normalizedSimplicity = (10 - complexity) / 10;
 
-  // Calculate business score (0 when force ranked since inputs are 0)
+  // Calculate business score (always calculated from actual values)
   const businessScore = useMemo(() => {
-    if (isForceRanked) return 0;
     return Math.round(
       (0.45 * normalizedBusinessValue + 0.35 * normalizedUrgency + 0.20 * normalizedSimplicity) * 100
     );
-  }, [normalizedBusinessValue, normalizedUrgency, normalizedSimplicity, isForceRanked]);
+  }, [normalizedBusinessValue, normalizedUrgency, normalizedSimplicity]);
 
   // Calculate auto-rank position based on business score among all requests
   const autoRankPosition = useMemo(() => {
     if (!allRequests || allRequests.length === 0 || !requestId) return null;
     
-    // Get non-force-ranked items sorted by score
-    const nonForcedItems = allRequests
-      .filter(r => !r.is_force_ranked)
-      .sort((a, b) => (b.business_score ?? 0) - (a.business_score ?? 0));
-    
-    const position = nonForcedItems.findIndex(r => r.id === requestId);
+    // Sort all items by business score to find natural position
+    const sortedByScore = [...allRequests].sort((a, b) => (b.business_score ?? 0) - (a.business_score ?? 0));
+    const position = sortedByScore.findIndex(r => r.id === requestId);
     return position >= 0 ? position + 1 : null;
   }, [allRequests, requestId]);
 
@@ -131,12 +131,13 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
     setJustification(data.rank_override_justification || '');
   }, [data.rank_override_justification]);
 
-  // Calculate and save business score when inputs change
+  // Handle input changes - persist immediately
   const handleInputChange = (field: string, value: number) => {
     if (isForceRanked) return; // Don't allow changes when force ranked
     
     onChange(field, value);
     
+    // Calculate and update business score
     let newUrgency = executiveUrgency;
     let newBusinessValue = businessValue;
     let newComplexity = complexity;
@@ -156,8 +157,8 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
     onChange('business_score', newScore);
   };
 
-  // Log rank change to audit history
-  const logRankChange = async (oldRank: number | null, newRank: number | null, isAuto: boolean, justificationText?: string) => {
+  // Log rank change to audit history (silent - no toast)
+  const logRankChange = async (oldRank: number | null, newRank: number | null, isAuto: boolean) => {
     if (!requestId) return;
     
     try {
@@ -172,7 +173,6 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
       const oldValue = oldRank !== null ? `Rank ${oldRank}` : 'Auto';
       const newValue = isAuto ? 'Auto' : `Rank ${newRank}`;
 
-      // Log rank change
       await supabase.from('business_request_audit_logs').insert({
         business_request_id: requestId,
         actor_id: user?.id,
@@ -182,64 +182,55 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
         old_value: oldValue,
         new_value: newValue,
       });
-
-      // Log justification if provided
-      if (justificationText) {
-        await supabase.from('business_request_audit_logs').insert({
-          business_request_id: requestId,
-          actor_id: user?.id,
-          actor_name: actorName,
-          action: 'UPDATE',
-          field_changed: 'Rank Justification',
-          old_value: null,
-          new_value: justificationText,
-        });
-      }
     } catch (error) {
       console.error('Failed to log rank change:', error);
     }
   };
 
   const handleRankChange = async (value: string) => {
-    const oldRank = data.rank;
+    const oldRank = prevRankRef.current;
     
     if (value === 'auto') {
-      // Set to Auto mode - restore ability to use inputs
+      // Set to Auto mode - keep existing input values, just disable force rank
       onChange('rank', null);
       onChange('is_force_ranked', false);
       setShowJustification(false);
       
-      await logRankChange(oldRank, null, true);
+      // Log silently in background
+      logRankChange(oldRank, null, true);
       
+      // Single toast only
       toast({
-        title: 'Rank Reset to Auto',
-        description: 'The rank will now be calculated automatically based on business score.',
+        title: 'Rank updated',
+        description: 'Switched to auto-calculated ranking.',
       });
     } else {
       const newRank = parseInt(value);
       
-      // Set force rank and nullify all inputs
+      // Set force rank - KEEP existing input values, just disable editing
       onChange('rank', newRank);
       onChange('is_force_ranked', true);
-      onChange('executive_urgency', null);
-      onChange('business_value', null);
-      onChange('complexity_score', null);
-      onChange('business_score', null);
-      setShowJustification(true);
+      setShowJustification(true); // Open justification section
       
+      // Log silently in background
+      logRankChange(oldRank, newRank, false);
+      
+      // Single toast only
       toast({
-        title: 'Forced Rank Applied',
-        description: `Rank set to ${newRank}. Inputs disabled. Please provide business justification.`,
-        variant: 'default',
+        title: 'Rank updated',
+        description: `Manual rank #${newRank} applied. Please provide justification.`,
       });
     }
+    
+    // Update ref for next comparison
+    prevRankRef.current = value === 'auto' ? null : parseInt(value);
   };
 
   const handleSaveJustification = async () => {
     if (!justification.trim()) {
       toast({
         title: 'Justification Required',
-        description: 'Please provide a business justification before saving.',
+        description: 'Please provide a business justification.',
         variant: 'destructive',
       });
       return;
@@ -247,12 +238,36 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
     
     onChange('rank_override_justification', justification);
     
-    // Log justification and rank change together
-    await logRankChange(null, data.rank, false, justification);
+    // Log justification silently
+    if (requestId) {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user?.id)
+          .single();
+
+        const actorName = profile?.full_name || user?.email || 'Unknown User';
+
+        await supabase.from('business_request_audit_logs').insert({
+          business_request_id: requestId,
+          actor_id: user?.id,
+          actor_name: actorName,
+          action: 'UPDATE',
+          field_changed: 'Rank Justification',
+          old_value: data.rank_override_justification || null,
+          new_value: justification,
+        });
+      } catch (error) {
+        console.error('Failed to log justification:', error);
+      }
+    }
     
+    // Single toast
     toast({
-      title: 'Justification Saved',
-      description: 'Your business justification has been logged in audit history.',
+      title: 'Justification saved',
+      description: 'Your business justification has been recorded.',
     });
   };
 
@@ -278,7 +293,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
                   onValueChange={(value) => handleInputChange('executive_urgency', parseInt(value))}
                   disabled={isForceRanked}
                 >
-                  <SelectTrigger className={cn("mt-2 w-full h-9", isForceRanked && "opacity-50 cursor-not-allowed")}>
+                  <SelectTrigger className={cn("mt-2 w-full h-9", isForceRanked && "opacity-50 cursor-not-allowed bg-muted")}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border shadow-lg z-50">
@@ -290,7 +305,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
               </div>
               <div className={cn(
                 "w-12 h-12 rounded-full border-[3px] flex items-center justify-center font-semibold text-base shrink-0",
-                isForceRanked ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor(executiveUrgency * 10)
+                isForceRanked ? "border-muted-foreground/40 text-muted-foreground bg-muted/30" : getScoreColor(executiveUrgency * 10)
               )}>
                 {executiveUrgency}
               </div>
@@ -308,7 +323,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
                   onValueChange={(value) => handleInputChange('business_value', parseInt(value))}
                   disabled={isForceRanked}
                 >
-                  <SelectTrigger className={cn("mt-2 w-full h-9", isForceRanked && "opacity-50 cursor-not-allowed")}>
+                  <SelectTrigger className={cn("mt-2 w-full h-9", isForceRanked && "opacity-50 cursor-not-allowed bg-muted")}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border shadow-lg z-50">
@@ -320,7 +335,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
               </div>
               <div className={cn(
                 "w-12 h-12 rounded-full border-[3px] flex items-center justify-center font-semibold text-base shrink-0",
-                isForceRanked ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor(businessValue * 10)
+                isForceRanked ? "border-muted-foreground/40 text-muted-foreground bg-muted/30" : getScoreColor(businessValue * 10)
               )}>
                 {businessValue}
               </div>
@@ -338,7 +353,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
                   onValueChange={(value) => handleInputChange('complexity_score', parseInt(value))}
                   disabled={isForceRanked}
                 >
-                  <SelectTrigger className={cn("mt-2 w-full h-9", isForceRanked && "opacity-50 cursor-not-allowed")}>
+                  <SelectTrigger className={cn("mt-2 w-full h-9", isForceRanked && "opacity-50 cursor-not-allowed bg-muted")}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border shadow-lg z-50">
@@ -350,7 +365,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
               </div>
               <div className={cn(
                 "w-12 h-12 rounded-full border-[3px] flex items-center justify-center font-semibold text-base shrink-0",
-                isForceRanked ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor((1 - complexity / 10) * 100)
+                isForceRanked ? "border-muted-foreground/40 text-muted-foreground bg-muted/30" : getScoreColor((1 - complexity / 10) * 100)
               )}>
                 {complexity}
               </div>
@@ -358,7 +373,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
 
             {isForceRanked && (
               <p className="text-[11px] text-amber-600 italic pt-2 border-t border-border/40">
-                Inputs disabled due to manual force rank override.
+                Inputs locked due to manual rank override. Switch to Auto to edit.
               </p>
             )}
           </CardContent>
@@ -413,42 +428,43 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
               </div>
             )}
 
-            {/* Business Score */}
+            {/* Business Score - Always shown */}
             <div className="text-center pt-2">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-brand-gold mb-3">
                 Business Score (Auto-Calculated)
               </h3>
-              <div className={cn(
-                "text-5xl font-bold leading-none",
-                isForceRanked ? "text-muted-foreground" : "text-brand-gold"
-              )}>
-                {isForceRanked ? '—' : businessScore}
+              <div className="text-5xl font-bold text-brand-gold leading-none">
+                {businessScore}
               </div>
-              {!isForceRanked && (
-                <p className="text-[11px] text-muted-foreground mt-1">(Average: 60)</p>
-              )}
-              {isForceRanked && (
-                <p className="text-[11px] text-amber-600 mt-1 italic">Manual override active</p>
-              )}
+              <p className="text-[11px] text-muted-foreground mt-1">(Average: 60)</p>
             </div>
 
-            {/* Auto Rank Position (for non-force-ranked items) */}
-            {!isForceRanked && autoRankPosition && (
-              <div className="text-center py-1">
-                <span className="text-xs text-muted-foreground">
-                  Auto Rank Position: <span className="font-semibold text-foreground">#{autoRankPosition}</span> of {allRequests?.filter(r => !r.is_force_ranked).length || 0}
+            {/* Rank Information */}
+            <div className="text-center py-2 space-y-2">
+              {/* Original Rank (based on score) */}
+              {autoRankPosition && (
+                <div className="text-xs text-muted-foreground">
+                  Original Rank (by score): <span className="font-semibold text-foreground">#{autoRankPosition}</span>
+                  <span className="text-muted-foreground/60"> of {allRequests?.length || 0}</span>
+                </div>
+              )}
+              
+              {/* Rank Badge */}
+              {isForceRanked ? (
+                <div className="space-y-1">
+                  <span className="inline-flex px-3 py-1.5 rounded-full text-xs font-semibold text-brand-gold bg-brand-gold/10">
+                    Forced Rank: #{displayRank}
+                  </span>
+                  <p className="text-[10px] text-amber-600 italic">Manual override active</p>
+                </div>
+              ) : (
+                <span className={cn(
+                  "inline-flex px-3 py-1.5 rounded-full text-xs font-semibold",
+                  rankInfo.color
+                )}>
+                  Business Rank: {rankInfo.label}
                 </span>
-              </div>
-            )}
-
-            {/* Rank Badge */}
-            <div className="text-center py-2">
-              <span className={cn(
-                "inline-flex px-3 py-1.5 rounded-full text-xs font-semibold",
-                isForceRanked ? "text-brand-gold bg-brand-gold/10" : rankInfo.color
-              )}>
-                {isForceRanked ? `Manual Rank: #${displayRank}` : `Business Rank: ${rankInfo.label}`}
-              </span>
+              )}
             </div>
 
             {/* Collapsible Thresholds & Info */}
@@ -507,7 +523,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
         </Card>
       </div>
 
-      {/* Justification Section - Full Width Below */}
+      {/* Justification Section - Full Width Below (shows when force ranked) */}
       {canAccessForcedRank && showJustification && (
         <Card className="border border-amber-200 rounded-lg bg-amber-50/30">
           <CardContent className="p-4 space-y-3">
