@@ -322,22 +322,17 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   <DropdownMenuTrigger asChild>
                     <Button
                       size="sm"
-                      disabled={!hasChanges}
-                      className={`h-8 px-3 text-sm font-medium ${
-                        hasChanges 
-                          ? 'bg-brand-gold hover:bg-brand-gold-hover text-white' 
-                          : 'bg-muted text-muted-foreground cursor-not-allowed'
-                      }`}
+                      className="h-8 px-3 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
                     >
                       Save
                       <ChevronDown className="h-3.5 w-3.5 ml-1" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="bg-popover">
-                    <DropdownMenuItem onSelect={handleSave} disabled={!hasChanges}>
+                    <DropdownMenuItem onSelect={handleSave}>
                       Save
                     </DropdownMenuItem>
-                    <DropdownMenuItem onSelect={handleSaveAndClose} disabled={!hasChanges}>
+                    <DropdownMenuItem onSelect={handleSaveAndClose}>
                       Save & Close
                     </DropdownMenuItem>
                   </DropdownMenuContent>
