@@ -89,14 +89,14 @@ export function FeaturesFiltersDialog({
           <div className="space-y-2">
             <Label>Status</Label>
             <Select
-              value={filters.status || ''}
-              onValueChange={(value) => onFiltersChange({ ...filters, status: value || undefined })}
+              value={filters.status || 'all'}
+              onValueChange={(value) => onFiltersChange({ ...filters, status: value === 'all' ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All statuses</SelectItem>
+                <SelectItem value="all">All statuses</SelectItem>
                 <SelectItem value="funnel">Funnel</SelectItem>
                 <SelectItem value="analyzing">Analyzing</SelectItem>
                 <SelectItem value="backlog">Backlog</SelectItem>
@@ -111,14 +111,14 @@ export function FeaturesFiltersDialog({
           <div className="space-y-2">
             <Label>Health</Label>
             <Select
-              value={filters.health || ''}
-              onValueChange={(value) => onFiltersChange({ ...filters, health: value || undefined })}
+              value={filters.health || 'all'}
+              onValueChange={(value) => onFiltersChange({ ...filters, health: value === 'all' ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All health levels" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All health levels</SelectItem>
+                <SelectItem value="all">All health levels</SelectItem>
                 <SelectItem value="on_track">On Track</SelectItem>
                 <SelectItem value="at_risk">At Risk</SelectItem>
                 <SelectItem value="off_track">Off Track</SelectItem>
@@ -129,14 +129,14 @@ export function FeaturesFiltersDialog({
           <div className="space-y-2">
             <Label>Epic</Label>
             <Select
-              value={filters.epicId || ''}
-              onValueChange={(value) => onFiltersChange({ ...filters, epicId: value || undefined })}
+              value={filters.epicId || 'all'}
+              onValueChange={(value) => onFiltersChange({ ...filters, epicId: value === 'all' ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All epics" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All epics</SelectItem>
+                <SelectItem value="all">All epics</SelectItem>
                 {epics?.map((epic) => (
                   <SelectItem key={epic.id} value={epic.id}>
                     {epic.name}
@@ -149,14 +149,14 @@ export function FeaturesFiltersDialog({
           <div className="space-y-2">
             <Label>Program</Label>
             <Select
-              value={filters.programId || ''}
-              onValueChange={(value) => onFiltersChange({ ...filters, programId: value || undefined })}
+              value={filters.programId || 'all'}
+              onValueChange={(value) => onFiltersChange({ ...filters, programId: value === 'all' ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All programs" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All programs</SelectItem>
+                <SelectItem value="all">All programs</SelectItem>
                 {programs?.map((program) => (
                   <SelectItem key={program.id} value={program.id}>
                     {program.name}
@@ -169,14 +169,14 @@ export function FeaturesFiltersDialog({
           <div className="space-y-2">
             <Label>Program Increment</Label>
             <Select
-              value={filters.piId || ''}
-              onValueChange={(value) => onFiltersChange({ ...filters, piId: value || undefined })}
+              value={filters.piId || 'all'}
+              onValueChange={(value) => onFiltersChange({ ...filters, piId: value === 'all' ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All PIs" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All PIs</SelectItem>
+                <SelectItem value="all">All PIs</SelectItem>
                 {programIncrements?.map((pi) => (
                   <SelectItem key={pi.id} value={pi.id}>
                     {pi.name}
@@ -189,14 +189,14 @@ export function FeaturesFiltersDialog({
           <div className="space-y-2">
             <Label>Iteration</Label>
             <Select
-              value={filters.iterationId || ''}
-              onValueChange={(value) => onFiltersChange({ ...filters, iterationId: value || undefined })}
+              value={filters.iterationId || 'all'}
+              onValueChange={(value) => onFiltersChange({ ...filters, iterationId: value === 'all' ? undefined : value })}
             >
               <SelectTrigger>
                 <SelectValue placeholder="All iterations" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All iterations</SelectItem>
+                <SelectItem value="all">All iterations</SelectItem>
                 {iterations?.map((iteration) => (
                   <SelectItem key={iteration.id} value={iteration.id}>
                     {iteration.name}
