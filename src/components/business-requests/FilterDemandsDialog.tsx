@@ -345,15 +345,24 @@ export function FilterDemandsDialog({
   };
 
   const handleClearFilters = () => {
+    // Reset all filters to empty state
     setLocalFilters({});
   };
 
   const handleApplyFilters = () => {
-    onFiltersChange(localFilters);
+    // Apply current local filters to parent and close
+    onFiltersChange({ ...localFilters });
+    onOpenChange(false);
+  };
+
+  const handleClearAndApply = () => {
+    // Clear all filters and apply immediately
+    onFiltersChange({});
     onOpenChange(false);
   };
 
   const handleCancel = () => {
+    // Discard changes and close - don't modify parent filters
     onOpenChange(false);
   };
 
@@ -370,7 +379,7 @@ export function FilterDemandsDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white border shadow-xl rounded-lg overflow-hidden gap-0">
+      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white border shadow-xl rounded-lg overflow-hidden gap-0 [&>button.absolute]:hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border">
           <h2 className="text-base font-semibold text-foreground">Filters</h2>

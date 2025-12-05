@@ -405,9 +405,20 @@ export default function IndustryPage() {
       );
     }
     
-    // Process Step filter (multi-select)
+    // Process Step filter (multi-select) - match both value and label since DB may store either
     if (filters.processStep && filters.processStep.length > 0) {
-      filtered = filtered.filter((r: any) => filters.processStep!.includes(r.process_step));
+      filtered = filtered.filter((r: any) => {
+        const dbValue = r.process_step;
+        // Check if DB value matches filter value directly
+        if (filters.processStep!.includes(dbValue)) return true;
+        // Check if DB stores label but filter uses value - find matching step
+        const matchingStep = PROCESS_STEPS.find(s => s.label === dbValue);
+        if (matchingStep && filters.processStep!.includes(matchingStep.value)) return true;
+        // Check if DB stores value but filter uses label
+        const matchingStepByValue = PROCESS_STEPS.find(s => s.value === dbValue);
+        if (matchingStepByValue && filters.processStep!.includes(matchingStepByValue.label)) return true;
+        return false;
+      });
     }
     
     // Submitted Date range filter
