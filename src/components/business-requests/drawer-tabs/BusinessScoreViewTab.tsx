@@ -92,6 +92,24 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     },
   });
 
+  // Fetch rank change count from audit logs
+  const { data: rankChangeData } = useQuery({
+    queryKey: ['rank-change-count', requestId],
+    queryFn: async () => {
+      if (!requestId) return 0;
+      const { count, error } = await supabase
+        .from('business_request_audit_logs')
+        .select('*', { count: 'exact', head: true })
+        .eq('business_request_id', requestId)
+        .eq('action', 'RANK_OVERRIDE');
+      if (error) throw error;
+      return count || 0;
+    },
+    enabled: !!requestId,
+  });
+  
+  const rankChangeCount = rankChangeData || 0;
+
   const canAccessForcedRank = useMemo(() => {
     if (!userRole) return false;
     return userRole.includes('admin') || userRole.includes('program_manager');
@@ -656,11 +674,17 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                   <div className="text-4xl font-bold text-brand-gold leading-none">
                     {businessScore}
                   </div>
-                  {autoRankPosition && (
-                    <p className="text-[10px] text-muted-foreground mt-1">
-                      Position #{autoRankPosition} of {allRequests?.length || 0}
+                  {/* Rank - Prominently displayed */}
+                  <div className="mt-3 p-2 bg-muted/30 rounded-md border border-border/50">
+                    <p className="text-xs font-semibold text-foreground">
+                      Rank #{autoRankPosition || '-'} <span className="font-normal text-muted-foreground">of {allRequests?.length || 0}</span>
                     </p>
-                  )}
+                    {rankChangeCount > 0 && (
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        Changed {rankChangeCount} time{rankChangeCount > 1 ? 's' : ''}
+                      </p>
+                    )}
+                  </div>
                 </>
               ) : (
                 <>
@@ -674,15 +698,18 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
               )}
             </div>
 
-            {/* Process Step Badge */}
+            {/* Score Threshold Badge */}
             <div className="flex justify-center">
-              {data.process_step ? (
-                <span className="inline-flex px-2.5 py-1 rounded text-[11px] font-medium border border-brand-gold/30 bg-brand-gold/10 text-brand-gold">
-                  {data.process_step}
+              {isScoringComplete ? (
+                <span className={cn(
+                  "inline-flex px-2.5 py-1 rounded text-[11px] font-medium border",
+                  rankInfo.color
+                )}>
+                  {rankInfo.label}
                 </span>
               ) : (
                 <span className="inline-flex px-2.5 py-1 rounded text-[11px] font-medium border border-muted-foreground/20 text-muted-foreground/60 bg-muted/30">
-                  No Status
+                  Not Scored
                 </span>
               )}
             </div>
