@@ -1,0 +1,192 @@
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Save, Edit, Clock, Folder } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ConfluenceEditor } from '@/components/knowledge-hub/editor';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+
+export default function KnowledgeHubDocumentPage() {
+  const { documentId } = useParams<{ documentId: string }>();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [hasChanges, setHasChanges] = useState(false);
+
+  const { data: document, isLoading } = useQuery({
+    queryKey: ['kb-document', documentId],
+    queryFn: async () => {
+      if (!documentId) return null;
+      const { data, error } = await supabase
+        .from('kb_documents')
+        .select('*')
+        .eq('id', documentId)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!documentId,
+  });
+
+  useEffect(() => {
+    if (document) {
+      setTitle(document.title);
+      // content stores HTML string as JSON
+      const contentValue = document.content;
+      setContent(typeof contentValue === 'string' ? contentValue : '');
+    }
+  }, [document]);
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ title, content }: { title: string; content: string }) => {
+      if (!documentId) throw new Error('No document ID');
+      const { error } = await supabase
+        .from('kb_documents')
+        .update({
+          title,
+          content: content,
+          content_text: content.replace(/<[^>]*>/g, ''), // Strip HTML for search
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', documentId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['kb-document', documentId] });
+      toast.success('Document saved');
+      setHasChanges(false);
+      setIsEditing(false);
+    },
+    onError: () => {
+      toast.error('Failed to save document');
+    },
+  });
+
+  const handleSave = () => {
+    updateMutation.mutate({ title, content });
+  };
+
+  const handleContentChange = (newContent: string) => {
+    setContent(newContent);
+    setHasChanges(true);
+  };
+
+  const handleTitleChange = (newTitle: string) => {
+    setTitle(newTitle);
+    setHasChanges(true);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="h-full flex flex-col bg-background">
+        <div className="border-b bg-card px-6 py-4">
+          <Skeleton className="h-8 w-64" />
+        </div>
+        <div className="flex-1 p-6">
+          <Skeleton className="h-[400px] w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!document) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-2">Document not found</h2>
+          <Button variant="outline" onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-full flex flex-col bg-background">
+      {/* Header */}
+      <div className="border-b bg-card px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            {isEditing ? (
+              <Input
+                value={title}
+                onChange={(e) => handleTitleChange(e.target.value)}
+                className="text-xl font-semibold h-10 w-96"
+              />
+            ) : (
+              <h1 className="text-xl font-semibold">{document.title}</h1>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {isEditing ? (
+              <>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsEditing(false);
+                    setTitle(document.title);
+                    const contentValue = document.content;
+                    setContent(typeof contentValue === 'string' ? contentValue : '');
+                    setHasChanges(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleSave} 
+                  disabled={!hasChanges || updateMutation.isPending}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {updateMutation.isPending ? 'Saving...' : 'Save'}
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => setIsEditing(true)}>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit
+              </Button>
+            )}
+          </div>
+        </div>
+        
+        {/* Metadata */}
+        <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1">
+            <Clock className="h-4 w-4" />
+            Last updated {new Date(document.updated_at).toLocaleDateString()}
+          </div>
+          {document.linked_work_item_type && (
+            <div className="flex items-center gap-1">
+              <Folder className="h-4 w-4" />
+              Linked to {document.linked_work_item_type}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Editor/Viewer */}
+      <div className="flex-1 overflow-auto p-6">
+        <div className="max-w-4xl mx-auto">
+          <ConfluenceEditor
+            content={content}
+            onChange={handleContentChange}
+            editable={isEditing}
+            placeholder="Start writing your documentation..."
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
