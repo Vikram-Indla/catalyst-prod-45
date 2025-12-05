@@ -819,20 +819,20 @@ export default function IndustryPage() {
                     <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
                   </div>
                   
-                  {/* Inner table with fixed min-width for horizontal scroll */}
-                  <div className="table border-collapse" style={{ minWidth: '1400px', width: '100%' }}>
+                  {/* Inner container with min-width */}
+                  <div style={{ minWidth: '1400px' }}>
                     {/* Column Headers - Sticky */}
-                    <div className="table-row sticky top-0 z-30 bg-white text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide">
+                    <div className="flex sticky top-0 z-30 bg-white text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide border-b border-[#E4E6EB]">
                       {/* Leading icons placeholder - fixed width */}
-                      <div className="table-cell align-middle h-10 px-4 border-b border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
+                      <div className="flex items-center h-10 px-4 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
                         <div className="flex items-center gap-2">
-                          <div className="w-8" /> {/* Drag */}
-                          <div className="w-8" /> {/* Checkbox */}
+                          <div className="w-8" />
+                          <div className="w-8" />
                         </div>
                       </div>
                       
                       {/* Column headers */}
-                      {columns.filter(col => col.visible).map((col, index, visibleCols) => {
+                      {columns.filter(col => col.visible).map((col) => {
                         const colDef = COLUMN_DEFINITIONS[col.id];
                         if (!colDef) return null;
                         const width = columnWidths[col.id] || colDef.defaultWidth;
@@ -842,8 +842,8 @@ export default function IndustryPage() {
                           <div 
                             key={col.id}
                             className={cn(
-                              "table-cell align-middle h-10 px-3.5 border-b border-r border-[#E4E6EB]",
-                              isCentered && "text-center"
+                              "flex items-center h-10 px-3.5 border-r border-[#E4E6EB] shrink-0",
+                              isCentered && "justify-center"
                             )}
                             style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
                           >
@@ -857,8 +857,8 @@ export default function IndustryPage() {
                         );
                       })}
                       
-                      {/* Add Column Button */}
-                      <div className="table-cell align-middle h-10 border-b border-[#E4E6EB]" style={{ width: '40px' }}>
+                      {/* Flex fill column for extending to full width */}
+                      <div className="flex-1 flex items-center h-10 min-w-[40px]">
                         <ColumnsDropdown
                           columns={columns}
                           onChange={handleColumnsChange}
@@ -891,206 +891,219 @@ export default function IndustryPage() {
                                 
                                 const isEditable = !NON_EDITABLE_COLUMNS.includes(col.id);
                                 
-                                const cellContent = (() => {
-                                  switch(col.id) {
-                                    case 'request_key':
-                                      return (
-                                        <button
-                                          onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                                          className="text-[13px] text-[#172B4D] hover:text-[#0052CC] hover:underline font-medium transition-colors truncate"
-                                        >
-                                          {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
-                                        </button>
-                                      );
-                                    case 'rank':
-                                      return (
-                                        <span className="text-[14px] text-[#172B4D] inline-flex items-center gap-1">
-                                          {isForceRanked && (
-                                            <Tooltip>
-                                              <TooltipTrigger asChild>
-                                                <Lock className="h-3 w-3 text-[#97A0AF] cursor-help" />
-                                              </TooltipTrigger>
-                                              <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
-                                                <div className="font-medium">Manually Prioritized</div>
-                                                <div className="text-gray-300 mt-1">This item's rank was manually overridden.</div>
-                                              </TooltipContent>
-                                            </Tooltip>
-                                          )}
-                                          <span className="font-medium">{request.rank ?? '-'}</span>
-                                        </span>
-                                      );
-                                    case 'title':
-                                      return <span className="text-[14px] text-[#172B4D] truncate">{request.title}</span>;
-                                    case 'process_step':
-                                      return (
-                                        <InlineEditableCell
-                                          value={request.process_step}
-                                          field="process_step"
-                                          requestId={request.id}
-                                          onSave={handleInlineSave}
-                                          type="select"
-                                          displayValue={getStatusBadge(request.process_step)}
-                                        />
-                                      );
-                                    case 'business_score':
-                                      return getBusinessScoreBadge(request);
-                                    case 'submitted_date':
-                                      return <span className="text-[14px] text-[#5E6C84] truncate">{formatDate(request.created_at)}</span>;
-                                    case 'planned_quarter':
-                                      return (
-                                        <InlineEditableCell
-                                          value={request.planned_quarter}
-                                          field="planned_quarter"
-                                          requestId={request.id}
-                                          onSave={handleInlineSave}
-                                          type="select"
-                                          displayValue={
-                                            <div className="flex items-center gap-1">
-                                              <span className="text-[14px] text-[#5E6C84] truncate">{request.planned_quarter || '-'}</span>
-                                              {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
-                                                <span className="text-[10px] px-1 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">{quarterDays}d</span>
-                                              )}
-                                            </div>
-                                          }
-                                        />
-                                      );
-                                    case 'end_date':
-                                      return (
-                                        <InlineEditableCell
-                                          value={request.end_date}
-                                          field="end_date"
-                                          requestId={request.id}
-                                          onSave={handleInlineSave}
-                                          type="date"
-                                          displayValue={<span className={`text-[14px] truncate ${targetInfo.class}`}>{formatDate(request.end_date)}</span>}
-                                        />
-                                      );
-                                    case 'ageing':
-                                      return (
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <span className={`text-[14px] inline-flex items-center gap-1 cursor-help ${ageingInfo.class}`}>
-                                              {ageingInfo.icon === 'flame' && <Flame className="h-3 w-3" />}
-                                              {ageingInfo.icon === 'alert' && <AlertTriangle className="h-3 w-3" />}
-                                              {ageingInfo.icon === 'clock' && <Clock className="h-3 w-3" />}
-                                              {ageing} days
-                                            </span>
-                                          </TooltipTrigger>
-                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
-                                            <div className="font-medium">{ageingInfo.label}</div>
-                                            <div className="text-gray-300 mt-1">{ageingInfo.tooltip}</div>
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      );
-                                    case 'delivery_platform':
-                                      return (
-                                        <InlineEditableCell
-                                          value={request.delivery_platform}
-                                          field="delivery_platform"
-                                          requestId={request.id}
-                                          onSave={handleInlineSave}
-                                          type="select"
-                                        />
-                                      );
-                                    case 'requestor':
-                                      return (
-                                        <InlineEditableCell
-                                          value={request.requestor}
-                                          field="requestor"
-                                          requestId={request.id}
-                                          onSave={handleInlineSave}
-                                          type="user"
-                                        />
-                                      );
-                                    case 'business_owner':
-                                      return (
-                                        <InlineEditableCell
-                                          value={request.business_owner}
-                                          field="business_owner"
-                                          requestId={request.id}
-                                          onSave={handleInlineSave}
-                                          type="user"
-                                        />
-                                      );
-                                    case 'department':
-                                      return (
-                                        <InlineEditableCell
-                                          value={request.department}
-                                          field="department"
-                                          requestId={request.id}
-                                          onSave={handleInlineSave}
-                                          type="select"
-                                        />
-                                      );
-                                    case 'created_by':
-                                      return (
-                                        <InlineEditableCell
-                                          value={request.created_by}
-                                          field="created_by"
-                                          requestId={request.id}
-                                          onSave={handleInlineSave}
-                                          type="user"
-                                        />
-                                      );
-                                    default:
-                                      return null;
-                                  }
-                                })();
-                                
-                                return cellContent;
+                                switch(col.id) {
+                                  case 'request_key':
+                                    return (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
+                                        className="text-[13px] text-[#172B4D] hover:text-[#0052CC] hover:underline font-medium transition-colors truncate"
+                                      >
+                                        {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
+                                      </button>
+                                    );
+                                  case 'rank':
+                                    return (
+                                      <span className="text-[14px] text-[#172B4D] inline-flex items-center gap-1">
+                                        {isForceRanked && (
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <Lock className="h-3 w-3 text-[#97A0AF] cursor-help" />
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
+                                              <div className="font-medium">Manually Prioritized</div>
+                                              <div className="text-gray-300 mt-1">This item's rank was manually overridden.</div>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        )}
+                                        <span className="font-medium">{request.rank ?? '-'}</span>
+                                      </span>
+                                    );
+                                  case 'title':
+                                    return <span className="text-[14px] text-[#172B4D] truncate">{request.title}</span>;
+                                  case 'process_step':
+                                    return (
+                                      <InlineEditableCell
+                                        value={request.process_step}
+                                        field="process_step"
+                                        requestId={request.id}
+                                        onSave={handleInlineSave}
+                                        type="select"
+                                        displayValue={getStatusBadge(request.process_step)}
+                                      />
+                                    );
+                                  case 'business_score':
+                                    return getBusinessScoreBadge(request);
+                                  case 'submitted_date':
+                                    return <span className="text-[14px] text-[#5E6C84] truncate">{formatDate(request.created_at)}</span>;
+                                  case 'planned_quarter':
+                                    return (
+                                      <InlineEditableCell
+                                        value={request.planned_quarter}
+                                        field="planned_quarter"
+                                        requestId={request.id}
+                                        onSave={handleInlineSave}
+                                        type="select"
+                                        displayValue={
+                                          <div className="flex items-center gap-1">
+                                            <span className="text-[14px] text-[#5E6C84] truncate">{request.planned_quarter || '-'}</span>
+                                            {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
+                                              <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                  <span className="flex-shrink-0 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                                                </TooltipTrigger>
+                                                <TooltipContent>Quarter ends in {quarterDays} days</TooltipContent>
+                                              </Tooltip>
+                                            )}
+                                          </div>
+                                        }
+                                      />
+                                    );
+                                  case 'end_date':
+                                    return (
+                                      <InlineEditableCell
+                                        value={request.end_date}
+                                        field="end_date"
+                                        requestId={request.id}
+                                        onSave={handleInlineSave}
+                                        type="date"
+                                        displayValue={
+                                          <div className="flex items-center gap-1">
+                                            <span className="text-[14px] text-[#5E6C84] truncate">{request.end_date ? formatDate(request.end_date) : '-'}</span>
+                                            {targetInfo && (
+                                              <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                  <span className={cn("flex-shrink-0 h-2 w-2 rounded-full", targetInfo.isOverdue ? "bg-red-500" : "bg-amber-400 animate-pulse")} />
+                                                </TooltipTrigger>
+                                                <TooltipContent>{targetInfo.tooltip}</TooltipContent>
+                                              </Tooltip>
+                                            )}
+                                          </div>
+                                        }
+                                      />
+                                    );
+                                  case 'delivery_platform':
+                                    return (
+                                      <InlineEditableCell
+                                        value={request.delivery_platform}
+                                        field="delivery_platform"
+                                        requestId={request.id}
+                                        onSave={handleInlineSave}
+                                        type="select"
+                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.delivery_platform || '-'}</span>}
+                                      />
+                                    );
+                                  case 'ageing':
+                                    return (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <span className={cn("inline-flex items-center gap-1 text-[14px] font-medium", ageingInfo.class)}>
+                                            {ageing}
+                                            {ageingInfo.icon}
+                                          </span>
+                                        </TooltipTrigger>
+                                        <TooltipContent>{ageingInfo.label}</TooltipContent>
+                                      </Tooltip>
+                                    );
+                                  case 'requestor':
+                                    return (
+                                      <InlineEditableCell
+                                        value={request.requestor}
+                                        field="requestor"
+                                        requestId={request.id}
+                                        onSave={handleInlineSave}
+                                        type="user"
+                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.requestor || '-'}</span>}
+                                      />
+                                    );
+                                  case 'business_owner':
+                                    return (
+                                      <InlineEditableCell
+                                        value={request.business_owner}
+                                        field="business_owner"
+                                        requestId={request.id}
+                                        onSave={handleInlineSave}
+                                        type="user"
+                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.business_owner || '-'}</span>}
+                                      />
+                                    );
+                                  case 'department':
+                                    return (
+                                      <InlineEditableCell
+                                        value={request.department}
+                                        field="department"
+                                        requestId={request.id}
+                                        onSave={handleInlineSave}
+                                        type="select"
+                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.department || '-'}</span>}
+                                      />
+                                    );
+                                  case 'created_by':
+                                    return (
+                                      <InlineEditableCell
+                                        value={request.created_by}
+                                        field="created_by"
+                                        requestId={request.id}
+                                        onSave={handleInlineSave}
+                                        type="user"
+                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.created_by || '-'}</span>}
+                                      />
+                                    );
+                                  default:
+                                    return null;
+                                }
                               };
                               
                               return (
                                 <Draggable key={request.id} draggableId={request.id} index={index}>
                                   {(provided, snapshot) => (
-                                      <div ref={provided.innerRef} {...provided.draggableProps} className="table-row-group">
-                                      <div 
-                                        className={cn(
-                                          "table-row cursor-pointer transition-colors",
-                                          "hover:bg-[#FAFBFC]",
-                                          snapshot.isDragging && 'bg-brand-gold/5',
-                                          selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-white'
-                                        )}
-                                        onClick={() => setSelectedRequestId(request.id)}
-                                      >
-                                        {/* Leading icons - fixed width matching header */}
-                                        <div className="table-cell align-middle h-11 px-4 border-b border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
-                                          <div className="flex items-center gap-2">
-                                            <div {...provided.dragHandleProps} className="w-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground flex items-center justify-center" onClick={e => e.stopPropagation()}>
-                                              <GripVertical className="h-4 w-4" />
-                                            </div>
-                                            
-                                            <div className="w-8 flex items-center justify-center" onClick={e => e.stopPropagation()}>
-                                              <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
-                                            </div>
+                                    <div 
+                                      ref={provided.innerRef} 
+                                      {...provided.draggableProps}
+                                      className={cn(
+                                        "flex cursor-pointer transition-colors border-b border-[#E4E6EB]",
+                                        "hover:bg-[#FAFBFC]",
+                                        snapshot.isDragging && 'bg-brand-gold/5',
+                                        selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-white'
+                                      )}
+                                      onClick={() => setSelectedRequestId(request.id)}
+                                    >
+                                      {/* Leading icons - fixed width matching header */}
+                                      <div className="flex items-center h-11 px-4 border-r border-[#E4E6EB] shrink-0" style={{ width: '80px', minWidth: '80px' }}>
+                                        <div className="flex items-center gap-2">
+                                          <div {...provided.dragHandleProps} className="w-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                                            <GripVertical className="h-4 w-4" />
+                                          </div>
+                                          
+                                          <div className="w-8 flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                                            <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
                                           </div>
                                         </div>
-
-                                        {/* Column values */}
-                                        {columns.filter(col => col.visible).map((col) => {
-                                          const colDef = COLUMN_DEFINITIONS[col.id];
-                                          if (!colDef) return null;
-                                          
-                                          const width = columnWidths[col.id] || colDef.defaultWidth;
-                                          const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
-                                          
-                                          return (
-                                            <div 
-                                              key={col.id}
-                                              className={cn(
-                                                "table-cell align-middle h-11 px-3.5 border-b border-r border-[#E4E6EB]",
-                                                isCentered && "text-center"
-                                              )}
-                                              style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
-                                            >
-                                              {renderColumnValue(col)}
-                                            </div>
-                                          );
-                                        })}
-                                        
-                                        {/* Empty cell for + column */}
-                                        <div className="table-cell align-middle h-11 border-b border-[#E4E6EB]" style={{ width: '40px' }} />
                                       </div>
+
+                                      {/* Column values */}
+                                      {columns.filter(col => col.visible).map((col) => {
+                                        const colDef = COLUMN_DEFINITIONS[col.id];
+                                        if (!colDef) return null;
+                                        
+                                        const width = columnWidths[col.id] || colDef.defaultWidth;
+                                        const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
+                                        
+                                        return (
+                                          <div 
+                                            key={col.id}
+                                            className={cn(
+                                              "flex items-center h-11 px-3.5 border-r border-[#E4E6EB] shrink-0",
+                                              isCentered && "justify-center"
+                                            )}
+                                            style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
+                                          >
+                                            {renderColumnValue(col)}
+                                          </div>
+                                        );
+                                      })}
+                                      
+                                      {/* Flex fill for extending row to full width */}
+                                      <div className="flex-1 h-11 min-w-[40px]" />
                                     </div>
                                   )}
                                 </Draggable>
@@ -1101,7 +1114,6 @@ export default function IndustryPage() {
                         )}
                       </Droppable>
                     </DragDropContext>
-                    
                   </div>
                 </div>
                 
