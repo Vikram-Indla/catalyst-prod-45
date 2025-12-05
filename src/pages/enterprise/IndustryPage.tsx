@@ -21,7 +21,6 @@ import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useQueryClient } from '@tanstack/react-query';
 import { useIndustryPreferences } from '@/hooks/useIndustryPreferences';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { useAuth } from '@/lib/auth';
 
 const COLUMN_DEFINITIONS: Record<string, { label: string; width: string }> = {
@@ -54,12 +53,24 @@ const calculateAgeing = (createdAt: string | null): number => {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
-// Get ageing color class based on days
-const getAgeingColorClass = (days: number): string => {
-  if (days >= 30) return 'text-destructive font-medium';
-  if (days >= 15) return 'text-orange-600';
-  if (days >= 8) return 'text-amber-600';
-  return 'text-muted-foreground';
+// Get ageing color class and tooltip based on days
+const getAgeingInfo = (days: number): { class: string; tooltip: string } => {
+  if (days >= 30) return { 
+    class: 'text-destructive font-medium', 
+    tooltip: `Critical aging: ${days} days old. Immediate escalation required (threshold: 30+ days)` 
+  };
+  if (days >= 15) return { 
+    class: 'text-orange-600', 
+    tooltip: `Escalation recommended: ${days} days old (threshold: 15-29 days)` 
+  };
+  if (days >= 8) return { 
+    class: 'text-amber-600', 
+    tooltip: `Attention needed: ${days} days old (threshold: 8-14 days)` 
+  };
+  return { 
+    class: 'text-muted-foreground', 
+    tooltip: `Normal: ${days} days old (within 7-day threshold)` 
+  };
 };
 
 // Get days until quarter end
@@ -71,35 +82,88 @@ const getDaysUntilQuarterEnd = (quarter: string | null): number | null => {
   const q = parseInt(match[1]);
   const year = parseInt(match[2]);
   const quarterEndMonth = q * 3;
-  const quarterEnd = new Date(year, quarterEndMonth, 0); // Last day of quarter
+  const quarterEnd = new Date(year, quarterEndMonth, 0);
   const now = new Date();
   const diffTime = quarterEnd.getTime() - now.getTime();
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
 
 // Get target date urgency
-const getTargetDateUrgency = (dateStr: string | null): { class: string; isOverdue: boolean; daysLeft: number | null } => {
-  if (!dateStr) return { class: 'text-muted-foreground', isOverdue: false, daysLeft: null };
+const getTargetDateInfo = (dateStr: string | null): { class: string; isOverdue: boolean; daysLeft: number | null; tooltip: string } => {
+  if (!dateStr) return { class: 'text-muted-foreground', isOverdue: false, daysLeft: null, tooltip: 'No target date set' };
   const target = new Date(dateStr);
   const now = new Date();
   const diffTime = target.getTime() - now.getTime();
   const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   
-  if (daysLeft < 0) return { class: 'text-destructive font-medium', isOverdue: true, daysLeft };
-  if (daysLeft <= 7) return { class: 'text-amber-600 font-medium', isOverdue: false, daysLeft };
-  return { class: 'text-muted-foreground', isOverdue: false, daysLeft };
+  if (daysLeft < 0) return { 
+    class: 'text-destructive font-medium', 
+    isOverdue: true, 
+    daysLeft, 
+    tooltip: `Overdue by ${Math.abs(daysLeft)} days. Immediate action required.` 
+  };
+  if (daysLeft <= 7) return { 
+    class: 'text-amber-600 font-medium', 
+    isOverdue: false, 
+    daysLeft, 
+    tooltip: `Urgent: Due in ${daysLeft} days (within 7-day threshold)` 
+  };
+  return { 
+    class: 'text-muted-foreground', 
+    isOverdue: false, 
+    daysLeft, 
+    tooltip: `On track: ${daysLeft} days remaining` 
+  };
 };
 
-// Process step semantic colors
-const PROCESS_STEP_COLORS: Record<string, { bg: string; text: string }> = {
-  'COMPLETED': { bg: 'bg-green-100', text: 'text-green-800' },
-  'IN PROGRESS': { bg: 'bg-blue-100', text: 'text-blue-800' },
-  'AWAITING BUSINESS RESPONSE': { bg: 'bg-amber-100', text: 'text-amber-800' },
-  'UNDER STUDY': { bg: 'bg-purple-100', text: 'text-purple-800' },
-  'ON HOLD': { bg: 'bg-gray-200', text: 'text-gray-700' },
-  'CLOSED': { bg: 'bg-gray-100', text: 'text-gray-600' },
-  'REQUEST RECEIVED': { bg: 'bg-sky-100', text: 'text-sky-800' },
-  'REOPEN': { bg: 'bg-indigo-100', text: 'text-indigo-800' },
+// Process step semantic colors and descriptions
+const PROCESS_STEP_INFO: Record<string, { bg: string; text: string; description: string }> = {
+  'COMPLETED': { bg: 'bg-green-100', text: 'text-green-800', description: 'Work completed and delivered' },
+  'IN PROGRESS': { bg: 'bg-blue-100', text: 'text-blue-800', description: 'Active work underway' },
+  'AWAITING BUSINESS RESPONSE': { bg: 'bg-amber-100', text: 'text-amber-800', description: 'Blocked - waiting for business input' },
+  'UNDER STUDY': { bg: 'bg-purple-100', text: 'text-purple-800', description: 'Analysis and feasibility assessment' },
+  'ON HOLD': { bg: 'bg-gray-200', text: 'text-gray-700', description: 'Paused - pending decision or dependency' },
+  'CLOSED': { bg: 'bg-gray-100', text: 'text-gray-600', description: 'Request closed (completed or cancelled)' },
+  'REQUEST RECEIVED': { bg: 'bg-sky-100', text: 'text-sky-800', description: 'New request - pending triage' },
+  'REOPEN': { bg: 'bg-indigo-100', text: 'text-indigo-800', description: 'Previously closed, now reopened' },
+};
+
+// Score tier information
+const getScoreInfo = (score: number | null | undefined): { colorClass: string; glowClass: string; tier: string; tooltip: string } => {
+  if (score === null || score === undefined) {
+    return { colorClass: 'bg-muted text-muted-foreground', glowClass: '', tier: 'N/A', tooltip: 'Score not calculated' };
+  }
+  
+  if (score >= 90) return { 
+    colorClass: 'bg-green-100 text-green-700 ring-1 ring-green-200', 
+    glowClass: 'shadow-sm shadow-green-200',
+    tier: 'Hot',
+    tooltip: `Score ${score}/100 = HOT priority\nTier: 90-100 (Top priority)\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+  };
+  if (score >= 75) return { 
+    colorClass: 'bg-emerald-100 text-emerald-700', 
+    glowClass: '',
+    tier: 'High',
+    tooltip: `Score ${score}/100 = HIGH priority\nTier: 75-89\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+  };
+  if (score >= 60) return { 
+    colorClass: 'bg-amber-100 text-amber-700', 
+    glowClass: '',
+    tier: 'Medium',
+    tooltip: `Score ${score}/100 = MEDIUM priority\nTier: 60-74\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+  };
+  if (score >= 40) return { 
+    colorClass: 'bg-orange-100 text-orange-700', 
+    glowClass: '',
+    tier: 'Low',
+    tooltip: `Score ${score}/100 = LOW priority\nTier: 40-59\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+  };
+  return { 
+    colorClass: 'bg-destructive/10 text-destructive', 
+    glowClass: '',
+    tier: 'Critical',
+    tooltip: `Score ${score}/100 = CRITICAL attention needed\nTier: 0-39 (Lowest priority)\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+  };
 };
 
 const ITEMS_PER_PAGE = 20;
@@ -109,8 +173,8 @@ interface ColumnSort {
   direction: SortDirection;
 }
 
-// Tie-breaking sort with cascade logic
-const sortWithTieBreaker = (items: any[]) => {
+// Tie-breaking sort with cascade logic (only used for Rank column)
+const sortByRankWithTieBreaker = (items: any[]) => {
   return [...items].sort((a, b) => {
     // Force-ranked items maintain their explicit rank position
     if (a.is_force_ranked && b.is_force_ranked) {
@@ -141,6 +205,55 @@ const sortWithTieBreaker = (items: any[]) => {
     
     // 5. Final fallback: Request ID (deterministic)
     return (a.request_key ?? '').localeCompare(b.request_key ?? '');
+  });
+};
+
+// Generic column sort (for non-rank columns)
+const sortByColumn = (items: any[], columnId: string, direction: SortDirection) => {
+  if (!direction) return items;
+  
+  return [...items].sort((a, b) => {
+    let aVal: any, bVal: any;
+    
+    switch (columnId) {
+      case 'rank':
+        // Use business logic sort for rank
+        return 0; // Will be handled separately
+      case 'business_score':
+        aVal = a.business_score ?? 0;
+        bVal = b.business_score ?? 0;
+        break;
+      case 'title':
+        aVal = a.title?.toLowerCase() ?? '';
+        bVal = b.title?.toLowerCase() ?? '';
+        break;
+      case 'request_key':
+        aVal = a.request_key ?? '';
+        bVal = b.request_key ?? '';
+        break;
+      case 'process_step':
+        aVal = a.process_step ?? '';
+        bVal = b.process_step ?? '';
+        break;
+      case 'planned_quarter':
+        aVal = a.planned_quarter ?? '';
+        bVal = b.planned_quarter ?? '';
+        break;
+      case 'end_date':
+        aVal = a.end_date ? new Date(a.end_date).getTime() : 0;
+        bVal = b.end_date ? new Date(b.end_date).getTime() : 0;
+        break;
+      case 'ageing':
+        aVal = a.created_at ? calculateAgeing(a.created_at) : 0;
+        bVal = b.created_at ? calculateAgeing(b.created_at) : 0;
+        break;
+      default:
+        return 0;
+    }
+    
+    if (aVal < bVal) return direction === 'asc' ? -1 : 1;
+    if (aVal > bVal) return direction === 'asc' ? 1 : -1;
+    return 0;
   });
 };
 
@@ -186,22 +299,18 @@ export default function IndustryPage() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
-  // Get user preferences for column order/visibility
   const { 
     columnOrder, 
     columnVisibility, 
     updateColumnOrder, 
     updatePreferences,
-    isLoading: prefsLoading 
   } = useIndustryPreferences();
 
-  // Derive columns from preferences
   const columns = useMemo(() => 
     getDefaultColumns(columnOrder, columnVisibility), 
     [columnOrder, columnVisibility]
   );
 
-  // Handler for column visibility changes
   const handleColumnsChange = useCallback((newColumns: ColumnConfig[]) => {
     const newVisibility: Record<string, boolean> = {};
     newColumns.forEach(col => {
@@ -210,7 +319,6 @@ export default function IndustryPage() {
     updatePreferences({ column_visibility: newVisibility });
   }, [updatePreferences]);
 
-  // Handler for column drag-drop reorder
   const handleColumnDragEnd = useCallback((result: DropResult) => {
     if (!result.destination) return;
     if (result.source.index === result.destination.index) return;
@@ -223,15 +331,13 @@ export default function IndustryPage() {
     toast({ title: 'Column order saved' });
   }, [columnOrder, updateColumnOrder, toast]);
 
-  // Use context for filters with defensive defaults
   const { industryFilters } = useCatalystContext();
   const deliveryPlatforms = industryFilters?.deliveryPlatforms || [];
   const processSteps = industryFilters?.processSteps || [];
   const quarters = industryFilters?.quarters || [];
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
-  const updateRequest = useUpdateBusinessRequest();
 
-  // Apply sorting and filtering using context filters with tie-breaking
+  // Apply sorting and filtering
   useEffect(() => {
     if (!requests || requests.length === 0) {
       setSortedRequests([]);
@@ -239,34 +345,36 @@ export default function IndustryPage() {
     }
     let filtered = [...requests];
 
-    // Apply delivery platform filter from context
+    // Apply filters
     if (deliveryPlatforms.length > 0) {
       filtered = filtered.filter((r: any) => deliveryPlatforms.includes(r.delivery_platform));
     }
-
-    // Apply process steps filter from context
     if (processSteps.length > 0) {
       filtered = filtered.filter((r: any) => processSteps.includes(r.process_step));
     }
-
-    // Apply quarters filter from context
     if (quarters.length > 0) {
       filtered = filtered.filter((r: any) => quarters.includes(r.planned_quarter));
     }
 
-    // Apply tie-breaking sort
-    const sorted = sortWithTieBreaker(filtered);
+    // Apply sorting based on selected column
+    let sorted: any[];
+    if (columnSort.columnId === 'rank' || !columnSort.direction) {
+      // Use business logic sort for Rank column
+      sorted = sortByRankWithTieBreaker(filtered);
+    } else {
+      // Use normal column sort for other columns
+      sorted = sortByColumn(filtered, columnSort.columnId, columnSort.direction);
+    }
     
-    // Assign ranks preserving force-ranked positions
+    // Assign display ranks
     const withRanks = sorted.map((req, idx) => ({
       ...req,
       displayRank: idx + 1
     }));
     
     setSortedRequests(withRanks);
-  }, [requests, deliveryPlatforms, processSteps, quarters]);
+  }, [requests, columnSort, deliveryPlatforms, processSteps, quarters]);
 
-  // Pagination calculations
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
@@ -275,42 +383,49 @@ export default function IndustryPage() {
   const handleSort = (columnId: string) => {
     setColumnSort(prev => ({
       columnId,
-      direction: prev.columnId === columnId ? prev.direction === 'asc' ? 'desc' : prev.direction === 'desc' ? null : 'asc' : 'asc'
+      direction: prev.columnId === columnId 
+        ? prev.direction === 'asc' ? 'desc' : prev.direction === 'desc' ? null : 'asc' 
+        : 'asc'
     }));
   };
 
   const getStatusBadge = (status: string) => {
     const step = PROCESS_STEPS.find(s => s.value === status);
-    const colors = PROCESS_STEP_COLORS[status] || { bg: 'bg-muted', text: 'text-muted-foreground' };
+    const info = PROCESS_STEP_INFO[status] || { bg: 'bg-muted', text: 'text-muted-foreground', description: 'Unknown status' };
     
     return (
-      <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${colors.bg} ${colors.text}`}>
-        {step?.label || status}
-      </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium cursor-help ${info.bg} ${info.text}`}>
+            {step?.label || status}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
+          <div className="font-medium">{step?.label || status}</div>
+          <div className="text-gray-300 mt-1">{info.description}</div>
+        </TooltipContent>
+      </Tooltip>
     );
   };
 
   const getBusinessScoreBadge = (score: number | null | undefined) => {
-    if (score === null || score === undefined) return <span className="text-muted-foreground text-xs">-</span>;
+    const info = getScoreInfo(score);
     
-    let colorClass = 'bg-destructive/10 text-destructive';
-    let glowClass = '';
-    
-    if (score >= 90) {
-      colorClass = 'bg-green-100 text-green-700 ring-1 ring-green-200';
-      glowClass = 'shadow-sm shadow-green-200';
-    } else if (score >= 75) {
-      colorClass = 'bg-emerald-100 text-emerald-700';
-    } else if (score >= 60) {
-      colorClass = 'bg-amber-100 text-amber-700';
-    } else if (score >= 40) {
-      colorClass = 'bg-orange-100 text-orange-700';
+    if (score === null || score === undefined) {
+      return <span className="text-muted-foreground text-xs">-</span>;
     }
     
     return (
-      <span className={`inline-flex items-center justify-center w-10 h-6 rounded-full text-xs font-semibold ${colorClass} ${glowClass}`}>
-        {score}
-      </span>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span className={`inline-flex items-center justify-center w-10 h-6 rounded-full text-xs font-semibold cursor-help ${info.colorClass} ${info.glowClass}`}>
+            {score}
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs whitespace-pre-line">
+          {info.tooltip}
+        </TooltipContent>
+      </Tooltip>
     );
   };
 
@@ -346,17 +461,17 @@ export default function IndustryPage() {
     const sourceIndex = result.source.index;
     const destIndex = result.destination.index;
     if (sourceIndex === destIndex) return;
+    
     const actualSourceIndex = startIndex + sourceIndex;
     const actualDestIndex = startIndex + destIndex;
     const reordered = Array.from(sortedRequests);
     const [movedItem] = reordered.splice(actualSourceIndex, 1);
     reordered.splice(actualDestIndex, 0, movedItem);
+    
     const oldRank = movedItem.displayRank || actualSourceIndex + 1;
     const newRank = actualDestIndex + 1;
     const businessScore = movedItem.business_score;
     const deservedRank = getDeservedRank(businessScore, sortedRequests);
-    
-    // Mark as force-ranked if moving to a position different from score-based rank
     const isForceRanking = newRank !== deservedRank;
     
     const updatedRequests = reordered.map((req, index) => ({
@@ -385,14 +500,8 @@ export default function IndustryPage() {
 
       await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       
-      const isMovingAboveDeserved = newRank < deservedRank;
-      if (isMovingAboveDeserved) {
-        setNotification({
-          show: true,
-          oldRank,
-          newRank,
-          score: businessScore
-        });
+      if (newRank < deservedRank) {
+        setNotification({ show: true, oldRank, newRank, score: businessScore });
       }
     } catch (error) {
       console.error('Failed to update ranks:', error);
@@ -408,27 +517,24 @@ export default function IndustryPage() {
     e.stopPropagation();
     setExpandedRows(prev => {
       const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
+      if (newSet.has(id)) newSet.delete(id);
+      else newSet.add(id);
       return newSet;
     });
   };
 
   const goToPage = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
   const closeNotification = useCallback(() => {
     setNotification(prev => ({ ...prev, show: false }));
   }, []);
 
-  // Count active filters from context
   const activeFilterCount = deliveryPlatforms.length + processSteps.length + quarters.length;
+
+  // Check if current sort is business logic (rank-based)
+  const isBusinessLogicSort = columnSort.columnId === 'rank' || !columnSort.direction;
 
   return (
     <TooltipProvider>
@@ -476,7 +582,6 @@ export default function IndustryPage() {
             )}
 
             <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
-
             <Button variant="outline" size="sm" className="border-border">
               <Upload className="h-4 w-4 mr-2" />
               Import
@@ -489,20 +594,16 @@ export default function IndustryPage() {
           </div>
         </div>
 
-        {/* Main Content with Side Panel */}
+        {/* Main Content */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Content Area */}
           <div className="flex-1 overflow-auto p-4 sm:p-6 relative">
             {isLoading ? (
               <div className="text-center py-8 text-muted-foreground">Loading...</div>
             ) : viewMode === 'kanban' ? (
-              <BusinessRequestsKanbanView 
-                requests={sortedRequests} 
-                onRequestSelect={setSelectedRequestId} 
-              />
+              <BusinessRequestsKanbanView requests={sortedRequests} onRequestSelect={setSelectedRequestId} />
             ) : sortedRequests.length > 0 ? (
-              <Card className="overflow-hidden relative">
-                {/* Column Headers with Drag-Drop Reorder */}
+              <Card className="overflow-hidden relative flex flex-col">
+                {/* Column Headers */}
                 <DragDropContext onDragEnd={handleColumnDragEnd}>
                   <Droppable droppableId="column-headers" direction="horizontal">
                     {(provided) => (
@@ -512,9 +613,9 @@ export default function IndustryPage() {
                         className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative"
                       >
                         <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
-                        <div className="w-5" /> {/* Expand chevron space */}
-                        <div className="w-5" /> {/* Drag handle space */}
-                        <div className="w-5" /> {/* Checkbox space */}
+                        <div className="w-5" />
+                        <div className="w-5" />
+                        <div className="w-5" />
                         {columnOrder.map((colId, index) => {
                           if (!isColumnVisible(colId)) return null;
                           const colDef = COLUMN_DEFINITIONS[colId];
@@ -546,21 +647,22 @@ export default function IndustryPage() {
                   </Droppable>
                 </DragDropContext>
 
+                {/* Rows */}
                 <DragDropContext onDragEnd={handleDragEnd}>
                   <Droppable droppableId="requests">
                     {provided => (
-                      <div {...provided.droppableProps} ref={provided.innerRef}>
+                      <div {...provided.droppableProps} ref={provided.innerRef} className="flex-1">
                         {paginatedRequests.map((request: any, index: number) => {
                           const globalIndex = startIndex + index;
-                          const isTop10 = (request.displayRank || globalIndex + 1) <= 10;
+                          const isTop10 = isBusinessLogicSort && (request.displayRank || globalIndex + 1) <= 10;
                           const isForceRanked = request.is_force_ranked;
-                          const isTied = hasScoreTie(request, sortedRequests, globalIndex);
+                          const isTied = isBusinessLogicSort && hasScoreTie(request, sortedRequests, globalIndex);
                           const isExpanded = expandedRows.has(request.id);
                           const ageing = calculateAgeing(request.created_at);
-                          const targetUrgency = getTargetDateUrgency(request.end_date);
+                          const ageingInfo = getAgeingInfo(ageing);
+                          const targetInfo = getTargetDateInfo(request.end_date);
                           const quarterDays = getDaysUntilQuarterEnd(request.planned_quarter);
                           
-                          // Helper to render column value based on colId
                           const renderColumnValue = (colId: string) => {
                             const colDef = COLUMN_DEFINITIONS[colId];
                             if (!colDef || !isColumnVisible(colId)) return null;
@@ -570,13 +672,10 @@ export default function IndustryPage() {
                                 return (
                                   <div className="w-24 shrink-0">
                                     <button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedRequestId(request.id);
-                                      }}
+                                      onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
                                       className="text-sm text-brand-gold hover:text-brand-gold-hover hover:underline font-medium transition-colors"
                                     >
-                                      {request.request_key ? request.request_key.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key).padStart(3, '0')}` : '-'}
+                                      {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
                                     </button>
                                   </div>
                                 );
@@ -584,33 +683,27 @@ export default function IndustryPage() {
                                 return (
                                   <div className="w-16 shrink-0 text-center">
                                     <span className="text-sm text-foreground inline-flex items-center gap-1 justify-center">
-                                      {/* Tie indicator */}
                                       {isTied && (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
-                                            <Equal className="h-3 w-3 text-muted-foreground" />
+                                            <Equal className="h-3 w-3 text-muted-foreground cursor-help" />
                                           </TooltipTrigger>
-                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs">
-                                            Rank determined by tie-breaker
+                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
+                                            <div className="font-medium">Score Tie Detected</div>
+                                            <div className="text-gray-300 mt-1">Rank determined by tie-breaker cascade: Urgency → Business Value → Submission Date</div>
                                           </TooltipContent>
                                         </Tooltip>
                                       )}
-                                      {/* Force-ranked lock icon */}
                                       {isForceRanked && (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
-                                            <Lock className="h-3 w-3 text-muted-foreground" />
+                                            <Lock className="h-3 w-3 text-muted-foreground cursor-help" />
                                           </TooltipTrigger>
                                           <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
-                                            <div>Manually prioritized</div>
-                                            {request.force_ranked_by && (
-                                              <div className="text-gray-300">by {request.force_ranked_by}</div>
-                                            )}
-                                            {request.force_ranked_at && (
-                                              <div className="text-gray-300">
-                                                {new Date(request.force_ranked_at).toLocaleDateString()}
-                                              </div>
-                                            )}
+                                            <div className="font-medium">Manually Prioritized</div>
+                                            <div className="text-gray-300 mt-1">This item's rank was manually overridden, bypassing score-based ordering.</div>
+                                            {request.force_ranked_by && <div className="text-gray-300">By: {request.force_ranked_by}</div>}
+                                            {request.force_ranked_at && <div className="text-gray-300">{new Date(request.force_ranked_at).toLocaleDateString()}</div>}
                                           </TooltipContent>
                                         </Tooltip>
                                       )}
@@ -625,52 +718,55 @@ export default function IndustryPage() {
                                   </div>
                                 );
                               case 'process_step':
-                                return (
-                                  <div className="w-36 shrink-0">
-                                    {getStatusBadge(request.process_step)}
-                                  </div>
-                                );
+                                return <div className="w-36 shrink-0">{getStatusBadge(request.process_step)}</div>;
                               case 'business_score':
-                                return (
-                                  <div className="w-20 shrink-0 text-center">
-                                    {getBusinessScoreBadge(request.business_score)}
-                                  </div>
-                                );
+                                return <div className="w-20 shrink-0 text-center">{getBusinessScoreBadge(request.business_score)}</div>;
                               case 'planned_quarter':
                                 return (
                                   <div className="w-24 shrink-0">
-                                    <div className="flex items-center gap-1">
-                                      <span className="text-sm text-muted-foreground">
-                                        {request.planned_quarter || '-'}
-                                      </span>
-                                      {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
-                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">
-                                          {quarterDays}d
-                                        </span>
-                                      )}
-                                    </div>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="flex items-center gap-1 cursor-help">
+                                          <span className="text-sm text-muted-foreground">{request.planned_quarter || '-'}</span>
+                                          {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
+                                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">{quarterDays}d</span>
+                                          )}
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs">
+                                        {quarterDays !== null ? (
+                                          quarterDays > 0 ? `${quarterDays} days until ${request.planned_quarter} quarter close` : 'Quarter has ended'
+                                        ) : 'No quarter assigned'}
+                                      </TooltipContent>
+                                    </Tooltip>
                                   </div>
                                 );
                               case 'end_date':
                                 return (
                                   <div className="w-28 shrink-0">
-                                    <div className="flex items-center gap-1">
-                                      {targetUrgency.isOverdue && (
-                                        <span className="text-destructive">⚠️</span>
-                                      )}
-                                      <span className={`text-sm ${targetUrgency.class}`}>
-                                        {formatDate(request.end_date)}
-                                      </span>
-                                    </div>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div className="flex items-center gap-1 cursor-help">
+                                          {targetInfo.isOverdue && <span className="text-destructive">⚠️</span>}
+                                          <span className={`text-sm ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs">{targetInfo.tooltip}</TooltipContent>
+                                    </Tooltip>
                                   </div>
                                 );
                               case 'ageing':
                                 return (
                                   <div className="w-20 shrink-0 text-center">
-                                    <span className={`text-sm inline-flex items-center gap-1 ${getAgeingColorClass(ageing)}`}>
-                                      {ageing >= 30 && <Flame className="h-3 w-3" />}
-                                      {ageing} days
-                                    </span>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <span className={`text-sm inline-flex items-center gap-1 cursor-help ${ageingInfo.class}`}>
+                                          {ageing >= 30 && <Flame className="h-3 w-3" />}
+                                          {ageing} days
+                                        </span>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs">{ageingInfo.tooltip}</TooltipContent>
+                                    </Tooltip>
                                   </div>
                                 );
                               default:
@@ -682,40 +778,32 @@ export default function IndustryPage() {
                             <Draggable key={request.id} draggableId={request.id} index={index}>
                               {(provided, snapshot) => (
                                 <div ref={provided.innerRef} {...provided.draggableProps}>
-                                  {/* Main Row */}
                                   <div 
-                                    className={`
-                                      flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer 
-                                      hover:bg-muted/30 transition-colors relative
+                                    className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors relative
                                       ${snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''}
                                       ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}
-                                      ${isTop10 ? 'bg-brand-gold/[0.03]' : ''}
-                                    `}
+                                      ${isTop10 ? 'bg-brand-gold/[0.03]' : ''}`}
                                     onClick={() => setSelectedRequestId(request.id)}
                                   >
-                                    {/* Top 10 Gold Left Border */}
                                     {isTop10 && (
-                                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-brand-gold" />
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <div className="absolute left-0 top-0 bottom-0 w-1 bg-brand-gold cursor-help" />
+                                        </TooltipTrigger>
+                                        <TooltipContent side="right" className="bg-brand-dark text-white text-xs">
+                                          Top 10 Priority Queue (Rank {request.displayRank})
+                                        </TooltipContent>
+                                      </Tooltip>
                                     )}
                                     
-                                    {/* Expand Chevron */}
-                                    <button
-                                      onClick={(e) => toggleRowExpansion(request.id, e)}
-                                      className="w-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-                                    >
-                                      {isExpanded ? (
-                                        <ChevronDown className="h-4 w-4" />
-                                      ) : (
-                                        <ChevronRightIcon className="h-4 w-4" />
-                                      )}
+                                    <button onClick={(e) => toggleRowExpansion(request.id, e)} className="w-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                                      {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRightIcon className="h-4 w-4" />}
                                     </button>
                                     
-                                    {/* Drag Handle */}
                                     <div {...provided.dragHandleProps} className="w-5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
                                       <GripVertical className="h-4 w-4" />
                                     </div>
                                     
-                                    {/* Checkbox */}
                                     <div className="w-5" onClick={e => e.stopPropagation()}>
                                       <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
                                     </div>
@@ -723,31 +811,17 @@ export default function IndustryPage() {
                                     {columnOrder.map(colId => renderColumnValue(colId))}
                                   </div>
                                   
-                                  {/* Inline Expansion Panel */}
                                   {isExpanded && (
                                     <div className="bg-muted/20 border-b px-4 py-3 ml-[60px]">
                                       <div className="grid grid-cols-2 gap-4 text-sm">
                                         <div>
                                           <span className="text-muted-foreground font-medium">Description:</span>
-                                          <p className="text-foreground mt-1 line-clamp-2">
-                                            {request.description || 'No description provided'}
-                                          </p>
+                                          <p className="text-foreground mt-1 line-clamp-2">{request.description || 'No description provided'}</p>
                                         </div>
                                         <div className="space-y-2">
-                                          <div>
-                                            <span className="text-muted-foreground font-medium">Business Owner:</span>
-                                            <span className="text-foreground ml-2">{request.requestor || '-'}</span>
-                                          </div>
-                                          <div>
-                                            <span className="text-muted-foreground font-medium">Dependencies:</span>
-                                            <span className="text-foreground ml-2">{request.dependencies || 'None'}</span>
-                                          </div>
-                                          <div>
-                                            <span className="text-muted-foreground font-medium">Last Updated:</span>
-                                            <span className="text-foreground ml-2">
-                                              {request.updated_at ? new Date(request.updated_at).toLocaleDateString() : '-'}
-                                            </span>
-                                          </div>
+                                          <div><span className="text-muted-foreground font-medium">Business Owner:</span><span className="text-foreground ml-2">{request.requestor || '-'}</span></div>
+                                          <div><span className="text-muted-foreground font-medium">Dependencies:</span><span className="text-foreground ml-2">{request.dependencies || 'None'}</span></div>
+                                          <div><span className="text-muted-foreground font-medium">Last Updated:</span><span className="text-foreground ml-2">{request.updated_at ? new Date(request.updated_at).toLocaleDateString() : '-'}</span></div>
                                         </div>
                                       </div>
                                     </div>
@@ -763,11 +837,33 @@ export default function IndustryPage() {
                   </Droppable>
                 </DragDropContext>
 
+                {/* Pagination Footer */}
                 {totalPages > 1 && (
                   <div className="px-4 py-2 bg-muted/30 border-t text-xs text-muted-foreground">
                     Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
                   </div>
                 )}
+
+                {/* Legend Bar */}
+                <div className="px-4 py-2 bg-muted/50 border-t flex items-center gap-6 text-xs text-muted-foreground">
+                  <span className="font-medium text-foreground">Legend:</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1 h-4 bg-brand-gold rounded" />
+                    <span>Top 10 Priority</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Lock className="h-3 w-3" />
+                    <span>Force-ranked</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Equal className="h-3 w-3" />
+                    <span>Score tie</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Flame className="h-3 w-3 text-destructive" />
+                    <span>Critical aging (30d+)</span>
+                  </div>
+                </div>
               </Card>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
@@ -778,7 +874,6 @@ export default function IndustryPage() {
         </div>
 
         <CreateBusinessRequestModal isOpen={createModalOpen} onClose={() => setCreateModalOpen(false)} />
-
         <BusinessRequestDrawer isOpen={!!selectedRequestId} onClose={() => setSelectedRequestId(null)} requestId={selectedRequestId} />
       </div>
     </TooltipProvider>
