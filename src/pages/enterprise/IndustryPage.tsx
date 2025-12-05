@@ -773,240 +773,238 @@ export default function IndustryPage() {
             ) : viewMode === 'kanban' ? (
               <BusinessRequestsKanbanView requests={sortedRequests} onRequestSelect={setSelectedRequestId} />
             ) : sortedRequests.length > 0 ? (
-            <Card className="flex-1 flex flex-col min-h-0">
-                {/* Column Headers - Draggable */}
-                <DraggableColumnHeaders
-                  columns={columns}
-                  columnDefinitions={COLUMN_DEFINITIONS}
-                  columnSort={columnSort}
-                  onSort={handleSort}
-                  onReorder={handleColumnsChange}
-                  columnWidths={columnWidths}
-                  onColumnResize={handleColumnResize}
-                  leadingContent={
-                    <>
-                      <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
-                      <div className="w-5 shrink-0" />
-                      <div className="w-5 shrink-0" />
-                      <div className="w-5 shrink-0" />
-                    </>
-                  }
-                />
-
-                {/* Rows - Single scroll container */}
+            <Card className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                {/* Single scroll container for header + body */}
                 <div className="flex-1 overflow-auto">
-                  <DragDropContext onDragEnd={handleDragEnd}>
-                    <Droppable droppableId="requests">
-                      {provided => (
-                        <div {...provided.droppableProps} ref={provided.innerRef}>
-                          {paginatedRequests.map((request: any, index: number) => {
-                          const globalIndex = startIndex + index;
-                          const isForceRanked = request.is_force_ranked;
-                          const isExpanded = expandedRows.has(request.id);
-                          const ageing = calculateAgeing(request.created_at);
-                          const ageingInfo = getAgeingInfo(ageing);
-                          const targetInfo = getTargetDateInfo(request.end_date);
-                          const quarterDays = getDaysUntilQuarterEnd(request.planned_quarter);
-                          
-                          const renderColumnValue = (col: ColumnConfig) => {
-                            const colDef = COLUMN_DEFINITIONS[col.id];
-                            if (!colDef || !col.visible) return null;
-                            
-                            const width = columnWidths[col.id] || colDef.defaultWidth;
-                            const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
-                            const baseStyle = { width: `${width}px`, flexShrink: 0 };
-                            
-                            switch(col.id) {
-                              case 'request_key':
-                                return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                                      className="text-sm text-muted-foreground hover:text-foreground hover:underline font-medium transition-colors truncate block"
-                                    >
-                                      {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
-                                    </button>
-                                  </div>
-                                );
-                              case 'rank':
-                                return (
-                                  <div style={baseStyle} className="text-center overflow-hidden">
-                                    <span className="text-sm text-foreground inline-flex items-center gap-1 justify-center">
-                                      {isForceRanked && (
+                  {/* Notification bar */}
+                  <div className="sticky top-0 z-20">
+                    <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
+                  </div>
+                  
+                  {/* Inner table with min-width to enable horizontal scroll */}
+                  <div className="min-w-max">
+                    {/* Column Headers - Sticky */}
+                    <div className="sticky top-0 z-10 flex items-center h-10 px-4 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                      {/* Leading icons placeholder */}
+                      <div className="flex items-center shrink-0 gap-4 mr-2">
+                        <div className="w-5" /> {/* Expand */}
+                        <div className="w-5" /> {/* Drag */}
+                        <div className="w-5" /> {/* Checkbox */}
+                      </div>
+                      
+                      {/* Column headers - matching body widths */}
+                      {columns.filter(col => col.visible).map(col => {
+                        const colDef = COLUMN_DEFINITIONS[col.id];
+                        if (!colDef) return null;
+                        const width = columnWidths[col.id] || colDef.defaultWidth;
+                        const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
+                        
+                        return (
+                          <div 
+                            key={col.id}
+                            className={cn(
+                              "shrink-0 px-2 flex items-center gap-1",
+                              isCentered && "justify-center"
+                            )}
+                            style={{ width: `${width}px` }}
+                          >
+                            <SimpleColumnHeader
+                              label={colDef.label}
+                              columnId={col.id}
+                              sortDirection={columnSort.columnId === col.id ? columnSort.direction : null}
+                              onSort={handleSort}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Table Body Rows */}
+                    <DragDropContext onDragEnd={handleDragEnd}>
+                      <Droppable droppableId="requests">
+                        {provided => (
+                          <div {...provided.droppableProps} ref={provided.innerRef}>
+                            {paginatedRequests.map((request: any, index: number) => {
+                              const globalIndex = startIndex + index;
+                              const isForceRanked = request.is_force_ranked;
+                              const isExpanded = expandedRows.has(request.id);
+                              const ageing = calculateAgeing(request.created_at);
+                              const ageingInfo = getAgeingInfo(ageing);
+                              const targetInfo = getTargetDateInfo(request.end_date);
+                              const quarterDays = getDaysUntilQuarterEnd(request.planned_quarter);
+                              
+                              const renderColumnValue = (col: ColumnConfig) => {
+                                const colDef = COLUMN_DEFINITIONS[col.id];
+                                if (!colDef || !col.visible) return null;
+                                
+                                const width = columnWidths[col.id] || colDef.defaultWidth;
+                                const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
+                                
+                                const cellContent = (() => {
+                                  switch(col.id) {
+                                    case 'request_key':
+                                      return (
+                                        <button
+                                          onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
+                                          className="text-sm text-muted-foreground hover:text-foreground hover:underline font-medium transition-colors truncate"
+                                        >
+                                          {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
+                                        </button>
+                                      );
+                                    case 'rank':
+                                      return (
+                                        <span className="text-sm text-foreground inline-flex items-center gap-1">
+                                          {isForceRanked && (
+                                            <Tooltip>
+                                              <TooltipTrigger asChild>
+                                                <Lock className="h-3 w-3 text-muted-foreground cursor-help" />
+                                              </TooltipTrigger>
+                                              <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
+                                                <div className="font-medium">Manually Prioritized</div>
+                                                <div className="text-gray-300 mt-1">This item's rank was manually overridden.</div>
+                                              </TooltipContent>
+                                            </Tooltip>
+                                          )}
+                                          <span className="font-medium">{request.displayRank || globalIndex + 1}</span>
+                                        </span>
+                                      );
+                                    case 'title':
+                                      return <span className="text-sm text-foreground truncate">{request.title}</span>;
+                                    case 'process_step':
+                                      return getStatusBadge(request.process_step);
+                                    case 'business_score':
+                                      return getBusinessScoreBadge(request);
+                                    case 'submitted_date':
+                                      return <span className="text-sm text-muted-foreground truncate">{formatDate(request.created_at)}</span>;
+                                    case 'planned_quarter':
+                                      return (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
-                                            <Lock className="h-3 w-3 text-muted-foreground cursor-help" />
+                                            <div className="flex items-center gap-1 cursor-help">
+                                              <span className="text-sm text-muted-foreground truncate">{request.planned_quarter || '-'}</span>
+                                              {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
+                                                <span className="text-[10px] px-1 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">{quarterDays}d</span>
+                                              )}
+                                            </div>
                                           </TooltipTrigger>
-                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
-                                            <div className="font-medium">Manually Prioritized</div>
-                                            <div className="text-gray-300 mt-1">This item's rank was manually overridden, bypassing score-based ordering.</div>
-                                            {request.force_ranked_by && <div className="text-gray-300">By: {request.force_ranked_by}</div>}
-                                            {request.force_ranked_at && <div className="text-gray-300">{new Date(request.force_ranked_at).toLocaleDateString()}</div>}
+                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs">
+                                            {quarterDays !== null ? (quarterDays > 0 ? `${quarterDays} days until quarter close` : 'Quarter has ended') : 'No quarter assigned'}
                                           </TooltipContent>
                                         </Tooltip>
-                                      )}
-                                      <span className="font-medium">{request.displayRank || globalIndex + 1}</span>
-                                    </span>
-                                  </div>
-                                );
-                              case 'title':
+                                      );
+                                    case 'end_date':
+                                      return (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <span className={`text-sm cursor-help truncate ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
+                                          </TooltipTrigger>
+                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs">{targetInfo.tooltip}</TooltipContent>
+                                        </Tooltip>
+                                      );
+                                    case 'ageing':
+                                      return (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <span className={`text-sm inline-flex items-center gap-1 cursor-help ${ageingInfo.class}`}>
+                                              {ageingInfo.icon === 'flame' && <Flame className="h-3 w-3" />}
+                                              {ageingInfo.icon === 'alert' && <AlertTriangle className="h-3 w-3" />}
+                                              {ageingInfo.icon === 'clock' && <Clock className="h-3 w-3" />}
+                                              {ageing} days
+                                            </span>
+                                          </TooltipTrigger>
+                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
+                                            <div className="font-medium">{ageingInfo.label}</div>
+                                            <div className="text-gray-300 mt-1">{ageingInfo.tooltip}</div>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      );
+                                    case 'delivery_platform':
+                                      return <span className="text-sm text-muted-foreground truncate">{request.delivery_platform || '-'}</span>;
+                                    case 'requestor':
+                                      return <span className="text-sm text-muted-foreground truncate">{request.requestor || '-'}</span>;
+                                    case 'business_owner':
+                                      return <span className="text-sm text-muted-foreground truncate">{request.business_owner || '-'}</span>;
+                                    case 'department':
+                                      return <span className="text-sm text-muted-foreground truncate">{request.department || '-'}</span>;
+                                    case 'created_by':
+                                      return <span className="text-sm text-muted-foreground truncate">{request.created_by || '-'}</span>;
+                                    default:
+                                      return null;
+                                  }
+                                })();
+                                
                                 return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <span className="text-sm text-foreground truncate block">{request.title}</span>
-                                  </div>
-                                );
-                              case 'process_step':
-                                return <div style={baseStyle} className="overflow-hidden">{getStatusBadge(request.process_step)}</div>;
-                              case 'business_score':
-                                return <div style={baseStyle} className="text-center overflow-hidden">{getBusinessScoreBadge(request)}</div>;
-                              case 'submitted_date':
-                                return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <span className="text-sm text-muted-foreground truncate block">{formatDate(request.created_at)}</span>
-                                  </div>
-                                );
-                              case 'planned_quarter':
-                                return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <div className="flex items-center gap-1 cursor-help">
-                                          <span className="text-sm text-muted-foreground truncate">{request.planned_quarter || '-'}</span>
-                                          {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
-                                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium shrink-0">{quarterDays}d</span>
-                                          )}
-                                        </div>
-                                      </TooltipTrigger>
-                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs">
-                                        {quarterDays !== null ? (
-                                          quarterDays > 0 ? `${quarterDays} days until ${request.planned_quarter} quarter close` : 'Quarter has ended'
-                                        ) : 'No quarter assigned'}
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </div>
-                                );
-                              case 'end_date':
-                                return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <span className={`text-sm cursor-help truncate block ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
-                                      </TooltipTrigger>
-                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs">{targetInfo.tooltip}</TooltipContent>
-                                    </Tooltip>
-                                  </div>
-                                );
-                              case 'ageing':
-                                return (
-                                  <div style={baseStyle} className="text-center overflow-hidden">
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        <span className={`text-sm inline-flex items-center gap-1 cursor-help ${ageingInfo.class}`}>
-                                          {ageingInfo.icon === 'flame' && <Flame className="h-3 w-3" />}
-                                          {ageingInfo.icon === 'alert' && <AlertTriangle className="h-3 w-3" />}
-                                          {ageingInfo.icon === 'clock' && <Clock className="h-3 w-3" />}
-                                          {ageing} days
-                                        </span>
-                                      </TooltipTrigger>
-                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs whitespace-normal">
-                                        <div className="font-medium">{ageingInfo.label}</div>
-                                        <div className="text-gray-300 mt-1">{ageingInfo.tooltip}</div>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </div>
-                                );
-                              case 'delivery_platform':
-                                return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <span className="text-sm text-muted-foreground truncate block">{request.delivery_platform || '-'}</span>
-                                  </div>
-                                );
-                              case 'requestor':
-                                return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <span className="text-sm text-muted-foreground truncate block">{request.requestor || '-'}</span>
-                                  </div>
-                                );
-                              case 'business_owner':
-                                return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <span className="text-sm text-muted-foreground truncate block">{request.business_owner || '-'}</span>
-                                  </div>
-                                );
-                              case 'department':
-                                return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <span className="text-sm text-muted-foreground truncate block">{request.department || '-'}</span>
-                                  </div>
-                                );
-                              case 'created_by':
-                                return (
-                                  <div style={baseStyle} className="overflow-hidden">
-                                    <span className="text-sm text-muted-foreground truncate block">{request.created_by || '-'}</span>
-                                  </div>
-                                );
-                              default:
-                                return null;
-                            }
-                          };
-                          
-                          return (
-                            <Draggable key={request.id} draggableId={request.id} index={index}>
-                              {(provided, snapshot) => (
-                                <div ref={provided.innerRef} {...provided.draggableProps}>
                                   <div 
-                                    className={`flex items-center px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors
-                                      ${snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''}
-                                      ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`}
-                                    onClick={() => setSelectedRequestId(request.id)}
+                                    key={col.id}
+                                    className={cn(
+                                      "shrink-0 px-2 flex items-center min-w-0",
+                                      isCentered && "justify-center"
+                                    )}
+                                    style={{ width: `${width}px` }}
                                   >
-                                    {/* Leading icons - match header structure */}
-                                    <div className="flex items-center shrink-0" style={{ gap: '16px' }}>
-                                      <button onClick={(e) => toggleRowExpansion(request.id, e)} className="w-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-                                        {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRightIcon className="h-4 w-4" />}
-                                      </button>
-                                      
-                                      <div {...provided.dragHandleProps} className="w-5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
-                                        <GripVertical className="h-4 w-4" />
-                                      </div>
-                                      
-                                      <div className="w-5" onClick={e => e.stopPropagation()}>
-                                        <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
-                                      </div>
-                                    </div>
-
-                                    {/* Column values - aligned with headers */}
-                                    <div className="flex items-center flex-1">
-                                      {columns.map(col => renderColumnValue(col))}
-                                    </div>
+                                    {cellContent}
                                   </div>
-                                  
-                                  {isExpanded && (
-                                    <div className="bg-muted/20 border-b px-4 py-3 ml-[60px]">
-                                      <div className="grid grid-cols-2 gap-4 text-sm">
-                                        <div>
-                                          <span className="text-muted-foreground font-medium">Description:</span>
-                                          <p className="text-foreground mt-1 line-clamp-2">{request.description || 'No description provided'}</p>
+                                );
+                              };
+                              
+                              return (
+                                <Draggable key={request.id} draggableId={request.id} index={index}>
+                                  {(provided, snapshot) => (
+                                    <div ref={provided.innerRef} {...provided.draggableProps}>
+                                      <div 
+                                        className={cn(
+                                          "flex items-center h-11 px-4 border-b cursor-pointer hover:bg-muted/30 transition-colors",
+                                          snapshot.isDragging && 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold',
+                                          selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'
+                                        )}
+                                        onClick={() => setSelectedRequestId(request.id)}
+                                      >
+                                        {/* Leading icons - fixed width matching header */}
+                                        <div className="flex items-center shrink-0 gap-4 mr-2">
+                                          <button onClick={(e) => toggleRowExpansion(request.id, e)} className="w-5 flex items-center justify-center text-muted-foreground hover:text-foreground">
+                                            {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRightIcon className="h-4 w-4" />}
+                                          </button>
+                                          
+                                          <div {...provided.dragHandleProps} className="w-5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
+                                            <GripVertical className="h-4 w-4" />
+                                          </div>
+                                          
+                                          <div className="w-5" onClick={e => e.stopPropagation()}>
+                                            <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
+                                          </div>
                                         </div>
-                                        <div className="space-y-2">
-                                          <div><span className="text-muted-foreground font-medium">Business Owner:</span><span className="text-foreground ml-2">{request.requestor || '-'}</span></div>
-                                          <div><span className="text-muted-foreground font-medium">Dependencies:</span><span className="text-foreground ml-2">{request.dependencies || 'None'}</span></div>
-                                          <div><span className="text-muted-foreground font-medium">Last Updated:</span><span className="text-foreground ml-2">{request.updated_at ? new Date(request.updated_at).toLocaleDateString() : '-'}</span></div>
-                                        </div>
+
+                                        {/* Column values */}
+                                        {columns.map(col => renderColumnValue(col))}
                                       </div>
+                                      
+                                      {isExpanded && (
+                                        <div className="bg-muted/20 border-b px-4 py-3 ml-[76px]">
+                                          <div className="grid grid-cols-2 gap-4 text-sm">
+                                            <div>
+                                              <span className="text-muted-foreground font-medium">Description:</span>
+                                              <p className="text-foreground mt-1 line-clamp-2">{request.description || 'No description provided'}</p>
+                                            </div>
+                                            <div className="space-y-2">
+                                              <div><span className="text-muted-foreground font-medium">Business Owner:</span><span className="text-foreground ml-2">{request.business_owner || '-'}</span></div>
+                                              <div><span className="text-muted-foreground font-medium">Dependencies:</span><span className="text-foreground ml-2">{request.dependencies || 'None'}</span></div>
+                                              <div><span className="text-muted-foreground font-medium">Last Updated:</span><span className="text-foreground ml-2">{request.updated_at ? new Date(request.updated_at).toLocaleDateString() : '-'}</span></div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
                                   )}
-                                </div>
-                              )}
-                            </Draggable>
-                          );
-                        })}
-                        {provided.placeholder}
-                      </div>
-                    )}
-                  </Droppable>
-                </DragDropContext>
-              </div>
+                                </Draggable>
+                              );
+                            })}
+                            {provided.placeholder}
+                          </div>
+                        )}
+                      </Droppable>
+                    </DragDropContext>
+                  </div>
+                </div>
 
                 {/* Pagination Footer */}
                 {totalPages > 1 && (
