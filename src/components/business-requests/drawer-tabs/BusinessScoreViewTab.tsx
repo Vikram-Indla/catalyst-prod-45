@@ -396,9 +396,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
                 <Select
                   value={String(executiveUrgency)}
                   onValueChange={(value) => handleInputChange('executive_urgency', parseInt(value))}
-                  disabled={isForceRanked}
+                  disabled={isForceRanked || isSavingRank}
                 >
-                  <SelectTrigger className={cn("mt-1.5 h-8 text-sm", isForceRanked && "opacity-50 bg-muted")}>
+                  <SelectTrigger className={cn("mt-1.5 h-8 text-sm", (isForceRanked || isSavingRank) && "opacity-50 bg-muted")}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border shadow-lg z-[200]">
@@ -410,7 +410,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
               </div>
               <div className={cn(
                 "w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm shrink-0 bg-transparent",
-                isForceRanked ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor(executiveUrgency * 10)
+                (isForceRanked || isSavingRank) ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor(executiveUrgency * 10)
               )}>
                 {executiveUrgency}
               </div>
@@ -426,9 +426,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
                 <Select
                   value={String(businessValue)}
                   onValueChange={(value) => handleInputChange('business_value', parseInt(value))}
-                  disabled={isForceRanked}
+                  disabled={isForceRanked || isSavingRank}
                 >
-                  <SelectTrigger className={cn("mt-1.5 h-8 text-sm", isForceRanked && "opacity-50 bg-muted")}>
+                  <SelectTrigger className={cn("mt-1.5 h-8 text-sm", (isForceRanked || isSavingRank) && "opacity-50 bg-muted")}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border shadow-lg z-[200]">
@@ -440,7 +440,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
               </div>
               <div className={cn(
                 "w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm shrink-0 bg-transparent",
-                isForceRanked ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor(businessValue * 10)
+                (isForceRanked || isSavingRank) ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor(businessValue * 10)
               )}>
                 {businessValue}
               </div>
@@ -456,9 +456,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
                 <Select
                   value={String(complexity)}
                   onValueChange={(value) => handleInputChange('complexity_score', parseInt(value))}
-                  disabled={isForceRanked}
+                  disabled={isForceRanked || isSavingRank}
                 >
-                  <SelectTrigger className={cn("mt-1.5 h-8 text-sm", isForceRanked && "opacity-50 bg-muted")}>
+                  <SelectTrigger className={cn("mt-1.5 h-8 text-sm", (isForceRanked || isSavingRank) && "opacity-50 bg-muted")}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border shadow-lg z-[200]">
@@ -470,7 +470,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
               </div>
               <div className={cn(
                 "w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm shrink-0 bg-transparent",
-                isForceRanked ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor((1 - complexity / 10) * 100)
+                (isForceRanked || isSavingRank) ? "border-muted-foreground/30 text-muted-foreground" : getScoreColor((1 - complexity / 10) * 100)
               )}>
                 {complexity}
               </div>
