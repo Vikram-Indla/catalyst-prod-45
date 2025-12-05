@@ -28,6 +28,7 @@ PROCESS_STEPS.forEach(step => {
 
 export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: WorkflowViewerModalProps) {
   const isPaused = currentStep === 'on_hold';
+  const isRejected = currentStep === 'rejected';
 
   // Fetch ALL process_step changes as chronological timeline
   const { data: transitions } = useQuery({
@@ -48,7 +49,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: W
       if (submittedDate) {
         timeline.push({
           fromStep: null,
-          toStep: 'request_received',
+          toStep: 'new_request',
           date: submittedDate,
           formattedDate: format(new Date(submittedDate), 'dd/MM/yyyy HH:mm')
         });
@@ -76,7 +77,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: W
   };
 
   const isOptionalStep = (stepValue: string): boolean => {
-    return stepValue === 'on_hold';
+    return stepValue === 'on_hold' || stepValue === 'rejected';
   };
 
   return (
@@ -84,7 +85,7 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: W
       <DialogTrigger asChild>
         <Button variant="link" className="h-auto p-0 text-xs text-brand-gold hover:text-brand-gold/80">
           <GitBranch className="h-3 w-3 mr-1" />
-          View workflow
+          Workflow History
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg bg-card">
@@ -176,12 +177,20 @@ export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: W
             )}
           </div>
 
-          {/* Paused note if currently on hold */}
+          {/* Orphan status notes */}
           {isPaused && (
             <div className="mt-4 pt-4 border-t border-border">
               <p className="text-xs text-amber-600 flex items-center gap-1">
                 <Pause className="h-3 w-3" />
-                This request is currently paused. Paused is an optional status that can be reached from any step.
+                This request is currently on-hold. On-Hold is an optional status that can be reached from any step.
+              </p>
+            </div>
+          )}
+          {isRejected && (
+            <div className="mt-4 pt-4 border-t border-border">
+              <p className="text-xs text-red-600 flex items-center gap-1">
+                <Pause className="h-3 w-3" />
+                This request has been rejected. Rejected is a terminal status.
               </p>
             </div>
           )}

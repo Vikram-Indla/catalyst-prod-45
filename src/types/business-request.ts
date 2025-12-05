@@ -1,14 +1,16 @@
 import { z } from 'zod';
 
-// Process Step Options - synchronized with Kanban columns (Finalized per governance)
+// Process Step Options - Main workflow flow + orphan statuses
 export const PROCESS_STEPS = [
-  { value: 'request_received', label: 'Received', color: 'bg-[#4a4a4a]' },
-  { value: 'under_study', label: 'Analysis', color: 'bg-[#c4c4c4]' },
-  { value: 'in_progress', label: 'Active', color: 'bg-[#5c4b8a]' },
-  { value: 'awaiting_business_response', label: 'Pending', color: 'bg-[#a0a0a0]' },
-  { value: 'on_hold', label: 'Paused', color: 'bg-[#c9a0a0]' },
-  { value: 'implemented', label: 'Implemented', color: 'bg-[#1a1a1a]' },
+  // Main flow (in order)
+  { value: 'new_request', label: 'New Request', color: 'bg-[#4a4a4a]' },
+  { value: 'analyse', label: 'Analyse', color: 'bg-[#c4c4c4]' },
+  { value: 'approved', label: 'Approved', color: 'bg-[#5c4b8a]' },
+  { value: 'implement', label: 'Implement', color: 'bg-[#1a1a1a]' },
   { value: 'closed', label: 'Closed', color: 'bg-[#6abf4b]' },
+  // Orphan statuses (not in main flow)
+  { value: 'rejected', label: 'Rejected', color: 'bg-[#dc2626]' },
+  { value: 'on_hold', label: 'On-Hold', color: 'bg-[#c9a0a0]' },
 ] as const;
 
 // Health Options
