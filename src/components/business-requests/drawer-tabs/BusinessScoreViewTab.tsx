@@ -182,6 +182,32 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         // Also update business_score if all inputs are complete
         if (allInputsProvided) {
           updateData.business_score = newScore;
+          
+          // Calculate auto-rank position based on score
+          // Only set rank if NOT already force-ranked
+          if (!data.is_force_ranked) {
+            // Fetch all requests to calculate position
+            const { data: allReqs } = await supabase
+              .from('business_requests')
+              .select('id, business_score')
+              .is('deleted_at', null)
+              .order('business_score', { ascending: false });
+            
+            if (allReqs) {
+              // Create a temp list with updated score for current request
+              const tempList = allReqs.map(r => 
+                r.id === requestId ? { ...r, business_score: newScore } : r
+              );
+              // Sort by score descending
+              tempList.sort((a, b) => (b.business_score ?? 0) - (a.business_score ?? 0));
+              // Find position (1-indexed)
+              const position = tempList.findIndex(r => r.id === requestId) + 1;
+              if (position > 0) {
+                updateData.rank = position;
+                onChange('rank', position);
+              }
+            }
+          }
         }
         
         await supabase
@@ -192,6 +218,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         // Refresh queries to keep everything in sync
         queryClient.invalidateQueries({ queryKey: ['business-requests'] });
         queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
+        queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
       } catch (error) {
         console.error('Failed to auto-save scoring input:', error);
       }
@@ -647,23 +674,15 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
               )}
             </div>
 
-            {/* Rank Badge */}
+            {/* Process Step Badge */}
             <div className="flex justify-center">
-              {isForceRanked ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-medium border border-brand-gold/30 bg-brand-gold/10 text-brand-gold">
-                  <Lock className="h-3 w-3" />
-                  Manual #{data.rank}
-                </span>
-              ) : isScoringComplete ? (
-                <span className={cn(
-                  "inline-flex px-2.5 py-1 rounded text-[11px] font-medium border",
-                  rankInfo.color
-                )}>
-                  {rankInfo.label}
+              {data.process_step ? (
+                <span className="inline-flex px-2.5 py-1 rounded text-[11px] font-medium border border-brand-gold/30 bg-brand-gold/10 text-brand-gold">
+                  {data.process_step}
                 </span>
               ) : (
                 <span className="inline-flex px-2.5 py-1 rounded text-[11px] font-medium border border-muted-foreground/20 text-muted-foreground/60 bg-muted/30">
-                  Not Scored
+                  No Status
                 </span>
               )}
             </div>
