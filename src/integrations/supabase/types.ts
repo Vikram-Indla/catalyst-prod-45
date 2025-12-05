@@ -357,7 +357,9 @@ export type Database = {
           approval_remarks: string | null
           approved_budget_ceiling: number | null
           approver_name: string | null
+          assignee: string | null
           business_justification: string | null
+          business_owner: string | null
           business_score: number | null
           business_value: number | null
           complexity: string | null
@@ -367,6 +369,7 @@ export type Database = {
           deleted_at: string | null
           delivery_platform: string | null
           delivery_track: string | null
+          department: string | null
           dependencies: string | null
           description: string | null
           end_date: string | null
@@ -427,7 +430,9 @@ export type Database = {
           approval_remarks?: string | null
           approved_budget_ceiling?: number | null
           approver_name?: string | null
+          assignee?: string | null
           business_justification?: string | null
+          business_owner?: string | null
           business_score?: number | null
           business_value?: number | null
           complexity?: string | null
@@ -437,6 +442,7 @@ export type Database = {
           deleted_at?: string | null
           delivery_platform?: string | null
           delivery_track?: string | null
+          department?: string | null
           dependencies?: string | null
           description?: string | null
           end_date?: string | null
@@ -497,7 +503,9 @@ export type Database = {
           approval_remarks?: string | null
           approved_budget_ceiling?: number | null
           approver_name?: string | null
+          assignee?: string | null
           business_justification?: string | null
+          business_owner?: string | null
           business_score?: number | null
           business_value?: number | null
           complexity?: string | null
@@ -507,6 +515,7 @@ export type Database = {
           deleted_at?: string | null
           delivery_platform?: string | null
           delivery_track?: string | null
+          department?: string | null
           dependencies?: string | null
           description?: string | null
           end_date?: string | null
