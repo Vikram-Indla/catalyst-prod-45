@@ -719,18 +719,20 @@ export default function IndustryPage() {
               <Input placeholder="Search industry requests..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9 bg-white border-border" />
             </div>
 
-            {/* Pagination - separate container */}
-            <div className="flex items-center gap-1 border border-border rounded-md bg-white px-1">
-              <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
-                {sortedRequests.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, sortedRequests.length)} of ${sortedRequests.length}` : '0 items'}
-              </span>
-              <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-8 w-8 p-0">
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
+            {/* Pagination - only in list mode */}
+            {viewMode === 'list' && (
+              <div className="flex items-center gap-1 border border-border rounded-md bg-white px-1">
+                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
+                  {sortedRequests.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, sortedRequests.length)} of ${sortedRequests.length}` : '0 items'}
+                </span>
+                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-8 w-8 p-0">
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
 
             {/* View Toggle - separate container */}
             <ViewToggle currentView={viewMode} onViewChange={setViewMode} />

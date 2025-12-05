@@ -134,8 +134,8 @@ export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpan
     <TooltipProvider delayDuration={200}>
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="text-xs text-muted-foreground/60 mb-2 italic">Click any column to expand</div>
-        <div className="w-full h-[calc(100vh-240px)] overflow-auto">
-          <div className="flex gap-3 pb-4 pr-4 min-w-max">
+        <div className="flex-1 w-full overflow-x-auto overflow-y-auto" style={{ maxHeight: 'calc(100vh - 220px)' }}>
+          <div className="flex gap-3 pb-4 pr-4" style={{ minWidth: 'max-content' }}>
             {KANBAN_COLUMNS.map(column => {
               const columnRequests = getRequestsByStatus(column.id);
               const isCollapsed = collapsedColumns.has(column.id);
