@@ -516,7 +516,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
 
             {isForceRanked && (
               <p className="text-[10px] text-amber-600 italic pt-2 border-t border-border/40">
-                Inputs locked. Switch to Auto to edit.
+                Scoring inputs locked while manually ranked. You can change the rank below or switch to Auto.
               </p>
             )}
           </CardContent>

@@ -40,6 +40,103 @@ import { DiscussionsViewTab } from './drawer-tabs/DiscussionsViewTab';
 import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+
+// Fields to track for audit logging (human-readable names)
+const AUDIT_FIELD_LABELS: Record<string, string> = {
+  title: 'Title',
+  description: 'Description',
+  process_step: 'Process Step',
+  department: 'Department',
+  business_owner: 'Business Owner',
+  requestor: 'Requestor',
+  assignee: 'Assignee',
+  delivery_platform: 'Delivery Platform',
+  delivery_track: 'Delivery Track',
+  planned_quarter: 'Planned Quarter',
+  urgency: 'Urgency',
+  complexity: 'Complexity',
+  risk_rating: 'Risk Rating',
+  estimated_effort: 'Estimated Effort',
+  estimated_cost: 'Estimated Cost',
+  start_date: 'Start Date',
+  end_date: 'End Date',
+  executive_urgency: 'Executive Urgency',
+  business_value: 'Business Value',
+  complexity_score: 'Complexity Score',
+  business_score: 'Business Score',
+  rank: 'Rank',
+  is_force_ranked: 'Force Ranked',
+  rank_override_justification: 'Rank Justification',
+  health: 'Health',
+  acceptance_criteria: 'Acceptance Criteria',
+  dependencies: 'Dependencies',
+  platform: 'Platform',
+  track: 'Track',
+};
+
+// Log field changes to audit table
+async function logFieldChanges(
+  requestId: string,
+  oldData: Partial<BusinessRequest> & Record<string, any>,
+  newData: Partial<BusinessRequest> & Record<string, any>
+) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user?.id)
+      .single();
+
+    const actorName = profile?.full_name || user?.email || 'Unknown User';
+    const auditLogs: any[] = [];
+
+    // Compare each tracked field
+    for (const [field, label] of Object.entries(AUDIT_FIELD_LABELS)) {
+      const oldValue = oldData[field];
+      const newValue = newData[field];
+
+      // Skip if values are the same (handle null/undefined as equal)
+      const oldNormalized = oldValue === undefined ? null : oldValue;
+      const newNormalized = newValue === undefined ? null : newValue;
+      
+      if (JSON.stringify(oldNormalized) === JSON.stringify(newNormalized)) continue;
+
+      // Format values for display
+      const formatValue = (val: any): string => {
+        if (val === null || val === undefined) return 'None';
+        if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+        if (typeof val === 'object') return JSON.stringify(val);
+        return String(val);
+      };
+
+      auditLogs.push({
+        business_request_id: requestId,
+        actor_id: user?.id,
+        actor_name: actorName,
+        action: 'UPDATE',
+        field_changed: label,
+        old_value: formatValue(oldNormalized),
+        new_value: formatValue(newNormalized),
+      });
+    }
+
+    // Insert all audit logs
+    if (auditLogs.length > 0) {
+      console.log('Inserting audit logs:', auditLogs);
+      const { error } = await supabase
+        .from('business_request_audit_logs')
+        .insert(auditLogs);
+      
+      if (error) {
+        console.error('Failed to insert audit logs:', error);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to log field changes:', error);
+  }
+}
 
 interface BusinessRequestDrawerProps {
   isOpen: boolean;
@@ -135,7 +232,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!requestId) return;
     
     console.log('Drawer handleSave - saving formData:', {
@@ -143,6 +240,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
       is_force_ranked: formData.is_force_ranked,
       rank_override_justification: formData.rank_override_justification
     });
+    
+    // Log all field changes to audit table
+    await logFieldChanges(requestId, originalData, formData);
     
     updateMutation.mutate({ id: requestId, data: formData as Partial<BusinessRequest> }, {
       onSuccess: () => {
@@ -152,6 +252,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         skipNextFormResetRef.current = true; // Prevent overwriting formData on refetch
         // Refresh table
         queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['business-request-audit', requestId] });
         toast.success('Business request saved');
       }
     });
@@ -181,7 +282,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   };
 
 
-  const handleSaveAndClose = () => {
+  const handleSaveAndClose = async () => {
     if (!requestId) return;
     
     console.log('Drawer handleSaveAndClose - saving formData:', {
@@ -189,6 +290,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
       is_force_ranked: formData.is_force_ranked,
       rank_override_justification: formData.rank_override_justification
     });
+    
+    // Log all field changes to audit table
+    await logFieldChanges(requestId, originalData, formData);
     
     // Close dialog and drawer immediately
     setShowUnsavedChangesDialog(false);
@@ -201,6 +305,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         console.log('Drawer save and close successful');
         setOriginalData(formData);
         queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['business-request-audit', requestId] });
         toast.success('Business request saved');
       }
     });
