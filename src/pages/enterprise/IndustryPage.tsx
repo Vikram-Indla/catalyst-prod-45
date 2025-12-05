@@ -144,8 +144,32 @@ interface ColumnSort {
   direction: SortDirection;
 }
 
-// Default sort by Business Score with tie-breaker cascade (no pinning)
+// Default sort: Use saved rank if available, otherwise sort by business score
 const sortByScoreWithTieBreaker = (items: any[]) => {
+  // Check if any items have saved ranks (from previous drag operations)
+  const hasAnyRanks = items.some(item => item.rank != null);
+  
+  if (hasAnyRanks) {
+    // Sort by saved rank first, then by score for unranked items
+    return [...items].sort((a, b) => {
+      const aRank = a.rank;
+      const bRank = b.rank;
+      
+      // Both have ranks - sort by rank
+      if (aRank != null && bRank != null) {
+        return aRank - bRank;
+      }
+      
+      // Only one has rank - ranked item comes first at its position
+      if (aRank != null) return -1;
+      if (bRank != null) return 1;
+      
+      // Neither has rank - fall back to score
+      return (b.business_score ?? 0) - (a.business_score ?? 0);
+    });
+  }
+  
+  // No saved ranks - use business score cascade
   return [...items].sort((a, b) => {
     // 1. Primary: Business Score (descending)
     const scoreA = a.business_score ?? 0;
