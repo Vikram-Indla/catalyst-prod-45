@@ -873,7 +873,12 @@ export default function IndustryPage() {
         </div>
 
         <CreateBusinessRequestModal isOpen={createModalOpen} onClose={() => setCreateModalOpen(false)} />
-        <BusinessRequestDrawer isOpen={!!selectedRequestId} onClose={() => setSelectedRequestId(null)} requestId={selectedRequestId} />
+        <BusinessRequestDrawer 
+          isOpen={!!selectedRequestId} 
+          onClose={() => setSelectedRequestId(null)} 
+          requestId={selectedRequestId}
+          onRequestChange={(newId) => setSelectedRequestId(newId)}
+        />
         <IndustryFiltersDialog
           open={filtersDialogOpen}
           onOpenChange={setFiltersDialogOpen}
