@@ -561,15 +561,34 @@ export default function IndustryPage() {
     }));
   };
 
+  // Jira-style status badge colors
+  const STATUS_BADGE_STYLES: Record<string, { bg: string; text: string }> = {
+    'implemented': { bg: 'bg-emerald-100', text: 'text-emerald-700' },
+    'closed': { bg: 'bg-emerald-100', text: 'text-emerald-700' },
+    'in_progress': { bg: 'bg-blue-100', text: 'text-blue-700' },
+    'active': { bg: 'bg-blue-100', text: 'text-blue-700' },
+    'on_hold': { bg: 'bg-amber-100', text: 'text-amber-700' },
+    'paused': { bg: 'bg-amber-100', text: 'text-amber-700' },
+    'request_received': { bg: 'bg-slate-100', text: 'text-slate-600' },
+    'received': { bg: 'bg-slate-100', text: 'text-slate-600' },
+    'under_study': { bg: 'bg-violet-100', text: 'text-violet-700' },
+    'analysis': { bg: 'bg-violet-100', text: 'text-violet-700' },
+    'awaiting_business_response': { bg: 'bg-orange-100', text: 'text-orange-700' },
+  };
+
   const getStatusBadge = (status: string) => {
     const step = PROCESS_STEPS.find(s => s.value === status);
     const info = PROCESS_STEP_INFO[status] || { description: 'Unknown status' };
+    const styles = STATUS_BADGE_STYLES[status] || { bg: 'bg-slate-100', text: 'text-slate-600' };
     
-    // Plain text status - no colored dots
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="text-sm text-muted-foreground cursor-help">
+          <span className={cn(
+            "inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded cursor-help",
+            styles.bg,
+            styles.text
+          )}>
             {step?.label || status}
           </span>
         </TooltipTrigger>
@@ -586,12 +605,12 @@ export default function IndustryPage() {
     
     // Show score value for all items (including force-ranked)
     if (score === null || score === undefined || score === 0) {
-      return <span className="text-muted-foreground text-sm">—</span>;
+      return <span className="text-[#97A0AF] text-[14px]">—</span>;
     }
     
-    // Plain text score - number speaks for itself
+    // Jira-style bold score
     return (
-      <span className="text-sm font-medium text-foreground tabular-nums">
+      <span className="text-[14px] font-semibold text-[#172B4D] tabular-nums">
         {score}
       </span>
     );
@@ -701,13 +720,13 @@ export default function IndustryPage() {
 
   return (
     <TooltipProvider>
-      <div className="h-full flex flex-col bg-background">
+      <div className="h-full flex flex-col bg-[#F4F5F7]">
         {/* Header */}
-        <div className="border-b bg-card px-4 sm:px-6 py-4">
+        <div className="border-b border-[#E4E6EB] bg-white px-4 sm:px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Demand Intake</h1>
-              <p className="text-sm text-muted-foreground">Industry-specific demand requests</p>
+              <h1 className="text-xl sm:text-2xl font-semibold text-[#172B4D]">Demand Intake</h1>
+              <p className="text-sm text-[#5E6C84]">Industry-specific demand requests</p>
             </div>
             <Button onClick={() => setCreateModalOpen(true)} className="bg-brand-gold text-white hover:bg-brand-gold-hover">
               <Plus className="h-4 w-4 mr-2" />
@@ -717,7 +736,7 @@ export default function IndustryPage() {
         </div>
 
         {/* Search & Filters Bar */}
-        <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 border-b bg-card">
+        <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 border-b border-[#E4E6EB] bg-white">
           {/* Row 1: Search + Actions */}
           <div className="flex items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
@@ -731,7 +750,7 @@ export default function IndustryPage() {
                   <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <span className="text-sm text-foreground px-2 whitespace-nowrap">
+                  <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
                     Page {currentPage} of {totalPages}
                   </span>
                   <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="h-8 w-8 p-0">
@@ -773,7 +792,7 @@ export default function IndustryPage() {
             ) : viewMode === 'kanban' ? (
               <BusinessRequestsKanbanView requests={sortedRequests} onRequestSelect={setSelectedRequestId} />
             ) : sortedRequests.length > 0 ? (
-            <Card className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            <Card className="flex-1 flex flex-col min-h-0 overflow-hidden border border-[#E4E6EB] rounded shadow-none">
                 {/* Single scroll container for header + body */}
                 <div className="flex-1 overflow-x-auto overflow-y-auto">
                   {/* Notification bar */}
@@ -784,7 +803,7 @@ export default function IndustryPage() {
                   {/* Inner table with fixed min-width for horizontal scroll */}
                   <div style={{ minWidth: '1400px' }}>
                     {/* Column Headers - Sticky */}
-                    <div className="sticky top-0 z-30 flex items-center h-10 px-4 bg-card border-b text-xs font-medium text-muted-foreground uppercase tracking-wide shadow-sm">
+                    <div className="sticky top-0 z-30 flex items-center h-10 px-4 bg-white border-b border-[#DFE1E6] text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide">
                       {/* Leading icons placeholder - fixed width */}
                       <div className="flex items-center gap-2 mr-2" style={{ width: '120px', minWidth: '120px' }}>
                         <div className="w-8" /> {/* Expand */}
@@ -803,7 +822,7 @@ export default function IndustryPage() {
                           <div 
                             key={col.id}
                             className={cn(
-                              "shrink-0 px-2 flex items-center gap-1",
+                              "shrink-0 px-3 flex items-center gap-1 border-r border-[#E4E6EB] last:border-r-0",
                               isCentered && "justify-center"
                             )}
                             style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
@@ -846,18 +865,18 @@ export default function IndustryPage() {
                                       return (
                                         <button
                                           onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                                          className="text-sm text-muted-foreground hover:text-foreground hover:underline font-medium transition-colors truncate"
+                                          className="text-[13px] text-[#172B4D] hover:text-[#0052CC] hover:underline font-medium transition-colors truncate"
                                         >
                                           {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
                                         </button>
                                       );
                                     case 'rank':
                                       return (
-                                        <span className="text-sm text-foreground inline-flex items-center gap-1">
+                                        <span className="text-[14px] text-[#172B4D] inline-flex items-center gap-1">
                                           {isForceRanked && (
                                             <Tooltip>
                                               <TooltipTrigger asChild>
-                                                <Lock className="h-3 w-3 text-muted-foreground cursor-help" />
+                                                <Lock className="h-3 w-3 text-[#97A0AF] cursor-help" />
                                               </TooltipTrigger>
                                               <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
                                                 <div className="font-medium">Manually Prioritized</div>
@@ -869,19 +888,19 @@ export default function IndustryPage() {
                                         </span>
                                       );
                                     case 'title':
-                                      return <span className="text-sm text-foreground truncate">{request.title}</span>;
+                                      return <span className="text-[14px] text-[#172B4D] truncate">{request.title}</span>;
                                     case 'process_step':
                                       return getStatusBadge(request.process_step);
                                     case 'business_score':
                                       return getBusinessScoreBadge(request);
                                     case 'submitted_date':
-                                      return <span className="text-sm text-muted-foreground truncate">{formatDate(request.created_at)}</span>;
+                                      return <span className="text-[14px] text-[#5E6C84] truncate">{formatDate(request.created_at)}</span>;
                                     case 'planned_quarter':
                                       return (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
                                             <div className="flex items-center gap-1 cursor-help">
-                                              <span className="text-sm text-muted-foreground truncate">{request.planned_quarter || '-'}</span>
+                                              <span className="text-[14px] text-[#5E6C84] truncate">{request.planned_quarter || '-'}</span>
                                               {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
                                                 <span className="text-[10px] px-1 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">{quarterDays}d</span>
                                               )}
@@ -896,7 +915,7 @@ export default function IndustryPage() {
                                       return (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
-                                            <span className={`text-sm cursor-help truncate ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
+                                            <span className={`text-[14px] cursor-help truncate ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
                                           </TooltipTrigger>
                                           <TooltipContent side="top" className="bg-brand-dark text-white text-xs">{targetInfo.tooltip}</TooltipContent>
                                         </Tooltip>
@@ -905,7 +924,7 @@ export default function IndustryPage() {
                                       return (
                                         <Tooltip>
                                           <TooltipTrigger asChild>
-                                            <span className={`text-sm inline-flex items-center gap-1 cursor-help ${ageingInfo.class}`}>
+                                            <span className={`text-[14px] inline-flex items-center gap-1 cursor-help ${ageingInfo.class}`}>
                                               {ageingInfo.icon === 'flame' && <Flame className="h-3 w-3" />}
                                               {ageingInfo.icon === 'alert' && <AlertTriangle className="h-3 w-3" />}
                                               {ageingInfo.icon === 'clock' && <Clock className="h-3 w-3" />}
@@ -919,15 +938,15 @@ export default function IndustryPage() {
                                         </Tooltip>
                                       );
                                     case 'delivery_platform':
-                                      return <span className="text-sm text-muted-foreground truncate">{request.delivery_platform || '-'}</span>;
+                                      return <span className="text-[14px] text-[#172B4D] truncate">{request.delivery_platform || '-'}</span>;
                                     case 'requestor':
-                                      return <span className="text-sm text-muted-foreground truncate">{request.requestor || '-'}</span>;
+                                      return <span className="text-[14px] text-[#172B4D] truncate">{request.requestor || '-'}</span>;
                                     case 'business_owner':
-                                      return <span className="text-sm text-muted-foreground truncate">{request.business_owner || '-'}</span>;
+                                      return <span className="text-[14px] text-[#172B4D] truncate">{request.business_owner || '-'}</span>;
                                     case 'department':
-                                      return <span className="text-sm text-muted-foreground truncate">{request.department || '-'}</span>;
+                                      return <span className="text-[14px] text-[#5E6C84] truncate">{request.department || '-'}</span>;
                                     case 'created_by':
-                                      return <span className="text-sm text-muted-foreground truncate">{request.created_by || '-'}</span>;
+                                      return <span className="text-[14px] text-[#5E6C84] truncate">{request.created_by || '-'}</span>;
                                     default:
                                       return null;
                                   }
@@ -937,7 +956,7 @@ export default function IndustryPage() {
                                   <div 
                                     key={col.id}
                                     className={cn(
-                                      "shrink-0 px-2 flex items-center min-w-0",
+                                      "shrink-0 px-3 flex items-center min-w-0 border-r border-[#E4E6EB] last:border-r-0",
                                       isCentered && "justify-center"
                                     )}
                                     style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
@@ -950,12 +969,13 @@ export default function IndustryPage() {
                               return (
                                 <Draggable key={request.id} draggableId={request.id} index={index}>
                                   {(provided, snapshot) => (
-                                    <div ref={provided.innerRef} {...provided.draggableProps}>
+                                      <div ref={provided.innerRef} {...provided.draggableProps}>
                                       <div 
                                         className={cn(
-                                          "flex items-center h-11 px-4 border-b cursor-pointer hover:bg-muted/30 transition-colors",
+                                          "flex items-center h-11 px-4 border-b border-[#E4E6EB] cursor-pointer transition-colors",
+                                          "hover:bg-[#FAFBFC]",
                                           snapshot.isDragging && 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold',
-                                          selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'
+                                          selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-white'
                                         )}
                                         onClick={() => setSelectedRequestId(request.id)}
                                       >
