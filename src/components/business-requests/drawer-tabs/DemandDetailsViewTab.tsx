@@ -59,9 +59,9 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
   };
 
   return (
-    <div className="space-y-4 p-4">
+    <div className="flex flex-col items-center space-y-4 p-4">
       {/* DETAILS Section - Consolidated Basic Info + Assignment */}
-      <Card className="border border-border/60 rounded-lg bg-card">
+      <Card className="border border-border/60 rounded-lg bg-card w-[90%]">
         <CardContent className="p-4 space-y-4">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Details</h3>
           
@@ -146,7 +146,7 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
       </Card>
 
       {/* PLANNING & DELIVERY Section - Consolidated Timeline + Delivery Context */}
-      <Card className="border border-border/60 rounded-lg bg-card">
+      <Card className="border border-border/60 rounded-lg bg-card w-[90%]">
         <CardContent className="p-4 space-y-4">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Planning & Delivery</h3>
           
