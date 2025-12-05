@@ -96,6 +96,7 @@ export function ProgramRoomSidebar({
   ];
 
   const morePagesSubMenu = [
+    { id: 'knowledge-hub', label: 'Knowledge Hub', path: '/knowledge-hub' },
     { id: 'assessments', label: 'Assessments', path: '/programs/:programId/pages/assessments' },
     { id: 'metrics', label: 'Metrics', path: '/programs/:programId/pages/metrics' },
     { id: 'meetings', label: 'Meetings', path: '/programs/:programId/pages/meetings' },
