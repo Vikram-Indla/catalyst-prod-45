@@ -235,6 +235,14 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
         <CardContent className="p-5 space-y-4">
           <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Timeline</h3>
           
+          {/* Submitted Date - Read-only */}
+          <div className="pb-3 border-b border-border/40">
+            <Label className="text-sm font-medium text-muted-foreground">Submitted Date</Label>
+            <p className="mt-1.5 text-sm font-medium text-foreground">
+              {data.created_at ? format(new Date(data.created_at), 'dd/MM/yyyy') : '-'}
+            </p>
+          </div>
+          
           <div className="grid grid-cols-3 gap-4">
             <div>
               <Label className="text-sm font-medium">Business Ask Date</Label>

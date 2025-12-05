@@ -450,6 +450,9 @@ export default function RequestAccess() {
             <p className="text-3xl font-bold text-[#0F172A]" style={{ fontFamily: "'Playfair Display', serif" }}>
               {ticketNumber}
             </p>
+            <p className="text-sm text-[#6B7280] mt-2">
+              {lang === 'ar' ? 'تاريخ التقديم' : 'Submitted Date'}: {format(new Date(), 'dd/MM/yyyy')}
+            </p>
           </div>
           
           <div className="mb-8 text-[#111827]/80 leading-relaxed">
