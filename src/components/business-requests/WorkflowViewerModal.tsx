@@ -3,13 +3,61 @@ import { Button } from '@/components/ui/button';
 import { GitBranch, ChevronRight, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PROCESS_STEPS } from '@/types/business-request';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { format } from 'date-fns';
 
 interface WorkflowViewerModalProps {
   currentStep: string;
+  requestId: string;
+  submittedDate?: string;
 }
 
-export function WorkflowViewerModal({ currentStep }: WorkflowViewerModalProps) {
+interface StepDate {
+  step: string;
+  date: string;
+}
+
+export function WorkflowViewerModal({ currentStep, requestId, submittedDate }: WorkflowViewerModalProps) {
   const currentIndex = PROCESS_STEPS.findIndex(step => step.value === currentStep);
+
+  // Fetch process_step change history from audit logs
+  const { data: stepDates } = useQuery({
+    queryKey: ['workflow-step-dates', requestId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('business_request_audit_logs')
+        .select('new_value, created_at')
+        .eq('business_request_id', requestId)
+        .eq('field_changed', 'process_step')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      // Build map of first entry date for each step
+      const stepDateMap: Record<string, string> = {};
+      
+      // If we have a submitted date, use it for the first step (Received)
+      if (submittedDate) {
+        stepDateMap['request_received'] = submittedDate;
+      }
+
+      // Process audit logs to get first entry date for each step
+      data?.forEach((log: { new_value: string | null; created_at: string }) => {
+        if (log.new_value && !stepDateMap[log.new_value]) {
+          stepDateMap[log.new_value] = log.created_at;
+        }
+      });
+
+      return stepDateMap;
+    },
+    enabled: !!requestId
+  });
+
+  const getStepDate = (stepValue: string): string | null => {
+    if (!stepDates || !stepDates[stepValue]) return null;
+    return format(new Date(stepDates[stepValue]), 'dd/MM/yyyy');
+  };
 
   return (
     <Dialog>
@@ -33,6 +81,7 @@ export function WorkflowViewerModal({ currentStep }: WorkflowViewerModalProps) {
               const isCompleted = index < currentIndex;
               const isCurrent = index === currentIndex;
               const isUpcoming = index > currentIndex;
+              const stepDate = getStepDate(step.value);
               
               return (
                 <div key={step.value} className="relative">
@@ -63,16 +112,24 @@ export function WorkflowViewerModal({ currentStep }: WorkflowViewerModalProps) {
                       )}
                     </div>
                     
-                    <div className="flex-1">
-                      <p 
-                        className={cn(
-                          "text-sm font-medium",
-                          isCurrent && "text-brand-gold",
-                          isUpcoming && "text-muted-foreground"
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p 
+                          className={cn(
+                            "text-sm font-medium",
+                            isCurrent && "text-brand-gold",
+                            isUpcoming && "text-muted-foreground"
+                          )}
+                        >
+                          {step.label}
+                        </p>
+                        {/* Show date if step has been reached */}
+                        {(isCompleted || isCurrent) && stepDate && (
+                          <span className="text-xs text-muted-foreground ml-2">
+                            {stepDate}
+                          </span>
                         )}
-                      >
-                        {step.label}
-                      </p>
+                      </div>
                       {isCurrent && (
                         <p className="text-xs text-muted-foreground">Current step</p>
                       )}

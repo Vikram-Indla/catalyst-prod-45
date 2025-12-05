@@ -134,7 +134,11 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
         <CardContent className="p-5 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold uppercase tracking-wide text-brand-gold">Process Step</h3>
-            <WorkflowViewerModal currentStep={data.process_step || 'request_received'} />
+            <WorkflowViewerModal 
+              currentStep={data.process_step || 'request_received'} 
+              requestId={data.id || ''}
+              submittedDate={data.created_at}
+            />
           </div>
           
           <div className="grid grid-cols-2 gap-4">
