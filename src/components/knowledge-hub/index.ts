@@ -3,4 +3,8 @@ export { CreateDocumentDialog } from './CreateDocumentDialog';
 export { CreateSpaceDialog } from './CreateSpaceDialog';
 export { DocumentVersionHistory } from './DocumentVersionHistory';
 export { DocumentTemplates } from './DocumentTemplates';
+export { DocumentComments } from './DocumentComments';
+export { DocumentLabels } from './DocumentLabels';
+export { DocumentAttachments } from './DocumentAttachments';
+export { DocumentExport } from './DocumentExport';
 export * from './editor';
