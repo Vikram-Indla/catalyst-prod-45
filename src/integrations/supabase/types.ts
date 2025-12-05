@@ -314,28 +314,46 @@ export type Database = {
         Row: {
           business_request_id: string
           created_at: string
+          file_name: string | null
+          file_path: string | null
+          file_size: number | null
           id: string
+          kind: string | null
           link_type: string
+          mime_type: string | null
           title: string
           updated_at: string
+          uploaded_by: string | null
           url: string
         }
         Insert: {
           business_request_id: string
           created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           id?: string
+          kind?: string | null
           link_type?: string
+          mime_type?: string | null
           title: string
           updated_at?: string
+          uploaded_by?: string | null
           url: string
         }
         Update: {
           business_request_id?: string
           created_at?: string
+          file_name?: string | null
+          file_path?: string | null
+          file_size?: number | null
           id?: string
+          kind?: string | null
           link_type?: string
+          mime_type?: string | null
           title?: string
           updated_at?: string
+          uploaded_by?: string | null
           url?: string
         }
         Relationships: [
