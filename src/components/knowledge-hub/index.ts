@@ -9,4 +9,5 @@ export { DocumentAttachments } from './DocumentAttachments';
 export { DocumentExport } from './DocumentExport';
 export { DocumentWatchers } from './DocumentWatchers';
 export { DocumentRestrictions } from './DocumentRestrictions';
+export { MentionInput, CommentContent } from './MentionInput';
 export * from './editor';

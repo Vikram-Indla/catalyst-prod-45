@@ -8,7 +8,6 @@
 import { useState } from 'react';
 import { MessageCircle, Send, Check, MoreVertical, Trash2, Reply } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { MentionInput, CommentContent } from './MentionInput';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -142,11 +142,11 @@ export function DocumentComments({ documentId }: DocumentCommentsProps) {
 
       {/* Add new comment */}
       <div className="space-y-2">
-        <Textarea
+        <MentionInput
           value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
-          className="min-h-[80px]"
+          onChange={setNewComment}
+          placeholder="Add a comment... Use @ to mention someone"
+          minHeight="80px"
         />
         <div className="flex justify-end">
           <Button 
@@ -263,7 +263,7 @@ function CommentThread({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <p className="text-sm mt-1 whitespace-pre-wrap">{comment.content}</p>
+          <p className="text-sm mt-1"><CommentContent content={comment.content} /></p>
           
           {!comment.resolved && (
             <Button 
@@ -292,7 +292,7 @@ function CommentThread({
                         {new Date(reply.created_at).toLocaleDateString()}
                       </span>
                     </div>
-                    <p className="text-sm">{reply.content}</p>
+                    <p className="text-sm"><CommentContent content={reply.content} /></p>
                   </div>
                 </div>
               ))}
@@ -302,11 +302,12 @@ function CommentThread({
           {/* Reply input */}
           {replyingTo === comment.id && (
             <div className="mt-3 space-y-2">
-              <Textarea
+              <MentionInput
                 value={replyContent}
-                onChange={(e) => setReplyContent(e.target.value)}
-                placeholder="Write a reply..."
-                className="min-h-[60px] text-sm"
+                onChange={setReplyContent}
+                placeholder="Write a reply... Use @ to mention someone"
+                minHeight="60px"
+                className="text-sm"
               />
               <div className="flex gap-2 justify-end">
                 <Button variant="ghost" size="sm" onClick={onCancelReply}>
