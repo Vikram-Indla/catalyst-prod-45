@@ -116,8 +116,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   }, [originalData]);
 
   const handleFieldChange = (field: string, value: any) => {
-    const newFormData = { ...formData, [field]: value };
-    setFormData(newFormData);
+    // Use functional update to ensure we always get the latest state
+    // This is critical when multiple onChange calls happen in sequence
+    setFormData(prev => ({ ...prev, [field]: value }));
     
     // Enable Save button on first edit - stays enabled until user manually saves
     if (!hasChanges) {
@@ -136,10 +137,19 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
   const handleSave = () => {
     if (!requestId) return;
+    
+    console.log('Drawer handleSave - saving formData:', {
+      rank: formData.rank,
+      is_force_ranked: formData.is_force_ranked,
+      rank_override_justification: formData.rank_override_justification
+    });
+    
     updateMutation.mutate({ id: requestId, data: formData as Partial<BusinessRequest> }, {
       onSuccess: () => {
+        console.log('Drawer save successful');
         setOriginalData(formData);
         setHasChanges(false);
+        skipNextFormResetRef.current = true; // Prevent overwriting formData on refetch
         // Refresh table
         queryClient.invalidateQueries({ queryKey: ['business-requests'] });
         toast.success('Business request saved');
@@ -174,6 +184,12 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const handleSaveAndClose = () => {
     if (!requestId) return;
     
+    console.log('Drawer handleSaveAndClose - saving formData:', {
+      rank: formData.rank,
+      is_force_ranked: formData.is_force_ranked,
+      rank_override_justification: formData.rank_override_justification
+    });
+    
     // Close dialog and drawer immediately
     setShowUnsavedChangesDialog(false);
     setHasChanges(false);
@@ -182,6 +198,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     // Save in background
     updateMutation.mutate({ id: requestId, data: formData as Partial<BusinessRequest> }, {
       onSuccess: () => {
+        console.log('Drawer save and close successful');
         setOriginalData(formData);
         queryClient.invalidateQueries({ queryKey: ['business-requests'] });
         toast.success('Business request saved');

@@ -271,7 +271,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true; // Prevent useEffect from resetting state
       try {
-        const { error: updateError } = await supabase
+        console.log('Switching to auto rank for:', requestId);
+        
+        const { data: updateData, error: updateError } = await supabase
           .from('business_requests')
           .update({ 
             rank: null, 
@@ -280,7 +282,10 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
             force_ranked_by: null,
             force_ranked_at: null
           })
-          .eq('id', requestId);
+          .eq('id', requestId)
+          .select();
+        
+        console.log('Switch to auto result:', { updateData, updateError });
         
         if (updateError) {
           console.error('Database update error:', updateError);
@@ -290,19 +295,24 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         // Log the change
         await logRankChange(oldRank, null, true);
         
-        // Update local state
+        // Update local state via parent - this updates formData in the drawer
         onChange('rank', null);
         onChange('is_force_ranked', false);
         onChange('rank_override_justification', null);
+        onChange('force_ranked_by', null);
+        onChange('force_ranked_at', null);
         
         setShowJustification(false);
         setPendingRank(null);
         prevRankRef.current = null;
         
-        // Force immediate refresh of ALL relevant queries - use resetQueries for guaranteed fresh data
-        await queryClient.resetQueries({ queryKey: ['business-request', requestId] });
-        await queryClient.resetQueries({ queryKey: ['business-requests'] });
-        await queryClient.resetQueries({ queryKey: ['all-business-requests-for-rank'] });
+        // Mark dirty so drawer knows there are changes saved
+        onDirtyChange?.(true);
+        
+        // IMPORTANT: Only invalidate the TABLE queries, NOT the single request query
+        // This prevents the useEffect from overwriting formData
+        await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        await queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
         
         toast({ title: 'Rank updated', description: 'Switched to auto-calculated ranking.' });
       } catch (error) {
@@ -337,7 +347,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true; // Prevent useEffect from resetting state
       try {
-        const { error: updateError } = await supabase
+        console.log('Saving force rank to database:', { requestId, pendingRank, justification: justification.trim() });
+        
+        const { data: updateData, error: updateError } = await supabase
           .from('business_requests')
           .update({ 
             rank: pendingRank, 
@@ -346,7 +358,10 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
             force_ranked_by: null, // Will be set by context if needed
             force_ranked_at: new Date().toISOString()
           })
-          .eq('id', requestId);
+          .eq('id', requestId)
+          .select();
+        
+        console.log('Supabase update result:', { updateData, updateError });
         
         if (updateError) {
           console.error('Database update error:', updateError);
@@ -356,19 +371,21 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         // Log the change
         await logRankChange(oldRank, pendingRank, false, justification.trim());
         
-        // Update local state via parent
+        // Update local state via parent - this updates formData in the drawer
         onChange('rank', pendingRank);
         onChange('is_force_ranked', true);
         onChange('rank_override_justification', justification.trim());
+        onChange('force_ranked_at', new Date().toISOString());
         
         prevRankRef.current = pendingRank;
-        // DO NOT clear pendingRank here - keep showing the saved value until data confirms
-        // The useEffect will handle state once data is confirmed
         
-        // Force immediate refresh of ALL relevant queries - use resetQueries for guaranteed fresh data
-        await queryClient.resetQueries({ queryKey: ['business-request', requestId] });
-        await queryClient.resetQueries({ queryKey: ['business-requests'] });
-        await queryClient.resetQueries({ queryKey: ['all-business-requests-for-rank'] });
+        // Mark dirty so drawer knows there are changes saved
+        onDirtyChange?.(true);
+        
+        // IMPORTANT: Only invalidate the TABLE queries, NOT the single request query
+        // This prevents the useEffect from overwriting formData
+        await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        await queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
         
         toast({ 
           title: 'Rank saved', 
