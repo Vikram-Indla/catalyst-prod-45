@@ -88,7 +88,7 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
   };
 
   return (
-    <div className="flex flex-col bg-white rounded-lg overflow-hidden">
+    <div className="flex flex-col h-full bg-white rounded-lg overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB]">
         <div className="flex items-center gap-2">
@@ -105,8 +105,7 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
       {/* Scrollable Activity List with max-height */}
       <div 
         ref={scrollContainerRef}
-        className="overflow-y-auto"
-        style={{ maxHeight: '400px' }}
+        className="flex-1 overflow-y-auto"
       >
         {isLoading ? (
           <div className="flex items-center justify-center py-12 text-[#9CA3AF]">
