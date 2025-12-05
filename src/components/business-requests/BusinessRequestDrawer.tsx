@@ -180,23 +180,23 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     <Sheet open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden`}>
         <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0">
-          {/* Single header row with request ID, title, and action buttons */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
-            {/* Left side: Request ID with copy link + Title with edit */}
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/10 rounded text-sm shrink-0">
-                <span className="text-primary font-medium">{request?.request_key || 'Loading...'}</span>
+          {/* Clean header row */}
+          <div className="flex items-center justify-between px-5 py-3 border-b border-border/30">
+            {/* Left side: Request ID + Title */}
+            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+              <div className="flex items-center gap-1 shrink-0">
+                <span className="text-sm font-medium text-brand-gold">{request?.request_key || '...'}</span>
                 <button
                   onClick={handleCopyLink}
-                  className="text-muted-foreground hover:text-primary transition-colors p-0.5"
+                  className="text-muted-foreground/60 hover:text-brand-gold transition-colors p-0.5"
                   title="Copy link"
                 >
-                  <LinkIcon className="h-3.5 w-3.5" />
+                  <LinkIcon className="h-3 w-3" />
                 </button>
               </div>
               
-              {/* Editable title inline */}
-              <div className="flex items-center gap-2 flex-1 min-w-0 group">
+              {/* Editable title */}
+              <div className="flex items-center gap-1.5 flex-1 min-w-0 group">
                 {isEditingName ? (
                   <Input
                     ref={nameInputRef}
@@ -204,19 +204,19 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                     onChange={(e) => setEditedName(e.target.value)}
                     onBlur={handleSaveName}
                     onKeyDown={handleNameKeyDown}
-                    className="text-lg font-semibold h-auto py-1 px-2 border-primary/50 focus:border-primary"
+                    className="text-base font-medium h-auto py-1 px-2 border-brand-gold/50 focus:border-brand-gold"
                   />
                 ) : (
                   <>
-                    <SheetTitle className="executive-drawer-title truncate text-lg">
+                    <SheetTitle className="truncate text-base font-medium text-foreground">
                       {request?.title || 'Loading...'}
                     </SheetTitle>
                     <button
                       onClick={handleStartEditName}
-                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-primary transition-all p-1"
+                      className="opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-brand-gold transition-all p-0.5"
                       title="Rename"
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Pencil className="h-3.5 w-3.5" />
                     </button>
                   </>
                 )}
