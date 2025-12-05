@@ -347,7 +347,6 @@ const App = () => (
               <Route path="/programs/:programId/settings" element={<PlaceholderPage />} />
               <Route path="/program-room" element={<Navigate to="/home" replace />} />
               <Route path="/pis" element={<ProgramIncrements />} />
-              <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
               <Route path="/program-board" element={<Navigate to="/home" replace />} />
               <Route path="/programs/program-board" element={<Navigate to="/home" replace />} />
               <Route path="/programs/program-board/history" element={<ProgramBoardHistory />} />
