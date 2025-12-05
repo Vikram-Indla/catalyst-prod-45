@@ -5,12 +5,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, Lock } from 'lucide-react';
+import { ChevronDown, Lock, Save } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BusinessRequest } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Score options 0-10
 const SCORE_OPTIONS = Array.from({ length: 11 }, (_, i) => i);
@@ -38,10 +38,12 @@ interface BusinessScoreViewTabProps {
   data: Partial<BusinessRequest> & Record<string, any>;
   onChange: (field: string, value: any) => void;
   requestId?: string;
+  onDirtyChange?: (isDirty: boolean) => void;
 }
 
-export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScoreViewTabProps) {
+export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange }: BusinessScoreViewTabProps) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   const isForceRanked = data.is_force_ranked === true && data.rank !== null && data.rank !== undefined;
   
@@ -53,9 +55,13 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
   const isScoringComplete = executiveUrgency > 0 && businessValue > 0 && complexity > 0;
 
   const [justification, setJustification] = useState(data.rank_override_justification || '');
-  const [showJustification, setShowJustification] = useState(isForceRanked);
+  const [showJustification, setShowJustification] = useState(false);
+  const [pendingRank, setPendingRank] = useState<number | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isSavingRank, setIsSavingRank] = useState(false);
   const prevRankRef = useRef<number | null>(data.rank);
+  const originalRankRef = useRef<number | null>(data.rank);
+  const originalIsForceRankedRef = useRef<boolean>(data.is_force_ranked === true);
 
   // Check user role
   const { data: userRole } = useQuery({
@@ -114,13 +120,16 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
 
   const rankInfo = getRankLabel(businessScore);
 
+  // Initialize refs when data changes
   useEffect(() => {
-    setShowJustification(isForceRanked);
-  }, [isForceRanked]);
-
-  useEffect(() => {
+    originalRankRef.current = data.rank;
+    originalIsForceRankedRef.current = data.is_force_ranked === true;
+    prevRankRef.current = data.rank;
     setJustification(data.rank_override_justification || '');
-  }, [data.rank_override_justification]);
+    // Only show justification if already force ranked with saved justification
+    setShowJustification(data.is_force_ranked === true && !!data.rank_override_justification);
+    setPendingRank(null);
+  }, [data.rank, data.is_force_ranked, data.rank_override_justification]);
 
   const handleInputChange = (field: string, value: number) => {
     if (isForceRanked) return;
@@ -154,9 +163,12 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
       // Reset score to 0 if inputs incomplete
       onChange('business_score', 0);
     }
+    
+    // Notify parent of dirty state
+    onDirtyChange?.(true);
   };
 
-  const logRankChange = async (oldRank: number | null, newRank: number | null, isAuto: boolean) => {
+  const logRankChange = async (oldRank: number | null, newRank: number | null, isAuto: boolean, justificationText?: string) => {
     if (!requestId) return;
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -177,7 +189,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
         action: 'RANK_OVERRIDE',
         field_changed: 'Forced Rank',
         old_value: oldValue,
-        new_value: newValue,
+        new_value: newValue + (justificationText ? ` - Justification: ${justificationText}` : ''),
       });
     } catch (error) {
       console.error('Failed to log rank change:', error);
@@ -195,7 +207,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
     }
   };
 
-  const handleRankChange = async (value: string) => {
+  const handleRankChange = (value: string) => {
     // Gate: Don't allow force rank without complete scoring
     if (!isScoringComplete && value !== 'auto') {
       toast({
@@ -205,65 +217,131 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
       });
       return;
     }
-
-    const oldRank = prevRankRef.current;
     
     if (value === 'auto') {
-      onChange('rank', null);
-      onChange('is_force_ranked', false);
-      setShowJustification(false);
-      logRankChange(oldRank, null, true);
-      toast({ title: 'Rank updated', description: 'Switched to auto-calculated ranking.' });
+      // Switching to auto - persist immediately
+      handleSwitchToAuto();
     } else {
+      // User selected a manual rank - show justification panel but don't persist yet
       const newRank = parseInt(value);
-      onChange('rank', newRank);
-      onChange('is_force_ranked', true);
+      setPendingRank(newRank);
       setShowJustification(true);
-      logRankChange(oldRank, newRank, false);
-      toast({ title: 'Rank updated', description: `Manual rank #${newRank} applied.` });
+      setJustification(''); // Clear for new entry
     }
-    
-    prevRankRef.current = value === 'auto' ? null : parseInt(value);
   };
 
-  const handleSaveJustification = async () => {
+  const handleSwitchToAuto = async () => {
+    const oldRank = prevRankRef.current;
+    
+    // Persist to database
+    if (requestId) {
+      setIsSavingRank(true);
+      try {
+        await supabase
+          .from('business_requests')
+          .update({ 
+            rank: null, 
+            is_force_ranked: false,
+            rank_override_justification: null 
+          })
+          .eq('id', requestId);
+        
+        // Log the change
+        await logRankChange(oldRank, null, true);
+        
+        // Update local state
+        onChange('rank', null);
+        onChange('is_force_ranked', false);
+        onChange('rank_override_justification', null);
+        
+        setShowJustification(false);
+        setPendingRank(null);
+        prevRankRef.current = null;
+        
+        // Refresh table
+        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
+        
+        toast({ title: 'Rank updated', description: 'Switched to auto-calculated ranking.' });
+      } catch (error) {
+        console.error('Failed to switch to auto:', error);
+        toast({ title: 'Error', description: 'Failed to update rank.', variant: 'destructive' });
+      } finally {
+        setIsSavingRank(false);
+      }
+    }
+  };
+
+  const handleSaveJustificationAndRank = async () => {
     if (!justification.trim()) {
-      toast({ title: 'Justification Required', description: 'Please provide a business justification.', variant: 'destructive' });
+      toast({ 
+        title: 'Justification Required', 
+        description: 'Please provide a business justification for the rank override.', 
+        variant: 'destructive' 
+      });
+      return;
+    }
+
+    if (pendingRank === null) {
+      toast({ title: 'Error', description: 'No rank selected.', variant: 'destructive' });
       return;
     }
     
-    onChange('rank_override_justification', justification);
+    const oldRank = prevRankRef.current;
     
+    // Persist to database
     if (requestId) {
+      setIsSavingRank(true);
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', user?.id)
-          .single();
-
-        const actorName = profile?.full_name || user?.email || 'Unknown User';
-
-        await supabase.from('business_request_audit_logs').insert({
-          business_request_id: requestId,
-          actor_id: user?.id,
-          actor_name: actorName,
-          action: 'UPDATE',
-          field_changed: 'Rank Justification',
-          old_value: data.rank_override_justification || null,
-          new_value: justification,
+        await supabase
+          .from('business_requests')
+          .update({ 
+            rank: pendingRank, 
+            is_force_ranked: true,
+            rank_override_justification: justification.trim()
+          })
+          .eq('id', requestId);
+        
+        // Log the change
+        await logRankChange(oldRank, pendingRank, false, justification.trim());
+        
+        // Update local state via parent
+        onChange('rank', pendingRank);
+        onChange('is_force_ranked', true);
+        onChange('rank_override_justification', justification.trim());
+        
+        prevRankRef.current = pendingRank;
+        setPendingRank(null);
+        
+        // Refresh table data
+        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
+        
+        toast({ 
+          title: 'Rank saved', 
+          description: `Manual rank #${pendingRank} applied with justification.` 
         });
       } catch (error) {
-        console.error('Failed to log justification:', error);
+        console.error('Failed to save rank:', error);
+        toast({ title: 'Error', description: 'Failed to save rank.', variant: 'destructive' });
+      } finally {
+        setIsSavingRank(false);
       }
     }
-    
-    toast({ title: 'Justification saved' });
+  };
+
+  const handleCancelRankChange = () => {
+    // Revert to original state - don't persist anything
+    setPendingRank(null);
+    setShowJustification(isForceRanked && !!data.rank_override_justification);
+    setJustification(data.rank_override_justification || '');
   };
 
   // Force rank is only enabled if scoring is complete OR already force ranked
   const forceRankEnabled = isScoringComplete || isForceRanked;
+
+  // Determine the display value for the select
+  const selectDisplayValue = pendingRank !== null ? String(pendingRank) : (isForceRanked ? String(data.rank) : 'auto');
 
   return (
     <div className="space-y-5 p-5">
@@ -390,9 +468,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
                 </div>
                 <div className="flex items-center gap-2" onClick={!forceRankEnabled ? handleForceRankClick : undefined}>
                   <Select
-                    value={isForceRanked ? String(data.rank) : 'auto'}
+                    value={selectDisplayValue}
                     onValueChange={handleRankChange}
-                    disabled={!forceRankEnabled}
+                    disabled={!forceRankEnabled || isSavingRank}
                   >
                     <SelectTrigger className={cn("h-8 text-sm", !forceRankEnabled && "opacity-50 cursor-not-allowed")}>
                       <SelectValue placeholder="Auto" />
@@ -404,14 +482,60 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
                       ))}
                     </SelectContent>
                   </Select>
-                  {isForceRanked && (
-                    <span className="text-sm font-semibold text-brand-gold">#{data.rank}</span>
+                  {(isForceRanked || pendingRank !== null) && (
+                    <span className="text-sm font-semibold text-brand-gold">
+                      #{pendingRank ?? data.rank}
+                    </span>
                   )}
                 </div>
                 {!isScoringComplete && !isForceRanked && (
                   <p className="text-[9px] text-muted-foreground mt-1.5 italic">
                     Complete all inputs to enable
                   </p>
+                )}
+
+                {/* Justification Panel - Shows when pending rank or already force ranked */}
+                {showJustification && (
+                  <div className="mt-3 p-3 bg-amber-50/50 rounded-md border border-amber-200/50 space-y-2">
+                    <Label className="text-xs font-medium text-foreground">
+                      Business Justification for Rank Override
+                      <span className="text-destructive ml-1">*</span>
+                    </Label>
+                    <Textarea
+                      value={justification}
+                      onChange={(e) => setJustification(e.target.value)}
+                      placeholder="Provide business justification for overriding the auto-calculated rank..."
+                      className="min-h-[80px] text-sm resize-none"
+                      disabled={isSavingRank}
+                    />
+                    {pendingRank !== null && (
+                      <div className="flex gap-2 pt-1">
+                        <Button
+                          size="sm"
+                          onClick={handleSaveJustificationAndRank}
+                          disabled={!justification.trim() || isSavingRank}
+                          className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                        >
+                          <Save className="h-3 w-3 mr-1" />
+                          {isSavingRank ? 'Saving...' : 'Save Rank'}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleCancelRankChange}
+                          disabled={isSavingRank}
+                          className="h-7 px-3 text-xs"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    )}
+                    {pendingRank === null && isForceRanked && (
+                      <p className="text-[10px] text-muted-foreground italic">
+                        Current justification saved. Select a new rank to modify.
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
             )}
@@ -445,9 +569,9 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
             </div>
 
             {/* Rank Badge */}
-            <div className="text-center">
+            <div className="flex justify-center">
               {isForceRanked ? (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-medium text-brand-gold bg-brand-gold/10 border border-brand-gold/20">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-[11px] font-medium border border-brand-gold/30 bg-brand-gold/10 text-brand-gold">
                   <Lock className="h-3 w-3" />
                   Manual #{data.rank}
                 </span>
@@ -464,61 +588,58 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
                 </span>
               )}
             </div>
-
-            {/* Collapsible Details */}
-            <Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-              <CollapsibleTrigger className="w-full flex items-center justify-between py-1.5 px-2 bg-muted/30 rounded hover:bg-muted/50 transition-colors">
-                <span className="text-[10px] font-medium text-muted-foreground">
-                  Score Details & Thresholds
-                </span>
-                <ChevronDown className={cn(
-                  "h-3.5 w-3.5 text-muted-foreground transition-transform",
-                  isDetailsOpen && "rotate-180"
-                )} />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="pt-2 space-y-2">
-                <div className="space-y-1 text-[10px]">
-                  <div className="flex justify-between"><span className="text-green-600">90–100</span><span className="text-muted-foreground">Must-Do Now</span></div>
-                  <div className="flex justify-between"><span className="text-emerald-600">75–89</span><span className="text-muted-foreground">High</span></div>
-                  <div className="flex justify-between"><span className="text-amber-600">60–74</span><span className="text-muted-foreground">Medium</span></div>
-                  <div className="flex justify-between"><span className="text-orange-600">40–59</span><span className="text-muted-foreground">Low</span></div>
-                  <div className="flex justify-between"><span className="text-red-600">0–39</span><span className="text-muted-foreground">Backlog</span></div>
-                </div>
-                <div className="pt-2 border-t border-border/40 text-[10px] text-muted-foreground space-y-0.5">
-                  <p>• Business Value: 45%</p>
-                  <p>• Executive Urgency: 35%</p>
-                  <p>• Simplicity: 20%</p>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
           </CardContent>
         </Card>
       </div>
 
-      {/* Justification Section */}
-      {canAccessForcedRank && showJustification && (
-        <Card className="border border-amber-200 rounded-lg bg-amber-50/30">
-          <CardContent className="p-4 space-y-2">
-            <Label className="text-sm font-medium text-amber-800">
-              Business Justification
-            </Label>
-            <Textarea
-              value={justification}
-              onChange={(e) => setJustification(e.target.value)}
-              placeholder="Enter justification for rank override..."
-              className="min-h-[70px] resize-none text-sm bg-white"
-            />
-            <Button 
-              onClick={handleSaveJustification}
-              className="bg-brand-gold hover:bg-brand-gold-hover text-white"
-              size="sm"
-              disabled={!justification.trim()}
-            >
-              Save Justification
-            </Button>
-          </CardContent>
+      {/* Score Breakdown Details */}
+      <Collapsible open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
+        <Card className="border border-border/50 rounded-lg bg-card">
+          <CollapsibleTrigger asChild>
+            <CardContent className="p-4 cursor-pointer hover:bg-muted/30 transition-colors">
+              <div className="flex items-center justify-between">
+                <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold">
+                  Score Breakdown
+                </h3>
+                <ChevronDown className={cn(
+                  "h-4 w-4 text-muted-foreground transition-transform",
+                  isDetailsOpen && "rotate-180"
+                )} />
+              </div>
+            </CardContent>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <CardContent className="pt-0 px-4 pb-4 border-t border-border/30">
+              <div className="space-y-3 pt-3">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Business Value (45%)</span>
+                  <span className="font-medium">
+                    {isScoringComplete ? `${Math.round((businessValue / 10) * 45)}` : '—'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Executive Urgency (35%)</span>
+                  <span className="font-medium">
+                    {isScoringComplete ? `${Math.round((executiveUrgency / 10) * 35)}` : '—'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Simplicity Factor (20%)</span>
+                  <span className="font-medium">
+                    {isScoringComplete ? `${Math.round(((10 - complexity) / 10) * 20)}` : '—'}
+                  </span>
+                </div>
+                <div className="flex justify-between text-sm pt-2 border-t border-border/30">
+                  <span className="font-medium text-foreground">Total Score</span>
+                  <span className="font-bold text-brand-gold">
+                    {isScoringComplete ? businessScore : '—'}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+          </CollapsibleContent>
         </Card>
-      )}
+      </Collapsible>
     </div>
   );
 }
