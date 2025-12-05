@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { History, ArrowRight, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 
 interface AuditHistoryTabProps {
   requestId: string;
@@ -52,7 +53,6 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
     if (!container || isFetchingNextPage || !hasNextPage) return;
 
     const { scrollTop, scrollHeight, clientHeight } = container;
-    // Trigger when user is within 100px of bottom
     if (scrollHeight - scrollTop - clientHeight < 100) {
       fetchNextPage();
     }
@@ -88,9 +88,9 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 bg-white rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB]">
+      <div className="flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB] shrink-0">
         <div className="flex items-center gap-2">
           <History className="h-4 w-4 text-brand-gold" />
           <span className="text-[13px] font-semibold text-brand-gold uppercase tracking-[0.5px]">
@@ -102,10 +102,10 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
         </span>
       </div>
 
-      {/* Scrollable Activity List with max-height */}
+      {/* Scrollable Activity List */}
       <div 
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto"
+        className="flex-1 overflow-y-auto min-h-0"
       >
         {isLoading ? (
           <div className="flex items-center justify-center py-12 text-[#9CA3AF]">
@@ -164,7 +164,7 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
               </div>
             ))}
 
-            {/* Loading indicator at bottom when fetching more */}
+            {/* Loading indicator when auto-fetching */}
             {isFetchingNextPage && (
               <div className="flex items-center justify-center py-4 text-[#9CA3AF]">
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -174,6 +174,20 @@ export function AuditHistoryTab({ requestId }: AuditHistoryTabProps) {
           </>
         )}
       </div>
+
+      {/* Footer with Load More button */}
+      {hasNextPage && !isFetchingNextPage && allLogs.length > 0 && (
+        <div className="shrink-0 border-t border-[#E5E7EB] px-5 py-3 bg-[#FAFAFA]">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fetchNextPage()}
+            className="w-full text-[13px] font-medium h-9 border-brand-gold text-brand-gold hover:bg-brand-gold hover:text-white transition-all duration-150"
+          >
+            Load more messages
+          </Button>
+        </div>
+      )}
 
       <style>{`
         @keyframes fadeIn {
