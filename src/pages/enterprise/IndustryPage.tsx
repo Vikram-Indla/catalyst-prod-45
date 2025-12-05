@@ -821,7 +821,7 @@ export default function IndustryPage() {
                           <div 
                             key={col.id}
                             className={cn(
-                              "h-full shrink-0 px-3.5 flex items-center gap-1 border-r border-[#E4E6EB] last:border-r-0",
+                              "h-full shrink-0 px-3.5 flex items-center gap-1 border-r border-[#E4E6EB]",
                               isCentered && "justify-center"
                             )}
                             style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
@@ -835,6 +835,17 @@ export default function IndustryPage() {
                           </div>
                         );
                       })}
+                      
+                      {/* Add Column Button */}
+                      <ColumnsDropdown
+                        columns={columns}
+                        onChange={handleColumnsChange}
+                        trigger={
+                          <button className="h-full shrink-0 w-10 flex items-center justify-center text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#FAFBFC] transition-colors">
+                            <Plus className="h-4 w-4" />
+                          </button>
+                        }
+                      />
                     </div>
 
                     {/* Table Body Rows */}
@@ -1003,16 +1014,17 @@ export default function IndustryPage() {
                       </Droppable>
                     </DragDropContext>
                     
-                    {/* + Create Row */}
-                    <div 
-                      className="flex items-center h-11 px-4 border-b border-[#E4E6EB] cursor-pointer hover:bg-[#FAFBFC] transition-colors bg-white"
-                      onClick={() => setCreateModalOpen(true)}
-                    >
-                      <div className="flex items-center gap-2 text-[#5E6C84] hover:text-[#172B4D]">
-                        <Plus className="h-4 w-4" />
-                        <span className="text-[13px] font-medium">Create</span>
-                      </div>
-                    </div>
+                  </div>
+                </div>
+                
+                {/* + Create Row - Always visible at bottom */}
+                <div 
+                  className="flex items-center h-11 px-4 border-b border-[#E4E6EB] cursor-pointer hover:bg-[#FAFBFC] transition-colors bg-white"
+                  onClick={() => setCreateModalOpen(true)}
+                >
+                  <div className="flex items-center gap-2 text-[#5E6C84] hover:text-[#172B4D]">
+                    <Plus className="h-4 w-4" />
+                    <span className="text-[13px] font-medium">Create</span>
                   </div>
                 </div>
 
