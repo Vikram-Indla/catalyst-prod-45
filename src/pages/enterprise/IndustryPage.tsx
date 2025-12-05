@@ -630,50 +630,44 @@ export default function IndustryPage() {
 
   const handleExport = () => {
     if (requests && requests.length > 0) {
-      // Export all columns from visible columns plus additional data fields
-      const exportColumns = [
-        'request_key',
-        'rank',
-        'title',
-        'process_step',
-        'business_score',
-        'created_at',
-        'planned_quarter',
-        'end_date',
-        'delivery_platform',
-        'requestor',
-        'business_owner',
-        'department',
-        'created_by',
-        'description',
-        'urgency',
-        'complexity',
-        'business_value',
-        'executive_urgency',
-        'complexity_score',
-        'risk_rating',
-        'health',
-        'track',
-        'platform',
-        'efs_domain',
-        'efs_service',
-        'ecs_registry',
-        'is_saudi',
-        'is_non_saudi',
-        'approval_decision',
-        'approval_date',
-        'approver_name',
-        'approval_remarks',
-        'implementation_owner',
-        'support_owner',
-        'technical_validator',
-        'dependencies',
-        'acceptance_criteria',
-        'business_justification',
-        'proposed_solution',
-        'updated_at'
+      // Export columns as per specification
+      const exportData = requests.map(req => ({
+        'Request ID': req.request_key || '',
+        'Summary': req.title || '',
+        'Score': req.business_score ?? '',
+        'Rank': req.rank ?? '',
+        'Delivery Platform': req.delivery_platform || '',
+        'Process Step': req.process_step || '',
+        'Business Owner': req.business_owner || '',
+        'Submitted Date': req.created_at ? new Date(req.created_at).toLocaleDateString('en-GB') : '',
+        'Ageing': req.created_at ? calculateAgeing(req.created_at) : '',
+        'Quarter': req.planned_quarter || '',
+        'Target Date': req.end_date ? new Date(req.end_date).toLocaleDateString('en-GB') : '',
+        'Assignee': req.requestor || '',
+        'Department': req.department || '',
+        'Reporter': req.created_by || '',
+      }));
+      
+      const headers = Object.keys(exportData[0]);
+      const csvRows = [
+        headers.join(','),
+        ...exportData.map(row => 
+          headers.map(h => {
+            const val = String(row[h as keyof typeof row] ?? '');
+            return val.includes(',') || val.includes('"') || val.includes('\n') 
+              ? `"${val.replace(/"/g, '""')}"` 
+              : val;
+          }).join(',')
+        )
       ];
-      exportToCSV(requests, 'industry-requests', exportColumns);
+      
+      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `industry-requests-${new Date().toISOString().split('T')[0]}.csv`;
+      link.click();
+      URL.revokeObjectURL(link.href);
+      
       toast({ title: 'Requests exported successfully' });
     }
   };
