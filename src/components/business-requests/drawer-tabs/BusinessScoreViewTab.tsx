@@ -271,14 +271,21 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true; // Prevent useEffect from resetting state
       try {
-        await supabase
+        const { error: updateError } = await supabase
           .from('business_requests')
           .update({ 
             rank: null, 
             is_force_ranked: false,
-            rank_override_justification: null 
+            rank_override_justification: null,
+            force_ranked_by: null,
+            force_ranked_at: null
           })
           .eq('id', requestId);
+        
+        if (updateError) {
+          console.error('Database update error:', updateError);
+          throw updateError;
+        }
         
         // Log the change
         await logRankChange(oldRank, null, true);
@@ -292,11 +299,10 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         setPendingRank(null);
         prevRankRef.current = null;
         
-        // Force immediate refresh of ALL relevant queries
-        await queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
-        await queryClient.refetchQueries({ queryKey: ['business-request', requestId] });
-        await queryClient.refetchQueries({ queryKey: ['business-requests'] });
-        await queryClient.refetchQueries({ queryKey: ['all-business-requests-for-rank'] });
+        // Force immediate refresh of ALL relevant queries - use resetQueries for guaranteed fresh data
+        await queryClient.resetQueries({ queryKey: ['business-request', requestId] });
+        await queryClient.resetQueries({ queryKey: ['business-requests'] });
+        await queryClient.resetQueries({ queryKey: ['all-business-requests-for-rank'] });
         
         toast({ title: 'Rank updated', description: 'Switched to auto-calculated ranking.' });
       } catch (error) {
@@ -331,14 +337,21 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
       setIsSavingRank(true);
       skipNextResetRef.current = true; // Prevent useEffect from resetting state
       try {
-        await supabase
+        const { error: updateError } = await supabase
           .from('business_requests')
           .update({ 
             rank: pendingRank, 
             is_force_ranked: true,
-            rank_override_justification: justification.trim()
+            rank_override_justification: justification.trim(),
+            force_ranked_by: null, // Will be set by context if needed
+            force_ranked_at: new Date().toISOString()
           })
           .eq('id', requestId);
+        
+        if (updateError) {
+          console.error('Database update error:', updateError);
+          throw updateError;
+        }
         
         // Log the change
         await logRankChange(oldRank, pendingRank, false, justification.trim());
@@ -352,11 +365,10 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         // DO NOT clear pendingRank here - keep showing the saved value until data confirms
         // The useEffect will handle state once data is confirmed
         
-        // Force immediate refresh of ALL relevant queries
-        await queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
-        await queryClient.refetchQueries({ queryKey: ['business-request', requestId] });
-        await queryClient.refetchQueries({ queryKey: ['business-requests'] });
-        await queryClient.refetchQueries({ queryKey: ['all-business-requests-for-rank'] });
+        // Force immediate refresh of ALL relevant queries - use resetQueries for guaranteed fresh data
+        await queryClient.resetQueries({ queryKey: ['business-request', requestId] });
+        await queryClient.resetQueries({ queryKey: ['business-requests'] });
+        await queryClient.resetQueries({ queryKey: ['all-business-requests-for-rank'] });
         
         toast({ 
           title: 'Rank saved', 
