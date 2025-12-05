@@ -68,6 +68,7 @@ export function useBusinessRequests(searchQuery?: string) {
       let query = supabase
         .from('business_requests')
         .select('*')
+        .is('deleted_at', null) // Filter out soft-deleted items
         .order('created_at', { ascending: false });
 
       if (searchQuery && searchQuery.trim()) {
@@ -301,18 +302,101 @@ export function useDeleteBusinessRequest() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      // Get the request_key before soft deleting for the success message
+      const { data: request } = await supabase
+        .from('business_requests')
+        .select('request_key')
+        .eq('id', id)
+        .single();
+      
+      // Soft delete by setting deleted_at timestamp
       const { error } = await supabase
         .from('business_requests')
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq('id', id);
       if (error) throw error;
+      
+      return request?.request_key || 'Request';
     },
-    onSuccess: () => {
+    onSuccess: (requestKey) => {
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      toast({ title: 'Business request deleted successfully' });
+      toast({ title: `${requestKey} deleted successfully` });
     },
     onError: (error) => {
       toast({ title: 'Failed to delete business request', description: error.message, variant: 'destructive' });
+    },
+  });
+}
+
+export function useDuplicateBusinessRequest() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      // Get the original request
+      const { data: original, error: fetchError } = await supabase
+        .from('business_requests')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (fetchError) throw fetchError;
+      if (!original) throw new Error('Request not found');
+
+      // Generate new request key
+      const { count } = await supabase
+        .from('business_requests')
+        .select('*', { count: 'exact', head: true });
+      
+      const nextNum = ((count || 0) + 1).toString().padStart(3, '0');
+      const newRequestKey = `MIM-${nextNum}`;
+
+      // Create duplicate with new key and reset certain fields
+      const { id: _id, request_key: _key, created_at: _created, updated_at: _updated, deleted_at: _deleted, rank: _rank, ...duplicateData } = original;
+      
+      const { data: newRequest, error: insertError } = await supabase
+        .from('business_requests')
+        .insert({
+          ...duplicateData,
+          request_key: newRequestKey,
+          title: `${original.title} (Copy)`,
+        })
+        .select()
+        .single();
+      
+      if (insertError) throw insertError;
+      
+      // Create audit log for the duplicate
+      const { data: { user } } = await supabase.auth.getUser();
+      let actorName = 'System';
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', user.id)
+          .single();
+        actorName = profile?.full_name || profile?.email || 'Unknown User';
+      }
+
+      await supabase.from('business_request_audit_logs').insert({
+        business_request_id: newRequest.id,
+        actor_id: user?.id || null,
+        actor_name: actorName,
+        action: 'CREATE',
+        field_changed: null,
+        old_value: null,
+        new_value: `Duplicated from ${original.request_key}`
+      });
+
+      return newRequest;
+    },
+    onSuccess: (newRequest) => {
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      toast({ title: `Request duplicated as ${newRequest.request_key}` });
+    },
+    onError: (error) => {
+      toast({ title: 'Failed to duplicate request', description: error.message, variant: 'destructive' });
     },
   });
 }

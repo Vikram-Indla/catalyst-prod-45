@@ -364,6 +364,7 @@ export type Database = {
           complexity_score: number | null
           created_at: string
           created_by: string | null
+          deleted_at: string | null
           delivery_platform: string | null
           delivery_track: string | null
           dependencies: string | null
@@ -433,6 +434,7 @@ export type Database = {
           complexity_score?: number | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           delivery_platform?: string | null
           delivery_track?: string | null
           dependencies?: string | null
@@ -502,6 +504,7 @@ export type Database = {
           complexity_score?: number | null
           created_at?: string
           created_by?: string | null
+          deleted_at?: string | null
           delivery_platform?: string | null
           delivery_track?: string | null
           dependencies?: string | null

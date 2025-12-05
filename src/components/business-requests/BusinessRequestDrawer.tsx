@@ -10,6 +10,16 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { 
   X, 
   Pencil, 
@@ -19,10 +29,9 @@ import {
   Minimize2,
   MoreVertical,
   Trash2,
-  Copy,
-  History
+  Copy
 } from 'lucide-react';
-import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest } from '@/hooks/useBusinessRequests';
+import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest, useDuplicateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { BusinessRequest } from '@/types/business-request';
 import { DemandDetailsViewTab } from './drawer-tabs/DemandDetailsViewTab';
 import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
@@ -35,6 +44,7 @@ interface BusinessRequestDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   requestId: string | null;
+  onRequestChange?: (newRequestId: string) => void;
 }
 
 // Four tabs for the view drawer
@@ -46,10 +56,11 @@ const VIEW_TABS = [
   { value: 'audit-history', label: 'Audit History' },
 ];
 
-export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRequestDrawerProps) {
+export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestChange }: BusinessRequestDrawerProps) {
   const { data: request, isLoading } = useBusinessRequest(requestId);
   const updateMutation = useUpdateBusinessRequest();
   const deleteMutation = useDeleteBusinessRequest();
+  const duplicateMutation = useDuplicateBusinessRequest();
   
   const [activeTab, setActiveTab] = useState('demand-details');
   const [formData, setFormData] = useState<Partial<BusinessRequest> & Record<string, any>>({});
@@ -57,6 +68,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
   const [editedName, setEditedName] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   // Sync form data when request changes
@@ -129,22 +141,31 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
   const handleAdditionalOption = (action: string) => {
     switch (action) {
       case 'duplicate':
-        if (request && requestId) {
-          toast.info('Duplicate functionality coming soon');
-        }
-        break;
-      case 'delete':
         if (requestId) {
-          deleteMutation.mutate(requestId, {
-            onSuccess: () => {
-              onClose();
+          duplicateMutation.mutate(requestId, {
+            onSuccess: (newRequest) => {
+              // Open the duplicated request in the same drawer
+              if (onRequestChange) {
+                onRequestChange(newRequest.id);
+              }
             }
           });
         }
         break;
-      case 'audit-log':
-        toast.info('Audit log functionality coming soon');
+      case 'delete':
+        setShowDeleteConfirm(true);
         break;
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (requestId) {
+      deleteMutation.mutate(requestId, {
+        onSuccess: () => {
+          setShowDeleteConfirm(false);
+          onClose();
+        }
+      });
     }
   };
 
@@ -236,10 +257,6 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
                     <Copy className="h-4 w-4 mr-2" />
                     Duplicate Request
                   </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => handleAdditionalOption('audit-log')}>
-                    <History className="h-4 w-4 mr-2" />
-                    View Audit Log
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem 
                     onSelect={() => handleAdditionalOption('delete')}
@@ -304,6 +321,28 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
           </div>
         </Tabs>
       </SheetContent>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Request</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <span className="font-semibold">{request?.request_key}</span>? 
+              This request will be moved to deleted items and can be restored within 30 days.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sheet>
   );
 }
