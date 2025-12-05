@@ -803,28 +803,30 @@ export default function IndustryPage() {
                   {/* Inner table with fixed min-width for horizontal scroll */}
                   <div style={{ minWidth: '1400px' }}>
                     {/* Column Headers - Sticky */}
-                    <div className="sticky top-0 z-30 flex items-stretch h-10 px-4 bg-white border-b border-[#DFE1E6] text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide">
+                    <div className="sticky top-0 z-30 flex items-stretch h-10 bg-white border-b border-[#DFE1E6] text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide">
                       {/* Leading icons placeholder - fixed width */}
-                      <div className="h-full flex items-center gap-2 mr-2 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
+                      <div className="h-full flex items-center gap-2 px-4 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
                         <div className="w-8" /> {/* Drag */}
                         <div className="w-8" /> {/* Checkbox */}
                       </div>
                       
                       {/* Column headers - using flex-grow for remaining space */}
-                      {columns.filter(col => col.visible).map(col => {
+                      {columns.filter(col => col.visible).map((col, index, visibleCols) => {
                         const colDef = COLUMN_DEFINITIONS[col.id];
                         if (!colDef) return null;
                         const width = columnWidths[col.id] || colDef.defaultWidth;
                         const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
+                        const isLast = index === visibleCols.length - 1;
                         
                         return (
                           <div 
                             key={col.id}
                             className={cn(
                               "h-full shrink-0 px-3.5 flex items-center gap-1 border-r border-[#E4E6EB]",
-                              isCentered && "justify-center"
+                              isCentered && "justify-center",
+                              isLast && "border-r-0 flex-1"
                             )}
-                            style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
+                            style={isLast ? { minWidth: `${colDef.minWidth}px` } : { width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
                           >
                             <SimpleColumnHeader
                               label={colDef.label}
@@ -841,7 +843,7 @@ export default function IndustryPage() {
                         columns={columns}
                         onChange={handleColumnsChange}
                         trigger={
-                          <button className="h-full shrink-0 w-10 flex items-center justify-center text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#FAFBFC] transition-colors">
+                          <button className="h-full shrink-0 w-10 flex items-center justify-center text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#FAFBFC] transition-colors border-l border-[#E4E6EB]">
                             <Plus className="h-4 w-4" />
                           </button>
                         }
@@ -865,9 +867,6 @@ export default function IndustryPage() {
                               const renderColumnValue = (col: ColumnConfig) => {
                                 const colDef = COLUMN_DEFINITIONS[col.id];
                                 if (!colDef || !col.visible) return null;
-                                
-                                const width = columnWidths[col.id] || colDef.defaultWidth;
-                                const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
                                 
                                 const cellContent = (() => {
                                   switch(col.id) {
@@ -962,18 +961,7 @@ export default function IndustryPage() {
                                   }
                                 })();
                                 
-                                return (
-                                  <div 
-                                    key={col.id}
-                                    className={cn(
-                                      "h-full shrink-0 px-3.5 flex items-center min-w-0 border-r border-[#E4E6EB] last:border-r-0",
-                                      isCentered && "justify-center"
-                                    )}
-                                    style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
-                                  >
-                                    {cellContent}
-                                  </div>
-                                );
+                                return cellContent;
                               };
                               
                               return (
@@ -982,15 +970,16 @@ export default function IndustryPage() {
                                       <div ref={provided.innerRef} {...provided.draggableProps}>
                                       <div 
                                         className={cn(
-                                          "flex items-stretch h-11 px-4 border-b border-[#E4E6EB] cursor-pointer transition-colors",
+                                          "flex items-stretch min-h-[44px] border-b border-[#E4E6EB] cursor-pointer transition-colors",
                                           "hover:bg-[#FAFBFC]",
                                           snapshot.isDragging && 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold',
                                           selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-white'
                                         )}
+                                        style={{ minWidth: '100%' }}
                                         onClick={() => setSelectedRequestId(request.id)}
                                       >
                                         {/* Leading icons - fixed width matching header */}
-                                        <div className="h-full flex items-center gap-2 mr-2 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
+                                        <div className="h-auto self-stretch flex items-center gap-2 px-4 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
                                           <div {...provided.dragHandleProps} className="w-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground flex items-center justify-center" onClick={e => e.stopPropagation()}>
                                             <GripVertical className="h-4 w-4" />
                                           </div>
@@ -1001,7 +990,28 @@ export default function IndustryPage() {
                                         </div>
 
                                         {/* Column values */}
-                                        {columns.map(col => renderColumnValue(col))}
+                                        {columns.filter(col => col.visible).map((col, colIndex, visibleCols) => {
+                                          const colDef = COLUMN_DEFINITIONS[col.id];
+                                          if (!colDef) return null;
+                                          
+                                          const width = columnWidths[col.id] || colDef.defaultWidth;
+                                          const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
+                                          const isLast = colIndex === visibleCols.length - 1;
+                                          
+                                          return (
+                                            <div 
+                                              key={col.id}
+                                              className={cn(
+                                                "self-stretch shrink-0 px-3.5 flex items-center min-w-0 border-r border-[#E4E6EB]",
+                                                isCentered && "justify-center",
+                                                isLast && "border-r-0 flex-1"
+                                              )}
+                                              style={isLast ? { minWidth: `${colDef.minWidth}px` } : { width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
+                                            >
+                                              {renderColumnValue(col)}
+                                            </div>
+                                          );
+                                        })}
                                       </div>
                                     </div>
                                   )}
