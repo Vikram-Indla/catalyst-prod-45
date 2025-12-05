@@ -6,8 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { CalendarIcon, Lock, Unlock, ChevronDown } from 'lucide-react';
+import { CalendarIcon, Lock, Unlock } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -23,69 +22,6 @@ const DELIVERY_TRACK_OPTIONS = [
   'BAU Fast Track',
   'Project',
   'Entity Integration',
-];
-
-// EFS Factory Service Domains
-const EFS_DOMAINS = [
-  { value: 'license_models', label: 'License Models / التراخيص الصناعية' },
-  { value: 'site_location', label: 'Site Location / الموقع المكاني' },
-  { value: 'environment_service', label: 'Environment Service / التصاريح البيئية' },
-  { value: 'customs_exemptions', label: 'Customs Exemptions / الإعفاءات الجمركية' },
-  { value: 'chemical_permits', label: 'Chemical Permits / الفسوحات الكيميائية' },
-  { value: 'labor_enablement', label: 'Labor Enablement / تأييد العمالة' },
-  { value: 'incentives_enablers', label: 'Incentives & Enablers / الحوافز والممكنات' },
-  { value: 'competitiveness', label: 'Competitiveness / التنافسية' },
-];
-
-// EFS Child Services (cascading)
-const EFS_SERVICES: Record<string, string[]> = {
-  'license_models': [
-    'Products / المنتجات',
-    'Raw Materials / المواد الأولية',
-    'Spare Parts / قطع الغيار',
-    'Machines / الآلات والمعدات',
-    'Data / البيانات',
-    'Energy / الطاقة',
-    'Investment / الاستثمار',
-    'Labor / العمالة',
-    'Site Allocation / التخصيص المكاني',
-    'Environmental Permit / التصريح البيئي',
-    'Ownership Transfer / نقل الملكية',
-    'License Transfer / نقل الترخيص',
-  ],
-  'site_location': ['RCJY', 'Modon', 'MOMRA', 'MEWA'],
-  'environment_service': ['Construction Permit', 'Operation Permit'],
-  'customs_exemptions': ['Customs Issuance', 'Return Exemption', 'Clearance', 'ZATCA', 'SASO'],
-  'chemical_permits': ['ZATCA'],
-  'labor_enablement': ['Labor Support Service', 'HRSD'],
-  'incentives_enablers': ['RCJY', 'Modon'],
-  'competitiveness': ['RCJY', 'Modon'],
-};
-
-// EFS Track Types
-const EFS_TRACK_TYPES = [
-  'Service in House',
-  'Active with Condition',
-  'Integration with Entities',
-  'Dashboard & Report',
-  'AI Track',
-];
-
-// ECS Options
-const ECS_OPTIONS = [
-  'CR with Industry ISIC',
-  'CR without Industry ISIC',
-];
-
-// IS Saudi Options
-const IS_SAUDI_OPTIONS = [
-  'Incentives & Enablers',
-  'Competitiveness',
-];
-
-// IS Non-Saudi Options
-const IS_NON_SAUDI_OPTIONS = [
-  'Incentives & Enablers',
 ];
 
 interface DemandDetailsViewTabProps {
@@ -121,9 +57,6 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
       toast.success(`Target Completion Date locked by ${currentUser}`);
     }
   };
-
-  const selectedDomain = data.efs_domain || '';
-  const serviceOptions = EFS_SERVICES[selectedDomain] || [];
 
   return (
     <div className="space-y-4 p-4">
@@ -381,146 +314,6 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
         </CardContent>
       </Card>
 
-      {/* Entity & Individual Services - Collapsible Section */}
-      <Collapsible defaultOpen={false}>
-        <Card className="border border-border/60 rounded-lg bg-card">
-          <CollapsibleTrigger asChild>
-            <CardContent className="p-4 cursor-pointer hover:bg-muted/30 transition-colors">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">
-                  Entity & Individual Services
-                </h3>
-                <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 [&[data-state=open]>svg]:rotate-180" />
-              </div>
-            </CardContent>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <CardContent className="pt-0 px-4 pb-4 space-y-4">
-              {/* EFS - Factory Services */}
-              <div className="space-y-3">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">EFS – Factory Services</p>
-                <div className="grid grid-cols-3 gap-3">
-                  <div>
-                    <Label className="text-xs font-medium">Domain</Label>
-                    <Select
-                      value={data.efs_domain || ''}
-                      onValueChange={(value) => {
-                        onChange('efs_domain', value);
-                        onChange('efs_service', '');
-                      }}
-                    >
-                      <SelectTrigger className="mt-1 h-9 text-sm">
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover border shadow-lg z-50">
-                        {EFS_DOMAINS.map((opt) => (
-                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-medium">Service</Label>
-                    <Select
-                      value={data.efs_service || ''}
-                      onValueChange={(value) => onChange('efs_service', value)}
-                      disabled={!selectedDomain}
-                    >
-                      <SelectTrigger className="mt-1 h-9 text-sm">
-                        <SelectValue placeholder={selectedDomain ? "Select..." : "Select domain"} />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover border shadow-lg z-50">
-                        {serviceOptions.map((opt) => (
-                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-medium">Track Type</Label>
-                    <Select
-                      value={data.efs_track_type || ''}
-                      onValueChange={(value) => onChange('efs_track_type', value)}
-                    >
-                      <SelectTrigger className="mt-1 h-9 text-sm">
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover border shadow-lg z-50">
-                        {EFS_TRACK_TYPES.map((opt) => (
-                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              {/* ECS - Commercial Services */}
-              <div className="space-y-3 pt-3 border-t border-border/40">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">ECS – Commercial Services</p>
-                <div>
-                  <Label className="text-xs font-medium">Commercial Registry</Label>
-                  <Select
-                    value={data.ecs_registry || ''}
-                    onValueChange={(value) => onChange('ecs_registry', value)}
-                  >
-                    <SelectTrigger className="mt-1 h-9 text-sm">
-                      <SelectValue placeholder="Select..." />
-                    </SelectTrigger>
-                    <SelectContent className="bg-popover border shadow-lg z-50">
-                      {ECS_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {/* IS - Individual Services */}
-              <div className="space-y-3 pt-3 border-t border-border/40">
-                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">IS – Individual Services</p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-xs font-medium">Saudi Category</Label>
-                    <Select
-                      value={data.is_saudi || ''}
-                      onValueChange={(value) => onChange('is_saudi', value)}
-                    >
-                      <SelectTrigger className="mt-1 h-9 text-sm">
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover border shadow-lg z-50">
-                        {IS_SAUDI_OPTIONS.map((opt) => (
-                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label className="text-xs font-medium">Non-Saudi Category</Label>
-                    <Select
-                      value={data.is_non_saudi || ''}
-                      onValueChange={(value) => onChange('is_non_saudi', value)}
-                    >
-                      <SelectTrigger className="mt-1 h-9 text-sm">
-                        <SelectValue placeholder="Select..." />
-                      </SelectTrigger>
-                      <SelectContent className="bg-popover border shadow-lg z-50">
-                        {IS_NON_SAUDI_OPTIONS.map((opt) => (
-                          <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </CollapsibleContent>
-        </Card>
-      </Collapsible>
     </div>
   );
 }
