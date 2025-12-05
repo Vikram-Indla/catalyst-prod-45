@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   Bold, 
@@ -7,13 +7,10 @@ import {
   Strikethrough,
   List, 
   ListOrdered, 
-  ListChecks,
   Link, 
   Image,
   Code,
   Quote,
-  Subscript,
-  Superscript,
   RemoveFormatting,
   ChevronDown,
   Type
@@ -43,10 +40,9 @@ interface RichTextEditorProps {
 
 export function RichTextEditor({ value, onChange, placeholder, className, minHeight = '200px' }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [linkUrl, setLinkUrl] = useState('');
   const [linkPopoverOpen, setLinkPopoverOpen] = useState(false);
-  const [imageUrl, setImageUrl] = useState('');
-  const [imagePopoverOpen, setImagePopoverOpen] = useState(false);
 
   useEffect(() => {
     if (editorRef.current && editorRef.current.innerHTML !== value) {
@@ -54,17 +50,18 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
     }
   }, [value]);
 
-  const execCommand = (command: string, value?: string) => {
-    document.execCommand(command, false, value);
-    editorRef.current?.focus();
-    handleInput();
-  };
-
-  const handleInput = () => {
+  const handleInput = useCallback(() => {
     if (editorRef.current) {
       onChange(editorRef.current.innerHTML);
     }
-  };
+  }, [onChange]);
+
+  const execCommand = useCallback((command: string, value?: string) => {
+    // Ensure editor is focused before executing command
+    editorRef.current?.focus();
+    document.execCommand(command, false, value);
+    handleInput();
+  }, [handleInput]);
 
   const insertLink = () => {
     if (linkUrl) {
@@ -74,16 +71,45 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
     }
   };
 
-  const insertImage = () => {
-    if (imageUrl) {
-      execCommand('insertImage', imageUrl);
-      setImageUrl('');
-      setImagePopoverOpen(false);
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const base64 = e.target?.result as string;
+        if (base64) {
+          // Focus and insert the image
+          editorRef.current?.focus();
+          document.execCommand('insertImage', false, base64);
+          handleInput();
+        }
+      };
+      reader.readAsDataURL(file);
     }
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const triggerImageUpload = () => {
+    fileInputRef.current?.click();
   };
 
   const formatBlock = (tag: string) => {
     execCommand('formatBlock', tag);
+  };
+
+  const toggleBulletList = () => {
+    editorRef.current?.focus();
+    document.execCommand('insertUnorderedList', false);
+    handleInput();
+  };
+
+  const toggleNumberedList = () => {
+    editorRef.current?.focus();
+    document.execCommand('insertOrderedList', false);
+    handleInput();
   };
 
   const clearFormatting = () => {
@@ -95,8 +121,49 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
     }
   };
 
+  // Handle keyboard events for list behavior
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Enter') {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const node = selection.anchorNode;
+        const parentLi = node?.parentElement?.closest('li');
+        
+        // If we're in a list item and it's empty, exit the list
+        if (parentLi && parentLi.textContent?.trim() === '') {
+          e.preventDefault();
+          const list = parentLi.closest('ul, ol');
+          if (list) {
+            // Remove the empty list item
+            parentLi.remove();
+            // Insert a paragraph after the list
+            const p = document.createElement('p');
+            p.innerHTML = '<br>';
+            list.after(p);
+            // Move cursor to the new paragraph
+            const range = document.createRange();
+            range.setStart(p, 0);
+            range.collapse(true);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            handleInput();
+          }
+        }
+      }
+    }
+  };
+
   return (
     <div className={cn("border border-input rounded-md bg-background", className)}>
+      {/* Hidden file input for image upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleImageUpload}
+      />
+
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 p-2 border-b border-border/60 bg-muted/30">
         {/* Text Format Dropdown */}
@@ -180,7 +247,7 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           variant="ghost"
           size="sm"
           className="h-8 w-8 p-0"
-          onClick={() => execCommand('insertUnorderedList')}
+          onClick={toggleBulletList}
           title="Bullet List"
         >
           <List className="h-4 w-4" />
@@ -190,24 +257,10 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           variant="ghost"
           size="sm"
           className="h-8 w-8 p-0"
-          onClick={() => execCommand('insertOrderedList')}
+          onClick={toggleNumberedList}
           title="Numbered List"
         >
           <ListOrdered className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => {
-            // Insert a checkbox-style list item
-            const html = '<input type="checkbox" style="margin-right: 8px;" />';
-            execCommand('insertHTML', html);
-          }}
-          title="Task List"
-        >
-          <ListChecks className="h-4 w-4" />
         </Button>
 
         <div className="w-px h-5 bg-border mx-1" />
@@ -246,39 +299,17 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
           </PopoverContent>
         </Popover>
 
-        {/* Image */}
-        <Popover open={imagePopoverOpen} onOpenChange={setImagePopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-8 w-8 p-0"
-              title="Insert Image"
-            >
-              <Image className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-72 p-3" align="start">
-            <div className="space-y-3">
-              <Label className="text-xs font-medium">Image URL</Label>
-              <Input
-                type="url"
-                placeholder="https://example.com/image.png"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="h-8 text-sm"
-              />
-              <Button
-                size="sm"
-                onClick={insertImage}
-                className="w-full h-8 bg-brand-gold hover:bg-brand-gold-hover text-white"
-              >
-                Insert Image
-              </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
+        {/* Image Upload */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-8 w-8 p-0"
+          onClick={triggerImageUpload}
+          title="Upload Image"
+        >
+          <Image className="h-4 w-4" />
+        </Button>
 
         <div className="w-px h-5 bg-border mx-1" />
 
@@ -311,30 +342,6 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
 
         <div className="w-px h-5 bg-border mx-1" />
 
-        {/* Sub/Superscript */}
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => execCommand('subscript')}
-          title="Subscript"
-        >
-          <Subscript className="h-4 w-4" />
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0"
-          onClick={() => execCommand('superscript')}
-          title="Superscript"
-        >
-          <Superscript className="h-4 w-4" />
-        </Button>
-
-        <div className="w-px h-5 bg-border mx-1" />
-
         {/* Clear Formatting */}
         <Button
           type="button"
@@ -352,8 +359,9 @@ export function RichTextEditor({ value, onChange, placeholder, className, minHei
       <div
         ref={editorRef}
         contentEditable
-        className="overflow-y-auto p-3 text-sm focus:outline-none prose prose-sm max-w-none [&_blockquote]:border-l-4 [&_blockquote]:border-brand-gold/50 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_a]:text-brand-gold [&_a]:underline [&_code]:bg-muted [&_code]:px-1 [&_code]:rounded"
+        className="overflow-y-auto p-3 text-sm focus:outline-none prose prose-sm max-w-none [&_blockquote]:border-l-4 [&_blockquote]:border-brand-gold/50 [&_blockquote]:pl-4 [&_blockquote]:italic [&_blockquote]:text-muted-foreground [&_a]:text-brand-gold [&_a]:underline [&_code]:bg-muted [&_code]:px-1 [&_code]:rounded [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1 [&_img]:max-w-full [&_img]:h-auto [&_img]:rounded"
         onInput={handleInput}
+        onKeyDown={handleKeyDown}
         data-placeholder={placeholder}
         style={{
           minHeight,
