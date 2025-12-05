@@ -24,13 +24,6 @@ const getInitialFormData = (): Record<string, any> => ({
   attachments: [],
   delivery_platform: '',
   planned_quarter: '',
-  // Entity Services
-  efs_domain: '',
-  efs_service: '',
-  efs_track_type: '',
-  ecs_registry: '',
-  is_saudi: '',
-  is_non_saudi: '',
   // Internal defaults
   process_step: 'new_demand',
   health: 'green',

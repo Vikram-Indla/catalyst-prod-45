@@ -390,10 +390,6 @@ export type Database = {
           department: string | null
           dependencies: string | null
           description: string | null
-          ecs_registry: string | null
-          efs_domain: string | null
-          efs_service: string | null
-          efs_track_type: string | null
           end_date: string | null
           environment_dependency: string | null
           estimated_cost: number | null
@@ -416,8 +412,6 @@ export type Database = {
           integration_required: boolean | null
           integration_systems: string[] | null
           is_force_ranked: boolean | null
-          is_non_saudi: string | null
-          is_saudi: string | null
           jira_epic_link: string | null
           key_risks_remarks: string | null
           on_hold_comment: string | null
@@ -469,10 +463,6 @@ export type Database = {
           department?: string | null
           dependencies?: string | null
           description?: string | null
-          ecs_registry?: string | null
-          efs_domain?: string | null
-          efs_service?: string | null
-          efs_track_type?: string | null
           end_date?: string | null
           environment_dependency?: string | null
           estimated_cost?: number | null
@@ -495,8 +485,6 @@ export type Database = {
           integration_required?: boolean | null
           integration_systems?: string[] | null
           is_force_ranked?: boolean | null
-          is_non_saudi?: string | null
-          is_saudi?: string | null
           jira_epic_link?: string | null
           key_risks_remarks?: string | null
           on_hold_comment?: string | null
@@ -548,10 +536,6 @@ export type Database = {
           department?: string | null
           dependencies?: string | null
           description?: string | null
-          ecs_registry?: string | null
-          efs_domain?: string | null
-          efs_service?: string | null
-          efs_track_type?: string | null
           end_date?: string | null
           environment_dependency?: string | null
           estimated_cost?: number | null
@@ -574,8 +558,6 @@ export type Database = {
           integration_required?: boolean | null
           integration_systems?: string[] | null
           is_force_ranked?: boolean | null
-          is_non_saudi?: string | null
-          is_saudi?: string | null
           jira_epic_link?: string | null
           key_risks_remarks?: string | null
           on_hold_comment?: string | null
