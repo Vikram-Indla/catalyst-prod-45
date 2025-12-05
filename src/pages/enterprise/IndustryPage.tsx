@@ -124,15 +124,15 @@ const getTargetDateInfo = (dateStr: string | null): { class: string; isOverdue: 
   };
 };
 
-// Process step: tiny dot color + neutral text (quiet default pattern)
-const PROCESS_STEP_INFO: Record<string, { dotColor: string; description: string }> = {
-  'closed': { dotColor: 'bg-green-500', description: 'Work completed and closed' },
-  'in_progress': { dotColor: 'bg-blue-500', description: 'Active work underway' },
-  'awaiting_business_response': { dotColor: 'bg-amber-500', description: 'Blocked - waiting for business input' },
-  'under_study': { dotColor: 'bg-purple-500', description: 'Analysis and feasibility assessment' },
-  'on_hold': { dotColor: 'bg-gray-400', description: 'Paused - pending decision or dependency' },
-  'implemented': { dotColor: 'bg-gray-500', description: 'Solution implemented and deployed' },
-  'request_received': { dotColor: 'bg-sky-500', description: 'New request - pending triage' },
+// Process step descriptions (plain text, no color)
+const PROCESS_STEP_INFO: Record<string, { description: string }> = {
+  'closed': { description: 'Work completed and closed' },
+  'in_progress': { description: 'Active work underway' },
+  'awaiting_business_response': { description: 'Blocked - waiting for business input' },
+  'under_study': { description: 'Analysis and feasibility assessment' },
+  'on_hold': { description: 'Paused - pending decision or dependency' },
+  'implemented': { description: 'Solution implemented and deployed' },
+  'request_received': { description: 'New request - pending triage' },
 };
 
 
@@ -354,13 +354,13 @@ export default function IndustryPage() {
 
   const getStatusBadge = (status: string) => {
     const step = PROCESS_STEPS.find(s => s.value === status);
-    const info = PROCESS_STEP_INFO[status] || { dotColor: 'bg-gray-400', description: 'Unknown status' };
+    const info = PROCESS_STEP_INFO[status] || { description: 'Unknown status' };
     
+    // Plain text status - no colored dots
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className="inline-flex items-center gap-2 px-2 py-1 rounded text-xs font-medium cursor-help bg-muted/50 text-foreground">
-            <span className={`w-2 h-2 rounded-full shrink-0 ${info.dotColor}`} />
+          <span className="text-sm text-muted-foreground cursor-help">
             {step?.label || status}
           </span>
         </TooltipTrigger>
