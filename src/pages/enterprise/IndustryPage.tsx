@@ -865,7 +865,7 @@ export default function IndustryPage() {
                                               </TooltipContent>
                                             </Tooltip>
                                           )}
-                                          <span className="font-medium">{request.displayRank || globalIndex + 1}</span>
+                                          <span className="font-medium">{request.rank ?? '-'}</span>
                                         </span>
                                       );
                                     case 'title':
