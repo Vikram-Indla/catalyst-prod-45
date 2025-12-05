@@ -107,11 +107,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const handleFieldChange = (field: string, value: any) => {
     const newFormData = { ...formData, [field]: value };
     setFormData(newFormData);
-    setHasChanges(checkForChanges(newFormData));
     
-    // Auto-save on field change
-    if (requestId) {
-      updateMutation.mutate({ id: requestId, data: { [field]: value } as Partial<BusinessRequest> });
+    // Enable Save button on first edit - stays enabled until user manually saves
+    if (!hasChanges) {
+      setHasChanges(true);
     }
   };
 
