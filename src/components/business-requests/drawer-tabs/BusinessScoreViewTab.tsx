@@ -377,7 +377,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                   <SelectTrigger className={cn("mt-1.5 h-8 text-sm", isForceRanked && "opacity-50 bg-muted")}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
+                  <SelectContent className="bg-popover border shadow-lg z-[200]">
                     {SCORE_OPTIONS.map((opt) => (
                       <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
                     ))}
@@ -407,7 +407,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                   <SelectTrigger className={cn("mt-1.5 h-8 text-sm", isForceRanked && "opacity-50 bg-muted")}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
+                  <SelectContent className="bg-popover border shadow-lg z-[200]">
                     {SCORE_OPTIONS.map((opt) => (
                       <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
                     ))}
@@ -437,7 +437,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                   <SelectTrigger className={cn("mt-1.5 h-8 text-sm", isForceRanked && "opacity-50 bg-muted")}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border shadow-lg z-50">
+                  <SelectContent className="bg-popover border shadow-lg z-[200]">
                     {SCORE_OPTIONS.map((opt) => (
                       <SelectItem key={opt} value={String(opt)}>{opt}</SelectItem>
                     ))}
@@ -484,7 +484,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                     <SelectTrigger className={cn("h-8 text-sm", !forceRankEnabled && "opacity-50 cursor-not-allowed")}>
                       <SelectValue placeholder="Auto" />
                     </SelectTrigger>
-                    <SelectContent className="bg-popover border shadow-lg z-50">
+                    <SelectContent className="bg-popover border shadow-lg z-[200]">
                       <SelectItem value="auto">Auto</SelectItem>
                       {RANK_OPTIONS.map((opt) => (
                         <SelectItem key={opt} value={String(opt)}>#{opt}</SelectItem>
