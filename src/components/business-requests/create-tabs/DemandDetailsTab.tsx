@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useAuth } from '@/lib/auth';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -101,10 +102,18 @@ interface DemandDetailsTabProps {
 }
 
 export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
+  const { user } = useAuth();
   const [targetDateLocked, setTargetDateLocked] = useState(false);
   const [lockedByUser, setLockedByUser] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentUser = 'Current User';
+
+  // Auto-populate reporter with current logged-in user on create
+  useEffect(() => {
+    if (user?.id && !data.requestor) {
+      onChange('requestor', user.id);
+    }
+  }, [user?.id, data.requestor, onChange]);
 
   const attachments: File[] = data.attachments || [];
 
@@ -385,12 +394,14 @@ export function DemandDetailsTab({ data, onChange }: DemandDetailsTabProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-sm font-medium">Reporter</Label>
-              <Input
-                value="Current User"
-                disabled
-                className="mt-1.5 bg-muted/50"
-              />
-              <p className="text-xs text-muted-foreground mt-1">Auto-filled (current user)</p>
+              <div className="mt-1.5">
+                <UserPicker
+                  value={data.requestor || null}
+                  onChange={(value) => onChange('requestor', value as string | null)}
+                  placeholder="Select reporter..."
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">Auto-populated with current user (editable)</p>
             </div>
 
             <div>
