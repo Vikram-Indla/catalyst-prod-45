@@ -46,7 +46,7 @@ export const useCreateKBDocument = () => {
       content?: Json;
       linked_work_item_id: string;
       linked_work_item_type: WorkItemType;
-      space_id?: string;
+      space_id?: string | null;
     }) => {
       const { data, error } = await supabase
         .from('kb_documents')
@@ -55,7 +55,7 @@ export const useCreateKBDocument = () => {
           content: newDoc.content || {},
           linked_work_item_id: newDoc.linked_work_item_id,
           linked_work_item_type: newDoc.linked_work_item_type,
-          space_id: newDoc.space_id,
+          space_id: newDoc.space_id || null,
           created_by: 'system',
           updated_by: 'system',
         }])
