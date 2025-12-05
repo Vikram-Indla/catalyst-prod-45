@@ -350,6 +350,30 @@ export default function IndustryPage() {
 
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
 
+  // Real-time subscription to auto-refresh table on any changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('business-requests-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'business_requests'
+        },
+        () => {
+          // Invalidate queries to refresh the table
+          queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+          queryClient.invalidateQueries({ queryKey: ['all-business-requests-for-rank'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
   // Calculate active filter count
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
@@ -432,18 +456,11 @@ export default function IndustryPage() {
   };
 
   const getBusinessScoreBadge = (request: any) => {
-    // Check if force ranked - show "Manual" instead of score
-    if (request.is_force_ranked) {
-      return (
-        <span className="text-xs font-medium text-brand-gold px-2 py-0.5 rounded bg-brand-gold/10">
-          Manual
-        </span>
-      );
-    }
-    
     const score = request.business_score;
-    if (score === null || score === undefined) {
-      return <span className="text-muted-foreground text-sm">-</span>;
+    
+    // Show score value for all items (including force-ranked)
+    if (score === null || score === undefined || score === 0) {
+      return <span className="text-muted-foreground text-sm">—</span>;
     }
     
     // Plain text score - number speaks for itself
