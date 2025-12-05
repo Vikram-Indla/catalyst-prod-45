@@ -580,25 +580,33 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                       disabled={isSavingRank || (isForceRanked && pendingRank === null)}
                     />
                     {pendingRank !== null && (
-                      <div className="flex gap-2 pt-1">
-                        <Button
-                          size="sm"
-                          onClick={handleSaveJustificationAndRank}
-                          disabled={isSavingRank}
-                          className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
-                        >
-                          <Save className="h-3 w-3 mr-1" />
-                          {isSavingRank ? 'Saving...' : 'Save Rank'}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={handleCancelRankChange}
-                          disabled={isSavingRank}
-                          className="h-7 px-3 text-xs"
-                        >
-                          Cancel
-                        </Button>
+                      <div className="space-y-2 pt-1">
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={handleSaveJustificationAndRank}
+                            disabled={isSavingRank}
+                            className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                          >
+                            <Save className="h-3 w-3 mr-1" />
+                            {isSavingRank ? 'Saving...' : 'Save Rank'}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleCancelRankChange}
+                            disabled={isSavingRank}
+                            className="h-7 px-3 text-xs"
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                        {!justification.trim() && (
+                          <div className="p-2.5 rounded-md bg-brand-gold/10 border border-brand-gold/20">
+                            <p className="text-[11px] font-medium text-brand-gold">Justification Required</p>
+                            <p className="text-[10px] text-brand-gold/80 mt-0.5">Please provide a business justification for the rank override.</p>
+                          </div>
+                        )}
                       </div>
                     )}
                     {pendingRank === null && isForceRanked && (
