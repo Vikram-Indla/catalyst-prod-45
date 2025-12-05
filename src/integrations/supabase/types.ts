@@ -4335,7 +4335,7 @@ export type Database = {
           parent_id: string | null
           published_at: string | null
           search_vector: unknown
-          space_id: string
+          space_id: string | null
           title: string
           updated_at: string
           updated_by: string
@@ -4351,7 +4351,7 @@ export type Database = {
           parent_id?: string | null
           published_at?: string | null
           search_vector?: unknown
-          space_id: string
+          space_id?: string | null
           title: string
           updated_at?: string
           updated_by: string
@@ -4367,7 +4367,7 @@ export type Database = {
           parent_id?: string | null
           published_at?: string | null
           search_vector?: unknown
-          space_id?: string
+          space_id?: string | null
           title?: string
           updated_at?: string
           updated_by?: string
