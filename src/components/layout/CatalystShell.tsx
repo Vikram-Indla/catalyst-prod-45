@@ -93,17 +93,17 @@ function CatalystShellContent() {
                 />
               ) : tier === 'enterprise' ? (
                 <LeftContextPanel />
-              ) : tier === 'program' ? (
+              ) : tier === 'program' && currentProgramId ? (
                 <ProgramRoomSidebar
-                  programId={currentProgramId || '22222222-2222-2222-2222-222222222222'}
+                  programId={currentProgramId}
                   expanded={sidebarExpanded}
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
                   selectedPI={selectedPI || undefined}
                   onPIChange={(pi) => setSelectedPI(pi)}
                 />
-              ) : tier === 'portfolio' ? (
+              ) : tier === 'portfolio' && currentPortfolioId ? (
                 <PortfolioRoomSidebar
-                  portfolioId={currentPortfolioId || 'default'}
+                  portfolioId={currentPortfolioId}
                   expanded={sidebarExpanded}
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
                   selectedPI={selectedPI || undefined}
