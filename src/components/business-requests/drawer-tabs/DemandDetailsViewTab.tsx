@@ -418,8 +418,8 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
             <div>
               <Label className="text-sm font-medium">Delivery Track</Label>
               <Select
-                value={data.delivery_track_parent || data.track || ''}
-                onValueChange={(value) => onChange('delivery_track_parent', value)}
+                value={data.delivery_track || data.track || ''}
+                onValueChange={(value) => onChange('delivery_track', value)}
               >
                 <SelectTrigger className="mt-1.5">
                   <SelectValue placeholder="Select track..." />
