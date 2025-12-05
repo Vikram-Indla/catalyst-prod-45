@@ -307,7 +307,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
             </TabsContent>
             <TabsContent value="business-score" className="m-0 focus-visible:outline-none">
-              <BusinessScoreViewTab data={formData} onChange={handleFieldChange} />
+              <BusinessScoreViewTab data={formData} onChange={handleFieldChange} requestId={requestId} />
             </TabsContent>
             <TabsContent value="links" className="m-0 focus-visible:outline-none">
               {requestId && <LinksViewTab requestId={requestId} />}
