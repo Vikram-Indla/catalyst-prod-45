@@ -1,16 +1,16 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Flame, Clock, AlertTriangle, Filter } from 'lucide-react';
+import { Plus, Search, Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Lock, Filter } from 'lucide-react';
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
-import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
+import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { RankUpdateNotification } from '@/components/business-requests/RankUpdateNotification';
 import { SimpleColumnHeader, SortDirection } from '@/components/business-requests/SimpleColumnHeader';
-import { DraggableColumnHeaders, useColumnWidths, ColumnWidths } from '@/components/business-requests/DraggableColumnHeaders';
+import { useColumnWidths, ColumnWidths } from '@/components/business-requests/DraggableColumnHeaders';
 import { BusinessRequestsKanbanView } from '@/components/business-requests/BusinessRequestsKanbanView';
 import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
 import { InlineEditableCell } from '@/components/business-requests/InlineEditableCell';
@@ -18,12 +18,10 @@ import { PROCESS_STEPS } from '@/types/business-request';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { useIndustryPreferences } from '@/hooks/useIndustryPreferences';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useAuth } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 
 // Non-editable columns
@@ -288,7 +286,6 @@ export default function IndustryPage() {
   const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [filters, setFilters] = useState<SmartFilters>({});
   const [columnSort, setColumnSort] = useState<ColumnSort>({
@@ -308,12 +305,10 @@ export default function IndustryPage() {
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
 
-  const { 
+  const {
     columnOrder, 
     columnVisibility, 
-    updateColumnOrder, 
     updatePreferences,
   } = useIndustryPreferences();
 
@@ -337,18 +332,6 @@ export default function IndustryPage() {
     // Save both order and visibility together for real-time update
     updatePreferences({ column_order: newOrder, column_visibility: newVisibility });
   }, [updatePreferences]);
-
-  const handleColumnDragEnd = useCallback((result: DropResult) => {
-    if (!result.destination) return;
-    if (result.source.index === result.destination.index) return;
-    
-    const newOrder = Array.from(columnOrder);
-    const [removed] = newOrder.splice(result.source.index, 1);
-    newOrder.splice(result.destination.index, 0, removed);
-    
-    updateColumnOrder(newOrder);
-    toast({ title: 'Column order saved' });
-  }, [columnOrder, updateColumnOrder, toast]);
 
   const { data: requests, isLoading } = useBusinessRequests(searchQuery);
 
@@ -651,82 +634,8 @@ export default function IndustryPage() {
     }
   };
 
-  const isColumnVisible = (columnId: string) => {
-    return columns.find(c => c.id === columnId)?.visible ?? false;
-  };
-
-  const getDeservedRank = (businessScore: number | null | undefined, allRequests: any[]) => {
-    if (businessScore === null || businessScore === undefined) return allRequests.length;
-    const sortedByScore = [...allRequests].sort((a, b) => (b.business_score || 0) - (a.business_score || 0));
-    const position = sortedByScore.findIndex(r => (r.business_score || 0) <= businessScore);
-    return position === -1 ? allRequests.length : position + 1;
-  };
-
-  const handleDragEnd = async (result: DropResult) => {
-    if (!result.destination) return;
-    const sourceIndex = result.source.index;
-    const destIndex = result.destination.index;
-    if (sourceIndex === destIndex) return;
-    
-    const actualSourceIndex = startIndex + sourceIndex;
-    const actualDestIndex = startIndex + destIndex;
-    const reordered = Array.from(sortedRequests);
-    const [movedItem] = reordered.splice(actualSourceIndex, 1);
-    reordered.splice(actualDestIndex, 0, movedItem);
-    
-    const oldRank = movedItem.displayRank || actualSourceIndex + 1;
-    const newRank = actualDestIndex + 1;
-    const businessScore = movedItem.business_score;
-    const deservedRank = getDeservedRank(businessScore, sortedRequests);
-    const isForceRanking = newRank !== deservedRank;
-    
-    const updatedRequests = reordered.map((req, index) => ({
-      ...req,
-      displayRank: index + 1,
-      rank: index + 1,
-      is_force_ranked: req.id === movedItem.id ? isForceRanking : req.is_force_ranked
-    }));
-    setSortedRequests(updatedRequests);
-    
-    const affectedItems = updatedRequests.filter((req, idx) => {
-      const original = sortedRequests.find(r => r.id === req.id);
-      return original?.rank !== idx + 1 || (req.id === movedItem.id && isForceRanking);
-    });
-    
-    try {
-      await Promise.all(affectedItems.map(item => {
-        const updateData: any = { rank: item.rank };
-        if (item.id === movedItem.id && isForceRanking) {
-          updateData.is_force_ranked = true;
-          updateData.force_ranked_by = user?.email || 'Unknown';
-          updateData.force_ranked_at = new Date().toISOString();
-        }
-        return supabase.from('business_requests').update(updateData).eq('id', item.id);
-      }));
-
-      await queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-      
-      if (newRank < deservedRank) {
-        setNotification({ show: true, oldRank, newRank, score: businessScore });
-      }
-    } catch (error) {
-      console.error('Failed to update ranks:', error);
-      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
-    }
-  };
-
   const toggleRowSelection = (id: string) => {
     setSelectedRows(prev => prev.includes(id) ? prev.filter(r => r !== id) : [...prev, id]);
-  };
-
-  const toggleRowExpansion = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedRows(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) newSet.delete(id);
-      else newSet.add(id);
-      return newSet;
-    });
   };
 
   const goToPage = (page: number) => {
@@ -747,10 +656,6 @@ export default function IndustryPage() {
               <h1 className="text-xl sm:text-2xl font-semibold text-[#172B4D]">Demand Intake</h1>
               <p className="text-sm text-[#5E6C84]">Industry-specific demand requests</p>
             </div>
-            <Button onClick={() => setCreateModalOpen(true)} className="bg-brand-gold text-white hover:bg-brand-gold-hover">
-              <Plus className="h-4 w-4 mr-2" />
-              New Request
-            </Button>
           </div>
         </div>
 
@@ -764,21 +669,6 @@ export default function IndustryPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              {totalPages > 1 && (
-                <div className="flex items-center gap-1 border-l border-r px-3 border-border">
-                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="h-8 w-8 p-0">
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
-
-              <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -793,12 +683,28 @@ export default function IndustryPage() {
                   </span>
                 )}
               </Button>
-              {/* Import button hidden - functionality preserved for future use */}
               {viewMode === 'list' && <ColumnsDropdown columns={columns} onChange={handleColumnsChange} />}
               <Button variant="outline" size="sm" onClick={handleExport} className="border-border">
                 <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
+              
+              {/* Pagination controls beside view toggle */}
+              {totalPages > 1 && (
+                <div className="flex items-center gap-1 border-l border-r px-3 border-border">
+                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
+                    {currentPage} / {totalPages}
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="h-8 w-8 p-0">
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+
+              <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
             </div>
           </div>
         </div>
@@ -823,12 +729,9 @@ export default function IndustryPage() {
                   <div style={{ minWidth: '1400px' }}>
                     {/* Column Headers - Sticky */}
                     <div className="flex sticky top-0 z-30 bg-white text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide border-b border-[#E4E6EB]">
-                      {/* Leading icons placeholder - fixed width */}
-                      <div className="flex items-center h-10 px-4 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
-                        <div className="flex items-center gap-2">
-                          <div className="w-8" />
-                          <div className="w-8" />
-                        </div>
+                      {/* Checkbox placeholder - fixed width */}
+                      <div className="flex items-center justify-center h-10 px-3 border-r border-[#E4E6EB]" style={{ width: '48px', minWidth: '48px' }}>
+                        <div className="w-4" />
                       </div>
                       
                       {/* Column headers */}
@@ -872,259 +775,232 @@ export default function IndustryPage() {
                     </div>
 
                     {/* Table Body Rows */}
-                    <DragDropContext onDragEnd={handleDragEnd}>
-                      <Droppable droppableId="requests">
-                        {provided => (
-                          <div {...provided.droppableProps} ref={provided.innerRef}>
-                            {paginatedRequests.map((request: any, index: number) => {
-                              const globalIndex = startIndex + index;
-                              const isForceRanked = request.is_force_ranked;
-                              const isExpanded = expandedRows.has(request.id);
-                              const ageing = calculateAgeing(request.created_at);
-                              const ageingInfo = getAgeingInfo(ageing);
-                              const targetInfo = getTargetDateInfo(request.end_date);
-                              const quarterDays = getDaysUntilQuarterEnd(request.planned_quarter);
-                              
-                              const renderColumnValue = (col: ColumnConfig) => {
-                                const colDef = COLUMN_DEFINITIONS[col.id];
-                                if (!colDef || !col.visible) return null;
-                                
-                                const isEditable = !NON_EDITABLE_COLUMNS.includes(col.id);
-                                
-                                switch(col.id) {
-                                  case 'request_key':
-                                    return (
-                                      <button
-                                        onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                                        className="text-[13px] text-[#172B4D] hover:text-[#0052CC] hover:underline font-medium transition-colors truncate"
-                                      >
-                                        {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
-                                      </button>
-                                    );
-                                  case 'rank':
-                                    return (
-                                      <span className="text-[14px] text-[#172B4D] inline-flex items-center gap-1">
-                                        {isForceRanked && (
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <Lock className="h-3 w-3 text-[#97A0AF] cursor-help" />
-                                            </TooltipTrigger>
-                                            <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
-                                              <div className="font-medium">Manually Prioritized</div>
-                                              <div className="text-gray-300 mt-1">This item's rank was manually overridden.</div>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        )}
-                                        <span className="font-medium">{request.rank ?? '-'}</span>
-                                      </span>
-                                    );
-                                  case 'title':
-                                    return <span className="text-[14px] text-[#172B4D] truncate">{request.title}</span>;
-                                  case 'process_step':
-                                    return (
-                                      <InlineEditableCell
-                                        value={request.process_step}
-                                        field="process_step"
-                                        requestId={request.id}
-                                        onSave={handleInlineSave}
-                                        type="select"
-                                        displayValue={getStatusBadge(request.process_step)}
-                                      />
-                                    );
-                                  case 'business_score':
-                                    return getBusinessScoreBadge(request);
-                                  case 'submitted_date':
-                                    return <span className="text-[14px] text-[#5E6C84] truncate">{formatDate(request.created_at)}</span>;
-                                  case 'planned_quarter':
-                                    return (
-                                      <InlineEditableCell
-                                        value={request.planned_quarter}
-                                        field="planned_quarter"
-                                        requestId={request.id}
-                                        onSave={handleInlineSave}
-                                        type="select"
-                                        displayValue={
-                                          <div className="flex items-center gap-1">
-                                            <span className="text-[14px] text-[#5E6C84] truncate">{request.planned_quarter || '-'}</span>
-                                            {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
-                                              <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                  <span className="flex-shrink-0 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
-                                                </TooltipTrigger>
-                                                <TooltipContent>Quarter ends in {quarterDays} days</TooltipContent>
-                                              </Tooltip>
-                                            )}
-                                          </div>
-                                        }
-                                      />
-                                    );
-                                  case 'end_date':
-                                    return (
-                                      <InlineEditableCell
-                                        value={request.end_date}
-                                        field="end_date"
-                                        requestId={request.id}
-                                        onSave={handleInlineSave}
-                                        type="date"
-                                        displayValue={
-                                          <div className="flex items-center gap-1">
-                                            <span className="text-[14px] text-[#5E6C84] truncate">{request.end_date ? formatDate(request.end_date) : '-'}</span>
-                                            {targetInfo && (
-                                              <Tooltip>
-                                                <TooltipTrigger asChild>
-                                                  <span className={cn("flex-shrink-0 h-2 w-2 rounded-full", targetInfo.isOverdue ? "bg-red-500" : "bg-amber-400 animate-pulse")} />
-                                                </TooltipTrigger>
-                                                <TooltipContent>{targetInfo.tooltip}</TooltipContent>
-                                              </Tooltip>
-                                            )}
-                                          </div>
-                                        }
-                                      />
-                                    );
-                                  case 'delivery_platform':
-                                    return (
-                                      <InlineEditableCell
-                                        value={request.delivery_platform}
-                                        field="delivery_platform"
-                                        requestId={request.id}
-                                        onSave={handleInlineSave}
-                                        type="select"
-                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.delivery_platform || '-'}</span>}
-                                      />
-                                    );
-                                  case 'ageing':
-                                    return (
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <span className={cn("inline-flex items-center gap-1 text-[14px] font-medium", ageingInfo.class)}>
-                                            {ageing}
-                                            {ageingInfo.icon}
-                                          </span>
-                                        </TooltipTrigger>
-                                        <TooltipContent>{ageingInfo.label}</TooltipContent>
-                                      </Tooltip>
-                                    );
-                                  case 'requestor':
-                                    return (
-                                      <InlineEditableCell
-                                        value={request.requestor}
-                                        field="requestor"
-                                        requestId={request.id}
-                                        onSave={handleInlineSave}
-                                        type="user"
-                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.requestor || '-'}</span>}
-                                      />
-                                    );
-                                  case 'business_owner':
-                                    return (
-                                      <InlineEditableCell
-                                        value={request.business_owner}
-                                        field="business_owner"
-                                        requestId={request.id}
-                                        onSave={handleInlineSave}
-                                        type="user"
-                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.business_owner || '-'}</span>}
-                                      />
-                                    );
-                                  case 'department':
-                                    return (
-                                      <InlineEditableCell
-                                        value={request.department}
-                                        field="department"
-                                        requestId={request.id}
-                                        onSave={handleInlineSave}
-                                        type="select"
-                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.department || '-'}</span>}
-                                      />
-                                    );
-                                  case 'created_by':
-                                    return (
-                                      <InlineEditableCell
-                                        value={request.created_by}
-                                        field="created_by"
-                                        requestId={request.id}
-                                        onSave={handleInlineSave}
-                                        type="user"
-                                        displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.created_by || '-'}</span>}
-                                      />
-                                    );
-                                  default:
-                                    return null;
-                                }
-                              };
+                    <div>
+                      {paginatedRequests.map((request: any, index: number) => {
+                        const isForceRanked = request.is_force_ranked;
+                        const ageing = calculateAgeing(request.created_at);
+                        const ageingInfo = getAgeingInfo(ageing);
+                        const targetInfo = getTargetDateInfo(request.end_date);
+                        const quarterDays = getDaysUntilQuarterEnd(request.planned_quarter);
+                        
+                        const renderColumnValue = (col: ColumnConfig) => {
+                          const colDef = COLUMN_DEFINITIONS[col.id];
+                          if (!colDef || !col.visible) return null;
+                          
+                          switch(col.id) {
+                            case 'request_key':
+                              return (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
+                                  className="text-[13px] text-[#172B4D] hover:text-[#0052CC] hover:underline font-medium transition-colors truncate"
+                                >
+                                  {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
+                                </button>
+                              );
+                            case 'rank':
+                              return (
+                                <span className="text-[14px] text-[#172B4D] inline-flex items-center gap-1">
+                                  {isForceRanked && (
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Lock className="h-3 w-3 text-[#97A0AF] cursor-help" />
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
+                                        <div className="font-medium">Manually Prioritized</div>
+                                        <div className="text-gray-300 mt-1">This item's rank was manually overridden.</div>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  )}
+                                  <span className="font-medium">{request.rank ?? '-'}</span>
+                                </span>
+                              );
+                            case 'title':
+                              return <span className="text-[14px] text-[#172B4D] truncate">{request.title}</span>;
+                            case 'process_step':
+                              return (
+                                <InlineEditableCell
+                                  value={request.process_step}
+                                  field="process_step"
+                                  requestId={request.id}
+                                  onSave={handleInlineSave}
+                                  type="select"
+                                  displayValue={getStatusBadge(request.process_step)}
+                                />
+                              );
+                            case 'business_score':
+                              return getBusinessScoreBadge(request);
+                            case 'submitted_date':
+                              return <span className="text-[14px] text-[#5E6C84] truncate">{formatDate(request.created_at)}</span>;
+                            case 'planned_quarter':
+                              return (
+                                <InlineEditableCell
+                                  value={request.planned_quarter}
+                                  field="planned_quarter"
+                                  requestId={request.id}
+                                  onSave={handleInlineSave}
+                                  type="select"
+                                  displayValue={
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-[14px] text-[#5E6C84] truncate">{request.planned_quarter || '-'}</span>
+                                      {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <span className="flex-shrink-0 h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+                                          </TooltipTrigger>
+                                          <TooltipContent>Quarter ends in {quarterDays} days</TooltipContent>
+                                        </Tooltip>
+                                      )}
+                                    </div>
+                                  }
+                                />
+                              );
+                            case 'end_date':
+                              return (
+                                <InlineEditableCell
+                                  value={request.end_date}
+                                  field="end_date"
+                                  requestId={request.id}
+                                  onSave={handleInlineSave}
+                                  type="date"
+                                  displayValue={
+                                    <div className="flex items-center gap-1">
+                                      <span className="text-[14px] text-[#5E6C84] truncate">{request.end_date ? formatDate(request.end_date) : '-'}</span>
+                                      {targetInfo && (
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <span className={cn("flex-shrink-0 h-2 w-2 rounded-full", targetInfo.isOverdue ? "bg-red-500" : "bg-amber-400 animate-pulse")} />
+                                          </TooltipTrigger>
+                                          <TooltipContent>{targetInfo.tooltip}</TooltipContent>
+                                        </Tooltip>
+                                      )}
+                                    </div>
+                                  }
+                                />
+                              );
+                            case 'delivery_platform':
+                              return (
+                                <InlineEditableCell
+                                  value={request.delivery_platform}
+                                  field="delivery_platform"
+                                  requestId={request.id}
+                                  onSave={handleInlineSave}
+                                  type="select"
+                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.delivery_platform || '-'}</span>}
+                                />
+                              );
+                            case 'ageing':
+                              return (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span className={cn("inline-flex items-center gap-1 text-[14px] font-medium", ageingInfo.class)}>
+                                      {ageing}
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent>{ageingInfo.label}</TooltipContent>
+                                </Tooltip>
+                              );
+                            case 'requestor':
+                              return (
+                                <InlineEditableCell
+                                  value={request.requestor}
+                                  field="requestor"
+                                  requestId={request.id}
+                                  onSave={handleInlineSave}
+                                  type="user"
+                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.requestor || '-'}</span>}
+                                />
+                              );
+                            case 'business_owner':
+                              return (
+                                <InlineEditableCell
+                                  value={request.business_owner}
+                                  field="business_owner"
+                                  requestId={request.id}
+                                  onSave={handleInlineSave}
+                                  type="user"
+                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.business_owner || '-'}</span>}
+                                />
+                              );
+                            case 'department':
+                              return (
+                                <InlineEditableCell
+                                  value={request.department}
+                                  field="department"
+                                  requestId={request.id}
+                                  onSave={handleInlineSave}
+                                  type="select"
+                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.department || '-'}</span>}
+                                />
+                              );
+                            case 'created_by':
+                              return (
+                                <InlineEditableCell
+                                  value={request.created_by}
+                                  field="created_by"
+                                  requestId={request.id}
+                                  onSave={handleInlineSave}
+                                  type="user"
+                                  displayValue={<span className="text-[14px] text-[#5E6C84] truncate">{request.created_by || '-'}</span>}
+                                />
+                              );
+                            default:
+                              return null;
+                          }
+                        };
+                        
+                        return (
+                          <div 
+                            key={request.id}
+                            className={cn(
+                              "flex cursor-pointer transition-colors border-b border-[#E4E6EB]",
+                              "hover:bg-[#FAFBFC]",
+                              selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-white'
+                            )}
+                            onClick={() => setSelectedRequestId(request.id)}
+                          >
+                            {/* Checkbox - fixed width matching header */}
+                            <div className="flex items-center justify-center h-11 px-3 border-r border-[#E4E6EB] shrink-0" style={{ width: '48px', minWidth: '48px' }} onClick={e => e.stopPropagation()}>
+                              <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
+                            </div>
+
+                            {/* Column values */}
+                            {columns.filter(col => col.visible).map((col) => {
+                              const colDef = COLUMN_DEFINITIONS[col.id];
+                              if (!colDef) return null;
+                              const width = columnWidths[col.id] || colDef.defaultWidth;
+                              const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
                               
                               return (
-                                <Draggable key={request.id} draggableId={request.id} index={index}>
-                                  {(provided, snapshot) => (
-                                    <div 
-                                      ref={provided.innerRef} 
-                                      {...provided.draggableProps}
-                                      className={cn(
-                                        "flex cursor-pointer transition-colors border-b border-[#E4E6EB]",
-                                        "hover:bg-[#FAFBFC]",
-                                        snapshot.isDragging && 'bg-brand-gold/5',
-                                        selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-white'
-                                      )}
-                                      onClick={() => setSelectedRequestId(request.id)}
-                                    >
-                                      {/* Leading icons - fixed width matching header */}
-                                      <div className="flex items-center h-11 px-4 border-r border-[#E4E6EB] shrink-0" style={{ width: '80px', minWidth: '80px' }}>
-                                        <div className="flex items-center gap-2">
-                                          <div {...provided.dragHandleProps} className="w-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground flex items-center justify-center" onClick={e => e.stopPropagation()}>
-                                            <GripVertical className="h-4 w-4" />
-                                          </div>
-                                          
-                                          <div className="w-8 flex items-center justify-center" onClick={e => e.stopPropagation()}>
-                                            <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
-                                          </div>
-                                        </div>
-                                      </div>
-
-                                      {/* Column values */}
-                                      {columns.filter(col => col.visible).map((col) => {
-                                        const colDef = COLUMN_DEFINITIONS[col.id];
-                                        if (!colDef) return null;
-                                        
-                                        const width = columnWidths[col.id] || colDef.defaultWidth;
-                                        const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
-                                        
-                                        return (
-                                          <div 
-                                            key={col.id}
-                                            className={cn(
-                                              "flex items-center h-11 px-3.5 border-r border-[#E4E6EB] shrink-0",
-                                              isCentered && "justify-center"
-                                            )}
-                                            style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
-                                          >
-                                            {renderColumnValue(col)}
-                                          </div>
-                                        );
-                                      })}
-                                      
-                                      {/* Flex fill for extending row to full width */}
-                                      <div className="flex-1 h-11 min-w-[40px]" />
-                                    </div>
+                                <div 
+                                  key={col.id}
+                                  className={cn(
+                                    "flex items-center h-11 px-3.5 border-r border-[#E4E6EB] shrink-0 overflow-hidden",
+                                    isCentered && "justify-center"
                                   )}
-                                </Draggable>
+                                  style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
+                                >
+                                  {renderColumnValue(col)}
+                                </div>
                               );
                             })}
-                            {provided.placeholder}
+                            
+                            {/* Flex fill for extending row to full width */}
+                            <div className="flex-1 h-11 min-w-[40px]" />
                           </div>
-                        )}
-                      </Droppable>
-                    </DragDropContext>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
                 
-                {/* + Create Row - Always visible at bottom */}
+                {/* + Create Row - Always visible at bottom with prominent styling */}
                 <div 
-                  className="flex items-center h-11 px-4 border-b border-[#E4E6EB] cursor-pointer hover:bg-[#FAFBFC] transition-colors bg-white"
+                  className="flex items-center h-12 px-4 border-t border-[#E4E6EB] cursor-pointer hover:bg-[#FAFBFC] transition-colors bg-white"
                   onClick={() => setCreateModalOpen(true)}
                 >
                   <div className="flex items-center gap-2 text-[#5E6C84] hover:text-[#172B4D]">
                     <Plus className="h-4 w-4" />
-                    <span className="text-[13px] font-medium">Create</span>
+                    <span className="text-[14px] font-medium">Create</span>
                   </div>
                 </div>
 
@@ -1199,19 +1075,6 @@ export default function IndustryPage() {
                       </Button>
                     </div>
                   )}
-                </div>
-
-                {/* Legend Bar */}
-                <div className="px-4 py-2 bg-muted/50 border-t flex items-center gap-6 text-xs text-muted-foreground">
-                  <span className="font-medium text-foreground">Legend:</span>
-                  <div className="flex items-center gap-1.5">
-                    <Lock className="h-3 w-3" />
-                    <span>Force-ranked</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Flame className="h-3 w-3 text-destructive" />
-                    <span>Critical aging (30d+)</span>
-                  </div>
                 </div>
               </Card>
             ) : (
