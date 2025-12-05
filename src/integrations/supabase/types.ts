@@ -231,6 +231,123 @@ export type Database = {
         }
         Relationships: []
       }
+      business_request_audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_name: string | null
+          business_request_id: string
+          created_at: string
+          field_changed: string | null
+          id: string
+          new_value: string | null
+          old_value: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_name?: string | null
+          business_request_id: string
+          created_at?: string
+          field_changed?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_name?: string | null
+          business_request_id?: string
+          created_at?: string
+          field_changed?: string | null
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_request_audit_logs_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_request_discussions: {
+        Row: {
+          business_request_id: string
+          created_at: string
+          id: string
+          message: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_request_id: string
+          created_at?: string
+          id?: string
+          message: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_request_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_request_discussions_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      business_request_links: {
+        Row: {
+          business_request_id: string
+          created_at: string
+          id: string
+          link_type: string
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          business_request_id: string
+          created_at?: string
+          id?: string
+          link_type?: string
+          title: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          business_request_id?: string
+          created_at?: string
+          id?: string
+          link_type?: string
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_request_links_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       business_requests: {
         Row: {
           acceptance_criteria: string | null

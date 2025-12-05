@@ -26,6 +26,9 @@ import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest 
 import { BusinessRequest } from '@/types/business-request';
 import { DemandDetailsViewTab } from './drawer-tabs/DemandDetailsViewTab';
 import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
+import { LinksViewTab } from './drawer-tabs/LinksViewTab';
+import { DiscussionsViewTab } from './drawer-tabs/DiscussionsViewTab';
+import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
 import { toast } from 'sonner';
 
 interface BusinessRequestDrawerProps {
@@ -34,10 +37,13 @@ interface BusinessRequestDrawerProps {
   requestId: string | null;
 }
 
-// Two tabs for the view drawer
+// Four tabs for the view drawer
 const VIEW_TABS = [
   { value: 'demand-details', label: 'Demand Details' },
   { value: 'business-score', label: 'Business Score' },
+  { value: 'links', label: 'Links' },
+  { value: 'discussions', label: 'Discussions' },
+  { value: 'audit-history', label: 'Audit History' },
 ];
 
 export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRequestDrawerProps) {
@@ -285,6 +291,15 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId }: BusinessRe
             </TabsContent>
             <TabsContent value="business-score" className="m-0 focus-visible:outline-none">
               <BusinessScoreViewTab data={formData} onChange={handleFieldChange} />
+            </TabsContent>
+            <TabsContent value="links" className="m-0 focus-visible:outline-none">
+              {requestId && <LinksViewTab requestId={requestId} />}
+            </TabsContent>
+            <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
+              {requestId && <DiscussionsViewTab requestId={requestId} />}
+            </TabsContent>
+            <TabsContent value="audit-history" className="m-0 focus-visible:outline-none h-[500px]">
+              {requestId && <AuditHistoryTab requestId={requestId} />}
             </TabsContent>
           </div>
         </Tabs>
