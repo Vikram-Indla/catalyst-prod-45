@@ -803,9 +803,9 @@ export default function IndustryPage() {
                   {/* Inner table with fixed min-width for horizontal scroll */}
                   <div style={{ minWidth: '1400px' }}>
                     {/* Column Headers - Sticky */}
-                    <div className="sticky top-0 z-30 flex items-center h-10 px-4 bg-white border-b border-[#DFE1E6] text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide">
+                    <div className="sticky top-0 z-30 flex items-stretch h-10 px-4 bg-white border-b border-[#DFE1E6] text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide">
                       {/* Leading icons placeholder - fixed width */}
-                      <div className="flex items-center gap-2 mr-2" style={{ width: '80px', minWidth: '80px' }}>
+                      <div className="flex items-center gap-2 mr-2 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
                         <div className="w-8" /> {/* Drag */}
                         <div className="w-8" /> {/* Checkbox */}
                       </div>
@@ -971,7 +971,7 @@ export default function IndustryPage() {
                                       <div ref={provided.innerRef} {...provided.draggableProps}>
                                       <div 
                                         className={cn(
-                                          "flex items-center h-11 px-4 border-b border-[#E4E6EB] cursor-pointer transition-colors",
+                                          "flex items-stretch h-11 px-4 border-b border-[#E4E6EB] cursor-pointer transition-colors",
                                           "hover:bg-[#FAFBFC]",
                                           snapshot.isDragging && 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold',
                                           selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-white'
@@ -979,7 +979,7 @@ export default function IndustryPage() {
                                         onClick={() => setSelectedRequestId(request.id)}
                                       >
                                         {/* Leading icons - fixed width matching header */}
-                                        <div className="flex items-center gap-2 mr-2" style={{ width: '80px', minWidth: '80px' }}>
+                                        <div className="flex items-center gap-2 mr-2 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
                                           <div {...provided.dragHandleProps} className="w-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground flex items-center justify-center" onClick={e => e.stopPropagation()}>
                                             <GripVertical className="h-4 w-4" />
                                           </div>
