@@ -19,47 +19,29 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { supabase } from '@/integrations/supabase/client';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { useQueryClient } from '@tanstack/react-query';
-const DEFAULT_COLUMNS: ColumnConfig[] = [{
-  id: 'request_key',
-  label: 'Request ID',
-  visible: true,
-  default: true
-}, {
-  id: 'rank',
-  label: 'Rank',
-  visible: true,
-  default: true
-}, {
-  id: 'title',
-  label: 'Summary',
-  visible: true,
-  default: true
-}, {
-  id: 'process_step',
-  label: 'Process Step',
-  visible: true,
-  default: true
-}, {
-  id: 'business_score',
-  label: 'Business Score',
-  visible: true,
-  default: true
-}, {
-  id: 'planned_quarter',
-  label: 'Planned Quarter',
-  visible: true,
-  default: true
-}, {
-  id: 'end_date',
-  label: 'Target Completion',
-  visible: true,
-  default: true
-}, {
-  id: 'ageing',
-  label: 'Ageing',
-  visible: true,
-  default: true
-}];
+import { useIndustryPreferences } from '@/hooks/useIndustryPreferences';
+
+const COLUMN_DEFINITIONS: Record<string, { label: string; width: string }> = {
+  request_key: { label: 'Request ID', width: 'w-24' },
+  rank: { label: 'Rank', width: 'w-12' },
+  title: { label: 'Summary', width: 'flex-1 min-w-0' },
+  process_step: { label: 'Process Step', width: 'w-36' },
+  business_score: { label: 'Score', width: 'w-24' },
+  planned_quarter: { label: 'Quarter', width: 'w-20' },
+  end_date: { label: 'Target Date', width: 'w-24' },
+  ageing: { label: 'Ageing', width: 'w-20' },
+};
+
+const DEFAULT_COLUMN_ORDER = ['request_key', 'rank', 'title', 'process_step', 'business_score', 'planned_quarter', 'end_date', 'ageing'];
+
+const getDefaultColumns = (order: string[], visibility: Record<string, boolean>): ColumnConfig[] => {
+  return order.map(id => ({
+    id,
+    label: COLUMN_DEFINITIONS[id]?.label || id,
+    visible: visibility[id] ?? true,
+    default: true,
+  }));
+};
 const calculateAgeing = (createdAt: string | null): number => {
   if (!createdAt) return 0;
   const created = new Date(createdAt);
@@ -77,7 +59,6 @@ export default function IndustryPage() {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
-  const [columns, setColumns] = useState<ColumnConfig[]>(DEFAULT_COLUMNS);
   const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -96,22 +77,52 @@ export default function IndustryPage() {
     newRank: 0,
     score: null
   });
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // Get user preferences for column order/visibility
+  const { 
+    columnOrder, 
+    columnVisibility, 
+    updateColumnOrder, 
+    updatePreferences,
+    isLoading: prefsLoading 
+  } = useIndustryPreferences();
+
+  // Derive columns from preferences
+  const columns = useMemo(() => 
+    getDefaultColumns(columnOrder, columnVisibility), 
+    [columnOrder, columnVisibility]
+  );
+
+  // Handler for column visibility changes
+  const handleColumnsChange = useCallback((newColumns: ColumnConfig[]) => {
+    const newVisibility: Record<string, boolean> = {};
+    newColumns.forEach(col => {
+      newVisibility[col.id] = col.visible;
+    });
+    updatePreferences({ column_visibility: newVisibility });
+  }, [updatePreferences]);
+
+  // Handler for column drag-drop reorder
+  const handleColumnDragEnd = useCallback((result: DropResult) => {
+    if (!result.destination) return;
+    if (result.source.index === result.destination.index) return;
+    
+    const newOrder = Array.from(columnOrder);
+    const [removed] = newOrder.splice(result.source.index, 1);
+    newOrder.splice(result.destination.index, 0, removed);
+    
+    updateColumnOrder(newOrder);
+    toast({ title: 'Column order saved' });
+  }, [columnOrder, updateColumnOrder, toast]);
+
   // Use context for filters with defensive defaults
-  const {
-    industryFilters
-  } = useCatalystContext();
+  const { industryFilters } = useCatalystContext();
   const deliveryPlatforms = industryFilters?.deliveryPlatforms || [];
   const processSteps = industryFilters?.processSteps || [];
   const quarters = industryFilters?.quarters || [];
-  const {
-    data: requests,
-    isLoading
-  } = useBusinessRequests(searchQuery);
+  const { data: requests, isLoading } = useBusinessRequests(searchQuery);
   const updateRequest = useUpdateBusinessRequest();
 
   // Apply sorting and filtering using context filters
@@ -366,7 +377,7 @@ export default function IndustryPage() {
             <Upload className="h-4 w-4 mr-2" />
             Import
           </Button>
-          {viewMode === 'list' && <ColumnsDropdown columns={columns} onChange={setColumns} />}
+          {viewMode === 'list' && <ColumnsDropdown columns={columns} onChange={handleColumnsChange} />}
           <Button variant="outline" size="sm" onClick={handleExport} className="border-border">
             <Download className="h-4 w-4 mr-2" />
             Export
@@ -387,43 +398,126 @@ export default function IndustryPage() {
             />
           ) : sortedRequests.length > 0 ? (
             <Card className="overflow-hidden relative">
-              {/* Column Headers - Simple Sort Only */}
-              <div className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative">
-                <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
-                <div className="w-5" />
-                <div className="w-5" />
-                {isColumnVisible('request_key') && <div className="w-24 shrink-0">
-                    <SimpleColumnHeader label="Request ID" columnId="request_key" sortDirection={columnSort.columnId === 'request_key' ? columnSort.direction : null} onSort={handleSort} />
-                  </div>}
-                {isColumnVisible('rank') && <div className="w-12 shrink-0 text-center">
-                    <SimpleColumnHeader label="Rank" columnId="rank" sortDirection={columnSort.columnId === 'rank' ? columnSort.direction : null} onSort={handleSort} />
-                  </div>}
-                {isColumnVisible('title') && <div className="flex-1 min-w-0">
-                    <SimpleColumnHeader label="Summary" columnId="title" sortDirection={columnSort.columnId === 'title' ? columnSort.direction : null} onSort={handleSort} />
-                  </div>}
-                {isColumnVisible('process_step') && <div className="w-36 shrink-0">
-                    <SimpleColumnHeader label="Process Step" columnId="process_step" sortDirection={columnSort.columnId === 'process_step' ? columnSort.direction : null} onSort={handleSort} />
-                  </div>}
-                {isColumnVisible('business_score') && <div className="w-24 shrink-0 text-center">
-                    <SimpleColumnHeader label="Score" columnId="business_score" sortDirection={columnSort.columnId === 'business_score' ? columnSort.direction : null} onSort={handleSort} />
-                  </div>}
-                {isColumnVisible('planned_quarter') && <div className="w-20 shrink-0">
-                    <SimpleColumnHeader label="Quarter" columnId="planned_quarter" sortDirection={columnSort.columnId === 'planned_quarter' ? columnSort.direction : null} onSort={handleSort} />
-                  </div>}
-                {isColumnVisible('end_date') && <div className="w-24 shrink-0">
-                    <SimpleColumnHeader label="Target Date" columnId="end_date" sortDirection={columnSort.columnId === 'end_date' ? columnSort.direction : null} onSort={handleSort} />
-                  </div>}
-                {isColumnVisible('ageing') && <div className="w-20 shrink-0 text-center">
-                    <SimpleColumnHeader label="Ageing" columnId="ageing" sortDirection={columnSort.columnId === 'ageing' ? columnSort.direction : null} onSort={handleSort} />
-                  </div>}
-              </div>
+              {/* Column Headers with Drag-Drop Reorder */}
+              <DragDropContext onDragEnd={handleColumnDragEnd}>
+                <Droppable droppableId="column-headers" direction="horizontal">
+                  {(provided) => (
+                    <div 
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className="flex items-center gap-4 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative"
+                    >
+                      <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
+                      <div className="w-5" />
+                      <div className="w-5" />
+                      {columnOrder.map((colId, index) => {
+                        if (!isColumnVisible(colId)) return null;
+                        const colDef = COLUMN_DEFINITIONS[colId];
+                        if (!colDef) return null;
+                        
+                        return (
+                          <Draggable key={colId} draggableId={`col-${colId}`} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                className={`${colDef.width} shrink-0 ${colId === 'rank' || colId === 'business_score' || colId === 'ageing' ? 'text-center' : ''} cursor-grab active:cursor-grabbing ${snapshot.isDragging ? 'bg-brand-gold/10 rounded px-2 shadow-sm' : ''}`}
+                              >
+                                <SimpleColumnHeader 
+                                  label={colDef.label} 
+                                  columnId={colId} 
+                                  sortDirection={columnSort.columnId === colId ? columnSort.direction : null} 
+                                  onSort={handleSort} 
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        );
+                      })}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
 
               <DragDropContext onDragEnd={handleDragEnd}>
                 <Droppable droppableId="requests">
                   {provided => <div {...provided.droppableProps} ref={provided.innerRef}>
                       {paginatedRequests.map((request: any, index: number) => {
-                  return <Draggable key={request.id} draggableId={request.id} index={index}>
-                            {(provided, snapshot) => <div ref={provided.innerRef} {...provided.draggableProps} className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors ${snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''} ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`} onClick={() => setSelectedRequestId(request.id)}>
+                        // Helper to render column value based on colId
+                        const renderColumnValue = (colId: string) => {
+                          const colDef = COLUMN_DEFINITIONS[colId];
+                          if (!colDef || !isColumnVisible(colId)) return null;
+                          
+                          switch(colId) {
+                            case 'request_key':
+                              return (
+                                <div className="w-24 shrink-0">
+                                  <span className="text-sm text-brand-gold">
+                                    {request.request_key ? request.request_key.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key).padStart(3, '0')}` : '-'}
+                                  </span>
+                                </div>
+                              );
+                            case 'rank':
+                              return (
+                                <div className="w-12 shrink-0 text-center">
+                                  <span className="text-sm text-foreground inline-flex items-start gap-0.5">
+                                    {(request.rank || startIndex + index + 1) <= 10 && <Star className="h-2 w-2 text-red-400 fill-red-400 -mt-0.5" strokeWidth={1} />}
+                                    {request.rank || startIndex + index + 1}
+                                  </span>
+                                </div>
+                              );
+                            case 'title':
+                              return (
+                                <div className="flex-1 min-w-0">
+                                  <span className="text-sm text-foreground truncate block">{request.title}</span>
+                                </div>
+                              );
+                            case 'process_step':
+                              return (
+                                <div className="w-36 shrink-0">
+                                  {getStatusBadge(request.process_step)}
+                                </div>
+                              );
+                            case 'business_score':
+                              return (
+                                <div className="w-24 shrink-0 text-center">
+                                  {getBusinessScoreBadge(request.business_score)}
+                                </div>
+                              );
+                            case 'planned_quarter':
+                              return (
+                                <div className="w-20 shrink-0 text-sm text-muted-foreground">
+                                  {request.planned_quarter || '-'}
+                                </div>
+                              );
+                            case 'end_date':
+                              return (
+                                <div className="w-24 shrink-0 text-sm text-muted-foreground">
+                                  {formatDate(request.end_date)}
+                                </div>
+                              );
+                            case 'ageing':
+                              return (
+                                <div className="w-20 shrink-0 text-center text-sm text-muted-foreground">
+                                  {calculateAgeing(request.created_at)} days
+                                </div>
+                              );
+                            default:
+                              return null;
+                          }
+                        };
+                        
+                        return (
+                          <Draggable key={request.id} draggableId={request.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div 
+                                ref={provided.innerRef} 
+                                {...provided.draggableProps} 
+                                className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors ${snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''} ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`} 
+                                onClick={() => setSelectedRequestId(request.id)}
+                              >
                                 <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
                                   <GripVertical className="h-4 w-4" />
                                 </div>
@@ -432,45 +526,12 @@ export default function IndustryPage() {
                                   <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
                                 </div>
 
-                                {isColumnVisible('request_key') && <div className="w-24 shrink-0">
-                                    <span className="text-sm text-brand-gold">
-                                      {request.request_key ? request.request_key.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key).padStart(3, '0')}` : '-'}
-                                    </span>
-                                  </div>}
-
-                                {isColumnVisible('rank') && <div className="w-12 shrink-0 text-center">
-                                    <span className="text-sm text-foreground inline-flex items-start gap-0.5">
-                                      {(request.rank || startIndex + index + 1) <= 10 && <Star className="h-2 w-2 text-red-400 fill-red-400 -mt-0.5" strokeWidth={1} />}
-                                      {request.rank || startIndex + index + 1}
-                                    </span>
-                                  </div>}
-
-                                {isColumnVisible('title') && <div className="flex-1 min-w-0">
-                                    <span className="text-sm text-foreground truncate block">{request.title}</span>
-                                  </div>}
-
-                                {isColumnVisible('process_step') && <div className="w-36 shrink-0">
-                                    {getStatusBadge(request.process_step)}
-                                  </div>}
-
-                                {isColumnVisible('business_score') && <div className="w-24 shrink-0 text-center">
-                                    {getBusinessScoreBadge(request.business_score)}
-                                  </div>}
-
-                                {isColumnVisible('planned_quarter') && <div className="w-20 shrink-0 text-sm text-muted-foreground">
-                                    {request.planned_quarter || '-'}
-                                  </div>}
-
-                                {isColumnVisible('end_date') && <div className="w-24 shrink-0 text-sm text-muted-foreground">
-                                    {formatDate(request.end_date)}
-                                  </div>}
-
-                                {isColumnVisible('ageing') && <div className="w-20 shrink-0 text-center text-sm text-muted-foreground">
-                                    {calculateAgeing(request.created_at)} days
-                                  </div>}
-                              </div>}
-                          </Draggable>;
-                })}
+                                {columnOrder.map(colId => renderColumnValue(colId))}
+                              </div>
+                            )}
+                          </Draggable>
+                        );
+                      })}
                       {provided.placeholder}
                     </div>}
                 </Droppable>

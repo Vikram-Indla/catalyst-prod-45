@@ -85,6 +85,18 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
     setJustification(data.rank_override_justification || '');
   }, [data.rank_override_justification]);
 
+  // Auto-save business_score when inputs change
+  useEffect(() => {
+    // Only update if the calculated score differs from stored value
+    if (data.business_score !== businessScore && (executiveUrgency > 0 || businessValue > 0 || complexity > 0)) {
+      onChange('business_score', businessScore);
+    }
+  }, [businessScore, data.business_score, executiveUrgency, businessValue, complexity, onChange]);
+
+  const handleInputChange = (field: string, value: number) => {
+    onChange(field, value);
+  };
+
   const handleRankChange = (value: string) => {
     const newRank = parseInt(value);
     onChange('rank', newRank);
@@ -133,7 +145,7 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
                   </p>
                   <Select
                     value={String(executiveUrgency)}
-                    onValueChange={(value) => onChange('executive_urgency', parseInt(value))}
+                    onValueChange={(value) => handleInputChange('executive_urgency', parseInt(value))}
                   >
                     <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
@@ -162,7 +174,7 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
                   </p>
                   <Select
                     value={String(businessValue)}
-                    onValueChange={(value) => onChange('business_value', parseInt(value))}
+                    onValueChange={(value) => handleInputChange('business_value', parseInt(value))}
                   >
                     <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
@@ -191,7 +203,7 @@ export function BusinessScoreViewTab({ data, onChange }: BusinessScoreViewTabPro
                   </p>
                   <Select
                     value={String(complexity)}
-                    onValueChange={(value) => onChange('complexity_score', parseInt(value))}
+                    onValueChange={(value) => handleInputChange('complexity_score', parseInt(value))}
                   >
                     <SelectTrigger className="mt-2 w-full">
                       <SelectValue />
