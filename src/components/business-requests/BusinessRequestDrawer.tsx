@@ -523,7 +523,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               ))}
             </TabsList>
 
-            <div className="executive-drawer-content flex-1 overflow-y-auto">
+            <div className="executive-drawer-content flex-1 flex flex-col min-h-0 overflow-hidden">
               <TabsContent value="demand-details" className="m-0 focus-visible:outline-none">
                 <DemandDetailsViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
@@ -541,7 +541,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
               <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
                 {requestId && <DiscussionsViewTab requestId={requestId} />}
               </TabsContent>
-              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none h-[500px]">
+              <TabsContent value="audit-history" className="m-0 focus-visible:outline-none flex-1 flex flex-col min-h-0">
                 {requestId && <AuditHistoryTab requestId={requestId} />}
               </TabsContent>
             </div>
