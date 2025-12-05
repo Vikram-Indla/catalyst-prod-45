@@ -14,6 +14,7 @@ import { format, subDays, startOfDay, endOfDay, startOfQuarter, endOfQuarter, ad
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
 import { UserPicker } from '@/components/ui/user-picker';
+import { BusinessOwnerPicker } from '@/components/ui/business-owner-picker';
 
 export type SmartFilterType = 'myOpen' | 'highPriority' | 'newThisWeek' | 'overdue' | 'currentQuarter' | 'unassigned' | null;
 
@@ -35,7 +36,7 @@ export interface SmartFilters {
   
   // Right column filters
   department?: string[];
-  businessOwner?: string;
+  businessOwnerValues?: string[]; // Changed to array for multi-select
   reporterIds?: string[]; // Changed to array of user IDs for multi-select
   assigneeIds?: string[]; // Changed to array of user IDs for multi-select
   deliveryPlatform?: string[];
@@ -402,11 +403,10 @@ export function SmartFiltersDialog({
             {/* Business Owner */}
             <div className="space-y-1.5">
               <Label className="text-sm">Business Owner</Label>
-              <Input
-                placeholder="Search by name..."
-                value={localFilters.businessOwner || ''}
-                onChange={(e) => updateFilter('businessOwner', e.target.value || undefined)}
-                className="h-9"
+              <BusinessOwnerPicker
+                value={localFilters.businessOwnerValues || []}
+                onChange={(value) => updateFilter('businessOwnerValues', value)}
+                placeholder="Search business owners..."
               />
             </div>
 
