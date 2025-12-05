@@ -690,19 +690,17 @@ export default function IndustryPage() {
               </Button>
               
               {/* Pagination controls beside view toggle */}
-              {totalPages > 1 && (
-                <div className="flex items-center gap-1 border-l border-r px-3 border-border">
-                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
-                    {currentPage} / {totalPages}
-                  </span>
-                  <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages} className="h-8 w-8 p-0">
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              )}
+              <div className="flex items-center gap-1 border-l border-r px-3 border-border">
+                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
+                  {sortedRequests.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, sortedRequests.length)} of ${sortedRequests.length}` : '0 items'}
+                </span>
+                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-8 w-8 p-0">
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
 
               <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
             </div>
