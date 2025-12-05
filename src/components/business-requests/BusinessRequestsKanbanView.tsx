@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
@@ -27,6 +27,8 @@ interface BusinessRequest {
 interface BusinessRequestsKanbanViewProps {
   requests: BusinessRequest[];
   onRequestSelect: (id: string) => void;
+  allExpanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
 }
 
 import { PROCESS_STEPS } from '@/types/business-request';
@@ -38,12 +40,21 @@ const KANBAN_COLUMNS = PROCESS_STEPS.map(step => ({
   color: step.color,
 }));
 
-export function BusinessRequestsKanbanView({ requests, onRequestSelect }: BusinessRequestsKanbanViewProps) {
+export function BusinessRequestsKanbanView({ requests, onRequestSelect, allExpanded, onExpandedChange }: BusinessRequestsKanbanViewProps) {
   const queryClient = useQueryClient();
   // All columns collapsed by default except 'in_progress'
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(
     new Set(['request_received', 'under_study', 'awaiting_business_response', 'reopen', 'on_hold', 'closed', 'completed'])
   );
+
+  // Sync with external expand/collapse control
+  useEffect(() => {
+    if (allExpanded === true) {
+      setCollapsedColumns(new Set());
+    } else if (allExpanded === false) {
+      setCollapsedColumns(new Set(KANBAN_COLUMNS.map(c => c.id)));
+    }
+  }, [allExpanded]);
 
   const toggleColumnCollapse = (columnId: string) => {
     setCollapsedColumns(prev => {

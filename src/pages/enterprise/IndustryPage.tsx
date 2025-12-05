@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Lock, Filter } from 'lucide-react';
+import { Plus, Search, Download, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Lock, Filter, Maximize2, Minimize2 } from 'lucide-react';
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
@@ -286,6 +286,7 @@ export default function IndustryPage() {
   const [sortedRequests, setSortedRequests] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [kanbanExpanded, setKanbanExpanded] = useState<boolean | undefined>(undefined);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [filters, setFilters] = useState<SmartFilters>({});
   const [columnSort, setColumnSort] = useState<ColumnSort>({
@@ -684,6 +685,28 @@ export default function IndustryPage() {
             {/* View Toggle - separate container */}
             <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
 
+            {/* Expand/Collapse All - only visible in kanban mode */}
+            {viewMode === 'kanban' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setKanbanExpanded(prev => prev === true ? false : true)}
+                className="border-border gap-2"
+              >
+                {kanbanExpanded ? (
+                  <>
+                    <Minimize2 className="h-4 w-4" />
+                    Collapse All
+                  </>
+                ) : (
+                  <>
+                    <Maximize2 className="h-4 w-4" />
+                    Expand All
+                  </>
+                )}
+              </Button>
+            )}
+
             <div className="flex items-center gap-2">
               <Button 
                 variant="outline" 
@@ -713,7 +736,12 @@ export default function IndustryPage() {
             {isLoading ? (
               <div className="text-center py-8 text-muted-foreground">Loading...</div>
             ) : viewMode === 'kanban' ? (
-              <BusinessRequestsKanbanView requests={sortedRequests} onRequestSelect={setSelectedRequestId} />
+              <BusinessRequestsKanbanView 
+                requests={sortedRequests} 
+                onRequestSelect={setSelectedRequestId}
+                allExpanded={kanbanExpanded}
+                onExpandedChange={setKanbanExpanded}
+              />
             ) : sortedRequests.length > 0 ? (
             <Card className="flex-1 flex flex-col min-h-0 overflow-hidden border border-[#E4E6EB] rounded shadow-none">
                 {/* Single scroll container for header + body */}
