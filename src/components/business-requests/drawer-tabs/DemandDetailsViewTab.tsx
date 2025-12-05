@@ -12,6 +12,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { RichTextEditor } from '../RichTextEditor';
+import { UserPicker } from '@/components/ui/user-picker';
 import { 
   BusinessRequest, 
   PROCESS_STEPS
@@ -361,20 +362,13 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
 
             <div>
               <Label className="text-sm font-medium">Assignee</Label>
-              <Select
-                value={data.requestor || ''}
-                onValueChange={(value) => onChange('requestor', value)}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select assignee..." />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border shadow-lg z-50">
-                  <SelectItem value="admin">Admin</SelectItem>
-                  <SelectItem value="manager">Manager</SelectItem>
-                  <SelectItem value="analyst">Business Analyst</SelectItem>
-                  <SelectItem value="tech_lead">Technical Lead</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="mt-1.5">
+                <UserPicker
+                  value={data.assignee || null}
+                  onChange={(value) => onChange('assignee', value as string | null)}
+                  placeholder="Select assignee..."
+                />
+              </div>
             </div>
           </div>
 
