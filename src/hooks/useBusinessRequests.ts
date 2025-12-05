@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { BusinessRequest, CreateBusinessRequestFormData, ReadinessChecklist } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
@@ -36,6 +37,31 @@ const transformRow = (row: any): BusinessRequest => ({
 });
 
 export function useBusinessRequests(searchQuery?: string) {
+  const queryClient = useQueryClient();
+  
+  // Set up real-time subscription for automatic updates
+  useEffect(() => {
+    const channel = supabase
+      .channel('business-requests-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'business_requests'
+        },
+        () => {
+          // Refetch data when any change occurs
+          queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+  
   return useQuery({
     queryKey: ['business-requests', searchQuery],
     queryFn: async () => {
