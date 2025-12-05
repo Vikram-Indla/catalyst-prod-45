@@ -45,7 +45,7 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
       toast.info('Target Completion Date unlocked');
     } else {
       if (!data.impl_start_date) {
-        toast.error('Cannot lock: Initiation Date must be populated first');
+        toast.error('Cannot lock: Kickoff Date must be populated first');
         return;
       }
       if (!data.end_date) {
@@ -180,15 +180,18 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
             </div>
 
             <div>
-              <Label className="text-xs font-medium">Initiation</Label>
+              <Label className="text-xs font-medium">Kickoff</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
+                    disabled={!['approved', 'implement', 'closed'].includes(data.process_step || '')}
                     className={cn(
                       "w-full justify-start text-left font-normal mt-1 h-9 text-sm",
-                      !data.impl_start_date && "text-muted-foreground"
+                      !data.impl_start_date && "text-muted-foreground",
+                      !['approved', 'implement', 'closed'].includes(data.process_step || '') && "opacity-60 cursor-not-allowed"
                     )}
+                    title={!['approved', 'implement', 'closed'].includes(data.process_step || '') ? 'Available when status is Approved or later' : undefined}
                   >
                     <CalendarIcon className="mr-1.5 h-3.5 w-3.5" />
                     {data.impl_start_date ? format(new Date(data.impl_start_date), 'dd/MM/yy') : 'Select'}
