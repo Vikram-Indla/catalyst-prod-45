@@ -13,6 +13,7 @@ import { SimpleColumnHeader, SortDirection } from '@/components/business-request
 import { DraggableColumnHeaders, useColumnWidths, ColumnWidths } from '@/components/business-requests/DraggableColumnHeaders';
 import { BusinessRequestsKanbanView } from '@/components/business-requests/BusinessRequestsKanbanView';
 import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
+import { InlineEditableCell } from '@/components/business-requests/InlineEditableCell';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
@@ -24,6 +25,9 @@ import { useIndustryPreferences } from '@/hooks/useIndustryPreferences';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/lib/auth';
 import { cn } from '@/lib/utils';
+
+// Non-editable columns
+const NON_EDITABLE_COLUMNS = ['request_key', 'rank', 'title', 'submitted_date', 'ageing', 'business_score'];
 
 const COLUMN_DEFINITIONS: Record<string, { label: string; defaultWidth: number; minWidth: number }> = {
   request_key: { label: 'Request ID', defaultWidth: 110, minWidth: 100 },
@@ -561,6 +565,21 @@ export default function IndustryPage() {
     }));
   };
 
+  // Inline edit save handler
+  const handleInlineSave = useCallback(async (requestId: string, field: string, value: any) => {
+    try {
+      const { error } = await supabase
+        .from('business_requests')
+        .update({ [field]: value })
+        .eq('id', requestId);
+      
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  }, [queryClient, toast]);
+
   // Jira-style status badge colors
   const STATUS_BADGE_STYLES: Record<string, { bg: string; text: string }> = {
     'implemented': { bg: 'bg-emerald-100', text: 'text-emerald-700' },
@@ -801,32 +820,32 @@ export default function IndustryPage() {
                   </div>
                   
                   {/* Inner table with fixed min-width for horizontal scroll */}
-                  <div style={{ minWidth: '1400px' }}>
+                  <div className="table border-collapse" style={{ minWidth: '1400px', width: '100%' }}>
                     {/* Column Headers - Sticky */}
-                    <div className="sticky top-0 z-30 flex items-stretch h-10 bg-white border-b border-[#DFE1E6] text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide">
+                    <div className="table-row sticky top-0 z-30 bg-white text-[12px] font-medium text-[#5E6C84] uppercase tracking-wide">
                       {/* Leading icons placeholder - fixed width */}
-                      <div className="h-full flex items-center gap-2 px-4 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
-                        <div className="w-8" /> {/* Drag */}
-                        <div className="w-8" /> {/* Checkbox */}
+                      <div className="table-cell align-middle h-10 px-4 border-b border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-8" /> {/* Drag */}
+                          <div className="w-8" /> {/* Checkbox */}
+                        </div>
                       </div>
                       
-                      {/* Column headers - using flex-grow for remaining space */}
+                      {/* Column headers */}
                       {columns.filter(col => col.visible).map((col, index, visibleCols) => {
                         const colDef = COLUMN_DEFINITIONS[col.id];
                         if (!colDef) return null;
                         const width = columnWidths[col.id] || colDef.defaultWidth;
                         const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
-                        const isLast = index === visibleCols.length - 1;
                         
                         return (
                           <div 
                             key={col.id}
                             className={cn(
-                              "h-full shrink-0 px-3.5 flex items-center gap-1 border-r border-[#E4E6EB]",
-                              isCentered && "justify-center",
-                              isLast && "border-r-0 flex-1"
+                              "table-cell align-middle h-10 px-3.5 border-b border-r border-[#E4E6EB]",
+                              isCentered && "text-center"
                             )}
-                            style={isLast ? { minWidth: `${colDef.minWidth}px` } : { width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
+                            style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
                           >
                             <SimpleColumnHeader
                               label={colDef.label}
@@ -839,15 +858,17 @@ export default function IndustryPage() {
                       })}
                       
                       {/* Add Column Button */}
-                      <ColumnsDropdown
-                        columns={columns}
-                        onChange={handleColumnsChange}
-                        trigger={
-                          <button className="h-full shrink-0 w-10 flex items-center justify-center text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#FAFBFC] transition-colors border-l border-[#E4E6EB]">
-                            <Plus className="h-4 w-4" />
-                          </button>
-                        }
-                      />
+                      <div className="table-cell align-middle h-10 border-b border-[#E4E6EB]" style={{ width: '40px' }}>
+                        <ColumnsDropdown
+                          columns={columns}
+                          onChange={handleColumnsChange}
+                          trigger={
+                            <button className="h-full w-10 flex items-center justify-center text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#FAFBFC] transition-colors">
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          }
+                        />
+                      </div>
                     </div>
 
                     {/* Table Body Rows */}
@@ -867,6 +888,8 @@ export default function IndustryPage() {
                               const renderColumnValue = (col: ColumnConfig) => {
                                 const colDef = COLUMN_DEFINITIONS[col.id];
                                 if (!colDef || !col.visible) return null;
+                                
+                                const isEditable = !NON_EDITABLE_COLUMNS.includes(col.id);
                                 
                                 const cellContent = (() => {
                                   switch(col.id) {
@@ -899,35 +922,48 @@ export default function IndustryPage() {
                                     case 'title':
                                       return <span className="text-[14px] text-[#172B4D] truncate">{request.title}</span>;
                                     case 'process_step':
-                                      return getStatusBadge(request.process_step);
+                                      return (
+                                        <InlineEditableCell
+                                          value={request.process_step}
+                                          field="process_step"
+                                          requestId={request.id}
+                                          onSave={handleInlineSave}
+                                          type="select"
+                                          displayValue={getStatusBadge(request.process_step)}
+                                        />
+                                      );
                                     case 'business_score':
                                       return getBusinessScoreBadge(request);
                                     case 'submitted_date':
                                       return <span className="text-[14px] text-[#5E6C84] truncate">{formatDate(request.created_at)}</span>;
                                     case 'planned_quarter':
                                       return (
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <div className="flex items-center gap-1 cursor-help">
+                                        <InlineEditableCell
+                                          value={request.planned_quarter}
+                                          field="planned_quarter"
+                                          requestId={request.id}
+                                          onSave={handleInlineSave}
+                                          type="select"
+                                          displayValue={
+                                            <div className="flex items-center gap-1">
                                               <span className="text-[14px] text-[#5E6C84] truncate">{request.planned_quarter || '-'}</span>
                                               {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
                                                 <span className="text-[10px] px-1 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">{quarterDays}d</span>
                                               )}
                                             </div>
-                                          </TooltipTrigger>
-                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs">
-                                            {quarterDays !== null ? (quarterDays > 0 ? `${quarterDays} days until quarter close` : 'Quarter has ended') : 'No quarter assigned'}
-                                          </TooltipContent>
-                                        </Tooltip>
+                                          }
+                                        />
                                       );
                                     case 'end_date':
                                       return (
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <span className={`text-[14px] cursor-help truncate ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
-                                          </TooltipTrigger>
-                                          <TooltipContent side="top" className="bg-brand-dark text-white text-xs">{targetInfo.tooltip}</TooltipContent>
-                                        </Tooltip>
+                                        <InlineEditableCell
+                                          value={request.end_date}
+                                          field="end_date"
+                                          requestId={request.id}
+                                          onSave={handleInlineSave}
+                                          type="date"
+                                          displayValue={<span className={`text-[14px] truncate ${targetInfo.class}`}>{formatDate(request.end_date)}</span>}
+                                        />
                                       );
                                     case 'ageing':
                                       return (
@@ -947,15 +983,55 @@ export default function IndustryPage() {
                                         </Tooltip>
                                       );
                                     case 'delivery_platform':
-                                      return <span className="text-[14px] text-[#172B4D] truncate">{request.delivery_platform || '-'}</span>;
+                                      return (
+                                        <InlineEditableCell
+                                          value={request.delivery_platform}
+                                          field="delivery_platform"
+                                          requestId={request.id}
+                                          onSave={handleInlineSave}
+                                          type="select"
+                                        />
+                                      );
                                     case 'requestor':
-                                      return <span className="text-[14px] text-[#172B4D] truncate">{request.requestor || '-'}</span>;
+                                      return (
+                                        <InlineEditableCell
+                                          value={request.requestor}
+                                          field="requestor"
+                                          requestId={request.id}
+                                          onSave={handleInlineSave}
+                                          type="user"
+                                        />
+                                      );
                                     case 'business_owner':
-                                      return <span className="text-[14px] text-[#172B4D] truncate">{request.business_owner || '-'}</span>;
+                                      return (
+                                        <InlineEditableCell
+                                          value={request.business_owner}
+                                          field="business_owner"
+                                          requestId={request.id}
+                                          onSave={handleInlineSave}
+                                          type="user"
+                                        />
+                                      );
                                     case 'department':
-                                      return <span className="text-[14px] text-[#5E6C84] truncate">{request.department || '-'}</span>;
+                                      return (
+                                        <InlineEditableCell
+                                          value={request.department}
+                                          field="department"
+                                          requestId={request.id}
+                                          onSave={handleInlineSave}
+                                          type="select"
+                                        />
+                                      );
                                     case 'created_by':
-                                      return <span className="text-[14px] text-[#5E6C84] truncate">{request.created_by || '-'}</span>;
+                                      return (
+                                        <InlineEditableCell
+                                          value={request.created_by}
+                                          field="created_by"
+                                          requestId={request.id}
+                                          onSave={handleInlineSave}
+                                          type="user"
+                                        />
+                                      );
                                     default:
                                       return null;
                                   }
@@ -967,51 +1043,53 @@ export default function IndustryPage() {
                               return (
                                 <Draggable key={request.id} draggableId={request.id} index={index}>
                                   {(provided, snapshot) => (
-                                      <div ref={provided.innerRef} {...provided.draggableProps}>
+                                      <div ref={provided.innerRef} {...provided.draggableProps} className="table-row-group">
                                       <div 
                                         className={cn(
-                                          "flex items-stretch min-h-[44px] border-b border-[#E4E6EB] cursor-pointer transition-colors",
+                                          "table-row cursor-pointer transition-colors",
                                           "hover:bg-[#FAFBFC]",
-                                          snapshot.isDragging && 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold',
+                                          snapshot.isDragging && 'bg-brand-gold/5',
                                           selectedRows.includes(request.id) ? 'bg-blue-50' : 'bg-white'
                                         )}
-                                        style={{ minWidth: '100%' }}
                                         onClick={() => setSelectedRequestId(request.id)}
                                       >
                                         {/* Leading icons - fixed width matching header */}
-                                        <div className="h-auto self-stretch flex items-center gap-2 px-4 border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
-                                          <div {...provided.dragHandleProps} className="w-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground flex items-center justify-center" onClick={e => e.stopPropagation()}>
-                                            <GripVertical className="h-4 w-4" />
-                                          </div>
-                                          
-                                          <div className="w-8 flex items-center justify-center" onClick={e => e.stopPropagation()}>
-                                            <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
+                                        <div className="table-cell align-middle h-11 px-4 border-b border-r border-[#E4E6EB]" style={{ width: '80px', minWidth: '80px' }}>
+                                          <div className="flex items-center gap-2">
+                                            <div {...provided.dragHandleProps} className="w-8 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                                              <GripVertical className="h-4 w-4" />
+                                            </div>
+                                            
+                                            <div className="w-8 flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                                              <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
+                                            </div>
                                           </div>
                                         </div>
 
                                         {/* Column values */}
-                                        {columns.filter(col => col.visible).map((col, colIndex, visibleCols) => {
+                                        {columns.filter(col => col.visible).map((col) => {
                                           const colDef = COLUMN_DEFINITIONS[col.id];
                                           if (!colDef) return null;
                                           
                                           const width = columnWidths[col.id] || colDef.defaultWidth;
                                           const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
-                                          const isLast = colIndex === visibleCols.length - 1;
                                           
                                           return (
                                             <div 
                                               key={col.id}
                                               className={cn(
-                                                "self-stretch shrink-0 px-3.5 flex items-center min-w-0 border-r border-[#E4E6EB]",
-                                                isCentered && "justify-center",
-                                                isLast && "border-r-0 flex-1"
+                                                "table-cell align-middle h-11 px-3.5 border-b border-r border-[#E4E6EB]",
+                                                isCentered && "text-center"
                                               )}
-                                              style={isLast ? { minWidth: `${colDef.minWidth}px` } : { width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
+                                              style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
                                             >
                                               {renderColumnValue(col)}
                                             </div>
                                           );
                                         })}
+                                        
+                                        {/* Empty cell for + column */}
+                                        <div className="table-cell align-middle h-11 border-b border-[#E4E6EB]" style={{ width: '40px' }} />
                                       </div>
                                     </div>
                                   )}
