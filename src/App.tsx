@@ -380,6 +380,7 @@ const App = () => (
               <Route path="/teams/:teamId/reports/work-tree" element={<WorkTreePage />} />
               <Route path="/teams/:teamId/pages/assessments" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/pages/metrics" element={<TeamComingSoon />} />
+              <Route path="/teams/:teamId/kanban-boards" element={<KanbanBoardsPage />} />
 
               {/* Portfolio Routes with :portfolioId */}
               <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
@@ -408,6 +409,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/pages/assessments" element={<TeamComingSoon />} />
               <Route path="/portfolio/:portfolioId/pages/metrics" element={<TeamComingSoon />} />
               <Route path="/portfolio/:portfolioId/pages/meetings" element={<TeamComingSoon />} />
+              <Route path="/portfolio/:portfolioId/kanban-boards" element={<KanbanBoardsPage />} />
 
               {/* Program Routes with :programId */}
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
@@ -433,6 +435,7 @@ const App = () => (
               <Route path="/programs/:programId/reports/board-history" element={<ProgramBoardHistory />} />
               <Route path="/programs/:programId/reports/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/reports/pi-objectives" element={<PIObjectives />} />
+              <Route path="/programs/:programId/kanban-boards" element={<KanbanBoardsPage />} />
               <Route path="/programs/:programId/pages/assessments" element={<TeamComingSoon />} />
               <Route path="/programs/:programId/pages/metrics" element={<TeamComingSoon />} />
               <Route path="/programs/:programId/pages/meetings" element={<TeamComingSoon />} />
@@ -483,6 +486,7 @@ const App = () => (
               <Route path="/team/:teamId/reports/story-point-progress" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/reports/team-velocity-trend" element={<TeamComingSoon />} />
               <Route path="/team/:teamId/reports/work-tree" element={<WorkTreePage />} />
+              <Route path="/team/:teamId/kanban-boards" element={<KanbanBoardsPage />} />
               
               {/* Team More Pages - Placeholder Routes */}
               <Route path="/team/:teamId/pages/assessments" element={<TeamComingSoon />} />
