@@ -156,7 +156,7 @@ export function InlineEditableCell({
         <PopoverTrigger asChild>
           {renderDisplay()}
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0 bg-white shadow-lg border z-[9999]" align="start">
+        <PopoverContent className="w-[200px] p-0 bg-white shadow-lg border z-[9999]" align="start" onClick={(e) => e.stopPropagation()}>
           <div className="max-h-[300px] overflow-y-auto">
             {getOptions().map((opt) => (
               <div
@@ -165,7 +165,8 @@ export function InlineEditableCell({
                   "px-3 py-2 cursor-pointer hover:bg-[#F4F5F7] flex items-center gap-2 text-[14px]",
                   editValue === opt.value && "bg-[#E9F2FF]"
                 )}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   onSave(requestId, field, opt.value);
                   setIsOpen(false);
                 }}
@@ -192,7 +193,7 @@ export function InlineEditableCell({
         <PopoverTrigger asChild>
           {renderDisplay()}
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0 bg-white shadow-lg border z-[9999]" align="start">
+        <PopoverContent className="w-auto p-0 bg-white shadow-lg border z-[9999]" align="start" onClick={(e) => e.stopPropagation()}>
           <Calendar
             mode="single"
             selected={dateValue}
