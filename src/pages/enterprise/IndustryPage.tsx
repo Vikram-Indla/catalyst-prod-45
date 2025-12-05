@@ -431,7 +431,17 @@ export default function IndustryPage() {
     );
   };
 
-  const getBusinessScoreBadge = (score: number | null | undefined) => {
+  const getBusinessScoreBadge = (request: any) => {
+    // Check if force ranked - show "Manual" instead of score
+    if (request.is_force_ranked) {
+      return (
+        <span className="text-xs font-medium text-brand-gold px-2 py-0.5 rounded bg-brand-gold/10">
+          Manual
+        </span>
+      );
+    }
+    
+    const score = request.business_score;
     if (score === null || score === undefined) {
       return <span className="text-muted-foreground text-sm">-</span>;
     }
@@ -699,7 +709,7 @@ export default function IndustryPage() {
                               case 'process_step':
                                 return <div className="w-36 shrink-0">{getStatusBadge(request.process_step)}</div>;
                               case 'business_score':
-                                return <div className="w-20 shrink-0 text-center">{getBusinessScoreBadge(request.business_score)}</div>;
+                                return <div className="w-20 shrink-0 text-center">{getBusinessScoreBadge(request)}</div>;
                               case 'submitted_date':
                                 return (
                                   <div className="w-28 shrink-0">
