@@ -188,7 +188,7 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({ isOpen, onClose }) =
                           <SelectValue placeholder="Select field" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Skip</SelectItem>
+                          <SelectItem value="skip">Skip</SelectItem>
                           {Object.entries(FIELD_MAPPINGS).map(([key, label]) => (
                             <SelectItem key={key} value={key}>{label}</SelectItem>
                           ))}

@@ -139,7 +139,7 @@ export function CycleCasesTab({ selectedCases, onCasesChange, fromSetId }: Cycle
                 <SelectValue placeholder="Filter by folder" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Folders</SelectItem>
+                <SelectItem value="all">All Folders</SelectItem>
                 {folders.map((f: any) => (
                   <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
                 ))}

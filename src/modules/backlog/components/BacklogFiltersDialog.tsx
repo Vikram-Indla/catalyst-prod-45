@@ -87,17 +87,17 @@ export function BacklogFiltersDialog({
           <div className="space-y-2">
             <Label>Portfolio</Label>
             <Select
-              value={localFilters.portfolio_id as string || ''}
+              value={localFilters.portfolio_id as string || 'all'}
               onValueChange={(value) =>
-                setLocalFilters({ ...localFilters, portfolio_id: value || undefined })
+                setLocalFilters({ ...localFilters, portfolio_id: value === 'all' ? undefined : value })
               }
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Portfolios" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Portfolios</SelectItem>
-                {portfolios?.map((portfolio) => (
+                <SelectItem value="all">All Portfolios</SelectItem>
+                {portfolios?.filter((portfolio) => portfolio.id).map((portfolio) => (
                   <SelectItem key={portfolio.id} value={portfolio.id}>
                     {portfolio.name}
                   </SelectItem>
@@ -109,16 +109,16 @@ export function BacklogFiltersDialog({
           <div className="space-y-2">
             <Label>State</Label>
             <Select
-              value={localFilters.state as string || ''}
+              value={localFilters.state as string || 'all'}
               onValueChange={(value) =>
-                setLocalFilters({ ...localFilters, state: value || undefined })
+                setLocalFilters({ ...localFilters, state: value === 'all' ? undefined : value })
               }
             >
               <SelectTrigger>
                 <SelectValue placeholder="All States" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All States</SelectItem>
+                <SelectItem value="all">All States</SelectItem>
                 {states.map((state) => (
                   <SelectItem key={state.value} value={state.value}>
                     {state.label}
@@ -131,16 +131,16 @@ export function BacklogFiltersDialog({
           <div className="space-y-2">
             <Label>Health</Label>
             <Select
-              value={localFilters.health as string || ''}
+              value={localFilters.health as string || 'all'}
               onValueChange={(value) =>
-                setLocalFilters({ ...localFilters, health: value || undefined })
+                setLocalFilters({ ...localFilters, health: value === 'all' ? undefined : value })
               }
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Health Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Health Statuses</SelectItem>
+                <SelectItem value="all">All Health Statuses</SelectItem>
                 {healthOptions.map((health) => (
                   <SelectItem key={health.value} value={health.value}>
                     {health.label}
