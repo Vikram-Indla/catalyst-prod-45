@@ -173,16 +173,9 @@ interface ColumnSort {
   direction: SortDirection;
 }
 
-// Tie-breaking sort with cascade logic (only used for Rank column)
-const sortByRankWithTieBreaker = (items: any[]) => {
+// Default sort by Business Score with tie-breaker cascade (no pinning)
+const sortByScoreWithTieBreaker = (items: any[]) => {
   return [...items].sort((a, b) => {
-    // Force-ranked items maintain their explicit rank position
-    if (a.is_force_ranked && b.is_force_ranked) {
-      return (a.rank ?? 999) - (b.rank ?? 999);
-    }
-    if (a.is_force_ranked) return -1;
-    if (b.is_force_ranked) return 1;
-    
     // 1. Primary: Business Score (descending)
     const scoreA = a.business_score ?? 0;
     const scoreB = b.business_score ?? 0;
@@ -359,8 +352,8 @@ export default function IndustryPage() {
     // Apply sorting based on selected column
     let sorted: any[];
     if (columnSort.columnId === 'rank' || !columnSort.direction) {
-      // Use business logic sort for Rank column
-      sorted = sortByRankWithTieBreaker(filtered);
+      // Use default sort by score with tie-breakers
+      sorted = sortByScoreWithTieBreaker(filtered);
     } else {
       // Use normal column sort for other columns
       sorted = sortByColumn(filtered, columnSort.columnId, columnSort.direction);
