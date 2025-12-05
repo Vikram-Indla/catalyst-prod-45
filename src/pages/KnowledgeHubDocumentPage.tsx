@@ -12,6 +12,7 @@ import { DocumentAttachments } from '@/components/knowledge-hub/DocumentAttachme
 import { DocumentExport } from '@/components/knowledge-hub/DocumentExport';
 import { DocumentWatchers } from '@/components/knowledge-hub/DocumentWatchers';
 import { DocumentRestrictions } from '@/components/knowledge-hub/DocumentRestrictions';
+import { DocumentFavorite } from '@/components/knowledge-hub/DocumentFavorite';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -215,6 +216,8 @@ export default function KnowledgeHubDocumentPage() {
               </>
             ) : (
               <>
+                {/* Favorite - Source: https://support.atlassian.com/confluence-cloud/docs/save-and-remove-pages-from-your-favorites/ */}
+                {documentId && <DocumentFavorite documentId={documentId} />}
                 {/* Watchers - Source: https://support.atlassian.com/confluence-cloud/docs/watch-pages-spaces-and-blogs/ */}
                 {documentId && <DocumentWatchers documentId={documentId} />}
                 {/* Restrictions - Source: https://support.atlassian.com/confluence-cloud/docs/restrict-a-page-or-space/ */}
