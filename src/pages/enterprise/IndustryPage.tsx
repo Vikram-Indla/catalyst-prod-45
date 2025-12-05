@@ -627,20 +627,20 @@ export default function IndustryPage() {
                   <div className="w-5" />
                   <div className="w-5" />
                   <div className="w-5" />
-                  {columnOrder.map((colId) => {
-                    if (!isColumnVisible(colId)) return null;
-                    const colDef = COLUMN_DEFINITIONS[colId];
+                  {columns.map((col) => {
+                    if (!col.visible) return null;
+                    const colDef = COLUMN_DEFINITIONS[col.id];
                     if (!colDef) return null;
                     
                     return (
                       <div
-                        key={colId}
-                        className={`${colDef.width} shrink-0 ${colId === 'rank' || colId === 'business_score' || colId === 'ageing' ? 'text-center' : ''}`}
+                        key={col.id}
+                        className={`${colDef.width} shrink-0 ${col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing' ? 'text-center' : ''}`}
                       >
                         <SimpleColumnHeader 
                           label={colDef.label} 
-                          columnId={colId} 
-                          sortDirection={columnSort.columnId === colId ? columnSort.direction : null} 
+                          columnId={col.id} 
+                          sortDirection={columnSort.columnId === col.id ? columnSort.direction : null} 
                           onSort={handleSort} 
                         />
                       </div>
@@ -663,11 +663,11 @@ export default function IndustryPage() {
                           const targetInfo = getTargetDateInfo(request.end_date);
                           const quarterDays = getDaysUntilQuarterEnd(request.planned_quarter);
                           
-                          const renderColumnValue = (colId: string) => {
-                            const colDef = COLUMN_DEFINITIONS[colId];
-                            if (!colDef || !isColumnVisible(colId)) return null;
+                          const renderColumnValue = (col: ColumnConfig) => {
+                            const colDef = COLUMN_DEFINITIONS[col.id];
+                            if (!colDef || !col.visible) return null;
                             
-                            switch(colId) {
+                            switch(col.id) {
                               case 'request_key':
                                 return (
                                   <div className="w-24 shrink-0">
@@ -824,7 +824,7 @@ export default function IndustryPage() {
                                       <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
                                     </div>
 
-                                    {columnOrder.map(colId => renderColumnValue(colId))}
+                                    {columns.map(col => renderColumnValue(col))}
                                   </div>
                                   
                                   {isExpanded && (
