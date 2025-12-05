@@ -668,8 +668,8 @@ export default function IndustryPage() {
               <Input placeholder="Search industry requests..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9 bg-white border-border" />
             </div>
 
-            {/* Pagination + View Toggle - right after search */}
-            <div className="flex items-center gap-1 border border-border rounded-md bg-white">
+            {/* Pagination - separate container */}
+            <div className="flex items-center gap-1 border border-border rounded-md bg-white px-1">
               <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
                 <ChevronLeft className="h-4 w-4" />
               </Button>
@@ -679,9 +679,10 @@ export default function IndustryPage() {
               <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-8 w-8 p-0">
                 <ChevronRight className="h-4 w-4" />
               </Button>
-              <div className="border-l border-border h-6" />
-              <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
             </div>
+
+            {/* View Toggle - separate container */}
+            <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
 
             <div className="flex items-center gap-2">
               <Button 
@@ -698,7 +699,6 @@ export default function IndustryPage() {
                   </span>
                 )}
               </Button>
-              {viewMode === 'list' && <ColumnsDropdown columns={columns} onChange={handleColumnsChange} />}
               <Button variant="outline" size="sm" onClick={handleExport} className="border-border">
                 <Download className="h-4 w-4 mr-2" />
                 Export
@@ -985,11 +985,11 @@ export default function IndustryPage() {
                               );
                             })}
                             
-                            {/* Flex fill to extend row */}
-                            <div className="flex-1 h-11 min-w-0" />
+                            {/* Flex fill to extend row to + button */}
+                            <div className="flex-1 h-11 min-w-0 border-r border-[#E4E6EB]" />
                             
                             {/* Empty cell matching header + button */}
-                            <div className="h-11 border-l border-[#E4E6EB] shrink-0" style={{ width: '48px', minWidth: '48px' }} />
+                            <div className="h-11 shrink-0" style={{ width: '48px', minWidth: '48px' }} />
                           </div>
                         );
                       })}
