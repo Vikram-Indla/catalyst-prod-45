@@ -786,9 +786,9 @@ export default function IndustryPage() {
                   leadingContent={
                     <>
                       <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
-                      <div className="w-5" />
-                      <div className="w-5" />
-                      <div className="w-5" />
+                      <div className="w-5 shrink-0" />
+                      <div className="w-5 shrink-0" />
+                      <div className="w-5 shrink-0" />
                     </>
                   }
                 />
@@ -955,25 +955,30 @@ export default function IndustryPage() {
                               {(provided, snapshot) => (
                                 <div ref={provided.innerRef} {...provided.draggableProps}>
                                   <div 
-                                    className={`flex items-center gap-4 px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors
+                                    className={`flex items-center px-4 py-2.5 border-b last:border-b-0 cursor-pointer hover:bg-muted/30 transition-colors
                                       ${snapshot.isDragging ? 'bg-brand-gold/5 shadow-md ring-1 ring-brand-gold' : ''}
                                       ${selectedRows.includes(request.id) ? 'bg-primary/5' : 'bg-card'}`}
                                     onClick={() => setSelectedRequestId(request.id)}
                                   >
-                                    
-                                    <button onClick={(e) => toggleRowExpansion(request.id, e)} className="w-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
-                                      {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRightIcon className="h-4 w-4" />}
-                                    </button>
-                                    
-                                    <div {...provided.dragHandleProps} className="w-5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
-                                      <GripVertical className="h-4 w-4" />
-                                    </div>
-                                    
-                                    <div className="w-5" onClick={e => e.stopPropagation()}>
-                                      <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
+                                    {/* Leading icons - match header structure */}
+                                    <div className="flex items-center shrink-0" style={{ gap: '16px' }}>
+                                      <button onClick={(e) => toggleRowExpansion(request.id, e)} className="w-5 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors">
+                                        {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRightIcon className="h-4 w-4" />}
+                                      </button>
+                                      
+                                      <div {...provided.dragHandleProps} className="w-5 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground" onClick={e => e.stopPropagation()}>
+                                        <GripVertical className="h-4 w-4" />
+                                      </div>
+                                      
+                                      <div className="w-5" onClick={e => e.stopPropagation()}>
+                                        <Checkbox checked={selectedRows.includes(request.id)} onCheckedChange={() => toggleRowSelection(request.id)} className="h-4 w-4" />
+                                      </div>
                                     </div>
 
-                                    {columns.map(col => renderColumnValue(col))}
+                                    {/* Column values - aligned with headers */}
+                                    <div className="flex items-center flex-1">
+                                      {columns.map(col => renderColumnValue(col))}
+                                    </div>
                                   </div>
                                   
                                   {isExpanded && (
