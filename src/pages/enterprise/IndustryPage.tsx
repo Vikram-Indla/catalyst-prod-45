@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Flame, Clock, AlertTriangle, Filter } from 'lucide-react';
-import { SmartFiltersDialog, SmartFilters } from '@/components/business-requests/SmartFiltersDialog';
+import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -1004,7 +1004,7 @@ export default function IndustryPage() {
           requestId={selectedRequestId}
           onRequestChange={(newId) => setSelectedRequestId(newId)}
         />
-        <SmartFiltersDialog
+        <FilterDemandsDialog
           open={filtersDialogOpen}
           onOpenChange={setFiltersDialogOpen}
           filters={filters}
