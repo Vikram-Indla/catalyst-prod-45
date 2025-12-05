@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Flame, Clock, AlertTriangle, Filter } from 'lucide-react';
+import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Flame, Clock, AlertTriangle, Filter } from 'lucide-react';
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
@@ -1002,15 +1002,92 @@ export default function IndustryPage() {
                         )}
                       </Droppable>
                     </DragDropContext>
+                    
+                    {/* + Create Row */}
+                    <div 
+                      className="flex items-center h-11 px-4 border-b border-[#E4E6EB] cursor-pointer hover:bg-[#FAFBFC] transition-colors bg-white"
+                      onClick={() => setCreateModalOpen(true)}
+                    >
+                      <div className="flex items-center gap-2 text-[#5E6C84] hover:text-[#172B4D]">
+                        <Plus className="h-4 w-4" />
+                        <span className="text-[13px] font-medium">Create</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 {/* Pagination Footer */}
-                {totalPages > 1 && (
-                  <div className="px-4 py-2 bg-muted/30 border-t text-xs text-muted-foreground">
+                <div className="px-4 py-3 bg-white border-t flex items-center justify-between">
+                  <div className="text-[13px] text-[#5E6C84]">
                     Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
                   </div>
-                )}
+                  {totalPages > 1 && (
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCurrentPage(1)}
+                        disabled={currentPage === 1}
+                        className="h-8 px-2 text-[13px]"
+                      >
+                        <ChevronsLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="h-8 px-2 text-[13px]"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum;
+                        if (totalPages <= 5) {
+                          pageNum = i + 1;
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1;
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i;
+                        } else {
+                          pageNum = currentPage - 2 + i;
+                        }
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={currentPage === pageNum ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={cn(
+                              "h-8 w-8 text-[13px]",
+                              currentPage === pageNum && "bg-brand-gold text-white hover:bg-brand-gold/90"
+                            )}
+                          >
+                            {pageNum}
+                          </Button>
+                        );
+                      })}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="h-8 px-2 text-[13px]"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={currentPage === totalPages}
+                        className="h-8 px-2 text-[13px]"
+                      >
+                        <ChevronsRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
 
                 {/* Legend Bar */}
                 <div className="px-4 py-2 bg-muted/50 border-t flex items-center gap-6 text-xs text-muted-foreground">
