@@ -760,13 +760,16 @@ export default function IndustryPage() {
                         );
                       })}
                       
-                      {/* Flex fill column for extending to full width */}
-                      <div className="flex-1 flex items-center h-10 min-w-[40px]">
+                      {/* Flex fill to extend row */}
+                      <div className="flex-1 h-10 min-w-0" />
+                      
+                      {/* Add column button - fixed cell at end */}
+                      <div className="flex items-center justify-center h-10 border-l border-[#E4E6EB] shrink-0" style={{ width: '48px', minWidth: '48px' }}>
                         <ColumnsDropdown
                           columns={columns}
                           onChange={handleColumnsChange}
                           trigger={
-                            <button className="h-full w-10 flex items-center justify-center text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#FAFBFC] transition-colors">
+                            <button className="h-8 w-8 flex items-center justify-center text-[#5E6C84] hover:text-[#172B4D] hover:bg-[#FAFBFC] rounded transition-colors">
                               <Plus className="h-4 w-4" />
                             </button>
                           }
@@ -984,8 +987,11 @@ export default function IndustryPage() {
                               );
                             })}
                             
-                            {/* Flex fill for extending row to full width */}
-                            <div className="flex-1 h-11 min-w-[40px]" />
+                            {/* Flex fill to extend row */}
+                            <div className="flex-1 h-11 min-w-0" />
+                            
+                            {/* Empty cell matching header + button */}
+                            <div className="h-11 border-l border-[#E4E6EB] shrink-0" style={{ width: '48px', minWidth: '48px' }} />
                           </div>
                         );
                       })}
