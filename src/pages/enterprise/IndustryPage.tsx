@@ -138,31 +138,31 @@ const getScoreInfo = (score: number | null | undefined): { colorClass: string; g
     colorClass: 'bg-green-100 text-green-700 ring-1 ring-green-200', 
     glowClass: 'shadow-sm shadow-green-200',
     tier: 'Hot',
-    tooltip: `Score ${score}/100 = HOT priority\nTier: 90-100 (Top priority)\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+    tooltip: `Score ${score}/100 = HOT priority\nTier: 90-100 (Top priority)`
   };
   if (score >= 75) return { 
     colorClass: 'bg-emerald-100 text-emerald-700', 
     glowClass: '',
     tier: 'High',
-    tooltip: `Score ${score}/100 = HIGH priority\nTier: 75-89\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+    tooltip: `Score ${score}/100 = HIGH priority\nTier: 75-89`
   };
   if (score >= 60) return { 
     colorClass: 'bg-amber-100 text-amber-700', 
     glowClass: '',
     tier: 'Medium',
-    tooltip: `Score ${score}/100 = MEDIUM priority\nTier: 60-74\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+    tooltip: `Score ${score}/100 = MEDIUM priority\nTier: 60-74`
   };
   if (score >= 40) return { 
     colorClass: 'bg-orange-100 text-orange-700', 
     glowClass: '',
     tier: 'Low',
-    tooltip: `Score ${score}/100 = LOW priority\nTier: 40-59\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+    tooltip: `Score ${score}/100 = LOW priority\nTier: 40-59`
   };
   return { 
     colorClass: 'bg-destructive/10 text-destructive', 
     glowClass: '',
     tier: 'Critical',
-    tooltip: `Score ${score}/100 = CRITICAL attention needed\nTier: 0-39 (Lowest priority)\nFormula: 45% Business Value + 35% Urgency + 20% Simplicity`
+    tooltip: `Score ${score}/100 = CRITICAL attention needed\nTier: 0-39 (Lowest priority)`
   };
 };
 
