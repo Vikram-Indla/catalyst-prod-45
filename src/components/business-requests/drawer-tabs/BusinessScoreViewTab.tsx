@@ -570,101 +570,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
         {/* Right Column - Results */}
         <Card className="border border-border/50 rounded-lg bg-card">
           <CardContent className="p-5 space-y-4">
-            {/* Forced Rank Section */}
-            {canAccessForcedRank && (
-              <div className="pb-4 border-b border-border/40">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-1.5">
-                    {isForceRanked && <Lock className="h-3 w-3 text-muted-foreground" />}
-                    <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold">
-                      Force Rank
-                    </h3>
-                  </div>
-                  <span className="text-[9px] text-muted-foreground uppercase tracking-wide">Reserved</span>
-                </div>
-                <div className="flex items-center gap-2" onClick={!forceRankEnabled ? handleForceRankClick : undefined}>
-                  <Select
-                    value={selectDisplayValue}
-                    onValueChange={handleRankChange}
-                    disabled={!forceRankEnabled || isSavingRank}
-                  >
-                    <SelectTrigger className={cn("h-8 text-sm", !forceRankEnabled && "opacity-50 cursor-not-allowed")}>
-                      <SelectValue placeholder="Auto" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-popover border shadow-lg z-[200]">
-                      <SelectItem value="auto">Auto</SelectItem>
-                      {RANK_OPTIONS.map((opt) => (
-                        <SelectItem key={opt} value={String(opt)}>#{opt}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {(isForceRanked || pendingRank !== null) && (
-                    <span className="text-sm font-semibold text-brand-gold">
-                      #{pendingRank ?? data.rank}
-                    </span>
-                  )}
-                </div>
-                {!forceRankEnabled && !isForceRanked && (
-                  <p className="text-[9px] text-muted-foreground mt-1.5 italic">
-                    Complete all inputs to enable
-                  </p>
-                )}
-
-                {/* Justification Panel - Shows when pending rank or already force ranked */}
-                {showJustification && (
-                  <div className="mt-3 p-3 bg-amber-50/50 rounded-md border border-amber-200/50 space-y-2">
-                    <Label className="text-xs font-medium text-foreground">
-                      Business Justification for Rank Override
-                      <span className="text-destructive ml-1">*</span>
-                    </Label>
-                    <Textarea
-                      value={justification}
-                      onChange={(e) => setJustification(e.target.value)}
-                      placeholder="Provide business justification for overriding the auto-calculated rank..."
-                      className="min-h-[80px] text-sm resize-none"
-                      disabled={isSavingRank || (isForceRanked && pendingRank === null)}
-                    />
-                    {pendingRank !== null && (
-                      <div className="space-y-2 pt-1">
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={handleSaveJustificationAndRank}
-                            disabled={isSavingRank}
-                            className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
-                          >
-                            <Save className="h-3 w-3 mr-1" />
-                            {isSavingRank ? 'Saving...' : 'Save Rank'}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={handleCancelRankChange}
-                            disabled={isSavingRank}
-                            className="h-7 px-3 text-xs"
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                        {!justification.trim() && (
-                          <div className="p-2.5 rounded-md bg-brand-gold/10 border border-brand-gold/20">
-                            <p className="text-[11px] font-medium text-brand-gold">Justification Required</p>
-                            <p className="text-[10px] text-brand-gold/80 mt-0.5">Please provide a business justification for the rank override.</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {pendingRank === null && isForceRanked && (
-                      <p className="text-[10px] text-muted-foreground italic">
-                        Current justification saved. Select a new rank to modify.
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Business Score - Always visible */}
+            {/* Business Score - Primary Display at Top */}
             <div className="text-center py-2">
               <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold mb-2">
                 Business Score
@@ -713,6 +619,105 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                 </span>
               )}
             </div>
+
+            {/* Force Rank - Collapsible Section (Admin/PM only) */}
+            {canAccessForcedRank && (
+              <Collapsible defaultOpen={isForceRanked}>
+                <div className="pt-3 border-t border-border/40">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full group">
+                    <div className="flex items-center gap-1.5">
+                      {isForceRanked && <Lock className="h-3 w-3 text-brand-gold" />}
+                      <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold">
+                        Override Rank
+                      </h3>
+                      <span className="text-[9px] text-muted-foreground uppercase tracking-wide ml-1">(Admin)</span>
+                    </div>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-3 space-y-3">
+                    <div className="flex items-center gap-2" onClick={!forceRankEnabled ? handleForceRankClick : undefined}>
+                      <Select
+                        value={selectDisplayValue}
+                        onValueChange={handleRankChange}
+                        disabled={!forceRankEnabled || isSavingRank}
+                      >
+                        <SelectTrigger className={cn("h-8 text-sm flex-1", !forceRankEnabled && "opacity-50 cursor-not-allowed")}>
+                          <SelectValue placeholder="Auto" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover border shadow-lg z-[200]">
+                          <SelectItem value="auto">Auto</SelectItem>
+                          {RANK_OPTIONS.map((opt) => (
+                            <SelectItem key={opt} value={String(opt)}>#{opt}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      {(isForceRanked || pendingRank !== null) && (
+                        <span className="text-sm font-semibold text-brand-gold">
+                          #{pendingRank ?? data.rank}
+                        </span>
+                      )}
+                    </div>
+                    {!forceRankEnabled && !isForceRanked && (
+                      <p className="text-[9px] text-muted-foreground italic">
+                        Complete all scoring inputs to enable override
+                      </p>
+                    )}
+
+                    {/* Justification Panel */}
+                    {showJustification && (
+                      <div className="p-3 bg-amber-50/50 rounded-md border border-amber-200/50 space-y-2">
+                        <Label className="text-xs font-medium text-foreground">
+                          Business Justification
+                          <span className="text-destructive ml-1">*</span>
+                        </Label>
+                        <Textarea
+                          value={justification}
+                          onChange={(e) => setJustification(e.target.value)}
+                          placeholder="Provide business justification for overriding the auto-calculated rank..."
+                          className="min-h-[80px] text-sm resize-none"
+                          disabled={isSavingRank || (isForceRanked && pendingRank === null)}
+                        />
+                        {pendingRank !== null && (
+                          <div className="space-y-2 pt-1">
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                onClick={handleSaveJustificationAndRank}
+                                disabled={isSavingRank}
+                                className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold-hover text-white"
+                              >
+                                <Save className="h-3 w-3 mr-1" />
+                                {isSavingRank ? 'Saving...' : 'Save Rank'}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleCancelRankChange}
+                                disabled={isSavingRank}
+                                className="h-7 px-3 text-xs"
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                            {!justification.trim() && (
+                              <div className="p-2.5 rounded-md bg-brand-gold/10 border border-brand-gold/20">
+                                <p className="text-[11px] font-medium text-brand-gold">Justification Required</p>
+                                <p className="text-[10px] text-brand-gold/80 mt-0.5">Please provide a business justification for the rank override.</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {pendingRank === null && isForceRanked && (
+                          <p className="text-[10px] text-muted-foreground italic">
+                            Current justification saved. Select a new rank to modify.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </CollapsibleContent>
+                </div>
+              </Collapsible>
+            )}
           </CardContent>
         </Card>
       </div>
