@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Edit, Clock, Folder } from 'lucide-react';
+import { ArrowLeft, Save, Edit, Clock, Folder, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ConfluenceEditor } from '@/components/knowledge-hub/editor';
+import { DocumentVersionHistory } from '@/components/knowledge-hub';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -18,6 +19,7 @@ export default function KnowledgeHubDocumentPage() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [hasChanges, setHasChanges] = useState(false);
+  const [showVersionHistory, setShowVersionHistory] = useState(false);
 
   const { data: document, isLoading } = useQuery({
     queryKey: ['kb-document', documentId],
@@ -166,10 +168,16 @@ export default function KnowledgeHubDocumentPage() {
                 </Button>
               </>
             ) : (
-              <Button onClick={() => setIsEditing(true)}>
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
+              <>
+                <Button variant="outline" onClick={() => setShowVersionHistory(true)}>
+                  <History className="h-4 w-4 mr-2" />
+                  History
+                </Button>
+                <Button onClick={() => setIsEditing(true)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+              </>
             )}
           </div>
         </div>
@@ -200,6 +208,21 @@ export default function KnowledgeHubDocumentPage() {
           />
         </div>
       </div>
+
+      {/* Version History */}
+      {documentId && (
+        <DocumentVersionHistory
+          documentId={documentId}
+          open={showVersionHistory}
+          onOpenChange={setShowVersionHistory}
+          onRestoreVersion={(restoredContent) => {
+            setContent(restoredContent);
+            setHasChanges(true);
+            setIsEditing(true);
+            toast.success('Version restored - save to apply changes');
+          }}
+        />
+      )}
     </div>
   );
 }
