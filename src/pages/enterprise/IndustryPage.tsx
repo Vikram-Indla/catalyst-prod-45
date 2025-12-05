@@ -753,7 +753,7 @@ export default function IndustryPage() {
                                           {ageing} days
                                         </span>
                                       </TooltipTrigger>
-                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs">{ageingInfo.tooltip}</TooltipContent>
+                                      <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs whitespace-normal">{ageingInfo.tooltip}</TooltipContent>
                                     </Tooltip>
                                   </div>
                                 );
