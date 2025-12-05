@@ -599,10 +599,7 @@ export default function IndustryPage() {
                   </span>
                 )}
               </Button>
-              <Button variant="outline" size="sm" className="border-border">
-                <Upload className="h-4 w-4 mr-2" />
-                Import
-              </Button>
+              {/* Import button hidden - functionality preserved for future use */}
               {viewMode === 'list' && <ColumnsDropdown columns={columns} onChange={handleColumnsChange} />}
               <Button variant="outline" size="sm" onClick={handleExport} className="border-border">
                 <Download className="h-4 w-4 mr-2" />
