@@ -90,16 +90,19 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
     return userRole.includes('admin') || userRole.includes('program_manager');
   }, [userRole]);
 
-  // Calculate business score
-  const normalizedUrgency = executiveUrgency / 10;
-  const normalizedBusinessValue = businessValue / 10;
-  const normalizedSimplicity = (10 - complexity) / 10;
-
+  // Calculate business score - ONLY when all 3 inputs are > 0
   const businessScore = useMemo(() => {
+    // Guard: All inputs must be > 0 for a valid score
+    if (!isScoringComplete) return 0;
+    
+    const normalizedUrgency = executiveUrgency / 10;
+    const normalizedBusinessValue = businessValue / 10;
+    const normalizedSimplicity = (10 - complexity) / 10;
+    
     return Math.round(
       (0.45 * normalizedBusinessValue + 0.35 * normalizedUrgency + 0.20 * normalizedSimplicity) * 100
     );
-  }, [normalizedBusinessValue, normalizedUrgency, normalizedSimplicity]);
+  }, [isScoringComplete, executiveUrgency, businessValue, complexity]);
 
   // Calculate rank position
   const autoRankPosition = useMemo(() => {
@@ -122,8 +125,10 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
   const handleInputChange = (field: string, value: number) => {
     if (isForceRanked) return;
     
+    // Persist the individual input
     onChange(field, value);
     
+    // Calculate what the new values would be
     let newUrgency = executiveUrgency;
     let newBusinessValue = businessValue;
     let newComplexity = complexity;
@@ -132,15 +137,23 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
     if (field === 'business_value') newBusinessValue = value;
     if (field === 'complexity_score') newComplexity = value;
     
-    const normalizedUrg = newUrgency / 10;
-    const normalizedBV = newBusinessValue / 10;
-    const normalizedSimp = (10 - newComplexity) / 10;
+    // GATED SCORING: Only calculate and persist business_score when ALL 3 inputs > 0
+    const allInputsProvided = newUrgency > 0 && newBusinessValue > 0 && newComplexity > 0;
     
-    const newScore = Math.round(
-      (0.45 * normalizedBV + 0.35 * normalizedUrg + 0.20 * normalizedSimp) * 100
-    );
-    
-    onChange('business_score', newScore);
+    if (allInputsProvided) {
+      const normalizedUrg = newUrgency / 10;
+      const normalizedBV = newBusinessValue / 10;
+      const normalizedSimp = (10 - newComplexity) / 10;
+      
+      const newScore = Math.round(
+        (0.45 * normalizedBV + 0.35 * normalizedUrg + 0.20 * normalizedSimp) * 100
+      );
+      
+      onChange('business_score', newScore);
+    } else {
+      // Reset score to 0 if inputs incomplete
+      onChange('business_score', 0);
+    }
   };
 
   const logRankChange = async (oldRank: number | null, newRank: number | null, isAuto: boolean) => {
@@ -408,13 +421,26 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
               <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold mb-2">
                 Business Score
               </h3>
-              <div className="text-4xl font-bold text-brand-gold leading-none">
-                {businessScore}
-              </div>
-              {autoRankPosition && (
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  Position #{autoRankPosition} of {allRequests?.length || 0}
-                </p>
+              {isScoringComplete ? (
+                <>
+                  <div className="text-4xl font-bold text-brand-gold leading-none">
+                    {businessScore}
+                  </div>
+                  {autoRankPosition && (
+                    <p className="text-[10px] text-muted-foreground mt-1">
+                      Position #{autoRankPosition} of {allRequests?.length || 0}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="text-3xl font-bold text-muted-foreground/50 leading-none">
+                    —
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1.5 italic">
+                    Complete all inputs to generate score
+                  </p>
+                </>
               )}
             </div>
 
@@ -425,12 +451,16 @@ export function BusinessScoreViewTab({ data, onChange, requestId }: BusinessScor
                   <Lock className="h-3 w-3" />
                   Manual #{data.rank}
                 </span>
-              ) : (
+              ) : isScoringComplete ? (
                 <span className={cn(
                   "inline-flex px-2.5 py-1 rounded text-[11px] font-medium border",
                   rankInfo.color
                 )}>
                   {rankInfo.label}
+                </span>
+              ) : (
+                <span className="inline-flex px-2.5 py-1 rounded text-[11px] font-medium border border-muted-foreground/20 text-muted-foreground/60 bg-muted/30">
+                  Not Scored
                 </span>
               )}
             </div>
