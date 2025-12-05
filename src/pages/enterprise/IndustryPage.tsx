@@ -34,9 +34,14 @@ const COLUMN_DEFINITIONS: Record<string, { label: string; width: string }> = {
   planned_quarter: { label: 'Quarter', width: 'w-24' },
   end_date: { label: 'Target Date', width: 'w-28' },
   ageing: { label: 'Ageing', width: 'w-20' },
+  delivery_platform: { label: 'Delivery Platform', width: 'w-32' },
+  requestor: { label: 'Assignee', width: 'w-28' },
+  business_owner: { label: 'Business Owner', width: 'w-28' },
+  department: { label: 'Department', width: 'w-28' },
+  created_by: { label: 'Reporter', width: 'w-28' },
 };
 
-const DEFAULT_COLUMN_ORDER = ['request_key', 'rank', 'title', 'process_step', 'business_score', 'submitted_date', 'planned_quarter', 'end_date', 'ageing'];
+const DEFAULT_COLUMN_ORDER = ['request_key', 'rank', 'title', 'process_step', 'business_score', 'submitted_date', 'planned_quarter', 'end_date', 'ageing', 'delivery_platform', 'requestor', 'business_owner', 'department', 'created_by'];
 
 const getDefaultColumns = (order: string[], visibility: Record<string, boolean>): ColumnConfig[] => {
   return order.map(id => ({
@@ -229,6 +234,26 @@ const sortByColumn = (items: any[], columnId: string, direction: SortDirection) 
       case 'submitted_date':
         aVal = a.created_at ? new Date(a.created_at).getTime() : 0;
         bVal = b.created_at ? new Date(b.created_at).getTime() : 0;
+        break;
+      case 'delivery_platform':
+        aVal = a.delivery_platform?.toLowerCase() ?? '';
+        bVal = b.delivery_platform?.toLowerCase() ?? '';
+        break;
+      case 'requestor':
+        aVal = a.requestor?.toLowerCase() ?? '';
+        bVal = b.requestor?.toLowerCase() ?? '';
+        break;
+      case 'business_owner':
+        aVal = a.business_owner?.toLowerCase() ?? '';
+        bVal = b.business_owner?.toLowerCase() ?? '';
+        break;
+      case 'department':
+        aVal = a.department?.toLowerCase() ?? '';
+        bVal = b.department?.toLowerCase() ?? '';
+        break;
+      case 'created_by':
+        aVal = a.created_by?.toLowerCase() ?? '';
+        bVal = b.created_by?.toLowerCase() ?? '';
         break;
       default:
         return 0;
@@ -705,6 +730,36 @@ export default function IndustryPage() {
                                         <div className="text-gray-300 mt-1">{ageingInfo.tooltip}</div>
                                       </TooltipContent>
                                     </Tooltip>
+                                  </div>
+                                );
+                              case 'delivery_platform':
+                                return (
+                                  <div className="w-32 shrink-0">
+                                    <span className="text-sm text-muted-foreground truncate block">{request.delivery_platform || '-'}</span>
+                                  </div>
+                                );
+                              case 'requestor':
+                                return (
+                                  <div className="w-28 shrink-0">
+                                    <span className="text-sm text-muted-foreground truncate block">{request.requestor || '-'}</span>
+                                  </div>
+                                );
+                              case 'business_owner':
+                                return (
+                                  <div className="w-28 shrink-0">
+                                    <span className="text-sm text-muted-foreground truncate block">{request.business_owner || '-'}</span>
+                                  </div>
+                                );
+                              case 'department':
+                                return (
+                                  <div className="w-28 shrink-0">
+                                    <span className="text-sm text-muted-foreground truncate block">{request.department || '-'}</span>
+                                  </div>
+                                );
+                              case 'created_by':
+                                return (
+                                  <div className="w-28 shrink-0">
+                                    <span className="text-sm text-muted-foreground truncate block">{request.created_by || '-'}</span>
                                   </div>
                                 );
                               default:
