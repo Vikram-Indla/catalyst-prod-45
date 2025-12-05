@@ -13,6 +13,7 @@ import { CalendarIcon, X, Sparkles, Clock, AlertTriangle, CalendarDays, User, Za
 import { format, subDays, startOfDay, endOfDay, startOfQuarter, endOfQuarter, addQuarters } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
+import { UserPicker } from '@/components/ui/user-picker';
 
 export type SmartFilterType = 'myOpen' | 'highPriority' | 'newThisWeek' | 'overdue' | 'currentQuarter' | 'unassigned' | null;
 
@@ -36,7 +37,7 @@ export interface SmartFilters {
   department?: string[];
   businessOwner?: string;
   reporter?: string;
-  assignee?: string;
+  assigneeIds?: string[]; // Changed to array of user IDs for multi-select
   deliveryPlatform?: string[];
   targetDateFrom?: Date;
   targetDateTo?: Date;
@@ -151,7 +152,7 @@ export function SmartFiltersDialog({
       case 'unassigned':
         newFilters = {
           ...newFilters,
-          assignee: 'UNASSIGNED',
+          assigneeIds: ['UNASSIGNED'],
           processStep: ['request_received', 'under_study', 'awaiting_business_response'],
         };
         break;
@@ -423,22 +424,16 @@ export function SmartFiltersDialog({
             {/* Assignee */}
             <div className="space-y-1.5">
               <Label className="text-sm">Assignee</Label>
-              <Input
-                placeholder="Search by name..."
-                value={localFilters.assignee === 'UNASSIGNED' ? '' : localFilters.assignee || ''}
-                onChange={(e) => updateFilter('assignee', e.target.value || undefined)}
-                className="h-9"
+              <UserPicker
+                value={localFilters.assigneeIds || []}
+                onChange={(value) => {
+                  const ids = Array.isArray(value) ? value : value ? [value] : undefined;
+                  updateFilter('assigneeIds', ids?.length ? ids : undefined);
+                }}
+                placeholder="Select assignees..."
+                multiSelect={true}
+                showUnassigned={true}
               />
-              <div className="flex items-center gap-2 mt-1">
-                <Checkbox
-                  id="unassigned"
-                  checked={localFilters.assignee === 'UNASSIGNED'}
-                  onCheckedChange={(checked) => updateFilter('assignee', checked ? 'UNASSIGNED' : undefined)}
-                />
-                <label htmlFor="unassigned" className="text-xs text-muted-foreground cursor-pointer">
-                  Show only unassigned
-                </label>
-              </div>
             </div>
 
             {/* Delivery Platform */}

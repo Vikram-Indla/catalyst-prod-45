@@ -10,6 +10,7 @@ import { ChevronUp, X, CalendarIcon } from 'lucide-react';
 import { format, subDays, addQuarters } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
+import { UserPicker } from '@/components/ui/user-picker';
 
 export type SmartFilterType = 'myOpen' | 'highPriority' | 'newThisWeek' | 'overdue' | 'currentQuarter' | 'unassigned' | null;
 
@@ -28,7 +29,7 @@ export interface SmartFilters {
   department?: string[];
   businessOwner?: string;
   reporter?: string;
-  assignee?: string;
+  assigneeIds?: string[]; // Changed to array of user IDs for multi-select
   deliveryPlatform?: string[];
   targetDateFrom?: Date;
   targetDateTo?: Date;
@@ -305,7 +306,7 @@ export function FilterDemandsDialog({
         newFilters = {
           ...newFilters,
           reporter: user?.email || '',
-          assignee: user?.email || '',
+          assigneeIds: user?.id ? [user.id] : [],
           processStep: PROCESS_STEPS.filter(s => s.value !== 'closed').map(s => s.value),
         };
         break;
@@ -340,7 +341,7 @@ export function FilterDemandsDialog({
       case 'unassigned':
         newFilters = {
           ...newFilters,
-          assignee: 'UNASSIGNED',
+          assigneeIds: ['UNASSIGNED'],
           processStep: ['request_received', 'under_study', 'awaiting_business_response'],
         };
         break;
@@ -468,19 +469,16 @@ export function FilterDemandsDialog({
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Assignee</label>
-                <Select
-                  value={localFilters.assignee || '__all__'}
-                  onValueChange={(value) => updateFilter('assignee', value === '__all__' ? undefined : value)}
-                >
-                  <SelectTrigger className="h-10 bg-white border-border">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white z-[100]">
-                    <SelectItem value="__all__">All</SelectItem>
-                    {user?.email && <SelectItem value={user.email}>Me</SelectItem>}
-                    <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
-                  </SelectContent>
-                </Select>
+                <UserPicker
+                  value={localFilters.assigneeIds || []}
+                  onChange={(value) => {
+                    const ids = Array.isArray(value) ? value : value ? [value] : undefined;
+                    updateFilter('assigneeIds', ids?.length ? ids : undefined);
+                  }}
+                  placeholder="Select assignees..."
+                  multiSelect={true}
+                  showUnassigned={true}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Department</label>

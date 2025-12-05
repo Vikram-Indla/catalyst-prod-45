@@ -483,15 +483,18 @@ export default function IndustryPage() {
       );
     }
     
-    // Assignee filter
-    if (filters.assignee) {
-      if (filters.assignee === 'UNASSIGNED') {
-        filtered = filtered.filter((r: any) => !r.assignee || r.assignee === '');
-      } else {
-        filtered = filtered.filter((r: any) => 
-          r.assignee?.toLowerCase().includes(filters.assignee!.toLowerCase())
-        );
-      }
+    // Assignee filter (multi-select with user IDs)
+    if (filters.assigneeIds && filters.assigneeIds.length > 0) {
+      filtered = filtered.filter((r: any) => {
+        if (filters.assigneeIds!.includes('UNASSIGNED')) {
+          // Include unassigned items
+          if (!r.assignee || r.assignee === '') return true;
+        }
+        // Filter by user IDs
+        const userIds = filters.assigneeIds!.filter(id => id !== 'UNASSIGNED');
+        if (userIds.length === 0) return !r.assignee || r.assignee === '';
+        return userIds.includes(r.assignee);
+      });
     }
     
     // Delivery Platform filter (multi-select)
