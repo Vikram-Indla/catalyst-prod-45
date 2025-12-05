@@ -231,6 +231,10 @@ const App = () => (
               <Route path="/enterprise/okr-hub" element={<OKRHub />} />
               <Route path="/portfolio/:portfolioId/okr-hub" element={<PortfolioOKRHub />} />
               <Route path="/program/:programId/okr-hub" element={<ProgramOKRHub />} />
+              <Route path="/program/:programId/work-tree" element={<WorkTreePage />} />
+              <Route path="/program/:programId/room" element={<ProgramRoom />} />
+              <Route path="/program/:programId/features" element={<FeaturesWithSidebar />} />
+              <Route path="/program/:programId/program-board" element={<ProgramBoardWithSidebar />} />
               <Route path="/team/:teamId/okr-hub" element={<TeamOKRHub />} />
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               <Route path="/work-tree" element={<WorkTreePage />} />
