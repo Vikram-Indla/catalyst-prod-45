@@ -492,7 +492,7 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange,
               <div className="pb-4 border-b border-border/40">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1.5">
-                    <Lock className="h-3 w-3 text-muted-foreground" />
+                    {isForceRanked && <Lock className="h-3 w-3 text-muted-foreground" />}
                     <h3 className="text-[11px] font-semibold uppercase tracking-wider text-brand-gold">
                       Force Rank
                     </h3>
