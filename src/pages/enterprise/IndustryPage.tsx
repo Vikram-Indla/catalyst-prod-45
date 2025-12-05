@@ -630,7 +630,50 @@ export default function IndustryPage() {
 
   const handleExport = () => {
     if (requests && requests.length > 0) {
-      exportToCSV(requests, 'industry-requests', ['request_key', 'title', 'process_step', 'planned_quarter', 'end_date', 'created_at']);
+      // Export all columns from visible columns plus additional data fields
+      const exportColumns = [
+        'request_key',
+        'rank',
+        'title',
+        'process_step',
+        'business_score',
+        'created_at',
+        'planned_quarter',
+        'end_date',
+        'delivery_platform',
+        'requestor',
+        'business_owner',
+        'department',
+        'created_by',
+        'description',
+        'urgency',
+        'complexity',
+        'business_value',
+        'executive_urgency',
+        'complexity_score',
+        'risk_rating',
+        'health',
+        'track',
+        'platform',
+        'efs_domain',
+        'efs_service',
+        'ecs_registry',
+        'is_saudi',
+        'is_non_saudi',
+        'approval_decision',
+        'approval_date',
+        'approver_name',
+        'approval_remarks',
+        'implementation_owner',
+        'support_owner',
+        'technical_validator',
+        'dependencies',
+        'acceptance_criteria',
+        'business_justification',
+        'proposed_solution',
+        'updated_at'
+      ];
+      exportToCSV(requests, 'industry-requests', exportColumns);
       toast({ title: 'Requests exported successfully' });
     }
   };
