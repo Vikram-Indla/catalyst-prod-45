@@ -276,6 +276,7 @@ export function FilterDemandsDialog({
   const { user } = useAuth();
   const [localFilters, setLocalFilters] = useState<SmartFilters>(filters);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    people: true,
     status: true,
     dates: true,
     classification: false,
@@ -428,6 +429,71 @@ export function FilterDemandsDialog({
 
         {/* Filter Body */}
         <div className="max-h-[50vh] sm:max-h-[400px] overflow-y-auto scroll-smooth overscroll-contain [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-muted/30 [&::-webkit-scrollbar-thumb]:bg-muted-foreground/20 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-muted-foreground/30">
+          {/* People Section */}
+          <AccordionSection 
+            title="People" 
+            isOpen={openSections.people} 
+            onToggle={() => toggleSection('people')}
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Reporter</label>
+                <Select
+                  value={localFilters.reporter || ''}
+                  onValueChange={(value) => updateFilter('reporter', value || undefined)}
+                >
+                  <SelectTrigger className="h-10 bg-white border-border">
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white z-[100]">
+                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value={user?.email || ''}>Me</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Business Owner</label>
+                <Select
+                  value={localFilters.businessOwner || ''}
+                  onValueChange={(value) => updateFilter('businessOwner', value || undefined)}
+                >
+                  <SelectTrigger className="h-10 bg-white border-border">
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white z-[100]">
+                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value={user?.email || ''}>Me</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Assignee</label>
+                <Select
+                  value={localFilters.assignee || ''}
+                  onValueChange={(value) => updateFilter('assignee', value || undefined)}
+                >
+                  <SelectTrigger className="h-10 bg-white border-border">
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white z-[100]">
+                    <SelectItem value="">All</SelectItem>
+                    <SelectItem value={user?.email || ''}>Me</SelectItem>
+                    <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Department</label>
+                <MultiSelectDropdown
+                  options={DEPARTMENT_OPTIONS}
+                  selected={localFilters.department || []}
+                  onChange={(values) => updateFilter('department', values.length > 0 ? values : undefined)}
+                  placeholder="Select..."
+                />
+              </div>
+            </div>
+          </AccordionSection>
+
           {/* Status & Workflow Section */}
           <AccordionSection 
             title="Status & Workflow" 
