@@ -114,7 +114,38 @@ export function useIndustryPreferences() {
         return data;
       }
     },
-    onSuccess: () => {
+    // Optimistic update for real-time UI response
+    onMutate: async ({ column_order, column_visibility }) => {
+      await queryClient.cancelQueries({ queryKey: ['industry-preferences', user?.id] });
+      
+      const previousData = queryClient.getQueryData<IndustryPreferences | null>(['industry-preferences', user?.id]);
+      
+      queryClient.setQueryData<IndustryPreferences | null>(['industry-preferences', user?.id], (old) => {
+        if (!old) {
+          return {
+            id: 'temp',
+            user_id: user?.id || '',
+            column_order: column_order || DEFAULT_COLUMN_ORDER,
+            column_visibility: column_visibility || DEFAULT_COLUMN_VISIBILITY,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          };
+        }
+        return {
+          ...old,
+          ...(column_order && { column_order }),
+          ...(column_visibility && { column_visibility }),
+        };
+      });
+      
+      return { previousData };
+    },
+    onError: (_err, _variables, context) => {
+      if (context?.previousData !== undefined) {
+        queryClient.setQueryData(['industry-preferences', user?.id], context.previousData);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['industry-preferences', user?.id] });
     },
   });

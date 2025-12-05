@@ -326,11 +326,13 @@ export default function IndustryPage() {
   );
 
   const handleColumnsChange = useCallback((newColumns: ColumnConfig[]) => {
+    const newOrder = newColumns.map(col => col.id);
     const newVisibility: Record<string, boolean> = {};
     newColumns.forEach(col => {
       newVisibility[col.id] = col.visible;
     });
-    updatePreferences({ column_visibility: newVisibility });
+    // Save both order and visibility together for real-time update
+    updatePreferences({ column_order: newOrder, column_visibility: newVisibility });
   }, [updatePreferences]);
 
   const handleColumnDragEnd = useCallback((result: DropResult) => {
