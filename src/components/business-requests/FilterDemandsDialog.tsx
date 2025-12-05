@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
-import { ChevronDown, X, User, Zap, Sparkles, AlertTriangle, CalendarDays, Clock, Check, CalendarIcon } from 'lucide-react';
+import { ChevronUp, X, CalendarIcon } from 'lucide-react';
 import { format, subDays, addQuarters } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
@@ -42,6 +42,14 @@ interface FilterDemandsDialogProps {
   onFiltersChange: (filters: SmartFilters) => void;
 }
 
+const AGEING_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: '0-7', label: '0–7 days (New)' },
+  { value: '8-30', label: '8–30 days (In Progress)' },
+  { value: '31-60', label: '31–60 days (At Risk)' },
+  { value: '60+', label: '60+ days (Stale)' },
+];
+
 const DEPARTMENT_OPTIONS = [
   { value: 'it', label: 'Information Technology' },
   { value: 'operations', label: 'Operations' },
@@ -50,13 +58,6 @@ const DEPARTMENT_OPTIONS = [
   { value: 'marketing', label: 'Marketing' },
   { value: 'sales', label: 'Sales' },
   { value: 'legal', label: 'Legal' },
-];
-
-const AGEING_BUCKETS = [
-  { value: '0-7', label: '0–7 days (New)' },
-  { value: '8-30', label: '8–30 days (In Progress)' },
-  { value: '31-60', label: '31–60 days (At Risk)' },
-  { value: '60+', label: '60+ days (Stale)' },
 ];
 
 const generateQuarters = (): { value: string; label: string }[] => {
@@ -77,37 +78,31 @@ const SMART_FILTER_CONFIG = [
   { 
     id: 'myOpen' as SmartFilterType, 
     label: 'My Open Requests', 
-    icon: User, 
     tooltip: 'Shows requests where you are the Reporter, Business Owner, or Assignee, and the status is not Closed.' 
   },
   { 
     id: 'highPriority' as SmartFilterType, 
     label: 'High Priority', 
-    icon: Zap, 
     tooltip: 'Shows requests with Rank 1–10 OR Score ≥ 80, and status is Analysis, Active, or Pending.' 
   },
   { 
     id: 'newThisWeek' as SmartFilterType, 
     label: 'New This Week', 
-    icon: Sparkles, 
     tooltip: 'Shows requests submitted within the last 7 days.' 
   },
   { 
     id: 'overdue' as SmartFilterType, 
     label: 'Overdue Items', 
-    icon: AlertTriangle, 
     tooltip: 'Shows requests where Target Date is before today and status is not Closed.' 
   },
   { 
     id: 'currentQuarter' as SmartFilterType, 
     label: 'Current Quarter', 
-    icon: CalendarDays, 
     tooltip: 'Shows requests planned for the current fiscal quarter.' 
   },
   { 
     id: 'unassigned' as SmartFilterType, 
     label: 'Unassigned', 
-    icon: Clock, 
     tooltip: 'Shows requests with no Assignee set and status is Received, Analysis, or Pending.' 
   },
 ];
@@ -118,13 +113,11 @@ function MultiSelectDropdown({
   selected, 
   onChange, 
   placeholder = 'Select...',
-  labelKey = 'label'
 }: { 
   options: { value: string; label: string }[]; 
   selected: string[]; 
   onChange: (values: string[]) => void;
   placeholder?: string;
-  labelKey?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -135,51 +128,52 @@ function MultiSelectDropdown({
     onChange(newValues);
   };
 
-  const selectedLabels = options.filter(o => selected.includes(o.value)).map(o => o.label);
+  const displayText = selected.length === 0 
+    ? placeholder 
+    : selected.length === 1 
+      ? options.find(o => o.value === selected[0])?.label || selected[0]
+      : `${selected.length} selected`;
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <button
+          type="button"
           className={cn(
-            "flex items-center justify-between w-full px-2.5 py-2 border rounded text-[13px] bg-card min-h-[34px] transition-all",
-            isOpen ? "border-brand-gold ring-2 ring-brand-gold/10" : "border-border hover:border-muted-foreground/50"
+            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white transition-colors",
+            selected.length > 0 ? "border-border text-foreground" : "border-border text-muted-foreground",
+            "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-gold"
           )}
         >
-          {selectedLabels.length === 0 ? (
-            <span className="text-muted-foreground text-xs">{placeholder}</span>
-          ) : (
-            <div className="flex flex-wrap gap-1 max-w-[calc(100%-16px)]">
-              {selectedLabels.map(label => (
-                <span key={label} className="px-1.5 py-0.5 bg-brand-gold/10 border border-brand-gold/30 rounded text-[11px] text-brand-gold-hover">
-                  {label}
-                </span>
-              ))}
-            </div>
-          )}
-          <ChevronDown className="h-2.5 w-2.5 text-muted-foreground shrink-0" />
+          <span className={cn("truncate", selected.length === 0 && "text-muted-foreground")}>
+            {displayText}
+          </span>
+          <svg className="h-4 w-4 text-muted-foreground shrink-0 ml-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0 bg-card border shadow-lg max-h-[150px] overflow-y-auto z-[100]" align="start">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-1 bg-white border shadow-lg rounded-md max-h-[200px] overflow-y-auto z-[100]" align="start">
         {options.map(option => (
           <div
             key={option.value}
             className={cn(
-              "flex items-center gap-2 px-2.5 py-2 cursor-pointer transition-colors",
-              selected.includes(option.value) ? "bg-brand-gold/10" : "hover:bg-muted/50"
+              "flex items-center gap-2 px-3 py-2 cursor-pointer rounded-sm transition-colors text-sm",
+              selected.includes(option.value) ? "bg-brand-gold/10 text-foreground" : "hover:bg-muted/50 text-foreground"
             )}
             onClick={() => toggleOption(option.value)}
           >
             <div className={cn(
-              "h-3.5 w-3.5 border rounded flex items-center justify-center shrink-0",
+              "h-4 w-4 border rounded flex items-center justify-center shrink-0",
               selected.includes(option.value) ? "bg-brand-gold border-brand-gold" : "border-border"
             )}>
-              {selected.includes(option.value) && <Check className="h-2.5 w-2.5 text-white" />}
+              {selected.includes(option.value) && (
+                <svg className="h-3 w-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              )}
             </div>
-            <span className={cn(
-              "text-xs",
-              selected.includes(option.value) ? "text-brand-gold-hover" : "text-foreground"
-            )}>{option.label}</span>
+            <span>{option.label}</span>
           </div>
         ))}
       </PopoverContent>
@@ -200,23 +194,72 @@ function AccordionSection({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn("border-b border-border last:border-b-0", isOpen && "bg-muted/30")}>
+    <div className="border-b border-border">
       <button
-        className="flex items-center justify-between w-full px-5 py-3 cursor-pointer hover:bg-muted/50 transition-colors"
+        type="button"
+        className="flex items-center justify-between w-full px-4 sm:px-5 py-3.5 text-left hover:bg-muted/30 transition-colors"
         onClick={onToggle}
       >
-        <span className="text-[13px] font-medium text-foreground">{title}</span>
-        <ChevronDown className={cn(
-          "h-2.5 w-2.5 text-muted-foreground transition-transform duration-200",
-          isOpen && "rotate-180"
+        <span className="text-sm font-medium text-foreground">{title}</span>
+        <ChevronUp className={cn(
+          "h-4 w-4 text-muted-foreground transition-transform duration-200",
+          !isOpen && "rotate-180"
         )} />
       </button>
-      {isOpen && (
-        <div className="px-5 pb-4 bg-muted/30">
+      <div className={cn(
+        "overflow-hidden transition-all duration-200",
+        isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+      )}>
+        <div className="px-4 sm:px-5 pb-4">
           {children}
         </div>
-      )}
+      </div>
     </div>
+  );
+}
+
+// Date input component matching the reference
+function DateInput({ 
+  value, 
+  onChange, 
+  placeholder = 'dd/mm/yyyy' 
+}: { 
+  value?: Date; 
+  onChange: (date?: Date) => void;
+  placeholder?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "flex items-center justify-between w-full h-10 px-3 border rounded-md text-sm bg-white transition-colors",
+            value ? "border-border text-foreground" : "border-border text-muted-foreground",
+            "hover:border-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-brand-gold"
+          )}
+        >
+          <span className={cn(!value && "text-muted-foreground")}>
+            {value ? format(value, "dd/MM/yyyy") : placeholder}
+          </span>
+          <CalendarIcon className="h-4 w-4 text-muted-foreground shrink-0" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0 bg-white border shadow-lg rounded-md z-[100]" align="start">
+        <Calendar 
+          mode="single" 
+          selected={value} 
+          onSelect={(date) => {
+            onChange(date);
+            setIsOpen(false);
+          }}
+          initialFocus
+          className="pointer-events-auto"
+        />
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -229,9 +272,8 @@ export function FilterDemandsDialog({
   const { user } = useAuth();
   const [localFilters, setLocalFilters] = useState<SmartFilters>(filters);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    people: true,
-    status: false,
-    dates: false,
+    status: true,
+    dates: true,
     classification: false,
   });
 
@@ -312,7 +354,6 @@ export function FilterDemandsDialog({
   };
 
   const handleCancel = () => {
-    // Discard changes and close
     onOpenChange(false);
   };
 
@@ -329,39 +370,41 @@ export function FilterDemandsDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleCancel}>
-      <DialogContent className="max-w-[560px] p-0 bg-card border shadow-xl rounded-lg overflow-hidden">
+      <DialogContent className="max-w-[480px] w-[95vw] p-0 bg-white border shadow-xl rounded-lg overflow-hidden gap-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <h2 className="text-[15px] font-semibold text-foreground tracking-tight">Filters</h2>
+        <div className="flex items-center justify-between px-4 sm:px-5 py-4 border-b border-border">
+          <h2 className="text-base font-semibold text-foreground">Filters</h2>
           <button 
-            className="w-7 h-7 flex items-center justify-center rounded hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
+            type="button"
+            className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-muted/50 transition-colors text-muted-foreground hover:text-foreground"
             onClick={handleCancel}
           >
-            <X className="h-4.5 w-4.5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Smart Filters */}
         <TooltipProvider>
-          <div className="px-5 py-3.5 border-b border-border">
-            <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide mb-2.5">Quick Filters</div>
-            <div className="flex gap-1.5 overflow-x-auto pb-0.5 -mx-1 px-1">
+          <div className="px-4 sm:px-5 py-4 border-b border-border bg-muted/20">
+            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Quick Filters</div>
+            <div className="flex flex-wrap gap-2">
               {SMART_FILTER_CONFIG.map((sf) => (
                 <Tooltip key={sf.id}>
                   <TooltipTrigger asChild>
                     <button
+                      type="button"
                       className={cn(
-                        "px-3 py-1.5 border rounded text-xs cursor-pointer transition-all whitespace-nowrap shrink-0 font-medium",
+                        "px-3 py-1.5 border rounded-md text-sm cursor-pointer transition-all whitespace-nowrap font-medium",
                         localFilters.activeSmartFilter === sf.id
                           ? "bg-brand-gold border-brand-gold text-white"
-                          : "bg-card border-border text-muted-foreground hover:border-brand-gold hover:text-brand-gold hover:bg-brand-gold/5"
+                          : "bg-white border-border text-foreground hover:border-brand-gold hover:bg-brand-gold/5"
                       )}
                       onClick={() => handleSmartFilterClick(sf.id)}
                     >
                       {sf.label}
                     </button>
                   </TooltipTrigger>
-                  <TooltipContent side="bottom" className="bg-brand-dark text-white text-xs max-w-[280px] p-2">
+                  <TooltipContent side="bottom" className="bg-brand-dark text-white text-xs max-w-[280px] p-2 rounded-md">
                     {sf.tooltip}
                   </TooltipContent>
                 </Tooltip>
@@ -371,74 +414,40 @@ export function FilterDemandsDialog({
         </TooltipProvider>
 
         {/* Filter Body */}
-        <div className="max-h-[420px] overflow-y-auto">
-          {/* People Section */}
-          <AccordionSection 
-            title="People" 
-            isOpen={openSections.people} 
-            onToggle={() => toggleSection('people')}
-          >
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Reporter</label>
-                <Input
-                  placeholder="Search..."
-                  value={localFilters.reporter || ''}
-                  onChange={(e) => updateFilter('reporter', e.target.value || undefined)}
-                  className="h-[34px] text-xs"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Business Owner</label>
-                <Input
-                  placeholder="Search..."
-                  value={localFilters.businessOwner || ''}
-                  onChange={(e) => updateFilter('businessOwner', e.target.value || undefined)}
-                  className="h-[34px] text-xs"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Assignee</label>
-                <Input
-                  placeholder="Search..."
-                  value={localFilters.assignee === 'UNASSIGNED' ? '' : (localFilters.assignee || '')}
-                  onChange={(e) => updateFilter('assignee', e.target.value || undefined)}
-                  className="h-[34px] text-xs"
-                />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Department</label>
-                <MultiSelectDropdown
-                  options={DEPARTMENT_OPTIONS}
-                  selected={localFilters.department || []}
-                  onChange={(values) => updateFilter('department', values.length > 0 ? values : undefined)}
-                />
-              </div>
-            </div>
-          </AccordionSection>
-
+        <div className="max-h-[50vh] sm:max-h-[400px] overflow-y-auto">
           {/* Status & Workflow Section */}
           <AccordionSection 
             title="Status & Workflow" 
             isOpen={openSections.status} 
             onToggle={() => toggleSection('status')}
           >
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Process Step</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Process Step</label>
                 <MultiSelectDropdown
                   options={PROCESS_STEPS.map(s => ({ value: s.value, label: s.label }))}
                   selected={localFilters.processStep || []}
                   onChange={(values) => updateFilter('processStep', values.length > 0 ? values : undefined)}
+                  placeholder="Select..."
                 />
               </div>
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Ageing</label>
-                <MultiSelectDropdown
-                  options={AGEING_BUCKETS}
-                  selected={localFilters.ageing || []}
-                  onChange={(values) => updateFilter('ageing', values.length > 0 ? values : undefined)}
-                />
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Ageing</label>
+                <Select
+                  value={(localFilters.ageing && localFilters.ageing[0]) || 'all'}
+                  onValueChange={(value) => updateFilter('ageing', value === 'all' ? undefined : [value])}
+                >
+                  <SelectTrigger className="h-10 bg-white border-border">
+                    <SelectValue placeholder="All" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white z-[100]">
+                    {AGEING_OPTIONS.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </AccordionSection>
@@ -449,101 +458,55 @@ export function FilterDemandsDialog({
             isOpen={openSections.dates} 
             onToggle={() => toggleSection('dates')}
           >
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Submitted Date</label>
-                <div className="flex items-center gap-1.5">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className={cn(
-                        "flex-1 flex items-center px-2.5 py-2 border rounded text-xs bg-card min-h-[34px] transition-all",
-                        localFilters.submittedDateFrom ? "border-brand-gold" : "border-border hover:border-muted-foreground/50"
-                      )}>
-                        <CalendarIcon className="h-3 w-3 mr-1.5 text-muted-foreground" />
-                        {localFilters.submittedDateFrom ? format(localFilters.submittedDateFrom, "MMM d, yyyy") : <span className="text-muted-foreground">From</span>}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-popover z-[100]" align="start">
-                      <Calendar 
-                        mode="single" 
-                        selected={localFilters.submittedDateFrom} 
-                        onSelect={(date) => updateFilter('submittedDateFrom', date)}
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <span className="text-muted-foreground text-[11px]">to</span>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className={cn(
-                        "flex-1 flex items-center px-2.5 py-2 border rounded text-xs bg-card min-h-[34px] transition-all",
-                        localFilters.submittedDateTo ? "border-brand-gold" : "border-border hover:border-muted-foreground/50"
-                      )}>
-                        <CalendarIcon className="h-3 w-3 mr-1.5 text-muted-foreground" />
-                        {localFilters.submittedDateTo ? format(localFilters.submittedDateTo, "MMM d, yyyy") : <span className="text-muted-foreground">To</span>}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-popover z-[100]" align="start">
-                      <Calendar 
-                        mode="single" 
-                        selected={localFilters.submittedDateTo} 
-                        onSelect={(date) => updateFilter('submittedDateTo', date)}
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+            <div className="space-y-4">
+              {/* Submitted Date */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Submitted Date</label>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <DateInput
+                      value={localFilters.submittedDateFrom}
+                      onChange={(date) => updateFilter('submittedDateFrom', date)}
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground shrink-0">to</span>
+                  <div className="flex-1">
+                    <DateInput
+                      value={localFilters.submittedDateTo}
+                      onChange={(date) => updateFilter('submittedDateTo', date)}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Target Date</label>
-                <div className="flex items-center gap-1.5">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className={cn(
-                        "flex-1 flex items-center px-2.5 py-2 border rounded text-xs bg-card min-h-[34px] transition-all",
-                        localFilters.targetDateFrom ? "border-brand-gold" : "border-border hover:border-muted-foreground/50"
-                      )}>
-                        <CalendarIcon className="h-3 w-3 mr-1.5 text-muted-foreground" />
-                        {localFilters.targetDateFrom ? format(localFilters.targetDateFrom, "MMM d, yyyy") : <span className="text-muted-foreground">From</span>}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-popover z-[100]" align="start">
-                      <Calendar 
-                        mode="single" 
-                        selected={localFilters.targetDateFrom} 
-                        onSelect={(date) => updateFilter('targetDateFrom', date)}
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <span className="text-muted-foreground text-[11px]">to</span>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <button className={cn(
-                        "flex-1 flex items-center px-2.5 py-2 border rounded text-xs bg-card min-h-[34px] transition-all",
-                        localFilters.targetDateTo ? "border-brand-gold" : "border-border hover:border-muted-foreground/50"
-                      )}>
-                        <CalendarIcon className="h-3 w-3 mr-1.5 text-muted-foreground" />
-                        {localFilters.targetDateTo ? format(localFilters.targetDateTo, "MMM d, yyyy") : <span className="text-muted-foreground">To</span>}
-                      </button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0 bg-popover z-[100]" align="start">
-                      <Calendar 
-                        mode="single" 
-                        selected={localFilters.targetDateTo} 
-                        onSelect={(date) => updateFilter('targetDateTo', date)}
-                        className="pointer-events-auto"
-                      />
-                    </PopoverContent>
-                  </Popover>
+
+              {/* Target Date */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Target Date</label>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <DateInput
+                      value={localFilters.targetDateFrom}
+                      onChange={(date) => updateFilter('targetDateFrom', date)}
+                    />
+                  </div>
+                  <span className="text-sm text-muted-foreground shrink-0">to</span>
+                  <div className="flex-1">
+                    <DateInput
+                      value={localFilters.targetDateTo}
+                      onChange={(date) => updateFilter('targetDateTo', date)}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Quarter</label>
+
+              {/* Quarter */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Quarter</label>
                 <MultiSelectDropdown
                   options={QUARTER_OPTIONS}
                   selected={localFilters.quarter || []}
                   onChange={(values) => updateFilter('quarter', values.length > 0 ? values : undefined)}
+                  placeholder="Select..."
                 />
               </div>
             </div>
@@ -555,37 +518,23 @@ export function FilterDemandsDialog({
             isOpen={openSections.classification} 
             onToggle={() => toggleSection('classification')}
           >
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Score</label>
-                <div className="flex items-center gap-1.5">
-                  <Input
-                    type="number"
-                    placeholder="Min"
-                    value={localFilters.scoreMin ?? ''}
-                    onChange={(e) => updateFilter('scoreMin', e.target.value ? parseInt(e.target.value) : undefined)}
-                    className="h-[34px] text-xs text-center"
-                    min={0}
-                    max={100}
-                  />
-                  <span className="text-muted-foreground text-[11px]">–</span>
-                  <Input
-                    type="number"
-                    placeholder="Max"
-                    value={localFilters.scoreMax ?? ''}
-                    onChange={(e) => updateFilter('scoreMax', e.target.value ? parseInt(e.target.value) : undefined)}
-                    className="h-[34px] text-xs text-center"
-                    min={0}
-                    max={100}
-                  />
-                </div>
-              </div>
-              <div className="space-y-1">
-                <label className="text-[11px] font-medium text-muted-foreground">Delivery Platform</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Delivery Platform</label>
                 <MultiSelectDropdown
                   options={DELIVERY_PLATFORM_OPTIONS.map(p => ({ value: p.value, label: p.label.en }))}
                   selected={localFilters.deliveryPlatform || []}
                   onChange={(values) => updateFilter('deliveryPlatform', values.length > 0 ? values : undefined)}
+                  placeholder="Select..."
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Department</label>
+                <MultiSelectDropdown
+                  options={DEPARTMENT_OPTIONS}
+                  selected={localFilters.department || []}
+                  onChange={(values) => updateFilter('department', values.length > 0 ? values : undefined)}
+                  placeholder="Select..."
                 />
               </div>
             </div>
@@ -593,25 +542,28 @@ export function FilterDemandsDialog({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-3.5 border-t border-border bg-card">
-          <span className="text-[11px] text-muted-foreground mr-auto">
-            <strong className="text-brand-gold">{activeFilterCount}</strong> filters applied
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3.5 border-t border-border bg-white">
+          <span className="text-sm">
+            <span className="text-brand-gold font-medium">{activeFilterCount}</span>
+            <span className="text-muted-foreground ml-1">filters applied</span>
           </span>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleClearFilters}
-            className="h-8 px-4 text-[13px] font-medium"
-          >
-            Clear All
-          </Button>
-          <Button 
-            size="sm" 
-            onClick={handleApplyFilters}
-            className="h-8 px-4 text-[13px] font-medium bg-brand-gold text-white hover:bg-brand-gold-hover"
-          >
-            Apply
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleClearFilters}
+              className="h-9 px-4 text-sm font-medium"
+            >
+              Clear All
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleApplyFilters}
+              className="h-9 px-5 text-sm font-medium bg-brand-gold hover:bg-brand-gold-hover text-white"
+            >
+              Apply
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
