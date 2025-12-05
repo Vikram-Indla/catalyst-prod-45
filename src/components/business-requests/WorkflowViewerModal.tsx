@@ -14,6 +14,8 @@ interface WorkflowViewerModalProps {
   requestId: string;
   submittedDate?: string;
   onStepChange?: (step: string) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 interface TransitionEntry {
@@ -33,8 +35,13 @@ PROCESS_STEPS.forEach(step => {
 const ORPHAN_STATUSES = ['on_hold', 'rejected'];
 const MAIN_STEPS = PROCESS_STEPS.filter(s => !ORPHAN_STATUSES.includes(s.value));
 
-export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onStepChange }: WorkflowViewerModalProps) {
-  const [isOpen, setIsOpen] = useState(false);
+export function WorkflowViewerModal({ currentStep, requestId, submittedDate, onStepChange, open, onOpenChange }: WorkflowViewerModalProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  // Support both controlled and uncontrolled modes
+  const isOpen = open !== undefined ? open : internalOpen;
+  const setIsOpen = onOpenChange || setInternalOpen;
+  
   const isPaused = currentStep === 'on_hold';
   const isRejected = currentStep === 'rejected';
 
