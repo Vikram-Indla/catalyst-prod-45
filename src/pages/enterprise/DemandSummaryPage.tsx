@@ -55,10 +55,9 @@ const statusesEn = [
   { name: 'Analysis', count: 17, color: 'bg-gray-400' },
   { name: 'Active', count: 31, color: 'bg-violet-500' },
   { name: 'Pending', count: 10, color: 'bg-gray-500' },
-  { name: 'Reopened', count: 4, color: 'bg-amber-500' },
   { name: 'Paused', count: 7, color: 'bg-rose-400' },
-  { name: 'Closed', count: 59, color: 'bg-gray-800' },
-  { name: 'Done', count: 12, color: 'bg-success' }
+  { name: 'Implemented', count: 59, color: 'bg-gray-800' },
+  { name: 'Closed', count: 12, color: 'bg-success' }
 ];
 
 const statusesAr = [
@@ -66,10 +65,9 @@ const statusesAr = [
   { name: 'تحليل', count: 17, color: 'bg-gray-400' },
   { name: 'نشط', count: 31, color: 'bg-violet-500' },
   { name: 'معلق', count: 10, color: 'bg-gray-500' },
-  { name: 'أعيد فتحه', count: 4, color: 'bg-amber-500' },
   { name: 'متوقف', count: 7, color: 'bg-rose-400' },
-  { name: 'مغلق', count: 59, color: 'bg-gray-800' },
-  { name: 'منجز', count: 12, color: 'bg-success' }
+  { name: 'منفذ', count: 59, color: 'bg-gray-800' },
+  { name: 'مغلق', count: 12, color: 'bg-success' }
 ];
 
 const deliveryDataEn = [

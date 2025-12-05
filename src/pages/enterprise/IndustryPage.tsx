@@ -118,14 +118,13 @@ const getTargetDateInfo = (dateStr: string | null): { class: string; isOverdue: 
 
 // Process step semantic colors and descriptions
 const PROCESS_STEP_INFO: Record<string, { bg: string; text: string; description: string }> = {
-  'completed': { bg: 'bg-green-100', text: 'text-green-800', description: 'Work completed and delivered' },
+  'closed': { bg: 'bg-green-100', text: 'text-green-800', description: 'Work completed and closed' },
   'in_progress': { bg: 'bg-blue-100', text: 'text-blue-800', description: 'Active work underway' },
   'awaiting_business_response': { bg: 'bg-amber-100', text: 'text-amber-800', description: 'Blocked - waiting for business input' },
   'under_study': { bg: 'bg-purple-100', text: 'text-purple-800', description: 'Analysis and feasibility assessment' },
   'on_hold': { bg: 'bg-gray-200', text: 'text-gray-700', description: 'Paused - pending decision or dependency' },
-  'closed': { bg: 'bg-gray-100', text: 'text-gray-600', description: 'Request closed (completed or cancelled)' },
+  'implemented': { bg: 'bg-gray-100', text: 'text-gray-600', description: 'Solution implemented and deployed' },
   'request_received': { bg: 'bg-sky-100', text: 'text-sky-800', description: 'New request - pending triage' },
-  'reopen': { bg: 'bg-indigo-100', text: 'text-indigo-800', description: 'Previously closed, now reopened' },
 };
 
 // Score tier information
