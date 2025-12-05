@@ -136,10 +136,10 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     setPendingRank(null);
   }, [data.rank, data.is_force_ranked, data.rank_override_justification, skipNextReset]);
 
-  const handleInputChange = (field: string, value: number) => {
+  const handleInputChange = async (field: string, value: number) => {
     if (isForceRanked) return;
     
-    // Persist the individual input
+    // Update local state immediately for responsive UI
     onChange(field, value);
     
     // Calculate what the new values would be
@@ -153,20 +153,43 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
     
     // GATED SCORING: Only calculate and persist business_score when ALL 3 inputs > 0
     const allInputsProvided = newUrgency > 0 && newBusinessValue > 0 && newComplexity > 0;
+    let newScore = 0;
     
     if (allInputsProvided) {
       const normalizedUrg = newUrgency / 10;
       const normalizedBV = newBusinessValue / 10;
       const normalizedSimp = (10 - newComplexity) / 10;
       
-      const newScore = Math.round(
+      newScore = Math.round(
         (0.45 * normalizedBV + 0.35 * normalizedUrg + 0.20 * normalizedSimp) * 100
       );
       
       onChange('business_score', newScore);
     } else {
-      // Reset score to 0 if inputs incomplete
       onChange('business_score', 0);
+    }
+    
+    // Auto-save to database immediately
+    if (requestId) {
+      try {
+        const updateData: Record<string, any> = { [field]: value };
+        
+        // Also update business_score if all inputs are complete
+        if (allInputsProvided) {
+          updateData.business_score = newScore;
+        }
+        
+        await supabase
+          .from('business_requests')
+          .update(updateData)
+          .eq('id', requestId);
+        
+        // Refresh queries to keep everything in sync
+        queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+        queryClient.invalidateQueries({ queryKey: ['business-request', requestId] });
+      } catch (error) {
+        console.error('Failed to auto-save scoring input:', error);
+      }
     }
     
     // Notify parent of dirty state
