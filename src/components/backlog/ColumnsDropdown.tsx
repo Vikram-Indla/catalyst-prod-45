@@ -13,9 +13,10 @@ export interface ColumnConfig {
 interface ColumnsDropdownProps {
   columns: ColumnConfig[];
   onChange: (columns: ColumnConfig[]) => void;
+  trigger?: React.ReactNode;
 }
 
-export const ColumnsDropdown = ({ columns, onChange }: ColumnsDropdownProps) => {
+export const ColumnsDropdown = ({ columns, onChange, trigger }: ColumnsDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -70,13 +71,19 @@ export const ColumnsDropdown = ({ columns, onChange }: ColumnsDropdownProps) => 
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
-        className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-9 px-3 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <Columns3 className="w-4 h-4" />
-        Columns
-      </button>
+      {trigger ? (
+        <div onClick={() => setIsOpen(!isOpen)}>
+          {trigger}
+        </div>
+      ) : (
+        <button
+          className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium h-9 px-3 py-2 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md transition-colors"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <Columns3 className="w-4 h-4" />
+          Columns
+        </button>
+      )}
 
       {isOpen && (
         <div className="absolute top-full right-0 mt-1 min-w-[260px] bg-card border border-border rounded shadow-lg z-[100] py-2">
