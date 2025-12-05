@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -280,6 +281,7 @@ const sortByColumn = (items: any[], columnId: string, direction: SortDirection) 
 };
 
 export default function IndustryPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -307,6 +309,16 @@ export default function IndustryPage() {
   });
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Handle create=true from URL (from global Create dropdown)
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setCreateModalOpen(true);
+      // Remove the create param from URL
+      searchParams.delete('create');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const {
     columnOrder, 

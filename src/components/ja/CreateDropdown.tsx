@@ -10,10 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Circle, Square, Hexagon, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, AlertCircle, FileCheck, Calendar, Package, Flag } from "lucide-react";
+import { Circle, Square, Hexagon, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, AlertCircle, FileCheck, Calendar, Package, Flag, Briefcase } from "lucide-react";
 
 const workItems = [
   { label: "Themes", icon: Circle, color: "text-workitem-theme", type: "theme" },
+  { label: "Business Request", icon: Briefcase, color: "text-brand-gold", type: "business-request" },
   { label: "Epics", icon: Square, color: "text-workitem-epic", type: "epic" },
   { label: "Features", icon: Box, color: "text-workitem-feature", type: "feature" },
   { label: "Stories", icon: FileText, color: "text-workitem-story", type: "story" },
@@ -43,6 +44,7 @@ export function CreateDropdown() {
     // Route to the appropriate page with create parameter
     const routeMap: Record<string, string> = {
       'theme': '/themes?create=true',
+      'business-request': '/industry?create=true',
       'epic': '/items/epics?create=true',
       'feature': '/features?create=true',
       'story': '/stories?create=true',
