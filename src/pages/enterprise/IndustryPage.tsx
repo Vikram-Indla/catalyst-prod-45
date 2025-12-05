@@ -10,12 +10,11 @@ import { CreateBusinessRequestModal } from '@/components/business-requests/Creat
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { RankUpdateNotification } from '@/components/business-requests/RankUpdateNotification';
 import { SimpleColumnHeader, SortDirection } from '@/components/business-requests/SimpleColumnHeader';
-import { useColumnWidths, ColumnWidths } from '@/components/business-requests/DraggableColumnHeaders';
+import { useResizableColumns } from '@/components/business-requests/ResizableColumnHeader';
 import { BusinessRequestsKanbanView } from '@/components/business-requests/BusinessRequestsKanbanView';
 import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
 import { InlineEditableCell } from '@/components/business-requests/InlineEditableCell';
 import { PROCESS_STEPS } from '@/types/business-request';
-import { exportToCSV } from '@/lib/exportUtils';
 import { useToast } from '@/hooks/use-toast';
 import { ColumnsDropdown, ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { supabase } from '@/integrations/supabase/client';
@@ -43,6 +42,8 @@ const COLUMN_DEFINITIONS: Record<string, { label: string; defaultWidth: number; 
   department: { label: 'Department', defaultWidth: 130, minWidth: 110 },
   created_by: { label: 'Reporter', defaultWidth: 130, minWidth: 110 },
 };
+
+type ColumnWidths = Record<string, number>;
 
 const DEFAULT_COLUMN_WIDTHS: ColumnWidths = Object.fromEntries(
   Object.entries(COLUMN_DEFINITIONS).map(([id, def]) => [id, def.defaultWidth])
@@ -314,7 +315,7 @@ export default function IndustryPage() {
   } = useIndustryPreferences();
 
   // Resizable column widths
-  const { columnWidths, handleColumnResize } = useColumnWidths(
+  const { columnWidths, handleColumnResize } = useResizableColumns(
     'industry-column-widths',
     DEFAULT_COLUMN_WIDTHS
   );
@@ -808,7 +809,7 @@ export default function IndustryPage() {
                             <th 
                               key={col.id}
                               className={cn(
-                                "h-10 px-3.5 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-card",
+                                "h-10 px-3.5 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-card relative group",
                                 isCentered && "text-center"
                               )}
                               style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
@@ -818,6 +819,34 @@ export default function IndustryPage() {
                                 columnId={col.id}
                                 sortDirection={columnSort.columnId === col.id ? columnSort.direction : null}
                                 onSort={handleSort}
+                              />
+                              {/* Resize handle */}
+                              <div
+                                className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize z-10 hover:bg-brand-gold/50 active:bg-brand-gold transition-colors"
+                                onMouseDown={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  const startX = e.clientX;
+                                  const startWidth = width;
+                                  
+                                  const handleMouseMove = (moveEvent: MouseEvent) => {
+                                    const delta = moveEvent.clientX - startX;
+                                    const newWidth = Math.max(colDef.minWidth, Math.min(800, startWidth + delta));
+                                    handleColumnResize(col.id, newWidth);
+                                  };
+                                  
+                                  const handleMouseUp = () => {
+                                    document.removeEventListener('mousemove', handleMouseMove);
+                                    document.removeEventListener('mouseup', handleMouseUp);
+                                    document.body.style.cursor = '';
+                                    document.body.style.userSelect = '';
+                                  };
+                                  
+                                  document.addEventListener('mousemove', handleMouseMove);
+                                  document.addEventListener('mouseup', handleMouseUp);
+                                  document.body.style.cursor = 'col-resize';
+                                  document.body.style.userSelect = 'none';
+                                }}
                               />
                             </th>
                           );
