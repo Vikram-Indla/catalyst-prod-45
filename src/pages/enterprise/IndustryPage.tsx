@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Plus, Search, Upload, Download, GripVertical, ChevronLeft, ChevronRight, Lock, ChevronDown, ChevronRight as ChevronRightIcon, Flame, Clock, AlertTriangle, Filter } from 'lucide-react';
-import { IndustryFiltersDialog } from '@/components/business-requests/IndustryFiltersDialog';
+import { SmartFiltersDialog, SmartFilters } from '@/components/business-requests/SmartFiltersDialog';
 import { useBusinessRequests, useUpdateBusinessRequest } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
@@ -281,13 +281,7 @@ export default function IndustryPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
-  const [filters, setFilters] = useState<{
-    deliveryPlatform?: string;
-    processStep?: string;
-    quarter?: string;
-    assignee?: string;
-    businessOwner?: string;
-  }>({});
+  const [filters, setFilters] = useState<SmartFilters>({});
   const [columnSort, setColumnSort] = useState<ColumnSort>({
     columnId: 'rank',
     direction: 'asc'
@@ -368,7 +362,12 @@ export default function IndustryPage() {
   }, [queryClient]);
 
   // Calculate active filter count
-  const activeFilterCount = Object.values(filters).filter(Boolean).length;
+  const activeFilterCount = Object.entries(filters).filter(([key, value]) => {
+    if (key === 'activeSmartFilter' || key === 'requestIdMode') return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (value instanceof Date) return true;
+    return value !== undefined && value !== '' && value !== null;
+  }).length;
 
   // Apply sorting and filtering
   useEffect(() => {
@@ -379,20 +378,126 @@ export default function IndustryPage() {
     let filtered = [...requests];
 
     // Apply filters
-    if (filters.deliveryPlatform) {
-      filtered = filtered.filter((r: any) => r.delivery_platform === filters.deliveryPlatform);
+    // Request ID filter
+    if (filters.requestId) {
+      filtered = filtered.filter((r: any) => 
+        r.request_key?.toLowerCase().includes(filters.requestId!.toLowerCase())
+      );
     }
-    if (filters.processStep) {
-      filtered = filtered.filter((r: any) => r.process_step === filters.processStep);
+    
+    // Rank filter (multi-select)
+    if (filters.rank && filters.rank.length > 0) {
+      filtered = filtered.filter((r: any) => filters.rank!.includes(r.rank));
     }
-    if (filters.quarter) {
-      filtered = filtered.filter((r: any) => r.planned_quarter === filters.quarter);
+    
+    // Score range filter
+    if (filters.scoreMin !== undefined) {
+      filtered = filtered.filter((r: any) => (r.business_score ?? 0) >= filters.scoreMin!);
     }
-    if (filters.assignee) {
-      filtered = filtered.filter((r: any) => r.requestor === filters.assignee);
+    if (filters.scoreMax !== undefined) {
+      filtered = filtered.filter((r: any) => (r.business_score ?? 0) <= filters.scoreMax!);
     }
+    
+    // Summary text filter
+    if (filters.summary) {
+      filtered = filtered.filter((r: any) => 
+        r.title?.toLowerCase().includes(filters.summary!.toLowerCase())
+      );
+    }
+    
+    // Process Step filter (multi-select)
+    if (filters.processStep && filters.processStep.length > 0) {
+      filtered = filtered.filter((r: any) => filters.processStep!.includes(r.process_step));
+    }
+    
+    // Submitted Date range filter
+    if (filters.submittedDateFrom) {
+      const fromDate = new Date(filters.submittedDateFrom).setHours(0, 0, 0, 0);
+      filtered = filtered.filter((r: any) => {
+        if (!r.created_at) return false;
+        return new Date(r.created_at).getTime() >= fromDate;
+      });
+    }
+    if (filters.submittedDateTo) {
+      const toDate = new Date(filters.submittedDateTo).setHours(23, 59, 59, 999);
+      filtered = filtered.filter((r: any) => {
+        if (!r.created_at) return false;
+        return new Date(r.created_at).getTime() <= toDate;
+      });
+    }
+    
+    // Ageing filter (multi-select buckets)
+    if (filters.ageing && filters.ageing.length > 0) {
+      filtered = filtered.filter((r: any) => {
+        const age = calculateAgeing(r.created_at);
+        return filters.ageing!.some(bucket => {
+          switch (bucket) {
+            case '0-7': return age >= 0 && age <= 7;
+            case '8-30': return age >= 8 && age <= 30;
+            case '31-60': return age >= 31 && age <= 60;
+            case '60+': return age > 60;
+            default: return false;
+          }
+        });
+      });
+    }
+    
+    // Department filter (multi-select)
+    if (filters.department && filters.department.length > 0) {
+      filtered = filtered.filter((r: any) => filters.department!.includes(r.department));
+    }
+    
+    // Business Owner filter
     if (filters.businessOwner) {
-      filtered = filtered.filter((r: any) => r.business_owner === filters.businessOwner);
+      filtered = filtered.filter((r: any) => 
+        r.business_owner?.toLowerCase().includes(filters.businessOwner!.toLowerCase())
+      );
+    }
+    
+    // Reporter filter
+    if (filters.reporter) {
+      filtered = filtered.filter((r: any) => 
+        r.requestor?.toLowerCase().includes(filters.reporter!.toLowerCase())
+      );
+    }
+    
+    // Assignee filter
+    if (filters.assignee) {
+      if (filters.assignee === 'UNASSIGNED') {
+        filtered = filtered.filter((r: any) => !r.assignee || r.assignee === '');
+      } else {
+        filtered = filtered.filter((r: any) => 
+          r.assignee?.toLowerCase().includes(filters.assignee!.toLowerCase())
+        );
+      }
+    }
+    
+    // Delivery Platform filter (multi-select)
+    if (filters.deliveryPlatform && filters.deliveryPlatform.length > 0) {
+      filtered = filtered.filter((r: any) => filters.deliveryPlatform!.includes(r.delivery_platform));
+    }
+    
+    // Target Date range filter
+    if (filters.targetDateFrom) {
+      const fromDate = new Date(filters.targetDateFrom).setHours(0, 0, 0, 0);
+      filtered = filtered.filter((r: any) => {
+        if (!r.impl_target_end_date && !r.end_date) return false;
+        const targetDate = r.impl_target_end_date || r.end_date;
+        return new Date(targetDate).getTime() >= fromDate;
+      });
+    }
+    if (filters.targetDateTo) {
+      const toDate = new Date(filters.targetDateTo).setHours(23, 59, 59, 999);
+      filtered = filtered.filter((r: any) => {
+        if (!r.impl_target_end_date && !r.end_date) return false;
+        const targetDate = r.impl_target_end_date || r.end_date;
+        return new Date(targetDate).getTime() <= toDate;
+      });
+    }
+    
+    // Quarter filter (multi-select)
+    if (filters.quarter && filters.quarter.length > 0) {
+      filtered = filtered.filter((r: any) => filters.quarter!.includes(r.planned_quarter));
     }
 
     // Apply sorting based on selected column
@@ -899,7 +1004,7 @@ export default function IndustryPage() {
           requestId={selectedRequestId}
           onRequestChange={(newId) => setSelectedRequestId(newId)}
         />
-        <IndustryFiltersDialog
+        <SmartFiltersDialog
           open={filtersDialogOpen}
           onOpenChange={setFiltersDialogOpen}
           filters={filters}
