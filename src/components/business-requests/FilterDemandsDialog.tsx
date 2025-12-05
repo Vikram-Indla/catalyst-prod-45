@@ -28,7 +28,7 @@ export interface SmartFilters {
   ageing?: string[];
   department?: string[];
   businessOwner?: string;
-  reporter?: string;
+  reporterIds?: string[]; // Changed to array of user IDs for multi-select
   assigneeIds?: string[]; // Changed to array of user IDs for multi-select
   deliveryPlatform?: string[];
   targetDateFrom?: Date;
@@ -305,7 +305,7 @@ export function FilterDemandsDialog({
       case 'myOpen':
         newFilters = {
           ...newFilters,
-          reporter: user?.email || '',
+          reporterIds: user?.id ? [user.id] : [],
           assigneeIds: user?.id ? [user.id] : [],
           processStep: PROCESS_STEPS.filter(s => s.value !== 'closed').map(s => s.value),
         };
@@ -439,18 +439,15 @@ export function FilterDemandsDialog({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Reporter</label>
-                <Select
-                  value={localFilters.reporter || '__all__'}
-                  onValueChange={(value) => updateFilter('reporter', value === '__all__' ? undefined : value)}
-                >
-                  <SelectTrigger className="h-10 bg-white border-border">
-                    <SelectValue placeholder="Select..." />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white z-[100]">
-                    <SelectItem value="__all__">All</SelectItem>
-                    {user?.email && <SelectItem value={user.email}>Me</SelectItem>}
-                  </SelectContent>
-                </Select>
+                <UserPicker
+                  value={localFilters.reporterIds || []}
+                  onChange={(value) => {
+                    const ids = Array.isArray(value) ? value : value ? [value] : undefined;
+                    updateFilter('reporterIds', ids?.length ? ids : undefined);
+                  }}
+                  placeholder="Select reporters..."
+                  multiSelect={true}
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Business Owner</label>

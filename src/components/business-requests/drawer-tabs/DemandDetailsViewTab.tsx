@@ -353,11 +353,13 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label className="text-sm font-medium">Reporter</Label>
-              <Input
-                value="Current User"
-                disabled
-                className="mt-1.5 bg-muted/50"
-              />
+              <div className="mt-1.5">
+                <UserPicker
+                  value={data.requestor || null}
+                  onChange={(value) => onChange('requestor', value as string | null)}
+                  placeholder="Select reporter..."
+                />
+              </div>
             </div>
 
             <div>

@@ -476,11 +476,11 @@ export default function IndustryPage() {
       );
     }
     
-    // Reporter filter
-    if (filters.reporter) {
-      filtered = filtered.filter((r: any) => 
-        r.requestor?.toLowerCase().includes(filters.reporter!.toLowerCase())
-      );
+    // Reporter filter (multi-select with user IDs)
+    if (filters.reporterIds && filters.reporterIds.length > 0) {
+      filtered = filtered.filter((r: any) => {
+        return filters.reporterIds!.includes(r.requestor);
+      });
     }
     
     // Assignee filter (multi-select with user IDs)

@@ -36,7 +36,7 @@ export interface SmartFilters {
   // Right column filters
   department?: string[];
   businessOwner?: string;
-  reporter?: string;
+  reporterIds?: string[]; // Changed to array of user IDs for multi-select
   assigneeIds?: string[]; // Changed to array of user IDs for multi-select
   deliveryPlatform?: string[];
   targetDateFrom?: Date;
@@ -117,7 +117,7 @@ export function SmartFiltersDialog({
       case 'myOpen':
         newFilters = {
           ...newFilters,
-          reporter: user?.email || '',
+          reporterIds: user?.id ? [user.id] : [],
           processStep: ['request_received', 'under_study', 'in_progress', 'awaiting_business_response', 'on_hold', 'implemented'],
         };
         break;
@@ -413,11 +413,14 @@ export function SmartFiltersDialog({
             {/* Reporter */}
             <div className="space-y-1.5">
               <Label className="text-sm">Reporter</Label>
-              <Input
-                placeholder="Search by name..."
-                value={localFilters.reporter || ''}
-                onChange={(e) => updateFilter('reporter', e.target.value || undefined)}
-                className="h-9"
+              <UserPicker
+                value={localFilters.reporterIds || []}
+                onChange={(value) => {
+                  const ids = Array.isArray(value) ? value : value ? [value] : undefined;
+                  updateFilter('reporterIds', ids?.length ? ids : undefined);
+                }}
+                placeholder="Select reporters..."
+                multiSelect={true}
               />
             </div>
 
