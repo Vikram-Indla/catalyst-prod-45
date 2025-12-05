@@ -192,6 +192,7 @@ import KanbanBoardsPage from "./pages/KanbanBoardsPage";
 import KanbanBoardView from "./pages/KanbanBoardView";
 import KanbanBoardSetup from "./pages/KanbanBoardSetup";
 import KanbanBoardAnalytics from "./pages/KanbanBoardAnalytics";
+import KnowledgeHubDocumentPage from "./pages/KnowledgeHubDocumentPage";
 
 const queryClient = new QueryClient();
 
@@ -517,6 +518,9 @@ const App = () => (
               <Route path="/team/:teamId/kanban-boards/:boardId" element={<KanbanBoardView />} />
               <Route path="/team/:teamId/kanban-boards/:boardId/setup" element={<KanbanBoardSetup />} />
               <Route path="/team/:teamId/kanban-boards/:boardId/analytics" element={<KanbanBoardAnalytics />} />
+              
+              {/* Knowledge Hub Routes */}
+              <Route path="/knowledge-hub/documents/:documentId" element={<KnowledgeHubDocumentPage />} />
               
               {/* Kanban Boards Routes - Program Scoped */}
               <Route path="/programs/:programId/kanban-boards" element={<KanbanBoardsPage />} />

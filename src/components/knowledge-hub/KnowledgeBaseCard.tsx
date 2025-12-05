@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FileText, Plus, ExternalLink, ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,20 +14,27 @@ interface KnowledgeBaseCardProps {
 
 export function KnowledgeBaseCard({ workItemId, workItemType }: KnowledgeBaseCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const navigate = useNavigate();
   const { data: documents, isLoading } = useKnowledgeHubDocuments(workItemId, workItemType);
   const createDocument = useCreateKBDocument();
 
   const handleCreateDocument = async () => {
     try {
-      await createDocument.mutateAsync({
+      const newDoc = await createDocument.mutateAsync({
         title: 'New Document',
         linked_work_item_id: workItemId,
         linked_work_item_type: workItemType,
       });
       toast.success('Document created');
+      // Navigate to the new document
+      navigate(`/knowledge-hub/documents/${newDoc.id}`);
     } catch (error) {
       toast.error('Failed to create document');
     }
+  };
+
+  const handleDocumentClick = (docId: string) => {
+    navigate(`/knowledge-hub/documents/${docId}`);
   };
 
   const displayedDocs = isExpanded ? documents : documents?.slice(0, 3);
@@ -72,6 +80,7 @@ export function KnowledgeBaseCard({ workItemId, workItemType }: KnowledgeBaseCar
             {displayedDocs?.map((doc) => (
               <div
                 key={doc.id}
+                onClick={() => handleDocumentClick(doc.id)}
                 className="flex items-center justify-between p-3 border rounded-md bg-background hover:bg-muted/50 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3 flex-1 min-w-0">
