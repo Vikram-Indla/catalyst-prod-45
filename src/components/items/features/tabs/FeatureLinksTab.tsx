@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Plus, ExternalLink, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Feature } from '@/types/feature.types';
+import { KnowledgeBaseCard } from '@/components/knowledge-hub/KnowledgeBaseCard';
 
 interface FeatureLinksTabProps {
   feature?: Feature;
@@ -123,6 +124,11 @@ export function FeatureLinksTab({ feature }: FeatureLinksTabProps) {
         <div className="border rounded-lg p-8 text-center text-sm text-muted-foreground">
           No links added yet
         </div>
+      )}
+
+      {/* Knowledge Base */}
+      {feature?.id && (
+        <KnowledgeBaseCard workItemId={feature.id} workItemType="feature" />
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Plus, ExternalLink, Trash2, Link as LinkIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { KnowledgeBaseCard } from "@/components/knowledge-hub/KnowledgeBaseCard";
 
 interface LinksTabProps {
   epicId: string;
@@ -152,6 +153,11 @@ export function LinksTab({ epicId }: LinksTabProps) {
         <p className="text-sm text-muted-foreground text-center py-4 border rounded-md">
           TODO (needs confirmation): External link management
         </p>
+      </div>
+
+      {/* Knowledge Base */}
+      <div className="border-t pt-4">
+        <KnowledgeBaseCard workItemId={epicId} workItemType="epic" />
       </div>
     </div>
   );
