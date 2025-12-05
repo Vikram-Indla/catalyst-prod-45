@@ -644,6 +644,35 @@ export function BusinessScoreViewTab({ data, onChange, requestId, onDirtyChange 
                     {isScoringComplete ? businessScore : '—'}
                   </span>
                 </div>
+
+                {/* Score Thresholds */}
+                <div className="pt-3 mt-3 border-t border-border/30">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                    Score Thresholds
+                  </p>
+                  <div className="space-y-1.5 text-xs">
+                    <div className="flex justify-between items-center">
+                      <span className="text-green-700">Must-Do Now</span>
+                      <span className="text-muted-foreground">90–100</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-emerald-700">High</span>
+                      <span className="text-muted-foreground">75–89</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-amber-700">Medium</span>
+                      <span className="text-muted-foreground">60–74</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-orange-700">Low</span>
+                      <span className="text-muted-foreground">40–59</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-red-700">Backlog / Parked</span>
+                      <span className="text-muted-foreground">0–39</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </CollapsibleContent>
