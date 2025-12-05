@@ -105,7 +105,21 @@ export function useCreateBusinessRequest() {
 
   return useMutation({
     mutationFn: async (data: CreateBusinessRequestFormData & { delivery_platform?: string; planned_quarter?: string }) => {
-      // Generate request key in MDT-XXX format
+      // Get current user for audit logging
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Get profile for actor name
+      let actorName = 'System';
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', user.id)
+          .single();
+        actorName = profile?.full_name || profile?.email || 'Unknown User';
+      }
+
+      // Generate request key in MIM-XXX format
       const requestKey = await generateRequestKey();
       
       const { data: result, error } = await supabase
@@ -126,6 +140,18 @@ export function useCreateBusinessRequest() {
         .select()
         .single();
       if (error) throw error;
+
+      // Create audit log for creation
+      await supabase.from('business_request_audit_logs').insert({
+        business_request_id: result.id,
+        actor_id: user?.id || null,
+        actor_name: actorName,
+        action: 'CREATE',
+        field_changed: null,
+        old_value: null,
+        new_value: data.title
+      });
+
       return result;
     },
     onSuccess: () => {
@@ -144,6 +170,27 @@ export function useUpdateBusinessRequest() {
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: Partial<BusinessRequest> }) => {
+      // Get current user for audit logging
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Get profile for actor name
+      let actorName = 'System';
+      if (user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name, email')
+          .eq('id', user.id)
+          .single();
+        actorName = profile?.full_name || profile?.email || 'Unknown User';
+      }
+
+      // Get the current data before update for audit logging
+      const { data: currentData } = await supabase
+        .from('business_requests')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
       // Convert ReadinessChecklist to Json-compatible format
       const updateData: Record<string, any> = { ...data };
       if (data.readiness_checklist) {
@@ -201,11 +248,42 @@ export function useUpdateBusinessRequest() {
         .select()
         .single();
       if (error) throw error;
+
+      // Create audit log entries for changed fields
+      if (currentData) {
+        const auditLogs: any[] = [];
+        
+        for (const [key, newValue] of Object.entries(data)) {
+          const oldValue = (currentData as any)[key];
+          const oldStr = oldValue === null || oldValue === undefined ? null : String(oldValue);
+          const newStr = newValue === null || newValue === undefined ? null : String(newValue);
+          
+          // Only log if value actually changed
+          if (oldStr !== newStr) {
+            auditLogs.push({
+              business_request_id: id,
+              actor_id: user?.id || null,
+              actor_name: actorName,
+              action: 'UPDATE',
+              field_changed: key,
+              old_value: oldStr,
+              new_value: newStr
+            });
+          }
+        }
+        
+        // Insert all audit logs
+        if (auditLogs.length > 0) {
+          await supabase.from('business_request_audit_logs').insert(auditLogs);
+        }
+      }
+
       return result;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['business-requests'] });
       queryClient.invalidateQueries({ queryKey: ['business-request'] });
+      queryClient.invalidateQueries({ queryKey: ['business-request-audit'] });
       // Only show toast for non-rank updates or explicit saves
       if (variables.data.rank === undefined) {
         toast({ title: 'Business request updated successfully' });
