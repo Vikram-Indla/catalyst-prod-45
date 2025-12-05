@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { CreateBusinessRequestModal } from '@/components/business-requests/Creat
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { RankUpdateNotification } from '@/components/business-requests/RankUpdateNotification';
 import { SimpleColumnHeader, SortDirection } from '@/components/business-requests/SimpleColumnHeader';
-import { DraggableColumnHeaders } from '@/components/business-requests/DraggableColumnHeaders';
+import { DraggableColumnHeaders, useColumnWidths, ColumnWidths } from '@/components/business-requests/DraggableColumnHeaders';
 import { BusinessRequestsKanbanView } from '@/components/business-requests/BusinessRequestsKanbanView';
 import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
 import { PROCESS_STEPS } from '@/types/business-request';
@@ -23,23 +23,28 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useIndustryPreferences } from '@/hooks/useIndustryPreferences';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAuth } from '@/lib/auth';
+import { cn } from '@/lib/utils';
 
-const COLUMN_DEFINITIONS: Record<string, { label: string; width: string }> = {
-  request_key: { label: 'Request ID', width: 'w-24' },
-  rank: { label: 'Rank', width: 'w-16' },
-  title: { label: 'Summary', width: 'flex-1 min-w-0' },
-  process_step: { label: 'Process Step', width: 'w-36' },
-  business_score: { label: 'Score', width: 'w-20' },
-  submitted_date: { label: 'Submitted Date', width: 'w-28' },
-  planned_quarter: { label: 'Quarter', width: 'w-24' },
-  end_date: { label: 'Target Date', width: 'w-28' },
-  ageing: { label: 'Ageing', width: 'w-20' },
-  delivery_platform: { label: 'Delivery Platform', width: 'w-32' },
-  requestor: { label: 'Assignee', width: 'w-28' },
-  business_owner: { label: 'Business Owner', width: 'w-28' },
-  department: { label: 'Department', width: 'w-28' },
-  created_by: { label: 'Reporter', width: 'w-28' },
+const COLUMN_DEFINITIONS: Record<string, { label: string; defaultWidth: number; minWidth: number }> = {
+  request_key: { label: 'Request ID', defaultWidth: 96, minWidth: 80 },
+  rank: { label: 'Rank', defaultWidth: 64, minWidth: 50 },
+  title: { label: 'Summary', defaultWidth: 300, minWidth: 150 },
+  process_step: { label: 'Process Step', defaultWidth: 144, minWidth: 100 },
+  business_score: { label: 'Score', defaultWidth: 80, minWidth: 60 },
+  submitted_date: { label: 'Submitted Date', defaultWidth: 112, minWidth: 90 },
+  planned_quarter: { label: 'Quarter', defaultWidth: 96, minWidth: 80 },
+  end_date: { label: 'Target Date', defaultWidth: 112, minWidth: 90 },
+  ageing: { label: 'Ageing', defaultWidth: 80, minWidth: 60 },
+  delivery_platform: { label: 'Delivery Platform', defaultWidth: 128, minWidth: 100 },
+  requestor: { label: 'Assignee', defaultWidth: 112, minWidth: 80 },
+  business_owner: { label: 'Business Owner', defaultWidth: 112, minWidth: 80 },
+  department: { label: 'Department', defaultWidth: 112, minWidth: 80 },
+  created_by: { label: 'Reporter', defaultWidth: 112, minWidth: 80 },
 };
+
+const DEFAULT_COLUMN_WIDTHS: ColumnWidths = Object.fromEntries(
+  Object.entries(COLUMN_DEFINITIONS).map(([id, def]) => [id, def.defaultWidth])
+);
 
 const DEFAULT_COLUMN_ORDER = ['request_key', 'rank', 'title', 'process_step', 'business_score', 'submitted_date', 'planned_quarter', 'end_date', 'ageing', 'delivery_platform', 'requestor', 'business_owner', 'department', 'created_by'];
 
@@ -307,6 +312,12 @@ export default function IndustryPage() {
     updateColumnOrder, 
     updatePreferences,
   } = useIndustryPreferences();
+
+  // Resizable column widths
+  const { columnWidths, handleColumnResize } = useColumnWidths(
+    'industry-column-widths',
+    DEFAULT_COLUMN_WIDTHS
+  );
 
   const columns = useMemo(() => 
     getDefaultColumns(columnOrder, columnVisibility), 
@@ -764,6 +775,8 @@ export default function IndustryPage() {
                   columnSort={columnSort}
                   onSort={handleSort}
                   onReorder={handleColumnsChange}
+                  columnWidths={columnWidths}
+                  onColumnResize={handleColumnResize}
                   leadingContent={
                     <>
                       <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
@@ -793,13 +806,17 @@ export default function IndustryPage() {
                             const colDef = COLUMN_DEFINITIONS[col.id];
                             if (!colDef || !col.visible) return null;
                             
+                            const width = columnWidths[col.id] || colDef.defaultWidth;
+                            const isCentered = col.id === 'rank' || col.id === 'business_score' || col.id === 'ageing';
+                            const baseStyle = { width: `${width}px`, flexShrink: 0 };
+                            
                             switch(col.id) {
                               case 'request_key':
                                 return (
-                                  <div className="w-24 shrink-0">
+                                  <div style={baseStyle} className="overflow-hidden">
                                     <button
                                       onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
-                                      className="text-sm text-muted-foreground hover:text-foreground hover:underline font-medium transition-colors"
+                                      className="text-sm text-muted-foreground hover:text-foreground hover:underline font-medium transition-colors truncate block"
                                     >
                                       {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
                                     </button>
@@ -807,7 +824,7 @@ export default function IndustryPage() {
                                 );
                               case 'rank':
                                 return (
-                                  <div className="w-16 shrink-0 text-center">
+                                  <div style={baseStyle} className="text-center overflow-hidden">
                                     <span className="text-sm text-foreground inline-flex items-center gap-1 justify-center">
                                       {isForceRanked && (
                                         <Tooltip>
@@ -828,29 +845,29 @@ export default function IndustryPage() {
                                 );
                               case 'title':
                                 return (
-                                  <div className="flex-1 min-w-0">
+                                  <div style={baseStyle} className="overflow-hidden">
                                     <span className="text-sm text-foreground truncate block">{request.title}</span>
                                   </div>
                                 );
                               case 'process_step':
-                                return <div className="w-36 shrink-0">{getStatusBadge(request.process_step)}</div>;
+                                return <div style={baseStyle} className="overflow-hidden">{getStatusBadge(request.process_step)}</div>;
                               case 'business_score':
-                                return <div className="w-20 shrink-0 text-center">{getBusinessScoreBadge(request)}</div>;
+                                return <div style={baseStyle} className="text-center overflow-hidden">{getBusinessScoreBadge(request)}</div>;
                               case 'submitted_date':
                                 return (
-                                  <div className="w-28 shrink-0">
-                                    <span className="text-sm text-muted-foreground">{formatDate(request.created_at)}</span>
+                                  <div style={baseStyle} className="overflow-hidden">
+                                    <span className="text-sm text-muted-foreground truncate block">{formatDate(request.created_at)}</span>
                                   </div>
                                 );
                               case 'planned_quarter':
                                 return (
-                                  <div className="w-24 shrink-0">
+                                  <div style={baseStyle} className="overflow-hidden">
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <div className="flex items-center gap-1 cursor-help">
-                                          <span className="text-sm text-muted-foreground">{request.planned_quarter || '-'}</span>
+                                          <span className="text-sm text-muted-foreground truncate">{request.planned_quarter || '-'}</span>
                                           {quarterDays !== null && quarterDays <= 30 && quarterDays > 0 && (
-                                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">{quarterDays}d</span>
+                                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 font-medium shrink-0">{quarterDays}d</span>
                                           )}
                                         </div>
                                       </TooltipTrigger>
@@ -864,10 +881,10 @@ export default function IndustryPage() {
                                 );
                               case 'end_date':
                                 return (
-                                  <div className="w-28 shrink-0">
+                                  <div style={baseStyle} className="overflow-hidden">
                                     <Tooltip>
                                       <TooltipTrigger asChild>
-                                        <span className={`text-sm cursor-help ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
+                                        <span className={`text-sm cursor-help truncate block ${targetInfo.class}`}>{formatDate(request.end_date)}</span>
                                       </TooltipTrigger>
                                       <TooltipContent side="top" className="bg-brand-dark text-white text-xs">{targetInfo.tooltip}</TooltipContent>
                                     </Tooltip>
@@ -875,7 +892,7 @@ export default function IndustryPage() {
                                 );
                               case 'ageing':
                                 return (
-                                  <div className="w-20 shrink-0 text-center">
+                                  <div style={baseStyle} className="text-center overflow-hidden">
                                     <Tooltip>
                                       <TooltipTrigger asChild>
                                         <span className={`text-sm inline-flex items-center gap-1 cursor-help ${ageingInfo.class}`}>
@@ -894,31 +911,31 @@ export default function IndustryPage() {
                                 );
                               case 'delivery_platform':
                                 return (
-                                  <div className="w-32 shrink-0">
+                                  <div style={baseStyle} className="overflow-hidden">
                                     <span className="text-sm text-muted-foreground truncate block">{request.delivery_platform || '-'}</span>
                                   </div>
                                 );
                               case 'requestor':
                                 return (
-                                  <div className="w-28 shrink-0">
+                                  <div style={baseStyle} className="overflow-hidden">
                                     <span className="text-sm text-muted-foreground truncate block">{request.requestor || '-'}</span>
                                   </div>
                                 );
                               case 'business_owner':
                                 return (
-                                  <div className="w-28 shrink-0">
+                                  <div style={baseStyle} className="overflow-hidden">
                                     <span className="text-sm text-muted-foreground truncate block">{request.business_owner || '-'}</span>
                                   </div>
                                 );
                               case 'department':
                                 return (
-                                  <div className="w-28 shrink-0">
+                                  <div style={baseStyle} className="overflow-hidden">
                                     <span className="text-sm text-muted-foreground truncate block">{request.department || '-'}</span>
                                   </div>
                                 );
                               case 'created_by':
                                 return (
-                                  <div className="w-28 shrink-0">
+                                  <div style={baseStyle} className="overflow-hidden">
                                     <span className="text-sm text-muted-foreground truncate block">{request.created_by || '-'}</span>
                                   </div>
                                 );
