@@ -108,8 +108,10 @@ export function DraggableColumnHeaders({
   const visibleColumns = columns.filter(col => col.visible);
 
   return (
-    <div className="flex items-center gap-0 px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative shrink-0">
-      {leadingContent}
+    <div className="flex items-center px-4 py-2.5 bg-muted/50 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide relative shrink-0">
+      <div className="flex items-center shrink-0" style={{ gap: '16px' }}>
+        {leadingContent}
+      </div>
       
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="column-headers" direction="horizontal">
