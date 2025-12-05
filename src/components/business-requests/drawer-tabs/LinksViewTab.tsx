@@ -430,43 +430,62 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
 
       {/* Links List */}
       <div className="space-y-3">
-        <h4 className="font-semibold text-[15px] text-foreground">Links</h4>
+        <h4 className="font-semibold text-[15px] text-foreground">Links ({links.length})</h4>
         {links.length > 0 ? (
-          <div className="space-y-2">
-            {links.map((link: any) => (
-              <Card key={link.id} className="p-4 bg-muted/30 border-border/40 hover:bg-muted/50 transition-colors">
-                <div className="flex items-center gap-3">
+          <Card className="overflow-hidden border-border/40">
+            {/* Table Header */}
+            <div className="grid grid-cols-[40px_1fr_100px_100px_80px] gap-3 px-4 py-3 bg-muted/50 border-b border-border/40 text-[12px] font-medium text-muted-foreground uppercase tracking-wide">
+              <div></div>
+              <div>Title</div>
+              <div>Type</div>
+              <div>Size/Host</div>
+              <div className="text-right">Actions</div>
+            </div>
+            
+            {/* Table Body */}
+            <div className="divide-y divide-border/30">
+              {links.map((link: any) => (
+                <div 
+                  key={link.id} 
+                  className="grid grid-cols-[40px_1fr_100px_100px_80px] gap-3 px-4 py-3 items-center hover:bg-muted/30 transition-colors"
+                >
                   {/* Icon */}
-                  <div className="w-10 h-10 flex items-center justify-center bg-brand-gold/10 rounded-lg shrink-0">
+                  <div className="w-9 h-9 flex items-center justify-center bg-brand-gold/10 rounded-lg">
                     {link.kind === 'document' ? (
-                      <FileText className="h-5 w-5 text-brand-gold" />
+                      <FileText className="h-4 w-4 text-brand-gold" />
                     ) : (
-                      <ExternalLink className="h-5 w-5 text-brand-gold" />
+                      <ExternalLink className="h-4 w-4 text-brand-gold" />
                     )}
                   </div>
                   
-                  {/* Info */}
-                  <div className="flex-1 min-w-0">
-                    <div className="text-[14px] font-medium text-foreground truncate">{link.title}</div>
-                    <div className="text-[12px] text-muted-foreground truncate">
-                      {link.kind === 'document' 
-                        ? `${link.file_name || 'Document'} • ${link.file_size ? formatFileSize(link.file_size) : ''}`
-                        : new URL(link.url).hostname
-                      }
-                    </div>
+                  {/* Title */}
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-medium text-foreground truncate">{link.title}</div>
+                    {link.kind === 'document' && link.file_name && (
+                      <div className="text-[11px] text-muted-foreground truncate">{link.file_name}</div>
+                    )}
                   </div>
                   
                   {/* Type Badge */}
-                  <span className="px-2.5 py-1 text-[11px] font-medium bg-muted text-muted-foreground rounded capitalize shrink-0">
-                    {link.link_type}
-                  </span>
+                  <div>
+                    <span className="inline-block px-2 py-0.5 text-[11px] font-medium bg-muted text-muted-foreground rounded capitalize">
+                      {link.link_type}
+                    </span>
+                  </div>
+                  
+                  {/* Size/Host */}
+                  <div className="text-[12px] text-muted-foreground truncate">
+                    {link.kind === 'document' 
+                      ? (link.file_size ? formatFileSize(link.file_size) : '-')
+                      : (() => { try { return new URL(link.url).hostname; } catch { return '-'; } })()
+                    }
+                  </div>
                   
                   {/* Actions */}
-                  <div className="flex items-center gap-1 shrink-0">
+                  <div className="flex items-center justify-end gap-1">
                     <button
                       onClick={async () => {
                         if (link.kind === 'document' && link.file_path) {
-                          // Use signed URL for private bucket
                           const { data } = await supabase.storage
                             .from('attachments')
                             .createSignedUrl(link.file_path, 3600);
@@ -477,7 +496,7 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
                           window.open(link.url, '_blank', 'noopener,noreferrer');
                         }
                       }}
-                      className="w-8 h-8 flex items-center justify-center rounded text-muted-foreground hover:bg-card hover:text-foreground transition-colors"
+                      className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-card hover:text-foreground transition-colors"
                       title={link.kind === 'document' ? 'Download' : 'Open'}
                     >
                       {link.kind === 'document' ? (
@@ -492,16 +511,16 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
                           deleteMutation.mutate(link);
                         }
                       }}
-                      className="w-8 h-8 flex items-center justify-center rounded text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
                       title="Delete"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </div>
-              </Card>
-            ))}
-          </div>
+              ))}
+            </div>
+          </Card>
         ) : (
           <div className="text-center py-10 text-muted-foreground">
             No links yet. Add links above.
