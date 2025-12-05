@@ -82,12 +82,15 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Sync form data when request changes
   useEffect(() => {
     if (request) {
-      setFormData(request);
-      setOriginalData(request);
-      setEditedName(request.title || '');
-      // Only reset hasChanges if we didn't just trigger this update ourselves
+      // Only overwrite formData if we didn't just trigger this update ourselves
       if (!skipNextFormResetRef.current) {
+        setFormData(request);
+        setOriginalData(request);
+        setEditedName(request.title || '');
         setHasChanges(false);
+      } else {
+        // Still update originalData for change detection, but keep formData as-is
+        setOriginalData(request);
       }
       skipNextFormResetRef.current = false;
     }
