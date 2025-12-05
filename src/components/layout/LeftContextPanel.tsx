@@ -141,6 +141,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
 
   // More pages sub-menu for Enterprise
   const morePagesSubMenu = [
+    { id: 'knowledge-hub', label: 'Knowledge Hub', path: '/knowledge-hub' },
     { id: 'assessments', label: 'Assessments', path: '/enterprise/pages/assessments' },
     { id: 'definition-of-done', label: 'Definition of done', path: '/enterprise/pages/definition-of-done' },
     { id: 'framework-maps', label: 'Framework maps', path: '/enterprise/pages/framework-maps' },
