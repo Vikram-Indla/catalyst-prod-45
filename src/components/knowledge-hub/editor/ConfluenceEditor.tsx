@@ -28,6 +28,21 @@ export function ConfluenceEditor({
   editable = true,
   placeholder = 'Start writing...'
 }: ConfluenceEditorProps) {
+  // Parse content - can be JSON string, HTML string, or TipTap JSON object
+  const parseContent = (c: string) => {
+    if (!c) return '';
+    try {
+      // Try to parse as JSON first (TipTap format)
+      const parsed = JSON.parse(c);
+      if (parsed && typeof parsed === 'object' && parsed.type === 'doc') {
+        return parsed;
+      }
+    } catch {
+      // Not JSON, treat as HTML
+    }
+    return c;
+  };
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -76,13 +91,13 @@ export function ConfluenceEditor({
       TextAlign.configure({
         types: ['heading', 'paragraph'],
       }),
-      Underline,
+    Underline,
       InfoPanelExtension,
       WarningPanelExtension,
       NotePanelExtension,
       ExpandExtension,
     ],
-    content,
+    content: parseContent(content),
     editable,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());

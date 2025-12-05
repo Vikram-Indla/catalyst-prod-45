@@ -46,7 +46,7 @@ export function CreateDocumentDialog({
     setIsCreating(true);
     try {
       const { data: userData } = await supabase.auth.getUser();
-      const userId = userData?.user?.id || 'system';
+      const userId = userData?.user?.id || '00000000-0000-0000-0000-000000000000';
       
       const { data, error } = await supabase
         .from('kb_documents')
