@@ -261,6 +261,8 @@ export type Database = {
           estimation_risk_rating: string | null
           executive_urgency: number | null
           expected_resume_date: string | null
+          force_ranked_at: string | null
+          force_ranked_by: string | null
           functional_spec_link: string | null
           health: string | null
           id: string
@@ -270,6 +272,7 @@ export type Database = {
           implementation_owner: string | null
           integration_required: boolean | null
           integration_systems: string[] | null
+          is_force_ranked: boolean | null
           jira_epic_link: string | null
           key_risks_remarks: string | null
           on_hold_comment: string | null
@@ -327,6 +330,8 @@ export type Database = {
           estimation_risk_rating?: string | null
           executive_urgency?: number | null
           expected_resume_date?: string | null
+          force_ranked_at?: string | null
+          force_ranked_by?: string | null
           functional_spec_link?: string | null
           health?: string | null
           id?: string
@@ -336,6 +341,7 @@ export type Database = {
           implementation_owner?: string | null
           integration_required?: boolean | null
           integration_systems?: string[] | null
+          is_force_ranked?: boolean | null
           jira_epic_link?: string | null
           key_risks_remarks?: string | null
           on_hold_comment?: string | null
@@ -393,6 +399,8 @@ export type Database = {
           estimation_risk_rating?: string | null
           executive_urgency?: number | null
           expected_resume_date?: string | null
+          force_ranked_at?: string | null
+          force_ranked_by?: string | null
           functional_spec_link?: string | null
           health?: string | null
           id?: string
@@ -402,6 +410,7 @@ export type Database = {
           implementation_owner?: string | null
           integration_required?: boolean | null
           integration_systems?: string[] | null
+          is_force_ranked?: boolean | null
           jira_epic_link?: string | null
           key_risks_remarks?: string | null
           on_hold_comment?: string | null
