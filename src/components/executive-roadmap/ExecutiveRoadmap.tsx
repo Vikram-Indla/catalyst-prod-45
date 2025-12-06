@@ -921,213 +921,92 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   </div>
                 </div>
 
-                {/* Timeline Bar */}
-                <TooltipProvider delayDuration={100}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex-1 relative py-3 px-2 cursor-pointer" style={{ display: 'flex', alignItems: 'center' }}>
-                        {/* Vertical grid lines for timeline columns */}
-                        <div className="absolute inset-0 flex pointer-events-none">
-                          {timelineColumns.map((_, i) => (
-                            <div 
-                              key={i} 
-                              className="flex-1 border-r" 
-                              style={{ borderColor: 'hsl(var(--roadmap-sandstone) / 0.5)' }} 
-                            />
-                          ))}
-                        </div>
-                        {/* Date labels */}
-                        <div 
-                          className="absolute text-xs"
-                          style={{ left: barPos.left, top: '2px', color: 'hsl(var(--roadmap-fossil))' }}
-                        >
-                          {formatDateLabel(item.startDate)}
-                        </div>
-                        <div 
-                          className="absolute text-xs" 
-                          style={{ 
-                            left: `calc(${barPos.left} + ${barPos.width})`, 
-                            top: '2px', 
-                            transform: 'translateX(-100%)',
-                            color: 'hsl(var(--roadmap-fossil))'
-                          }}
-                        >
-                          {formatDateLabel(item.endDate)}
-                        </div>
+                {/* Timeline Bar - No tooltip wrapper */}
+                <div className="flex-1 relative py-3 px-2 cursor-pointer" style={{ display: 'flex', alignItems: 'center' }}>
+                  {/* Vertical grid lines for timeline columns */}
+                  <div className="absolute inset-0 flex pointer-events-none">
+                    {timelineColumns.map((_, i) => (
+                      <div 
+                        key={i} 
+                        className="flex-1 border-r" 
+                        style={{ borderColor: 'hsl(var(--roadmap-sandstone) / 0.5)' }} 
+                      />
+                    ))}
+                  </div>
+                  {/* Date labels */}
+                  <div 
+                    className="absolute text-xs"
+                    style={{ left: barPos.left, top: '2px', color: 'hsl(var(--roadmap-fossil))' }}
+                  >
+                    {formatDateLabel(item.startDate)}
+                  </div>
+                  <div 
+                    className="absolute text-xs" 
+                    style={{ 
+                      left: `calc(${barPos.left} + ${barPos.width})`, 
+                      top: '2px', 
+                      transform: 'translateX(-100%)',
+                      color: 'hsl(var(--roadmap-fossil))'
+                    }}
+                  >
+                    {formatDateLabel(item.endDate)}
+                  </div>
 
-                        {/* Bar - UNIFORM gold gradient for all statuses */}
-                        <div 
-                          className="absolute h-[26px] rounded-full overflow-visible"
+                  {/* Bar - UNIFORM gold gradient for all statuses */}
+                  <div 
+                    className="absolute h-[26px] rounded-full overflow-hidden"
+                    style={{ 
+                      left: barPos.left, 
+                      width: barPos.width, 
+                      top: '50%', 
+                      transform: 'translateY(-50%)',
+                      background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
+                    }}
+                  >
+                    {/* Milestones - positioned inside the bar with padding */}
+                    {showMilestones && item.milestones.map((ms, index) => {
+                      // Keep milestones inside bar: distribute evenly within bounds
+                      const totalMilestones = item.milestones.length;
+                      let pos: number;
+                      if (totalMilestones === 1) {
+                        pos = 50; // Center if only one
+                      } else {
+                        // Distribute from 10% to 90% to keep inside bar
+                        pos = 10 + (index * (80 / (totalMilestones - 1)));
+                      }
+                      
+                      return (
+                        <div
+                          key={ms.step}
+                          className="absolute w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center text-[10px] font-medium cursor-pointer"
                           style={{ 
-                            left: barPos.left, 
-                            width: barPos.width, 
+                            left: `${pos}%`, 
                             top: '50%', 
-                            transform: 'translateY(-50%)',
-                            background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
+                            transform: 'translate(-50%, -50%)',
+                            backgroundColor: ms.state === 'complete' 
+                              ? 'hsl(var(--roadmap-milestone-complete))' 
+                              : 'white',
+                            borderColor: ms.state === 'complete' 
+                              ? 'hsl(var(--roadmap-milestone-complete))'
+                              : ms.state === 'current'
+                                ? 'hsl(var(--roadmap-milestone-current))'
+                                : 'hsl(var(--roadmap-milestone-pending))',
+                            color: ms.state === 'complete' 
+                              ? 'white'
+                              : ms.state === 'current'
+                                ? 'hsl(var(--roadmap-milestone-current))'
+                                : 'hsl(var(--roadmap-fossil))',
+                            boxShadow: ms.state === 'current' 
+                              ? '0 0 8px hsla(var(--roadmap-milestone-current) / 0.5)' 
+                              : 'none'
                           }}
                         >
-                          {/* Milestones - positioned inside the bar with padding */}
-                          {showMilestones && item.milestones.map((ms, index) => {
-                            // Keep milestones inside bar: first at 5%, then evenly spaced, last at 95%
-                            const totalMilestones = item.milestones.length;
-                            let pos: number;
-                            if (totalMilestones === 1) {
-                              pos = 50; // Center if only one
-                            } else {
-                              // Distribute from 8% to 92% to keep inside bar
-                              pos = 8 + (index * (84 / (totalMilestones - 1)));
-                            }
-                            const msDate = new Date(ms.date);
-                            const dateLabel = msDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' });
-                            
-                            return (
-                              <div
-                                key={ms.step}
-                                className={cn(
-                                  "absolute w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center text-[10px] font-medium group cursor-pointer"
-                                )}
-                                style={{ 
-                                  left: `${pos}%`, 
-                                  top: '50%', 
-                                  transform: 'translate(-50%, -50%)',
-                                  backgroundColor: ms.state === 'complete' 
-                                    ? 'hsl(var(--roadmap-milestone-complete))' 
-                                    : 'white',
-                                  borderColor: ms.state === 'complete' 
-                                    ? 'hsl(var(--roadmap-milestone-complete))'
-                                    : ms.state === 'current'
-                                      ? 'hsl(var(--roadmap-milestone-current))'
-                                      : 'hsl(var(--roadmap-milestone-pending))',
-                                  color: ms.state === 'complete' 
-                                    ? 'white'
-                                    : ms.state === 'current'
-                                      ? 'hsl(var(--roadmap-milestone-current))'
-                                      : 'hsl(var(--roadmap-fossil))',
-                                  boxShadow: ms.state === 'current' 
-                                    ? '0 0 8px hsla(var(--roadmap-milestone-current) / 0.5)' 
-                                    : 'none'
-                                }}
-                                title={dateLabel}
-                              >
-                                {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : ms.step}
-                                {/* Date tooltip on hover */}
-                                <span 
-                                  className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs px-1.5 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                                  style={{ 
-                                    backgroundColor: 'hsl(var(--roadmap-charcoal))',
-                                    color: 'white'
-                                  }}
-                                >
-                                  {dateLabel}
-                                </span>
-                              </div>
-                            );
-                          })}
+                          {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : ms.step}
                         </div>
-                      </div>
-                    </TooltipTrigger>
-
-                    {/* Tooltip content */}
-                    <TooltipContent 
-                      side="bottom" 
-                      align="start" 
-                      className="w-80 p-0 shadow-lg rounded-xl overflow-hidden"
-                      style={{ 
-                        backgroundColor: 'white',
-                        border: '1px solid hsl(var(--roadmap-sandstone))'
-                      }}
-                    >
-                      <div className="p-3 border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
-                        <div className="text-xs font-medium" style={{ color: 'hsl(var(--roadmap-status-new))' }}>{item.id}</div>
-                        <div className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{isRTL ? item.titleAr : item.titleEn}</div>
-                        <span 
-                          className="inline-block mt-1.5 px-2 py-0.5 text-xs rounded-full"
-                          style={{ 
-                            backgroundColor: `${STATUS_COLORS[item.status]}20`, 
-                            color: STATUS_COLORS[item.status] 
-                          }}
-                        >
-                          {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                        </span>
-                      </div>
-                      {item.risks.length > 0 && (
-                        <div className="p-3 border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
-                          <div className="text-xs font-medium mb-1.5 flex items-center gap-2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                            {t.risks}
-                            <span 
-                              className="px-1.5 py-0.5 rounded text-xs"
-                              style={{ backgroundColor: 'hsl(var(--roadmap-parchment))' }}
-                            >
-                              {item.risks.length}
-                            </span>
-                          </div>
-                          {item.risks.map(risk => (
-                            <div key={risk.sno} className="flex items-center justify-between text-xs py-0.5">
-                              <span style={{ color: 'hsl(var(--roadmap-fossil))' }}>{risk.sno}. {risk.title}</span>
-                              <span 
-                                className="text-xs px-1.5 py-0.5 rounded"
-                                style={{
-                                  backgroundColor: risk.status === 'resolved' 
-                                    ? 'hsla(var(--roadmap-milestone-complete) / 0.1)'
-                                    : risk.status === 'pending'
-                                      ? 'hsla(var(--roadmap-status-new) / 0.1)'
-                                      : 'hsla(var(--roadmap-today) / 0.1)',
-                                  color: risk.status === 'resolved' 
-                                    ? 'hsl(var(--roadmap-milestone-complete))'
-                                    : risk.status === 'pending'
-                                      ? 'hsl(var(--roadmap-status-new))'
-                                      : 'hsl(var(--roadmap-today))'
-                                }}
-                              >
-                                {risk.status}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {item.dependencies.length > 0 && (
-                        <div className="p-3">
-                          <div className="text-xs font-medium mb-1.5 flex items-center gap-2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                            {t.dependencies}
-                            <span 
-                              className="px-1.5 py-0.5 rounded text-xs"
-                              style={{ backgroundColor: 'hsl(var(--roadmap-parchment))' }}
-                            >
-                              {item.dependencies.length}
-                            </span>
-                          </div>
-                          {item.dependencies.map(dep => (
-                            <div key={dep.sno} className="flex items-center justify-between text-xs py-0.5">
-                              <span style={{ color: 'hsl(var(--roadmap-fossil))' }}>{dep.sno}. {dep.title}</span>
-                              <span 
-                                className="text-xs px-1.5 py-0.5 rounded"
-                                style={{
-                                  backgroundColor: dep.status === 'resolved' 
-                                    ? 'hsla(var(--roadmap-milestone-complete) / 0.1)'
-                                    : dep.status === 'pending'
-                                      ? 'hsla(var(--roadmap-status-new) / 0.1)'
-                                      : 'hsla(var(--roadmap-today) / 0.1)',
-                                  color: dep.status === 'resolved' 
-                                    ? 'hsl(var(--roadmap-milestone-complete))'
-                                    : dep.status === 'pending'
-                                      ? 'hsl(var(--roadmap-status-new))'
-                                      : 'hsl(var(--roadmap-today))'
-                                }}
-                              >
-                                {dep.status}
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                      {item.risks.length === 0 && item.dependencies.length === 0 && (
-                        <div className="p-3 text-xs text-center" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                          {isRTL ? 'لا توجد مخاطر أو اعتماديات' : 'No risks or dependencies'}
-                        </div>
-                      )}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             );
           })}
