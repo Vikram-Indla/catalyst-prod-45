@@ -86,7 +86,7 @@ export function CreateDropdown() {
       <DropdownMenuTrigger asChild>
         <Button
           size="sm"
-          className="h-8 px-3 sm:h-9 sm:px-4 bg-primary hover:bg-primary/90 text-primary-foreground"
+          className="h-8 px-2.5 bg-primary hover:bg-primary/90 text-primary-foreground"
         >
           <Plus className="h-4 w-4 mr-1" />
           Create

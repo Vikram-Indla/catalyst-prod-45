@@ -14,7 +14,7 @@ export function NotificationsPanel() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9 relative">
+        <Button variant="ghost" size="icon" className="h-8 w-8 relative">
           <Bell className="h-4 w-4" />
           {notificationCount > 0 && (
             <span className="absolute top-1 right-1 h-2 w-2 bg-destructive rounded-full" />
