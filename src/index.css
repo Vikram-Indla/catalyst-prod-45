@@ -1024,3 +1024,43 @@ h3 {
   border-radius: 4px;
   font-weight: 500;
 }
+
+/* ============================================
+   PRINT STYLES - Executive Roadmap
+   ============================================ */
+@media print {
+  /* Hide Catalyst shell elements */
+  [data-sidebar],
+  aside,
+  nav,
+  header:not(.roadmap-print-header),
+  .catalyst-header,
+  .catalyst-sidebar,
+  [class*="SidebarProvider"],
+  [class*="AppSidebar"],
+  [data-slot="sidebar"] {
+    display: none !important;
+  }
+  
+  /* Make main content full width */
+  main,
+  [data-slot="main"],
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* White background for print */
+  body,
+  html,
+  #root {
+    background: white !important;
+  }
+  
+  /* Remove shadows */
+  * {
+    box-shadow: none !important;
+  }
+}
