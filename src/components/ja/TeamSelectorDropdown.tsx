@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
-import { Search, Users } from 'lucide-react';
+import { Search, Users, Star } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useStarredItems } from '@/hooks/useStarredItems';
 
 interface TeamSelectorDropdownProps {
   onClose: () => void;
@@ -14,6 +15,7 @@ interface TeamSelectorDropdownProps {
 export function TeamSelectorDropdown({ onClose }: TeamSelectorDropdownProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const { isStarred, toggleStar } = useStarredItems();
 
   const { data: teams, isLoading } = useQuery({
     queryKey: ['teams-header'],
@@ -45,6 +47,18 @@ export function TeamSelectorDropdown({ onClose }: TeamSelectorDropdownProps) {
     onClose();
   };
 
+  const handleToggleStar = async (e: React.MouseEvent, team: typeof filtered[0]) => {
+    e.stopPropagation();
+    await toggleStar({
+      room_type: 'team',
+      room_id: team.id,
+      room_name: team.name,
+      room_subtitle: team.programs?.name || 'Team',
+      room_path: `/teams/${team.id}/room`,
+      pi_label: null,
+    });
+  };
+
   return (
     <div className="w-80 bg-popover border rounded-md shadow-lg">
       <div className="p-3 border-b">
@@ -73,25 +87,41 @@ export function TeamSelectorDropdown({ onClose }: TeamSelectorDropdownProps) {
               {search ? 'No teams found' : 'No teams available'}
             </div>
           ) : (
-            filtered.map((team) => (
-              <button
-                key={team.id}
-                onClick={() => handleSelect(team.id)}
-                className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate">{team.name}</div>
-                    {team.programs && (
-                      <div className="text-xs text-muted-foreground truncate">
-                        {team.programs.name}
-                      </div>
-                    )}
+            filtered.map((team) => {
+              const starred = isStarred('team', team.id);
+              return (
+                <button
+                  key={team.id}
+                  onClick={() => handleSelect(team.id)}
+                  className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm group"
+                >
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium truncate">{team.name}</div>
+                      {team.programs && (
+                        <div className="text-xs text-muted-foreground truncate">
+                          {team.programs.name}
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      onClick={(e) => handleToggleStar(e, team)}
+                      className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand-gold"
+                      aria-label={starred ? "Unstar team" : "Star team"}
+                    >
+                      <Star
+                        className={`h-4 w-4 ${
+                          starred
+                            ? "text-brand-gold fill-brand-gold"
+                            : "text-muted-foreground hover:text-brand-gold"
+                        }`}
+                      />
+                    </button>
                   </div>
-                </div>
-              </button>
-            ))
+                </button>
+              );
+            })
           )}
         </div>
       </ScrollArea>
