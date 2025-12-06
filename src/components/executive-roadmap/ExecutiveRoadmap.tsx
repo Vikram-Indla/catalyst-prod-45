@@ -443,7 +443,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
 
         {/* Floating Pills Toolbar */}
-        <div className="inline-flex items-center gap-2 relative z-30">
+        <div className="inline-flex items-center gap-2 relative z-30" style={{ direction: 'ltr' }}>
           {/* Milestones Toggle */}
           <button
             onClick={() => setShowMilestones(!showMilestones)}
@@ -604,16 +604,16 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             <div className="flex">
               <div 
                 className={cn(
-                  "shrink-0 px-3 border-r border-border bg-muted relative group flex items-center",
+                  "shrink-0 px-3 border-r border-border bg-muted relative group flex items-center overflow-hidden",
                   timeScale === 'quarterly' ? 'py-2' : 'py-2'
                 )}
                 style={{ width: `${firstColumnWidth}px` }}
               >
-                <div className="flex items-center justify-between w-full">
-                  <span className="text-xs font-medium text-muted-foreground">{t.businessRequest}</span>
+                <div className="flex items-center justify-between w-full min-w-0 gap-2">
+                  <span className="text-xs font-medium text-muted-foreground truncate">{t.businessRequest}</span>
                   <button 
                     onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                    className="text-xs font-medium text-brand-gold flex items-center gap-0.5 hover:opacity-80"
+                    className="text-xs font-medium text-brand-gold flex items-center gap-0.5 hover:opacity-80 shrink-0"
                   >
                     {sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                     {sortField === 'rank' ? t.rank : sortField === 'platform' ? t.platform : t.owner}
@@ -622,10 +622,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 {/* Resize Handle */}
                 <div
                   className={cn(
-                    "absolute right-0 top-0 h-full w-1 cursor-col-resize z-20 transition-colors",
+                    "absolute top-0 h-full w-1 cursor-col-resize z-20 transition-colors",
                     "hover:bg-brand-gold/60 active:bg-brand-gold",
                     isResizing && "bg-brand-gold"
                   )}
+                  style={{ [isRTL ? 'left' : 'right']: 0 }}
                   onMouseDown={handleResizeMouseDown}
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -694,17 +695,17 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               >
                 {/* Request Info - No tooltip here */}
                 <div 
-                  className="shrink-0 px-3 py-3 border-r border-border"
+                  className="shrink-0 px-3 py-3 border-r border-border overflow-hidden"
                   style={{ width: `${firstColumnWidth}px` }}
                 >
                   <div className="flex items-start gap-2">
-                    <div className="flex items-center gap-0.5">
+                    <div className="flex items-center gap-0.5 shrink-0">
                       <span className="text-sm font-medium text-foreground">{item.rank}</span>
                       {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
                         <Lock className="h-3 w-3 text-brand-gold" />
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 overflow-hidden">
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
@@ -717,7 +718,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       <div className="text-sm font-medium text-foreground truncate leading-tight">
                         {isRTL ? item.titleAr : item.titleEn}
                       </div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
+                      <div className="text-xs text-muted-foreground mt-0.5 truncate">
                         {isRTL ? item.ownerAr : item.ownerEn}
                         <span className="mx-1">·</span>
                         <span style={{ color: statusColor }}>{isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}</span>
