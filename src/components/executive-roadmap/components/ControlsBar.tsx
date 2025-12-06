@@ -1,6 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Toggle } from '@/components/ui/toggle';
 import { ArrowUpDown, Maximize, Minimize, FileDown, Flag, Menu, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { 
@@ -216,16 +215,16 @@ export function ControlsBar({
       {/* Action buttons */}
       <div className="flex items-center gap-1">
         {/* Milestones toggle */}
-        <Toggle
-          pressed={showMilestones}
-          onPressedChange={onMilestonesToggle}
+        <Button
+          variant={showMilestones ? "default" : "ghost"}
           size="sm"
           className="h-8 px-2 text-xs hidden sm:flex"
+          onClick={onMilestonesToggle}
           aria-label={showMilestones ? t.hideMilestones : t.showMilestones}
         >
           <Flag className="h-4 w-4 mr-1" />
           <span className="hidden md:inline">{t.milestones}</span>
-        </Toggle>
+        </Button>
 
         {/* Language toggle */}
         <Button
