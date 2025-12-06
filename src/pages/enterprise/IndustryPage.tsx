@@ -806,10 +806,10 @@ export default function IndustryPage() {
                 <div className="flex-1 overflow-x-auto overflow-y-auto">
                   <table className="min-w-full w-max border-separate border-spacing-0">
                     {/* Table Header */}
-                    <thead className="sticky top-0 z-30 bg-brand-gold/10">
+                    <thead className="sticky top-0 z-30 bg-brand-gold/5">
                       <tr>
                         {/* Checkbox header cell */}
-                        <th className="h-10 px-3 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-brand-gold/10" style={{ width: '48px', minWidth: '48px' }}>
+                        <th className="h-10 px-3 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-brand-gold/5" style={{ width: '48px', minWidth: '48px' }}>
                           <div className="w-4" />
                         </th>
                         
@@ -824,7 +824,7 @@ export default function IndustryPage() {
                             <th 
                               key={col.id}
                               className={cn(
-                                "h-10 px-3.5 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-brand-gold/10 relative group",
+                                "h-10 px-3.5 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-brand-gold/5 relative group",
                                 isCentered && "text-center"
                               )}
                               style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
@@ -868,7 +868,7 @@ export default function IndustryPage() {
                         })}
                         
                         {/* Add column button header cell - sticky right */}
-                        <th className="h-10 border-b border-border bg-brand-gold/10 sticky right-0 z-20" style={{ width: '48px', minWidth: '48px' }}>
+                        <th className="h-10 border-b border-border bg-brand-gold/5 sticky right-0 z-20" style={{ width: '48px', minWidth: '48px' }}>
                           <div className="flex items-center justify-center">
                             <ColumnsDropdown
                               columns={columns}
