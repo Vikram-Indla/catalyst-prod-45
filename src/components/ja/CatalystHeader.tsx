@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { useUserRole } from "@/hooks/useUserRole";
+import { useEnabledModules } from "@/hooks/useModules";
 import { Button } from "@/components/ui/button";
 import { ItemsDropdown } from "./ItemsDropdown";
 import { CreateDropdown } from "./CreateDropdown";
@@ -43,6 +44,7 @@ export function CatalystHeader() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const { isAdmin } = useUserRole();
+  const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
 
   // Show Tests dropdown only when in program context with tests visible
   const isProgramRoute = location.pathname.startsWith('/programs/');
@@ -69,14 +71,21 @@ export function CatalystHeader() {
     }
   };
 
-  const navItems = [
-    { label: "Home", path: "/home" },
-    { label: "Enterprise", path: "/industry" },
-    { label: "Product", hasDropdown: true },
-    { label: "Portfolio", hasDropdown: true },
-    { label: "Program", hasDropdown: true },
-    { label: "Team", hasDropdown: true, path: "/teams" },
+  // Define nav items with their module codes
+  const allNavItems = [
+    { label: "Home", path: "/home", moduleCode: null }, // Always visible
+    { label: "Enterprise", path: "/industry", moduleCode: "PRODUCT" }, // Product module controls Enterprise/Industry
+    { label: "Product", hasDropdown: true, moduleCode: "PRODUCT" },
+    { label: "Portfolio", hasDropdown: true, moduleCode: "PORTFOLIO" },
+    { label: "Program", hasDropdown: true, moduleCode: "PROGRAM" },
+    { label: "Team", hasDropdown: true, path: "/teams", moduleCode: "TEAMS" },
   ];
+
+  // Filter nav items based on enabled modules
+  const navItems = allNavItems.filter(item => {
+    if (item.moduleCode === null) return true; // Always show items without module code
+    return isModuleEnabled(item.moduleCode);
+  });
 
   return (
     <>

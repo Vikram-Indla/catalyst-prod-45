@@ -14,6 +14,38 @@ export type Database = {
   }
   public: {
     Tables: {
+      active_package: {
+        Row: {
+          id: string
+          is_custom: boolean | null
+          package_code: string | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          is_custom?: boolean | null
+          package_code?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          is_custom?: boolean | null
+          package_code?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "active_package_package_code_fkey"
+            columns: ["package_code"]
+            isOneToOne: false
+            referencedRelation: "module_packages"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
       activity_logs: {
         Row: {
           action: string
@@ -4842,6 +4874,69 @@ export type Database = {
           },
         ]
       }
+      module_packages: {
+        Row: {
+          code: string
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      modules: {
+        Row: {
+          code: string
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          icon: string | null
+          id: string
+          is_default_enabled: boolean | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          is_default_enabled?: boolean | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          is_default_enabled?: boolean | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -5582,6 +5677,80 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "strategic_themes"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      org_modules: {
+        Row: {
+          created_at: string | null
+          enabled_at: string | null
+          enabled_by: string | null
+          id: string
+          is_enabled: boolean | null
+          module_code: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enabled_at?: string | null
+          enabled_by?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          module_code: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enabled_at?: string | null
+          enabled_by?: string | null
+          id?: string
+          is_enabled?: boolean | null
+          module_code?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "org_modules_module_code_fkey"
+            columns: ["module_code"]
+            isOneToOne: true
+            referencedRelation: "modules"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      package_modules: {
+        Row: {
+          created_at: string | null
+          id: string
+          module_code: string
+          package_code: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          module_code: string
+          package_code: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          module_code?: string
+          package_code?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "package_modules_module_code_fkey"
+            columns: ["module_code"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["code"]
+          },
+          {
+            foreignKeyName: "package_modules_package_code_fkey"
+            columns: ["package_code"]
+            isOneToOne: false
+            referencedRelation: "module_packages"
+            referencedColumns: ["code"]
           },
         ]
       }

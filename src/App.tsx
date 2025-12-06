@@ -123,6 +123,7 @@ import Portfolios from "./pages/admin/Portfolios";
 import Estimation from "./pages/admin/Estimation";
 import Security from "./pages/admin/Security";
 import ActivityLog from "./pages/admin/ActivityLog";
+import ModulesPackages from "./pages/admin/ModulesPackages";
 import UserRoles from "./pages/admin/UserRoles";
 import ReportsDiscovery from "./pages/admin/ReportsDiscovery";
 import PIWizard from "./pages/admin/PIWizard";
@@ -558,6 +559,7 @@ const App = () => (
                 <Route path="use-trend" element={<UseTrend />} />
                 <Route path="usage-trends" element={<UsageTrends />} />
                 <Route path="work-codes" element={<WorkCodes />} />
+                <Route path="modules-packages" element={<ModulesPackages />} />
                 <Route path="details-panels" element={<DetailsPanels />} />
                 <Route path="terminology" element={<Terminology />} />
                 <Route path="team-settings" element={<TeamSettings />} />
