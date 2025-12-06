@@ -28,6 +28,9 @@ import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RoadmapFiltersDialog, RoadmapFilters } from './RoadmapFiltersDialog';
+import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 type TimeScale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 type Language = 'en' | 'ar';
@@ -125,10 +128,27 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
+  const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const t = TRANSLATIONS[language];
   const isRTL = language === 'ar';
+
+  // Fetch the selected business request ID from request_key
+  const { data: selectedRequestDbId } = useQuery({
+    queryKey: ['business-request-id', selectedRequestId],
+    queryFn: async () => {
+      if (!selectedRequestId) return null;
+      const { data, error } = await supabase
+        .from('business_requests')
+        .select('id')
+        .eq('request_key', selectedRequestId)
+        .maybeSingle();
+      if (error) throw error;
+      return data?.id || null;
+    },
+    enabled: !!selectedRequestId,
+  });
 
   // Use API items if available, otherwise use seed data
   const items = useMemo(() => {
@@ -549,7 +569,15 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="text-[11px] text-[#C69C6D] font-medium">{item.id}</div>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedRequestId(item.id);
+                              }}
+                              className="text-[11px] text-[#C69C6D] font-medium hover:underline cursor-pointer bg-transparent border-none p-0"
+                            >
+                              {item.id}
+                            </button>
                             <div className="text-[13px] font-medium text-[#2C2825] truncate leading-tight">
                               {isRTL ? item.titleAr : item.titleEn}
                             </div>
@@ -717,6 +745,13 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           if (newFilters.showMilestones !== undefined) setShowMilestones(newFilters.showMilestones);
         }}
         uniqueOwners={uniqueOwners}
+      />
+
+      {/* Business Request Drawer */}
+      <BusinessRequestDrawer
+        isOpen={!!selectedRequestId && !!selectedRequestDbId}
+        onClose={() => setSelectedRequestId(null)}
+        requestId={selectedRequestDbId || null}
       />
     </div>
   );
