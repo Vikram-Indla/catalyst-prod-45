@@ -13,11 +13,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 export default function DetailsPanels() {
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="h-full flex flex-col bg-background">
+        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Details Panels</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-2xl font-semibold text-foreground">Details Panels</h1>
+            <p className="text-sm text-muted-foreground mt-1">
               Configure detail panel layouts and visible fields for work items
             </p>
           </div>
@@ -25,6 +25,7 @@ export default function DetailsPanels() {
             Save Changes
           </Button>
         </div>
+        <div className="flex-1 overflow-auto p-6 space-y-6">
 
         <Tabs defaultValue="epics" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5">
@@ -356,6 +357,7 @@ export default function DetailsPanels() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </AdminGuard>
   );

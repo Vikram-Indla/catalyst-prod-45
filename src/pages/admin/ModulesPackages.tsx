@@ -123,12 +123,11 @@ export default function ModulesPackages() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        {/* Header - matching DetailsPanels pattern */}
-        <div className="flex items-center justify-between">
+      <div className="h-full flex flex-col bg-background">
+        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Modules & Packages</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-2xl font-semibold text-foreground">Modules & Packages</h1>
+            <p className="text-sm text-muted-foreground mt-1">
               Configure which Catalyst modules are available for this organization, and which solution package is applied.
             </p>
           </div>
@@ -141,6 +140,7 @@ export default function ModulesPackages() {
             Save Changes
           </Button>
         </div>
+        <div className="flex-1 overflow-auto p-6 space-y-6">
 
         {/* Summary Cards */}
         <div className="grid gap-4 md:grid-cols-3">
@@ -251,6 +251,7 @@ export default function ModulesPackages() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </AdminGuard>
   );

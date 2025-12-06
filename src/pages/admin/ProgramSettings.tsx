@@ -9,11 +9,11 @@ import { Button } from '@/components/ui/button';
 export default function ProgramSettings() {
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="h-full flex flex-col bg-background">
+        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Program Settings</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-2xl font-semibold text-foreground">Program Settings</h1>
+            <p className="text-sm text-muted-foreground mt-1">
               Configure program-level settings and preferences.
             </p>
           </div>
@@ -21,7 +21,7 @@ export default function ProgramSettings() {
             Save Settings
           </Button>
         </div>
-
+        <div className="flex-1 overflow-auto p-6 space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Program Configuration</CardTitle>
@@ -35,6 +35,7 @@ export default function ProgramSettings() {
             </p>
           </CardContent>
         </Card>
+        </div>
       </div>
     </AdminGuard>
   );

@@ -126,22 +126,20 @@ export default function ChangesLog() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <FileText className="h-8 w-8 text-brand-gold" />
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Changes Log</h1>
-              <p className="text-muted-foreground mt-2">
-                Track all system configuration and data changes
-              </p>
-            </div>
+      <div className="h-full flex flex-col bg-background">
+        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Changes Log</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Track all system configuration and data changes
+            </p>
           </div>
           <Button variant="outline">
             <Download className="h-4 w-4 mr-2" />
             Export Log
           </Button>
         </div>
+        <div className="flex-1 overflow-auto p-6 space-y-6">
 
         {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-4">
@@ -247,6 +245,7 @@ export default function ChangesLog() {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </AdminGuard>
   );

@@ -26,13 +26,14 @@ export default function Terminology() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Platform Terminology</h1>
-          <p className="text-muted-foreground mt-2">
+      <div className="h-full flex flex-col bg-background">
+        <div className="border-b bg-card px-6 py-4">
+          <h1 className="text-2xl font-semibold text-foreground">Platform Terminology</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Configure terminology sets (SAFe, DAD, LeSS) to match your processes and external tools.
           </p>
         </div>
+        <div className="flex-1 overflow-auto p-6 space-y-6">
 
         <Alert>
           <Info className="h-4 w-4" />
@@ -188,6 +189,7 @@ export default function Terminology() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </AdminGuard>
   );

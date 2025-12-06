@@ -75,9 +75,9 @@ export default function Teams() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-[var(--s4)] mb-[var(--s4)]">
+            <div className="flex items-center gap-4 mb-4">
               <div className="relative flex-1">
-                <Search className="absolute left-[var(--s3)] top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Search teams..."
                   className="pl-10"
@@ -86,7 +86,7 @@ export default function Teams() {
             </div>
 
             {isLoading ? (
-              <div className="text-center py-[var(--s8)] text-muted-foreground">Loading teams...</div>
+              <div className="text-center py-8 text-muted-foreground">Loading teams...</div>
             ) : (
               <ResponsiveTableWrapper minWidth={600}>
                 <table className="w-full">
@@ -106,7 +106,7 @@ export default function Teams() {
                         <td className="p-3 text-sm">{team.programs?.name || 'N/A'}</td>
                         <td className="p-3 text-sm">-</td>
                         <td className="p-3 text-sm">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-success/20 text-success-600">
                             Active
                           </span>
                         </td>
