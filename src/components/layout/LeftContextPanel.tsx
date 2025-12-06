@@ -238,9 +238,9 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
       </button>
 
       <div className="h-full flex flex-col overflow-hidden">
-        {/* Context Header */}
+        {/* Context Header - aligned with page header */}
         {expanded && (
-          <div className="border-b" style={{ padding: 'var(--s4)', paddingTop: 'var(--s4)', paddingBottom: 'var(--s3)' }}>
+          <div className="border-b border-border px-4 py-4">
               {/* Portfolio/Program Selector */}
               {(tier === 'portfolio' || tier === 'program') && currentPortfolio && (
                 <Select value={portfolioId || undefined} onValueChange={setPortfolioId}>
