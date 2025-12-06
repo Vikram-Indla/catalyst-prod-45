@@ -597,17 +597,18 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       )}
 
       {/* Timeline Grid - smooth scroll */}
-      <div className="flex-1 overflow-auto scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
+      <div className="flex-1 overflow-auto scroll-smooth" style={{ scrollBehavior: 'smooth', direction: 'ltr' }}>
         <div className="min-w-[1200px]">
           {/* Timeline Header */}
           <div className="border-b border-border bg-card sticky top-0 z-10">
-            <div className="flex">
+            <div className={cn("flex", isRTL && "flex-row-reverse")}>
               <div 
                 className={cn(
-                  "shrink-0 px-3 border-r border-border bg-muted relative group flex items-center overflow-hidden",
-                  timeScale === 'quarterly' ? 'py-2' : 'py-2'
+                  "shrink-0 px-3 bg-muted relative group flex items-center overflow-hidden",
+                  timeScale === 'quarterly' ? 'py-2' : 'py-2',
+                  isRTL ? "border-l border-border" : "border-r border-border"
                 )}
-                style={{ width: `${firstColumnWidth}px` }}
+                style={{ width: `${firstColumnWidth}px`, direction: isRTL ? 'rtl' : 'ltr', textAlign: isRTL ? 'right' : 'left' }}
               >
                 <div className="flex items-center justify-between w-full min-w-0 gap-2">
                   <span className="text-xs font-medium text-muted-foreground truncate">{t.businessRequest}</span>
@@ -683,20 +684,21 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             const barPos = getBarPosition(item);
             const statusColor = STATUS_COLORS[item.status];
 
-            return (
-              <div 
-                key={item.id}
-                className={cn(
-                  "flex border-b border-border hover:bg-secondary transition-colors",
-                  hoveredItem === item.id && "bg-brand-gold/5"
-                )}
-                onMouseEnter={() => setHoveredItem(item.id)}
-                onMouseLeave={() => setHoveredItem(null)}
-              >
+              return (
+                <div 
+                  key={item.id}
+                  className={cn(
+                    "flex border-b border-border hover:bg-secondary transition-colors",
+                    hoveredItem === item.id && "bg-brand-gold/5",
+                    isRTL && "flex-row-reverse"
+                  )}
+                  onMouseEnter={() => setHoveredItem(item.id)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                >
                 {/* Request Info - No tooltip here */}
                 <div 
-                  className="shrink-0 px-3 py-3 border-r border-border overflow-hidden"
-                  style={{ width: `${firstColumnWidth}px` }}
+                  className={cn("shrink-0 px-3 py-3 overflow-hidden", isRTL ? "border-l border-border" : "border-r border-border")}
+                  style={{ width: `${firstColumnWidth}px`, direction: isRTL ? 'rtl' : 'ltr', textAlign: isRTL ? 'right' : 'left' }}
                 >
                   <div className="flex items-start gap-2">
                     <div className="flex items-center gap-0.5 shrink-0">
