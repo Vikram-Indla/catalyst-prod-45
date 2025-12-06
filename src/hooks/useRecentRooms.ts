@@ -12,6 +12,9 @@ export interface RecentRoom {
   room_subtitle: string | null;
   room_path: string;
   pi_label: string | null;
+  page_key: string;
+  timebox_type: string | null;
+  timebox_id: string | null;
   last_accessed_at: string;
   access_count: number;
 }
@@ -22,14 +25,18 @@ interface UseRecentRoomsOptions {
 }
 
 export function useRecentRooms(options: UseRecentRoomsOptions = {}) {
-  const { filterByRoomType = null, limit = 10 } = options;
+  const { filterByRoomType = null, limit = 8 } = options;
   const [recentRooms, setRecentRooms] = useState<RecentRoom[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchRecentRooms = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setRecentRooms([]);
+        setLoading(false);
+        return;
+      }
 
       let query = supabase
         .from("recent_activity")
@@ -46,9 +53,10 @@ export function useRecentRooms(options: UseRecentRoomsOptions = {}) {
       const { data, error } = await query;
 
       if (error) throw error;
-      setRecentRooms(data || []);
+      setRecentRooms((data || []) as RecentRoom[]);
     } catch (error) {
       console.error("Error fetching recent rooms:", error);
+      setRecentRooms([]);
     } finally {
       setLoading(false);
     }
@@ -60,7 +68,10 @@ export function useRecentRooms(options: UseRecentRoomsOptions = {}) {
     roomName: string,
     roomSubtitle: string | null,
     roomPath: string,
-    piLabel: string | null = null
+    piLabel: string | null = null,
+    pageKey: string = "room",
+    timeboxType: string | null = null,
+    timeboxId: string | null = null
   ) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -74,6 +85,9 @@ export function useRecentRooms(options: UseRecentRoomsOptions = {}) {
         p_room_subtitle: roomSubtitle,
         p_room_path: roomPath,
         p_pi_label: piLabel,
+        p_page_key: pageKey,
+        p_timebox_type: timeboxType,
+        p_timebox_id: timeboxId,
       });
 
       if (error) throw error;

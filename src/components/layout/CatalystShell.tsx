@@ -12,10 +12,14 @@ import { CatalystContextProvider, useCatalystContext } from '@/contexts/Catalyst
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
 import { useEnabledModules } from '@/hooks/useModules';
+import { useRecentPlaceTracker } from '@/hooks/useRecentPlaceTracker';
 
 function CatalystShellContent() {
   // Track last visited route for session persistence
   useTrackLastRoute();
+  
+  // Track room visits for Recent Rooms functionality
+  useRecentPlaceTracker();
   const location = useLocation();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
   const { tier, setTier } = useCatalystContext();
