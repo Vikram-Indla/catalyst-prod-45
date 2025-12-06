@@ -463,9 +463,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             <div className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>Industry Requests Portfolio</div>
           </div>
         </div>
-        {/* Catalyst label on right side for print */}
-        <div className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
-          Catalyst - Enterprise Demand & Delivery Management
+        {/* Catalyst branding on right side for print - matching brand style */}
+        <div className="text-xl font-semibold" style={{ letterSpacing: '-0.02em' }}>
+          <span style={{ color: '#1a1a1a' }}>Cata</span>
+          <span style={{ color: '#C69C6D' }}>lyst</span>
         </div>
       </div>
 
@@ -496,31 +497,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
         {/* Floating Pills Toolbar */}
         <div className="inline-flex items-center gap-1.5 relative z-30" style={{ direction: 'ltr' }}>
-          {/* Timeline View Toggle - Prominent styling */}
-          <TooltipProvider delayDuration={200}>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setIsTimelineView(!isTimelineView)}
-                  className={cn(
-                    "w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-200 hover:-translate-y-0.5",
-                    isTimelineView 
-                      ? "text-white shadow-lg" 
-                      : "bg-white text-[hsl(var(--roadmap-fossil))] shadow-md hover:shadow-lg"
-                  )}
-                  style={{ 
-                    backgroundColor: isTimelineView ? 'hsl(var(--roadmap-status-new))' : 'white',
-                    border: isTimelineView ? '2px solid hsl(var(--roadmap-status-new))' : '2px solid hsl(var(--roadmap-sandstone))',
-                    boxShadow: isTimelineView ? '0 0 12px hsla(var(--roadmap-status-new) / 0.4)' : undefined
-                  }}
-                >
-                  <LayoutList className="w-5 h-5" strokeWidth={2.5} />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs font-medium">Timeline View</TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-
           {/* Milestones Toggle */}
           <TooltipProvider delayDuration={200}>
             <Tooltip>
@@ -722,20 +698,21 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       {/* Timeline Grid */}
       <div className="flex-1 overflow-auto scroll-smooth relative" style={{ scrollBehavior: 'smooth', direction: 'ltr' }}>
         <div className="min-w-[1200px] relative">
-          {/* Today line */}
+          {/* Today line - More visible with higher z-index */}
           {todayPosition !== null && (
             <div
-              className="absolute top-0 bottom-0 w-0.5 z-30 pointer-events-none"
+              className="absolute top-0 bottom-0 z-40 pointer-events-none"
               style={{ 
                 left: `calc(${firstColumnWidth}px + (100% - ${firstColumnWidth}px) * ${todayPosition / 100})`,
-                backgroundColor: 'hsl(var(--roadmap-today))'
+                width: '2px',
+                backgroundColor: '#ef4444'
               }}
             >
               {/* Today badge */}
               <div 
-                className="absolute top-0 left-1/2 -translate-x-1/2 px-2 py-0.5 text-xs font-semibold rounded-b whitespace-nowrap"
+                className="absolute top-0 left-1/2 -translate-x-1/2 px-2 py-0.5 text-xs font-bold rounded-b whitespace-nowrap shadow-lg"
                 style={{ 
-                  backgroundColor: 'hsl(var(--roadmap-today))',
+                  backgroundColor: '#ef4444',
                   color: 'white'
                 }}
               >
@@ -743,8 +720,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               </div>
               {/* Pulsing dot */}
               <div 
-                className="absolute top-6 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full animate-pulse"
-                style={{ backgroundColor: 'hsl(var(--roadmap-today))' }}
+                className="absolute top-6 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full animate-pulse shadow-md"
+                style={{ backgroundColor: '#ef4444' }}
               />
             </div>
           )}
@@ -754,16 +731,16 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             <div className={cn("flex", isRTL && "flex-row-reverse")}>
               <div 
                 className={cn(
-                  "shrink-0 px-3 relative group flex items-center overflow-hidden",
-                  timeScale === 'quarterly' ? 'py-2' : 'py-2',
-                  isRTL ? "border-l" : "border-r"
+                  "shrink-0 px-3 relative group flex items-center overflow-hidden box-border",
+                  timeScale === 'quarterly' ? 'py-2' : 'py-2'
                 )}
                 style={{ 
                   width: `${firstColumnWidth}px`, 
                   direction: isRTL ? 'rtl' : 'ltr', 
                   textAlign: isRTL ? 'right' : 'left',
                   backgroundColor: 'hsl(var(--roadmap-parchment))',
-                  borderColor: 'hsl(var(--roadmap-sandstone))'
+                  borderRight: isRTL ? 'none' : '1px solid hsl(var(--roadmap-sandstone))',
+                  borderLeft: isRTL ? '1px solid hsl(var(--roadmap-sandstone))' : 'none'
                 }}
               >
                 <div className="flex items-center justify-between w-full min-w-0 gap-2">
@@ -868,12 +845,13 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               >
                 {/* Request Info with Status Indicator */}
                 <div 
-                  className={cn("shrink-0 px-3 py-3 overflow-hidden", isRTL ? "border-l" : "border-r")}
+                  className="shrink-0 px-3 py-3 overflow-hidden box-border"
                   style={{ 
                     width: `${firstColumnWidth}px`, 
                     direction: isRTL ? 'rtl' : 'ltr', 
                     textAlign: isRTL ? 'right' : 'left',
-                    borderColor: 'hsl(var(--roadmap-sandstone))'
+                    borderRight: isRTL ? 'none' : '1px solid hsl(var(--roadmap-sandstone))',
+                    borderLeft: isRTL ? '1px solid hsl(var(--roadmap-sandstone))' : 'none'
                   }}
                 >
                   <div className="flex items-start gap-3">
