@@ -11,8 +11,13 @@ import {
   DropdownMenu, 
   DropdownMenuContent, 
   DropdownMenuItem, 
-  DropdownMenuTrigger 
+  DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { 
   ArrowLeft, 
   Trash2, 
@@ -29,7 +34,9 @@ import {
   Calendar,
   User,
   Clock,
-  Eye
+  Eye,
+  Filter,
+  ChevronDown
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -139,8 +146,8 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
   
   const [formView, setFormView] = useState<FormView>('selection');
   const [isDragOver, setIsDragOver] = useState(false);
-  const [filterType, setFilterType] = useState<FilterType>('all');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [typeFilters, setTypeFilters] = useState<LinkKind[]>([]);
+  const [statusFilters, setStatusFilters] = useState<Exclude<StatusFilter, 'all'>[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   
   // External link form state
@@ -320,17 +327,17 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
   const filteredLinks = useMemo(() => {
     let result = [...links];
     
-    // Filter by type
-    if (filterType !== 'all') {
-      result = result.filter(link => link.kind === filterType);
+    // Filter by type (if any selected; empty = show all)
+    if (typeFilters.length > 0) {
+      result = result.filter(link => typeFilters.includes(link.kind as LinkKind));
     }
     
     // Filter by status (only for implementation links)
-    if (statusFilter !== 'all' && filterType === 'implementation') {
+    if (statusFilters.length > 0) {
       result = result.filter(link => {
         if (link.kind !== 'implementation') return true;
-        const normalized = normalizeStatus(link.linked_item_type); // TODO: fetch actual status
-        return normalized === statusFilter;
+        const normalized = normalizeStatus(link.linked_item_type);
+        return statusFilters.includes(normalized as Exclude<StatusFilter, 'all'>);
       });
     }
     
@@ -353,7 +360,7 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
     });
     
     return result;
-  }, [links, filterType, statusFilter, sortOption]);
+  }, [links, typeFilters, statusFilters, sortOption]);
 
   // Calculate counts
   const typeCounts = useMemo(() => {
@@ -581,18 +588,29 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
   };
 
   const clearFilters = () => {
-    setFilterType('all');
-    setStatusFilter('all');
+    setTypeFilters([]);
+    setStatusFilters([]);
     setSortOption('newest');
   };
 
+  const toggleTypeFilter = (type: LinkKind) => {
+    setTypeFilters(prev => 
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    );
+  };
+
+  const toggleStatusFilter = (status: Exclude<StatusFilter, 'all'>) => {
+    setStatusFilters(prev => 
+      prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status]
+    );
+  };
+
   const getFilterSummary = () => {
-    if (filterType === 'all') {
+    if (typeFilters.length === 0 && statusFilters.length === 0) {
       return 'Showing all links';
     }
     const count = filteredLinks.length;
-    const typeLabel = filterType === 'knowledge-hub' ? 'Knowledge Hub' : filterType;
-    return `Showing ${count} ${typeLabel} link${count !== 1 ? 's' : ''}`;
+    return `Showing ${count} link${count !== 1 ? 's' : ''}`;
   };
 
   return (
@@ -934,63 +952,112 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
 
       {/* Filter & Controls Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4">
-        {/* Type Filter Chips */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[12px] font-medium text-muted-foreground">Filter by</span>
-          <div className="flex flex-wrap gap-1.5">
-            {(['all', 'implementation', 'document', 'knowledge-hub', 'external'] as FilterType[]).map((type) => (
-              <button
-                key={type}
-                onClick={() => setFilterType(type)}
-                className={cn(
-                  "inline-flex items-center gap-1 px-2.5 py-1.5 text-[12px] font-medium rounded-full border transition-all",
-                  filterType === type
-                    ? "bg-foreground text-background border-foreground"
-                    : "bg-background text-muted-foreground border-border hover:border-foreground/30"
+        {/* Type Filter + Status Filter Dropdowns */}
+        <div className="flex items-center gap-3">
+          {/* Type Filter Multi-Select Dropdown */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 gap-1.5 text-[12px] bg-background">
+                <Filter className="h-3.5 w-3.5" />
+                Type
+                {typeFilters.length > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 bg-foreground text-background rounded-full text-[10px] font-semibold">
+                    {typeFilters.length}
+                  </span>
                 )}
-              >
-                {type === 'all' ? 'All' : type === 'knowledge-hub' ? 'Knowledge Hub' : type.charAt(0).toUpperCase() + type.slice(1)}
-                <span className="opacity-70">({typeCounts[type]})</span>
-              </button>
-            ))}
-          </div>
+                <ChevronDown className="h-3.5 w-3.5 ml-1" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-48 p-2 bg-background" align="start">
+              <div className="space-y-1">
+                {(['implementation', 'document', 'knowledge-hub', 'external'] as LinkKind[]).map((type) => (
+                  <label
+                    key={type}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer"
+                  >
+                    <Checkbox
+                      checked={typeFilters.includes(type)}
+                      onCheckedChange={() => toggleTypeFilter(type)}
+                    />
+                    <span className="text-[12px] font-medium">
+                      {type === 'knowledge-hub' ? 'Knowledge Hub' : type.charAt(0).toUpperCase() + type.slice(1)}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground ml-auto">({typeCounts[type]})</span>
+                  </label>
+                ))}
+              </div>
+              {typeFilters.length > 0 && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full mt-2 text-[11px] h-7" 
+                  onClick={() => setTypeFilters([])}
+                >
+                  Clear
+                </Button>
+              )}
+            </PopoverContent>
+          </Popover>
+
+          {/* Status Filter Multi-Select Dropdown */}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 gap-1.5 text-[12px] bg-background">
+                <Clock className="h-3.5 w-3.5" />
+                Status
+                {statusFilters.length > 0 && (
+                  <span className="ml-1 px-1.5 py-0.5 bg-foreground text-background rounded-full text-[10px] font-semibold">
+                    {statusFilters.length}
+                  </span>
+                )}
+                <ChevronDown className="h-3.5 w-3.5 ml-1" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-44 p-2 bg-background" align="start">
+              <div className="space-y-1">
+                {(['not-started', 'in-progress', 'blocked', 'done'] as Exclude<StatusFilter, 'all'>[]).map((status) => (
+                  <label
+                    key={status}
+                    className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer"
+                  >
+                    <Checkbox
+                      checked={statusFilters.includes(status)}
+                      onCheckedChange={() => toggleStatusFilter(status)}
+                    />
+                    <span className={cn("w-2 h-2 rounded-full", STATUS_INDICATOR_COLORS[status])} />
+                    <span className="text-[12px] font-medium">{STATUS_CONFIG[status].label}</span>
+                  </label>
+                ))}
+              </div>
+              {statusFilters.length > 0 && (
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full mt-2 text-[11px] h-7" 
+                  onClick={() => setStatusFilters([])}
+                >
+                  Clear
+                </Button>
+              )}
+            </PopoverContent>
+          </Popover>
         </div>
 
-        {/* Status & Sort Controls */}
-        <div className="flex items-center gap-3">
-          {filterType === 'implementation' && (
-            <div className="flex items-center gap-2">
-              <span className="text-[12px] text-muted-foreground">Status</span>
-              <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
-                <SelectTrigger className="h-8 w-[130px] text-[12px] bg-background">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="not-started">Not Started</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="blocked">Blocked</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-          
-          <div className="flex items-center gap-2">
-            <span className="text-[12px] text-muted-foreground">Sort by</span>
-            <Select value={sortOption} onValueChange={(v) => setSortOption(v as SortOption)}>
-              <SelectTrigger className="h-8 w-[130px] text-[12px] bg-background">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="oldest">Oldest First</SelectItem>
-                <SelectItem value="alpha-asc">Name (A–Z)</SelectItem>
-                <SelectItem value="alpha-desc">Name (Z–A)</SelectItem>
-                <SelectItem value="type">Type</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {/* Sort Control */}
+        <div className="flex items-center gap-2">
+          <span className="text-[12px] text-muted-foreground">Sort by</span>
+          <Select value={sortOption} onValueChange={(v) => setSortOption(v as SortOption)}>
+            <SelectTrigger className="h-8 w-[130px] text-[12px] bg-background">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest First</SelectItem>
+              <SelectItem value="oldest">Oldest First</SelectItem>
+              <SelectItem value="alpha-asc">Name (A–Z)</SelectItem>
+              <SelectItem value="alpha-desc">Name (Z–A)</SelectItem>
+              <SelectItem value="type">Type</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -1026,128 +1093,99 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
                         : 'bg-gray-400'
                     )} />
                     
-                    {/* Card Body */}
-                    <div className="flex-1 flex items-start justify-between gap-4 p-4 min-w-0">
-                      <div className="flex-1 min-w-0">
-                        {/* Header */}
-                        <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-                          {link.kind === 'implementation' && link.linked_item_type && (
+                    {/* Card Body - 2 line layout */}
+                    <div className="flex-1 p-3 min-w-0">
+                      {/* Line 1: Title + Type Badge + Status Badge + Menu */}
+                      <div className="flex items-center gap-2">
+                        {/* Title - truncates to make room for badges */}
+                        <a 
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[14px] font-medium text-brand-gold hover:underline underline-offset-2 truncate flex-1 min-w-0"
+                        >
+                          {link.title}
+                        </a>
+                        
+                        {/* Badges Group - flex-shrink-0 to keep visible */}
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
+                          {/* Implementation: show status badge */}
+                          {link.kind === 'implementation' && statusConfig && (
                             <span className={cn(
-                              "px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded",
-                              typeBadge.bg, typeBadge.text
+                              "inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium rounded",
+                              statusConfig.bgColor, statusConfig.color
                             )}>
-                              {link.linked_item_type}
+                              <span className={cn("w-1.5 h-1.5 rounded-full", STATUS_INDICATOR_COLORS[normalizedStatus!])} />
+                              {statusConfig.label}
                             </span>
                           )}
-                          <a 
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[14px] font-medium text-foreground hover:text-brand-gold hover:underline underline-offset-2 truncate"
-                          >
-                            {link.title}
-                          </a>
-                        </div>
-                        
-                        {/* Meta */}
-                        <div className="flex items-center gap-2 text-[12px] text-muted-foreground flex-wrap">
-                          {link.kind === 'implementation' && statusConfig && (
-                            <>
-                              <span className="flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                Status: <span className={statusConfig.color}>{statusConfig.label}</span>
-                              </span>
-                              <span>•</span>
-                            </>
-                          )}
-                          {link.kind === 'implementation' && link.linked_item_source && (
-                            <>
-                              <span>Source: {link.linked_item_source}</span>
-                              <span>•</span>
-                            </>
-                          )}
-                          {link.kind === 'document' && link.file_size && (
-                            <>
-                              <span>{formatFileSize(link.file_size)}</span>
-                              <span>•</span>
-                            </>
-                          )}
-                          {link.kind === 'external' && (
-                            <>
-                              <span>{(() => { try { return new URL(link.url).hostname; } catch { return 'External'; } })()}</span>
-                              <span>•</span>
-                            </>
-                          )}
-                          {link.kind === 'knowledge-hub' && (
-                            <>
-                              <span>Knowledge Hub</span>
-                              <span>•</span>
-                            </>
-                          )}
-                        </div>
-                        
-                        {/* Footer */}
-                        <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-2">
-                          <Calendar className="h-3 w-3" />
-                          <span>Added {formatDate(link.created_at)}</span>
-                          {link.added_by_name && (
-                            <span>by {link.added_by_name}</span>
-                          )}
+                          
+                          {/* Type Badge */}
+                          <span className={cn(
+                            "inline-flex items-center px-2 py-0.5 text-[10px] font-medium rounded capitalize whitespace-nowrap",
+                            link.kind === 'implementation' && link.linked_item_type
+                              ? `${TYPE_BADGE_CONFIG[link.linked_item_type]?.bg || 'bg-gray-100'} ${TYPE_BADGE_CONFIG[link.linked_item_type]?.text || 'text-gray-700'}`
+                              : `${typeBadge.bg} ${typeBadge.text}`
+                          )}>
+                            {link.kind === 'implementation' && link.linked_item_type
+                              ? link.linked_item_type
+                              : link.kind === 'knowledge-hub' ? 'KB' : link.kind === 'document' ? 'Document' : 'External'}
+                          </span>
+                          
+                          {/* 3-dot menu */}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="w-6 h-6 flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors">
+                                <MoreVertical className="h-4 w-4" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40 bg-background">
+                              <DropdownMenuItem onClick={async () => {
+                                if (link.kind === 'document' && link.file_path) {
+                                  const { data } = await supabase.storage.from('attachments').createSignedUrl(link.file_path, 3600);
+                                  if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+                                } else {
+                                  window.open(link.url, '_blank', 'noopener,noreferrer');
+                                }
+                              }}>
+                                <Eye className="h-4 w-4 mr-2" />
+                                {link.kind === 'document' ? 'Download' : 'Open'}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem 
+                                onClick={() => {
+                                  if (confirm('Remove this link?')) {
+                                    deleteMutation.mutate(link);
+                                  }
+                                }}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Remove link
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </div>
                       
-                      {/* Actions */}
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        {link.kind === 'implementation' && statusConfig && (
-                          <span className={cn(
-                            "inline-flex items-center gap-1 px-2 py-1 text-[11px] font-medium rounded",
-                            statusConfig.bgColor, statusConfig.color
-                          )}>
-                            <span className={cn("w-1.5 h-1.5 rounded-full", STATUS_INDICATOR_COLORS[normalizedStatus!])} />
-                            {statusConfig.label}
-                          </span>
+                      {/* Line 2: Meta info */}
+                      <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mt-1 truncate">
+                        {link.kind === 'document' && link.file_size && (
+                          <>
+                            <span>{formatFileSize(link.file_size)}</span>
+                            <span>•</span>
+                          </>
                         )}
-                        
-                        {link.kind !== 'implementation' && (
-                          <span className={cn(
-                            "inline-flex items-center px-2 py-1 text-[11px] font-medium rounded capitalize",
-                            typeBadge.bg, typeBadge.text
-                          )}>
-                            {link.kind === 'knowledge-hub' ? 'KB Article' : link.kind}
-                          </span>
+                        {link.kind === 'external' && (
+                          <>
+                            <span className="truncate max-w-[120px]">{(() => { try { return new URL(link.url).hostname; } catch { return 'External'; } })()}</span>
+                            <span>•</span>
+                          </>
                         )}
-                        
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button className="w-7 h-7 flex items-center justify-center rounded text-muted-foreground hover:bg-muted transition-colors">
-                              <MoreVertical className="h-4 w-4" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-40 bg-background">
-                            <DropdownMenuItem onClick={async () => {
-                              if (link.kind === 'document' && link.file_path) {
-                                const { data } = await supabase.storage.from('attachments').createSignedUrl(link.file_path, 3600);
-                                if (data?.signedUrl) window.open(data.signedUrl, '_blank');
-                              } else {
-                                window.open(link.url, '_blank', 'noopener,noreferrer');
-                              }
-                            }}>
-                              <Eye className="h-4 w-4 mr-2" />
-                              {link.kind === 'document' ? 'Download' : 'Open'}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => {
-                                if (confirm('Remove this link?')) {
-                                  deleteMutation.mutate(link);
-                                }
-                              }}
-                              className="text-destructive focus:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Remove link
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Calendar className="h-3 w-3 flex-shrink-0" />
+                        <span className="whitespace-nowrap">Added {formatDate(link.created_at)}</span>
+                        {link.added_by_name && (
+                          <span className="truncate">by {link.added_by_name}</span>
+                        )}
                       </div>
                     </div>
                   </li>
@@ -1158,7 +1196,7 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
         </div>
       ) : (
         <div className="border border-dashed border-border rounded-lg p-10 text-center">
-          {filterType !== 'all' || statusFilter !== 'all' ? (
+          {typeFilters.length > 0 || statusFilters.length > 0 ? (
             <>
               <p className="text-[14px] text-muted-foreground mb-3">No matching links found</p>
               <Button variant="outline" size="sm" onClick={clearFilters}>Clear Filters</Button>
