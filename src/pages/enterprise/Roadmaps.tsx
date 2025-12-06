@@ -323,8 +323,8 @@ export default function Roadmaps() {
       
       {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden min-w-0">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[var(--s3)] px-[var(--s3)] sm:px-[var(--s6)] py-[var(--s3)] sm:py-[var(--s4)] border-b border-border">
+        {/* Header - fixed height 72px to align with sidebar */}
+        <div className="h-[72px] flex items-center justify-between gap-[var(--s3)] px-[var(--s3)] sm:px-[var(--s6)] border-b border-border shrink-0">
           <div className="flex items-center gap-[var(--s2)] min-w-0">
             <Star className="w-5 h-5 text-muted-foreground flex-shrink-0" />
             <h1 className="text-lg sm:text-xl font-semibold text-foreground truncate">Live Roadmap</h1>
