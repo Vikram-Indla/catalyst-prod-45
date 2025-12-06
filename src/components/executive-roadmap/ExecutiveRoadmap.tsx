@@ -305,20 +305,19 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   // Generate timeline columns
   const timelineColumns = useMemo(() => {
     const cols: { label: string; subLabel: string }[] = [];
-    const monthNames = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
-    const monthNamesAr = ['أكتوبر', 'نوفمبر', 'ديسمبر', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر'];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthNamesAr = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 
     if (timeScale === 'monthly') {
       for (let i = 0; i < 12; i++) {
-        const year = i < 3 ? 2024 : 2025;
         cols.push({
           label: isRTL ? monthNamesAr[i] : monthNames[i],
-          subLabel: String(year)
+          subLabel: '2025'
         });
       }
     } else if (timeScale === 'weekly') {
       for (let i = 1; i <= 12; i++) {
-        const startDate = new Date('2024-11-01');
+        const startDate = new Date('2025-11-01');
         startDate.setDate(startDate.getDate() + (i - 1) * 7);
         cols.push({
           label: isRTL ? `أ${i}` : `W${i}`,
@@ -333,8 +332,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         });
       }
     } else if (timeScale === 'yearly') {
-      cols.push({ label: '2024', subLabel: '' });
       cols.push({ label: '2025', subLabel: '' });
+      cols.push({ label: '2026', subLabel: '' });
     }
 
     return cols;
@@ -344,36 +343,36 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const quarterlyGroups = useMemo(() => {
     if (timeScale !== 'quarterly') return null;
     return [
-      { label: 'Q4 2024', span: 3 },
       { label: 'Q1 2025', span: 3 },
       { label: 'Q2 2025', span: 3 },
       { label: 'Q3 2025', span: 3 },
+      { label: 'Q4 2025', span: 3 },
     ];
   }, [timeScale]);
 
   // Calculate today line position
-  // Note: If today is outside the visible range, we show a demo position at ~40% for visualization
   const getTodayPosition = useCallback(() => {
     const today = new Date();
     let rangeStart: Date, rangeEnd: Date;
     
     if (timeScale === 'monthly') {
-      rangeStart = new Date('2024-10-01');
-      rangeEnd = new Date('2025-09-30');
-    } else if (timeScale === 'weekly') {
-      rangeStart = new Date('2024-11-01');
-      rangeEnd = new Date('2025-01-24');
-    } else if (timeScale === 'quarterly') {
-      rangeStart = new Date('2024-10-01');
-      rangeEnd = new Date('2025-09-30');
-    } else {
-      rangeStart = new Date('2024-01-01');
+      // Updated range to include current date (Dec 2025)
+      rangeStart = new Date('2025-01-01');
       rangeEnd = new Date('2025-12-31');
+    } else if (timeScale === 'weekly') {
+      rangeStart = new Date('2025-11-01');
+      rangeEnd = new Date('2026-01-24');
+    } else if (timeScale === 'quarterly') {
+      rangeStart = new Date('2025-01-01');
+      rangeEnd = new Date('2025-12-31');
+    } else {
+      rangeStart = new Date('2025-01-01');
+      rangeEnd = new Date('2026-12-31');
     }
 
-    // If today is outside visible range, show demo line at ~40% for Feb/Mar area
+    // If today is outside visible range, return null
     if (today < rangeStart || today > rangeEnd) {
-      return 40; // Demo position when real date is outside range
+      return null;
     }
     
     const totalDays = (rangeEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
@@ -795,14 +794,14 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       }}
                     >
                       <div 
-                        className="px-1.5 py-0.5 text-[9px] font-medium rounded whitespace-nowrap"
+                        className="px-1.5 py-0.5 text-[9px] font-semibold rounded whitespace-nowrap"
                         style={{ 
-                          backgroundColor: 'hsla(35, 46%, 60%, 0.15)',
+                          backgroundColor: 'hsla(35, 46%, 60%, 0.2)',
                           color: 'hsl(var(--roadmap-status-new))',
-                          border: '1px solid hsla(35, 46%, 60%, 0.3)'
+                          border: '1px solid hsla(35, 46%, 60%, 0.4)'
                         }}
                       >
-                        {todayLabel}
+                        {isRTL ? 'اليوم' : 'Today'}
                       </div>
                     </div>
                   )}
@@ -844,14 +843,14 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       }}
                     >
                       <div 
-                        className="px-1.5 py-0.5 text-[9px] font-medium rounded whitespace-nowrap"
+                        className="px-1.5 py-0.5 text-[9px] font-semibold rounded whitespace-nowrap"
                         style={{ 
-                          backgroundColor: 'hsla(35, 46%, 60%, 0.15)',
+                          backgroundColor: 'hsla(35, 46%, 60%, 0.2)',
                           color: 'hsl(var(--roadmap-status-new))',
-                          border: '1px solid hsla(35, 46%, 60%, 0.3)'
+                          border: '1px solid hsla(35, 46%, 60%, 0.4)'
                         }}
                       >
-                        {todayLabel}
+                        {isRTL ? 'اليوم' : 'Today'}
                       </div>
                     </div>
                   )}
@@ -971,7 +970,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       style={{ 
                         left: `${todayPosition}%`,
                         width: '1px',
-                        borderLeft: '1px dashed hsla(35, 46%, 60%, 0.65)',
+                        borderLeft: '1px dashed hsla(35, 46%, 60%, 0.8)',
                         zIndex: 10
                       }}
                     />
