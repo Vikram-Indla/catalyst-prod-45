@@ -6338,6 +6338,7 @@ export type Database = {
       }
       risks: {
         Row: {
+          business_request_id: string | null
           consequence: string | null
           contingency: string | null
           created_at: string
@@ -6365,6 +6366,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          business_request_id?: string | null
           consequence?: string | null
           contingency?: string | null
           created_at?: string
@@ -6392,6 +6394,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          business_request_id?: string | null
           consequence?: string | null
           contingency?: string | null
           created_at?: string
@@ -6431,6 +6434,13 @@ export type Database = {
             columns: ["program_increment_id"]
             isOneToOne: false
             referencedRelation: "program_increments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "risks_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
             referencedColumns: ["id"]
           },
         ]
