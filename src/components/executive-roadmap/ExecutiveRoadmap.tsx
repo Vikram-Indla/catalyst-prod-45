@@ -352,6 +352,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   }, [timeScale]);
 
   // Calculate today line position
+  // Note: If today is outside the visible range, we show a demo position at ~40% for visualization
   const getTodayPosition = useCallback(() => {
     const today = new Date();
     let rangeStart: Date, rangeEnd: Date;
@@ -370,7 +371,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       rangeEnd = new Date('2025-12-31');
     }
 
-    if (today < rangeStart || today > rangeEnd) return null;
+    // If today is outside visible range, show demo line at ~40% for Feb/Mar area
+    if (today < rangeStart || today > rangeEnd) {
+      return 40; // Demo position when real date is outside range
+    }
     
     const totalDays = (rangeEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
     const daysSinceStart = (today.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
@@ -699,30 +703,31 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Search Bar */}
+      {/* Compact Search Bar */}
       <div 
-        className="flex items-center gap-3 px-4 sm:px-6 py-2 border-b print:hidden"
+        className="flex items-center gap-2 px-4 sm:px-6 py-2 border-b print:hidden"
         style={{ 
           backgroundColor: 'hsl(var(--roadmap-parchment))',
           borderColor: 'hsl(var(--roadmap-sandstone))'
         }}
       >
-        <div className="relative flex-1 max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'hsl(var(--roadmap-fossil))' }} />
+        <div className="relative w-32">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: 'hsl(var(--roadmap-fossil))' }} />
           <Input
             type="text"
-            placeholder={isRTL ? 'بحث رقم التذكرة (MIM-XXX)...' : 'Search ticket number (MIM-XXX)...'}
+            placeholder={isRTL ? 'MIM-XXX' : 'MIM-XXX'}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9 text-sm bg-white"
+            maxLength={10}
+            className="pl-7 h-7 text-xs bg-white"
             style={{ 
               border: '1px solid hsl(var(--roadmap-sandstone))',
-              borderRadius: '8px'
+              borderRadius: '6px'
             }}
           />
         </div>
         <div className="text-xs" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-          {filteredItems.length} {isRTL ? 'نتيجة' : 'results'}
+          {filteredItems.length} {isRTL ? 'نتيجة' : 'items'}
         </div>
       </div>
 
@@ -903,7 +908,17 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           #{item.rank}
                         </span>
                         {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
-                          <Lock className="h-3 w-3" style={{ color: 'hsl(var(--roadmap-status-new))' }} />
+                          <TooltipProvider delayDuration={100}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Lock className="h-3 w-3 cursor-help" style={{ color: 'hsl(var(--roadmap-status-new))' }} />
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="text-xs">
+                                <div className="font-semibold">Force Rank #{item.rank}</div>
+                                <div>Business Score: 78</div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         )}
                         <button 
                           onClick={(e) => {
