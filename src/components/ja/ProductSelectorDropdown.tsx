@@ -18,7 +18,7 @@ const productItems = [
 export function ProductSelectorDropdown({ onClose }: ProductSelectorDropdownProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const { isStarred, toggleStar } = useStarredItems();
+  const { isStarred, toggleStar } = useStarredItems({ limit: 100 });
 
   const filtered = productItems.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase())

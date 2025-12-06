@@ -63,17 +63,24 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Check if already starred
-      const existing = starredItems.find(
-        (s) => s.room_type === item.room_type && s.room_id === item.room_id
-      );
+      // CRITICAL: Query the database directly to check if starred
+      // Do NOT rely on local starredItems array which may be limited
+      const { data: existingData, error: checkError } = await supabase
+        .from("starred_items")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("room_type", item.room_type)
+        .eq("room_id", item.room_id)
+        .maybeSingle();
 
-      if (existing) {
-        // Unstar
+      if (checkError) throw checkError;
+
+      if (existingData) {
+        // Unstar - item exists in database
         const { error } = await supabase
           .from("starred_items")
           .delete()
-          .eq("id", existing.id);
+          .eq("id", existingData.id);
 
         if (error) throw error;
 
@@ -82,7 +89,7 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
           description: `${item.room_name} has been removed from your starred items.`,
         });
       } else {
-        // Star
+        // Star - item does not exist in database
         const { error } = await supabase
           .from("starred_items")
           .insert([{
@@ -116,6 +123,7 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
     }
   };
 
+  // Check if an item is starred - query database if not in local cache
   const isStarred = (roomType: RoomType, roomId: string) => {
     return starredItems.some(
       (item) => item.room_type === roomType && item.room_id === roomId
