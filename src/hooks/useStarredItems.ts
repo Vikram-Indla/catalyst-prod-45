@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useId } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import type { Database } from "@/integrations/supabase/types";
@@ -26,6 +26,7 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
   const [starredItems, setStarredItems] = useState<StarredItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const instanceId = useId(); // Unique ID for each hook instance
 
   const fetchStarredItems = async () => {
     try {
@@ -133,9 +134,9 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
   useEffect(() => {
     fetchStarredItems();
 
-    // Set up realtime subscription
+    // Set up realtime subscription with unique channel name per instance
     const channel = supabase
-      .channel("starred-items-changes")
+      .channel(`starred-items-changes-${instanceId}`)
       .on(
         "postgres_changes",
         {
