@@ -784,20 +784,23 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               {/* Timeline columns with vertical separators */}
               {timeScale === 'quarterly' ? (
                 <div className="flex-1 flex flex-col relative">
-                  {/* Today indicator in header */}
+                  {/* Today indicator badge only in header */}
                   {todayPosition !== null && (
                     <div
-                      className="absolute top-0 bottom-0 pointer-events-none z-20"
+                      className="absolute pointer-events-none z-20"
                       style={{ 
                         left: `${todayPosition}%`,
-                        width: '3px',
-                        backgroundColor: '#ef4444',
-                        boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)'
+                        top: '4px',
+                        transform: 'translateX(-50%)'
                       }}
                     >
                       <div 
-                        className="absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 text-[10px] font-bold rounded whitespace-nowrap shadow-lg"
-                        style={{ backgroundColor: '#ef4444', color: 'white' }}
+                        className="px-1.5 py-0.5 text-[9px] font-medium rounded whitespace-nowrap"
+                        style={{ 
+                          backgroundColor: 'hsla(35, 46%, 60%, 0.15)',
+                          color: 'hsl(var(--roadmap-status-new))',
+                          border: '1px solid hsla(35, 46%, 60%, 0.3)'
+                        }}
                       >
                         {todayLabel}
                       </div>
@@ -830,20 +833,23 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 </div>
               ) : (
                 <div className="flex-1 flex relative">
-                  {/* Today indicator in header */}
+                  {/* Today indicator badge only in header */}
                   {todayPosition !== null && (
                     <div
-                      className="absolute top-0 bottom-0 pointer-events-none z-20"
+                      className="absolute pointer-events-none z-20"
                       style={{ 
                         left: `${todayPosition}%`,
-                        width: '3px',
-                        backgroundColor: '#ef4444',
-                        boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)'
+                        top: '4px',
+                        transform: 'translateX(-50%)'
                       }}
                     >
                       <div 
-                        className="absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 text-[10px] font-bold rounded whitespace-nowrap shadow-lg"
-                        style={{ backgroundColor: '#ef4444', color: 'white' }}
+                        className="px-1.5 py-0.5 text-[9px] font-medium rounded whitespace-nowrap"
+                        style={{ 
+                          backgroundColor: 'hsla(35, 46%, 60%, 0.15)',
+                          color: 'hsl(var(--roadmap-status-new))',
+                          border: '1px solid hsla(35, 46%, 60%, 0.3)'
+                        }}
                       >
                         {todayLabel}
                       </div>
@@ -958,16 +964,15 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     ))}
                   </div>
                   
-                  {/* Today line - rendered in each row */}
+                  {/* Today line - subtle dashed gold separator */}
                   {todayPosition !== null && (
                     <div
                       className="absolute top-0 bottom-0 pointer-events-none"
                       style={{ 
                         left: `${todayPosition}%`,
-                        width: '3px',
-                        backgroundColor: '#ef4444',
-                        boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)',
-                        zIndex: 40
+                        width: '1px',
+                        borderLeft: '1px dashed hsla(35, 46%, 60%, 0.35)',
+                        zIndex: 10
                       }}
                     />
                   )}
