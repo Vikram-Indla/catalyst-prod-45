@@ -17,8 +17,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck } from 'lucide-react';
-import { UserProfile, useUpdateUserStatus } from '@/hooks/useUsers';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2 } from 'lucide-react';
+import { UserProfile, useUpdateUserStatus, useDeleteUser } from '@/hooks/useUsers';
 import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
@@ -34,8 +44,10 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
   
   const updateStatus = useUpdateUserStatus();
+  const deleteUser = useDeleteUser();
 
   // Get unique roles for filter dropdown
   const allRoles = [...new Set(users.flatMap(u => u.roles.map(r => r.role_name)))];
@@ -90,6 +102,17 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
   const handleStatusToggle = (userId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
     updateStatus.mutate({ userId, status: newStatus });
+  };
+
+  const handleDeleteUser = (user: UserProfile) => {
+    setUserToDelete(user);
+  };
+
+  const confirmDeleteUser = () => {
+    if (userToDelete) {
+      deleteUser.mutate(userToDelete.id);
+      setUserToDelete(null);
+    }
   };
 
   if (isLoading) {
@@ -232,6 +255,18 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                               </>
                             )}
                           </DropdownMenuItem>
+                          {user.status === 'Inactive' && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                onClick={() => handleDeleteUser(user)}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Remove User
+                              </DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
@@ -253,6 +288,28 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
           <span>Showing {filteredUsers.length} of {users.length} users</span>
         </div>
       </CardContent>
+
+      {/* Delete User Confirmation Dialog */}
+      <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to permanently remove <strong>{userToDelete?.full_name || userToDelete?.email}</strong> from the system? 
+              This action cannot be undone and will delete all associated data including roles and permissions.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDeleteUser}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Remove User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
