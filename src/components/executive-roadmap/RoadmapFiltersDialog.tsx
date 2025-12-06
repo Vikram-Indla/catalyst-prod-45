@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Switch } from '@/components/ui/switch';
+
 import { ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PLATFORM_INFO, STAGE_NAMES } from '@/data/roadmapSeed';
@@ -45,7 +45,6 @@ export function RoadmapFiltersDialog({
   const [localFilters, setLocalFilters] = useState<RoadmapFilters>(filters);
   const [expandedSections, setExpandedSections] = useState({
     filters: true,
-    display: true,
   });
 
   useEffect(() => {
@@ -208,31 +207,6 @@ export function RoadmapFiltersDialog({
             </CollapsibleContent>
           </Collapsible>
 
-          {/* Display Section */}
-          <Collapsible open={expandedSections.display} onOpenChange={() => toggleSection('display')}>
-            <CollapsibleTrigger className="w-full flex items-center justify-between px-6 py-3 border-b border-border hover:bg-muted/30">
-              <span className="text-sm font-medium text-foreground">Display</span>
-              <ChevronUp className={cn("h-4 w-4 text-muted-foreground transition-transform", !expandedSections.display && "rotate-180")} />
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <div className="px-6 py-4 space-y-4 border-b border-border">
-                {/* Milestones */}
-                <div>
-                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Milestones</label>
-                  <div className="flex items-center gap-2 h-9">
-                    <Switch 
-                      checked={localFilters.showMilestones !== false} 
-                      onCheckedChange={(v) => updateFilter('showMilestones', v)}
-                      className="data-[state=checked]:bg-brand-gold"
-                    />
-                    <span className="text-sm text-muted-foreground">
-                      {localFilters.showMilestones !== false ? 'Visible' : 'Hidden'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CollapsibleContent>
-          </Collapsible>
         </div>
 
         {/* Footer */}
