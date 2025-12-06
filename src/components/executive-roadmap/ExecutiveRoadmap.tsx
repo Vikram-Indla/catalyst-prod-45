@@ -136,7 +136,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [owner, setOwner] = useState<string>('all');
   const [sortField, setSortField] = useState<SortField>('rank');
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
-  const [showMilestones, setShowMilestones] = useState(true);
+  const [showMilestones, setShowMilestones] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeKPI, setActiveKPI] = useState<RoadmapStatus | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
