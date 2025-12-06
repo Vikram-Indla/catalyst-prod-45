@@ -401,7 +401,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
         <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden`}>
           <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0">
             {/* Clean header row */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-border/30">
+            <div className="flex items-center justify-between px-5 h-11 border-b border-border">
               {/* Left side: Request ID + Title */}
               <div className="flex items-center gap-2.5 flex-1 min-w-0">
                 <div className="flex items-center gap-1 shrink-0">
@@ -511,8 +511,8 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
             <SheetDescription className="sr-only">Business request details panel</SheetDescription>
           </SheetHeader>
 
-          {/* Workflow History link - compact header element */}
-          <div className="px-5 py-0 border-b border-border/30 bg-card shrink-0">
+          {/* Workflow History link - compact header element - matches table row height */}
+          <div className="px-5 h-11 flex items-center border-b border-border bg-card shrink-0">
             <button 
               onClick={() => setWorkflowModalOpen(true)}
               className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
@@ -535,7 +535,7 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
 
           {/* Tabs with horizontal scroll */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b h-auto shrink-0 overflow-x-auto flex-nowrap bg-[#feffff]">
+            <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b border-border h-11 shrink-0 overflow-x-auto flex-nowrap bg-card">
               {VIEW_TABS.map((tab) => (
                 <TabsTrigger
                   key={tab.value}
