@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
-import { Search, Factory, Pickaxe } from 'lucide-react';
+import { Search, Factory, Pickaxe, Star } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useStarredItems } from '@/hooks/useStarredItems';
 
 interface ProductSelectorDropdownProps {
   onClose: () => void;
@@ -16,6 +17,7 @@ const productItems = [
 export function ProductSelectorDropdown({ onClose }: ProductSelectorDropdownProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const { isStarred, toggleStar } = useStarredItems();
 
   const filtered = productItems.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase())
@@ -24,6 +26,18 @@ export function ProductSelectorDropdown({ onClose }: ProductSelectorDropdownProp
   const handleSelect = (path: string) => {
     navigate(path);
     onClose();
+  };
+
+  const handleToggleStar = async (e: React.MouseEvent, item: typeof productItems[0]) => {
+    e.stopPropagation();
+    await toggleStar({
+      room_type: 'product',
+      room_id: item.id,
+      room_name: item.name,
+      room_subtitle: 'Product',
+      room_path: item.path,
+      pi_label: null,
+    });
   };
 
   return (
@@ -50,14 +64,30 @@ export function ProductSelectorDropdown({ onClose }: ProductSelectorDropdownProp
           ) : (
             filtered.map((item) => {
               const Icon = item.icon;
+              const starred = isStarred('product', item.id);
               return (
                 <button
                   key={item.id}
                   onClick={() => handleSelect(item.path)}
-                  className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm flex items-center gap-2"
+                  className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm group"
                 >
-                  <Icon className="h-4 w-4 text-muted-foreground" />
-                  {item.name}
+                  <div className="flex items-center gap-2">
+                    <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                    <span className="flex-1 font-medium">{item.name}</span>
+                    <button
+                      onClick={(e) => handleToggleStar(e, item)}
+                      className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand-gold"
+                      aria-label={starred ? "Unstar product" : "Star product"}
+                    >
+                      <Star
+                        className={`h-4 w-4 ${
+                          starred
+                            ? "text-brand-gold fill-brand-gold"
+                            : "text-muted-foreground hover:text-brand-gold"
+                        }`}
+                      />
+                    </button>
+                  </div>
                 </button>
               );
             })
