@@ -143,7 +143,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
-  const [showLegend, setShowLegend] = useState(true);
+  const [showLegend, setShowLegend] = useState(false);
   const [isTimelineView, setIsTimelineView] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [firstColumnWidth, setFirstColumnWidth] = useState<number>(() => {
@@ -995,20 +995,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     {formatDateLabel(item.endDate)}
                   </div>
 
-                  {/* Status label above bar - full name, centered */}
-                  <div 
-                    className="absolute text-[10px] font-semibold uppercase tracking-wide whitespace-nowrap"
-                    style={{ 
-                      left: `calc(${barPos.left} + ${barPos.width} / 2)`, 
-                      top: '6px', 
-                      transform: 'translateX(-50%)',
-                      color: STATUS_COLORS[item.status]
-                    }}
-                  >
-                    {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                  </div>
-
-                  {/* Bar - centered vertically */}
+                  {/* Bar with status label sitting on top */}
                   <div 
                     className="absolute h-[24px] rounded-full overflow-hidden flex items-center"
                     style={{ 
@@ -1016,10 +1003,24 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       width: barPos.width, 
                       top: '50%', 
                       transform: 'translateY(-50%)',
-                      marginTop: '4px',
+                      marginTop: '6px',
                       background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
                     }}
                   >
+                  </div>
+                  
+                  {/* Status label sitting on bar */}
+                  <div 
+                    className="absolute text-[9px] font-medium whitespace-nowrap pointer-events-none"
+                    style={{ 
+                      left: `calc(${barPos.left} + ${barPos.width} / 2)`, 
+                      top: '50%', 
+                      transform: 'translate(-50%, -50%)',
+                      marginTop: '-6px',
+                      color: 'hsl(var(--roadmap-charcoal))'
+                    }}
+                  >
+                    {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
                     {/* Milestones - positioned inside the bar with padding */}
                     {showMilestones && item.milestones.map((ms, index) => {
                       // Keep milestones inside bar: distribute evenly within bounds
