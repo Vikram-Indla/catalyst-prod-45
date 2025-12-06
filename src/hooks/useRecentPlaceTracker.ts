@@ -10,13 +10,15 @@ interface RoomContext {
   roomType: RoomType;
   roomId: string;
   roomName: string;
-  roomSubtitle: string | null;
+  roomSubtitle: string;  // Shows the last visited page within the room
   pageKey: string;
+  targetUrl: string;     // Clean deep link (no noisy params)
 }
 
 /**
  * Hook that automatically tracks recent place visits based on route navigation.
- * This runs in the shell and detects when user enters room pages.
+ * Implements Jira Align parity: one entry per room (roomType + entityId),
+ * subtitle shows last visited page. No duplicates for same room.
  */
 export function useRecentPlaceTracker() {
   const location = useLocation();
@@ -66,7 +68,6 @@ export function useRecentPlaceTracker() {
         .eq("id", params.teamId)
         .single();
       
-      // Fetch program name separately if needed
       if (data?.program_id) {
         const { data: programData } = await supabase
           .from("programs")
@@ -80,43 +81,49 @@ export function useRecentPlaceTracker() {
     enabled: !!params.teamId,
   });
 
-  // Fixed UUIDs for product room pages (deterministic based on page)
-  const PRODUCT_ROOM_IDS = {
-    "demand-summary": "00000000-0000-0000-0000-000000000001",
-    "backlog": "00000000-0000-0000-0000-000000000002",
-    "roadmaps": "00000000-0000-0000-0000-000000000003",
-  } as const;
+  // Single fixed UUID for Product Room (all pages within Product Room share this)
+  const PRODUCT_ROOM_ID = "00000000-0000-0000-0000-000000000001";
+
+  /**
+   * Derive page label from path for subtitle display.
+   * Only top-level section/tab names, ignoring query params and transient states.
+   */
+  const getPageLabel = (path: string): { pageKey: string; label: string; cleanPath: string } => {
+    // Product Room pages
+    if (path === "/industry/demand-summary") {
+      return { pageKey: "demand-summary", label: "Demand Summary", cleanPath: "/industry/demand-summary" };
+    }
+    if (path === "/industry" || path === "/industry/") {
+      return { pageKey: "backlog", label: "Backlog", cleanPath: "/industry" };
+    }
+    if (path === "/industry/roadmaps" || path.startsWith("/industry/roadmaps")) {
+      return { pageKey: "roadmaps", label: "Roadmaps", cleanPath: "/industry/roadmaps" };
+    }
+    if (path.startsWith("/industry/risks")) {
+      return { pageKey: "risks", label: "Risks", cleanPath: "/industry/risks" };
+    }
+    if (path.startsWith("/industry/milestones")) {
+      return { pageKey: "milestones", label: "Milestones", cleanPath: "/industry/milestones" };
+    }
+    
+    // Default for other pages within a room
+    return { pageKey: "room", label: "Overview", cleanPath: path.split("?")[0] };
+  };
 
   // Determine room context from current route
   const getRoomContext = (): RoomContext | null => {
     const path = location.pathname;
 
-    // Product Room pages
-    if (path === "/industry/demand-summary") {
+    // Product Room - ALL pages within Product use the SAME room_id
+    if (path.startsWith("/industry")) {
+      const { pageKey, label, cleanPath } = getPageLabel(path);
       return {
         roomType: "product" as RoomType,
-        roomId: PRODUCT_ROOM_IDS["demand-summary"],
+        roomId: PRODUCT_ROOM_ID,
         roomName: "Product Room",
-        roomSubtitle: "Demand Summary",
-        pageKey: "demand-summary",
-      };
-    }
-    if (path === "/industry") {
-      return {
-        roomType: "product" as RoomType,
-        roomId: PRODUCT_ROOM_IDS["backlog"],
-        roomName: "Product Room",
-        roomSubtitle: "Backlog",
-        pageKey: "backlog",
-      };
-    }
-    if (path === "/industry/roadmaps") {
-      return {
-        roomType: "product" as RoomType,
-        roomId: PRODUCT_ROOM_IDS["roadmaps"],
-        roomName: "Product Room",
-        roomSubtitle: "Roadmaps",
-        pageKey: "roadmaps",
+        roomSubtitle: label,
+        pageKey: pageKey,
+        targetUrl: cleanPath,
       };
     }
 
@@ -130,6 +137,28 @@ export function useRecentPlaceTracker() {
           roomName: portfolio.name,
           roomSubtitle: "Portfolio Room",
           pageKey: "room",
+          targetUrl: `/portfolio/${params.portfolioId}/room`,
+        };
+      }
+      // Other portfolio pages (backlog, roadmaps, etc.)
+      if (path.includes("/backlog")) {
+        return {
+          roomType: "portfolio" as RoomType,
+          roomId: params.portfolioId,
+          roomName: portfolio.name,
+          roomSubtitle: "Backlog",
+          pageKey: "backlog",
+          targetUrl: `/portfolio/${params.portfolioId}/backlog`,
+        };
+      }
+      if (path.includes("/roadmaps")) {
+        return {
+          roomType: "portfolio" as RoomType,
+          roomId: params.portfolioId,
+          roomName: portfolio.name,
+          roomSubtitle: "Roadmaps",
+          pageKey: "roadmaps",
+          targetUrl: `/portfolio/${params.portfolioId}/roadmaps`,
         };
       }
     }
@@ -144,6 +173,28 @@ export function useRecentPlaceTracker() {
           roomName: program.name,
           roomSubtitle: program.portfolios?.name || "Program Room",
           pageKey: "room",
+          targetUrl: `/programs/${params.programId}/room`,
+        };
+      }
+      // Other program pages
+      if (path.includes("/backlog")) {
+        return {
+          roomType: "program" as RoomType,
+          roomId: params.programId,
+          roomName: program.name,
+          roomSubtitle: "Backlog",
+          pageKey: "backlog",
+          targetUrl: `/programs/${params.programId}/backlog`,
+        };
+      }
+      if (path.includes("/dependencies")) {
+        return {
+          roomType: "program" as RoomType,
+          roomId: params.programId,
+          roomName: program.name,
+          roomSubtitle: "Dependencies",
+          pageKey: "dependencies",
+          targetUrl: `/programs/${params.programId}/dependencies`,
         };
       }
     }
@@ -158,6 +209,28 @@ export function useRecentPlaceTracker() {
           roomName: team.name,
           roomSubtitle: team.programName || "Team Room",
           pageKey: "room",
+          targetUrl: `/team/${params.teamId}/room`,
+        };
+      }
+      // Other team pages
+      if (path.includes("/backlog")) {
+        return {
+          roomType: "team" as RoomType,
+          roomId: params.teamId,
+          roomName: team.name,
+          roomSubtitle: "Backlog",
+          pageKey: "backlog",
+          targetUrl: `/team/${params.teamId}/backlog`,
+        };
+      }
+      if (path.includes("/stories")) {
+        return {
+          roomType: "team" as RoomType,
+          roomId: params.teamId,
+          roomName: team.name,
+          roomSubtitle: "Stories",
+          pageKey: "stories",
+          targetUrl: `/team/${params.teamId}/stories`,
         };
       }
     }
@@ -169,18 +242,19 @@ export function useRecentPlaceTracker() {
     const roomContext = getRoomContext();
     if (!roomContext) return;
 
-    // Generate tracking key
-    const trackingKey = `${roomContext.roomType}-${roomContext.roomId}-${roomContext.pageKey}`;
+    // Generate tracking key at ROOM level (not page level)
+    // This ensures we only track one entry per room
+    const trackingKey = `${roomContext.roomType}:${roomContext.roomId}`;
     
-    // Skip if already tracked
-    if (lastTrackedRef.current === trackingKey) return;
+    // Skip if we just tracked this room (but allow subtitle updates)
+    // We want to update if it's the same room but different page
+    const fullKey = `${trackingKey}:${roomContext.pageKey}`;
+    if (lastTrackedRef.current === fullKey) return;
 
     const trackAccess = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
-
-        const targetUrl = location.pathname + location.search;
 
         const { error } = await supabase.rpc("track_room_access", {
           p_user_id: user.id,
@@ -188,7 +262,7 @@ export function useRecentPlaceTracker() {
           p_room_id: roomContext.roomId,
           p_room_name: roomContext.roomName,
           p_room_subtitle: roomContext.roomSubtitle,
-          p_room_path: targetUrl,
+          p_room_path: roomContext.targetUrl,  // Clean URL, no query params
           p_pi_label: null,
           p_page_key: roomContext.pageKey,
           p_timebox_type: null,
@@ -198,7 +272,7 @@ export function useRecentPlaceTracker() {
         if (error) {
           console.error("Error tracking room access:", error);
         } else {
-          lastTrackedRef.current = trackingKey;
+          lastTrackedRef.current = fullKey;
         }
       } catch (error) {
         console.error("Error tracking room access:", error);
@@ -206,5 +280,5 @@ export function useRecentPlaceTracker() {
     };
 
     trackAccess();
-  }, [location.pathname, location.search, program, portfolio, team]);
+  }, [location.pathname, program, portfolio, team]);
 }
