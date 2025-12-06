@@ -323,19 +323,19 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     >
       {/* Header with Status Pills - hidden in print */}
       <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-[#E8E4DD] bg-white print:hidden">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-[#C69C6D] flex items-center justify-center text-white font-bold text-xs">
-              MIM
-            </div>
-            <div>
-              <div className="text-[10px] text-[#C69C6D] font-medium tracking-wider">{t.executiveRoadmap}</div>
-              <div className="text-sm font-semibold text-[#2C2825]">{t.industryRequests}</div>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-[#C69C6D] flex items-center justify-center text-white font-bold text-xs">
+            MIM
           </div>
-          
-          {/* Status Pill Strip - inline in header */}
-          <div className="hidden md:flex items-center gap-1.5 ml-4">
+          <div>
+            <div className="text-[10px] text-[#C69C6D] font-medium tracking-wider">{t.executiveRoadmap}</div>
+            <div className="text-sm font-semibold text-[#2C2825]">{t.industryRequests}</div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {/* Status Pill Strip - pushed to right */}
+          <div className="hidden md:flex items-center gap-1.5">
             <span className="text-[10px] font-medium text-[#5C5650] uppercase tracking-wide mr-1">
               {isRTL ? 'الحالة:' : 'STATUS:'}
             </span>
@@ -362,9 +362,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               );
             })}
           </div>
-        </div>
 
-        <div className="flex items-center gap-2">
           {/* Language toggle */}
           <div className="flex items-center bg-[#F5F2ED] rounded-lg p-0.5">
             <button
