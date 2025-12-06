@@ -65,8 +65,13 @@ export const SEED_ROADMAP_ITEMS: BusinessRequestRoadmapItem[] = [
       { step: 4, date: "2025-01-25", state: "pending" },
       { step: 5, date: "2025-03-25", state: "pending" }
     ],
-    risks: [],
-    dependencies: []
+    risks: [
+      { sno: 1, title: "Regulatory approval delays", status: "pending" },
+      { sno: 2, title: "Integration complexity", status: "resolved" }
+    ],
+    dependencies: [
+      { sno: 1, title: "MIM-019: Energy Dashboard", status: "pending" }
+    ]
   },
   {
     id: "MIM-002",
@@ -111,8 +116,13 @@ export const SEED_ROADMAP_ITEMS: BusinessRequestRoadmapItem[] = [
       { step: 4, date: "2025-05-25", state: "pending" },
       { step: 5, date: "2025-06-25", state: "pending" }
     ],
-    risks: [],
-    dependencies: []
+    risks: [
+      { sno: 1, title: "Resource availability", status: "blocked" }
+    ],
+    dependencies: [
+      { sno: 1, title: "MIM-002: Compliance Tracker", status: "pending" },
+      { sno: 2, title: "MIM-030: License Portal", status: "resolved" }
+    ]
   },
   {
     id: "MIM-019",
@@ -132,7 +142,9 @@ export const SEED_ROADMAP_ITEMS: BusinessRequestRoadmapItem[] = [
       { step: 4, date: "2025-01-25", state: "pending" },
       { step: 5, date: "2025-03-25", state: "pending" }
     ],
-    risks: [],
+    risks: [
+      { sno: 1, title: "Data source integration", status: "pending" }
+    ],
     dependencies: []
   },
   {
