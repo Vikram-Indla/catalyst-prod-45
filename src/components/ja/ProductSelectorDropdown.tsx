@@ -1,42 +1,72 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
-import { Search, Factory, Pickaxe, Star } from 'lucide-react';
+import { Search, Factory, Pickaxe, Building2, Star, Loader2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useStarredItems } from '@/hooks/useStarredItems';
+import { useBusinessLines } from '@/hooks/useProductSettings';
 
 interface ProductSelectorDropdownProps {
   onClose: () => void;
 }
 
-// Use deterministic UUIDs for products (generated from product names)
-const productItems = [
-  { id: 'a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d', slug: 'industry', name: 'Industry', path: '/industry', icon: Factory },
-  { id: 'b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e', slug: 'mining', name: 'Mining', path: '/mining', icon: Pickaxe },
-];
+// Map business line keys to icons
+const getIconForBusinessLine = (key: string) => {
+  switch (key.toUpperCase()) {
+    case 'IND':
+    case 'INDUSTRY':
+      return Factory;
+    case 'MIN':
+    case 'MINING':
+      return Pickaxe;
+    default:
+      return Building2;
+  }
+};
+
+// Map business line keys to routes
+const getPathForBusinessLine = (key: string) => {
+  switch (key.toUpperCase()) {
+    case 'IND':
+    case 'INDUSTRY':
+      return '/industry';
+    case 'MIN':
+    case 'MINING':
+      return '/mining';
+    default:
+      return `/product/${key.toLowerCase()}`;
+  }
+};
 
 export function ProductSelectorDropdown({ onClose }: ProductSelectorDropdownProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const { isStarred, toggleStar } = useStarredItems({ limit: 100 });
+  
+  // Fetch business lines from database - only show active ones
+  const { data: businessLines = [], isLoading } = useBusinessLines();
+  const activeBusinessLines = businessLines.filter(line => line.is_active);
 
-  const filtered = productItems.filter(p =>
-    p.name.toLowerCase().includes(search.toLowerCase())
+  const filtered = activeBusinessLines.filter(line =>
+    line.name.toLowerCase().includes(search.toLowerCase()) ||
+    line.key.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleSelect = (path: string) => {
+  const handleSelect = (line: typeof activeBusinessLines[0]) => {
+    const path = getPathForBusinessLine(line.key);
     navigate(path);
     onClose();
   };
 
-  const handleToggleStar = async (e: React.MouseEvent, item: typeof productItems[0]) => {
+  const handleToggleStar = async (e: React.MouseEvent, line: typeof activeBusinessLines[0]) => {
     e.stopPropagation();
+    const path = getPathForBusinessLine(line.key);
     await toggleStar({
       room_type: 'product',
-      room_id: item.id,
-      room_name: item.name,
+      room_id: line.id,
+      room_name: line.name,
       room_subtitle: 'Product',
-      room_path: item.path,
+      room_path: path,
       pi_label: null,
     });
   };
@@ -58,25 +88,32 @@ export function ProductSelectorDropdown({ onClose }: ProductSelectorDropdownProp
       </div>
       <ScrollArea className="max-h-80">
         <div className="p-2">
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <div className="px-3 py-8 text-center">
+              <Loader2 className="h-5 w-5 animate-spin mx-auto text-muted-foreground" />
+            </div>
+          ) : filtered.length === 0 ? (
             <div className="px-3 py-8 text-center text-sm text-muted-foreground">
               No products found
             </div>
           ) : (
-            filtered.map((item) => {
-              const Icon = item.icon;
-              const starred = isStarred('product', item.id);
+            filtered.map((line) => {
+              const Icon = getIconForBusinessLine(line.key);
+              const starred = isStarred('product', line.id);
               return (
                 <button
-                  key={item.id}
-                  onClick={() => handleSelect(item.path)}
+                  key={line.id}
+                  onClick={() => handleSelect(line)}
                   className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm group"
                 >
                   <div className="flex items-center gap-2">
                     <Icon className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    <span className="flex-1 font-medium">{item.name}</span>
+                    <span className="flex-1 font-medium">{line.name}</span>
+                    {line.is_default && (
+                      <span className="text-xs text-brand-gold font-medium">Default</span>
+                    )}
                     <button
-                      onClick={(e) => handleToggleStar(e, item)}
+                      onClick={(e) => handleToggleStar(e, line)}
                       className={`p-1 rounded hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold ${
                         starred ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus:opacity-100"
                       }`}

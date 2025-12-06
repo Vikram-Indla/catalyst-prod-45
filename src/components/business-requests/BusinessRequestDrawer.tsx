@@ -45,6 +45,7 @@ import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useVisibleDrawerTabs } from '@/hooks/useDrawerTabConfigs';
 
 // Fields to track for audit logging (human-readable names)
 const AUDIT_FIELD_LABELS: Record<string, string> = {
@@ -149,8 +150,8 @@ interface BusinessRequestDrawerProps {
   onRequestChange?: (newRequestId: string) => void;
 }
 
-// Tabs for the view drawer
-const VIEW_TABS = [
+// Fallback tabs if config is not loaded
+const FALLBACK_TABS = [
   { value: 'demand-details', label: 'Demand Details' },
   { value: 'business-score', label: 'Business Score' },
   { value: 'budget', label: 'Budget' },
@@ -167,6 +168,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   const updateMutation = useUpdateBusinessRequest();
   const deleteMutation = useDeleteBusinessRequest();
   const duplicateMutation = useDuplicateBusinessRequest();
+  
+  // Fetch visible tabs from configuration
+  const { visibleTabs, isLoading: tabsLoading } = useVisibleDrawerTabs();
+  const VIEW_TABS = visibleTabs.length > 0 ? visibleTabs : FALLBACK_TABS;
   
   const [activeTab, setActiveTab] = useState('demand-details');
   const [formData, setFormData] = useState<Partial<BusinessRequest> & Record<string, any>>({});

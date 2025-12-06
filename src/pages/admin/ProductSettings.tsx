@@ -28,10 +28,14 @@ export default function ProductSettings() {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // Save logic will be handled by individual panels
+      // Trigger save on FieldsLayoutPanel if it has the save handler
+      if ((window as any).__fieldsLayoutSave) {
+        await (window as any).__fieldsLayoutSave();
+      }
       toast.success('Settings saved successfully');
       setHasChanges(false);
     } catch (error) {
+      console.error('Failed to save settings:', error);
       toast.error('Failed to save settings');
     } finally {
       setIsSaving(false);
