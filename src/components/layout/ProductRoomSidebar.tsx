@@ -52,8 +52,8 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                 PR
               </div>
               <div className="flex flex-col">
-                <span className="font-semibold text-foreground">Demand Intake</span>
-                <span className="text-xs text-muted-foreground">Industry-specific demand requests</span>
+                <span className="font-semibold text-foreground">Product</span>
+                <span className="text-xs text-muted-foreground">Industry</span>
               </div>
             </div>
           ) : (
