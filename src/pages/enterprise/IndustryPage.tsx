@@ -595,25 +595,16 @@ export default function IndustryPage() {
 
   const getStatusBadge = (status: string) => {
     const step = PROCESS_STEPS.find(s => s.value === status);
-    const info = PROCESS_STEP_INFO[status] || { description: 'Unknown status' };
     const styles = STATUS_BADGE_STYLES[status] || { bg: 'bg-slate-100', text: 'text-slate-600' };
     
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span className={cn(
-            "inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded cursor-help",
-            styles.bg,
-            styles.text
-          )}>
-            {step?.label || status}
-          </span>
-        </TooltipTrigger>
-        <TooltipContent side="top" className="bg-brand-dark text-white text-xs max-w-xs">
-          <div className="font-medium">{step?.label || status}</div>
-          <div className="text-gray-300 mt-1">{info.description}</div>
-        </TooltipContent>
-      </Tooltip>
+      <span className={cn(
+        "inline-block px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded",
+        styles.bg,
+        styles.text
+      )}>
+        {step?.label || status}
+      </span>
     );
   };
 
