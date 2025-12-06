@@ -1030,9 +1030,9 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     {formatDateLabel(item.endDate)}
                   </div>
 
-                  {/* Bar with status label sitting on top */}
+                  {/* Bar */}
                   <div 
-                    className="absolute h-[24px] rounded-full overflow-hidden flex items-center"
+                    className="absolute h-[24px] rounded-full overflow-visible flex items-center justify-center"
                     style={{ 
                       left: barPos.left, 
                       width: barPos.width, 
@@ -1042,29 +1042,21 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
                     }}
                   >
-                  </div>
-                  
-                  {/* Status label sitting on bar */}
-                  <div 
-                    className="absolute text-[9px] font-medium whitespace-nowrap pointer-events-none"
-                    style={{ 
-                      left: `calc(${barPos.left} + ${barPos.width} / 2)`, 
-                      top: '50%', 
-                      transform: 'translate(-50%, -50%)',
-                      marginTop: '-6px',
-                      color: 'hsl(var(--roadmap-charcoal))'
-                    }}
-                  >
-                    {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                    {/* Milestones - positioned inside the bar with padding */}
+                    {/* Status label centered on bar */}
+                    <span 
+                      className="text-[9px] font-medium whitespace-nowrap px-1"
+                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
+                    >
+                      {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
+                    </span>
+                    
+                    {/* Milestones - positioned inside the bar */}
                     {showMilestones && item.milestones.map((ms, index) => {
-                      // Keep milestones inside bar: distribute evenly within bounds
                       const totalMilestones = item.milestones.length;
                       let pos: number;
                       if (totalMilestones === 1) {
-                        pos = 50; // Center if only one
+                        pos = 50;
                       } else {
-                        // Distribute from 10% to 90% to keep inside bar
                         pos = 10 + (index * (80 / (totalMilestones - 1)));
                       }
                       
