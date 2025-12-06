@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronLeft,
@@ -17,6 +17,7 @@ import {
   Link,
   Blocks,
 } from 'lucide-react';
+import { useEnabledModules } from '@/hooks/useModules';
 import {
   Select,
   SelectContent,
@@ -98,33 +99,41 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     setSnapshotId,
   } = useCatalystContext();
 
-  // More items sub-menu for Enterprise
-  const moreItemsSubMenu = [
-    { id: 'ideation', label: 'Ideation', path: '/enterprise/ideation' },
-    { id: 'brainstorming', label: 'Brainstorming', path: '/enterprise/brainstorming' },
-    { id: 'innovation', label: 'Innovation', path: '/enterprise/innovation' },
-    { id: 'canvas', label: 'Canvas (labs)', path: '/enterprise/canvas' },
-    { id: 'mind-maps', label: 'Mind maps', path: '/enterprise/mind-maps' },
-    { id: 'competitors', label: 'Competitors', path: '/enterprise/competitors' },
-    { id: 'goals', label: 'Goals', path: '/enterprise/goals' },
-    { id: 'vision', label: 'Vision', path: '/enterprise/vision' },
-    { id: 'personas', label: 'Personas', path: '/enterprise/personas' },
-    { id: 'skills-inventory', label: 'Skills inventory', path: '/enterprise/skills-inventory' },
-    { id: 'risks', label: 'Risks', path: '/risks' },
-    { id: 'impediments', label: 'Impediments', path: '/enterprise/impediments' },
-    { id: 'kanban-boards', label: 'Kanban Boards', path: '/enterprise/kanban-boards' },
-    { id: 'epics', label: 'Epics', path: '/enterprise/epics' },
-    { id: 'features', label: 'Features', path: '/enterprise/features' },
-    { id: 'stories', label: 'Stories', path: '/enterprise/stories' },
-    { id: 'defects', label: 'Defects', path: '/enterprise/defects' },
-    { id: 'tasks', label: 'Tasks', path: '/enterprise/tasks' },
-    { id: 'objectives', label: 'Objectives', path: '/enterprise/objectives' },
-    { id: 'dependencies', label: 'Dependencies', path: '/enterprise/dependencies' },
-    { id: 'sprints', label: 'Sprints', path: '/enterprise/sprints' },
-    { id: 'program-increments', label: 'Program Increments', path: '/enterprise/program-increments' },
-    { id: 'release-vehicles', label: 'Release Vehicles', path: '/enterprise/release-vehicles' },
-    { id: 'success-criteria', label: 'Success Criteria', path: '/enterprise/success-criteria' },
+  const { isModuleEnabled } = useEnabledModules();
+
+  // More items sub-menu for Enterprise with module codes
+  const allMoreItemsSubMenu = [
+    { id: 'ideation', label: 'Ideation', path: '/enterprise/ideation', moduleCode: 'ENTERPRISE' },
+    { id: 'brainstorming', label: 'Brainstorming', path: '/enterprise/brainstorming', moduleCode: 'ENTERPRISE' },
+    { id: 'innovation', label: 'Innovation', path: '/enterprise/innovation', moduleCode: 'ENTERPRISE' },
+    { id: 'canvas', label: 'Canvas (labs)', path: '/enterprise/canvas', moduleCode: 'ENTERPRISE' },
+    { id: 'mind-maps', label: 'Mind maps', path: '/enterprise/mind-maps', moduleCode: 'ENTERPRISE' },
+    { id: 'competitors', label: 'Competitors', path: '/enterprise/competitors', moduleCode: 'ENTERPRISE' },
+    { id: 'goals', label: 'Goals', path: '/enterprise/goals', moduleCode: 'ENTERPRISE' },
+    { id: 'vision', label: 'Vision', path: '/enterprise/vision', moduleCode: 'ENTERPRISE' },
+    { id: 'personas', label: 'Personas', path: '/enterprise/personas', moduleCode: 'ENTERPRISE' },
+    { id: 'skills-inventory', label: 'Skills inventory', path: '/enterprise/skills-inventory', moduleCode: 'ENTERPRISE' },
+    { id: 'risks', label: 'Risks', path: '/risks', moduleCode: 'PORTFOLIO' },
+    { id: 'impediments', label: 'Impediments', path: '/enterprise/impediments', moduleCode: 'TEAM' },
+    { id: 'kanban-boards', label: 'Kanban Boards', path: '/enterprise/kanban-boards', moduleCode: 'ENTERPRISE' },
+    { id: 'epics', label: 'Epics', path: '/enterprise/epics', moduleCode: 'PORTFOLIO' },
+    { id: 'features', label: 'Features', path: '/enterprise/features', moduleCode: 'PROGRAM' },
+    { id: 'stories', label: 'Stories', path: '/enterprise/stories', moduleCode: 'TEAM' },
+    { id: 'defects', label: 'Defects', path: '/enterprise/defects', moduleCode: 'TEAM' },
+    { id: 'tasks', label: 'Tasks', path: '/enterprise/tasks', moduleCode: 'TEAM' },
+    { id: 'objectives', label: 'Objectives', path: '/enterprise/objectives', moduleCode: 'ENTERPRISE' },
+    { id: 'dependencies', label: 'Dependencies', path: '/enterprise/dependencies', moduleCode: 'PROGRAM' },
+    { id: 'sprints', label: 'Sprints', path: '/enterprise/sprints', moduleCode: 'TEAM' },
+    { id: 'program-increments', label: 'Program Increments', path: '/enterprise/program-increments', moduleCode: 'PROGRAM' },
+    { id: 'release-vehicles', label: 'Release Vehicles', path: '/enterprise/release-vehicles', moduleCode: 'PROGRAM' },
+    { id: 'success-criteria', label: 'Success Criteria', path: '/enterprise/success-criteria', moduleCode: 'ENTERPRISE' },
   ];
+
+  // Filter items based on enabled modules
+  const moreItemsSubMenu = useMemo(() => 
+    allMoreItemsSubMenu.filter(item => isModuleEnabled(item.moduleCode)),
+    [isModuleEnabled]
+  );
 
   // Reports sub-menu for Enterprise
   const reportsSubMenu = [

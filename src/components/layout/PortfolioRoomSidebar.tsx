@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,6 +34,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { useEnabledModules } from '@/hooks/useModules';
 
 interface PortfolioRoomSidebarProps {
   portfolioId: string;
@@ -78,19 +79,28 @@ export function PortfolioRoomSidebar({
   const [reportsExpanded, setReportsExpanded] = useState(false);
   const [morePagesExpanded, setMorePagesExpanded] = useState(false);
 
-  const moreItemsSubMenu = [
-    { id: 'initiatives', label: 'Initiatives', path: '/portfolio/:portfolioId/initiatives' },
-    { id: 'features', label: 'Features', path: '/portfolio/:portfolioId/features' },
-    { id: 'stories', label: 'Stories', path: '/portfolio/:portfolioId/stories' },
-    { id: 'defects', label: 'Defects', path: '/portfolio/:portfolioId/defects' },
-    { id: 'tasks', label: 'Tasks', path: '/portfolio/:portfolioId/tasks' },
-    { id: 'dependencies', label: 'Dependencies', path: '/portfolio/:portfolioId/dependencies' },
-    { id: 'risks', label: 'Risks', path: '/portfolio/:portfolioId/risks' },
-    { id: 'impediments', label: 'Impediments', path: '/portfolio/:portfolioId/impediments' },
-    { id: 'sprints', label: 'Sprints', path: '/portfolio/:portfolioId/sprints' },
-    { id: 'program-increments', label: 'Program Increments', path: '/portfolio/:portfolioId/program-increments' },
-    { id: 'release-vehicles', label: 'Release Vehicles', path: '/portfolio/:portfolioId/release-vehicles' },
+  const { isModuleEnabled } = useEnabledModules();
+
+  // Define items with their required module codes
+  const allMoreItemsSubMenu = [
+    { id: 'initiatives', label: 'Initiatives', path: '/portfolio/:portfolioId/initiatives', moduleCode: 'PORTFOLIO' },
+    { id: 'features', label: 'Features', path: '/portfolio/:portfolioId/features', moduleCode: 'PROGRAM' },
+    { id: 'stories', label: 'Stories', path: '/portfolio/:portfolioId/stories', moduleCode: 'TEAM' },
+    { id: 'defects', label: 'Defects', path: '/portfolio/:portfolioId/defects', moduleCode: 'TEAM' },
+    { id: 'tasks', label: 'Tasks', path: '/portfolio/:portfolioId/tasks', moduleCode: 'TEAM' },
+    { id: 'dependencies', label: 'Dependencies', path: '/portfolio/:portfolioId/dependencies', moduleCode: 'PROGRAM' },
+    { id: 'risks', label: 'Risks', path: '/portfolio/:portfolioId/risks', moduleCode: 'PORTFOLIO' },
+    { id: 'impediments', label: 'Impediments', path: '/portfolio/:portfolioId/impediments', moduleCode: 'TEAM' },
+    { id: 'sprints', label: 'Sprints', path: '/portfolio/:portfolioId/sprints', moduleCode: 'TEAM' },
+    { id: 'program-increments', label: 'Program Increments', path: '/portfolio/:portfolioId/program-increments', moduleCode: 'PROGRAM' },
+    { id: 'release-vehicles', label: 'Release Vehicles', path: '/portfolio/:portfolioId/release-vehicles', moduleCode: 'PROGRAM' },
   ];
+
+  // Filter items based on enabled modules
+  const moreItemsSubMenu = useMemo(() => 
+    allMoreItemsSubMenu.filter(item => isModuleEnabled(item.moduleCode)),
+    [isModuleEnabled]
+  );
 
   const reportsSubMenu = [
     { id: 'epic-status', label: 'Epic status report', path: '/portfolio/:portfolioId/reports/epic-status' },
