@@ -258,13 +258,13 @@ export function DependencyDetailsDrawer({ open, onClose, dependencyId }: Depende
 
   return (
     <Sheet open={open} onOpenChange={onClose}>
-      <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
-        <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
-          <div className="flex-1 pr-2 sm:pr-4 min-w-0">
-            <SheetTitle className="executive-drawer-title truncate">
+      <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden bg-white">
+        <SheetHeader className="executive-drawer-header flex-row items-center justify-between space-y-0 shrink-0 bg-white px-3 md:px-4 py-2 border-b border-neutral-200">
+          <div className="flex-1 pr-2 min-w-0">
+            <SheetTitle className="executive-drawer-title truncate text-base font-semibold">
               {isEdit ? 'Edit Dependency' : 'Create Dependency'}
             </SheetTitle>
-            <SheetDescription className="executive-drawer-subtitle mt-1 truncate">
+            <SheetDescription className="text-xs text-muted-foreground truncate">
               {isEdit && existingDependency ? (
                 `${existingDependency.from_feature?.name || 'Unknown'} → ${existingDependency.to_feature?.name || 'Unknown'}`
               ) : (

@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+// Card/CardContent removed - using divs for compact white panels
 import { CalendarIcon, Lock, Unlock } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -59,11 +59,10 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
   };
 
   return (
-    <div className="flex flex-col space-y-3 p-2 sm:p-3 md:p-4">
+    <div className="flex flex-col space-y-3 p-3 md:p-4 bg-white">
       {/* DETAILS Section - Consolidated Basic Info + Assignment */}
-      <Card className="border border-border/60 rounded-lg bg-card w-full">
-        <CardContent className="p-3 sm:p-4 space-y-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Details</h3>
+      <div className="border border-neutral-200 rounded-xl bg-white p-3 md:p-4 space-y-4 shadow-none">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Details</h3>
           
           {/* Summary */}
           <div>
@@ -142,13 +141,11 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
       {/* PLANNING & DELIVERY Section - Consolidated Timeline + Delivery Context */}
-      <Card className="border border-border/60 rounded-lg bg-card w-full">
-        <CardContent className="p-3 sm:p-4 space-y-4">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Planning & Delivery</h3>
+      <div className="border border-neutral-200 rounded-xl bg-white p-3 md:p-4 space-y-4 shadow-none">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Planning & Delivery</h3>
           
           {/* Dates - 3-column compact grid */}
           <div className="grid grid-cols-3 gap-3">
@@ -312,11 +309,9 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
                   <SelectItem value="Q4-2027">Q4 2027</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
           </div>
-        </CardContent>
-      </Card>
-
+        </div>
+      </div>
     </div>
   );
 }

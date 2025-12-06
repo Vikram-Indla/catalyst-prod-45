@@ -21,18 +21,18 @@ export function TeamDetailsDrawer({ teamId, open, onOpenChange }: TeamDetailsDra
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="executive-drawer w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden">
+      <SheetContent side="right" className="executive-drawer w-full sm:max-w-2xl p-0 flex flex-col overflow-hidden bg-white">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center h-full bg-white">
             <div className="text-muted-foreground">Loading team details...</div>
           </div>
         ) : !team ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center h-full bg-white">
             <div className="text-muted-foreground">Team not found</div>
           </div>
         ) : (
           <>
-            <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
+            <SheetHeader className="executive-drawer-header flex-row items-center justify-between space-y-0 shrink-0 bg-white px-3 md:px-4 py-2 border-b border-neutral-200">
               <div className="flex-1 min-w-0">
                 <SheetTitle className="executive-drawer-title truncate">{team.name}</SheetTitle>
                 {team.short_name && (
