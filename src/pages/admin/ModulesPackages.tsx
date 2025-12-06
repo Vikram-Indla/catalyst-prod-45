@@ -58,17 +58,6 @@ export default function ModulesPackages() {
   const handlePackageChange = (packageCode: string) => {
     setSelectedPackage(packageCode);
     setHasChanges(true);
-    
-    if (packageCode === 'CUSTOM') {
-      // Keep current settings
-      return;
-    }
-    
-    // Get modules for this package and apply them
-    const packageModulesList = packages?.find(p => p.code === packageCode);
-    if (packageModulesList) {
-      // Need to fetch package modules
-    }
   };
   
   // Update settings when package modules are loaded
@@ -118,11 +107,10 @@ export default function ModulesPackages() {
   
   const enabledCount = Object.values(moduleSettings).filter(Boolean).length;
   const totalCount = modules?.length || 0;
-  const activePackageName = packages?.find(p => p.code === selectedPackage)?.name || 'Custom';
+  const activePackageName = packages?.find(p => p.code === selectedPackage)?.name || 'None / Custom';
   
   // Find which package includes each module
   const getPackagesForModule = (moduleCode: string): string[] => {
-    // This would require fetching all package_modules, simplified for now
     const packageMap: Record<string, string[]> = {
       PRODUCT: ['Product Starter', 'Product + Delivery', 'Strategy + Product', 'Full Catalyst'],
       ENTERPRISE: ['Strategy + Product', 'Full Catalyst'],
@@ -136,6 +124,7 @@ export default function ModulesPackages() {
   return (
     <AdminGuard>
       <div className="p-6 space-y-6">
+        {/* Header - matching DetailsPanels pattern */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Modules & Packages</h1>
@@ -266,4 +255,3 @@ export default function ModulesPackages() {
     </AdminGuard>
   );
 }
-
