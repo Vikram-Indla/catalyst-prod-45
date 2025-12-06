@@ -6346,6 +6346,74 @@ export type Database = {
           },
         ]
       }
+      product_role_permissions: {
+        Row: {
+          created_at: string | null
+          id: string
+          permission_group: string
+          permission_level: string
+          role_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          permission_group: string
+          permission_level: string
+          role_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          permission_group?: string
+          permission_level?: string
+          role_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_role_permissions_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "product_roles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_roles: {
+        Row: {
+          code: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          scope: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          scope?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          scope?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       product_status_configs: {
         Row: {
           category: string
@@ -10549,6 +10617,68 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      user_permission_overrides: {
+        Row: {
+          created_at: string | null
+          id: string
+          module: string | null
+          override_value: string
+          permission_group: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          module?: string | null
+          override_value: string
+          permission_group: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          module?: string | null
+          override_value?: string
+          permission_group?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_product_roles: {
+        Row: {
+          business_lines: string[] | null
+          created_at: string | null
+          id: string
+          role_id: string
+          user_id: string
+        }
+        Insert: {
+          business_lines?: string[] | null
+          created_at?: string | null
+          id?: string
+          role_id: string
+          user_id: string
+        }
+        Update: {
+          business_lines?: string[] | null
+          created_at?: string | null
+          id?: string
+          role_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_product_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "product_roles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_role_history: {
         Row: {
