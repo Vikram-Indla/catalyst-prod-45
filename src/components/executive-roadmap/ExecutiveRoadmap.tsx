@@ -11,6 +11,7 @@ import {
 import { 
   ChevronUp, 
   ChevronDown, 
+  ChevronRight,
   Maximize2, 
   Minimize2, 
   FileDown, 
@@ -119,6 +120,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [activeKPI, setActiveKPI] = useState<RoadmapStatus | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const t = TRANSLATIONS[language];
@@ -397,138 +399,151 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Controls Bar - Inline filters */}
-      <div className="flex items-center gap-3 px-4 sm:px-6 py-1 border-b border-[#E8E4DD] bg-white print:hidden">
-        {/* Mobile menu */}
-        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="sm:hidden h-7">
-              <Menu className="h-4 w-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side={isRTL ? "right" : "left"} className="w-[280px]">
-            <div className="space-y-4 py-4">
-              <div>
-                <label className="text-xs font-medium text-[#5C5650] mb-2 block">{t.platform}</label>
-                <Select value={platform} onValueChange={setPlatform}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="all">{t.allPlatforms}</SelectItem>
-                    {Object.keys(PLATFORM_INFO).map(p => (
-                      <SelectItem key={p} value={p}>{isRTL ? PLATFORM_INFO[p].nameAr : p}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-[#5C5650] mb-2 block">{t.status}</label>
-                <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="all">{t.allStatuses}</SelectItem>
-                    {Object.entries(isRTL ? STAGE_NAMES_AR : STAGE_NAMES).map(([s, name]) => (
-                      <SelectItem key={s} value={s}>{name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <label className="text-xs font-medium text-[#5C5650] mb-2 block">{t.owner}</label>
-                <Select value={owner} onValueChange={setOwner}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem value="all">{t.allOwners}</SelectItem>
-                    {uniqueOwners.map(o => {
-                      const item = items.find(i => i.ownerEn === o);
-                      return <SelectItem key={o} value={o}>{isRTL ? item?.ownerAr : o}</SelectItem>;
-                    })}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
-
-        {/* Desktop filters - inline */}
-        <div className="hidden sm:flex items-center gap-1">
-          <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.platform}</span>
-          <Select value={platform} onValueChange={setPlatform}>
-            <SelectTrigger className="w-[120px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-            <SelectContent className="bg-white z-50">
-              <SelectItem value="all">{t.allPlatforms}</SelectItem>
-              {Object.keys(PLATFORM_INFO).map(p => (
-                <SelectItem key={p} value={p}>{isRTL ? PLATFORM_INFO[p].nameAr : p}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-1">
-          <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.status}</span>
-          <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-[100px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-            <SelectContent className="bg-white z-50">
-              <SelectItem value="all">{t.allStatuses}</SelectItem>
-              {Object.entries(isRTL ? STAGE_NAMES_AR : STAGE_NAMES).map(([s, name]) => (
-                <SelectItem key={s} value={s}>{name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-1">
-          <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.owner}</span>
-          <Select value={owner} onValueChange={setOwner}>
-            <SelectTrigger className="w-[110px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-            <SelectContent className="bg-white z-50">
-              <SelectItem value="all">{t.allOwners}</SelectItem>
-              {uniqueOwners.map(o => {
-                const item = items.find(i => i.ownerEn === o);
-                return <SelectItem key={o} value={o}>{isRTL ? item?.ownerAr : o}</SelectItem>;
-              })}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Sort By dropdown */}
-        <div className="hidden sm:flex items-center gap-1">
-          <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.sortBy}</span>
-          <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
-            <SelectTrigger className="w-[80px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-            <SelectContent className="bg-white z-50">
-              <SelectItem value="rank">{t.rank}</SelectItem>
-              <SelectItem value="platform">{t.platform}</SelectItem>
-              <SelectItem value="owner">{t.owner}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Period dropdown */}
-        <div className="hidden sm:flex items-center gap-1">
-          <span className="text-[10px] text-[#5C5650] font-medium uppercase">{isRTL ? 'الفترة' : 'PERIOD'}</span>
-          <Select value={timeScale} onValueChange={(v) => setTimeScale(v as TimeScale)}>
-            <SelectTrigger className="w-[80px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-            <SelectContent className="bg-white z-50">
-              <SelectItem value="weekly">{t.weekly}</SelectItem>
-              <SelectItem value="monthly">{t.monthly}</SelectItem>
-              <SelectItem value="quarterly">{t.quarterly}</SelectItem>
-              <SelectItem value="yearly">{t.yearly}</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="flex-1" />
-
-        {/* Milestones toggle */}
-        <div className="flex items-center gap-1">
-          <span className="text-[10px] text-[#5C5650] font-medium uppercase hidden sm:inline">{t.milestones}</span>
-          <Switch 
-            checked={showMilestones} 
-            onCheckedChange={setShowMilestones}
-            className="data-[state=checked]:bg-[#C69C6D] scale-75"
-          />
-        </div>
+      {/* Show/Hide Filters Toggle */}
+      <div 
+        className="flex items-center gap-2 px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white cursor-pointer hover:bg-[#F5F2ED] transition-colors print:hidden"
+        onClick={() => setShowFilters(!showFilters)}
+      >
+        <ChevronRight className={cn("h-4 w-4 text-[#5C5650] transition-transform", showFilters && "rotate-90")} />
+        <span className="text-[11px] font-medium text-[#5C5650]">
+          {showFilters ? 'Hide Details' : 'Show Details'}
+        </span>
       </div>
+
+      {/* Controls Bar - Inline filters (collapsible) */}
+      {showFilters && (
+        <div className="flex items-center gap-3 px-4 sm:px-6 py-1 border-b border-[#E8E4DD] bg-white print:hidden">
+          {/* Mobile menu */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="sm" className="sm:hidden h-7">
+                <Menu className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side={isRTL ? "right" : "left"} className="w-[280px]">
+              <div className="space-y-4 py-4">
+                <div>
+                  <label className="text-xs font-medium text-[#5C5650] mb-2 block">{t.platform}</label>
+                  <Select value={platform} onValueChange={setPlatform}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="all">{t.allPlatforms}</SelectItem>
+                      {Object.keys(PLATFORM_INFO).map(p => (
+                        <SelectItem key={p} value={p}>{isRTL ? PLATFORM_INFO[p].nameAr : p}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-[#5C5650] mb-2 block">{t.status}</label>
+                  <Select value={status} onValueChange={setStatus}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="all">{t.allStatuses}</SelectItem>
+                      {Object.entries(isRTL ? STAGE_NAMES_AR : STAGE_NAMES).map(([s, name]) => (
+                        <SelectItem key={s} value={s}>{name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-[#5C5650] mb-2 block">{t.owner}</label>
+                  <Select value={owner} onValueChange={setOwner}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent className="bg-white">
+                      <SelectItem value="all">{t.allOwners}</SelectItem>
+                      {uniqueOwners.map(o => {
+                        const item = items.find(i => i.ownerEn === o);
+                        return <SelectItem key={o} value={o}>{isRTL ? item?.ownerAr : o}</SelectItem>;
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          {/* Desktop filters - inline */}
+          <div className="hidden sm:flex items-center gap-1">
+            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.platform}</span>
+            <Select value={platform} onValueChange={setPlatform}>
+              <SelectTrigger className="w-[120px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+              <SelectContent className="bg-white z-50">
+                <SelectItem value="all">{t.allPlatforms}</SelectItem>
+                {Object.keys(PLATFORM_INFO).map(p => (
+                  <SelectItem key={p} value={p}>{isRTL ? PLATFORM_INFO[p].nameAr : p}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-1">
+            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.status}</span>
+            <Select value={status} onValueChange={setStatus}>
+              <SelectTrigger className="w-[100px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+              <SelectContent className="bg-white z-50">
+                <SelectItem value="all">{t.allStatuses}</SelectItem>
+                {Object.entries(isRTL ? STAGE_NAMES_AR : STAGE_NAMES).map(([s, name]) => (
+                  <SelectItem key={s} value={s}>{name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="hidden sm:flex items-center gap-1">
+            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.owner}</span>
+            <Select value={owner} onValueChange={setOwner}>
+              <SelectTrigger className="w-[110px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+              <SelectContent className="bg-white z-50">
+                <SelectItem value="all">{t.allOwners}</SelectItem>
+                {uniqueOwners.map(o => {
+                  const item = items.find(i => i.ownerEn === o);
+                  return <SelectItem key={o} value={o}>{isRTL ? item?.ownerAr : o}</SelectItem>;
+                })}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Sort By dropdown */}
+          <div className="hidden sm:flex items-center gap-1">
+            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.sortBy}</span>
+            <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
+              <SelectTrigger className="w-[80px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+              <SelectContent className="bg-white z-50">
+                <SelectItem value="rank">{t.rank}</SelectItem>
+                <SelectItem value="platform">{t.platform}</SelectItem>
+                <SelectItem value="owner">{t.owner}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Period dropdown */}
+          <div className="hidden sm:flex items-center gap-1">
+            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{isRTL ? 'الفترة' : 'PERIOD'}</span>
+            <Select value={timeScale} onValueChange={(v) => setTimeScale(v as TimeScale)}>
+              <SelectTrigger className="w-[80px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+              <SelectContent className="bg-white z-50">
+                <SelectItem value="weekly">{t.weekly}</SelectItem>
+                <SelectItem value="monthly">{t.monthly}</SelectItem>
+                <SelectItem value="quarterly">{t.quarterly}</SelectItem>
+                <SelectItem value="yearly">{t.yearly}</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex-1" />
+
+          {/* Milestones toggle */}
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-[#5C5650] font-medium uppercase hidden sm:inline">{t.milestones}</span>
+            <Switch 
+              checked={showMilestones} 
+              onCheckedChange={setShowMilestones}
+              className="data-[state=checked]:bg-[#C69C6D] scale-75"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Timeline Grid - smooth scroll */}
       <div className="flex-1 overflow-auto scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
