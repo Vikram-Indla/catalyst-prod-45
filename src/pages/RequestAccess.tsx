@@ -336,7 +336,7 @@ export default function RequestAccess() {
       
       if (requestError) throw requestError;
       
-      // Add a system comment capturing the external requester info
+      // 1. Add a system comment in Discussions capturing the external requester info
       const externalComment = `**Submitted via External Request Form**\n\n**Requested by:** ${formData.reporter}\n**Email:** ${formData.email}\n\n_This demand was submitted by an external user through the public intake form._`;
       
       await supabase
@@ -345,6 +345,20 @@ export default function RequestAccess() {
           business_request_id: requestData.id,
           user_id: '00000000-0000-0000-0000-000000000000', // System user placeholder
           message: externalComment,
+        }]);
+      
+      // 2. Add a structured audit log entry for Audit History
+      const auditDetails = `Requester Name: ${formData.reporter} | Email: ${formData.email} | Auto-comment generated in Discussions`;
+      
+      await supabase
+        .from('business_request_audit_logs')
+        .insert([{
+          business_request_id: requestData.id,
+          actor_name: 'System',
+          action: 'External Request Submission',
+          field_changed: 'created',
+          old_value: null,
+          new_value: auditDetails,
         }]);
       
       setTicketNumber(requestData.request_key);
