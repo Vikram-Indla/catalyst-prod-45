@@ -158,13 +158,15 @@ export function HomeContent() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-foreground">Starred</h2>
-            <Button
-              variant="link"
-              className="text-primary hover:text-primary/80 px-0 h-auto"
-              onClick={() => navigate("/starred")}
-            >
-              View all
-            </Button>
+            {starredItems.length >= 8 && (
+              <Button
+                variant="link"
+                className="text-primary hover:text-primary/80 px-0 h-auto"
+                onClick={() => navigate("/starred")}
+              >
+                View all
+              </Button>
+            )}
           </div>
 
           {loadingStarred ? (
