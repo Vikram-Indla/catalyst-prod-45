@@ -197,6 +197,35 @@ export function useUpdateUserStatus() {
   });
 }
 
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId },
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Failed to delete user');
+      }
+
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      toast.success('User removed from the system');
+    },
+    onError: (error) => {
+      toast.error((error as Error).message || 'Failed to remove user');
+    }
+  });
+}
+
 export function useIsSuperAdmin() {
   return useQuery({
     queryKey: ['is-super-admin'],
