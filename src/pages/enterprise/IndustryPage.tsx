@@ -281,6 +281,7 @@ const sortByColumn = (items: any[], columnId: string, direction: SortDirection) 
 };
 
 export default function IndustryPage() {
+  console.log('[IndustryPage] Component mounting...');
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
