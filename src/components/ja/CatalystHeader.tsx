@@ -105,7 +105,7 @@ export function CatalystHeader() {
           </div>
 
           {/* Main Navigation - Visible on tablet and up */}
-          <nav className="hidden md:flex items-center gap-1 flex-1 justify-center max-w-4xl">
+          <nav className="hidden md:flex items-center gap-6 flex-1 justify-center max-w-4xl">
             {navItems.map((item) => (
               <div key={item.label}>
                 {item.label === "Product" ? (
@@ -257,6 +257,23 @@ export function CatalystHeader() {
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Notifications</p>
+                </TooltipContent>
+              </Tooltip>
+
+              {/* Settings - Between Notifications and Search */}
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={() => navigate('/admin/activity')}
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Settings</p>
                 </TooltipContent>
               </Tooltip>
 
