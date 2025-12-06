@@ -1,23 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Switch } from '@/components/ui/switch';
-import { ChevronUp, X } from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PLATFORM_INFO, STAGE_NAMES } from '@/data/roadmapSeed';
 
 export type SmartFilterType = 'inProgress' | 'highPriority' | 'upcoming' | 'blocked' | 'currentQuarter' | null;
 
 export interface RoadmapFilters {
-  activeSmartFilter?: SmartFilterType;
+  activePlatformFilter?: string | null;
   platform?: string;
   status?: string;
   owner?: string;
   sortField?: string;
-  timeScale?: string;
   showMilestones?: boolean;
 }
 
@@ -29,33 +28,12 @@ interface RoadmapFiltersDialogProps {
   uniqueOwners: string[];
 }
 
-const SMART_FILTER_CONFIG = [
-  { 
-    id: 'inProgress' as SmartFilterType, 
-    label: 'In Progress', 
-    tooltip: 'Shows items currently being implemented.' 
-  },
-  { 
-    id: 'highPriority' as SmartFilterType, 
-    label: 'High Priority', 
-    tooltip: 'Shows items with rank 1-5.' 
-  },
-  { 
-    id: 'upcoming' as SmartFilterType, 
-    label: 'Upcoming', 
-    tooltip: 'Shows items planned for the next 30 days.' 
-  },
-  { 
-    id: 'blocked' as SmartFilterType, 
-    label: 'Blocked', 
-    tooltip: 'Shows items that are currently blocked.' 
-  },
-  { 
-    id: 'currentQuarter' as SmartFilterType, 
-    label: 'Current Quarter', 
-    tooltip: 'Shows items planned for the current quarter.' 
-  },
-];
+// Platform-based quick filters
+const PLATFORM_QUICK_FILTERS = Object.keys(PLATFORM_INFO).map(key => ({
+  id: key,
+  label: key,
+  tooltip: `Filter by ${key}`
+}));
 
 export function RoadmapFiltersDialog({
   open,
@@ -76,33 +54,17 @@ export function RoadmapFiltersDialog({
     }
   }, [open, filters]);
 
-  const handleSmartFilterClick = (filterId: SmartFilterType) => {
-    if (localFilters.activeSmartFilter === filterId) {
-      setLocalFilters({ ...localFilters, activeSmartFilter: null });
+  const handlePlatformFilterClick = (platformId: string) => {
+    if (localFilters.activePlatformFilter === platformId) {
+      setLocalFilters({ ...localFilters, activePlatformFilter: null, platform: 'all' });
       return;
     }
 
-    let newFilters: RoadmapFilters = { activeSmartFilter: filterId };
-
-    switch (filterId) {
-      case 'inProgress':
-        newFilters.status = 'IMPLEMENT';
-        break;
-      case 'highPriority':
-        // Will be handled in parent component
-        break;
-      case 'upcoming':
-        newFilters.status = 'APPROVED';
-        break;
-      case 'blocked':
-        // Will be handled in parent component  
-        break;
-      case 'currentQuarter':
-        // Will be handled in parent component
-        break;
-    }
-
-    setLocalFilters(prev => ({ ...prev, ...newFilters }));
+    setLocalFilters(prev => ({ 
+      ...prev, 
+      activePlatformFilter: platformId,
+      platform: platformId 
+    }));
   };
 
   const updateFilter = <K extends keyof RoadmapFilters>(key: K, value: RoadmapFilters[K]) => {
@@ -116,19 +78,19 @@ export function RoadmapFiltersDialog({
 
   const handleClearAll = () => {
     setLocalFilters({
+      activePlatformFilter: null,
       platform: 'all',
       status: 'all',
       owner: 'all',
       sortField: 'rank',
-      timeScale: 'monthly',
       showMilestones: true,
     });
   };
 
   const countActiveFilters = () => {
     let count = 0;
-    if (localFilters.activeSmartFilter) return 1;
-    if (localFilters.platform && localFilters.platform !== 'all') count++;
+    if (localFilters.activePlatformFilter) count++;
+    if (localFilters.platform && localFilters.platform !== 'all' && !localFilters.activePlatformFilter) count++;
     if (localFilters.status && localFilters.status !== 'all') count++;
     if (localFilters.owner && localFilters.owner !== 'all') count++;
     return count;
@@ -140,40 +102,37 @@ export function RoadmapFiltersDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] p-0 gap-0 bg-white">
+      <DialogContent className="sm:max-w-[480px] p-0 gap-0 bg-white [&>button]:hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <h2 className="text-lg font-semibold text-foreground">Filters</h2>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onOpenChange(false)}>
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+        <DialogHeader className="px-6 py-4 border-b border-border">
+          <DialogTitle className="text-lg font-semibold text-foreground">Filters</DialogTitle>
+        </DialogHeader>
 
         {/* Content */}
         <div className="max-h-[60vh] overflow-y-auto">
-          {/* Quick Filters */}
+          {/* Quick Filters - Platform based */}
           <div className="px-6 py-4 border-b border-border">
             <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">Quick Filters</div>
             <TooltipProvider>
               <div className="flex flex-wrap gap-2">
-                {SMART_FILTER_CONFIG.map((sf) => (
-                  <Tooltip key={sf.id}>
+                {PLATFORM_QUICK_FILTERS.map((pf) => (
+                  <Tooltip key={pf.id}>
                     <TooltipTrigger asChild>
                       <button
                         type="button"
                         className={cn(
                           "px-3 py-1.5 rounded-md text-sm font-medium border transition-colors",
-                          localFilters.activeSmartFilter === sf.id
+                          localFilters.activePlatformFilter === pf.id
                             ? "bg-brand-gold text-white border-brand-gold"
                             : "bg-white text-foreground border-border hover:bg-muted/50"
                         )}
-                        onClick={() => handleSmartFilterClick(sf.id)}
+                        onClick={() => handlePlatformFilterClick(pf.id)}
                       >
-                        {sf.label}
+                        {pf.label}
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="bottom" className="max-w-[200px] text-xs">
-                      {sf.tooltip}
+                      {pf.tooltip}
                     </TooltipContent>
                   </Tooltip>
                 ))}
@@ -257,34 +216,18 @@ export function RoadmapFiltersDialog({
             </CollapsibleTrigger>
             <CollapsibleContent>
               <div className="px-6 py-4 space-y-4 border-b border-border">
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Period */}
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Period</label>
-                    <Select value={localFilters.timeScale || 'monthly'} onValueChange={(v) => updateFilter('timeScale', v)}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                      <SelectContent className="bg-white z-50">
-                        <SelectItem value="weekly">Weekly</SelectItem>
-                        <SelectItem value="monthly">Monthly</SelectItem>
-                        <SelectItem value="quarterly">Quarterly</SelectItem>
-                        <SelectItem value="yearly">Yearly</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Milestones */}
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Milestones</label>
-                    <div className="flex items-center gap-2 h-9">
-                      <Switch 
-                        checked={localFilters.showMilestones !== false} 
-                        onCheckedChange={(v) => updateFilter('showMilestones', v)}
-                        className="data-[state=checked]:bg-brand-gold"
-                      />
-                      <span className="text-sm text-muted-foreground">
-                        {localFilters.showMilestones !== false ? 'Visible' : 'Hidden'}
-                      </span>
-                    </div>
+                {/* Milestones */}
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Milestones</label>
+                  <div className="flex items-center gap-2 h-9">
+                    <Switch 
+                      checked={localFilters.showMilestones !== false} 
+                      onCheckedChange={(v) => updateFilter('showMilestones', v)}
+                      className="data-[state=checked]:bg-brand-gold"
+                    />
+                    <span className="text-sm text-muted-foreground">
+                      {localFilters.showMilestones !== false ? 'Visible' : 'Hidden'}
+                    </span>
                   </div>
                 </div>
               </div>
