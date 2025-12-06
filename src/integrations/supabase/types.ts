@@ -6342,7 +6342,7 @@ export type Database = {
           consequence: string | null
           contingency: string | null
           created_at: string
-          created_by: string
+          created_by: string | null
           critical_path: string | null
           deleted_at: string | null
           description: string
@@ -6351,9 +6351,9 @@ export type Database = {
           mitigation: string | null
           notify: string | null
           occurrence: string | null
-          owner_id: string
-          program_id: string
-          program_increment_id: string
+          owner_id: string | null
+          program_id: string | null
+          program_increment_id: string | null
           related_item_id: string | null
           relationship: string
           resolution_method: string
@@ -6370,7 +6370,7 @@ export type Database = {
           consequence?: string | null
           contingency?: string | null
           created_at?: string
-          created_by: string
+          created_by?: string | null
           critical_path?: string | null
           deleted_at?: string | null
           description: string
@@ -6379,9 +6379,9 @@ export type Database = {
           mitigation?: string | null
           notify?: string | null
           occurrence?: string | null
-          owner_id: string
-          program_id: string
-          program_increment_id: string
+          owner_id?: string | null
+          program_id?: string | null
+          program_increment_id?: string | null
           related_item_id?: string | null
           relationship: string
           resolution_method?: string
@@ -6398,7 +6398,7 @@ export type Database = {
           consequence?: string | null
           contingency?: string | null
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           critical_path?: string | null
           deleted_at?: string | null
           description?: string
@@ -6407,9 +6407,9 @@ export type Database = {
           mitigation?: string | null
           notify?: string | null
           occurrence?: string | null
-          owner_id?: string
-          program_id?: string
-          program_increment_id?: string
+          owner_id?: string | null
+          program_id?: string | null
+          program_increment_id?: string | null
           related_item_id?: string | null
           relationship?: string
           resolution_method?: string

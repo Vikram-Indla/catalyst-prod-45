@@ -137,11 +137,11 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
           ...data,
           risk_number: nextRiskNumber,
           business_request_id: requestId,
-          // Required fields with defaults for demand context
-          program_id: '00000000-0000-0000-0000-000000000000',
-          program_increment_id: '00000000-0000-0000-0000-000000000000',
-          owner_id: '00000000-0000-0000-0000-000000000000',
-          created_by: '00000000-0000-0000-0000-000000000000',
+          // Demand-scoped risks don't require program context
+          program_id: null,
+          program_increment_id: null,
+          owner_id: null,
+          created_by: null,
           relationship: 'Feature',
           notify: 'None',
           tags: '',
