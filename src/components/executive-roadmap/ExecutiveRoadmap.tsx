@@ -343,7 +343,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Header with Status Pills - fixed height 72px to align with sidebar */}
+      {/* Header with top controls - fixed height 72px to align with sidebar */}
       <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-[#E8E4DD] bg-white print:hidden shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-[#C69C6D] flex items-center justify-center text-white font-bold text-xs">
@@ -356,34 +356,26 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Status Pill Strip - pushed to right */}
-          <div className="hidden md:flex items-center gap-1.5">
-            <span className="text-[10px] font-medium text-[#5C5650] uppercase tracking-wide mr-1">
-              {isRTL ? 'الحالة:' : 'STATUS:'}
-            </span>
-            {kpiCards.map((kpi) => {
-              const isActive = activeKPI === kpi.status;
-              return (
-                <button
-                  key={kpi.status}
-                  onClick={() => setActiveKPI(isActive ? null : kpi.status)}
-                  className={cn(
-                    "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer border",
-                    isActive 
-                      ? "bg-[#F5EFE6] border-[#C69C6D] text-[#2C2825]" 
-                      : "bg-[#F5F2ED] border-transparent text-[#5C5650] hover:bg-[#E8E4DD]"
-                  )}
-                >
-                  <span 
-                    className="w-1.5 h-1.5 rounded-full" 
-                    style={{ backgroundColor: STATUS_COLORS[kpi.status] }}
-                  />
-                  <span>{kpi.status === 'NEW' ? (isRTL ? 'جديد' : 'New') : kpi.status === 'ANALYSE' ? (isRTL ? 'تحليل' : 'Analyse') : kpi.status === 'APPROVED' ? (isRTL ? 'موافق' : 'Approved') : kpi.status === 'IMPLEMENT' ? (isRTL ? 'تنفيذ' : 'Implement') : (isRTL ? 'مغلق' : 'Closed')}</span>
-                  <span className="font-bold">{statusCounts[kpi.status]}</span>
-                </button>
-              );
-            })}
+          {/* Milestones toggle */}
+          <div className="hidden sm:flex items-center gap-1.5 bg-[#F5F2ED] px-2.5 py-1.5 rounded-lg">
+            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.milestones}</span>
+            <Switch 
+              checked={showMilestones} 
+              onCheckedChange={setShowMilestones}
+              className="data-[state=checked]:bg-[#C69C6D] scale-75"
+            />
           </div>
+
+          {/* Filters button */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setFiltersDialogOpen(true)}
+            className="h-8 text-[11px] gap-1.5"
+          >
+            <Filter className="h-3.5 w-3.5" />
+            {isRTL ? 'تصفية' : 'Filters'}
+          </Button>
 
           {/* Language toggle */}
           <div className="flex items-center bg-[#F5F2ED] rounded-lg p-0.5">
@@ -419,7 +411,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Show/Hide Filters Toggle */}
+      {/* Show/Hide Details Toggle with Status Pills */}
       <div 
         className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white print:hidden"
       >
@@ -429,152 +421,41 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         >
           <ChevronRight className={cn("h-4 w-4 text-[#5C5650] transition-transform", showFilters && "rotate-90")} />
           <span className="text-[11px] font-medium text-[#5C5650]">
-            {showFilters ? 'Hide Details' : 'Show Details'}
+            {showFilters ? (isRTL ? 'إخفاء التفاصيل' : 'Hide Details') : (isRTL ? 'إظهار التفاصيل' : 'Show Details')}
           </span>
         </div>
-        
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => setFiltersDialogOpen(true)}
-          className="h-7 text-[11px] gap-1.5"
-        >
-          <Filter className="h-3.5 w-3.5" />
-          Filters
-        </Button>
       </div>
 
-      {/* Controls Bar - Inline filters (collapsible) */}
+      {/* Status Pills - shown when Details expanded */}
       {showFilters && (
-        <div className="flex items-center gap-3 px-4 sm:px-6 py-1 border-b border-[#E8E4DD] bg-white print:hidden">
-          {/* Mobile menu */}
-          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="sm" className="sm:hidden h-7">
-                <Menu className="h-4 w-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side={isRTL ? "right" : "left"} className="w-[280px]">
-              <div className="space-y-4 py-4">
-                <div>
-                  <label className="text-xs font-medium text-[#5C5650] mb-2 block">{t.platform}</label>
-                  <Select value={platform} onValueChange={setPlatform}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="all">{t.allPlatforms}</SelectItem>
-                      {Object.keys(PLATFORM_INFO).map(p => (
-                        <SelectItem key={p} value={p}>{isRTL ? PLATFORM_INFO[p].nameAr : p}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-[#5C5650] mb-2 block">{t.status}</label>
-                  <Select value={status} onValueChange={setStatus}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="all">{t.allStatuses}</SelectItem>
-                      {Object.entries(isRTL ? STAGE_NAMES_AR : STAGE_NAMES).map(([s, name]) => (
-                        <SelectItem key={s} value={s}>{name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <label className="text-xs font-medium text-[#5C5650] mb-2 block">{t.owner}</label>
-                  <Select value={owner} onValueChange={setOwner}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent className="bg-white">
-                      <SelectItem value="all">{t.allOwners}</SelectItem>
-                      {uniqueOwners.map(o => {
-                        const item = items.find(i => i.ownerEn === o);
-                        return <SelectItem key={o} value={o}>{isRTL ? item?.ownerAr : o}</SelectItem>;
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          {/* Desktop filters - inline */}
-          <div className="hidden sm:flex items-center gap-1">
-            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.platform}</span>
-            <Select value={platform} onValueChange={setPlatform}>
-              <SelectTrigger className="w-[120px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-              <SelectContent className="bg-white z-50">
-                <SelectItem value="all">{t.allPlatforms}</SelectItem>
-                {Object.keys(PLATFORM_INFO).map(p => (
-                  <SelectItem key={p} value={p}>{isRTL ? PLATFORM_INFO[p].nameAr : p}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-1">
-            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.status}</span>
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="w-[100px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-              <SelectContent className="bg-white z-50">
-                <SelectItem value="all">{t.allStatuses}</SelectItem>
-                {Object.entries(isRTL ? STAGE_NAMES_AR : STAGE_NAMES).map(([s, name]) => (
-                  <SelectItem key={s} value={s}>{name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-1">
-            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.owner}</span>
-            <Select value={owner} onValueChange={setOwner}>
-              <SelectTrigger className="w-[110px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-              <SelectContent className="bg-white z-50">
-                <SelectItem value="all">{t.allOwners}</SelectItem>
-                {uniqueOwners.map(o => {
-                  const item = items.find(i => i.ownerEn === o);
-                  return <SelectItem key={o} value={o}>{isRTL ? item?.ownerAr : o}</SelectItem>;
-                })}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Sort By dropdown */}
-          <div className="hidden sm:flex items-center gap-1">
-            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.sortBy}</span>
-            <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
-              <SelectTrigger className="w-[80px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-              <SelectContent className="bg-white z-50">
-                <SelectItem value="rank">{t.rank}</SelectItem>
-                <SelectItem value="platform">{t.platform}</SelectItem>
-                <SelectItem value="owner">{t.owner}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Period dropdown */}
-          <div className="hidden sm:flex items-center gap-1">
-            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{isRTL ? 'الفترة' : 'PERIOD'}</span>
-            <Select value={timeScale} onValueChange={(v) => setTimeScale(v as TimeScale)}>
-              <SelectTrigger className="w-[80px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-              <SelectContent className="bg-white z-50">
-                <SelectItem value="weekly">{t.weekly}</SelectItem>
-                <SelectItem value="monthly">{t.monthly}</SelectItem>
-                <SelectItem value="quarterly">{t.quarterly}</SelectItem>
-                <SelectItem value="yearly">{t.yearly}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex-1" />
-
-          {/* Milestones toggle */}
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] text-[#5C5650] font-medium uppercase hidden sm:inline">{t.milestones}</span>
-            <Switch 
-              checked={showMilestones} 
-              onCheckedChange={setShowMilestones}
-              className="data-[state=checked]:bg-[#C69C6D] scale-75"
-            />
+        <div className="flex items-center gap-3 px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white print:hidden">
+          {/* Status Pill Strip */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] font-medium text-[#5C5650] uppercase tracking-wide mr-1">
+              {isRTL ? 'الحالة:' : 'STATUS:'}
+            </span>
+            {kpiCards.map((kpi) => {
+              const isActive = activeKPI === kpi.status;
+              return (
+                <button
+                  key={kpi.status}
+                  onClick={() => setActiveKPI(isActive ? null : kpi.status)}
+                  className={cn(
+                    "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer border",
+                    isActive 
+                      ? "bg-[#F5EFE6] border-[#C69C6D] text-[#2C2825]" 
+                      : "bg-[#F5F2ED] border-transparent text-[#5C5650] hover:bg-[#E8E4DD]"
+                  )}
+                >
+                  <span 
+                    className="w-1.5 h-1.5 rounded-full" 
+                    style={{ backgroundColor: STATUS_COLORS[kpi.status] }}
+                  />
+                  <span>{kpi.status === 'NEW' ? (isRTL ? 'جديد' : 'New') : kpi.status === 'ANALYSE' ? (isRTL ? 'تحليل' : 'Analyse') : kpi.status === 'APPROVED' ? (isRTL ? 'موافق' : 'Approved') : kpi.status === 'IMPLEMENT' ? (isRTL ? 'تنفيذ' : 'Implement') : (isRTL ? 'مغلق' : 'Closed')}</span>
+                  <span className="font-bold">{statusCounts[kpi.status]}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
