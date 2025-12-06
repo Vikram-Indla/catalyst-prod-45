@@ -5,7 +5,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
 import { ChevronUp, X, CalendarIcon } from 'lucide-react';
 import { format, subDays, addQuarters } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -52,15 +52,8 @@ const AGEING_OPTIONS = [
   { value: '60+', label: '60+ days (Stale)' },
 ];
 
-const DEPARTMENT_OPTIONS = [
-  { value: 'it', label: 'Information Technology' },
-  { value: 'operations', label: 'Operations' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'hr', label: 'Human Resources' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'sales', label: 'Sales' },
-  { value: 'legal', label: 'Legal' },
-];
+// DEPARTMENT_OPTIONS imported from business-request.ts (single source of truth)
+const getDepartmentOptions = () => DEPARTMENT_OPTIONS.map(d => ({ value: d.value, label: d.label.en }));
 
 const generateQuarters = (): { value: string; label: string }[] => {
   const quarters = [];
@@ -474,7 +467,7 @@ export function FilterDemandsDialog({
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Department</label>
                 <MultiSelectDropdown
-                  options={DEPARTMENT_OPTIONS}
+                  options={getDepartmentOptions()}
                   selected={localFilters.department || []}
                   onChange={(values) => updateFilter('department', values.length > 0 ? values : undefined)}
                   placeholder="Select..."
@@ -599,7 +592,7 @@ export function FilterDemandsDialog({
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-muted-foreground">Department</label>
                 <MultiSelectDropdown
-                  options={DEPARTMENT_OPTIONS}
+                  options={getDepartmentOptions()}
                   selected={localFilters.department || []}
                   onChange={(values) => updateFilter('department', values.length > 0 ? values : undefined)}
                   placeholder="Select..."

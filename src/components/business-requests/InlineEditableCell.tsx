@@ -6,7 +6,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { CalendarIcon, Check, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
 
 interface InlineEditableCellProps {
   value: string | null | undefined;
@@ -30,14 +30,7 @@ const USER_OPTIONS = [
   { value: 'Rania B', label: 'Rania B' },
 ];
 
-const DEPARTMENT_OPTIONS = [
-  { value: 'IT', label: 'IT' },
-  { value: 'Finance', label: 'Finance' },
-  { value: 'Operations', label: 'Operations' },
-  { value: 'HR', label: 'HR' },
-  { value: 'Marketing', label: 'Marketing' },
-  { value: 'Sales', label: 'Sales' },
-];
+// DEPARTMENT_OPTIONS imported from business-request.ts (single source of truth)
 
 const QUARTER_OPTIONS = [
   { value: 'Q1 2024', label: 'Q1 2024' },
@@ -102,11 +95,11 @@ export function InlineEditableCell({
     if (options) return options;
     switch (field) {
       case 'process_step':
-        return PROCESS_STEPS.map(s => ({ value: s, label: s }));
+        return PROCESS_STEPS.map(s => ({ value: s.value, label: s.label }));
       case 'delivery_platform':
-        return DELIVERY_PLATFORM_OPTIONS.map(p => ({ value: p.value, label: p.label }));
+        return DELIVERY_PLATFORM_OPTIONS.map(p => ({ value: p.value, label: p.label.en }));
       case 'department':
-        return DEPARTMENT_OPTIONS;
+        return DEPARTMENT_OPTIONS.map(d => ({ value: d.value, label: d.label.en }));
       case 'requestor':
       case 'business_owner':
       case 'created_by':
