@@ -188,9 +188,9 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[900px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
-        <div className="executive-drawer-header flex-shrink-0">
-          <div className="flex items-start justify-between gap-[var(--s2)] sm:gap-[var(--s4)]">
+      <SheetContent className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[900px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden bg-white">
+        <div className="executive-drawer-header flex-shrink-0 bg-white px-3 md:px-4 py-2 border-b border-neutral-200">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex-1 min-w-0">
               <h2 className="executive-drawer-title truncate">
                 {feature ? `Feature: ${formData.name || feature.name}` : 'New Feature'}

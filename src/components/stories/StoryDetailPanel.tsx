@@ -104,11 +104,11 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
 
   return (
     <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-      <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden">
-        <SheetHeader className="executive-drawer-header flex-row items-start justify-between space-y-0 shrink-0">
-          <div className="flex-1 pr-2 sm:pr-4 min-w-0">
-            <SheetTitle className="executive-drawer-title truncate">{story.name}</SheetTitle>
-            <div className="flex items-center gap-[var(--s2)] mt-1">
+      <SheetContent side="right" className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[800px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden bg-white">
+        <SheetHeader className="executive-drawer-header flex-row items-center justify-between space-y-0 shrink-0 bg-white px-3 md:px-4 h-10 border-b border-neutral-200">
+          <div className="flex-1 pr-2 min-w-0 flex items-center gap-2">
+            <SheetTitle className="executive-drawer-title truncate text-base font-semibold">{story.name}</SheetTitle>
+            <div className="flex items-center gap-2">
               <Badge variant="outline" className="capitalize text-xs">
                 {story.status ? STORY_STATUS_LABELS[story.status] : 'To Do'}
               </Badge>

@@ -342,10 +342,10 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
   return (
     <>
       <Sheet open={open} onOpenChange={(open) => !open && onClose()}>
-        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden`}>
-          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0">
-            {/* Top row: Epic ID with copy link, action buttons */}
-            <div className="flex items-center justify-between px-5 py-3 border-b border-border/40">
+        <SheetContent side="right" hideClose className={`executive-drawer ${drawerWidthClass} p-0 flex flex-col overflow-hidden bg-white`}>
+          <SheetHeader className="executive-drawer-header flex-col space-y-0 shrink-0 p-0 bg-white">
+            {/* Compact header row */}
+            <div className="flex items-center justify-between px-3 md:px-4 h-10 border-b border-neutral-200 bg-white">
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1.5 px-2 py-1 bg-primary/10 rounded text-sm">
                   <span className="text-primary font-medium">Epic {epic.epic_key || epic.id?.slice(0, 8)}</span>
