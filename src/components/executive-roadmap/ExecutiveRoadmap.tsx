@@ -397,38 +397,38 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     <div 
       ref={containerRef}
       className={cn(
-        "h-full flex flex-col bg-[#FAF8F5] overflow-hidden print:bg-white",
+        "h-full flex flex-col bg-secondary overflow-hidden print:bg-white font-sans",
         isRTL && "direction-rtl",
         className
       )}
       style={{ direction: isRTL ? 'rtl' : 'ltr' }}
     >
       {/* Print-only Header */}
-      <div className="hidden print:flex items-center justify-between px-6 py-4 border-b border-[#E8E4DD] bg-white">
+      <div className="hidden print:flex items-center justify-between px-6 py-4 border-b border-border bg-card">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#C69C6D] flex items-center justify-center text-white font-bold text-xs">
+          <div className="w-9 h-9 rounded-lg bg-brand-gold flex items-center justify-center text-primary-foreground font-bold text-xs">
             MIM
           </div>
           <div>
-            <div className="text-[10px] text-[#C69C6D] font-medium tracking-wider">EXECUTIVE ROADMAP</div>
-            <div className="text-sm font-semibold text-[#2C2825]">Industry Requests Portfolio</div>
+            <div className="text-xs text-brand-gold font-medium tracking-wider">EXECUTIVE ROADMAP</div>
+            <div className="text-sm font-semibold text-foreground">Industry Requests Portfolio</div>
           </div>
         </div>
         <div className="text-xl font-semibold">
-          <span className="text-[#1a1a1a]">Cata</span>
-          <span className="text-[#C69C6D]">lyst</span>
+          <span className="text-foreground">Cata</span>
+          <span className="text-brand-gold">lyst</span>
         </div>
       </div>
 
       {/* Header with top controls - fixed height 72px to align with sidebar */}
-      <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-[#E8E4DD] bg-white print:hidden shrink-0">
+      <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-border bg-card print:hidden shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-[#C69C6D] flex items-center justify-center text-white font-bold text-xs">
+          <div className="w-9 h-9 rounded-lg bg-brand-gold flex items-center justify-center text-primary-foreground font-bold text-xs">
             MIM
           </div>
           <div>
-            <div className="text-[10px] text-[#C69C6D] font-medium tracking-wider">{t.executiveRoadmap}</div>
-            <div className="text-sm font-semibold text-[#2C2825]">{t.industryRequests}</div>
+            <div className="text-xs text-brand-gold font-medium tracking-wider">{t.executiveRoadmap}</div>
+            <div className="text-sm font-semibold text-foreground">{t.industryRequests}</div>
           </div>
         </div>
 
@@ -439,8 +439,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             onClick={() => setShowMilestones(!showMilestones)}
             className={cn(
               "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-              "shadow-[0_2px_8px_rgba(44,40,37,0.08)] hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5",
-              showMilestones ? "bg-[#C69C6D] text-white" : "bg-[#FAF8F5] text-[#5C5650]"
+              "shadow-sm hover:shadow-md hover:-translate-y-0.5",
+              showMilestones ? "bg-brand-gold text-primary-foreground" : "bg-secondary text-muted-foreground"
             )}
           >
             <Clock className="w-[18px] h-[18px]" />
@@ -451,8 +451,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             onClick={() => setFiltersDialogOpen(true)}
             className={cn(
               "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-              "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
-              "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+              "bg-secondary text-muted-foreground shadow-sm",
+              "hover:shadow-md hover:-translate-y-0.5"
             )}
           >
             <Filter className="w-[18px] h-[18px]" />
@@ -464,24 +464,24 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               <button
                 className={cn(
                   "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-                  "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
-                  "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+                  "bg-secondary text-muted-foreground shadow-sm",
+                  "hover:shadow-md hover:-translate-y-0.5"
                 )}
               >
                 <Calendar className="w-[18px] h-[18px]" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-36 bg-white z-50 shadow-lg rounded-lg border border-[#E8E4DD]">
+            <DropdownMenuContent align="end" className="w-36 bg-card z-50 shadow-lg rounded-lg border border-border">
               {(['weekly', 'monthly', 'quarterly', 'yearly'] as TimeScale[]).map((scale) => (
                 <DropdownMenuItem
                   key={scale}
                   onClick={() => setTimeScale(scale)}
-                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[#FAF8F5]"
+                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-secondary"
                 >
                   <span className="w-4">
-                    {timeScale === scale && <Check className="w-4 h-4 text-[#C69C6D]" />}
+                    {timeScale === scale && <Check className="w-4 h-4 text-brand-gold" />}
                   </span>
-                  <span className={cn("text-sm", timeScale === scale && "font-medium text-[#2C2825]")}>
+                  <span className={cn("text-sm", timeScale === scale && "font-medium text-foreground")}>
                     {t[scale]}
                   </span>
                 </DropdownMenuItem>
@@ -490,12 +490,12 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </DropdownMenu>
 
           {/* Language Toggle */}
-          <div className="flex bg-[#FAF8F5] rounded-xl p-1 gap-0.5 shadow-[0_2px_8px_rgba(44,40,37,0.08)]">
+          <div className="flex bg-secondary rounded-xl p-1 gap-0.5 shadow-sm">
             <button
               onClick={() => setLanguage('en')}
               className={cn(
-                "w-[30px] h-[30px] flex items-center justify-center rounded-lg text-[10px] font-bold cursor-pointer transition-all duration-150",
-                language === 'en' ? "bg-[#C69C6D] text-white" : "bg-transparent text-[#9A9389] hover:text-[#2C2825]"
+                "w-[30px] h-[30px] flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all duration-150",
+                language === 'en' ? "bg-brand-gold text-primary-foreground" : "bg-transparent text-muted-foreground hover:text-foreground"
               )}
             >
               EN
@@ -503,8 +503,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             <button
               onClick={() => setLanguage('ar')}
               className={cn(
-                "w-[30px] h-[30px] flex items-center justify-center rounded-lg text-[10px] font-bold cursor-pointer transition-all duration-150",
-                language === 'ar' ? "bg-[#C69C6D] text-white" : "bg-transparent text-[#9A9389] hover:text-[#2C2825]"
+                "w-[30px] h-[30px] flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all duration-150",
+                language === 'ar' ? "bg-brand-gold text-primary-foreground" : "bg-transparent text-muted-foreground hover:text-foreground"
               )}
             >
               ع
@@ -516,8 +516,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             onClick={handleExport}
             className={cn(
               "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-              "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
-              "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+              "bg-secondary text-muted-foreground shadow-sm",
+              "hover:shadow-md hover:-translate-y-0.5"
             )}
           >
             <Download className="w-[18px] h-[18px]" />
@@ -528,8 +528,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             onClick={toggleFullscreen}
             className={cn(
               "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-              "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
-              "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+              "bg-secondary text-muted-foreground shadow-sm",
+              "hover:shadow-md hover:-translate-y-0.5"
             )}
           >
             {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
@@ -539,14 +539,14 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
       {/* Show/Hide Details Toggle with Status Pills */}
       <div 
-        className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white print:hidden"
+        className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-border bg-card print:hidden"
       >
         <div 
-          className="flex items-center gap-2 cursor-pointer hover:bg-[#F5F2ED] px-2 py-1 rounded transition-colors"
+          className="flex items-center gap-2 cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors"
           onClick={() => setShowFilters(!showFilters)}
         >
-          <ChevronRight className={cn("h-4 w-4 text-[#5C5650] transition-transform", showFilters && "rotate-90")} />
-          <span className="text-[11px] font-medium text-[#5C5650]">
+          <ChevronRight className={cn("h-4 w-4 text-muted-foreground transition-transform", showFilters && "rotate-90")} />
+          <span className="text-xs font-medium text-muted-foreground">
             {showFilters ? (isRTL ? 'إخفاء التفاصيل' : 'Hide Details') : (isRTL ? 'إظهار التفاصيل' : 'Show Details')}
           </span>
         </div>
@@ -554,10 +554,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
       {/* Status Pills - shown when Details expanded */}
       {showFilters && (
-        <div className="flex items-center gap-3 px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white print:hidden">
+        <div className="flex items-center gap-3 px-4 sm:px-6 py-2 border-b border-border bg-card print:hidden">
           {/* Status Pill Strip */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-medium text-[#5C5650] uppercase tracking-wide mr-1">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide mr-1">
               {isRTL ? 'الحالة:' : 'STATUS:'}
             </span>
             {kpiCards.map((kpi) => {
@@ -567,10 +567,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   key={kpi.status}
                   onClick={() => setActiveKPI(isActive ? null : kpi.status)}
                   className={cn(
-                    "inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium transition-all cursor-pointer border",
+                    "inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all cursor-pointer border",
                     isActive 
-                      ? "bg-[#F5EFE6] border-[#C69C6D] text-[#2C2825]" 
-                      : "bg-[#F5F2ED] border-transparent text-[#5C5650] hover:bg-[#E8E4DD]"
+                      ? "bg-brand-gold/10 border-brand-gold text-foreground" 
+                      : "bg-muted border-transparent text-muted-foreground hover:bg-accent"
                   )}
                 >
                   <span 
@@ -590,16 +590,16 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       <div className="flex-1 overflow-auto scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
         <div className="min-w-[1200px]">
           {/* Timeline Header */}
-          <div className="flex border-b border-[#E8E4DD] bg-white sticky top-0 z-10">
+          <div className="flex border-b border-border bg-card sticky top-0 z-10">
             <div 
-              className="shrink-0 px-3 py-2 border-r border-[#E8E4DD] bg-[#F5F2ED] relative group"
+              className="shrink-0 px-3 py-2 border-r border-border bg-muted relative group"
               style={{ width: `${firstColumnWidth}px` }}
             >
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-medium text-[#5C5650]">{t.businessRequest}</span>
+                <span className="text-xs font-medium text-muted-foreground">{t.businessRequest}</span>
                 <button 
                   onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                  className="text-[11px] font-medium text-[#C69C6D] flex items-center gap-0.5 hover:opacity-80"
+                  className="text-xs font-medium text-brand-gold flex items-center gap-0.5 hover:opacity-80"
                 >
                   {sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                   {sortField === 'rank' ? t.rank : sortField === 'platform' ? t.platform : t.owner}
@@ -609,8 +609,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               <div
                 className={cn(
                   "absolute right-0 top-0 h-full w-1 cursor-col-resize z-20 transition-colors",
-                  "hover:bg-[#C69C6D]/60 active:bg-[#C69C6D]",
-                  isResizing && "bg-[#C69C6D]"
+                  "hover:bg-brand-gold/60 active:bg-brand-gold",
+                  isResizing && "bg-brand-gold"
                 )}
                 onMouseDown={handleResizeMouseDown}
                 onClick={(e) => e.stopPropagation()}
@@ -623,10 +623,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               {timelineColumns.map((col, i) => (
                 <div 
                   key={i} 
-                  className="flex-1 px-1 py-2 text-center border-r border-[#E8E4DD] last:border-r-0"
+                  className="flex-1 px-1 py-2 text-center border-r border-border last:border-r-0"
                 >
-                  <div className="text-[11px] font-medium text-[#2C2825]">{col.label}</div>
-                  {col.subLabel && <div className="text-[9px] text-[#9A9389]">{col.subLabel}</div>}
+                  <div className="text-xs font-medium text-foreground">{col.label}</div>
+                  {col.subLabel && <div className="text-xs text-muted-foreground">{col.subLabel}</div>}
                 </div>
               ))}
             </div>
@@ -641,22 +641,22 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               <div 
                 key={item.id}
                 className={cn(
-                  "flex border-b border-[#E8E4DD] hover:bg-[#FAF8F5] transition-colors",
-                  hoveredItem === item.id && "bg-[#F7F1E8]"
+                  "flex border-b border-border hover:bg-secondary transition-colors",
+                  hoveredItem === item.id && "bg-brand-gold/5"
                 )}
                 onMouseEnter={() => setHoveredItem(item.id)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 {/* Request Info - No tooltip here */}
                 <div 
-                  className="shrink-0 px-3 py-3 border-r border-[#E8E4DD]"
+                  className="shrink-0 px-3 py-3 border-r border-border"
                   style={{ width: `${firstColumnWidth}px` }}
                 >
                   <div className="flex items-start gap-2">
                     <div className="flex items-center gap-0.5">
-                      <span className="text-sm font-medium text-[#2C2825]">{item.rank}</span>
+                      <span className="text-sm font-medium text-foreground">{item.rank}</span>
                       {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
-                        <Lock className="h-3 w-3 text-[#C69C6D]" />
+                        <Lock className="h-3 w-3 text-brand-gold" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -665,19 +665,19 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           e.stopPropagation();
                           setSelectedRequestId(item.id);
                         }}
-                        className="text-[11px] text-[#C69C6D] font-medium hover:underline cursor-pointer bg-transparent border-none p-0"
+                        className="text-xs text-brand-gold font-medium hover:underline cursor-pointer bg-transparent border-none p-0"
                       >
                         {item.id}
                       </button>
-                      <div className="text-[13px] font-medium text-[#2C2825] truncate leading-tight">
+                      <div className="text-sm font-medium text-foreground truncate leading-tight">
                         {isRTL ? item.titleAr : item.titleEn}
                       </div>
-                      <div className="text-[10px] text-[#9A9389] mt-0.5">
+                      <div className="text-xs text-muted-foreground mt-0.5">
                         {isRTL ? item.ownerAr : item.ownerEn}
                         <span className="mx-1">·</span>
                         <span style={{ color: statusColor }}>{isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}</span>
                         <span className="mx-1">·</span>
-                        <span className="text-[#C69C6D]">{isRTL ? PLATFORM_INFO[item.platform]?.nameAr : item.platform}</span>
+                        <span className="text-brand-gold">{isRTL ? PLATFORM_INFO[item.platform]?.nameAr : item.platform}</span>
                       </div>
                     </div>
                   </div>
@@ -689,11 +689,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     <TooltipTrigger asChild>
                       <div className="flex-1 relative py-3 px-2 cursor-pointer">
                         {/* Date labels */}
-                        <div className="absolute text-[9px] text-[#9A9389]" style={{ left: barPos.left, top: '2px' }}>
+                        <div className="absolute text-xs text-muted-foreground" style={{ left: barPos.left, top: '2px' }}>
                           {formatDateLabel(item.startDate)}
                         </div>
                         <div 
-                          className="absolute text-[9px] text-[#9A9389]" 
+                          className="absolute text-xs text-muted-foreground" 
                           style={{ left: `calc(${barPos.left} + ${barPos.width})`, top: '2px', transform: 'translateX(-100%)' }}
                         >
                           {formatDateLabel(item.endDate)}
@@ -720,17 +720,17 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                               <div
                                 key={ms.step}
                                 className={cn(
-                                  "absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[9px] font-medium group cursor-pointer",
-                                  ms.state === 'complete' && "bg-[#C69C6D] border-[#C69C6D] text-white",
-                                  ms.state === 'current' && "bg-white border-[#C69C6D] text-[#C69C6D]",
-                                  ms.state === 'pending' && "bg-white border-[#C4BEB4] text-[#9A9389]"
+                                  "absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-xs font-medium group cursor-pointer",
+                                  ms.state === 'complete' && "bg-brand-gold border-brand-gold text-primary-foreground",
+                                  ms.state === 'current' && "bg-card border-brand-gold text-brand-gold",
+                                  ms.state === 'pending' && "bg-card border-muted-foreground/30 text-muted-foreground"
                                 )}
                                 style={{ left: `${pos}%`, top: '50%', transform: 'translate(-50%, -50%)' }}
                                 title={dateLabel}
                               >
                                 {ms.state === 'complete' ? '✓' : ms.step}
                                 {/* Date tooltip on hover */}
-                                <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#2C2825] text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-foreground text-primary-foreground text-xs px-1.5 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                                   {dateLabel}
                                 </span>
                               </div>
@@ -741,31 +741,31 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     </TooltipTrigger>
 
                     {/* Tooltip content - shows on hover over timeline only */}
-                    <TooltipContent side="bottom" align="start" className="w-80 p-0 bg-white shadow-lg border border-[#E8E4DD]">
-                      <div className="p-3 border-b border-[#E8E4DD]">
-                        <div className="text-[11px] text-[#C69C6D] font-medium">{item.id}</div>
-                        <div className="text-sm font-semibold text-[#2C2825]">{isRTL ? item.titleAr : item.titleEn}</div>
+                    <TooltipContent side="bottom" align="start" className="w-80 p-0 bg-card shadow-lg border border-border">
+                      <div className="p-3 border-b border-border">
+                        <div className="text-xs text-brand-gold font-medium">{item.id}</div>
+                        <div className="text-sm font-semibold text-foreground">{isRTL ? item.titleAr : item.titleEn}</div>
                         <span 
-                          className="inline-block mt-1.5 px-2 py-0.5 text-[10px] rounded-full"
+                          className="inline-block mt-1.5 px-2 py-0.5 text-xs rounded-full"
                           style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
                         >
                           {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
                         </span>
                       </div>
                       {item.risks.length > 0 && (
-                        <div className="p-3 border-b border-[#E8E4DD]">
-                          <div className="text-[11px] font-medium text-[#5C5650] mb-1.5 flex items-center gap-2">
+                        <div className="p-3 border-b border-border">
+                          <div className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
                             {t.risks}
-                            <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.risks.length}</span>
+                            <span className="bg-muted px-1.5 py-0.5 rounded text-xs">{item.risks.length}</span>
                           </div>
                           {item.risks.map(risk => (
-                            <div key={risk.sno} className="flex items-center justify-between text-[11px] py-0.5">
-                              <span className="text-[#5C5650]">{risk.sno}. {risk.title}</span>
+                            <div key={risk.sno} className="flex items-center justify-between text-xs py-0.5">
+                              <span className="text-muted-foreground">{risk.sno}. {risk.title}</span>
                               <span className={cn(
-                                "text-[10px] px-1.5 py-0.5 rounded",
-                                risk.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
-                                risk.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
-                                risk.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
+                                "text-xs px-1.5 py-0.5 rounded",
+                                risk.status === 'resolved' && "bg-success/10 text-success",
+                                risk.status === 'pending' && "bg-brand-gold/10 text-brand-gold",
+                                risk.status === 'blocked' && "bg-destructive/10 text-destructive"
                               )}>
                                 {risk.status}
                               </span>
@@ -775,18 +775,18 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       )}
                       {item.dependencies.length > 0 && (
                         <div className="p-3">
-                          <div className="text-[11px] font-medium text-[#5C5650] mb-1.5 flex items-center gap-2">
+                          <div className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
                             {t.dependencies}
-                            <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.dependencies.length}</span>
+                            <span className="bg-muted px-1.5 py-0.5 rounded text-xs">{item.dependencies.length}</span>
                           </div>
                           {item.dependencies.map(dep => (
-                            <div key={dep.sno} className="flex items-center justify-between text-[11px] py-0.5">
-                              <span className="text-[#5C5650]">{dep.sno}. {dep.title}</span>
+                            <div key={dep.sno} className="flex items-center justify-between text-xs py-0.5">
+                              <span className="text-muted-foreground">{dep.sno}. {dep.title}</span>
                               <span className={cn(
-                                "text-[10px] px-1.5 py-0.5 rounded",
-                                dep.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
-                                dep.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
-                                dep.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
+                                "text-xs px-1.5 py-0.5 rounded",
+                                dep.status === 'resolved' && "bg-success/10 text-success",
+                                dep.status === 'pending' && "bg-brand-gold/10 text-brand-gold",
+                                dep.status === 'blocked' && "bg-destructive/10 text-destructive"
                               )}>
                                 {dep.status}
                               </span>
@@ -795,7 +795,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         </div>
                       )}
                       {item.risks.length === 0 && item.dependencies.length === 0 && (
-                        <div className="p-3 text-[11px] text-[#9A9389] text-center">
+                        <div className="p-3 text-xs text-muted-foreground text-center">
                           {isRTL ? 'لا توجد مخاطر أو اعتماديات' : 'No risks or dependencies'}
                         </div>
                       )}
