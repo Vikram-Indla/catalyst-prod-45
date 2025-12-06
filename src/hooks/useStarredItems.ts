@@ -105,11 +105,12 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
 
       // Refresh list
       await fetchStarredItems();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error toggling star:", error);
+      console.error("Error details:", error?.message, error?.details, error?.hint, error?.code);
       toast({
         title: "Error",
-        description: "Failed to update starred items.",
+        description: error?.message || "Failed to update starred items.",
         variant: "destructive",
       });
     }
