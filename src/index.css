@@ -188,6 +188,30 @@
   --shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.12);
   --shadow-elegant: 0 10px 30px -10px rgba(198, 156, 109, 0.3);
   --shadow-glow: 0 0 40px rgba(198, 156, 109, 0.4);
+  
+  /* === EXECUTIVE ROADMAP DESIGN SYSTEM === */
+  --roadmap-ivory: 40 33% 97%;                /* #FAF8F5 - background */
+  --roadmap-charcoal: 20 6% 16%;              /* #2C2825 - dark text */
+  --roadmap-parchment: 36 18% 95%;            /* #F5F2ED - secondary bg */
+  --roadmap-sandstone: 36 12% 89%;            /* #E8E4DD - borders */
+  --roadmap-driftwood: 36 9% 76%;             /* #C4BEB4 - muted elements */
+  --roadmap-fossil: 25 3% 46%;                /* #7A7570 - muted text */
+  --roadmap-graphite: 24 5% 33%;              /* #5C5650 - secondary text */
+  
+  /* Executive Roadmap Status Colors */
+  --roadmap-status-new: 35 46% 60%;           /* #C69C6D - gold */
+  --roadmap-status-analyse: 210 26% 48%;      /* #5B7B9B - steel blue */
+  --roadmap-status-approved: 28 26% 44%;      /* #8B7355 - dark gold */
+  --roadmap-status-implement: 146 31% 42%;    /* #4A8C6A - green */
+  --roadmap-status-closed: 24 5% 33%;         /* #5C5650 - charcoal */
+  
+  /* Executive Roadmap Today Line */
+  --roadmap-today: 7 76% 60%;                 /* #E85D4C - coral red */
+  
+  /* Executive Roadmap Milestone Colors */
+  --roadmap-milestone-complete: 146 31% 42%;  /* #4A8C6A - green */
+  --roadmap-milestone-current: 35 46% 60%;    /* #C69C6D - gold */
+  --roadmap-milestone-pending: 36 9% 76%;     /* #C4BEB4 - driftwood */
 }
 
 .dark {
