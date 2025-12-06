@@ -1032,7 +1032,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
                   {/* Status label sitting ABOVE the bar */}
                   <div 
-                    className="absolute text-[9px] font-medium whitespace-nowrap pointer-events-none"
+                    className="absolute text-[10px] font-medium whitespace-nowrap pointer-events-none"
                     style={{ 
                       left: `calc(${barPos.left} + ${barPos.width} / 2)`, 
                       top: '50%', 
