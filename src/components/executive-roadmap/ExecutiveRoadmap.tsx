@@ -145,6 +145,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [showLegend, setShowLegend] = useState(false);
   const [isTimelineView, setIsTimelineView] = useState(true);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [firstColumnWidth, setFirstColumnWidth] = useState<number>(() => {
     try {
@@ -515,6 +517,66 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
         {/* Floating Pills Toolbar */}
         <div className="inline-flex items-center gap-1.5 relative z-30" style={{ direction: 'ltr' }}>
+          {/* Expandable Search */}
+          <div className="flex items-center">
+            {isSearchExpanded && (
+              <div 
+                className="overflow-hidden transition-all duration-300 ease-out mr-1.5"
+                style={{ width: isSearchExpanded ? '180px' : '0px' }}
+              >
+                <Input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder={isRTL ? 'بحث...' : 'Search ID or title...'}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-9 text-xs bg-white px-3"
+                  style={{ 
+                    border: '1px solid hsl(var(--roadmap-sandstone))',
+                    borderRadius: '10px',
+                    direction: isRTL ? 'rtl' : 'ltr'
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      setSearchQuery('');
+                      setIsSearchExpanded(false);
+                    }
+                  }}
+                />
+              </div>
+            )}
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => {
+                      if (isSearchExpanded && searchQuery) {
+                        setSearchQuery('');
+                      }
+                      setIsSearchExpanded(!isSearchExpanded);
+                      if (!isSearchExpanded) {
+                        setTimeout(() => searchInputRef.current?.focus(), 100);
+                      }
+                    }}
+                    className={cn(
+                      "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5",
+                      isSearchExpanded 
+                        ? "text-white" 
+                        : "bg-white text-[hsl(var(--roadmap-fossil))]"
+                    )}
+                    style={{ 
+                      backgroundColor: isSearchExpanded ? 'hsl(var(--roadmap-status-new))' : undefined,
+                      border: isSearchExpanded ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+                    }}
+                  >
+                    <Search className="w-[18px] h-[18px]" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">{isRTL ? 'بحث' : 'Search'}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+
           {/* Milestones Toggle */}
           <TooltipProvider delayDuration={200}>
             <Tooltip>
@@ -702,33 +764,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Compact Search Bar */}
-      <div 
-        className="flex items-center gap-2 px-4 sm:px-6 py-2 border-b print:hidden"
-        style={{ 
-          backgroundColor: 'hsl(var(--roadmap-parchment))',
-          borderColor: 'hsl(var(--roadmap-sandstone))'
-        }}
-      >
-        <div className="relative w-32">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: 'hsl(var(--roadmap-fossil))' }} />
-          <Input
-            type="text"
-            placeholder={isRTL ? 'MIM-XXX' : 'MIM-XXX'}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            maxLength={10}
-            className="pl-7 h-7 text-xs bg-white"
-            style={{ 
-              border: '1px solid hsl(var(--roadmap-sandstone))',
-              borderRadius: '6px'
-            }}
-          />
-        </div>
-        <div className="text-xs" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-          {filteredItems.length} {isRTL ? 'نتيجة' : 'items'}
-        </div>
-      </div>
 
       {/* Timeline Grid */}
       <div className="flex-1 overflow-auto scroll-smooth" style={{ scrollBehavior: 'smooth', direction: 'ltr' }}>
