@@ -792,7 +792,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           status,
           owner,
           sortField,
-          timeScale,
           showMilestones,
         }}
         onFiltersChange={(newFilters: RoadmapFilters) => {
@@ -800,7 +799,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           if (newFilters.status) setStatus(newFilters.status);
           if (newFilters.owner) setOwner(newFilters.owner);
           if (newFilters.sortField) setSortField(newFilters.sortField as SortField);
-          if (newFilters.timeScale) setTimeScale(newFilters.timeScale as TimeScale);
           if (newFilters.showMilestones !== undefined) setShowMilestones(newFilters.showMilestones);
         }}
         uniqueOwners={uniqueOwners}
