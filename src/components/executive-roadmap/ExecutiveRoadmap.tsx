@@ -322,7 +322,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       style={{ direction: isRTL ? 'rtl' : 'ltr' }}
     >
       {/* Header with Status Pills - hidden in print */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-[#E8E4DD] bg-white print:hidden">
+      <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white print:hidden">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-[#C69C6D] flex items-center justify-center text-white font-bold text-xs">
             MIM
@@ -398,7 +398,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       </div>
 
       {/* Controls Bar - Inline filters */}
-      <div className="flex items-center gap-3 px-4 sm:px-6 py-1.5 border-b border-[#E8E4DD] bg-white print:hidden">
+      <div className="flex items-center gap-3 px-4 sm:px-6 py-1 border-b border-[#E8E4DD] bg-white print:hidden">
         {/* Mobile menu */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild>
