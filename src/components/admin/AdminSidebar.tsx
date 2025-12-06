@@ -30,6 +30,7 @@ const adminSections = [
     title: 'Application Settings',
     items: [
       { label: 'Modules & Packages', path: '/admin/modules-packages', icon: Package },
+      { label: 'Product Settings', path: '/admin/product-settings', icon: Settings },
       { label: 'Work Codes', path: '/admin/work-codes', icon: Database },
       { label: 'Details Panels', path: '/admin/details-panels', icon: Settings },
       { label: 'Terminology', path: '/admin/terminology', icon: FileText },

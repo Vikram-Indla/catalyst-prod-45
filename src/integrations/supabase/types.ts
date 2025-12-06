@@ -263,6 +263,42 @@ export type Database = {
         }
         Relationships: []
       }
+      business_lines: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_default: boolean
+          key: string
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          key: string
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_default?: boolean
+          key?: string
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       business_request_audit_logs: {
         Row: {
           action: string
@@ -898,6 +934,156 @@ export type Database = {
             columns: ["custom_field_def_id"]
             isOneToOne: false
             referencedRelation: "custom_field_defs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demand_field_configs: {
+        Row: {
+          business_line_id: string | null
+          created_at: string
+          field_key: string
+          id: string
+          is_active: boolean
+          is_required: boolean
+          is_system: boolean
+          label: string
+          position: number
+          rules_json: Json | null
+          section_key: string
+          tab_key: string
+          updated_at: string
+        }
+        Insert: {
+          business_line_id?: string | null
+          created_at?: string
+          field_key: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          is_system?: boolean
+          label: string
+          position?: number
+          rules_json?: Json | null
+          section_key: string
+          tab_key: string
+          updated_at?: string
+        }
+        Update: {
+          business_line_id?: string | null
+          created_at?: string
+          field_key?: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          is_system?: boolean
+          label?: string
+          position?: number
+          rules_json?: Json | null
+          section_key?: string
+          tab_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demand_field_configs_business_line_id_fkey"
+            columns: ["business_line_id"]
+            isOneToOne: false
+            referencedRelation: "business_lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demand_section_configs: {
+        Row: {
+          business_line_id: string | null
+          collapsed_by_default: boolean
+          created_at: string
+          id: string
+          is_required: boolean
+          is_visible: boolean
+          name: string
+          position: number
+          section_key: string
+          tab_key: string
+          updated_at: string
+        }
+        Insert: {
+          business_line_id?: string | null
+          collapsed_by_default?: boolean
+          created_at?: string
+          id?: string
+          is_required?: boolean
+          is_visible?: boolean
+          name: string
+          position?: number
+          section_key: string
+          tab_key: string
+          updated_at?: string
+        }
+        Update: {
+          business_line_id?: string | null
+          collapsed_by_default?: boolean
+          created_at?: string
+          id?: string
+          is_required?: boolean
+          is_visible?: boolean
+          name?: string
+          position?: number
+          section_key?: string
+          tab_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demand_section_configs_business_line_id_fkey"
+            columns: ["business_line_id"]
+            isOneToOne: false
+            referencedRelation: "business_lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      demand_tab_configs: {
+        Row: {
+          business_line_id: string | null
+          created_at: string
+          display_name: string
+          id: string
+          is_active: boolean
+          is_required: boolean
+          position: number
+          tab_key: string
+          updated_at: string
+        }
+        Insert: {
+          business_line_id?: string | null
+          created_at?: string
+          display_name: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          position?: number
+          tab_key: string
+          updated_at?: string
+        }
+        Update: {
+          business_line_id?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          position?: number
+          tab_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "demand_tab_configs_business_line_id_fkey"
+            columns: ["business_line_id"]
+            isOneToOne: false
+            referencedRelation: "business_lines"
             referencedColumns: ["id"]
           },
         ]
@@ -6112,6 +6298,92 @@ export type Database = {
             columns: ["process_flow_id"]
             isOneToOne: false
             referencedRelation: "process_flows"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_status_configs: {
+        Row: {
+          category: string
+          color: string | null
+          created_at: string
+          id: string
+          is_default: boolean
+          name: string
+          position: number
+          status_key: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name: string
+          position?: number
+          status_key: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          color?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          name?: string
+          position?: number
+          status_key?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      product_view_configs: {
+        Row: {
+          business_line_id: string | null
+          column_key: string
+          created_at: string
+          display_name: string
+          id: string
+          is_default_sort: boolean
+          is_visible: boolean
+          position: number
+          sort_direction: string | null
+          updated_at: string
+          view_type: string
+        }
+        Insert: {
+          business_line_id?: string | null
+          column_key: string
+          created_at?: string
+          display_name: string
+          id?: string
+          is_default_sort?: boolean
+          is_visible?: boolean
+          position?: number
+          sort_direction?: string | null
+          updated_at?: string
+          view_type: string
+        }
+        Update: {
+          business_line_id?: string | null
+          column_key?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_default_sort?: boolean
+          is_visible?: boolean
+          position?: number
+          sort_direction?: string | null
+          updated_at?: string
+          view_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_view_configs_business_line_id_fkey"
+            columns: ["business_line_id"]
+            isOneToOne: false
+            referencedRelation: "business_lines"
             referencedColumns: ["id"]
           },
         ]
