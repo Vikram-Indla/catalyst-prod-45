@@ -702,7 +702,7 @@ export default function IndustryPage() {
     <TooltipProvider>
       <div className="h-full flex flex-col bg-background">
         {/* Header */}
-        <div className="border-b border-[#E4E6EB] bg-white px-4 sm:px-6 py-4">
+        <div className="border-b border-border bg-card px-4 sm:px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="min-w-0">
               <h1 className="text-xl sm:text-2xl font-semibold text-[#172B4D]">Demand Intake</h1>
@@ -712,7 +712,7 @@ export default function IndustryPage() {
         </div>
 
         {/* Search & Filters Bar */}
-        <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 border-b border-[#E4E6EB] bg-white">
+        <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 border-b border-border bg-card">
           {/* Row 1: Search + Actions */}
           <div className="flex items-center justify-between gap-4">
             <div className="relative flex-1 max-w-md">
