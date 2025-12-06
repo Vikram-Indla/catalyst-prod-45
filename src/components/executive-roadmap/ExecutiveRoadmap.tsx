@@ -333,6 +333,34 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     ];
   }, [timeScale]);
 
+  // Calculate today line position
+  const getTodayPosition = useCallback(() => {
+    const today = new Date();
+    let rangeStart: Date, rangeEnd: Date;
+    
+    if (timeScale === 'monthly') {
+      rangeStart = new Date('2024-10-01');
+      rangeEnd = new Date('2025-09-30');
+    } else if (timeScale === 'weekly') {
+      rangeStart = new Date('2024-11-01');
+      rangeEnd = new Date('2025-01-24');
+    } else if (timeScale === 'quarterly') {
+      rangeStart = new Date('2024-10-01');
+      rangeEnd = new Date('2025-09-30');
+    } else {
+      rangeStart = new Date('2024-01-01');
+      rangeEnd = new Date('2025-12-31');
+    }
+
+    if (today < rangeStart || today > rangeEnd) return null;
+    
+    const totalDays = (rangeEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
+    const daysSinceStart = (today.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
+    return (daysSinceStart / totalDays) * 100;
+  }, [timeScale]);
+
+  const todayPosition = getTodayPosition();
+
   // Calculate bar position
   const getBarPosition = useCallback((item: BusinessRequestRoadmapItem) => {
     const start = new Date(item.startDate);
@@ -734,6 +762,15 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="flex-1 relative py-3 px-2 cursor-pointer">
+                        {/* Today line */}
+                        {todayPosition !== null && (
+                          <div
+                            className="absolute top-0 bottom-0 w-0.5 bg-destructive z-20 pointer-events-none"
+                            style={{ left: `${todayPosition}%` }}
+                          >
+                            <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-2 h-2 bg-destructive rounded-full" />
+                          </div>
+                        )}
                         {/* Date labels */}
                         <div className="absolute text-xs text-muted-foreground" style={{ left: barPos.left, top: '2px' }}>
                           {formatDateLabel(item.startDate)}
