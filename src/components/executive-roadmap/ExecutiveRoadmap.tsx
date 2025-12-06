@@ -358,6 +358,19 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
         {/* Floating Pills Toolbar */}
         <div className="inline-flex items-center gap-2">
+          {/* Period Dropdown */}
+          <Select value={timeScale} onValueChange={(val) => setTimeScale(val as TimeScale)}>
+            <SelectTrigger className="h-[38px] min-w-[100px] bg-[#FAF8F5] border-none rounded-xl shadow-[0_2px_8px_rgba(44,40,37,0.08)] text-[#5C5650] text-xs font-medium hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] transition-all duration-200">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="weekly">{t.weekly}</SelectItem>
+              <SelectItem value="monthly">{t.monthly}</SelectItem>
+              <SelectItem value="quarterly">{t.quarterly}</SelectItem>
+              <SelectItem value="yearly">{t.yearly}</SelectItem>
+            </SelectContent>
+          </Select>
+
           {/* Milestones Toggle */}
           <TooltipProvider>
             <Tooltip>
