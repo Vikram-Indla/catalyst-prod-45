@@ -150,6 +150,32 @@ export interface BusinessRequest {
   // Planning
   planned_quarter: string | null;
   
+  // Budget - Funding & Budget
+  funding_status: string | null;
+  budget_year: string | null;
+  budget_type: string[] | null;
+  approved_budget_sar: number | null;
+  current_year_budget_sar: number | null;
+  budget_owner_name: string | null;
+  project_manager_user_id: string | null;
+  planned_external_spend_sar: number | null;
+  internal_effort_cost_sar: number | null;
+  
+  // Budget - Contract & Commercials
+  contract_type: string | null;
+  primary_vendor_name: string | null;
+  po_numbers: string[] | null;
+  contract_start_date: string | null;
+  contract_end_date: string | null;
+  delivery_model: string | null;
+  
+  // Budget - Funding & Capacity Notes
+  capacity_status: string | null;
+  internal_effort_pct: number | null;
+  vendor_effort_pct: number | null;
+  funding_assumptions: string | null;
+  capacity_risks: string | null;
+  
   // Metadata
   created_at: string;
   updated_at: string;
