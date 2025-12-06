@@ -123,7 +123,7 @@ interface ExecutiveRoadmapProps {
 
 export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps) {
   const [language, setLanguage] = useState<Language>('en');
-  const [timeScale, setTimeScale] = useState<TimeScale>('monthly');
+  const [timeScale, setTimeScale] = useState<TimeScale>('quarterly');
   const [platform, setPlatform] = useState<string>('all');
   const [status, setStatus] = useState<string>('all');
   const [owner, setOwner] = useState<string>('all');
