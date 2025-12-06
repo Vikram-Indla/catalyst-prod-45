@@ -369,12 +369,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           {/* Filters button */}
           <Button 
             variant="outline" 
-            size="sm" 
+            size="icon"
             onClick={() => setFiltersDialogOpen(true)}
-            className="h-8 text-[11px] gap-1.5"
+            className="h-8 w-8"
           >
-            <Filter className="h-3.5 w-3.5" />
-            {isRTL ? 'تصفية' : 'Filters'}
+            <Filter className="h-4 w-4" />
           </Button>
 
           {/* Language toggle */}
