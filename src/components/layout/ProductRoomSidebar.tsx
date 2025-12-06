@@ -1,8 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight, Box, ListTree, Map, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Box, ListTree, Map, BookOpen, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useUserRole } from '@/hooks/useUserRole';
+import { Separator } from '@/components/ui/separator';
 
 interface ProductRoomSidebarProps {
   expanded: boolean;
@@ -20,6 +22,7 @@ const menuItems = [
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAdmin } = useUserRole();
 
   const isActive = (path: string, exact: boolean = false) => {
     if (exact) return location.pathname === path;
@@ -108,6 +111,47 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
             );
           })}
         </nav>
+
+        {/* Settings Entry Point - Admin Only */}
+        {isAdmin && (
+          <>
+            <div className="flex-1" />
+            <div className="p-2 border-t">
+              {!expanded ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => navigate('/admin/product-settings')}
+                      className={cn(
+                        'w-full h-10 flex items-center justify-center',
+                        location.pathname === '/admin/product-settings' && 'bg-brand-gold-pale text-brand-gold'
+                      )}
+                    >
+                      <Settings className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="bg-popover border">
+                    Product Settings
+                  </TooltipContent>
+                </Tooltip>
+              ) : (
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/admin/product-settings')}
+                  className={cn(
+                    'w-full justify-start gap-3 h-10',
+                    location.pathname === '/admin/product-settings' && 'bg-brand-gold-pale text-brand-gold'
+                  )}
+                >
+                  <Settings className="h-5 w-5" />
+                  <span>Settings</span>
+                </Button>
+              )}
+            </div>
+          </>
+        )}
       </aside>
     </TooltipProvider>
   );
