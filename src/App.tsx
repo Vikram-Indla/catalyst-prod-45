@@ -182,16 +182,6 @@ import PortfolioThemeSelfTest from "./pages/dev/PortfolioThemeSelfTest";
 import ProgramBoardSelfTest from "./pages/dev/ProgramBoardSelfTest";
 import SourcesReference from "./pages/dev/SourcesReference";
 import ToastDemo from "./pages/dev/ToastDemo";
-import { TestCasesPage } from "./pages/TestCasesPage";
-import { TestCaseDetailPage } from "./pages/TestCaseDetailPage";
-import { TestCyclesPage } from "./pages/TestCyclesPage";
-import { TestSetsPage } from "./pages/TestSetsPage";
-import { TestReportsPage } from "./pages/TestReportsPage";
-import CycleDetailPage from "./pages/CycleDetailPage";
-import ExecutionGridPage from "./pages/ExecutionGridPage";
-import TestStepLibraryPage from "./pages/TestStepLibraryPage";
-import TestOverviewPage from "./pages/TestOverviewPage";
-import TestManagementSettingsPage from "./pages/settings/TestManagementSettingsPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import KanbanBoardsPage from "./pages/KanbanBoardsPage";
 import KanbanBoardView from "./pages/KanbanBoardView";
@@ -510,18 +500,6 @@ const App = () => (
               <Route path="/work-items/subtasks" element={<Subtasks />} />
               <Route path="/releases" element={<Releases />} />
               
-              {/* Test Management Routes - Program Scoped */}
-              <Route path="/programs/:programId/tests" element={<TestOverviewPage />} />
-              <Route path="/programs/:programId/tests/overview" element={<TestOverviewPage />} />
-              <Route path="/programs/:programId/tests/cases" element={<TestCasesPage />} />
-              <Route path="/programs/:programId/tests/cases/:id" element={<TestCaseDetailPage />} />
-              <Route path="/programs/:programId/tests/sets" element={<TestSetsPage />} />
-              <Route path="/programs/:programId/tests/library" element={<TestStepLibraryPage />} />
-              <Route path="/programs/:programId/tests/cycles" element={<TestCyclesPage />} />
-              <Route path="/programs/:programId/tests/cycles/:cycleId" element={<CycleDetailPage />} />
-              <Route path="/programs/:programId/tests/cycles/:cycleId/grid" element={<ExecutionGridPage />} />
-              <Route path="/programs/:programId/tests/reports" element={<TestReportsPage />} />
-              <Route path="/programs/:programId/tests/settings" element={<TestManagementSettingsPage />} />
               <Route path="/unauthorized" element={<UnauthorizedPage />} />
               
               {/* Kanban Boards Routes - Team Scoped */}
