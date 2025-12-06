@@ -158,19 +158,23 @@ export function DiscussionsViewTab({ requestId }: DiscussionsViewTabProps) {
             </div>
           ) : (
             discussions.map((discussion: any) => {
+              const isSystemUser = discussion.user_id === '00000000-0000-0000-0000-000000000000';
               const profile = profilesMap[discussion.user_id];
+              const displayName = isSystemUser ? 'System' : (profile?.full_name || profile?.email || 'Unknown User');
+              const initials = isSystemUser ? 'SY' : getInitials(profile?.full_name, profile?.email);
+              
               return (
                 <Card key={discussion.id} className="p-4 bg-card border-border/60">
                   <div className="flex gap-3">
                     <Avatar className="h-8 w-8 shrink-0">
-                      <AvatarFallback className="text-xs bg-brand-gold/10 text-brand-gold">
-                        {getInitials(profile?.full_name, profile?.email)}
+                      <AvatarFallback className={`text-xs ${isSystemUser ? 'bg-muted text-muted-foreground' : 'bg-brand-gold/10 text-brand-gold'}`}>
+                        {initials}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium text-[13px] text-foreground">
-                          {profile?.full_name || profile?.email || 'Unknown User'}
+                        <span className={`font-medium text-[13px] ${isSystemUser ? 'text-muted-foreground italic' : 'text-foreground'}`}>
+                          {displayName}
                         </span>
                         <span className="text-[12px] text-muted-foreground">
                           {format(new Date(discussion.created_at), 'MMM d, yyyy h:mm a')}
