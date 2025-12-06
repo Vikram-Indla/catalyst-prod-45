@@ -1,10 +1,10 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { useCatalystToast, CatalystToastOptions, CatalystToastItem } from '@/hooks/useCatalystToast';
+import React, { createContext, useContext, ReactNode, useEffect, useState, useCallback } from 'react';
 import { CatalystToastContainer } from '@/components/ui/catalyst-toast';
 import { CatalystToastAction } from '@/components/ui/catalyst-toast';
+import { catalystToast, CatalystToastItem } from '@/lib/catalystToast';
 
 interface CatalystToastContextValue {
-  showToast: (options: CatalystToastOptions) => string;
+  showToast: (options: Omit<CatalystToastItem, 'id'>) => string;
   dismissToast: (id: string) => void;
   dismissAll: () => void;
   success: (title: string, message: string, action?: CatalystToastAction, duration?: number) => string;
@@ -28,10 +28,44 @@ export const CatalystToastProvider: React.FC<CatalystToastProviderProps> = ({
   position = 'top-right',
   maxToasts = 5
 }) => {
-  const { toasts, dismissToast, ...toastMethods } = useCatalystToast(maxToasts);
+  const [toasts, setToasts] = useState<CatalystToastItem[]>([]);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }, []);
+
+  const dismissAll = useCallback(() => {
+    setToasts([]);
+  }, []);
+
+  // Subscribe to the singleton toast system
+  useEffect(() => {
+    const unsubscribe = catalystToast._subscribe(
+      (newToast) => {
+        setToasts((prev) => {
+          const updated = [newToast, ...prev];
+          return updated.slice(0, maxToasts);
+        });
+      },
+      (id) => {
+        dismissToast(id);
+      }
+    );
+    return unsubscribe;
+  }, [maxToasts, dismissToast]);
+
+  const contextValue: CatalystToastContextValue = {
+    showToast: catalystToast.show,
+    dismissToast,
+    dismissAll,
+    success: catalystToast.success,
+    error: catalystToast.error,
+    warning: catalystToast.warning,
+    info: catalystToast.info,
+  };
 
   return (
-    <CatalystToastContext.Provider value={{ dismissToast, ...toastMethods }}>
+    <CatalystToastContext.Provider value={contextValue}>
       {children}
       <CatalystToastContainer 
         toasts={toasts.map(t => ({ ...t, onClose: dismissToast }))} 

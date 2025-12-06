@@ -1,6 +1,6 @@
 import { useState, useEffect, useId } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { catalystToast } from "@/lib/catalystToast";
 import type { Database } from "@/integrations/supabase/types";
 
 type RoomType = Database["public"]["Enums"]["room_type"];
@@ -25,7 +25,6 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
   const { filterByRoomType = null, limit = 10 } = options;
   const [starredItems, setStarredItems] = useState<StarredItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
   const instanceId = useId(); // Unique ID for each hook instance
 
   const fetchStarredItems = async () => {
@@ -85,10 +84,10 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
 
         if (error) throw error;
 
-        toast({
-          title: "Removed from starred",
-          description: `${item.room_name} has been removed from your starred items.`,
-        });
+        catalystToast.info(
+          "Removed from starred",
+          `${item.room_name} has been removed from your starred items.`
+        );
       } else {
         // Star - item does not exist in database
         const { error } = await supabase
@@ -105,10 +104,10 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
 
         if (error) throw error;
 
-        toast({
-          title: "Added to starred",
-          description: `${item.room_name} has been added to your starred items.`,
-        });
+        catalystToast.info(
+          "Added to starred",
+          `${item.room_name} has been added to your starred items.`
+        );
       }
 
       // Refresh list
@@ -116,11 +115,10 @@ export function useStarredItems(options: UseStarredItemsOptions = {}) {
     } catch (error: any) {
       console.error("Error toggling star:", error);
       console.error("Error details:", error?.message, error?.details, error?.hint, error?.code);
-      toast({
-        title: "Error",
-        description: error?.message || "Failed to update starred items.",
-        variant: "destructive",
-      });
+      catalystToast.error(
+        "Error",
+        error?.message || "Failed to update starred items."
+      );
     }
   };
 
