@@ -14,9 +14,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Search, MoreHorizontal, UserCog, Power, PowerOff } from 'lucide-react';
+import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck } from 'lucide-react';
 import { UserProfile, useUpdateUserStatus } from '@/hooks/useUsers';
 import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -25,10 +26,11 @@ import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContai
 interface UsersTableProps {
   users: UserProfile[];
   isLoading: boolean;
+  onEditRoles?: (userId: string) => void;
   onEditPermissions?: (userId: string) => void;
 }
 
-export function UsersTable({ users, isLoading, onEditPermissions }: UsersTableProps) {
+export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }: UsersTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -197,17 +199,6 @@ export function UsersTable({ users, isLoading, onEditPermissions }: UsersTablePr
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center justify-end gap-2">
-                      {onEditPermissions && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => onEditPermissions(user.id)}
-                        >
-                          <UserCog className="h-3 w-3 mr-1" />
-                          Edit Permissions
-                        </Button>
-                      )}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -215,6 +206,19 @@ export function UsersTable({ users, isLoading, onEditPermissions }: UsersTablePr
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          {onEditRoles && (
+                            <DropdownMenuItem onClick={() => onEditRoles(user.id)}>
+                              <ShieldCheck className="h-4 w-4 mr-2" />
+                              Edit Roles
+                            </DropdownMenuItem>
+                          )}
+                          {onEditPermissions && (
+                            <DropdownMenuItem onClick={() => onEditPermissions(user.id)}>
+                              <UserCog className="h-4 w-4 mr-2" />
+                              Edit Permissions
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => handleStatusToggle(user.id, user.status)}>
                             {user.status === 'Active' ? (
                               <>

@@ -6,6 +6,7 @@ import { ResponsivePageContainer, ResponsivePageHeader } from '@/components/layo
 import { UsersTable } from '@/components/admin/users/UsersTable';
 import { UsersStatsCards } from '@/components/admin/users/UsersStatsCards';
 import { AddUserModal } from '@/components/admin/users/AddUserModal';
+import { EditUserRolesModal } from '@/components/admin/users/EditUserRolesModal';
 import { UserOverridesModal } from '@/components/admin/roles-permissions/UserOverridesModal';
 import { useUsers } from '@/hooks/useUsers';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -17,14 +18,25 @@ import { useUserRole } from '@/hooks/useUserRole';
 export default function Users() {
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [isRolesModalOpen, setIsRolesModalOpen] = useState(false);
   const [isOverridesModalOpen, setIsOverridesModalOpen] = useState(false);
 
   const { data: users, isLoading } = useUsers();
   const { isAdmin } = useUserRole();
 
+  const handleEditRoles = (userId: string) => {
+    setSelectedUserId(userId);
+    setIsRolesModalOpen(true);
+  };
+
   const handleEditPermissions = (userId: string) => {
     setSelectedUserId(userId);
     setIsOverridesModalOpen(true);
+  };
+
+  const handleCloseRolesModal = () => {
+    setIsRolesModalOpen(false);
+    setSelectedUserId(null);
   };
 
   const handleCloseOverridesModal = () => {
@@ -32,8 +44,9 @@ export default function Users() {
     setSelectedUserId(null);
   };
 
-  // Get the user's primary role for the overrides modal
+  // Get the selected user's info for modals
   const selectedUser = users?.find(u => u.id === selectedUserId);
+  const selectedUserRoleIds = selectedUser?.roles.map(r => r.role_id) || [];
   const selectedUserRoleId = selectedUser?.roles[0]?.role_id || null;
 
   return (
@@ -62,6 +75,7 @@ export default function Users() {
         <UsersTable 
           users={users || []} 
           isLoading={isLoading}
+          onEditRoles={handleEditRoles}
           onEditPermissions={handleEditPermissions}
         />
 
@@ -69,6 +83,15 @@ export default function Users() {
         <AddUserModal 
           isOpen={isAddUserModalOpen} 
           onClose={() => setIsAddUserModalOpen(false)} 
+        />
+
+        {/* Edit User Roles Modal */}
+        <EditUserRolesModal
+          isOpen={isRolesModalOpen}
+          onClose={handleCloseRolesModal}
+          userId={selectedUserId}
+          userName={selectedUser?.full_name || null}
+          currentRoleIds={selectedUserRoleIds}
         />
 
         {/* User Overrides Modal */}

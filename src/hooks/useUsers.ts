@@ -157,6 +157,48 @@ export function useCreateUser() {
   });
 }
 
+export function useUpdateUserRoles() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ userId, roleIds }: { userId: string; roleIds: string[] }) => {
+      // First, delete all existing roles for this user
+      const { error: deleteError } = await supabase
+        .from('user_product_roles')
+        .delete()
+        .eq('user_id', userId);
+
+      if (deleteError) throw deleteError;
+
+      // Then insert the new roles
+      if (roleIds.length > 0) {
+        const roleInserts = roleIds.map(roleId => ({
+          user_id: userId,
+          role_id: roleId,
+          business_lines: []
+        }));
+
+        const { error: insertError } = await supabase
+          .from('user_product_roles')
+          .insert(roleInserts);
+
+        if (insertError) throw insertError;
+      }
+
+      return { userId, roleIds };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      queryClient.invalidateQueries({ queryKey: ['product-roles'] });
+      toast.success('User roles updated successfully');
+    },
+    onError: (error) => {
+      console.error('Failed to update user roles:', error);
+      toast.error('Failed to update roles');
+    }
+  });
+}
+
 export function useUpdateUserStatus() {
   const queryClient = useQueryClient();
 
