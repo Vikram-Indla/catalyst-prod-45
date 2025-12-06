@@ -111,6 +111,7 @@ import Announcements from "./pages/admin/Announcements";
 import Users from "./pages/admin/Users";
 import TeamRoles from "./pages/admin/TeamRoles";
 import SystemRoles from "./pages/admin/SystemRoles";
+import RolesPermissions from "./pages/admin/RolesPermissions";
 import Cities from "./pages/admin/Cities";
 import Customers from "./pages/admin/Customers";
 import CostCenters from "./pages/admin/CostCenters";
@@ -555,6 +556,7 @@ const App = () => (
                 <Route path="security-settings" element={<SecuritySettings />} />
                 <Route path="announcements" element={<Announcements />} />
                 <Route path="users" element={<Users />} />
+                <Route path="roles-permissions" element={<RolesPermissions />} />
                 <Route path="team-roles" element={<TeamRoles />} />
                 <Route path="system-roles" element={<SystemRoles />} />
                 <Route path="cities" element={<Cities />} />
