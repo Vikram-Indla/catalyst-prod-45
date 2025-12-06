@@ -372,46 +372,28 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </Select>
 
           {/* Milestones Toggle */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setShowMilestones(!showMilestones)}
-                  className={cn(
-                    "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-                    "shadow-[0_2px_8px_rgba(44,40,37,0.08)] hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5",
-                    showMilestones ? "bg-[#C69C6D] text-white" : "bg-[#FAF8F5] text-[#5C5650]"
-                  )}
-                >
-                  <Clock className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-[#2C2825] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md">
-                {t.milestones}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <button
+            onClick={() => setShowMilestones(!showMilestones)}
+            className={cn(
+              "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
+              "shadow-[0_2px_8px_rgba(44,40,37,0.08)] hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5",
+              showMilestones ? "bg-[#C69C6D] text-white" : "bg-[#FAF8F5] text-[#5C5650]"
+            )}
+          >
+            <Clock className="w-[18px] h-[18px]" />
+          </button>
 
           {/* Filter */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => setFiltersDialogOpen(true)}
-                  className={cn(
-                    "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-                    "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
-                    "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
-                  )}
-                >
-                  <Filter className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-[#2C2825] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md">
-                Filters
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <button
+            onClick={() => setFiltersDialogOpen(true)}
+            className={cn(
+              "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
+              "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
+              "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+            )}
+          >
+            <Filter className="w-[18px] h-[18px]" />
+          </button>
 
           {/* Language Toggle */}
           <div className="flex bg-[#FAF8F5] rounded-xl p-1 gap-0.5 shadow-[0_2px_8px_rgba(44,40,37,0.08)]">
@@ -436,46 +418,28 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </div>
 
           {/* Export PDF */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={handleExport}
-                  className={cn(
-                    "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-                    "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
-                    "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
-                  )}
-                >
-                  <Download className="w-[18px] h-[18px]" />
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-[#2C2825] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md">
-                Export PDF
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <button
+            onClick={handleExport}
+            className={cn(
+              "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
+              "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
+              "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+            )}
+          >
+            <Download className="w-[18px] h-[18px]" />
+          </button>
 
           {/* Fullscreen */}
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={toggleFullscreen}
-                  className={cn(
-                    "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-                    "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
-                    "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
-                  )}
-                >
-                  {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
-                </button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="bg-[#2C2825] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md">
-                Fullscreen
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <button
+            onClick={toggleFullscreen}
+            className={cn(
+              "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
+              "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
+              "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+            )}
+          >
+            {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
+          </button>
         </div>
       </div>
 
