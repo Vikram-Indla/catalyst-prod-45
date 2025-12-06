@@ -1030,7 +1030,21 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     {formatDateLabel(item.endDate)}
                   </div>
 
-                  {/* Bar */}
+                  {/* Status label sitting ABOVE the bar */}
+                  <div 
+                    className="absolute text-[9px] font-medium whitespace-nowrap pointer-events-none"
+                    style={{ 
+                      left: `calc(${barPos.left} + ${barPos.width} / 2)`, 
+                      top: '50%', 
+                      transform: 'translate(-50%, -100%)',
+                      marginTop: '-4px',
+                      color: 'hsl(var(--roadmap-charcoal))'
+                    }}
+                  >
+                    {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
+                  </div>
+                  
+                  {/* Bar with milestones */}
                   <div 
                     className="absolute h-[24px] rounded-full overflow-visible flex items-center justify-center"
                     style={{ 
@@ -1042,15 +1056,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
                     }}
                   >
-                    {/* Status label centered on bar */}
-                    <span 
-                      className="text-[9px] font-medium whitespace-nowrap px-1"
-                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                    >
-                      {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                    </span>
-                    
-                    {/* Milestones - positioned inside the bar */}
+                    {/* Milestones - positioned on the bar */}
                     {showMilestones && item.milestones.map((ms, index) => {
                       const totalMilestones = item.milestones.length;
                       let pos: number;
