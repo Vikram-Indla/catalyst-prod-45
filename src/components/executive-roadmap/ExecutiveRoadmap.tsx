@@ -490,6 +490,19 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </Select>
         </div>
 
+        {/* Sort By dropdown */}
+        <div className="hidden sm:flex items-center gap-1">
+          <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.sortBy}</span>
+          <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
+            <SelectTrigger className="w-[80px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+            <SelectContent className="bg-white z-50">
+              <SelectItem value="rank">{t.rank}</SelectItem>
+              <SelectItem value="platform">{t.platform}</SelectItem>
+              <SelectItem value="owner">{t.owner}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {/* Period dropdown */}
         <div className="hidden sm:flex items-center gap-1">
           <span className="text-[10px] text-[#5C5650] font-medium uppercase">{isRTL ? 'الفترة' : 'PERIOD'}</span>
