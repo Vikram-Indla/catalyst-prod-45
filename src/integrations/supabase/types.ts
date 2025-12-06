@@ -1453,6 +1453,50 @@ export type Database = {
         }
         Relationships: []
       }
+      drawer_tab_configs: {
+        Row: {
+          business_line_id: string | null
+          created_at: string
+          display_name: string
+          id: string
+          is_required: boolean
+          is_visible: boolean
+          position: number
+          tab_key: string
+          updated_at: string
+        }
+        Insert: {
+          business_line_id?: string | null
+          created_at?: string
+          display_name: string
+          id?: string
+          is_required?: boolean
+          is_visible?: boolean
+          position?: number
+          tab_key: string
+          updated_at?: string
+        }
+        Update: {
+          business_line_id?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_required?: boolean
+          is_visible?: boolean
+          position?: number
+          tab_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drawer_tab_configs_business_line_id_fkey"
+            columns: ["business_line_id"]
+            isOneToOne: false
+            referencedRelation: "business_lines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       epic_acceptance_criteria: {
         Row: {
           created_at: string

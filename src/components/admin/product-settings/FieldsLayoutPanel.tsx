@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useBusinessLines } from '@/hooks/useProductSettings';
+import { useDrawerTabConfigs, useBulkUpdateDrawerTabConfigs, DrawerTabConfig } from '@/hooks/useDrawerTabConfigs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
@@ -7,22 +8,11 @@ import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronRight, GripVertical, Settings2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface FieldsLayoutPanelProps {
   onChanges: () => void;
 }
-
-// Default tabs configuration
-const DEFAULT_TABS = [
-  { key: 'demand-details', name: 'Demand Details', is_required: true, is_active: true },
-  { key: 'business-score', name: 'Business Score', is_required: false, is_active: true },
-  { key: 'budget', name: 'Budget', is_required: false, is_active: true },
-  { key: 'risks', name: 'Risks', is_required: false, is_active: true },
-  { key: 'milestones', name: 'Milestones', is_required: false, is_active: true },
-  { key: 'links', name: 'Links', is_required: false, is_active: true },
-  { key: 'discussions', name: 'Discussions', is_required: false, is_active: true },
-  { key: 'audit-history', name: 'Audit History', is_required: false, is_active: true },
-];
 
 // Default sections for Demand Details
 const DEFAULT_SECTIONS = [
@@ -45,17 +35,36 @@ const DEFAULT_FIELDS = [
 ];
 
 export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
-  const { data: businessLines = [], isLoading } = useBusinessLines();
+  const { data: businessLines = [], isLoading: linesLoading } = useBusinessLines();
   const [selectedScope, setSelectedScope] = useState<string>('global');
-  const [tabs, setTabs] = useState(DEFAULT_TABS);
+  
+  // Fetch tab configs from database
+  const businessLineId = selectedScope === 'global' ? null : selectedScope;
+  const { data: dbTabs = [], isLoading: tabsLoading } = useDrawerTabConfigs(businessLineId);
+  const bulkUpdateTabs = useBulkUpdateDrawerTabConfigs();
+  
+  // Local state for tabs (synced with DB)
+  const [tabs, setTabs] = useState<DrawerTabConfig[]>([]);
   const [sections, setSections] = useState(DEFAULT_SECTIONS);
   const [fields, setFields] = useState(DEFAULT_FIELDS);
   const [sectionsOpen, setSectionsOpen] = useState(false);
+  const [hasLocalChanges, setHasLocalChanges] = useState(false);
+
+  // Sync local state when DB data changes
+  useEffect(() => {
+    if (dbTabs.length > 0) {
+      setTabs(dbTabs);
+      setHasLocalChanges(false);
+    }
+  }, [dbTabs]);
 
   const handleTabToggle = (tabKey: string) => {
     setTabs(tabs.map(tab => 
-      tab.key === tabKey ? { ...tab, is_active: !tab.is_active } : tab
+      tab.tab_key === tabKey && !tab.is_required 
+        ? { ...tab, is_visible: !tab.is_visible } 
+        : tab
     ));
+    setHasLocalChanges(true);
     onChanges();
   };
 
@@ -72,6 +81,41 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
     ));
     onChanges();
   };
+
+  // Save tab configs to database
+  const handleSaveTabs = async () => {
+    if (!hasLocalChanges || tabs.length === 0) return;
+    
+    try {
+      await bulkUpdateTabs.mutateAsync(
+        tabs.map(tab => ({
+          id: tab.id,
+          is_visible: tab.is_visible,
+          position: tab.position,
+        }))
+      );
+      setHasLocalChanges(false);
+    } catch (error) {
+      console.error('Failed to save tab configs:', error);
+    }
+  };
+
+  // Expose save function for parent to call
+  useEffect(() => {
+    // This effect allows the parent Save button to trigger our save
+    const handleGlobalSave = () => {
+      handleSaveTabs();
+    };
+    
+    // Register save handler on window for parent access
+    (window as any).__fieldsLayoutSave = handleGlobalSave;
+    
+    return () => {
+      delete (window as any).__fieldsLayoutSave;
+    };
+  }, [tabs, hasLocalChanges]);
+
+  const isLoading = linesLoading || tabsLoading;
 
   if (isLoading) {
     return (
@@ -118,18 +162,18 @@ export function FieldsLayoutPanel({ onChanges }: FieldsLayoutPanelProps) {
           <p className="text-xs text-muted-foreground">Configure which tabs appear in the Demand drawer</p>
         </div>
         <div className="divide-y">
-          {tabs.map((tab, index) => (
-            <div key={tab.key} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/20">
+          {tabs.map((tab) => (
+            <div key={tab.id} className="flex items-center gap-4 px-4 py-3 hover:bg-muted/20">
               <GripVertical className="h-4 w-4 text-muted-foreground cursor-grab" />
               <div className="flex-1 flex items-center gap-2">
-                <span className="text-sm">{tab.name}</span>
+                <span className="text-sm">{tab.display_name}</span>
                 {tab.is_required && (
                   <Badge variant="secondary" className="text-xs">Required</Badge>
                 )}
               </div>
               <Switch
-                checked={tab.is_active}
-                onCheckedChange={() => handleTabToggle(tab.key)}
+                checked={tab.is_visible}
+                onCheckedChange={() => handleTabToggle(tab.tab_key)}
                 disabled={tab.is_required}
               />
             </div>
