@@ -316,7 +316,18 @@ export default function RequestAccess() {
     setIsSubmitting(true);
     
     try {
-      // Insert the business request with ALL fields mapped correctly
+      // Log submission data for debugging
+      console.log('Submitting external request with data:', {
+        title: formData.summary,
+        description: formData.description?.substring(0, 100) + '...',
+        delivery_platform: formData.deliveryPlatform,
+        department: formData.department,
+        business_owner: formData.businessOwner,
+        requester: formData.reporter,
+        email: formData.email,
+      });
+
+      // Insert the business request with ALL fields mapped correctly to drawer fields
       const { data: requestData, error: requestError } = await supabase
         .from('business_requests')
         .insert([{
@@ -325,7 +336,7 @@ export default function RequestAccess() {
           delivery_platform: formData.deliveryPlatform,
           department: formData.department,
           business_owner: formData.businessOwner,
-          process_step: 'new_request',
+          process_step: 'new_request', // Must be 'new_request' NOT 'request_received'
           health: 'green',
           platform: 'Web',
           complexity: 'Medium',
@@ -334,12 +345,17 @@ export default function RequestAccess() {
         .select('id, request_key')
         .single();
       
-      if (requestError) throw requestError;
+      if (requestError) {
+        console.error('Error creating business request:', requestError);
+        throw requestError;
+      }
+
+      console.log('Business request created:', requestData);
       
       // 1. Add a system comment in Discussions capturing the external requester info
       const externalComment = `**Submitted via External Request Form**\n\n**Requested by:** ${formData.reporter}\n**Email:** ${formData.email}\n\n_This demand was submitted by an external user through the public intake form._`;
       
-      await supabase
+      const { error: discussionError } = await supabase
         .from('business_request_discussions')
         .insert([{
           business_request_id: requestData.id,
@@ -347,10 +363,17 @@ export default function RequestAccess() {
           message: externalComment,
         }]);
       
+      if (discussionError) {
+        console.error('Error creating discussion comment:', discussionError);
+        // Don't throw - continue with submission even if comment fails
+      } else {
+        console.log('Discussion comment created successfully');
+      }
+      
       // 2. Add a structured audit log entry for Audit History
       const auditDetails = `Requester Name: ${formData.reporter} | Email: ${formData.email} | Auto-comment generated in Discussions`;
       
-      await supabase
+      const { error: auditError } = await supabase
         .from('business_request_audit_logs')
         .insert([{
           business_request_id: requestData.id,
@@ -361,10 +384,18 @@ export default function RequestAccess() {
           new_value: auditDetails,
         }]);
       
+      if (auditError) {
+        console.error('Error creating audit log:', auditError);
+        // Don't throw - continue with submission even if audit log fails
+      } else {
+        console.log('Audit log created successfully');
+      }
+      
       setTicketNumber(requestData.request_key);
       setSubmissionSuccess(true);
       
     } catch (error: any) {
+      console.error('Submission failed:', error);
       toast({ title: 'Submission failed', description: error.message, variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
