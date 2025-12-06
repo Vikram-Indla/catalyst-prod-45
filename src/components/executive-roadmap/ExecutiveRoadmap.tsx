@@ -323,6 +323,23 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       )}
       style={{ direction: isRTL ? 'rtl' : 'ltr' }}
     >
+      {/* Print-only Header */}
+      <div className="hidden print:flex items-center justify-between px-6 py-4 border-b border-[#E8E4DD] bg-white">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-[#C69C6D] flex items-center justify-center text-white font-bold text-xs">
+            MIM
+          </div>
+          <div>
+            <div className="text-[10px] text-[#C69C6D] font-medium tracking-wider">EXECUTIVE ROADMAP</div>
+            <div className="text-sm font-semibold text-[#2C2825]">Industry Requests Portfolio</div>
+          </div>
+        </div>
+        <div className="text-xl font-semibold">
+          <span className="text-[#1a1a1a]">Cata</span>
+          <span className="text-[#C69C6D]">lyst</span>
+        </div>
+      </div>
+
       {/* Header with Status Pills - fixed height 72px to align with sidebar */}
       <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-[#E8E4DD] bg-white print:hidden shrink-0">
         <div className="flex items-center gap-3">
