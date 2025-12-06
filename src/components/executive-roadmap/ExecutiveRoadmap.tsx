@@ -14,12 +14,13 @@ import {
   ChevronRight,
   Maximize2, 
   Minimize2, 
-  FileDown, 
+  Download, 
   Flag, 
   Menu,
   X,
   Lock,
-  Filter
+  Filter,
+  Clock
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
@@ -355,34 +356,57 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Milestones toggle */}
-          <div className="flex items-center gap-1.5 bg-[#F5F2ED] px-2.5 py-1.5 rounded-lg">
-            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.milestones}</span>
-            <Switch 
-              checked={showMilestones} 
-              onCheckedChange={setShowMilestones}
-              className="data-[state=checked]:bg-[#C69C6D] scale-75"
-            />
-          </div>
+        {/* Floating Pills Toolbar */}
+        <div className="inline-flex items-center gap-2">
+          {/* Milestones Toggle */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setShowMilestones(!showMilestones)}
+                  className={cn(
+                    "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
+                    "shadow-[0_2px_8px_rgba(44,40,37,0.08)] hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5",
+                    showMilestones ? "bg-[#C69C6D] text-white" : "bg-[#FAF8F5] text-[#5C5650]"
+                  )}
+                >
+                  <Clock className="w-[18px] h-[18px]" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="bg-[#2C2825] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md">
+                {t.milestones}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          {/* Filters */}
-          <Button 
-            variant="ghost" 
-            size="icon"
-            onClick={() => setFiltersDialogOpen(true)}
-            className="h-8 w-8 text-[#5C5650] hover:text-[#2C2825]"
-          >
-            <Filter className="h-4 w-4" />
-          </Button>
+          {/* Filter */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setFiltersDialogOpen(true)}
+                  className={cn(
+                    "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
+                    "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
+                    "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+                  )}
+                >
+                  <Filter className="w-[18px] h-[18px]" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="bg-[#2C2825] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md">
+                Filters
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
-          {/* Language toggle */}
-          <div className="flex items-center bg-[#F5F2ED] rounded-lg p-0.5">
+          {/* Language Toggle */}
+          <div className="flex bg-[#FAF8F5] rounded-xl p-1 gap-0.5 shadow-[0_2px_8px_rgba(44,40,37,0.08)]">
             <button
               onClick={() => setLanguage('en')}
               className={cn(
-                "px-2 py-1 text-[11px] font-medium rounded-md transition-all",
-                language === 'en' ? "bg-[#C69C6D] text-white" : "text-[#5C5650] hover:text-[#2C2825]"
+                "w-[30px] h-[30px] flex items-center justify-center rounded-lg text-[10px] font-bold cursor-pointer transition-all duration-150",
+                language === 'en' ? "bg-[#C69C6D] text-white" : "bg-transparent text-[#9A9389] hover:text-[#2C2825]"
               )}
             >
               EN
@@ -390,23 +414,55 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             <button
               onClick={() => setLanguage('ar')}
               className={cn(
-                "px-2 py-1 text-[11px] font-medium rounded-md transition-all",
-                language === 'ar' ? "bg-[#C69C6D] text-white" : "text-[#5C5650] hover:text-[#2C2825]"
+                "w-[30px] h-[30px] flex items-center justify-center rounded-lg text-[10px] font-bold cursor-pointer transition-all duration-150",
+                language === 'ar' ? "bg-[#C69C6D] text-white" : "bg-transparent text-[#9A9389] hover:text-[#2C2825]"
               )}
             >
-              عربي
+              ع
             </button>
           </div>
 
-          {/* Export */}
-          <Button variant="ghost" size="icon" onClick={handleExport} className="h-8 w-8 text-[#5C5650] hover:text-[#2C2825]">
-            <FileDown className="h-4 w-4" />
-          </Button>
+          {/* Export PDF */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleExport}
+                  className={cn(
+                    "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
+                    "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
+                    "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+                  )}
+                >
+                  <Download className="w-[18px] h-[18px]" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="bg-[#2C2825] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md">
+                Export PDF
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {/* Fullscreen */}
-          <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="h-8 w-8 text-[#5C5650] hover:text-[#2C2825]">
-            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={toggleFullscreen}
+                  className={cn(
+                    "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
+                    "bg-[#FAF8F5] text-[#5C5650] shadow-[0_2px_8px_rgba(44,40,37,0.08)]",
+                    "hover:shadow-[0_4px_12px_rgba(44,40,37,0.12)] hover:-translate-y-0.5"
+                  )}
+                >
+                  {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="bg-[#2C2825] text-white text-[10px] font-medium px-2.5 py-1.5 rounded-md">
+                Fullscreen
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
