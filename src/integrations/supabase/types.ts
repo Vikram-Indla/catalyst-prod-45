@@ -312,6 +312,7 @@ export type Database = {
       }
       business_request_links: {
         Row: {
+          added_by_name: string | null
           business_request_id: string
           created_at: string
           file_name: string | null
@@ -320,6 +321,9 @@ export type Database = {
           id: string
           kind: string | null
           link_type: string
+          linked_item_id: string | null
+          linked_item_source: string | null
+          linked_item_type: string | null
           mime_type: string | null
           title: string
           updated_at: string
@@ -327,6 +331,7 @@ export type Database = {
           url: string
         }
         Insert: {
+          added_by_name?: string | null
           business_request_id: string
           created_at?: string
           file_name?: string | null
@@ -335,6 +340,9 @@ export type Database = {
           id?: string
           kind?: string | null
           link_type?: string
+          linked_item_id?: string | null
+          linked_item_source?: string | null
+          linked_item_type?: string | null
           mime_type?: string | null
           title: string
           updated_at?: string
@@ -342,6 +350,7 @@ export type Database = {
           url: string
         }
         Update: {
+          added_by_name?: string | null
           business_request_id?: string
           created_at?: string
           file_name?: string | null
@@ -350,6 +359,9 @@ export type Database = {
           id?: string
           kind?: string | null
           link_type?: string
+          linked_item_id?: string | null
+          linked_item_source?: string | null
+          linked_item_type?: string | null
           mime_type?: string | null
           title?: string
           updated_at?: string
