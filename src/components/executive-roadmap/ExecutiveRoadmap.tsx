@@ -971,7 +971,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       style={{ 
                         left: `${todayPosition}%`,
                         width: '1px',
-                        borderLeft: '1px dashed hsla(35, 46%, 60%, 0.35)',
+                        borderLeft: '1px dashed hsla(35, 46%, 60%, 0.65)',
                         zIndex: 10
                       }}
                     />
