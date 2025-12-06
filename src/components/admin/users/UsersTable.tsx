@@ -27,11 +27,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2 } from 'lucide-react';
+import { Search, MoreHorizontal, UserCog, Power, PowerOff, ShieldCheck, Trash2, KeyRound } from 'lucide-react';
 import { UserProfile, useUpdateUserStatus, useDeleteUser } from '@/hooks/useUsers';
 import { format, formatDistanceToNow, isToday, isYesterday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
+import { ResetPasswordDialog } from './ResetPasswordDialog';
+import { useIsSuperAdmin } from '@/hooks/useUsers';
 
 interface UsersTableProps {
   users: UserProfile[];
@@ -45,9 +47,11 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [userToDelete, setUserToDelete] = useState<UserProfile | null>(null);
+  const [resetPasswordUser, setResetPasswordUser] = useState<UserProfile | null>(null);
   
   const updateStatus = useUpdateUserStatus();
   const deleteUser = useDeleteUser();
+  const { data: isSuperAdmin } = useIsSuperAdmin();
 
   // Get unique roles for filter dropdown
   const allRoles = [...new Set(users.flatMap(u => u.roles.map(r => r.role_name)))];
@@ -241,6 +245,16 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
                               Edit Permissions
                             </DropdownMenuItem>
                           )}
+                          {/* Reset Password - only for Active users, only for admins */}
+                          {user.status === 'Active' && isSuperAdmin && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem onClick={() => setResetPasswordUser(user)}>
+                                <KeyRound className="h-4 w-4 mr-2" />
+                                Reset Password
+                              </DropdownMenuItem>
+                            </>
+                          )}
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => handleStatusToggle(user.id, user.status)}>
                             {user.status === 'Active' ? (
@@ -310,6 +324,14 @@ export function UsersTable({ users, isLoading, onEditRoles, onEditPermissions }:
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Reset Password Dialog */}
+      <ResetPasswordDialog
+        isOpen={!!resetPasswordUser}
+        onClose={() => setResetPasswordUser(null)}
+        userId={resetPasswordUser?.id || null}
+        userName={resetPasswordUser?.full_name || resetPasswordUser?.email || null}
+      />
     </Card>
   );
 }

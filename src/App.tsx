@@ -172,6 +172,7 @@ import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import RequestAccess from "./pages/RequestAccess";
+import ResetPassword from "./pages/ResetPassword";
 import TeamComingSoon from "./pages/team/ComingSoon";
 import TeamStoriesPage from "./pages/team/TeamStoriesPage";
 import SelfTest from "./pages/dev/SelfTest";
@@ -208,6 +209,7 @@ const App = () => (
               <Route path="/" element={<Navigate to="/home" replace />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/request-access" element={<RequestAccess />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
