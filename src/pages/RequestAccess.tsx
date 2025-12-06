@@ -307,6 +307,7 @@ export default function RequestAccess() {
   };
 
   const handleSubmit = async () => {
+    // Validate all required fields before submission
     if (!validateStep(0) || !validateStep(1)) {
       setCurrentStep(0);
       toast({ title: 'Please fix the errors', variant: 'destructive' });
@@ -316,15 +317,16 @@ export default function RequestAccess() {
     setIsSubmitting(true);
     
     try {
-      // Log submission data for debugging
-      console.log('Submitting external request with data:', {
+      // Log submission data for debugging - all fields should be populated
+      console.log('[External Request] Submitting with:', {
         title: formData.summary,
         description: formData.description?.substring(0, 100) + '...',
         delivery_platform: formData.deliveryPlatform,
         department: formData.department,
         business_owner: formData.businessOwner,
-        requester: formData.reporter,
-        email: formData.email,
+        requester_name: formData.reporter,
+        requester_email: formData.email,
+        process_step: 'new_request',
       });
 
       // Insert the business request with ALL fields mapped correctly to drawer fields
