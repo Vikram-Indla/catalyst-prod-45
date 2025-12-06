@@ -10,7 +10,8 @@ import {
   Database,
   FolderTree,
   Megaphone,
-  BarChart3
+  BarChart3,
+  Package
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +29,7 @@ const adminSections = [
   {
     title: 'Application Settings',
     items: [
+      { label: 'Modules & Packages', path: '/admin/modules-packages', icon: Package },
       { label: 'Work Codes', path: '/admin/work-codes', icon: Database },
       { label: 'Details Panels', path: '/admin/details-panels', icon: Settings },
       { label: 'Terminology', path: '/admin/terminology', icon: FileText },
