@@ -71,10 +71,10 @@ export function CatalystHeader() {
     }
   };
 
-  // Define nav items with their module codes
+  // Define nav items with their module codes - each module has its own code
   const allNavItems = [
     { label: "Home", path: "/home", moduleCode: null }, // Always visible
-    { label: "Enterprise", path: "/industry", moduleCode: "PRODUCT" }, // Product module controls Enterprise/Industry
+    { label: "Enterprise", path: "/industry", moduleCode: "ENTERPRISE" },
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT" },
     { label: "Portfolio", hasDropdown: true, moduleCode: "PORTFOLIO" },
     { label: "Program", hasDropdown: true, moduleCode: "PROGRAM" },
