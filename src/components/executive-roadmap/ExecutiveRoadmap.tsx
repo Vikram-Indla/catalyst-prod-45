@@ -11,27 +11,20 @@ import {
 import { 
   ChevronUp, 
   ChevronDown, 
-  ChevronRight,
   Maximize2, 
   Minimize2, 
   Download, 
-  Flag, 
-  Menu,
-  X,
   Lock,
   Filter,
   Clock,
   Calendar,
   Check,
-  GripVertical
+  LayoutList
 } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RoadmapFiltersDialog, RoadmapFilters } from './RoadmapFiltersDialog';
+import { RoadmapLegend } from './RoadmapLegend';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -43,17 +36,17 @@ type SortOrder = 'asc' | 'desc';
 
 const MIN_FIRST_COLUMN_WIDTH = 180;
 const MAX_FIRST_COLUMN_WIDTH = 500;
-const DEFAULT_FIRST_COLUMN_WIDTH = 280;
+const DEFAULT_FIRST_COLUMN_WIDTH = 320;
 
 const TRANSLATIONS = {
   en: {
     executiveRoadmap: 'EXECUTIVE ROADMAP',
     industryRequests: 'Industry Requests Portfolio',
-    newRequest: 'NEW REQUEST',
-    analyse: 'ANALYSE',
-    approved: 'APPROVED',
-    implement: 'IMPLEMENT',
-    closed: 'CLOSED',
+    newRequest: 'New',
+    analyse: 'Analyse',
+    approved: 'Approved',
+    implement: 'Implement',
+    closed: 'Closed',
     awaitingReview: 'Awaiting review',
     underAnalysis: 'Under analysis',
     readyToStart: 'Ready to start',
@@ -79,9 +72,9 @@ const TRANSLATIONS = {
   ar: {
     executiveRoadmap: 'خارطة الطريق التنفيذية',
     industryRequests: 'محفظة الطلبات الصناعية',
-    newRequest: 'طلب جديد',
+    newRequest: 'جديد',
     analyse: 'تحليل',
-    approved: 'موافق عليه',
+    approved: 'موافق',
     implement: 'تنفيذ',
     closed: 'مغلق',
     awaitingReview: 'بانتظار المراجعة',
@@ -108,12 +101,22 @@ const TRANSLATIONS = {
   }
 };
 
+// Status colors using CSS variables
 const STATUS_COLORS: Record<RoadmapStatus, string> = {
-  'NEW': '#C69C6D',
-  'ANALYSE': '#5B7B9B',
-  'APPROVED': '#A67F52',
-  'IMPLEMENT': '#4A6355',
-  'CLOSED': '#5C5650',
+  'NEW': 'hsl(var(--roadmap-status-new))',
+  'ANALYSE': 'hsl(var(--roadmap-status-analyse))',
+  'APPROVED': 'hsl(var(--roadmap-status-approved))',
+  'IMPLEMENT': 'hsl(var(--roadmap-status-implement))',
+  'CLOSED': 'hsl(var(--roadmap-status-closed))',
+};
+
+// 3-letter status abbreviations
+const STATUS_ABBR: Record<RoadmapStatus, string> = {
+  'NEW': 'NEW',
+  'ANALYSE': 'ANL',
+  'APPROVED': 'APR',
+  'IMPLEMENT': 'IMP',
+  'CLOSED': 'CLS',
 };
 
 interface ExecutiveRoadmapProps {
@@ -133,10 +136,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [activeKPI, setActiveKPI] = useState<RoadmapStatus | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<string | null>(null);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [showLegend, setShowLegend] = useState(false);
+  const [isTimelineView, setIsTimelineView] = useState(true);
   const [firstColumnWidth, setFirstColumnWidth] = useState<number>(() => {
     try {
       const saved = localStorage.getItem('roadmap-first-column-width');
@@ -307,7 +311,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         });
       }
     } else if (timeScale === 'quarterly') {
-      // For quarterly, generate 12 month columns (will be grouped into quarters in header)
       for (let i = 0; i < 12; i++) {
         cols.push({
           label: isRTL ? monthNamesAr[i] : monthNames[i],
@@ -326,10 +329,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const quarterlyGroups = useMemo(() => {
     if (timeScale !== 'quarterly') return null;
     return [
-      { label: 'Q4 2024', span: 3 }, // Oct, Nov, Dec
-      { label: 'Q1 2025', span: 3 }, // Jan, Feb, Mar
-      { label: 'Q2 2025', span: 3 }, // Apr, May, Jun
-      { label: 'Q3 2025', span: 3 }, // Jul, Aug, Sep
+      { label: 'Q4 2024', span: 3 },
+      { label: 'Q1 2025', span: 3 },
+      { label: 'Q2 2025', span: 3 },
+      { label: 'Q3 2025', span: 3 },
     ];
   }, [timeScale]);
 
@@ -360,6 +363,12 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   }, [timeScale]);
 
   const todayPosition = getTodayPosition();
+  
+  // Format today's date
+  const todayLabel = useMemo(() => {
+    const today = new Date();
+    return today.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+  }, [isRTL]);
 
   // Calculate bar position
   const getBarPosition = useCallback((item: BusinessRequestRoadmapItem) => {
@@ -404,7 +413,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   // Format date label
   const formatDateLabel = (dateStr: string) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', year: '2-digit' }).replace(' ', ' \'');
+    return date.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', year: '2-digit' }).replace(' ', " '");
   };
 
   // Handle export
@@ -412,112 +421,178 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     window.print();
   };
 
-  // Toggle fullscreen - use CSS-based fullscreen instead of native API
-  // Native fullscreen breaks portalled components (dialogs, dropdowns)
+  // Toggle fullscreen
   const toggleFullscreen = () => {
     setIsFullscreen(!isFullscreen);
   };
 
   const kpiCards = [
-    { status: 'NEW' as RoadmapStatus, label: t.newRequest, subtitle: t.awaitingReview },
-    { status: 'ANALYSE' as RoadmapStatus, label: t.analyse, subtitle: t.underAnalysis },
-    { status: 'APPROVED' as RoadmapStatus, label: t.approved, subtitle: t.readyToStart },
-    { status: 'IMPLEMENT' as RoadmapStatus, label: t.implement, subtitle: t.inProgress },
-    { status: 'CLOSED' as RoadmapStatus, label: t.closed, subtitle: t.completed },
+    { status: 'NEW' as RoadmapStatus, label: t.newRequest },
+    { status: 'ANALYSE' as RoadmapStatus, label: t.analyse },
+    { status: 'APPROVED' as RoadmapStatus, label: t.approved },
+    { status: 'IMPLEMENT' as RoadmapStatus, label: t.implement },
+    { status: 'CLOSED' as RoadmapStatus, label: t.closed },
   ];
 
   return (
     <div 
       ref={containerRef}
       className={cn(
-        "flex flex-col bg-secondary overflow-hidden print:bg-white font-sans",
+        "flex flex-col overflow-hidden print:bg-white",
         isRTL && "direction-rtl",
-        isFullscreen 
-          ? "fixed inset-0 z-50" 
-          : "h-full",
+        isFullscreen ? "fixed inset-0 z-50" : "h-full",
         className
       )}
-      style={{ direction: isRTL ? 'rtl' : 'ltr' }}
+      style={{ 
+        direction: isRTL ? 'rtl' : 'ltr',
+        fontFamily: 'Inter, sans-serif',
+        backgroundColor: 'hsl(var(--roadmap-ivory))'
+      }}
     >
       {/* Print-only Header */}
-      <div className="hidden print:flex items-center justify-between px-6 py-4 border-b border-border bg-card">
+      <div className="hidden print:flex items-center justify-between px-6 py-4 border-b bg-white" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-brand-gold flex items-center justify-center text-primary-foreground font-bold text-xs">
+          <div 
+            className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm"
+            style={{ background: 'linear-gradient(135deg, #C69C6D, #E8D5C0)' }}
+          >
             MIM
           </div>
           <div>
-            <div className="text-xs text-brand-gold font-medium tracking-wider">EXECUTIVE ROADMAP</div>
-            <div className="text-sm font-semibold text-foreground">Industry Requests Portfolio</div>
+            <div className="text-xs font-medium tracking-wider" style={{ color: 'hsl(var(--roadmap-status-new))' }}>EXECUTIVE ROADMAP</div>
+            <div className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>Industry Requests Portfolio</div>
           </div>
-        </div>
-        <div className="text-xl font-semibold">
-          <span className="text-foreground">Cata</span>
-          <span className="text-brand-gold">lyst</span>
         </div>
       </div>
 
-      {/* Header with top controls - fixed height 72px to align with sidebar */}
-      <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-border bg-card print:hidden shrink-0 relative z-20">
+      {/* Header with top controls */}
+      <div 
+        className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b print:hidden shrink-0 relative z-20"
+        style={{ 
+          backgroundColor: 'hsl(var(--roadmap-parchment))',
+          borderColor: 'hsl(var(--roadmap-sandstone))'
+        }}
+      >
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-brand-gold flex items-center justify-center text-primary-foreground font-bold text-xs">
+          <div 
+            className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm shadow-sm"
+            style={{ background: 'linear-gradient(135deg, #C69C6D, #E8D5C0)' }}
+          >
             MIM
           </div>
           <div>
-            <div className="text-xs text-brand-gold font-medium tracking-wider">{t.executiveRoadmap}</div>
-            <div className="text-sm font-semibold text-foreground">{t.industryRequests}</div>
+            <div className="text-xs font-medium tracking-wider" style={{ color: 'hsl(var(--roadmap-status-new))' }}>
+              {t.executiveRoadmap}
+            </div>
+            <div className="text-base font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+              {t.industryRequests}
+            </div>
           </div>
         </div>
 
         {/* Floating Pills Toolbar */}
-        <div className="inline-flex items-center gap-2 relative z-30" style={{ direction: 'ltr' }}>
+        <div className="inline-flex items-center gap-1.5 relative z-30" style={{ direction: 'ltr' }}>
+          {/* Timeline View Toggle */}
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setIsTimelineView(!isTimelineView)}
+                  className={cn(
+                    "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5",
+                    isTimelineView 
+                      ? "text-white" 
+                      : "bg-white text-[hsl(var(--roadmap-fossil))]"
+                  )}
+                  style={{ 
+                    backgroundColor: isTimelineView ? 'hsl(var(--roadmap-status-new))' : undefined,
+                    border: isTimelineView ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+                  }}
+                >
+                  <LayoutList className="w-[18px] h-[18px]" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">Timeline View</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
           {/* Milestones Toggle */}
-          <button
-            onClick={() => setShowMilestones(!showMilestones)}
-            className={cn(
-              "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-              "shadow-sm hover:shadow-md hover:-translate-y-0.5",
-              showMilestones ? "bg-brand-gold text-primary-foreground" : "bg-secondary text-muted-foreground"
-            )}
-          >
-            <Clock className="w-[18px] h-[18px]" />
-          </button>
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setShowMilestones(!showMilestones)}
+                  className={cn(
+                    "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5",
+                    showMilestones 
+                      ? "text-white" 
+                      : "bg-white text-[hsl(var(--roadmap-fossil))]"
+                  )}
+                  style={{ 
+                    backgroundColor: showMilestones ? 'hsl(var(--roadmap-status-new))' : undefined,
+                    border: showMilestones ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+                  }}
+                >
+                  <Clock className="w-[18px] h-[18px]" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">Milestones</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Divider */}
+          <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
 
           {/* Filter */}
-          <button
-            onClick={() => setFiltersDialogOpen(true)}
-            className={cn(
-              "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-              "bg-secondary text-muted-foreground shadow-sm",
-              "hover:shadow-md hover:-translate-y-0.5"
-            )}
-          >
-            <Filter className="w-[18px] h-[18px]" />
-          </button>
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setFiltersDialogOpen(true)}
+                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                  style={{ 
+                    border: '1px solid hsl(var(--roadmap-sandstone))',
+                    color: 'hsl(var(--roadmap-fossil))'
+                  }}
+                >
+                  <Filter className="w-[18px] h-[18px]" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">Filters</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {/* Period Dropdown */}
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                className={cn(
-                  "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-                  "bg-secondary text-muted-foreground shadow-sm",
-                  "hover:shadow-md hover:-translate-y-0.5"
-                )}
-              >
-                <Calendar className="w-[18px] h-[18px]" />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-36 bg-card z-50 shadow-lg rounded-lg border border-border">
+            <TooltipProvider delayDuration={200}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                      style={{ 
+                        border: '1px solid hsl(var(--roadmap-sandstone))',
+                        color: 'hsl(var(--roadmap-fossil))'
+                      }}
+                    >
+                      <Calendar className="w-[18px] h-[18px]" />
+                    </button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="text-xs">Time Period</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <DropdownMenuContent align="end" className="w-36 bg-white z-50 shadow-lg rounded-lg" style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}>
               {(['weekly', 'monthly', 'quarterly', 'yearly'] as TimeScale[]).map((scale) => (
                 <DropdownMenuItem
                   key={scale}
                   onClick={() => setTimeScale(scale)}
-                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-secondary"
+                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[hsl(var(--roadmap-parchment))]"
                 >
                   <span className="w-4">
-                    {timeScale === scale && <Check className="w-4 h-4 text-brand-gold" />}
+                    {timeScale === scale && <Check className="w-4 h-4" style={{ color: 'hsl(var(--roadmap-status-new))' }} />}
                   </span>
-                  <span className={cn("text-sm", timeScale === scale && "font-medium text-foreground")}>
+                  <span className={cn("text-sm", timeScale === scale && "font-medium")} style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
                     {t[scale]}
                   </span>
                 </DropdownMenuItem>
@@ -525,179 +600,221 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             </DropdownMenuContent>
           </DropdownMenu>
 
+          {/* Divider */}
+          <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
+
           {/* Language Toggle */}
-          <div className="flex bg-secondary rounded-xl p-1 gap-0.5 shadow-sm">
+          <div 
+            className="flex rounded-[10px] p-0.5 gap-0.5 shadow-sm"
+            style={{ backgroundColor: 'hsl(var(--roadmap-parchment))', border: '1px solid hsl(var(--roadmap-sandstone))' }}
+          >
             <button
               onClick={() => setLanguage('en')}
               className={cn(
-                "w-[30px] h-[30px] flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all duration-150",
-                language === 'en' ? "bg-brand-gold text-primary-foreground" : "bg-transparent text-muted-foreground hover:text-foreground"
+                "w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all duration-150",
+                language === 'en' ? "text-white" : "bg-transparent hover:opacity-80"
               )}
+              style={{ 
+                backgroundColor: language === 'en' ? 'hsl(var(--roadmap-status-new))' : 'transparent',
+                color: language === 'en' ? 'white' : 'hsl(var(--roadmap-fossil))'
+              }}
             >
               EN
             </button>
             <button
               onClick={() => setLanguage('ar')}
               className={cn(
-                "w-[30px] h-[30px] flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all duration-150",
-                language === 'ar' ? "bg-brand-gold text-primary-foreground" : "bg-transparent text-muted-foreground hover:text-foreground"
+                "w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all duration-150",
+                language === 'ar' ? "text-white" : "bg-transparent hover:opacity-80"
               )}
+              style={{ 
+                backgroundColor: language === 'ar' ? 'hsl(var(--roadmap-status-new))' : 'transparent',
+                color: language === 'ar' ? 'white' : 'hsl(var(--roadmap-fossil))'
+              }}
             >
               ع
             </button>
           </div>
 
+          {/* Divider */}
+          <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
+
           {/* Export PDF */}
-          <button
-            onClick={handleExport}
-            className={cn(
-              "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-              "bg-secondary text-muted-foreground shadow-sm",
-              "hover:shadow-md hover:-translate-y-0.5"
-            )}
-          >
-            <Download className="w-[18px] h-[18px]" />
-          </button>
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={handleExport}
+                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                  style={{ 
+                    border: '1px solid hsl(var(--roadmap-sandstone))',
+                    color: 'hsl(var(--roadmap-fossil))'
+                  }}
+                >
+                  <Download className="w-[18px] h-[18px]" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">Export PDF</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
 
           {/* Fullscreen */}
-          <button
-            onClick={toggleFullscreen}
-            className={cn(
-              "w-[38px] h-[38px] flex items-center justify-center rounded-xl border-none cursor-pointer transition-all duration-200",
-              "bg-secondary text-muted-foreground shadow-sm",
-              "hover:shadow-md hover:-translate-y-0.5"
-            )}
-          >
-            {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Show/Hide Details Toggle with Status Pills */}
-      <div 
-        className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-border bg-card print:hidden"
-      >
-        <div 
-          className="flex items-center gap-2 cursor-pointer hover:bg-muted px-2 py-1 rounded transition-colors"
-          onClick={() => setShowFilters(!showFilters)}
-        >
-          <ChevronRight className={cn("h-4 w-4 text-muted-foreground transition-transform", showFilters && "rotate-90")} />
-          <span className="text-xs font-medium text-muted-foreground">
-            {showFilters ? (isRTL ? 'إخفاء التفاصيل' : 'Hide Details') : (isRTL ? 'إظهار التفاصيل' : 'Show Details')}
-          </span>
-        </div>
-      </div>
-
-      {/* Status Pills - shown when Details expanded */}
-      {showFilters && (
-        <div className="flex items-center gap-3 px-4 sm:px-6 py-2 border-b border-border bg-card print:hidden">
-          {/* Status Pill Strip */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide mr-1">
-              {isRTL ? 'الحالة:' : 'STATUS:'}
-            </span>
-            {kpiCards.map((kpi) => {
-              const isActive = activeKPI === kpi.status;
-              return (
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
                 <button
-                  key={kpi.status}
-                  onClick={() => setActiveKPI(isActive ? null : kpi.status)}
-                  className={cn(
-                    "inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium transition-all cursor-pointer border",
-                    isActive 
-                      ? "bg-brand-gold/10 border-brand-gold text-foreground" 
-                      : "bg-muted border-transparent text-muted-foreground hover:bg-accent"
-                  )}
+                  onClick={toggleFullscreen}
+                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                  style={{ 
+                    border: '1px solid hsl(var(--roadmap-sandstone))',
+                    color: 'hsl(var(--roadmap-fossil))'
+                  }}
                 >
-                  <span 
-                    className="w-1.5 h-1.5 rounded-full" 
-                    style={{ backgroundColor: STATUS_COLORS[kpi.status] }}
-                  />
-                  <span>{kpi.status === 'NEW' ? (isRTL ? 'جديد' : 'New') : kpi.status === 'ANALYSE' ? (isRTL ? 'تحليل' : 'Analyse') : kpi.status === 'APPROVED' ? (isRTL ? 'موافق' : 'Approved') : kpi.status === 'IMPLEMENT' ? (isRTL ? 'تنفيذ' : 'Implement') : (isRTL ? 'مغلق' : 'Closed')}</span>
-                  <span className="font-bold">{statusCounts[kpi.status]}</span>
+                  {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
                 </button>
-              );
-            })}
-          </div>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">{isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
-      )}
+      </div>
 
-      {/* Timeline Grid - smooth scroll */}
-      <div className="flex-1 overflow-auto scroll-smooth relative" style={{ scrollBehavior: 'smooth', direction: 'ltr' }}>
-        <div className="min-w-[1200px] relative">
-          {/* Today line - spans entire timeline */}
-          {todayPosition !== null && (
-            <div
-              className="absolute top-0 bottom-0 w-0.5 bg-destructive z-30 pointer-events-none"
+      {/* Status Pills - Always visible centered row */}
+      <div 
+        className="flex items-center justify-center gap-3 px-4 sm:px-6 py-3 border-b print:hidden"
+        style={{ 
+          backgroundColor: 'hsl(var(--roadmap-parchment))',
+          borderColor: 'hsl(var(--roadmap-sandstone))'
+        }}
+      >
+        {kpiCards.map((kpi) => {
+          const isActive = activeKPI === kpi.status;
+          return (
+            <button
+              key={kpi.status}
+              onClick={() => setActiveKPI(isActive ? null : kpi.status)}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer",
+                isActive && "shadow-sm"
+              )}
               style={{ 
-                left: `calc(${firstColumnWidth}px + (100% - ${firstColumnWidth}px) * ${todayPosition / 100})` 
+                backgroundColor: isActive ? 'hsl(var(--roadmap-charcoal))' : 'hsl(var(--roadmap-parchment))',
+                color: isActive ? 'white' : 'hsl(var(--roadmap-graphite))',
+                border: isActive ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
               }}
             >
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-xs font-medium rounded-b whitespace-nowrap">
-                Today
+              <span 
+                className="w-2 h-2 rounded-full" 
+                style={{ backgroundColor: STATUS_COLORS[kpi.status] }}
+              />
+              <span className="font-bold">{statusCounts[kpi.status]}</span>
+              <span>{kpi.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Timeline Grid */}
+      <div className="flex-1 overflow-auto scroll-smooth relative" style={{ scrollBehavior: 'smooth', direction: 'ltr' }}>
+        <div className="min-w-[1200px] relative">
+          {/* Today line */}
+          {todayPosition !== null && (
+            <div
+              className="absolute top-0 bottom-0 w-0.5 z-30 pointer-events-none"
+              style={{ 
+                left: `calc(${firstColumnWidth}px + (100% - ${firstColumnWidth}px) * ${todayPosition / 100})`,
+                backgroundColor: 'hsl(var(--roadmap-today))'
+              }}
+            >
+              {/* Today badge */}
+              <div 
+                className="absolute top-0 left-1/2 -translate-x-1/2 px-2 py-0.5 text-xs font-semibold rounded-b whitespace-nowrap"
+                style={{ 
+                  backgroundColor: 'hsl(var(--roadmap-today))',
+                  color: 'white'
+                }}
+              >
+                {todayLabel}
               </div>
+              {/* Pulsing dot */}
+              <div 
+                className="absolute top-6 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full animate-pulse"
+                style={{ backgroundColor: 'hsl(var(--roadmap-today))' }}
+              />
             </div>
           )}
+
           {/* Timeline Header */}
-          <div className="border-b border-border bg-card sticky top-0 z-10">
+          <div className="border-b sticky top-0 z-10" style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))' }}>
             <div className={cn("flex", isRTL && "flex-row-reverse")}>
               <div 
                 className={cn(
-                  "shrink-0 px-3 bg-muted relative group flex items-center overflow-hidden",
+                  "shrink-0 px-3 relative group flex items-center overflow-hidden",
                   timeScale === 'quarterly' ? 'py-2' : 'py-2',
-                  isRTL ? "border-l border-border" : "border-r border-border"
+                  isRTL ? "border-l" : "border-r"
                 )}
-                style={{ width: `${firstColumnWidth}px`, direction: isRTL ? 'rtl' : 'ltr', textAlign: isRTL ? 'right' : 'left' }}
+                style={{ 
+                  width: `${firstColumnWidth}px`, 
+                  direction: isRTL ? 'rtl' : 'ltr', 
+                  textAlign: isRTL ? 'right' : 'left',
+                  backgroundColor: 'hsl(var(--roadmap-parchment))',
+                  borderColor: 'hsl(var(--roadmap-sandstone))'
+                }}
               >
                 <div className="flex items-center justify-between w-full min-w-0 gap-2">
-                  <span className="text-xs font-medium text-muted-foreground truncate">{t.businessRequest}</span>
+                  <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                    {t.businessRequest}
+                  </span>
                   <button 
                     onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                    className="text-xs font-medium text-brand-gold flex items-center gap-0.5 hover:opacity-80 shrink-0"
+                    className="text-xs font-medium flex items-center gap-0.5 hover:opacity-80 shrink-0"
+                    style={{ color: 'hsl(var(--roadmap-status-new))' }}
                   >
                     {sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                    {sortField === 'rank' ? t.rank : sortField === 'platform' ? t.platform : t.owner}
+                    {t.rank} ↓
                   </button>
                 </div>
                 {/* Resize Handle */}
                 <div
                   className={cn(
-                    "absolute top-0 h-full w-1 cursor-col-resize z-20 transition-colors",
-                    "hover:bg-brand-gold/60 active:bg-brand-gold",
-                    isResizing && "bg-brand-gold"
+                    "absolute top-0 h-full w-1 cursor-col-resize z-20 transition-colors hover:opacity-80",
+                    isResizing && "opacity-100"
                   )}
-                  style={{ [isRTL ? 'left' : 'right']: 0 }}
+                  style={{ 
+                    [isRTL ? 'left' : 'right']: 0,
+                    backgroundColor: isResizing ? 'hsl(var(--roadmap-status-new))' : 'transparent'
+                  }}
                   onMouseDown={handleResizeMouseDown}
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {/* Wider hit area for easier grabbing */}
                   <div className="absolute -left-1 -right-1 top-0 h-full" />
                 </div>
               </div>
               
-              {/* Timeline columns - handle quarterly specially */}
+              {/* Timeline columns */}
               {timeScale === 'quarterly' ? (
                 <div className="flex-1 flex flex-col">
-                  {/* Top row: Months */}
-                  <div className="flex border-b border-border">
-                    {timelineColumns.map((col, i) => (
-                      <div 
-                        key={i} 
-                        className="flex-1 px-1 py-1.5 text-center border-r border-border last:border-r-0"
-                      >
-                        <div className="text-xs font-medium text-muted-foreground">{col.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                  {/* Bottom row: Quarters */}
-                  <div className="flex">
+                  {/* Top row: Quarters */}
+                  <div className="flex border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
                     {quarterlyGroups?.map((quarter, i) => (
                       <div 
                         key={i} 
-                        className="flex-1 px-1 py-1.5 text-center border-r border-border last:border-r-0"
-                        style={{ flex: quarter.span }}
+                        className="flex-1 px-1 py-1.5 text-center border-r last:border-r-0"
+                        style={{ flex: quarter.span, borderColor: 'hsl(var(--roadmap-sandstone))' }}
                       >
-                        <div className="text-xs font-semibold text-foreground">{quarter.label}</div>
+                        <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{quarter.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Bottom row: Months */}
+                  <div className="flex">
+                    {timelineColumns.map((col, i) => (
+                      <div 
+                        key={i} 
+                        className="flex-1 px-1 py-1.5 text-center border-r last:border-r-0"
+                        style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}
+                      >
+                        <div className="text-xs font-medium" style={{ color: 'hsl(var(--roadmap-fossil))' }}>{col.label}</div>
                       </div>
                     ))}
                   </div>
@@ -707,10 +824,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   {timelineColumns.map((col, i) => (
                     <div 
                       key={i} 
-                      className="flex-1 px-1 py-2 text-center border-r border-border last:border-r-0"
+                      className="flex-1 px-1 py-2 text-center border-r last:border-r-0"
+                      style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}
                     >
-                      <div className="text-xs font-medium text-foreground">{col.label}</div>
-                      {col.subLabel && <div className="text-xs text-muted-foreground">{col.subLabel}</div>}
+                      <div className="text-xs font-medium" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{col.label}</div>
+                      {col.subLabel && <div className="text-xs" style={{ color: 'hsl(var(--roadmap-fossil))' }}>{col.subLabel}</div>}
                     </div>
                   ))}
                 </div>
@@ -721,103 +839,166 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           {/* Rows */}
           {filteredItems.map((item) => {
             const barPos = getBarPosition(item);
-            const statusColor = STATUS_COLORS[item.status];
+            const isSelected = selectedRow === item.id;
 
-              return (
+            return (
+              <div 
+                key={item.id}
+                className={cn(
+                  "flex border-b transition-colors cursor-pointer",
+                  isRTL && "flex-row-reverse"
+                )}
+                style={{ 
+                  borderColor: 'hsl(var(--roadmap-sandstone))',
+                  backgroundColor: isSelected 
+                    ? 'hsla(var(--roadmap-status-new) / 0.08)' 
+                    : hoveredItem === item.id 
+                      ? 'hsla(var(--roadmap-status-new) / 0.04)' 
+                      : 'white',
+                  borderLeft: isSelected ? '3px solid hsl(var(--roadmap-status-new))' : '3px solid transparent'
+                }}
+                onClick={() => setSelectedRow(isSelected ? null : item.id)}
+                onMouseEnter={() => setHoveredItem(item.id)}
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                {/* Request Info with Status Indicator */}
                 <div 
-                  key={item.id}
-                  className={cn(
-                    "flex border-b border-border hover:bg-secondary transition-colors",
-                    hoveredItem === item.id && "bg-brand-gold/5",
-                    isRTL && "flex-row-reverse"
-                  )}
-                  onMouseEnter={() => setHoveredItem(item.id)}
-                  onMouseLeave={() => setHoveredItem(null)}
+                  className={cn("shrink-0 px-3 py-3 overflow-hidden", isRTL ? "border-l" : "border-r")}
+                  style={{ 
+                    width: `${firstColumnWidth}px`, 
+                    direction: isRTL ? 'rtl' : 'ltr', 
+                    textAlign: isRTL ? 'right' : 'left',
+                    borderColor: 'hsl(var(--roadmap-sandstone))'
+                  }}
                 >
-                {/* Request Info - No tooltip here */}
-                <div 
-                  className={cn("shrink-0 px-3 py-3 overflow-hidden", isRTL ? "border-l border-border" : "border-r border-border")}
-                  style={{ width: `${firstColumnWidth}px`, direction: isRTL ? 'rtl' : 'ltr', textAlign: isRTL ? 'right' : 'left' }}
-                >
-                  <div className="flex items-start gap-2">
-                    <div className="flex items-center gap-0.5 shrink-0">
-                      <span className="text-sm font-medium text-foreground">{item.rank}</span>
-                      {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
-                        <Lock className="h-3 w-3 text-brand-gold" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0 overflow-hidden">
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedRequestId(item.id);
-                        }}
-                        className="text-xs text-brand-gold font-medium hover:underline cursor-pointer bg-transparent border-none p-0"
+                  <div className="flex items-start gap-3">
+                    {/* Status Indicator */}
+                    <div className="flex flex-col items-center shrink-0 pt-0.5">
+                      <div 
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: STATUS_COLORS[item.status] }}
+                      />
+                      <span 
+                        className="text-[9px] font-bold mt-0.5 tracking-wider"
+                        style={{ color: STATUS_COLORS[item.status] }}
                       >
-                        {item.id}
-                      </button>
-                      <div className="text-sm font-medium text-foreground truncate leading-tight">
+                        {STATUS_ABBR[item.status]}
+                      </span>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0 overflow-hidden">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                          #{item.rank}
+                        </span>
+                        {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
+                          <Lock className="h-3 w-3" style={{ color: 'hsl(var(--roadmap-status-new))' }} />
+                        )}
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedRequestId(item.id);
+                          }}
+                          className="text-xs font-medium hover:underline cursor-pointer bg-transparent border-none p-0"
+                          style={{ color: 'hsl(var(--roadmap-status-new))' }}
+                        >
+                          {item.id}
+                        </button>
+                      </div>
+                      <div className="text-sm font-medium truncate leading-tight mt-0.5" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
                         {isRTL ? item.titleAr : item.titleEn}
                       </div>
-                      <div className="text-xs text-muted-foreground mt-0.5 truncate">
+                      <div className="text-xs mt-0.5 truncate" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                         {isRTL ? item.ownerAr : item.ownerEn}
                         <span className="mx-1">·</span>
-                        <span style={{ color: statusColor }}>{isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}</span>
-                        <span className="mx-1">·</span>
-                        <span className="text-brand-gold">{isRTL ? PLATFORM_INFO[item.platform]?.nameAr : item.platform}</span>
+                        <span style={{ color: 'hsl(var(--roadmap-status-new))' }}>
+                          {isRTL ? PLATFORM_INFO[item.platform]?.nameAr : item.platform}
+                        </span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Timeline Bar - Tooltip only here */}
+                {/* Timeline Bar */}
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="flex-1 relative py-3 px-2 cursor-pointer">
                         {/* Date labels */}
-                        <div className="absolute text-xs text-muted-foreground" style={{ left: barPos.left, top: '2px' }}>
+                        <div 
+                          className="absolute text-xs"
+                          style={{ left: barPos.left, top: '2px', color: 'hsl(var(--roadmap-fossil))' }}
+                        >
                           {formatDateLabel(item.startDate)}
                         </div>
                         <div 
-                          className="absolute text-xs text-muted-foreground" 
-                          style={{ left: `calc(${barPos.left} + ${barPos.width})`, top: '2px', transform: 'translateX(-100%)' }}
+                          className="absolute text-xs" 
+                          style={{ 
+                            left: `calc(${barPos.left} + ${barPos.width})`, 
+                            top: '2px', 
+                            transform: 'translateX(-100%)',
+                            color: 'hsl(var(--roadmap-fossil))'
+                          }}
                         >
                           {formatDateLabel(item.endDate)}
                         </div>
 
-                        {/* Bar */}
+                        {/* Bar - UNIFORM gold gradient for all statuses */}
                         <div 
-                          className="absolute h-5 rounded-full"
+                          className="absolute h-[26px] rounded-full"
                           style={{ 
                             left: barPos.left, 
                             width: barPos.width, 
                             top: '50%', 
                             transform: 'translateY(-50%)',
-                            background: `linear-gradient(90deg, ${statusColor}40, ${statusColor}60)`,
-                            border: `1px solid ${statusColor}80`
+                            background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
                           }}
                         >
-                          {/* Milestones with date tooltip */}
+                          {/* Milestones */}
                           {showMilestones && item.milestones.map((ms) => {
                             const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
                             const msDate = new Date(ms.date);
                             const dateLabel = msDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' });
+                            
                             return (
                               <div
                                 key={ms.step}
                                 className={cn(
-                                  "absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-xs font-medium group cursor-pointer",
-                                  ms.state === 'complete' && "bg-brand-gold border-brand-gold text-primary-foreground",
-                                  ms.state === 'current' && "bg-card border-brand-gold text-brand-gold",
-                                  ms.state === 'pending' && "bg-card border-muted-foreground/30 text-muted-foreground"
+                                  "absolute w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center text-[10px] font-medium group cursor-pointer"
                                 )}
-                                style={{ left: `${pos}%`, top: '50%', transform: 'translate(-50%, -50%)' }}
+                                style={{ 
+                                  left: `${pos}%`, 
+                                  top: '50%', 
+                                  transform: 'translate(-50%, -50%)',
+                                  backgroundColor: ms.state === 'complete' 
+                                    ? 'hsl(var(--roadmap-milestone-complete))' 
+                                    : 'white',
+                                  borderColor: ms.state === 'complete' 
+                                    ? 'hsl(var(--roadmap-milestone-complete))'
+                                    : ms.state === 'current'
+                                      ? 'hsl(var(--roadmap-milestone-current))'
+                                      : 'hsl(var(--roadmap-milestone-pending))',
+                                  color: ms.state === 'complete' 
+                                    ? 'white'
+                                    : ms.state === 'current'
+                                      ? 'hsl(var(--roadmap-milestone-current))'
+                                      : 'hsl(var(--roadmap-fossil))',
+                                  boxShadow: ms.state === 'current' 
+                                    ? '0 0 8px hsla(var(--roadmap-milestone-current) / 0.5)' 
+                                    : 'none'
+                                }}
                                 title={dateLabel}
                               >
-                                {ms.state === 'complete' ? '✓' : ms.step}
+                                {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : ms.step}
                                 {/* Date tooltip on hover */}
-                                <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-foreground text-primary-foreground text-xs px-1.5 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                <span 
+                                  className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs px-1.5 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
+                                  style={{ 
+                                    backgroundColor: 'hsl(var(--roadmap-charcoal))',
+                                    color: 'white'
+                                  }}
+                                >
                                   {dateLabel}
                                 </span>
                               </div>
@@ -827,33 +1008,58 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       </div>
                     </TooltipTrigger>
 
-                    {/* Tooltip content - shows on hover over timeline only */}
-                    <TooltipContent side="bottom" align="start" className="w-80 p-0 bg-card shadow-lg border border-border">
-                      <div className="p-3 border-b border-border">
-                        <div className="text-xs text-brand-gold font-medium">{item.id}</div>
-                        <div className="text-sm font-semibold text-foreground">{isRTL ? item.titleAr : item.titleEn}</div>
+                    {/* Tooltip content */}
+                    <TooltipContent 
+                      side="bottom" 
+                      align="start" 
+                      className="w-80 p-0 shadow-lg rounded-xl overflow-hidden"
+                      style={{ 
+                        backgroundColor: 'white',
+                        border: '1px solid hsl(var(--roadmap-sandstone))'
+                      }}
+                    >
+                      <div className="p-3 border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
+                        <div className="text-xs font-medium" style={{ color: 'hsl(var(--roadmap-status-new))' }}>{item.id}</div>
+                        <div className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{isRTL ? item.titleAr : item.titleEn}</div>
                         <span 
                           className="inline-block mt-1.5 px-2 py-0.5 text-xs rounded-full"
-                          style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
+                          style={{ 
+                            backgroundColor: `${STATUS_COLORS[item.status]}20`, 
+                            color: STATUS_COLORS[item.status] 
+                          }}
                         >
                           {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
                         </span>
                       </div>
                       {item.risks.length > 0 && (
-                        <div className="p-3 border-b border-border">
-                          <div className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
+                        <div className="p-3 border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
+                          <div className="text-xs font-medium mb-1.5 flex items-center gap-2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                             {t.risks}
-                            <span className="bg-muted px-1.5 py-0.5 rounded text-xs">{item.risks.length}</span>
+                            <span 
+                              className="px-1.5 py-0.5 rounded text-xs"
+                              style={{ backgroundColor: 'hsl(var(--roadmap-parchment))' }}
+                            >
+                              {item.risks.length}
+                            </span>
                           </div>
                           {item.risks.map(risk => (
                             <div key={risk.sno} className="flex items-center justify-between text-xs py-0.5">
-                              <span className="text-muted-foreground">{risk.sno}. {risk.title}</span>
-                              <span className={cn(
-                                "text-xs px-1.5 py-0.5 rounded",
-                                risk.status === 'resolved' && "bg-success/10 text-success",
-                                risk.status === 'pending' && "bg-brand-gold/10 text-brand-gold",
-                                risk.status === 'blocked' && "bg-destructive/10 text-destructive"
-                              )}>
+                              <span style={{ color: 'hsl(var(--roadmap-fossil))' }}>{risk.sno}. {risk.title}</span>
+                              <span 
+                                className="text-xs px-1.5 py-0.5 rounded"
+                                style={{
+                                  backgroundColor: risk.status === 'resolved' 
+                                    ? 'hsla(var(--roadmap-milestone-complete) / 0.1)'
+                                    : risk.status === 'pending'
+                                      ? 'hsla(var(--roadmap-status-new) / 0.1)'
+                                      : 'hsla(var(--roadmap-today) / 0.1)',
+                                  color: risk.status === 'resolved' 
+                                    ? 'hsl(var(--roadmap-milestone-complete))'
+                                    : risk.status === 'pending'
+                                      ? 'hsl(var(--roadmap-status-new))'
+                                      : 'hsl(var(--roadmap-today))'
+                                }}
+                              >
                                 {risk.status}
                               </span>
                             </div>
@@ -862,19 +1068,33 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       )}
                       {item.dependencies.length > 0 && (
                         <div className="p-3">
-                          <div className="text-xs font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
+                          <div className="text-xs font-medium mb-1.5 flex items-center gap-2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                             {t.dependencies}
-                            <span className="bg-muted px-1.5 py-0.5 rounded text-xs">{item.dependencies.length}</span>
+                            <span 
+                              className="px-1.5 py-0.5 rounded text-xs"
+                              style={{ backgroundColor: 'hsl(var(--roadmap-parchment))' }}
+                            >
+                              {item.dependencies.length}
+                            </span>
                           </div>
                           {item.dependencies.map(dep => (
                             <div key={dep.sno} className="flex items-center justify-between text-xs py-0.5">
-                              <span className="text-muted-foreground">{dep.sno}. {dep.title}</span>
-                              <span className={cn(
-                                "text-xs px-1.5 py-0.5 rounded",
-                                dep.status === 'resolved' && "bg-success/10 text-success",
-                                dep.status === 'pending' && "bg-brand-gold/10 text-brand-gold",
-                                dep.status === 'blocked' && "bg-destructive/10 text-destructive"
-                              )}>
+                              <span style={{ color: 'hsl(var(--roadmap-fossil))' }}>{dep.sno}. {dep.title}</span>
+                              <span 
+                                className="text-xs px-1.5 py-0.5 rounded"
+                                style={{
+                                  backgroundColor: dep.status === 'resolved' 
+                                    ? 'hsla(var(--roadmap-milestone-complete) / 0.1)'
+                                    : dep.status === 'pending'
+                                      ? 'hsla(var(--roadmap-status-new) / 0.1)'
+                                      : 'hsla(var(--roadmap-today) / 0.1)',
+                                  color: dep.status === 'resolved' 
+                                    ? 'hsl(var(--roadmap-milestone-complete))'
+                                    : dep.status === 'pending'
+                                      ? 'hsl(var(--roadmap-status-new))'
+                                      : 'hsl(var(--roadmap-today))'
+                                }}
+                              >
                                 {dep.status}
                               </span>
                             </div>
@@ -882,7 +1102,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         </div>
                       )}
                       {item.risks.length === 0 && item.dependencies.length === 0 && (
-                        <div className="p-3 text-xs text-muted-foreground text-center">
+                        <div className="p-3 text-xs text-center" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                           {isRTL ? 'لا توجد مخاطر أو اعتماديات' : 'No risks or dependencies'}
                         </div>
                       )}
@@ -895,13 +1115,18 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
+      {/* Legend */}
+      <RoadmapLegend 
+        isVisible={showLegend} 
+        onToggle={() => setShowLegend(!showLegend)} 
+        isRTL={isRTL}
+      />
+
       {/* Print Styles */}
       <style>{`
         @media print {
           .print\\:hidden { display: none !important; }
           .print\\:bg-white { background: white !important; }
-          .print\\:border-b-2 { border-bottom-width: 2px !important; }
-          .print\\:gap-4 { gap: 1rem !important; }
           body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
           @page { size: A3 landscape; margin: 1cm; }
         }
