@@ -99,51 +99,26 @@ export function useCreateUser() {
 
   return useMutation({
     mutationFn: async (input: CreateUserInput) => {
-      // Check if email already exists
-      const { data: existing, error: checkError } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', input.email)
-        .maybeSingle();
-
-      if (checkError) throw checkError;
-      if (existing) {
-        throw new Error('A user with this email already exists.');
-      }
-
-      // Generate a UUID for the new user
-      const newUserId = crypto.randomUUID();
-      const fullName = `${input.firstName} ${input.lastName}`.trim();
-
-      // Create the profile
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: newUserId,
-          email: input.email,
-          full_name: fullName,
+      // Call the edge function to create the user
+      const { data, error } = await supabase.functions.invoke('create-user', {
+        body: {
+          firstName: input.firstName,
+          lastName: input.lastName,
+          email: input.email.toLowerCase(),
           status: input.status,
-          role: 'user' // Default system role
-        });
+          roleIds: input.roleIds,
+        },
+      });
 
-      if (profileError) throw profileError;
-
-      // Create user_product_roles entries for each selected role
-      if (input.roleIds.length > 0) {
-        const roleInserts = input.roleIds.map(roleId => ({
-          user_id: newUserId,
-          role_id: roleId,
-          business_lines: input.businessLines || []
-        }));
-
-        const { error: rolesError } = await supabase
-          .from('user_product_roles')
-          .insert(roleInserts);
-
-        if (rolesError) throw rolesError;
+      if (error) {
+        throw new Error(error.message || 'Failed to create user');
       }
 
-      return { id: newUserId, email: input.email, full_name: fullName };
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      return data.user;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users-list'] });
