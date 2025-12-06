@@ -244,7 +244,7 @@ const App = () => (
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/kanban-boards" element={<KanbanBoardsPage />} />
-              <Route path="/enterprise/business-requests" element={<BusinessRequests />} />
+              
               
               {/* Mining */}
               <Route path="/mining" element={<MiningComingSoon />} />
