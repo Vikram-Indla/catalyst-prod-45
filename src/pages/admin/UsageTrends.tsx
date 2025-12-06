@@ -24,16 +24,13 @@ export default function UsageTrends() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="h-8 w-8 text-brand-gold" />
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Usage Trends</h1>
-              <p className="text-muted-foreground mt-2">
-                Monitor platform usage, user activity, and system performance metrics
-              </p>
-            </div>
+      <div className="h-full flex flex-col bg-background">
+        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Usage Trends</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Monitor platform usage, user activity, and system performance metrics
+            </p>
           </div>
           <Select defaultValue="30">
             <SelectTrigger className="w-[180px]">
@@ -47,6 +44,7 @@ export default function UsageTrends() {
             </SelectContent>
           </Select>
         </div>
+        <div className="flex-1 overflow-auto p-6 space-y-6">
 
         {/* Key Metrics */}
         <div className="grid gap-4 md:grid-cols-4">
@@ -201,6 +199,7 @@ export default function UsageTrends() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </AdminGuard>
   );

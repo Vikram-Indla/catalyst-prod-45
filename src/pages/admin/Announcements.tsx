@@ -34,22 +34,20 @@ export default function Announcements() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Megaphone className="h-8 w-8 text-brand-gold" />
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Add Announcements</h1>
-              <p className="text-muted-foreground mt-2">
-                Notify users about system updates, company updates, and other announcements.
-              </p>
-            </div>
+      <div className="h-full flex flex-col bg-background">
+        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Add Announcements</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Notify users about system updates, company updates, and other announcements.
+            </p>
           </div>
           <Button className="bg-brand-gold hover:bg-brand-gold-hover">
             <Plus className="h-4 w-4 mr-2" />
             Create Announcement
           </Button>
         </div>
+        <div className="flex-1 overflow-auto p-6 space-y-6">
 
         <div className="grid gap-4 md:grid-cols-3">
           <Card>
@@ -65,7 +63,7 @@ export default function Announcements() {
               <CardTitle className="text-sm font-medium">Active</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{stats.active}</div>
+              <div className="text-2xl font-bold text-success-600">{stats.active}</div>
             </CardContent>
           </Card>
           <Card>
@@ -119,7 +117,7 @@ export default function Announcements() {
                         <TableCell>
                           <Badge
                             variant={announcement.is_active ? 'default' : 'secondary'}
-                            className={announcement.is_active ? 'bg-green-100 text-green-800' : ''}
+                            className={announcement.is_active ? 'bg-success/20 text-success-600' : ''}
                           >
                             {announcement.is_active ? 'Active' : 'Inactive'}
                           </Badge>
@@ -186,6 +184,7 @@ export default function Announcements() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </AdminGuard>
   );

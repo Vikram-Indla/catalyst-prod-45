@@ -13,11 +13,11 @@ import { Switch } from '@/components/ui/switch';
 export default function Estimation() {
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="h-full flex flex-col bg-background">
+        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Estimation</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-2xl font-semibold text-foreground">Estimation</h1>
+            <p className="text-sm text-muted-foreground mt-1">
               Configure estimation systems, scales, and calculation methods
             </p>
           </div>
@@ -25,6 +25,7 @@ export default function Estimation() {
             Save Changes
           </Button>
         </div>
+        <div className="flex-1 overflow-auto p-6 space-y-6">
 
         <Card>
           <CardHeader>
@@ -172,6 +173,7 @@ export default function Estimation() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </AdminGuard>
   );

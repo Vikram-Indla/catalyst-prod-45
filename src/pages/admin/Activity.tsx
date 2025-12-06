@@ -55,11 +55,11 @@ export default function Activity() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="h-full flex flex-col bg-background">
+        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Activity</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-2xl font-semibold text-foreground">Activity</h1>
+            <p className="text-sm text-muted-foreground mt-1">
               Track user activity by users' names and roles. Access user profiles, roles, and announcements.
             </p>
           </div>
@@ -68,6 +68,7 @@ export default function Activity() {
             Export
           </Button>
         </div>
+        <div className="flex-1 overflow-auto p-6 space-y-6">
 
         <div className="grid gap-6 md:grid-cols-3">
           <Card>
@@ -193,6 +194,7 @@ export default function Activity() {
               )}
             </CardContent>
           </Card>
+        </div>
         </div>
       </div>
     </AdminGuard>

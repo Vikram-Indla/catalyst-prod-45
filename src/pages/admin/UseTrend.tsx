@@ -69,13 +69,14 @@ export default function UseTrend() {
 
   return (
     <AdminGuard>
-      <div className="p-6 space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Use Trend</h1>
-          <p className="text-muted-foreground mt-2">
+      <div className="h-full flex flex-col bg-background">
+        <div className="border-b bg-card px-6 py-4">
+          <h1 className="text-2xl font-semibold text-foreground">Use Trend</h1>
+          <p className="text-sm text-muted-foreground mt-1">
             Track user activity over time with login charts and invalid login tracking.
           </p>
         </div>
+        <div className="flex-1 overflow-auto p-6 space-y-6">
 
         <div className="grid gap-4 md:grid-cols-4">
           <Card>
@@ -208,6 +209,7 @@ export default function UseTrend() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </AdminGuard>
   );
