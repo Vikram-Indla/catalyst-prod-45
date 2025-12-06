@@ -16,7 +16,13 @@ export interface StarredItem {
   created_at: string;
 }
 
-export function useStarredItems() {
+interface UseStarredItemsOptions {
+  filterByRoomType?: RoomType | null;
+  limit?: number;
+}
+
+export function useStarredItems(options: UseStarredItemsOptions = {}) {
+  const { filterByRoomType = null, limit = 10 } = options;
   const [starredItems, setStarredItems] = useState<StarredItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
@@ -26,11 +32,22 @@ export function useStarredItems() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("starred_items")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
+
+      // Apply room type filter if specified
+      if (filterByRoomType) {
+        query = query.eq("room_type", filterByRoomType);
+      }
+
+      if (limit) {
+        query = query.limit(limit);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setStarredItems(data || []);
@@ -126,7 +143,7 @@ export function useStarredItems() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [filterByRoomType, limit]);
 
   return { starredItems, loading, toggleStar, isStarred, refetch: fetchStarredItems };
 }

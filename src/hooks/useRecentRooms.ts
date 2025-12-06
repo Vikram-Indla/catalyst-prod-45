@@ -16,7 +16,13 @@ export interface RecentRoom {
   access_count: number;
 }
 
-export function useRecentRooms() {
+interface UseRecentRoomsOptions {
+  filterByRoomType?: RoomType | null;
+  limit?: number;
+}
+
+export function useRecentRooms(options: UseRecentRoomsOptions = {}) {
+  const { filterByRoomType = null, limit = 10 } = options;
   const [recentRooms, setRecentRooms] = useState<RecentRoom[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,12 +31,19 @@ export function useRecentRooms() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
+      let query = supabase
         .from("recent_activity")
         .select("*")
         .eq("user_id", user.id)
         .order("last_accessed_at", { ascending: false })
-        .limit(10);
+        .limit(limit);
+
+      // Apply room type filter if specified
+      if (filterByRoomType) {
+        query = query.eq("room_type", filterByRoomType);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       setRecentRooms(data || []);
@@ -92,7 +105,7 @@ export function useRecentRooms() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [filterByRoomType, limit]);
 
-  return { recentRooms, loading, trackRoomAccess };
+  return { recentRooms, loading, trackRoomAccess, refetch: fetchRecentRooms };
 }
