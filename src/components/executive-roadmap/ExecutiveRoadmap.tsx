@@ -384,27 +384,24 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* KPI Dashboard */}
-      <div className="grid grid-cols-5 gap-3 px-4 sm:px-6 py-4 border-b border-[#E8E4DD] bg-white print:gap-4">
+      {/* KPI Dashboard - Compact One-liner */}
+      <div className="flex gap-2 px-4 sm:px-6 py-3 border-b border-[#E8E4DD] bg-white print:gap-3">
         {kpiCards.map((kpi) => (
           <button
             key={kpi.status}
             onClick={() => setActiveKPI(activeKPI === kpi.status ? null : kpi.status)}
             className={cn(
-              "text-left p-3 sm:p-4 rounded-lg transition-all cursor-pointer",
-              activeKPI === kpi.status 
-                ? "bg-[#F7F1E8] ring-2 ring-[#C69C6D]" 
-                : "bg-[#F5F2ED] hover:bg-[#E8E4DD]"
+              "flex-1 text-left px-3 py-2 rounded border border-[#E8E4DD] transition-all cursor-pointer bg-white hover:bg-[#FAFAFA]",
+              activeKPI === kpi.status && "border-[#C69C6D] bg-[#FBF8F4]"
             )}
-            style={{ borderLeft: `3px solid ${STATUS_COLORS[kpi.status]}` }}
           >
-            <div className="text-[10px] sm:text-xs text-[#5C5650] font-medium uppercase tracking-wide truncate">
+            <div className="text-[10px] text-[#5C5650] font-medium uppercase tracking-wide">
               {kpi.label}
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-[#2C2825] mt-1">
+            <div className="text-lg font-bold text-[#2C2825] leading-tight">
               {statusCounts[kpi.status]}
             </div>
-            <div className="text-[10px] sm:text-xs text-[#9A9389] truncate">
+            <div className="text-[10px] text-[#9A9389]">
               {kpi.subtitle}
             </div>
           </button>
