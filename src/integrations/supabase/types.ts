@@ -4689,6 +4689,7 @@ export type Database = {
       }
       milestones: {
         Row: {
+          business_request_id: string | null
           category: string | null
           category_id: string | null
           completed_date: string | null
@@ -4705,6 +4706,7 @@ export type Database = {
           work_item_id: string | null
         }
         Insert: {
+          business_request_id?: string | null
           category?: string | null
           category_id?: string | null
           completed_date?: string | null
@@ -4721,6 +4723,7 @@ export type Database = {
           work_item_id?: string | null
         }
         Update: {
+          business_request_id?: string | null
           category?: string | null
           category_id?: string | null
           completed_date?: string | null
@@ -4737,6 +4740,13 @@ export type Database = {
           work_item_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "milestones_business_request_id_fkey"
+            columns: ["business_request_id"]
+            isOneToOne: false
+            referencedRelation: "business_requests"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "milestones_category_id_fkey"
             columns: ["category_id"]

@@ -38,6 +38,7 @@ import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
 import { LinksViewTab } from './drawer-tabs/LinksViewTab';
 import { DiscussionsViewTab } from './drawer-tabs/DiscussionsViewTab';
 import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
+import { MilestonesViewTab } from './drawer-tabs/MilestonesViewTab';
 import { WorkflowViewerModal } from './WorkflowViewerModal';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
@@ -150,6 +151,7 @@ interface BusinessRequestDrawerProps {
 const VIEW_TABS = [
   { value: 'demand-details', label: 'Demand Details' },
   { value: 'business-score', label: 'Business Score' },
+  { value: 'milestones', label: 'Milestones' },
   { value: 'links', label: 'Links' },
   { value: 'discussions', label: 'Discussions' },
   { value: 'audit-history', label: 'Audit History' },
@@ -565,6 +567,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   requestId={requestId || undefined}
                   onDirtyChange={handleDirtyChange}
                 />
+              </TabsContent>
+              <TabsContent value="milestones" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+                {requestId && <MilestonesViewTab requestId={requestId} />}
               </TabsContent>
               <TabsContent value="links" className="m-0 focus-visible:outline-none">
                 {requestId && <LinksViewTab requestId={requestId} />}
