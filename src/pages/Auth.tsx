@@ -6,6 +6,7 @@ import { IntegrationBadge } from "@/components/brand/IntegrationBadge";
 import { getLastRoute, clearLastRoute } from "@/hooks/useSessionPersistence";
 import { supabase } from "@/integrations/supabase/client";
 import { ForcePasswordReset } from "@/components/auth/ForcePasswordReset";
+import { PasswordInput } from "@/components/auth/PasswordInput";
 
 // TODO: Replace this default-password + first-login-reset flow with a full email-based 
 // invitation + activation flow using the Catalyst HTML email template when we move to production.
@@ -18,6 +19,7 @@ export default function Auth() {
   const [userType, setUserType] = useState<"existing" | "external">("existing");
   const [mustChangePassword, setMustChangePassword] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const { signIn, user, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -65,30 +67,36 @@ export default function Auth() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setLoginError(null);
     
     const { error } = await signIn(email, password);
     
-    if (!error) {
-      // Get the current user after successful login
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      
-      if (currentUser) {
-        // Check if password change is required
-        const needsPasswordChange = await checkMustChangePassword(currentUser.id);
-        
-        if (needsPasswordChange) {
-          setMustChangePassword(true);
-          setCurrentUserId(currentUser.id);
-          setIsLoading(false);
-          return;
-        }
-      }
-      
-      // Redirect to last visited page or default to home
-      const lastRoute = getLastRoute();
-      clearLastRoute(); // Clear after use to prevent stale redirects
-      navigate(lastRoute);
+    if (error) {
+      // Set inline error message
+      setLoginError("The email or password you entered is incorrect.");
+      setIsLoading(false);
+      return;
     }
+    
+    // Get the current user after successful login
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    
+    if (currentUser) {
+      // Check if password change is required
+      const needsPasswordChange = await checkMustChangePassword(currentUser.id);
+      
+      if (needsPasswordChange) {
+        setMustChangePassword(true);
+        setCurrentUserId(currentUser.id);
+        setIsLoading(false);
+        return;
+      }
+    }
+    
+    // Redirect to last visited page or default to home
+    const lastRoute = getLastRoute();
+    clearLastRoute(); // Clear after use to prevent stale redirects
+    navigate(lastRoute);
     
     setIsLoading(false);
   };
@@ -345,20 +353,38 @@ export default function Auth() {
                       }}>
                         Email Address
                       </label>
-                      <input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="name@company.com" required className="w-full transition-all outline-none" style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        padding: "14px 18px",
-                        border: "2px solid rgba(26, 26, 26, 0.1)",
-                        borderRadius: "10px",
-                        fontSize: "1rem",
-                        backgroundColor: "#feffff"
-                      }} onFocus={e => {
-                        e.target.style.borderColor = "#c69c6d";
-                        e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
-                      }} onBlur={e => {
-                        e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
-                        e.target.style.boxShadow = "none";
-                      }} />
+                      <input 
+                        id="email" 
+                        type="email" 
+                        value={email} 
+                        onChange={e => {
+                          setEmail(e.target.value);
+                          setLoginError(null); // Clear error on input change
+                        }} 
+                        placeholder="name@company.com" 
+                        required 
+                        className="w-full transition-all outline-none" 
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          padding: "14px 18px",
+                          border: `2px solid ${loginError ? '#dc2626' : 'rgba(26, 26, 26, 0.1)'}`,
+                          borderRadius: "10px",
+                          fontSize: "1rem",
+                          backgroundColor: "#feffff"
+                        }} 
+                        onFocus={e => {
+                          if (!loginError) {
+                            e.target.style.borderColor = "#c69c6d";
+                            e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
+                          }
+                        }} 
+                        onBlur={e => {
+                          if (!loginError) {
+                            e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
+                            e.target.style.boxShadow = "none";
+                          }
+                        }} 
+                      />
                     </div>
 
                     {/* Password Field */}
@@ -371,20 +397,29 @@ export default function Auth() {
                       }}>
                         Password
                       </label>
-                      <input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" required className="w-full transition-all outline-none" style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        padding: "14px 18px",
-                        border: "2px solid rgba(26, 26, 26, 0.1)",
-                        borderRadius: "10px",
-                        fontSize: "1rem",
-                        backgroundColor: "#feffff"
-                      }} onFocus={e => {
-                        e.target.style.borderColor = "#c69c6d";
-                        e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
-                      }} onBlur={e => {
-                        e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
-                        e.target.style.boxShadow = "none";
-                      }} />
+                      <PasswordInput
+                        id="password"
+                        value={password}
+                        onChange={(val) => {
+                          setPassword(val);
+                          setLoginError(null); // Clear error on input change
+                        }}
+                        placeholder="Enter your password"
+                        required
+                        hasError={!!loginError}
+                      />
+                      {/* Inline Error Message */}
+                      {loginError && (
+                        <p 
+                          className="mt-2 text-sm"
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            color: "#dc2626"
+                          }}
+                        >
+                          {loginError}
+                        </p>
+                      )}
                     </div>
 
                     {/* Form Options Row */}
@@ -433,7 +468,8 @@ export default function Auth() {
                       borderRadius: "10px",
                       fontSize: "1rem",
                       border: "none",
-                      cursor: isLoading ? "not-allowed" : "pointer"
+                      cursor: isLoading ? "not-allowed" : "pointer",
+                      opacity: isLoading ? 0.7 : 1
                     }} onMouseEnter={e => {
                       if (!isLoading) {
                         e.currentTarget.style.transform = "translateY(-2px)";
