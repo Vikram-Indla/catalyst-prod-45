@@ -177,9 +177,7 @@ function CatalystShellContent() {
           </>
         )}
         <main className="flex-1 overflow-auto w-full min-w-0">
-          <div className="p-3 sm:p-4 md:p-6">
-            <AnnouncementBanner />
-          </div>
+          <AnnouncementBanner />
           <Outlet />
         </main>
       </div>
