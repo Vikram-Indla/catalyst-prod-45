@@ -298,7 +298,7 @@ export function CatalystHeader() {
           </nav>
 
           {/* Right Side Actions - Compact on mobile, full on desktop */}
-          <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
+          <div className="flex items-center gap-0 shrink-0">
             {/* Create Button - Always visible */}
             <CreateDropdown />
 
