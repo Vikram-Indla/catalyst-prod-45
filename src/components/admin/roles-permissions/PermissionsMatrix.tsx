@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -7,25 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { ProductRole, useAllRolePermissions } from '@/hooks/useProductRoles';
+import { ProductRole, useAllRolePermissions, PERMISSION_GROUPS } from '@/hooks/useProductRoles';
 import { cn } from '@/lib/utils';
 
 interface PermissionsMatrixProps {
   roles: ProductRole[];
 }
-
-const PERMISSION_GROUPS = [
-  'View Demands',
-  'CreateEdit Demands',
-  'Workflow Actions',
-  'Budget Tab',
-  'Risks Tab',
-  'Milestones Tab',
-  'Links Tab',
-  'Export',
-  'Import',
-  'Product Settings',
-];
 
 const PERMISSION_LEVEL_STYLES: Record<string, string> = {
   'Full': 'text-green-600 font-medium',

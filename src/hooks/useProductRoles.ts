@@ -10,6 +10,7 @@ export interface ProductRole {
   is_active: boolean;
   scope: string;
   created_at: string;
+  updated_at: string;
   user_count?: number;
 }
 
@@ -41,11 +42,40 @@ export interface UserPermissionOverride {
   module: string;
 }
 
+export const PERMISSION_GROUPS = [
+  'View Demands',
+  'CreateEdit Demands',
+  'Workflow Actions',
+  'Budget Tab',
+  'Risks Tab',
+  'Milestones Tab',
+  'Links Tab',
+  'Export',
+  'Import',
+  'Product Settings',
+] as const;
+
+export type PermissionGroup = typeof PERMISSION_GROUPS[number];
+export type PermissionLevel = 'Full' | 'View only' | 'Own only' | 'None';
+
+// Default permissions for new roles
+const DEFAULT_PERMISSIONS: Record<PermissionGroup, PermissionLevel> = {
+  'View Demands': 'View only',
+  'CreateEdit Demands': 'None',
+  'Workflow Actions': 'None',
+  'Budget Tab': 'None',
+  'Risks Tab': 'None',
+  'Milestones Tab': 'None',
+  'Links Tab': 'None',
+  'Export': 'None',
+  'Import': 'None',
+  'Product Settings': 'None',
+};
+
 export function useProductRoles() {
-  const { data: roles, isLoading, error } = useQuery({
+  const { data: roles, isLoading, error, refetch } = useQuery({
     queryKey: ['product-roles'],
     queryFn: async () => {
-      // Fetch roles
       const { data: rolesData, error: rolesError } = await supabase
         .from('product_roles')
         .select('*')
@@ -53,14 +83,12 @@ export function useProductRoles() {
 
       if (rolesError) throw rolesError;
 
-      // Fetch user counts per role
       const { data: userCounts, error: countsError } = await supabase
         .from('user_product_roles')
         .select('role_id');
 
       if (countsError) throw countsError;
 
-      // Count users per role
       const countMap = (userCounts || []).reduce((acc, ur) => {
         acc[ur.role_id] = (acc[ur.role_id] || 0) + 1;
         return acc;
@@ -73,7 +101,7 @@ export function useProductRoles() {
     }
   });
 
-  return { roles, isLoading, error };
+  return { roles, isLoading, error, refetch };
 }
 
 export function useRolePermissions(roleId: string | null) {
@@ -114,7 +142,6 @@ export function useUsersWithRole(roleId: string | null) {
     queryFn: async () => {
       if (!roleId) return [];
 
-      // Fetch users with this role
       const { data: userRoles, error: rolesError } = await supabase
         .from('user_product_roles')
         .select('*')
@@ -124,7 +151,6 @@ export function useUsersWithRole(roleId: string | null) {
 
       if (!userRoles || userRoles.length === 0) return [];
 
-      // Fetch user profiles
       const userIds = userRoles.map(ur => ur.user_id);
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
@@ -133,7 +159,6 @@ export function useUsersWithRole(roleId: string | null) {
 
       if (profilesError) throw profilesError;
 
-      // Fetch overrides
       const { data: overrides, error: overridesError } = await supabase
         .from('user_permission_overrides')
         .select('user_id')
@@ -189,7 +214,6 @@ export function useSaveUserOverrides() {
       userId: string; 
       overrides: { permission_group: string; override_value: string }[] 
     }) => {
-      // Delete existing overrides for this user
       const { error: deleteError } = await supabase
         .from('user_permission_overrides')
         .delete()
@@ -198,7 +222,6 @@ export function useSaveUserOverrides() {
 
       if (deleteError) throw deleteError;
 
-      // Insert new overrides (only non-Inherited ones)
       const toInsert = overrides
         .filter(o => o.override_value !== 'Inherited')
         .map(o => ({
@@ -258,11 +281,188 @@ export function useUserProductRole(userId: string | null) {
         .from('user_product_roles')
         .select('*, role:product_roles(*)')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') throw error;
+      if (error) throw error;
       return data;
     },
     enabled: !!userId
+  });
+}
+
+// === CRUD Mutations for Roles ===
+
+export function useCreateRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      name, 
+      description, 
+      is_active,
+      permissions
+    }: { 
+      name: string; 
+      description: string; 
+      is_active: boolean;
+      permissions?: Record<PermissionGroup, PermissionLevel>;
+    }) => {
+      // Generate code from name
+      const code = name.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+
+      // Create role
+      const { data: role, error: roleError } = await supabase
+        .from('product_roles')
+        .insert({
+          name,
+          code,
+          description,
+          is_active,
+          scope: 'Product'
+        })
+        .select()
+        .single();
+
+      if (roleError) throw roleError;
+
+      // Create permissions for the role
+      const permsToUse = permissions || DEFAULT_PERMISSIONS;
+      const permissionInserts = PERMISSION_GROUPS.map(group => ({
+        role_id: role.id,
+        permission_group: group,
+        permission_level: permsToUse[group] || 'None'
+      }));
+
+      const { error: permsError } = await supabase
+        .from('product_role_permissions')
+        .insert(permissionInserts);
+
+      if (permsError) throw permsError;
+
+      return role as ProductRole;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['product-roles'] });
+      queryClient.invalidateQueries({ queryKey: ['all-role-permissions'] });
+      toast.success('Role created successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to create role: ' + (error as Error).message);
+    }
+  });
+}
+
+export function useUpdateRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      id, 
+      name, 
+      description, 
+      is_active 
+    }: { 
+      id: string; 
+      name: string; 
+      description: string; 
+      is_active: boolean;
+    }) => {
+      const { data, error } = await supabase
+        .from('product_roles')
+        .update({
+          name,
+          description,
+          is_active,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as ProductRole;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['product-roles'] });
+      toast.success('Role updated successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to update role: ' + (error as Error).message);
+    }
+  });
+}
+
+export function useDeleteRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (roleId: string) => {
+      // Delete permissions first
+      const { error: permsError } = await supabase
+        .from('product_role_permissions')
+        .delete()
+        .eq('role_id', roleId);
+
+      if (permsError) throw permsError;
+
+      // Delete user-role assignments
+      const { error: assignError } = await supabase
+        .from('user_product_roles')
+        .delete()
+        .eq('role_id', roleId);
+
+      if (assignError) throw assignError;
+
+      // Delete role
+      const { error } = await supabase
+        .from('product_roles')
+        .delete()
+        .eq('id', roleId);
+
+      if (error) throw error;
+      return true;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['product-roles'] });
+      queryClient.invalidateQueries({ queryKey: ['all-role-permissions'] });
+      toast.success('Role deleted successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete role: ' + (error as Error).message);
+    }
+  });
+}
+
+export function useUpdateRolePermissions() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ 
+      roleId, 
+      permissions 
+    }: { 
+      roleId: string; 
+      permissions: Record<string, PermissionLevel>;
+    }) => {
+      // Update each permission
+      const updates = Object.entries(permissions).map(([group, level]) => 
+        supabase
+          .from('product_role_permissions')
+          .update({ permission_level: level, updated_at: new Date().toISOString() })
+          .eq('role_id', roleId)
+          .eq('permission_group', group)
+      );
+
+      await Promise.all(updates);
+      return true;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['role-permissions'] });
+      queryClient.invalidateQueries({ queryKey: ['all-role-permissions'] });
+      toast.success('Permissions updated successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to update permissions: ' + (error as Error).message);
+    }
   });
 }
