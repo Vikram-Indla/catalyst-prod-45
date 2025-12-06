@@ -187,15 +187,27 @@ export function useIsSuperAdmin() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return false;
 
-      // Check if user has Super Admin role
-      const { data: userRoles, error } = await supabase
+      // Check system-level admin role in user_roles table first
+      const { data: systemRoles, error: systemError } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+
+      if (!systemError && systemRoles?.some(r => r.role === 'admin')) {
+        return true;
+      }
+
+      // Also check product-level Super Admin role in user_product_roles
+      const { data: productRoles, error: productError } = await supabase
         .from('user_product_roles')
         .select('role_id, product_roles!inner(code)')
         .eq('user_id', user.id);
 
-      if (error) return false;
+      if (productError) return false;
 
-      return userRoles?.some((ur: any) => ur.product_roles?.code === 'super_admin') || false;
+      return productRoles?.some((ur: any) => 
+        ur.product_roles?.code === 'super_admin' || ur.product_roles?.code === 'product_admin'
+      ) || false;
     }
   });
 }
