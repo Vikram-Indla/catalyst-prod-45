@@ -49,8 +49,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         toast({
-          title: "Sign in failed",
-          description: error.message,
+          title: "Sign-in failed",
+          description: "The email or password you entered is incorrect.",
           variant: "destructive",
         });
       }
@@ -58,8 +58,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error };
     } catch (error: any) {
       toast({
-        title: "Sign in failed",
-        description: error.message,
+        title: "Sign-in failed",
+        description: "The email or password you entered is incorrect.",
         variant: "destructive",
       });
       return { error };

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { PasswordInput } from '@/components/auth/PasswordInput';
 
 interface ForcePasswordResetProps {
   onSuccess: () => void;
@@ -113,21 +114,6 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
 
       {/* Password Reset Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Error Message */}
-        {error && (
-          <div 
-            className="p-3 rounded-lg text-sm"
-            style={{
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              color: '#dc2626',
-              border: '1px solid rgba(239, 68, 68, 0.2)',
-              fontFamily: "'DM Sans', sans-serif"
-            }}
-          >
-            {error}
-          </div>
-        )}
-
         {/* New Password Field */}
         <div>
           <label htmlFor="newPassword" className="block mb-1.5" style={{
@@ -138,30 +124,16 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
           }}>
             New Password
           </label>
-          <input
+          <PasswordInput
             id="newPassword"
-            type="password"
             value={newPassword}
-            onChange={e => setNewPassword(e.target.value)}
+            onChange={(val) => {
+              setNewPassword(val);
+              setError(null);
+            }}
             placeholder="Enter your new password"
             required
-            className="w-full transition-all outline-none"
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              padding: "14px 18px",
-              border: "2px solid rgba(26, 26, 26, 0.1)",
-              borderRadius: "10px",
-              fontSize: "1rem",
-              backgroundColor: "#feffff"
-            }}
-            onFocus={e => {
-              e.target.style.borderColor = "#c69c6d";
-              e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
-            }}
-            onBlur={e => {
-              e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
-              e.target.style.boxShadow = "none";
-            }}
+            hasError={!!error}
           />
           <p className="mt-1.5 text-xs" style={{
             fontFamily: "'DM Sans', sans-serif",
@@ -181,31 +153,29 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
           }}>
             Confirm New Password
           </label>
-          <input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
+            onChange={(val) => {
+              setConfirmPassword(val);
+              setError(null);
+            }}
             placeholder="Confirm your new password"
             required
-            className="w-full transition-all outline-none"
-            style={{
-              fontFamily: "'DM Sans', sans-serif",
-              padding: "14px 18px",
-              border: "2px solid rgba(26, 26, 26, 0.1)",
-              borderRadius: "10px",
-              fontSize: "1rem",
-              backgroundColor: "#feffff"
-            }}
-            onFocus={e => {
-              e.target.style.borderColor = "#c69c6d";
-              e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
-            }}
-            onBlur={e => {
-              e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
-              e.target.style.boxShadow = "none";
-            }}
+            hasError={!!error}
           />
+          {/* Inline Error Message */}
+          {error && (
+            <p 
+              className="mt-2 text-sm"
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                color: "#dc2626"
+              }}
+            >
+              {error}
+            </p>
+          )}
         </div>
 
         {/* Submit Button */}
@@ -223,7 +193,8 @@ export function ForcePasswordReset({ onSuccess, userId }: ForcePasswordResetProp
             fontSize: "1rem",
             border: "none",
             cursor: isLoading ? "not-allowed" : "pointer",
-            marginTop: "8px"
+            marginTop: "8px",
+            opacity: isLoading ? 0.7 : 1
           }}
           onMouseEnter={e => {
             if (!isLoading) {
