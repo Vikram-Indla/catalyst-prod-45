@@ -321,8 +321,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       )}
       style={{ direction: isRTL ? 'rtl' : 'ltr' }}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[#E8E4DD] bg-white print:border-b-2">
+      {/* Header - hidden in print */}
+      <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-[#E8E4DD] bg-white print:hidden">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-[#C69C6D] flex items-center justify-center text-white font-bold text-sm">
             MIM
@@ -333,7 +333,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </div>
         </div>
 
-        <div className="flex items-center gap-2 print:hidden">
+        <div className="flex items-center gap-2">
           {/* Language toggle */}
           <div className="flex items-center bg-[#F5F2ED] rounded-lg p-1">
             <button
@@ -384,8 +384,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* KPI Dashboard - Compact One-liner */}
-      <div className="flex gap-2 px-4 sm:px-6 py-3 border-b border-[#E8E4DD] bg-white print:gap-3">
+      {/* KPI Dashboard - Compact One-liner - hidden in print */}
+      <div className="flex gap-2 px-4 sm:px-6 py-3 border-b border-[#E8E4DD] bg-white print:hidden">
         {kpiCards.map((kpi) => (
           <button
             key={kpi.status}
