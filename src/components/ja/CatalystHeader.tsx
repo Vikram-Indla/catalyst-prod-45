@@ -319,7 +319,7 @@ export function CatalystHeader() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9"
+                    className="h-8 w-8"
                     onClick={() => navigate('/admin/activity')}
                   >
                     <Settings className="h-4 w-4" />
@@ -336,7 +336,7 @@ export function CatalystHeader() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9"
+                    className="h-8 w-8"
                     onClick={() => setIsSearchOpen(true)}
                   >
                     <Search className="h-4 w-4" />
@@ -350,7 +350,7 @@ export function CatalystHeader() {
               {/* User Profile Menu - Always visible */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-brand-gold text-background text-sm font-semibold">
                         {user?.email?.charAt(0).toUpperCase() || 'U'}
