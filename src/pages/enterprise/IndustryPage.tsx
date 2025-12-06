@@ -1112,19 +1112,9 @@ export default function IndustryPage() {
                   </table>
                 </div>
                 
-                {/* + Create Row - Always visible at bottom with prominent styling */}
-                <div 
-                  className="flex items-center h-12 px-4 border-t border-[#E4E6EB] cursor-pointer hover:bg-[#FAFBFC] transition-colors bg-white"
-                  onClick={() => setCreateModalOpen(true)}
-                >
-                  <div className="flex items-center gap-2 text-[#5E6C84] hover:text-[#172B4D]">
-                    <Plus className="h-4 w-4" />
-                    <span className="text-[14px] font-medium">Create</span>
-                  </div>
-                </div>
 
                 {/* Pagination Footer */}
-                <div className="px-4 py-3 bg-white border-t flex items-center justify-between">
+                <div className="px-4 py-3 bg-white flex items-center justify-between">
                   <div className="text-[13px] text-[#5E6C84]">
                     Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
                   </div>
