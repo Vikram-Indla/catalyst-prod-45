@@ -700,7 +700,7 @@ export default function IndustryPage() {
 
   return (
     <TooltipProvider>
-      <div className="h-full flex flex-col bg-[#F4F5F7]">
+      <div className="h-full flex flex-col bg-background">
         {/* Header */}
         <div className="border-b border-[#E4E6EB] bg-white px-4 sm:px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
