@@ -44,7 +44,7 @@ const SORT_OPTIONS = [
 export function MilestonesTab({ entityId, entityType, hideCategory = false }: MilestonesTabProps) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  
   const [sortBy, setSortBy] = useState('title');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -203,17 +203,6 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
     setShowAddForm(false);
   };
 
-  const toggleExpand = (id: string) => {
-    setExpandedIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
-      }
-      return next;
-    });
-  };
 
   const getStateConfig = (state: string) => {
     return MILESTONE_STATES.find(s => s.value === state) || MILESTONE_STATES[0];
@@ -293,7 +282,6 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
       <div className="space-y-3">
         {sortedMilestones.map((milestone) => {
           const isEditing = editingId === milestone.id;
-          const isExpanded = expandedIds.has(milestone.id);
           const stateConfig = getStateConfig(milestone.state);
 
           if (isEditing) {
@@ -317,83 +305,47 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
               key={milestone.id}
               className="border rounded-lg bg-card overflow-hidden"
             >
-              {/* Collapsed View */}
-                <div
-                  className="p-4 cursor-pointer hover:bg-muted/30 transition-colors"
-                  onClick={() => toggleExpand(milestone.id)}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-foreground">{milestone.title}</h4>
-                      <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3.5 w-3.5" />
-                        <span>Start: {formatDate(milestone.start_date)}</span>
-                        <span className="mx-1">—</span>
-                        <span>Due: {formatDate(milestone.due_date)}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className={cn(
-                        "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
-                        stateConfig.color
-                      )}>
-                        {stateConfig.label}
-                      </span>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild onClick={e => e.stopPropagation()}>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => handleEdit(milestone)}>
-                            <Pencil className="h-4 w-4 mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => setDeleteId(milestone.id)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+              <div className="p-4 hover:bg-muted/30 transition-colors">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-foreground">{milestone.title}</h4>
+                    <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+                      <Calendar className="h-3.5 w-3.5" />
+                      <span>Start: {formatDate(milestone.start_date)}</span>
+                      <span className="mx-1">—</span>
+                      <span>Due: {formatDate(milestone.due_date)}</span>
                     </div>
                   </div>
-                </div>
-
-              {/* Expanded View */}
-              {isExpanded && (
-                <div className="px-4 pb-4 pt-0 border-t bg-muted/20">
-                  <div className="pt-3 space-y-2">
-                    <div className="text-sm text-foreground font-medium">{milestone.title}</div>
-                    <div>
-                      <span className="text-sm text-muted-foreground">State</span>
-                      <div className="mt-1">
-                        <span className={cn(
-                          "inline-block px-2 py-0.5 rounded text-xs font-medium uppercase",
-                          stateConfig.color
-                        )}>
-                          {stateConfig.label}
-                        </span>
-                      </div>
-                    </div>
-                    {!hideCategory && milestone.category && (
-                      <div>
-                        <span className="text-sm text-muted-foreground">Category</span>
-                        <div className="text-sm mt-0.5 capitalize">{milestone.category}</div>
-                      </div>
-                    )}
-                    {milestone.description && (
-                      <div>
-                        <span className="text-sm text-muted-foreground">Description</span>
-                        <div className="text-sm mt-0.5">{milestone.description}</div>
-                      </div>
-                    )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className={cn(
+                      "inline-flex items-center px-2 py-0.5 rounded text-xs font-medium",
+                      stateConfig.color
+                    )}>
+                      {stateConfig.label}
+                    </span>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleEdit(milestone)}>
+                          <Pencil className="h-4 w-4 mr-2" />
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() => setDeleteId(milestone.id)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           );
         })}
