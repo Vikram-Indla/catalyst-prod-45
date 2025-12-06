@@ -357,44 +357,56 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
         <div className="flex items-center gap-2">
           {/* Milestones toggle */}
-          {/* Milestones toggle */}
-          <div className="flex items-center gap-2 bg-[#F5F2ED] px-3 py-1.5 rounded-full">
-            <span className="text-[11px] text-[#5C5650] font-medium uppercase tracking-wide">{t.milestones}</span>
+          <div className="flex items-center gap-1.5 bg-[#F5F2ED] px-2.5 py-1.5 rounded-lg">
+            <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.milestones}</span>
             <Switch 
               checked={showMilestones} 
               onCheckedChange={setShowMilestones}
-              className="data-[state=checked]:bg-[#C69C6D] scale-[0.8]"
+              className="data-[state=checked]:bg-[#C69C6D] scale-75"
             />
           </div>
 
-          {/* Filter icon */}
-          <Filter 
-            className="h-4 w-4 text-[#8B7355] cursor-pointer hover:text-[#C69C6D] transition-colors" 
+          {/* Filters */}
+          <Button 
+            variant="ghost" 
+            size="icon"
             onClick={() => setFiltersDialogOpen(true)}
-          />
+            className="h-8 w-8 text-[#5C5650] hover:text-[#2C2825]"
+          >
+            <Filter className="h-4 w-4" />
+          </Button>
 
           {/* Language toggle */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center bg-[#F5F2ED] rounded-lg p-0.5">
             <button
               onClick={() => setLanguage('en')}
               className={cn(
-                "text-[11px] font-medium transition-all px-1",
-                language === 'en' ? "text-[#C69C6D]" : "text-[#8B7355] hover:text-[#5C5650]"
+                "px-2 py-1 text-[11px] font-medium rounded-md transition-all",
+                language === 'en' ? "bg-[#C69C6D] text-white" : "text-[#5C5650] hover:text-[#2C2825]"
               )}
             >
               EN
             </button>
-            <span className="text-[#C9C4BC] text-[11px]">|</span>
             <button
               onClick={() => setLanguage('ar')}
               className={cn(
-                "text-[11px] font-medium transition-all px-1",
-                language === 'ar' ? "text-[#C69C6D]" : "text-[#8B7355] hover:text-[#5C5650]"
+                "px-2 py-1 text-[11px] font-medium rounded-md transition-all",
+                language === 'ar' ? "bg-[#C69C6D] text-white" : "text-[#5C5650] hover:text-[#2C2825]"
               )}
             >
               عربي
             </button>
           </div>
+
+          {/* Export */}
+          <Button variant="ghost" size="icon" onClick={handleExport} className="h-8 w-8 text-[#5C5650] hover:text-[#2C2825]">
+            <FileDown className="h-4 w-4" />
+          </Button>
+
+          {/* Fullscreen */}
+          <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="h-8 w-8 text-[#5C5650] hover:text-[#2C2825]">
+            {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </Button>
         </div>
       </div>
 
