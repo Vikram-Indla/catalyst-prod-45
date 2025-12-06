@@ -307,12 +307,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         });
       }
     } else if (timeScale === 'quarterly') {
-      const quarters = ['Q4', 'Q1', 'Q2', 'Q3'];
-      const years = [2024, 2025, 2025, 2025];
-      for (let i = 0; i < 4; i++) {
+      // For quarterly, generate 12 month columns (will be grouped into quarters in header)
+      for (let i = 0; i < 12; i++) {
         cols.push({
-          label: quarters[i],
-          subLabel: String(years[i])
+          label: isRTL ? monthNamesAr[i] : monthNames[i],
+          subLabel: ''
         });
       }
     } else if (timeScale === 'yearly') {
@@ -322,6 +321,17 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
     return cols;
   }, [timeScale, isRTL]);
+
+  // Generate quarterly grouping data
+  const quarterlyGroups = useMemo(() => {
+    if (timeScale !== 'quarterly') return null;
+    return [
+      { label: 'Q4 2024', span: 3 }, // Oct, Nov, Dec
+      { label: 'Q1 2025', span: 3 }, // Jan, Feb, Mar
+      { label: 'Q2 2025', span: 3 }, // Apr, May, Jun
+      { label: 'Q3 2025', span: 3 }, // Jul, Aug, Sep
+    ];
+  }, [timeScale]);
 
   // Calculate bar position
   const getBarPosition = useCallback((item: BusinessRequestRoadmapItem) => {
@@ -590,45 +600,80 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       <div className="flex-1 overflow-auto scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
         <div className="min-w-[1200px]">
           {/* Timeline Header */}
-          <div className="flex border-b border-border bg-card sticky top-0 z-10">
-            <div 
-              className="shrink-0 px-3 py-2 border-r border-border bg-muted relative group"
-              style={{ width: `${firstColumnWidth}px` }}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-muted-foreground">{t.businessRequest}</span>
-                <button 
-                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                  className="text-xs font-medium text-brand-gold flex items-center gap-0.5 hover:opacity-80"
-                >
-                  {sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                  {sortField === 'rank' ? t.rank : sortField === 'platform' ? t.platform : t.owner}
-                </button>
-              </div>
-              {/* Resize Handle */}
-              <div
+          <div className="border-b border-border bg-card sticky top-0 z-10">
+            <div className="flex">
+              <div 
                 className={cn(
-                  "absolute right-0 top-0 h-full w-1 cursor-col-resize z-20 transition-colors",
-                  "hover:bg-brand-gold/60 active:bg-brand-gold",
-                  isResizing && "bg-brand-gold"
+                  "shrink-0 px-3 border-r border-border bg-muted relative group flex items-center",
+                  timeScale === 'quarterly' ? 'py-2' : 'py-2'
                 )}
-                onMouseDown={handleResizeMouseDown}
-                onClick={(e) => e.stopPropagation()}
+                style={{ width: `${firstColumnWidth}px` }}
               >
-                {/* Wider hit area for easier grabbing */}
-                <div className="absolute -left-1 -right-1 top-0 h-full" />
-              </div>
-            </div>
-            <div className="flex-1 flex">
-              {timelineColumns.map((col, i) => (
-                <div 
-                  key={i} 
-                  className="flex-1 px-1 py-2 text-center border-r border-border last:border-r-0"
-                >
-                  <div className="text-xs font-medium text-foreground">{col.label}</div>
-                  {col.subLabel && <div className="text-xs text-muted-foreground">{col.subLabel}</div>}
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-xs font-medium text-muted-foreground">{t.businessRequest}</span>
+                  <button 
+                    onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                    className="text-xs font-medium text-brand-gold flex items-center gap-0.5 hover:opacity-80"
+                  >
+                    {sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                    {sortField === 'rank' ? t.rank : sortField === 'platform' ? t.platform : t.owner}
+                  </button>
                 </div>
-              ))}
+                {/* Resize Handle */}
+                <div
+                  className={cn(
+                    "absolute right-0 top-0 h-full w-1 cursor-col-resize z-20 transition-colors",
+                    "hover:bg-brand-gold/60 active:bg-brand-gold",
+                    isResizing && "bg-brand-gold"
+                  )}
+                  onMouseDown={handleResizeMouseDown}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Wider hit area for easier grabbing */}
+                  <div className="absolute -left-1 -right-1 top-0 h-full" />
+                </div>
+              </div>
+              
+              {/* Timeline columns - handle quarterly specially */}
+              {timeScale === 'quarterly' ? (
+                <div className="flex-1 flex flex-col">
+                  {/* Top row: Months */}
+                  <div className="flex border-b border-border">
+                    {timelineColumns.map((col, i) => (
+                      <div 
+                        key={i} 
+                        className="flex-1 px-1 py-1.5 text-center border-r border-border last:border-r-0"
+                      >
+                        <div className="text-xs font-medium text-muted-foreground">{col.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Bottom row: Quarters */}
+                  <div className="flex">
+                    {quarterlyGroups?.map((quarter, i) => (
+                      <div 
+                        key={i} 
+                        className="flex-1 px-1 py-1.5 text-center border-r border-border last:border-r-0"
+                        style={{ flex: quarter.span }}
+                      >
+                        <div className="text-xs font-semibold text-foreground">{quarter.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 flex">
+                  {timelineColumns.map((col, i) => (
+                    <div 
+                      key={i} 
+                      className="flex-1 px-1 py-2 text-center border-r border-border last:border-r-0"
+                    >
+                      <div className="text-xs font-medium text-foreground">{col.label}</div>
+                      {col.subLabel && <div className="text-xs text-muted-foreground">{col.subLabel}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
