@@ -193,19 +193,34 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
   });
 
   // Fetch work items for implementation linking
-  const { data: workItems = [] } = useQuery({
+  const { data: workItems = [], isLoading: workItemsLoading, error: workItemsError } = useQuery({
     queryKey: ['work-items-for-linking', implSearch],
     queryFn: async () => {
+      const searchTerm = implSearch.trim();
+      if (!searchTerm) return [];
+      
       const results: any[] = [];
       
-      // Search Epics
-      const { data: epics } = await supabase
-        .from('epics')
-        .select('id, epic_key, name, state, owner_name')
-        .ilike('name', `%${implSearch}%`)
-        .limit(10);
-      
-      if (epics) {
+      // Search Epics by key OR name using separate queries then combining
+      // (Supabase .or() with ilike can be tricky, so we do explicit OR)
+      try {
+        const { data: epicsByKey } = await supabase
+          .from('epics')
+          .select('id, epic_key, name, state, owner_name')
+          .ilike('epic_key', `%${searchTerm}%`)
+          .limit(5);
+        
+        const { data: epicsByName } = await supabase
+          .from('epics')
+          .select('id, epic_key, name, state, owner_name')
+          .ilike('name', `%${searchTerm}%`)
+          .limit(5);
+        
+        // Combine and dedupe
+        const epicsMap = new Map();
+        [...(epicsByKey || []), ...(epicsByName || [])].forEach(e => epicsMap.set(e.id, e));
+        const epics = Array.from(epicsMap.values());
+        
         results.push(...epics.map(e => ({
           id: e.id,
           key: e.epic_key || `E-${e.id.slice(0, 4)}`,
@@ -215,49 +230,75 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
           owner: e.owner_name || 'Unassigned',
           source: 'Catalyst Epics'
         })));
+      } catch (err) {
+        console.error('Error searching epics:', err);
       }
       
-      // Search Features
-      const { data: features } = await supabase
-        .from('features')
-        .select('id, display_id, name, status, owner_name')
-        .ilike('name', `%${implSearch}%`)
-        .limit(10);
-      
-      if (features) {
+      // Search Features by key OR name
+      try {
+        const { data: featuresByKey } = await supabase
+          .from('features')
+          .select('id, display_id, name, status')
+          .ilike('display_id', `%${searchTerm}%`)
+          .limit(5);
+        
+        const { data: featuresByName } = await supabase
+          .from('features')
+          .select('id, display_id, name, status')
+          .ilike('name', `%${searchTerm}%`)
+          .limit(5);
+        
+        const featuresMap = new Map();
+        [...(featuresByKey || []), ...(featuresByName || [])].forEach(f => featuresMap.set(f.id, f));
+        const features = Array.from(featuresMap.values());
+        
         results.push(...features.map((f: any) => ({
           id: f.id,
           key: f.display_id || `F-${f.id.slice(0, 4)}`,
           title: f.name,
           type: 'feature',
           status: f.status || 'new',
-          owner: f.owner_name || 'Unassigned',
+          owner: 'Unassigned',
           source: 'Catalyst Features'
         })));
+      } catch (err) {
+        console.error('Error searching features:', err);
       }
       
-      // Search Stories
-      const { data: stories } = await supabase
-        .from('stories')
-        .select('id, story_key, name, status, owner_name')
-        .ilike('name', `%${implSearch}%`)
-        .limit(10);
-      
-      if (stories) {
+      // Search Stories by key OR name
+      try {
+        const { data: storiesByKey } = await supabase
+          .from('stories')
+          .select('id, story_key, name, status')
+          .ilike('story_key', `%${searchTerm}%`)
+          .limit(5);
+        
+        const { data: storiesByName } = await supabase
+          .from('stories')
+          .select('id, story_key, name, status')
+          .ilike('name', `%${searchTerm}%`)
+          .limit(5);
+        
+        const storiesMap = new Map();
+        [...(storiesByKey || []), ...(storiesByName || [])].forEach(s => storiesMap.set(s.id, s));
+        const stories = Array.from(storiesMap.values());
+        
         results.push(...stories.map((s: any) => ({
           id: s.id,
           key: s.story_key || `S-${s.id.slice(0, 4)}`,
           title: s.name,
           type: 'story',
           status: s.status || 'new',
-          owner: s.owner_name || 'Unassigned',
+          owner: 'Unassigned',
           source: 'Catalyst Stories'
         })));
+      } catch (err) {
+        console.error('Error searching stories:', err);
       }
       
       return results;
     },
-    enabled: formView === 'implementation' && implSearch.length >= 2
+    enabled: formView === 'implementation' && implSearch.trim().length >= 1
   });
 
   const { data: links = [], isLoading: linksLoading } = useQuery({
@@ -626,49 +667,69 @@ export function LinksViewTab({ requestId }: LinksViewTabProps) {
                 <Input
                   value={implSearch}
                   onChange={(e) => setImplSearch(e.target.value)}
-                  placeholder="Search by key or title..."
+                  placeholder="Search by key (E-1234) or title..."
                   className="pl-9 h-10 bg-muted/30 border-border/60 focus:border-brand-gold focus:ring-brand-gold/15"
                 />
               </div>
+              {workItemsError && (
+                <p className="text-[11px] text-destructive mt-1.5">
+                  Something went wrong while searching work items. Please try again or contact support if the issue persists.
+                </p>
+              )}
             </div>
 
-            {implSearch.length >= 2 && (
+            {implSearch.trim().length >= 1 && (
               <ScrollArea className="h-[200px] border rounded-lg">
                 <div className="p-2 space-y-1">
-                  {workItems.length > 0 ? (
-                    workItems.map((item: any) => (
-                      <button
-                        key={item.id}
-                        onClick={() => setSelectedWorkItem(item)}
-                        className={cn(
-                          "w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all",
-                          selectedWorkItem?.id === item.id 
-                            ? "bg-brand-gold/10 border border-brand-gold" 
-                            : "hover:bg-muted/50"
-                        )}
-                      >
-                        <span className={cn(
-                          "px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded",
-                          TYPE_BADGE_CONFIG[item.type]?.bg || 'bg-gray-100',
-                          TYPE_BADGE_CONFIG[item.type]?.text || 'text-gray-700'
-                        )}>
-                          {item.type}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-[13px] font-medium truncate">
-                            <span className="text-muted-foreground">{item.key}</span> – {item.title}
+                  {workItemsLoading ? (
+                    <div className="text-center py-8 text-[13px] text-muted-foreground">
+                      Searching...
+                    </div>
+                  ) : workItems.length > 0 ? (
+                    workItems.map((item: any) => {
+                      const statusCategory = normalizeStatus(item.status);
+                      const statusConfig = STATUS_CONFIG[statusCategory];
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => setSelectedWorkItem(item)}
+                          className={cn(
+                            "w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all",
+                            selectedWorkItem?.id === item.id 
+                              ? "bg-brand-gold/10 border border-brand-gold" 
+                              : "hover:bg-muted/50"
+                          )}
+                        >
+                          <span className={cn(
+                            "px-1.5 py-0.5 text-[10px] font-semibold uppercase rounded",
+                            TYPE_BADGE_CONFIG[item.type]?.bg || 'bg-gray-100',
+                            TYPE_BADGE_CONFIG[item.type]?.text || 'text-gray-700'
+                          )}>
+                            {item.type}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <div className="text-[13px] font-medium truncate">
+                              <span className="text-muted-foreground">{item.key}</span> – {item.title}
+                            </div>
+                            <div className="text-[11px] text-muted-foreground flex items-center gap-2">
+                              <span>{item.owner}</span>
+                              <span>•</span>
+                              <span>{item.source}</span>
+                            </div>
                           </div>
-                          <div className="text-[11px] text-muted-foreground flex items-center gap-2">
-                            <span>{item.owner}</span>
-                            <span>•</span>
-                            <span>{item.source}</span>
-                          </div>
-                        </div>
-                      </button>
-                    ))
+                          <span className={cn(
+                            "px-2 py-0.5 text-[10px] font-medium rounded-full flex-shrink-0",
+                            statusConfig.bgColor,
+                            statusConfig.color
+                          )}>
+                            {statusConfig.label}
+                          </span>
+                        </button>
+                      );
+                    })
                   ) : (
                     <div className="text-center py-8 text-[13px] text-muted-foreground">
-                      {implSearch.length < 2 ? 'Type at least 2 characters to search' : 'No work items found'}
+                      No work items found
                     </div>
                   )}
                 </div>
