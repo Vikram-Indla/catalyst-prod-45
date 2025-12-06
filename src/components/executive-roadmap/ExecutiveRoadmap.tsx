@@ -697,44 +697,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
       {/* Timeline Grid */}
       <div className="flex-1 overflow-auto scroll-smooth" style={{ scrollBehavior: 'smooth', direction: 'ltr' }}>
-        <div className="min-w-[1200px] relative">
-          {/* Today line - use sticky positioning to span content */}
-          {todayPosition !== null && (
-            <div
-              className="sticky top-0 h-0 z-50 pointer-events-none"
-              style={{ 
-                marginLeft: `calc(${firstColumnWidth}px + (100% - ${firstColumnWidth}px) * ${todayPosition / 100})`,
-              }}
-            >
-              <div
-                style={{ 
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '3px',
-                  height: '2000px',
-                  backgroundColor: '#ef4444',
-                  boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)'
-                }}
-              >
-                {/* Today badge */}
-                <div 
-                  className="absolute top-0 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-bold rounded-b whitespace-nowrap shadow-lg"
-                  style={{ 
-                    backgroundColor: '#ef4444',
-                    color: 'white'
-                  }}
-                >
-                  {todayLabel}
-                </div>
-                {/* Pulsing dot */}
-                <div 
-                  className="absolute top-8 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full animate-pulse shadow-md"
-                  style={{ backgroundColor: '#ef4444' }}
-                />
-              </div>
-            </div>
-          )}
+        <div className="min-w-[1200px]" style={{ position: 'relative' }}>
           {/* Timeline Header */}
           <div className="border-b sticky top-0 z-10" style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))' }}>
             <div className={cn("flex", isRTL && "flex-row-reverse")}>
@@ -1001,6 +964,39 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               </div>
             );
           })}
+          
+          {/* Today line - absolute positioned overlay spanning full content height */}
+          {todayPosition !== null && (
+            <div
+              style={{ 
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: `calc(${firstColumnWidth}px + (100% - ${firstColumnWidth}px) * ${todayPosition / 100})`,
+                width: '3px',
+                backgroundColor: '#ef4444',
+                boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)',
+                zIndex: 50,
+                pointerEvents: 'none'
+              }}
+            >
+              {/* Today badge */}
+              <div 
+                className="absolute top-0 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-bold rounded-b whitespace-nowrap shadow-lg"
+                style={{ 
+                  backgroundColor: '#ef4444',
+                  color: 'white'
+                }}
+              >
+                {todayLabel}
+              </div>
+              {/* Pulsing dot */}
+              <div 
+                className="absolute top-8 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full animate-pulse shadow-md"
+                style={{ backgroundColor: '#ef4444' }}
+              />
+            </div>
+          )}
         </div>
       </div>
 
