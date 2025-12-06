@@ -11,6 +11,7 @@ import { ProductRoomSidebar } from './ProductRoomSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
+import { useEnabledModules } from '@/hooks/useModules';
 
 function CatalystShellContent() {
   // Track last visited route for session persistence
@@ -19,6 +20,7 @@ function CatalystShellContent() {
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
   const { tier, setTier } = useCatalystContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const { isModuleEnabled } = useEnabledModules();
   
   // Extract IDs from URL params
   const currentProgramId = params.programId || null;
@@ -83,17 +85,17 @@ function CatalystShellContent() {
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on Tier and Route */}
       <div className="flex flex-1 overflow-hidden">
-          {/* No sidebar for Home route */}
+          {/* No sidebar for Home route - sidebars only show for enabled modules */}
           {location.pathname !== '/home' && (
             <>
-              {isProductRoute ? (
+              {isProductRoute && isModuleEnabled('PRODUCT') ? (
                 <ProductRoomSidebar
                   expanded={sidebarExpanded}
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
                 />
-              ) : tier === 'enterprise' ? (
+              ) : tier === 'enterprise' && isModuleEnabled('ENTERPRISE') ? (
                 <LeftContextPanel />
-              ) : tier === 'program' && currentProgramId ? (
+              ) : tier === 'program' && currentProgramId && isModuleEnabled('PROGRAM') ? (
                 <ProgramRoomSidebar
                   programId={currentProgramId}
                   expanded={sidebarExpanded}
@@ -101,7 +103,7 @@ function CatalystShellContent() {
                   selectedPI={selectedPI || undefined}
                   onPIChange={(pi) => setSelectedPI(pi)}
                 />
-              ) : tier === 'portfolio' && currentPortfolioId ? (
+              ) : tier === 'portfolio' && currentPortfolioId && isModuleEnabled('PORTFOLIO') ? (
                 <PortfolioRoomSidebar
                   portfolioId={currentPortfolioId}
                   expanded={sidebarExpanded}
@@ -109,7 +111,7 @@ function CatalystShellContent() {
                   selectedPI={selectedPI || undefined}
                   onPIChange={(pi) => setSelectedPI(pi)}
                 />
-              ) : tier === 'team' && currentTeamId ? (
+              ) : tier === 'team' && currentTeamId && isModuleEnabled('TEAMS') ? (
                 <TeamRoomSidebar
                   teamId={currentTeamId}
                   expanded={sidebarExpanded}
