@@ -374,17 +374,28 @@ export type Database = {
           approval_inputs: string | null
           approval_remarks: string | null
           approved_budget_ceiling: number | null
+          approved_budget_sar: number | null
           approver_name: string | null
           assignee: string | null
+          budget_owner_name: string | null
+          budget_type: string[] | null
+          budget_year: string | null
           business_justification: string | null
           business_owner: string | null
           business_score: number | null
           business_value: number | null
+          capacity_risks: string | null
+          capacity_status: string | null
           complexity: string | null
           complexity_score: number | null
+          contract_end_date: string | null
+          contract_start_date: string | null
+          contract_type: string | null
           created_at: string
           created_by: string | null
+          current_year_budget_sar: number | null
           deleted_at: string | null
+          delivery_model: string | null
           delivery_platform: string | null
           delivery_track: string | null
           department: string | null
@@ -403,6 +414,8 @@ export type Database = {
           force_ranked_at: string | null
           force_ranked_by: string | null
           functional_spec_link: string | null
+          funding_assumptions: string | null
+          funding_status: string | null
           health: string | null
           id: string
           impl_start_date: string | null
@@ -411,17 +424,23 @@ export type Database = {
           implementation_owner: string | null
           integration_required: boolean | null
           integration_systems: string[] | null
+          internal_effort_cost_sar: number | null
+          internal_effort_pct: number | null
           is_force_ranked: boolean | null
           jira_epic_link: string | null
           key_risks_remarks: string | null
           on_hold_comment: string | null
           on_hold_reason: string | null
           outcome_summary: string | null
+          planned_external_spend_sar: number | null
           planned_quarter: string | null
           platform: string | null
+          po_numbers: string[] | null
           portfolio_comments: string | null
           portfolio_decision: string | null
+          primary_vendor_name: string | null
           process_step: string | null
+          project_manager_user_id: string | null
           proposed_solution: string | null
           qa_remarks: string | null
           rank: number | null
@@ -439,6 +458,7 @@ export type Database = {
           track: string | null
           updated_at: string
           urgency: string | null
+          vendor_effort_pct: number | null
         }
         Insert: {
           acceptance_criteria?: string | null
@@ -447,17 +467,28 @@ export type Database = {
           approval_inputs?: string | null
           approval_remarks?: string | null
           approved_budget_ceiling?: number | null
+          approved_budget_sar?: number | null
           approver_name?: string | null
           assignee?: string | null
+          budget_owner_name?: string | null
+          budget_type?: string[] | null
+          budget_year?: string | null
           business_justification?: string | null
           business_owner?: string | null
           business_score?: number | null
           business_value?: number | null
+          capacity_risks?: string | null
+          capacity_status?: string | null
           complexity?: string | null
           complexity_score?: number | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          contract_type?: string | null
           created_at?: string
           created_by?: string | null
+          current_year_budget_sar?: number | null
           deleted_at?: string | null
+          delivery_model?: string | null
           delivery_platform?: string | null
           delivery_track?: string | null
           department?: string | null
@@ -476,6 +507,8 @@ export type Database = {
           force_ranked_at?: string | null
           force_ranked_by?: string | null
           functional_spec_link?: string | null
+          funding_assumptions?: string | null
+          funding_status?: string | null
           health?: string | null
           id?: string
           impl_start_date?: string | null
@@ -484,17 +517,23 @@ export type Database = {
           implementation_owner?: string | null
           integration_required?: boolean | null
           integration_systems?: string[] | null
+          internal_effort_cost_sar?: number | null
+          internal_effort_pct?: number | null
           is_force_ranked?: boolean | null
           jira_epic_link?: string | null
           key_risks_remarks?: string | null
           on_hold_comment?: string | null
           on_hold_reason?: string | null
           outcome_summary?: string | null
+          planned_external_spend_sar?: number | null
           planned_quarter?: string | null
           platform?: string | null
+          po_numbers?: string[] | null
           portfolio_comments?: string | null
           portfolio_decision?: string | null
+          primary_vendor_name?: string | null
           process_step?: string | null
+          project_manager_user_id?: string | null
           proposed_solution?: string | null
           qa_remarks?: string | null
           rank?: number | null
@@ -512,6 +551,7 @@ export type Database = {
           track?: string | null
           updated_at?: string
           urgency?: string | null
+          vendor_effort_pct?: number | null
         }
         Update: {
           acceptance_criteria?: string | null
@@ -520,17 +560,28 @@ export type Database = {
           approval_inputs?: string | null
           approval_remarks?: string | null
           approved_budget_ceiling?: number | null
+          approved_budget_sar?: number | null
           approver_name?: string | null
           assignee?: string | null
+          budget_owner_name?: string | null
+          budget_type?: string[] | null
+          budget_year?: string | null
           business_justification?: string | null
           business_owner?: string | null
           business_score?: number | null
           business_value?: number | null
+          capacity_risks?: string | null
+          capacity_status?: string | null
           complexity?: string | null
           complexity_score?: number | null
+          contract_end_date?: string | null
+          contract_start_date?: string | null
+          contract_type?: string | null
           created_at?: string
           created_by?: string | null
+          current_year_budget_sar?: number | null
           deleted_at?: string | null
+          delivery_model?: string | null
           delivery_platform?: string | null
           delivery_track?: string | null
           department?: string | null
@@ -549,6 +600,8 @@ export type Database = {
           force_ranked_at?: string | null
           force_ranked_by?: string | null
           functional_spec_link?: string | null
+          funding_assumptions?: string | null
+          funding_status?: string | null
           health?: string | null
           id?: string
           impl_start_date?: string | null
@@ -557,17 +610,23 @@ export type Database = {
           implementation_owner?: string | null
           integration_required?: boolean | null
           integration_systems?: string[] | null
+          internal_effort_cost_sar?: number | null
+          internal_effort_pct?: number | null
           is_force_ranked?: boolean | null
           jira_epic_link?: string | null
           key_risks_remarks?: string | null
           on_hold_comment?: string | null
           on_hold_reason?: string | null
           outcome_summary?: string | null
+          planned_external_spend_sar?: number | null
           planned_quarter?: string | null
           platform?: string | null
+          po_numbers?: string[] | null
           portfolio_comments?: string | null
           portfolio_decision?: string | null
+          primary_vendor_name?: string | null
           process_step?: string | null
+          project_manager_user_id?: string | null
           proposed_solution?: string | null
           qa_remarks?: string | null
           rank?: number | null
@@ -585,6 +644,7 @@ export type Database = {
           track?: string | null
           updated_at?: string
           urgency?: string | null
+          vendor_effort_pct?: number | null
         }
         Relationships: []
       }

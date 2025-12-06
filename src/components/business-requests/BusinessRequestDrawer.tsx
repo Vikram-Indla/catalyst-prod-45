@@ -35,6 +35,7 @@ import { useBusinessRequest, useUpdateBusinessRequest, useDeleteBusinessRequest,
 import { BusinessRequest } from '@/types/business-request';
 import { DemandDetailsViewTab } from './drawer-tabs/DemandDetailsViewTab';
 import { BusinessScoreViewTab } from './drawer-tabs/BusinessScoreViewTab';
+import { BudgetViewTab } from './drawer-tabs/BudgetViewTab';
 import { LinksViewTab } from './drawer-tabs/LinksViewTab';
 import { DiscussionsViewTab } from './drawer-tabs/DiscussionsViewTab';
 import { AuditHistoryTab } from './drawer-tabs/AuditHistoryTab';
@@ -152,6 +153,7 @@ interface BusinessRequestDrawerProps {
 const VIEW_TABS = [
   { value: 'demand-details', label: 'Demand Details' },
   { value: 'business-score', label: 'Business Score' },
+  { value: 'budget', label: 'Budget' },
   { value: 'risks', label: 'Risks' },
   { value: 'milestones', label: 'Milestones' },
   { value: 'links', label: 'Links' },
@@ -569,6 +571,9 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
                   requestId={requestId || undefined}
                   onDirtyChange={handleDirtyChange}
                 />
+              </TabsContent>
+              <TabsContent value="budget" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
+                <BudgetViewTab data={formData} onChange={handleFieldChange} />
               </TabsContent>
               <TabsContent value="risks" className="m-0 focus-visible:outline-none flex-1 p-4 md:p-5 pb-6">
                 {requestId && <RisksViewTab requestId={requestId} />}
