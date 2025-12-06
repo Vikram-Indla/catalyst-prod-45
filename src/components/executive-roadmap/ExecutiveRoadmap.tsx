@@ -321,8 +321,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       )}
       style={{ direction: isRTL ? 'rtl' : 'ltr' }}
     >
-      {/* Header with Status Pills - hidden in print */}
-      <div className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white print:hidden">
+      {/* Header with Status Pills - fixed height 72px to align with sidebar */}
+      <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-[#E8E4DD] bg-white print:hidden shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-[#C69C6D] flex items-center justify-center text-white font-bold text-xs">
             MIM
