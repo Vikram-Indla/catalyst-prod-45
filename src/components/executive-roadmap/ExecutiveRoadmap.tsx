@@ -384,15 +384,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     window.print();
   };
 
-  // Toggle fullscreen
+  // Toggle fullscreen - use CSS-based fullscreen instead of native API
+  // Native fullscreen breaks portalled components (dialogs, dropdowns)
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      containerRef.current?.requestFullscreen();
-      setIsFullscreen(true);
-    } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
-    }
+    setIsFullscreen(!isFullscreen);
   };
 
   const kpiCards = [
@@ -407,8 +402,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     <div 
       ref={containerRef}
       className={cn(
-        "h-full flex flex-col bg-secondary overflow-hidden print:bg-white font-sans",
+        "flex flex-col bg-secondary overflow-hidden print:bg-white font-sans",
         isRTL && "direction-rtl",
+        isFullscreen 
+          ? "fixed inset-0 z-50" 
+          : "h-full",
         className
       )}
       style={{ direction: isRTL ? 'rtl' : 'ltr' }}
