@@ -76,7 +76,6 @@ export function CatalystHeader() {
     { label: "Portfolio", hasDropdown: true },
     { label: "Program", hasDropdown: true },
     { label: "Team", hasDropdown: true, path: "/teams" },
-    { label: "Custom Rooms", hasDropdown: true },
   ];
 
   return (
