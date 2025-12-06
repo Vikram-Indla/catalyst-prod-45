@@ -397,8 +397,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Controls Bar */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-3 px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white print:hidden">
+      {/* Controls Bar - Inline filters */}
+      <div className="flex items-center gap-3 px-4 sm:px-6 py-1.5 border-b border-[#E8E4DD] bg-white print:hidden">
         {/* Mobile menu */}
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild>
@@ -449,11 +449,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </SheetContent>
         </Sheet>
 
-        {/* Desktop filters */}
-        <div className="hidden sm:flex items-center gap-1.5">
+        {/* Desktop filters - inline */}
+        <div className="hidden sm:flex items-center gap-1">
           <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.platform}</span>
           <Select value={platform} onValueChange={setPlatform}>
-            <SelectTrigger className="w-[130px] h-7 text-xs bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-[120px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-white z-50">
               <SelectItem value="all">{t.allPlatforms}</SelectItem>
               {Object.keys(PLATFORM_INFO).map(p => (
@@ -463,10 +463,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </Select>
         </div>
 
-        <div className="hidden sm:flex items-center gap-1.5">
+        <div className="hidden sm:flex items-center gap-1">
           <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.status}</span>
           <Select value={status} onValueChange={setStatus}>
-            <SelectTrigger className="w-[110px] h-7 text-xs bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-[100px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-white z-50">
               <SelectItem value="all">{t.allStatuses}</SelectItem>
               {Object.entries(isRTL ? STAGE_NAMES_AR : STAGE_NAMES).map(([s, name]) => (
@@ -476,10 +476,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </Select>
         </div>
 
-        <div className="hidden sm:flex items-center gap-1.5">
+        <div className="hidden sm:flex items-center gap-1">
           <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.owner}</span>
           <Select value={owner} onValueChange={setOwner}>
-            <SelectTrigger className="w-[130px] h-7 text-xs bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-[110px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-white z-50">
               <SelectItem value="all">{t.allOwners}</SelectItem>
               {uniqueOwners.map(o => {
@@ -490,11 +490,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </Select>
         </div>
 
-        {/* Period dropdown - replaces time scale buttons */}
-        <div className="hidden sm:flex items-center gap-1.5">
+        {/* Period dropdown */}
+        <div className="hidden sm:flex items-center gap-1">
           <span className="text-[10px] text-[#5C5650] font-medium uppercase">{isRTL ? 'الفترة' : 'PERIOD'}</span>
           <Select value={timeScale} onValueChange={(v) => setTimeScale(v as TimeScale)}>
-            <SelectTrigger className="w-[100px] h-7 text-xs bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-[80px] h-6 text-[11px] bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
             <SelectContent className="bg-white z-50">
               <SelectItem value="weekly">{t.weekly}</SelectItem>
               <SelectItem value="monthly">{t.monthly}</SelectItem>
@@ -506,67 +506,42 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
         <div className="flex-1" />
 
-        {/* Sort */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-[10px] text-[#5C5650] font-medium uppercase hidden sm:inline">{t.sortBy}</span>
-          <Select value={sortField} onValueChange={(v) => setSortField(v as SortField)}>
-            <SelectTrigger className="w-[80px] h-7 text-xs bg-[#F5F2ED] border-0"><SelectValue /></SelectTrigger>
-            <SelectContent className="bg-white z-50">
-              <SelectItem value="rank">{t.rank}</SelectItem>
-              <SelectItem value="platform">{t.platform}</SelectItem>
-              <SelectItem value="owner">{t.owner}</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn("h-7 w-7", sortOrder === 'asc' ? "bg-[#2C2825] text-white" : "")}
-            onClick={() => setSortOrder('asc')}
-          >
-            <ChevronUp className="h-3 w-3" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className={cn("h-7 w-7", sortOrder === 'desc' ? "bg-[#2C2825] text-white" : "")}
-            onClick={() => setSortOrder('desc')}
-          >
-            <ChevronDown className="h-3 w-3" />
-          </Button>
-        </div>
-
         {/* Milestones toggle */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <span className="text-[10px] text-[#5C5650] font-medium uppercase hidden sm:inline">{t.milestones}</span>
           <Switch 
             checked={showMilestones} 
             onCheckedChange={setShowMilestones}
-            className="data-[state=checked]:bg-[#C69C6D] scale-90"
+            className="data-[state=checked]:bg-[#C69C6D] scale-75"
           />
         </div>
       </div>
 
-      {/* Timeline Grid */}
-      <div className="flex-1 overflow-auto">
+      {/* Timeline Grid - smooth scroll */}
+      <div className="flex-1 overflow-auto scroll-smooth" style={{ scrollBehavior: 'smooth' }}>
         <div className="min-w-[1200px]">
           {/* Timeline Header */}
           <div className="flex border-b border-[#E8E4DD] bg-white sticky top-0 z-10">
-            <div className="w-[320px] shrink-0 px-4 py-3 border-r border-[#E8E4DD] bg-[#F5F2ED]">
+            <div className="w-[280px] shrink-0 px-3 py-2 border-r border-[#E8E4DD] bg-[#F5F2ED]">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[#5C5650]">{t.businessRequest}</span>
-                <span className="text-xs font-medium text-[#C69C6D] flex items-center gap-1">
-                  <ChevronUp className="h-3 w-3" /> {t.rank}
-                </span>
+                <span className="text-[11px] font-medium text-[#5C5650]">{t.businessRequest}</span>
+                <button 
+                  onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                  className="text-[11px] font-medium text-[#C69C6D] flex items-center gap-0.5 hover:opacity-80"
+                >
+                  {sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                  {sortField === 'rank' ? t.rank : sortField === 'platform' ? t.platform : t.owner}
+                </button>
               </div>
             </div>
             <div className="flex-1 flex">
               {timelineColumns.map((col, i) => (
                 <div 
                   key={i} 
-                  className="flex-1 px-2 py-3 text-center border-r border-[#E8E4DD] last:border-r-0"
+                  className="flex-1 px-1 py-2 text-center border-r border-[#E8E4DD] last:border-r-0"
                 >
-                  <div className="text-xs font-medium text-[#2C2825]">{col.label}</div>
-                  {col.subLabel && <div className="text-[10px] text-[#9A9389]">{col.subLabel}</div>}
+                  <div className="text-[11px] font-medium text-[#2C2825]">{col.label}</div>
+                  {col.subLabel && <div className="text-[9px] text-[#9A9389]">{col.subLabel}</div>}
                 </div>
               ))}
             </div>
@@ -576,7 +551,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           {filteredItems.map((item) => {
             const barPos = getBarPosition(item);
             const statusColor = STATUS_COLORS[item.status];
-            const hasRisksOrDeps = item.risks.length > 0 || item.dependencies.length > 0;
 
             return (
               <Popover key={item.id}>
@@ -590,20 +564,20 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     onMouseLeave={() => setHoveredItem(null)}
                   >
                     {/* Request Info */}
-                    <div className="w-[320px] shrink-0 px-4 py-4 border-r border-[#E8E4DD]">
-                      <div className="flex items-start gap-3">
-                        <div className="flex items-center gap-1">
+                    <div className="w-[280px] shrink-0 px-3 py-3 border-r border-[#E8E4DD]">
+                      <div className="flex items-start gap-2">
+                        <div className="flex items-center gap-0.5">
                           <span className="text-sm font-medium text-[#2C2825]">{item.rank}</span>
                           {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
                             <Lock className="h-3 w-3 text-[#C69C6D]" />
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs text-[#C69C6D] font-medium">{item.id}</div>
-                          <div className="text-sm font-medium text-[#2C2825] truncate">
+                          <div className="text-[11px] text-[#C69C6D] font-medium">{item.id}</div>
+                          <div className="text-[13px] font-medium text-[#2C2825] truncate leading-tight">
                             {isRTL ? item.titleAr : item.titleEn}
                           </div>
-                          <div className="text-xs text-[#9A9389] mt-0.5">
+                          <div className="text-[10px] text-[#9A9389] mt-0.5">
                             {isRTL ? item.ownerAr : item.ownerEn}
                             <span className="mx-1">·</span>
                             <span style={{ color: statusColor }}>{isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}</span>
@@ -615,14 +589,14 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     </div>
 
                     {/* Timeline Bar */}
-                    <div className="flex-1 relative py-4 px-2">
+                    <div className="flex-1 relative py-3 px-2">
                       {/* Date labels */}
-                      <div className="absolute text-[10px] text-[#9A9389]" style={{ left: barPos.left, top: '4px' }}>
+                      <div className="absolute text-[9px] text-[#9A9389]" style={{ left: barPos.left, top: '2px' }}>
                         {formatDateLabel(item.startDate)}
                       </div>
                       <div 
-                        className="absolute text-[10px] text-[#9A9389]" 
-                        style={{ left: `calc(${barPos.left} + ${barPos.width})`, top: '4px', transform: 'translateX(-100%)' }}
+                        className="absolute text-[9px] text-[#9A9389]" 
+                        style={{ left: `calc(${barPos.left} + ${barPos.width})`, top: '2px', transform: 'translateX(-100%)' }}
                       >
                         {formatDateLabel(item.endDate)}
                       </div>
@@ -639,21 +613,28 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           border: `1px solid ${statusColor}80`
                         }}
                       >
-                        {/* Milestones */}
+                        {/* Milestones with date tooltip */}
                         {showMilestones && item.milestones.map((ms) => {
                           const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
+                          const msDate = new Date(ms.date);
+                          const dateLabel = msDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' });
                           return (
                             <div
                               key={ms.step}
                               className={cn(
-                                "absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[9px] font-medium",
+                                "absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[9px] font-medium group cursor-pointer",
                                 ms.state === 'complete' && "bg-[#C69C6D] border-[#C69C6D] text-white",
                                 ms.state === 'current' && "bg-white border-[#C69C6D] text-[#C69C6D]",
                                 ms.state === 'pending' && "bg-white border-[#C4BEB4] text-[#9A9389]"
                               )}
                               style={{ left: `${pos}%`, top: '50%', transform: 'translate(-50%, -50%)' }}
+                              title={dateLabel}
                             >
                               {ms.state === 'complete' ? '✓' : ms.step}
+                              {/* Date tooltip on hover */}
+                              <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#2C2825] text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                {dateLabel}
+                              </span>
                             </div>
                           );
                         })}
@@ -662,63 +643,66 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   </div>
                 </PopoverTrigger>
 
-                {/* Tooltip/Popover */}
-                {hasRisksOrDeps && (
-                  <PopoverContent className="w-80 p-0" side="bottom" align="start">
-                    <div className="p-4 border-b border-[#E8E4DD]">
-                      <div className="text-xs text-[#C69C6D] font-medium">{item.id}</div>
-                      <div className="text-sm font-semibold text-[#2C2825]">{isRTL ? item.titleAr : item.titleEn}</div>
-                      <span 
-                        className="inline-block mt-2 px-2 py-0.5 text-[10px] rounded-full"
-                        style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
-                      >
-                        {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                      </span>
+                {/* Tooltip/Popover - always show on hover */}
+                <PopoverContent className="w-80 p-0 bg-white shadow-lg" side="bottom" align="start">
+                  <div className="p-3 border-b border-[#E8E4DD]">
+                    <div className="text-[11px] text-[#C69C6D] font-medium">{item.id}</div>
+                    <div className="text-sm font-semibold text-[#2C2825]">{isRTL ? item.titleAr : item.titleEn}</div>
+                    <span 
+                      className="inline-block mt-1.5 px-2 py-0.5 text-[10px] rounded-full"
+                      style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
+                    >
+                      {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
+                    </span>
+                  </div>
+                  {item.risks.length > 0 && (
+                    <div className="p-3 border-b border-[#E8E4DD]">
+                      <div className="text-[11px] font-medium text-[#5C5650] mb-1.5 flex items-center gap-2">
+                        {t.risks}
+                        <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.risks.length}</span>
+                      </div>
+                      {item.risks.map(risk => (
+                        <div key={risk.sno} className="flex items-center justify-between text-[11px] py-0.5">
+                          <span className="text-[#5C5650]">{risk.sno}. {risk.title}</span>
+                          <span className={cn(
+                            "text-[10px] px-1.5 py-0.5 rounded",
+                            risk.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
+                            risk.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
+                            risk.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
+                          )}>
+                            {risk.status}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                    {item.risks.length > 0 && (
-                      <div className="p-4 border-b border-[#E8E4DD]">
-                        <div className="text-xs font-medium text-[#5C5650] mb-2 flex items-center gap-2">
-                          {t.risks}
-                          <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.risks.length}</span>
-                        </div>
-                        {item.risks.map(risk => (
-                          <div key={risk.sno} className="flex items-center justify-between text-xs py-1">
-                            <span className="text-[#5C5650]">{risk.sno}. {risk.title}</span>
-                            <span className={cn(
-                              "text-[10px] px-1.5 py-0.5 rounded",
-                              risk.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
-                              risk.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
-                              risk.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
-                            )}>
-                              {risk.status}
-                            </span>
-                          </div>
-                        ))}
+                  )}
+                  {item.dependencies.length > 0 && (
+                    <div className="p-3">
+                      <div className="text-[11px] font-medium text-[#5C5650] mb-1.5 flex items-center gap-2">
+                        {t.dependencies}
+                        <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.dependencies.length}</span>
                       </div>
-                    )}
-                    {item.dependencies.length > 0 && (
-                      <div className="p-4">
-                        <div className="text-xs font-medium text-[#5C5650] mb-2 flex items-center gap-2">
-                          {t.dependencies}
-                          <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.dependencies.length}</span>
+                      {item.dependencies.map(dep => (
+                        <div key={dep.sno} className="flex items-center justify-between text-[11px] py-0.5">
+                          <span className="text-[#5C5650]">{dep.sno}. {dep.title}</span>
+                          <span className={cn(
+                            "text-[10px] px-1.5 py-0.5 rounded",
+                            dep.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
+                            dep.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
+                            dep.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
+                          )}>
+                            {dep.status}
+                          </span>
                         </div>
-                        {item.dependencies.map(dep => (
-                          <div key={dep.sno} className="flex items-center justify-between text-xs py-1">
-                            <span className="text-[#5C5650]">{dep.sno}. {dep.title}</span>
-                            <span className={cn(
-                              "text-[10px] px-1.5 py-0.5 rounded",
-                              dep.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
-                              dep.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
-                              dep.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
-                            )}>
-                              {dep.status}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </PopoverContent>
-                )}
+                      ))}
+                    </div>
+                  )}
+                  {item.risks.length === 0 && item.dependencies.length === 0 && (
+                    <div className="p-3 text-[11px] text-[#9A9389] text-center">
+                      {isRTL ? 'لا توجد مخاطر أو اعتماديات' : 'No risks or dependencies'}
+                    </div>
+                  )}
+                </PopoverContent>
               </Popover>
             );
           })}
