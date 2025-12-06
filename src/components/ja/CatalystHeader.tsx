@@ -127,7 +127,7 @@ export function CatalystHeader() {
           </div>
 
           {/* Main Navigation - Visible on tablet and up, packed layout */}
-          <nav className="hidden md:flex items-center gap-4 ml-6">
+          <nav className="hidden md:flex items-center ml-6" style={{ gap: 'clamp(12px, 1.1vw, 14px)' }}>
             <TooltipProvider>
               {navItems.map((item) => {
                 // Disabled module rendering
@@ -138,11 +138,11 @@ export function CatalystHeader() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="h-10 px-2.5 text-sm font-medium opacity-40 cursor-not-allowed hover:bg-transparent rounded-[10px]"
+                          className="h-10 py-1.5 px-2.5 text-sm font-medium opacity-40 cursor-not-allowed hover:bg-transparent rounded-[10px] flex items-center gap-2"
                           onClick={() => handleDisabledModuleClick(item.label)}
                         >
                           {item.label}
-                          <Lock className="ml-1 h-3 w-3" />
+                          <Lock className="h-3 w-3" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -168,10 +168,10 @@ export function CatalystHeader() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-10 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px]"
+                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
                           >
                             {item.label}
-                            <ChevronDown className="ml-1 h-3 w-3" />
+                            <ChevronDown className="h-3 w-3" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -187,10 +187,10 @@ export function CatalystHeader() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-10 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px]"
+                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
                           >
                             {item.label}
-                            <ChevronDown className="ml-1 h-3 w-3" />
+                            <ChevronDown className="h-3 w-3" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -206,10 +206,10 @@ export function CatalystHeader() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-10 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px]"
+                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
                           >
                             {item.label}
-                            <ChevronDown className="ml-1 h-3 w-3" />
+                            <ChevronDown className="h-3 w-3" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -225,10 +225,10 @@ export function CatalystHeader() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-10 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px]"
+                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
                           >
                             {item.label}
-                            <ChevronDown className="ml-1 h-3 w-3" />
+                            <ChevronDown className="h-3 w-3" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -244,10 +244,10 @@ export function CatalystHeader() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-10 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px]"
+                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
                           >
                             {item.label}
-                            <ChevronDown className="ml-1 h-3 w-3" />
+                            <ChevronDown className="h-3 w-3" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -263,10 +263,10 @@ export function CatalystHeader() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-10 px-2.5 text-sm font-medium hover:bg-accent/50 whitespace-nowrap rounded-[10px]"
+                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 whitespace-nowrap rounded-[10px] flex items-center gap-2"
                           >
                             {item.label}
-                            <ChevronDown className="ml-1 h-3 w-3" />
+                            <ChevronDown className="h-3 w-3" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-48 bg-popover z-[60]">
@@ -279,7 +279,7 @@ export function CatalystHeader() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-10 px-2.5 text-sm font-medium hover:bg-accent/50 whitespace-nowrap rounded-[10px]"
+                        className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 whitespace-nowrap rounded-[10px] flex items-center"
                         onClick={() => item.path && navigate(item.path)}
                       >
                         {item.label}
