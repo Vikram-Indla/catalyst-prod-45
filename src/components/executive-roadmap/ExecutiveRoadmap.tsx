@@ -623,8 +623,21 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       )}
 
       {/* Timeline Grid - smooth scroll */}
-      <div className="flex-1 overflow-auto scroll-smooth" style={{ scrollBehavior: 'smooth', direction: 'ltr' }}>
-        <div className="min-w-[1200px]">
+      <div className="flex-1 overflow-auto scroll-smooth relative" style={{ scrollBehavior: 'smooth', direction: 'ltr' }}>
+        <div className="min-w-[1200px] relative">
+          {/* Today line - spans entire timeline */}
+          {todayPosition !== null && (
+            <div
+              className="absolute top-0 bottom-0 w-0.5 bg-destructive z-30 pointer-events-none"
+              style={{ 
+                left: `calc(${firstColumnWidth}px + (100% - ${firstColumnWidth}px) * ${todayPosition / 100})` 
+              }}
+            >
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-xs font-medium rounded-b whitespace-nowrap">
+                Today
+              </div>
+            </div>
+          )}
           {/* Timeline Header */}
           <div className="border-b border-border bg-card sticky top-0 z-10">
             <div className={cn("flex", isRTL && "flex-row-reverse")}>
@@ -762,15 +775,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="flex-1 relative py-3 px-2 cursor-pointer">
-                        {/* Today line */}
-                        {todayPosition !== null && (
-                          <div
-                            className="absolute top-0 bottom-0 w-0.5 bg-destructive z-20 pointer-events-none"
-                            style={{ left: `${todayPosition}%` }}
-                          >
-                            <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-2 h-2 bg-destructive rounded-full" />
-                          </div>
-                        )}
                         {/* Date labels */}
                         <div className="absolute text-xs text-muted-foreground" style={{ left: barPos.left, top: '2px' }}>
                           {formatDateLabel(item.startDate)}
