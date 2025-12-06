@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { PROCESS_STEPS, DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
 import { CalendarIcon, X, Sparkles, Clock, AlertTriangle, CalendarDays, User, Zap } from 'lucide-react';
 import { format, subDays, startOfDay, endOfDay, startOfQuarter, endOfQuarter, addQuarters } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -52,15 +52,7 @@ interface SmartFiltersDialogProps {
   onFiltersChange: (filters: SmartFilters) => void;
 }
 
-const DEPARTMENT_OPTIONS = [
-  { value: 'it', label: 'Information Technology' },
-  { value: 'operations', label: 'Operations' },
-  { value: 'finance', label: 'Finance' },
-  { value: 'hr', label: 'Human Resources' },
-  { value: 'marketing', label: 'Marketing' },
-  { value: 'sales', label: 'Sales' },
-  { value: 'legal', label: 'Legal' },
-];
+// DEPARTMENT_OPTIONS imported from business-request.ts (single source of truth)
 
 const AGEING_BUCKETS = [
   { value: '0-7', label: '0–7 days (New)', min: 0, max: 7 },
@@ -394,7 +386,7 @@ export function SmartFiltersDialog({
                     )}
                     onClick={() => toggleMultiSelect('department', dept.value)}
                   >
-                    {dept.label}
+                    {dept.label.en}
                   </Button>
                 ))}
               </div>

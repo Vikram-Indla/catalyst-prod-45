@@ -26,6 +26,7 @@ export const COMPLEXITY_OPTIONS = ['Low', 'Medium', 'High', 'Very High'];
 export const URGENCY_OPTIONS = ['Low', 'Normal', 'High', 'Critical'];
 export const TRACK_OPTIONS = ['Digital', 'Core Banking', 'Payments', 'Analytics', 'Infrastructure'];
 export const RISK_RATING_OPTIONS = ['Low', 'Medium', 'High', 'Critical'];
+
 // Single source of truth for Delivery Platform options (used in both internal and external forms)
 export const DELIVERY_PLATFORM_OPTIONS = [
   { value: 'Senaei Platform', label: { en: 'Senaei Platform', ar: 'منصة صناعي' } },
@@ -39,6 +40,21 @@ export const DELIVERY_PLATFORM_OPTIONS = [
   { value: 'RHQ Services', label: { en: 'RHQ Services', ar: 'خدمات المقر الإقليمي' } },
   { value: 'Other', label: { en: 'Other', ar: 'أخرى' } },
 ] as const;
+
+// Single source of truth for Department options (used in both internal and external forms)
+export const DEPARTMENT_OPTIONS = [
+  { value: 'it', label: { en: 'Information Technology', ar: 'تقنية المعلومات' } },
+  { value: 'operations', label: { en: 'Operations', ar: 'العمليات' } },
+  { value: 'finance', label: { en: 'Finance', ar: 'المالية' } },
+  { value: 'hr', label: { en: 'Human Resources', ar: 'الموارد البشرية' } },
+  { value: 'marketing', label: { en: 'Marketing', ar: 'التسويق' } },
+  { value: 'sales', label: { en: 'Sales', ar: 'المبيعات' } },
+  { value: 'legal', label: { en: 'Legal', ar: 'الشؤون القانونية' } },
+  { value: 'strategy', label: { en: 'Strategy', ar: 'الاستراتيجية' } },
+  { value: 'business', label: { en: 'Business', ar: 'الأعمال' } },
+  { value: 'other', label: { en: 'Other', ar: 'أخرى' } },
+] as const;
+
 export const DELIVERY_TRACK_OPTIONS = ['Digital', 'Core Banking', 'Payments', 'Analytics'];
 export const INTEGRATION_SYSTEMS_OPTIONS = ['SAP', 'Salesforce', 'Oracle', 'Microsoft Dynamics', 'Custom API', 'Core Banking', 'Payment Gateway'];
 export const PORTFOLIO_DECISION_OPTIONS = ['Pending', 'Approve', 'Reject', 'Defer', 'Need More Info'];

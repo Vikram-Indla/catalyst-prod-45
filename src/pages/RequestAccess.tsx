@@ -10,7 +10,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RichTextEditor } from '@/components/business-requests/RichTextEditor';
-import { DELIVERY_PLATFORM_OPTIONS } from '@/types/business-request';
+import { DELIVERY_PLATFORM_OPTIONS, DEPARTMENT_OPTIONS } from '@/types/business-request';
 
 // Description template with section hints
 const DESCRIPTION_TEMPLATE_EN = `<p><strong>Business Need:</strong></p>
@@ -171,18 +171,7 @@ const translations = {
   }
 };
 
-// Department options
-const DEPARTMENTS = [
-  { en: 'Information Technology', ar: 'تقنية المعلومات' },
-  { en: 'Operations', ar: 'العمليات' },
-  { en: 'Finance', ar: 'المالية' },
-  { en: 'Human Resources', ar: 'الموارد البشرية' },
-  { en: 'Business', ar: 'الأعمال' },
-  { en: 'Strategy', ar: 'الاستراتيجية' },
-  { en: 'Other', ar: 'أخرى' }
-];
-
-// Delivery Platform options - imported from business-request.ts (single source of truth)
+// Department and Delivery Platform options imported from business-request.ts (single source of truth)
 
 export default function RequestAccess() {
   const navigate = useNavigate();
@@ -327,25 +316,38 @@ export default function RequestAccess() {
     setIsSubmitting(true);
     
     try {
-      const { data, error } = await supabase
+      // Insert the business request with ALL fields mapped correctly
+      const { data: requestData, error: requestError } = await supabase
         .from('business_requests')
         .insert([{
           title: formData.summary,
           description: formData.description,
           delivery_platform: formData.deliveryPlatform,
-          requestor: formData.reporter,
-          process_step: 'request_received',
+          department: formData.department,
+          business_owner: formData.businessOwner,
+          process_step: 'new_request',
           health: 'green',
           platform: 'Web',
           complexity: 'Medium',
           urgency: 'Normal',
         }])
-        .select('request_key')
+        .select('id, request_key')
         .single();
       
-      if (error) throw error;
+      if (requestError) throw requestError;
       
-      setTicketNumber(data.request_key);
+      // Add a system comment capturing the external requester info
+      const externalComment = `**Submitted via External Request Form**\n\n**Requested by:** ${formData.reporter}\n**Email:** ${formData.email}\n\n_This demand was submitted by an external user through the public intake form._`;
+      
+      await supabase
+        .from('business_request_discussions')
+        .insert([{
+          business_request_id: requestData.id,
+          user_id: '00000000-0000-0000-0000-000000000000', // System user placeholder
+          message: externalComment,
+        }]);
+      
+      setTicketNumber(requestData.request_key);
       setSubmissionSuccess(true);
       
     } catch (error: any) {
@@ -638,8 +640,8 @@ export default function RequestAccess() {
                           <SelectValue placeholder={t.deptPlaceholder} />
                         </SelectTrigger>
                         <SelectContent>
-                          {DEPARTMENTS.map((d) => (
-                            <SelectItem key={d.en} value={d.en}>{lang === 'en' ? d.en : d.ar}</SelectItem>
+                          {DEPARTMENT_OPTIONS.map((d) => (
+                            <SelectItem key={d.value} value={d.value}>{lang === 'en' ? d.label.en : d.label.ar}</SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
@@ -738,7 +740,7 @@ export default function RequestAccess() {
                     </div>
                     <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
                       <strong>{t.deptLabel}:</strong>
-                      <span className="text-[#6B7280]">{formData.department || '—'}</span>
+                      <span className="text-[#6B7280]">{DEPARTMENT_OPTIONS.find(d => d.value === formData.department)?.label[lang] || formData.department || '—'}</span>
                     </div>
                     <div className="flex items-center justify-between gap-3 px-3 py-2.5 border border-[#E5E7EB] rounded-xl bg-white text-[13px]">
                       <strong>{t.ownerLabel}:</strong>

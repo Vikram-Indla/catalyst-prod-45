@@ -14,7 +14,8 @@ import { RichTextEditor } from '../RichTextEditor';
 import { UserPicker } from '@/components/ui/user-picker';
 import { 
   BusinessRequest, 
-  DELIVERY_PLATFORM_OPTIONS
+  DELIVERY_PLATFORM_OPTIONS,
+  DEPARTMENT_OPTIONS
 } from '@/types/business-request';
 
 // Delivery Track Options
@@ -121,13 +122,11 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
                   <SelectValue placeholder="Select..." />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border shadow-lg z-50">
-                  <SelectItem value="it">Information Technology</SelectItem>
-                  <SelectItem value="operations">Operations</SelectItem>
-                  <SelectItem value="finance">Finance</SelectItem>
-                  <SelectItem value="hr">Human Resources</SelectItem>
-                  <SelectItem value="marketing">Marketing</SelectItem>
-                  <SelectItem value="sales">Sales</SelectItem>
-                  <SelectItem value="legal">Legal</SelectItem>
+                  {DEPARTMENT_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label.en}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
