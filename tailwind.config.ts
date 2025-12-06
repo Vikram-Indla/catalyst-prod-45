@@ -121,6 +121,33 @@ export default {
           800: "hsl(var(--neutral-800))",
           900: "hsl(var(--neutral-900))",
         },
+        // Catalyst Toast Colors
+        catalyst: {
+          black: "#1a1a1a",
+        },
+        toast: {
+          message: "#525252",
+          close: "#9ca3af",
+          success: {
+            bg: "#f0fdf4",
+            border: "#22c55e",
+            "border-dark": "#16a34a",
+            icon: "#15803d",
+          },
+          error: {
+            bg: "#fef2f2",
+            border: "#ef4444",
+            "border-dark": "#dc2626",
+            icon: "#dc2626",
+          },
+          warning: {
+            bg: "#fffbeb",
+            border: "#f59e0b",
+            "border-dark": "#d97706",
+            icon: "#d97706",
+          },
+        },
+        "brand-gold-dark": "#a67c4e",
       },
       borderRadius: {
         none: "0",
@@ -180,10 +207,20 @@ export default {
             height: "0",
           },
         },
+        "toast-in": {
+          "0%": { opacity: "0", transform: "translateY(-12px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "toast-out": {
+          "0%": { opacity: "1", transform: "translateY(0)" },
+          "100%": { opacity: "0", transform: "translateY(-12px)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "toast-in": "toast-in 0.3s ease",
+        "toast-out": "toast-out 0.2s ease forwards",
       },
     },
   },

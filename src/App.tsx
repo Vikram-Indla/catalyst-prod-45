@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./lib/auth";
 import { NavigationProvider } from "./contexts/NavigationContext";
+import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CatalystShell } from "./components/layout/CatalystShell";
 import Auth from "./pages/Auth";
@@ -180,6 +181,7 @@ import NotificationsSelfTest from "./pages/dev/NotificationsSelfTest";
 import PortfolioThemeSelfTest from "./pages/dev/PortfolioThemeSelfTest";
 import ProgramBoardSelfTest from "./pages/dev/ProgramBoardSelfTest";
 import SourcesReference from "./pages/dev/SourcesReference";
+import ToastDemo from "./pages/dev/ToastDemo";
 import { TestCasesPage } from "./pages/TestCasesPage";
 import { TestCaseDetailPage } from "./pages/TestCaseDetailPage";
 import { TestCyclesPage } from "./pages/TestCyclesPage";
@@ -206,10 +208,11 @@ const App = () => (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
         <NavigationProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+          <CatalystToastProvider position="top-right" maxToasts={5}>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
               <Routes>
               <Route path="/" element={<Navigate to="/home" replace />} />
               <Route path="/auth" element={<Auth />} />
@@ -609,6 +612,7 @@ const App = () => (
               <Route path="/dev/portfolio-theme-self-test" element={<PortfolioThemeSelfTest />} />
               <Route path="/dev/program-board-self-test" element={<ProgramBoardSelfTest />} />
               <Route path="/dev/sources" element={<SourcesReference />} />
+              <Route path="/dev/toast-demo" element={<ToastDemo />} />
             </Route>
             
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
@@ -616,6 +620,7 @@ const App = () => (
             </Routes>
           </BrowserRouter>
         </TooltipProvider>
+      </CatalystToastProvider>
       </NavigationProvider>
     </AuthProvider>
   </ThemeProvider>
