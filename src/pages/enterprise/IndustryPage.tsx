@@ -804,10 +804,10 @@ export default function IndustryPage() {
                 <div className="flex-1 overflow-x-auto overflow-y-auto">
                   <table className="min-w-full w-max border-separate border-spacing-0">
                     {/* Table Header */}
-                    <thead className="sticky top-0 z-40 bg-card" style={{ position: 'sticky' }}>
-                      <tr className="bg-card">
+                    <thead className="sticky top-0 z-40" style={{ position: 'sticky', background: 'hsl(35 46% 97%)' }}>
+                      <tr style={{ background: 'hsl(35 46% 97%)' }}>
                         {/* Checkbox header cell */}
-                        <th className="h-10 px-3 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-card" style={{ width: '48px', minWidth: '48px' }}>
+                        <th className="h-10 px-3 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border" style={{ width: '48px', minWidth: '48px', background: 'hsl(35 46% 97%)' }}>
                           <div className="w-4" />
                         </th>
                         
@@ -822,10 +822,10 @@ export default function IndustryPage() {
                             <th 
                               key={col.id}
                               className={cn(
-                              "h-10 px-3.5 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border bg-card relative group",
+                              "h-10 px-3.5 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border relative group",
                                 isCentered && "text-center"
                               )}
-                              style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
+                              style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px`, background: 'hsl(35 46% 97%)' }}
                             >
                               <SimpleColumnHeader
                                 label={colDef.label}
@@ -866,7 +866,7 @@ export default function IndustryPage() {
                         })}
                         
                         {/* Add column button header cell - sticky right */}
-                        <th className="h-10 border-b border-border bg-card sticky right-0 z-20" style={{ width: '48px', minWidth: '48px' }}>
+                        <th className="h-10 border-b border-border sticky right-0 z-20" style={{ width: '48px', minWidth: '48px', background: 'hsl(35 46% 97%)' }}>
                           <div className="flex items-center justify-center">
                             <ColumnsDropdown
                               columns={columns}
