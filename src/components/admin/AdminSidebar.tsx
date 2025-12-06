@@ -93,13 +93,13 @@ export function AdminSidebar() {
         <p className="text-xs text-muted-foreground mt-1">System Configuration</p>
       </div>
       
-      <nav className="flex-1 overflow-y-auto p-4 space-y-6">
+      <nav className="flex-1 overflow-y-auto p-4 space-y-4">
         {adminSections.map((section) => (
           <div key={section.title}>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
               {section.title}
             </h3>
-            <ul className="space-y-1">
+            <ul className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname === item.path;
@@ -109,7 +109,7 @@ export function AdminSidebar() {
                     <Link
                       to={item.path}
                       className={cn(
-                        "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
+                        "flex items-center gap-3 px-3 py-1.5 rounded-md text-sm transition-colors",
                         isActive 
                           ? "bg-brand-gold text-white font-medium" 
                           : "text-foreground hover:bg-muted"
