@@ -32,7 +32,7 @@
   --surface-gray-200: 218 14% 91%;            /* #E5E7EB */
   
   /* Background and foreground - mapped to surfaces */
-  --background: 214 15% 96%;                  /* #F3F4F6 - page background */
+  --background: 0 0% 100%;                    /* #FFFFFF - page background */
   --foreground: 217 19% 16%;                  /* #111827 - text */
   --card: 0 0% 100%;                          /* #FFFFFF */
   --card-foreground: 217 19% 16%;
