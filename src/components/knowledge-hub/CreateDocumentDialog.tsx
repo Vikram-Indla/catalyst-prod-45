@@ -109,12 +109,12 @@ export function CreateDocumentDialog({
           </div>
           <div className="grid gap-2">
             <Label htmlFor="space">Space (Optional)</Label>
-            <Select value={spaceId} onValueChange={setSpaceId}>
+            <Select value={spaceId || "none"} onValueChange={(val) => setSpaceId(val === "none" ? "" : val)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select a space" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No space</SelectItem>
+                <SelectItem value="none">No space</SelectItem>
                 {spaces?.map((space) => (
                   <SelectItem key={space.id} value={space.id}>
                     {space.name}
