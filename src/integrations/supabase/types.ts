@@ -6662,36 +6662,45 @@ export type Database = {
           access_count: number
           id: string
           last_accessed_at: string
+          page_key: string
           pi_label: string | null
           room_id: string
           room_name: string
           room_path: string
           room_subtitle: string | null
           room_type: Database["public"]["Enums"]["room_type"]
+          timebox_id: string | null
+          timebox_type: string | null
           user_id: string
         }
         Insert: {
           access_count?: number
           id?: string
           last_accessed_at?: string
+          page_key?: string
           pi_label?: string | null
           room_id: string
           room_name: string
           room_path: string
           room_subtitle?: string | null
           room_type: Database["public"]["Enums"]["room_type"]
+          timebox_id?: string | null
+          timebox_type?: string | null
           user_id: string
         }
         Update: {
           access_count?: number
           id?: string
           last_accessed_at?: string
+          page_key?: string
           pi_label?: string | null
           room_id?: string
           room_name?: string
           room_path?: string
           room_subtitle?: string | null
           room_type?: Database["public"]["Enums"]["room_type"]
+          timebox_id?: string | null
+          timebox_type?: string | null
           user_id?: string
         }
         Relationships: []
@@ -10978,18 +10987,34 @@ export type Database = {
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
-      track_room_access: {
-        Args: {
-          p_pi_label?: string
-          p_room_id: string
-          p_room_name: string
-          p_room_path: string
-          p_room_subtitle: string
-          p_room_type: Database["public"]["Enums"]["room_type"]
-          p_user_id: string
-        }
-        Returns: undefined
-      }
+      track_room_access:
+        | {
+            Args: {
+              p_pi_label?: string
+              p_room_id: string
+              p_room_name: string
+              p_room_path: string
+              p_room_subtitle: string
+              p_room_type: Database["public"]["Enums"]["room_type"]
+              p_user_id: string
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_page_key?: string
+              p_pi_label?: string
+              p_room_id: string
+              p_room_name: string
+              p_room_path: string
+              p_room_subtitle: string
+              p_room_type: Database["public"]["Enums"]["room_type"]
+              p_timebox_id?: string
+              p_timebox_type?: string
+              p_user_id: string
+            }
+            Returns: undefined
+          }
       user_in_portfolio: {
         Args: { _portfolio_id: string; _user_id: string }
         Returns: boolean
