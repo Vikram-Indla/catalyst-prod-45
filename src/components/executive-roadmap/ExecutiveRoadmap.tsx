@@ -463,6 +463,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             <div className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>Industry Requests Portfolio</div>
           </div>
         </div>
+        {/* Catalyst label on right side for print */}
+        <div className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+          Catalyst - Enterprise Demand & Delivery Management
+        </div>
       </div>
 
       {/* Header with top controls */}
