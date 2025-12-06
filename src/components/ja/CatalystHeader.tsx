@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Search, Bell, HelpCircle, User, ChevronDown, LogOut, Settings } from "lucide-react";
+import { Search, Bell, HelpCircle, User, ChevronDown, LogOut, Settings, Lock } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -20,6 +20,7 @@ import { StarredDropdown } from "./StarredDropdown";
 import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
 import { MobileNavigationMenu } from "./MobileNavigationMenu";
 import { TestsDropdown } from "./TestsDropdown";
+import { catalystToast } from "@/lib/catalystToast";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,6 +72,18 @@ export function CatalystHeader() {
     }
   };
 
+  // Handle click on disabled module
+  const handleDisabledModuleClick = (label: string) => {
+    if (isAdmin) {
+      navigate('/admin/modules-packages');
+    } else {
+      catalystToast.info(
+        'Module Disabled',
+        'This module is disabled by your organization.'
+      );
+    }
+  };
+
   // Define nav items with their module codes - each module has its own code
   const allNavItems = [
     { label: "Home", path: "/home", moduleCode: null }, // Always visible
@@ -81,11 +94,11 @@ export function CatalystHeader() {
     { label: "Team", hasDropdown: true, path: "/teams", moduleCode: "TEAMS" },
   ];
 
-  // Filter nav items based on enabled modules
-  const navItems = allNavItems.filter(item => {
-    if (item.moduleCode === null) return true; // Always show items without module code
-    return isModuleEnabled(item.moduleCode);
-  });
+  // Get all nav items with their enabled status
+  const navItems = allNavItems.map(item => ({
+    ...item,
+    isEnabled: item.moduleCode === null ? true : isModuleEnabled(item.moduleCode),
+  }));
 
   return (
     <>
@@ -115,136 +128,167 @@ export function CatalystHeader() {
 
           {/* Main Navigation - Visible on tablet and up */}
           <nav className="hidden md:flex items-center gap-6 flex-1 justify-center max-w-4xl">
-            {navItems.map((item) => (
-              <div key={item.label}>
-                {item.label === "Product" ? (
-                  <Popover
-                    open={activeDropdown === item.label}
-                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+            <TooltipProvider>
+              {navItems.map((item) => {
+                // Disabled module rendering
+                if (!item.isEnabled) {
+                  return (
+                    <Tooltip key={item.label}>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-9 px-3 text-sm font-medium opacity-40 cursor-not-allowed hover:bg-transparent"
+                          onClick={() => handleDisabledModuleClick(item.label)}
+                        >
+                          {item.label}
+                          <Lock className="ml-1 h-3 w-3" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          {isAdmin 
+                            ? `This module is disabled. Enable it in Administration → Modules & Packages.`
+                            : `This module is disabled by your organization.`}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                }
+
+                // Enabled module rendering
+                return (
+                  <div key={item.label}>
+                    {item.label === "Product" ? (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
-                        {item.label}
-                        <ChevronDown className="ml-1 h-3 w-3" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                      <ProductSelectorDropdown onClose={() => setActiveDropdown(null)} />
-                    </PopoverContent>
-                  </Popover>
-                ) : item.label === "Portfolio" ? (
-                  <Popover
-                    open={activeDropdown === item.label}
-                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                          >
+                            {item.label}
+                            <ChevronDown className="ml-1 h-3 w-3" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <ProductSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                        </PopoverContent>
+                      </Popover>
+                    ) : item.label === "Portfolio" ? (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
-                        {item.label}
-                        <ChevronDown className="ml-1 h-3 w-3" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                      <PortfolioSelectorDropdown onClose={() => setActiveDropdown(null)} />
-                    </PopoverContent>
-                  </Popover>
-                ) : item.label === "Program" ? (
-                  <Popover
-                    open={activeDropdown === item.label}
-                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                          >
+                            {item.label}
+                            <ChevronDown className="ml-1 h-3 w-3" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <PortfolioSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                        </PopoverContent>
+                      </Popover>
+                    ) : item.label === "Program" ? (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
-                        {item.label}
-                        <ChevronDown className="ml-1 h-3 w-3" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                      <ProgramSelectorDropdown onClose={() => setActiveDropdown(null)} />
-                    </PopoverContent>
-                  </Popover>
-                ) : item.label === "Team" && item.path ? (
-                  <Popover
-                    open={activeDropdown === item.label}
-                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                          >
+                            {item.label}
+                            <ChevronDown className="ml-1 h-3 w-3" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <ProgramSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                        </PopoverContent>
+                      </Popover>
+                    ) : item.label === "Team" && item.path ? (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
-                        {item.label}
-                        <ChevronDown className="ml-1 h-3 w-3" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                      <TeamSelectorDropdown onClose={() => setActiveDropdown(null)} />
-                    </PopoverContent>
-                  </Popover>
-                ) : item.label === "Starred" ? (
-                  <Popover
-                    open={activeDropdown === item.label}
-                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                  >
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                          >
+                            {item.label}
+                            <ChevronDown className="ml-1 h-3 w-3" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <TeamSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                        </PopoverContent>
+                      </Popover>
+                    ) : item.label === "Starred" ? (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
-                        {item.label}
-                        <ChevronDown className="ml-1 h-3 w-3" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                      <StarredDropdown onClose={() => setActiveDropdown(null)} />
-                    </PopoverContent>
-                  </Popover>
-                ) : item.hasDropdown ? (
-                  <DropdownMenu
-                    open={activeDropdown === item.label}
-                    onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                  >
-                    <DropdownMenuTrigger asChild>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 px-3 text-sm font-medium hover:bg-accent/50"
+                          >
+                            {item.label}
+                            <ChevronDown className="ml-1 h-3 w-3" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <StarredDropdown onClose={() => setActiveDropdown(null)} />
+                        </PopoverContent>
+                      </Popover>
+                    ) : item.hasDropdown ? (
+                      <DropdownMenu
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                      >
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-9 px-3 text-sm font-medium hover:bg-accent/50 whitespace-nowrap"
+                          >
+                            {item.label}
+                            <ChevronDown className="ml-1 h-3 w-3" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" className="w-48 bg-popover z-[60]">
+                          <DropdownMenuItem className="text-muted-foreground text-xs">
+                            TODO (needs confirmation)
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    ) : (
                       <Button
                         variant="ghost"
                         size="sm"
                         className="h-9 px-3 text-sm font-medium hover:bg-accent/50 whitespace-nowrap"
+                        onClick={() => item.path && navigate(item.path)}
                       >
                         {item.label}
-                        <ChevronDown className="ml-1 h-3 w-3" />
                       </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-48 bg-popover z-[60]">
-                      <DropdownMenuItem className="text-muted-foreground text-xs">
-                        TODO (needs confirmation)
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                ) : (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-9 px-3 text-sm font-medium hover:bg-accent/50 whitespace-nowrap"
-                    onClick={() => item.path && navigate(item.path)}
-                  >
-                    {item.label}
-                  </Button>
-                )}
-              </div>
-            ))}
+                    )}
+                  </div>
+                );
+              })}
+            </TooltipProvider>
 
             {/* Tests Dropdown - Only visible in program context */}
             {showTestsDropdown && <TestsDropdown isActive />}
