@@ -469,7 +469,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       <div 
         className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b print:hidden shrink-0 relative z-20"
         style={{ 
-          backgroundColor: 'hsl(var(--roadmap-parchment))',
+          backgroundColor: 'white',
           borderColor: 'hsl(var(--roadmap-sandstone))'
         }}
       >
@@ -492,27 +492,28 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
         {/* Floating Pills Toolbar */}
         <div className="inline-flex items-center gap-1.5 relative z-30" style={{ direction: 'ltr' }}>
-          {/* Timeline View Toggle */}
+          {/* Timeline View Toggle - Prominent styling */}
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setIsTimelineView(!isTimelineView)}
                   className={cn(
-                    "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5",
+                    "w-10 h-10 flex items-center justify-center rounded-xl cursor-pointer transition-all duration-200 hover:-translate-y-0.5",
                     isTimelineView 
-                      ? "text-white" 
-                      : "bg-white text-[hsl(var(--roadmap-fossil))]"
+                      ? "text-white shadow-lg" 
+                      : "bg-white text-[hsl(var(--roadmap-fossil))] shadow-md hover:shadow-lg"
                   )}
                   style={{ 
-                    backgroundColor: isTimelineView ? 'hsl(var(--roadmap-status-new))' : undefined,
-                    border: isTimelineView ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+                    backgroundColor: isTimelineView ? 'hsl(var(--roadmap-status-new))' : 'white',
+                    border: isTimelineView ? '2px solid hsl(var(--roadmap-status-new))' : '2px solid hsl(var(--roadmap-sandstone))',
+                    boxShadow: isTimelineView ? '0 0 12px hsla(var(--roadmap-status-new) / 0.4)' : undefined
                   }}
                 >
-                  <LayoutList className="w-[18px] h-[18px]" />
+                  <LayoutList className="w-5 h-5" strokeWidth={2.5} />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Timeline View</TooltipContent>
+              <TooltipContent side="bottom" className="text-xs font-medium">Timeline View</TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
@@ -791,16 +792,16 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 </div>
               </div>
               
-              {/* Timeline columns */}
+              {/* Timeline columns with vertical separators */}
               {timeScale === 'quarterly' ? (
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col relative">
                   {/* Top row: Quarters */}
                   <div className="flex border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
                     {quarterlyGroups?.map((quarter, i) => (
                       <div 
                         key={i} 
-                        className="flex-1 px-1 py-1.5 text-center border-r last:border-r-0"
-                        style={{ flex: quarter.span, borderColor: 'hsl(var(--roadmap-sandstone))' }}
+                        className="flex-1 px-1 py-1.5 text-center border-r"
+                        style={{ flex: quarter.span, borderColor: 'hsl(var(--roadmap-driftwood))' }}
                       >
                         <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{quarter.label}</div>
                       </div>
@@ -811,8 +812,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     {timelineColumns.map((col, i) => (
                       <div 
                         key={i} 
-                        className="flex-1 px-1 py-1.5 text-center border-r last:border-r-0"
-                        style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}
+                        className="flex-1 px-1 py-1.5 text-center border-r"
+                        style={{ borderColor: 'hsl(var(--roadmap-driftwood))' }}
                       >
                         <div className="text-xs font-medium" style={{ color: 'hsl(var(--roadmap-fossil))' }}>{col.label}</div>
                       </div>
@@ -824,8 +825,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   {timelineColumns.map((col, i) => (
                     <div 
                       key={i} 
-                      className="flex-1 px-1 py-2 text-center border-r last:border-r-0"
-                      style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}
+                      className="flex-1 px-1 py-2 text-center border-r"
+                      style={{ borderColor: 'hsl(var(--roadmap-driftwood))' }}
                     >
                       <div className="text-xs font-medium" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{col.label}</div>
                       {col.subLabel && <div className="text-xs" style={{ color: 'hsl(var(--roadmap-fossil))' }}>{col.subLabel}</div>}
@@ -924,7 +925,17 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 <TooltipProvider delayDuration={100}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <div className="flex-1 relative py-3 px-2 cursor-pointer">
+                      <div className="flex-1 relative py-3 px-2 cursor-pointer" style={{ display: 'flex', alignItems: 'center' }}>
+                        {/* Vertical grid lines for timeline columns */}
+                        <div className="absolute inset-0 flex pointer-events-none">
+                          {timelineColumns.map((_, i) => (
+                            <div 
+                              key={i} 
+                              className="flex-1 border-r" 
+                              style={{ borderColor: 'hsl(var(--roadmap-sandstone) / 0.5)' }} 
+                            />
+                          ))}
+                        </div>
                         {/* Date labels */}
                         <div 
                           className="absolute text-xs"
@@ -946,7 +957,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
                         {/* Bar - UNIFORM gold gradient for all statuses */}
                         <div 
-                          className="absolute h-[26px] rounded-full"
+                          className="absolute h-[26px] rounded-full overflow-visible"
                           style={{ 
                             left: barPos.left, 
                             width: barPos.width, 
@@ -955,9 +966,17 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                             background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
                           }}
                         >
-                          {/* Milestones */}
-                          {showMilestones && item.milestones.map((ms) => {
-                            const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
+                          {/* Milestones - positioned inside the bar with padding */}
+                          {showMilestones && item.milestones.map((ms, index) => {
+                            // Keep milestones inside bar: first at 5%, then evenly spaced, last at 95%
+                            const totalMilestones = item.milestones.length;
+                            let pos: number;
+                            if (totalMilestones === 1) {
+                              pos = 50; // Center if only one
+                            } else {
+                              // Distribute from 8% to 92% to keep inside bar
+                              pos = 8 + (index * (84 / (totalMilestones - 1)));
+                            }
                             const msDate = new Date(ms.date);
                             const dateLabel = msDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' });
                             
@@ -1115,12 +1134,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Legend */}
-      <RoadmapLegend 
-        isVisible={showLegend} 
-        onToggle={() => setShowLegend(!showLegend)} 
-        isRTL={isRTL}
-      />
+      {/* Legend - Removed per user request */}
 
       {/* Print Styles */}
       <style>{`
