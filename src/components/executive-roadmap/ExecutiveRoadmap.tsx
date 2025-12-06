@@ -355,9 +355,9 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {/* Milestones toggle */}
-          <div className="hidden sm:flex items-center gap-1.5 bg-[#F5F2ED] px-2.5 py-1.5 rounded-lg">
+          <div className="flex items-center gap-1.5 bg-[#F5F2ED] px-2.5 py-1.5 rounded-lg">
             <span className="text-[10px] text-[#5C5650] font-medium uppercase">{t.milestones}</span>
             <Switch 
               checked={showMilestones} 
@@ -366,12 +366,12 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             />
           </div>
 
-          {/* Filters button */}
+          {/* Filters */}
           <Button 
-            variant="outline" 
+            variant="ghost" 
             size="icon"
             onClick={() => setFiltersDialogOpen(true)}
-            className="h-8 w-8"
+            className="h-8 w-8 text-[#5C5650] hover:text-[#2C2825]"
           >
             <Filter className="h-4 w-4" />
           </Button>
@@ -381,7 +381,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             <button
               onClick={() => setLanguage('en')}
               className={cn(
-                "px-2.5 py-1 text-[11px] font-medium rounded-md transition-all",
+                "px-2 py-1 text-[11px] font-medium rounded-md transition-all",
                 language === 'en' ? "bg-[#C69C6D] text-white" : "text-[#5C5650] hover:text-[#2C2825]"
               )}
             >
@@ -390,7 +390,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             <button
               onClick={() => setLanguage('ar')}
               className={cn(
-                "px-2.5 py-1 text-[11px] font-medium rounded-md transition-all",
+                "px-2 py-1 text-[11px] font-medium rounded-md transition-all",
                 language === 'ar' ? "bg-[#C69C6D] text-white" : "text-[#5C5650] hover:text-[#2C2825]"
               )}
             >
@@ -399,12 +399,12 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           </div>
 
           {/* Export */}
-          <Button variant="ghost" size="icon" onClick={handleExport} className="h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={handleExport} className="h-8 w-8 text-[#5C5650] hover:text-[#2C2825]">
             <FileDown className="h-4 w-4" />
           </Button>
 
           {/* Fullscreen */}
-          <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="hidden sm:flex h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={toggleFullscreen} className="h-8 w-8 text-[#5C5650] hover:text-[#2C2825]">
             {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </Button>
         </div>
