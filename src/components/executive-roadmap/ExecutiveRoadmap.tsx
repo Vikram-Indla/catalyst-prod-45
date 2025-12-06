@@ -18,13 +18,15 @@ import {
   Flag, 
   Menu,
   X,
-  Lock
+  Lock,
+  Filter
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { RoadmapFiltersDialog, RoadmapFilters } from './RoadmapFiltersDialog';
 
 type TimeScale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 type Language = 'en' | 'ar';
@@ -121,6 +123,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const t = TRANSLATIONS[language];
@@ -418,13 +421,27 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
       {/* Show/Hide Filters Toggle */}
       <div 
-        className="flex items-center gap-2 px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white cursor-pointer hover:bg-[#F5F2ED] transition-colors print:hidden"
-        onClick={() => setShowFilters(!showFilters)}
+        className="flex items-center justify-between px-4 sm:px-6 py-2 border-b border-[#E8E4DD] bg-white print:hidden"
       >
-        <ChevronRight className={cn("h-4 w-4 text-[#5C5650] transition-transform", showFilters && "rotate-90")} />
-        <span className="text-[11px] font-medium text-[#5C5650]">
-          {showFilters ? 'Hide Details' : 'Show Details'}
-        </span>
+        <div 
+          className="flex items-center gap-2 cursor-pointer hover:bg-[#F5F2ED] px-2 py-1 rounded transition-colors"
+          onClick={() => setShowFilters(!showFilters)}
+        >
+          <ChevronRight className={cn("h-4 w-4 text-[#5C5650] transition-transform", showFilters && "rotate-90")} />
+          <span className="text-[11px] font-medium text-[#5C5650]">
+            {showFilters ? 'Hide Details' : 'Show Details'}
+          </span>
+        </div>
+        
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => setFiltersDialogOpen(true)}
+          className="h-7 text-[11px] gap-1.5"
+        >
+          <Filter className="h-3.5 w-3.5" />
+          Filters
+        </Button>
       </div>
 
       {/* Controls Bar - Inline filters (collapsible) */}
@@ -765,6 +782,29 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           @page { size: A3 landscape; margin: 1cm; }
         }
       `}</style>
+
+      {/* Filters Dialog */}
+      <RoadmapFiltersDialog
+        open={filtersDialogOpen}
+        onOpenChange={setFiltersDialogOpen}
+        filters={{
+          platform,
+          status,
+          owner,
+          sortField,
+          timeScale,
+          showMilestones,
+        }}
+        onFiltersChange={(newFilters: RoadmapFilters) => {
+          if (newFilters.platform) setPlatform(newFilters.platform);
+          if (newFilters.status) setStatus(newFilters.status);
+          if (newFilters.owner) setOwner(newFilters.owner);
+          if (newFilters.sortField) setSortField(newFilters.sortField as SortField);
+          if (newFilters.timeScale) setTimeScale(newFilters.timeScale as TimeScale);
+          if (newFilters.showMilestones !== undefined) setShowMilestones(newFilters.showMilestones);
+        }}
+        uniqueOwners={uniqueOwners}
+      />
     </div>
   );
 }
