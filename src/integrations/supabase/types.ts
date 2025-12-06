@@ -6508,6 +6508,7 @@ export type Database = {
           full_name: string | null
           id: string
           last_login: string | null
+          must_change_password: boolean
           role: string | null
           status: string
           updated_at: string | null
@@ -6519,6 +6520,7 @@ export type Database = {
           full_name?: string | null
           id: string
           last_login?: string | null
+          must_change_password?: boolean
           role?: string | null
           status?: string
           updated_at?: string | null
@@ -6530,6 +6532,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           last_login?: string | null
+          must_change_password?: boolean
           role?: string | null
           status?: string
           updated_at?: string | null
