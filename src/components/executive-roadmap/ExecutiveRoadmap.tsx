@@ -697,35 +697,37 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
       {/* Timeline Grid */}
       <div className="flex-1 overflow-auto scroll-smooth relative" style={{ scrollBehavior: 'smooth', direction: 'ltr' }}>
-        <div className="min-w-[1200px] relative">
-          {/* Today line - More visible with higher z-index */}
-          {todayPosition !== null && (
-            <div
-              className="absolute top-0 bottom-0 z-40 pointer-events-none"
+        {/* Today line - positioned in scroll container to span full height */}
+        {todayPosition !== null && (
+          <div
+            className="absolute z-50 pointer-events-none"
+            style={{ 
+              top: 0,
+              bottom: 0,
+              left: `calc(${firstColumnWidth}px + (100% - ${firstColumnWidth}px) * ${todayPosition / 100})`,
+              width: '3px',
+              backgroundColor: '#ef4444',
+              boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)'
+            }}
+          >
+            {/* Today badge */}
+            <div 
+              className="absolute top-0 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-bold rounded-b whitespace-nowrap shadow-lg"
               style={{ 
-                left: `calc(${firstColumnWidth}px + (100% - ${firstColumnWidth}px) * ${todayPosition / 100})`,
-                width: '2px',
-                backgroundColor: '#ef4444'
+                backgroundColor: '#ef4444',
+                color: 'white'
               }}
             >
-              {/* Today badge */}
-              <div 
-                className="absolute top-0 left-1/2 -translate-x-1/2 px-2 py-0.5 text-xs font-bold rounded-b whitespace-nowrap shadow-lg"
-                style={{ 
-                  backgroundColor: '#ef4444',
-                  color: 'white'
-                }}
-              >
-                {todayLabel}
-              </div>
-              {/* Pulsing dot */}
-              <div 
-                className="absolute top-6 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full animate-pulse shadow-md"
-                style={{ backgroundColor: '#ef4444' }}
-              />
+              {todayLabel}
             </div>
-          )}
-
+            {/* Pulsing dot */}
+            <div 
+              className="absolute top-8 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full animate-pulse shadow-md"
+              style={{ backgroundColor: '#ef4444' }}
+            />
+          </div>
+        )}
+        <div className="min-w-[1200px] relative">
           {/* Timeline Header */}
           <div className="border-b sticky top-0 z-10" style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))' }}>
             <div className={cn("flex", isRTL && "flex-row-reverse")}>
