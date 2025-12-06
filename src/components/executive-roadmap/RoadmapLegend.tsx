@@ -17,14 +17,13 @@ const STATUS_ITEMS = [
 ];
 
 export function RoadmapLegend({ isVisible, onToggle, isRTL = false }: RoadmapLegendProps) {
+  if (!isVisible) return null;
+  
   return (
     <div className="fixed bottom-6 right-6 z-40 print:hidden">
       {/* Legend Panel */}
       <div
-        className={cn(
-          "absolute bottom-14 right-0 w-72 bg-white rounded-xl shadow-lg border border-[hsl(var(--roadmap-sandstone))] overflow-hidden transition-all duration-300 origin-bottom-right",
-          isVisible ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-2 pointer-events-none"
-        )}
+        className="w-72 bg-white rounded-xl shadow-lg border border-[hsl(var(--roadmap-sandstone))] overflow-hidden"
         style={{ fontFamily: 'Inter, sans-serif' }}
       >
         {/* Header */}
@@ -128,20 +127,6 @@ export function RoadmapLegend({ isVisible, onToggle, isRTL = false }: RoadmapLeg
           </div>
         </div>
       </div>
-
-      {/* Toggle Button */}
-      <button
-        onClick={onToggle}
-        className={cn(
-          "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5",
-          isVisible 
-            ? "bg-[hsl(var(--roadmap-status-new))] text-white" 
-            : "bg-white text-[hsl(var(--roadmap-fossil))] border border-[hsl(var(--roadmap-sandstone))]"
-        )}
-        title={isRTL ? (isVisible ? 'إخفاء الدليل' : 'إظهار الدليل') : (isVisible ? 'Hide Legend' : 'Show Legend')}
-      >
-        {isVisible ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-      </button>
     </div>
   );
 }
