@@ -77,7 +77,9 @@ export function ProductSelectorDropdown({ onClose }: ProductSelectorDropdownProp
                     <span className="flex-1 font-medium">{item.name}</span>
                     <button
                       onClick={(e) => handleToggleStar(e, item)}
-                      className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand-gold"
+                      className={`p-1 rounded hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-brand-gold ${
+                        starred ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus:opacity-100"
+                      }`}
                       aria-label={starred ? "Unstar product" : "Star product"}
                     >
                       <Star
