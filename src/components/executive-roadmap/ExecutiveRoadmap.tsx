@@ -19,8 +19,12 @@ import {
   Clock,
   Calendar,
   Check,
-  LayoutList
+  LayoutList,
+  Eye,
+  EyeOff,
+  Search
 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RoadmapFiltersDialog, RoadmapFilters } from './RoadmapFiltersDialog';
@@ -141,6 +145,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
   const [showLegend, setShowLegend] = useState(false);
   const [isTimelineView, setIsTimelineView] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [firstColumnWidth, setFirstColumnWidth] = useState<number>(() => {
     try {
       const saved = localStorage.getItem('roadmap-first-column-width');
@@ -245,6 +250,16 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       result = result.filter(item => item.ownerEn === owner);
     }
 
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.trim().toLowerCase();
+      result = result.filter(item => 
+        item.id.toLowerCase().includes(query) ||
+        item.titleEn.toLowerCase().includes(query) ||
+        item.titleAr.toLowerCase().includes(query)
+      );
+    }
+
     // Sort
     result.sort((a, b) => {
       let valA: any, valB: any;
@@ -270,7 +285,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     });
 
     return result;
-  }, [items, activeKPI, platform, status, owner, sortField, sortOrder, isRTL]);
+  }, [items, activeKPI, platform, status, owner, sortField, sortOrder, isRTL, searchQuery]);
 
   // Count items by status
   const statusCounts = useMemo(() => {
@@ -635,7 +650,31 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   <Download className="w-[18px] h-[18px]" />
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="bottom" className="text-xs">Export PDF</TooltipContent>
+          <TooltipContent side="bottom" className="text-xs">Export PDF</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Legend Toggle */}
+          <TooltipProvider delayDuration={200}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => setShowLegend(!showLegend)}
+                  className={cn(
+                    "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5",
+                    showLegend 
+                      ? "text-white" 
+                      : "bg-white text-[hsl(var(--roadmap-fossil))]"
+                  )}
+                  style={{ 
+                    backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
+                    border: showLegend ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
+                  }}
+                >
+                  {showLegend ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="text-xs">{showLegend ? 'Hide Legend' : 'Show Legend'}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
 
@@ -660,39 +699,31 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Status Pills - Always visible centered row */}
+      {/* Search Bar */}
       <div 
-        className="flex items-center justify-center gap-3 px-4 sm:px-6 py-3 border-b print:hidden"
+        className="flex items-center gap-3 px-4 sm:px-6 py-2 border-b print:hidden"
         style={{ 
           backgroundColor: 'hsl(var(--roadmap-parchment))',
           borderColor: 'hsl(var(--roadmap-sandstone))'
         }}
       >
-        {kpiCards.map((kpi) => {
-          const isActive = activeKPI === kpi.status;
-          return (
-            <button
-              key={kpi.status}
-              onClick={() => setActiveKPI(isActive ? null : kpi.status)}
-              className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer",
-                isActive && "shadow-sm"
-              )}
-              style={{ 
-                backgroundColor: isActive ? 'hsl(var(--roadmap-charcoal))' : 'hsl(var(--roadmap-parchment))',
-                color: isActive ? 'white' : 'hsl(var(--roadmap-graphite))',
-                border: isActive ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
-              }}
-            >
-              <span 
-                className="w-2 h-2 rounded-full" 
-                style={{ backgroundColor: STATUS_COLORS[kpi.status] }}
-              />
-              <span className="font-bold">{statusCounts[kpi.status]}</span>
-              <span>{kpi.label}</span>
-            </button>
-          );
-        })}
+        <div className="relative flex-1 max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'hsl(var(--roadmap-fossil))' }} />
+          <Input
+            type="text"
+            placeholder={isRTL ? 'بحث رقم التذكرة (MIM-XXX)...' : 'Search ticket number (MIM-XXX)...'}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-9 h-9 text-sm bg-white"
+            style={{ 
+              border: '1px solid hsl(var(--roadmap-sandstone))',
+              borderRadius: '8px'
+            }}
+          />
+        </div>
+        <div className="text-xs" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+          {filteredItems.length} {isRTL ? 'نتيجة' : 'results'}
+        </div>
       </div>
 
       {/* Timeline Grid */}
@@ -748,6 +779,25 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               {/* Timeline columns with vertical separators */}
               {timeScale === 'quarterly' ? (
                 <div className="flex-1 flex flex-col relative">
+                  {/* Today indicator in header */}
+                  {todayPosition !== null && (
+                    <div
+                      className="absolute top-0 bottom-0 pointer-events-none z-20"
+                      style={{ 
+                        left: `${todayPosition}%`,
+                        width: '3px',
+                        backgroundColor: '#ef4444',
+                        boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)'
+                      }}
+                    >
+                      <div 
+                        className="absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 text-[10px] font-bold rounded whitespace-nowrap shadow-lg"
+                        style={{ backgroundColor: '#ef4444', color: 'white' }}
+                      >
+                        {todayLabel}
+                      </div>
+                    </div>
+                  )}
                   {/* Top row: Quarters */}
                   <div className="flex border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
                     {quarterlyGroups?.map((quarter, i) => (
@@ -774,7 +824,26 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   </div>
                 </div>
               ) : (
-                <div className="flex-1 flex">
+                <div className="flex-1 flex relative">
+                  {/* Today indicator in header */}
+                  {todayPosition !== null && (
+                    <div
+                      className="absolute top-0 bottom-0 pointer-events-none z-20"
+                      style={{ 
+                        left: `${todayPosition}%`,
+                        width: '3px',
+                        backgroundColor: '#ef4444',
+                        boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)'
+                      }}
+                    >
+                      <div 
+                        className="absolute -top-1 left-1/2 -translate-x-1/2 px-2 py-0.5 text-[10px] font-bold rounded whitespace-nowrap shadow-lg"
+                        style={{ backgroundColor: '#ef4444', color: 'white' }}
+                      >
+                        {todayLabel}
+                      </div>
+                    </div>
+                  )}
                   {timelineColumns.map((col, i) => (
                     <div 
                       key={i} 
@@ -826,22 +895,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     borderLeft: isRTL ? '1px solid hsl(var(--roadmap-sandstone))' : 'none'
                   }}
                 >
-                  <div className="flex items-start gap-3">
-                    {/* Status Indicator */}
-                    <div className="flex flex-col items-center shrink-0 pt-0.5">
-                      <div 
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: STATUS_COLORS[item.status] }}
-                      />
-                      <span 
-                        className="text-[9px] font-bold mt-0.5 tracking-wider"
-                        style={{ color: STATUS_COLORS[item.status] }}
-                      >
-                        {STATUS_ABBR[item.status]}
-                      </span>
-                    </div>
-
-                    {/* Content */}
+                  <div className="flex items-start gap-2">
+                    {/* Content - No vertical status badges */}
                     <div className="flex-1 min-w-0 overflow-hidden">
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
@@ -875,7 +930,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   </div>
                 </div>
 
-                {/* Timeline Bar - No tooltip wrapper */}
+                {/* Timeline Bar area */}
                 <div className="flex-1 relative py-3 px-2 cursor-pointer" style={{ display: 'flex', alignItems: 'center' }}>
                   {/* Vertical grid lines for timeline columns */}
                   <div className="absolute inset-0 flex pointer-events-none">
@@ -887,6 +942,21 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       />
                     ))}
                   </div>
+                  
+                  {/* Today line - rendered in each row */}
+                  {todayPosition !== null && (
+                    <div
+                      className="absolute top-0 bottom-0 pointer-events-none"
+                      style={{ 
+                        left: `${todayPosition}%`,
+                        width: '3px',
+                        backgroundColor: '#ef4444',
+                        boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)',
+                        zIndex: 40
+                      }}
+                    />
+                  )}
+                  
                   {/* Date labels */}
                   <div 
                     className="absolute text-xs"
@@ -906,9 +976,9 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     {formatDateLabel(item.endDate)}
                   </div>
 
-                  {/* Bar - UNIFORM gold gradient for all statuses */}
+                  {/* Bar with STATUS CHIP on it */}
                   <div 
-                    className="absolute h-[26px] rounded-full overflow-hidden"
+                    className="absolute h-[28px] rounded-full overflow-hidden flex items-center"
                     style={{ 
                       left: barPos.left, 
                       width: barPos.width, 
@@ -917,6 +987,16 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
                     }}
                   >
+                    {/* Status chip at start of bar */}
+                    <div 
+                      className="shrink-0 px-2 h-full flex items-center text-[10px] font-bold tracking-wider text-white"
+                      style={{ 
+                        backgroundColor: STATUS_COLORS[item.status],
+                        borderRadius: '9999px 0 0 9999px'
+                      }}
+                    >
+                      {STATUS_ABBR[item.status]}
+                    </div>
                     {/* Milestones - positioned inside the bar with padding */}
                     {showMilestones && item.milestones.map((ms, index) => {
                       // Keep milestones inside bar: distribute evenly within bounds
@@ -964,43 +1044,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               </div>
             );
           })}
-          
-          {/* Today line - absolute positioned overlay spanning full content height */}
-          {todayPosition !== null && (
-            <div
-              style={{ 
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                left: `calc(${firstColumnWidth}px + (100% - ${firstColumnWidth}px) * ${todayPosition / 100})`,
-                width: '3px',
-                backgroundColor: '#ef4444',
-                boxShadow: '0 0 8px rgba(239, 68, 68, 0.5)',
-                zIndex: 50,
-                pointerEvents: 'none'
-              }}
-            >
-              {/* Today badge */}
-              <div 
-                className="absolute top-0 left-1/2 -translate-x-1/2 px-2 py-1 text-xs font-bold rounded-b whitespace-nowrap shadow-lg"
-                style={{ 
-                  backgroundColor: '#ef4444',
-                  color: 'white'
-                }}
-              >
-                {todayLabel}
-              </div>
-              {/* Pulsing dot */}
-              <div 
-                className="absolute top-8 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full animate-pulse shadow-md"
-                style={{ backgroundColor: '#ef4444' }}
-              />
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Legend - Removed per user request */}
+      {/* Legend */}
+      <RoadmapLegend isVisible={showLegend} onToggle={() => setShowLegend(!showLegend)} isRTL={isRTL} />
 
       {/* Print Styles */}
       <style>{`
