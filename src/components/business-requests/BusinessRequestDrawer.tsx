@@ -178,6 +178,13 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
   // Using ref instead of state to avoid triggering useEffect re-runs
   const skipNextFormResetRef = useRef(false);
 
+  // Reset to default tab when drawer opens
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab('demand-details');
+    }
+  }, [isOpen]);
+
   // Sync form data when request changes
   useEffect(() => {
     if (request) {
