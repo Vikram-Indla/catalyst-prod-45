@@ -208,6 +208,11 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
     setFormError('');
   };
 
+  // Check if mitigation is required based on resolution_method
+  const isMitigationRequired = (resolutionMethod: string) => {
+    return resolutionMethod === 'Mitigated';
+  };
+
   const handleSave = () => {
     if (!formData.title.trim()) {
       setFormError('Title is required');
@@ -215,6 +220,11 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
     }
     if (!formData.description.trim()) {
       setFormError('Description is required');
+      return;
+    }
+    // Validate mitigation plan when resolution_method is "Mitigated"
+    if (isMitigationRequired(formData.resolution_method) && !formData.mitigation?.trim()) {
+      setFormError('mitigation_required');
       return;
     }
     
@@ -483,6 +493,10 @@ function RiskForm({
   isLoading: boolean;
   isEdit?: boolean;
 }) {
+  // Check if mitigation is required based on resolution_method
+  const isMitigationRequired = formData.resolution_method === 'Mitigated';
+  const showMitigationError = formError === 'mitigation_required';
+  
   return (
     <div className="border rounded-lg bg-card p-4 space-y-4">
       {/* Section: Risk Details */}
@@ -632,13 +646,25 @@ function RiskForm({
         
         {/* Mitigation Plan */}
         <div>
-          <label className="text-sm font-medium">Mitigation Plan</label>
+          <label className="text-sm font-medium">
+            Mitigation Plan
+            {isMitigationRequired && <span className="text-destructive">*</span>}
+          </label>
           <Textarea
             value={formData.mitigation}
             onChange={e => setFormData({ ...formData, mitigation: e.target.value })}
             placeholder="How will this risk be mitigated?"
-            className="mt-1 min-h-[60px]"
+            className={cn(
+              "mt-1 min-h-[60px]",
+              showMitigationError && "border-destructive focus-visible:ring-destructive"
+            )}
           />
+          {showMitigationError && (
+            <div className="flex items-center gap-1 text-destructive text-sm mt-1">
+              <AlertCircle className="h-3.5 w-3.5" />
+              <span>Mitigation Plan is required for this risk configuration. Please provide a mitigation plan.</span>
+            </div>
+          )}
         </div>
 
         {/* Contingency Plan */}
@@ -664,8 +690,8 @@ function RiskForm({
         </div>
       </div>
 
-      {/* Error message */}
-      {formError && (
+      {/* Error message - show general errors but not mitigation_required (shown inline) */}
+      {formError && formError !== 'mitigation_required' && (
         <div className="flex items-center gap-1 text-destructive text-sm">
           <AlertCircle className="h-3.5 w-3.5" />
           <span>{formError}</span>
