@@ -25,7 +25,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RoadmapFiltersDialog, RoadmapFilters } from './RoadmapFiltersDialog';
 
 type TimeScale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
@@ -495,157 +495,159 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             const statusColor = STATUS_COLORS[item.status];
 
             return (
-              <Popover key={item.id}>
-                <PopoverTrigger asChild>
-                  <div 
-                    className={cn(
-                      "flex border-b border-[#E8E4DD] hover:bg-[#FAF8F5] cursor-pointer transition-colors",
-                      hoveredItem === item.id && "bg-[#F7F1E8]"
-                    )}
-                    onMouseEnter={() => setHoveredItem(item.id)}
-                    onMouseLeave={() => setHoveredItem(null)}
-                  >
-                    {/* Request Info */}
-                    <div className="w-[280px] shrink-0 px-3 py-3 border-r border-[#E8E4DD]">
-                      <div className="flex items-start gap-2">
-                        <div className="flex items-center gap-0.5">
-                          <span className="text-sm font-medium text-[#2C2825]">{item.rank}</span>
-                          {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
-                            <Lock className="h-3 w-3 text-[#C69C6D]" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-[11px] text-[#C69C6D] font-medium">{item.id}</div>
-                          <div className="text-[13px] font-medium text-[#2C2825] truncate leading-tight">
-                            {isRTL ? item.titleAr : item.titleEn}
-                          </div>
-                          <div className="text-[10px] text-[#9A9389] mt-0.5">
-                            {isRTL ? item.ownerAr : item.ownerEn}
-                            <span className="mx-1">·</span>
-                            <span style={{ color: statusColor }}>{isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}</span>
-                            <span className="mx-1">·</span>
-                            <span className="text-[#C69C6D]">{isRTL ? PLATFORM_INFO[item.platform]?.nameAr : item.platform}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Timeline Bar */}
-                    <div className="flex-1 relative py-3 px-2">
-                      {/* Date labels */}
-                      <div className="absolute text-[9px] text-[#9A9389]" style={{ left: barPos.left, top: '2px' }}>
-                        {formatDateLabel(item.startDate)}
-                      </div>
-                      <div 
-                        className="absolute text-[9px] text-[#9A9389]" 
-                        style={{ left: `calc(${barPos.left} + ${barPos.width})`, top: '2px', transform: 'translateX(-100%)' }}
-                      >
-                        {formatDateLabel(item.endDate)}
-                      </div>
-
-                      {/* Bar */}
-                      <div 
-                        className="absolute h-5 rounded-full"
-                        style={{ 
-                          left: barPos.left, 
-                          width: barPos.width, 
-                          top: '50%', 
-                          transform: 'translateY(-50%)',
-                          background: `linear-gradient(90deg, ${statusColor}40, ${statusColor}60)`,
-                          border: `1px solid ${statusColor}80`
-                        }}
-                      >
-                        {/* Milestones with date tooltip */}
-                        {showMilestones && item.milestones.map((ms) => {
-                          const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
-                          const msDate = new Date(ms.date);
-                          const dateLabel = msDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' });
-                          return (
-                            <div
-                              key={ms.step}
-                              className={cn(
-                                "absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[9px] font-medium group cursor-pointer",
-                                ms.state === 'complete' && "bg-[#C69C6D] border-[#C69C6D] text-white",
-                                ms.state === 'current' && "bg-white border-[#C69C6D] text-[#C69C6D]",
-                                ms.state === 'pending' && "bg-white border-[#C4BEB4] text-[#9A9389]"
-                              )}
-                              style={{ left: `${pos}%`, top: '50%', transform: 'translate(-50%, -50%)' }}
-                              title={dateLabel}
-                            >
-                              {ms.state === 'complete' ? '✓' : ms.step}
-                              {/* Date tooltip on hover */}
-                              <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#2C2825] text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                {dateLabel}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </PopoverTrigger>
-
-                {/* Tooltip/Popover - always show on hover */}
-                <PopoverContent className="w-80 p-0 bg-white shadow-lg" side="bottom" align="start">
-                  <div className="p-3 border-b border-[#E8E4DD]">
-                    <div className="text-[11px] text-[#C69C6D] font-medium">{item.id}</div>
-                    <div className="text-sm font-semibold text-[#2C2825]">{isRTL ? item.titleAr : item.titleEn}</div>
-                    <span 
-                      className="inline-block mt-1.5 px-2 py-0.5 text-[10px] rounded-full"
-                      style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
+              <TooltipProvider key={item.id} delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div 
+                      className={cn(
+                        "flex border-b border-[#E8E4DD] hover:bg-[#FAF8F5] cursor-pointer transition-colors",
+                        hoveredItem === item.id && "bg-[#F7F1E8]"
+                      )}
+                      onMouseEnter={() => setHoveredItem(item.id)}
+                      onMouseLeave={() => setHoveredItem(null)}
                     >
-                      {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                    </span>
-                  </div>
-                  {item.risks.length > 0 && (
+                      {/* Request Info */}
+                      <div className="w-[280px] shrink-0 px-3 py-3 border-r border-[#E8E4DD]">
+                        <div className="flex items-start gap-2">
+                          <div className="flex items-center gap-0.5">
+                            <span className="text-sm font-medium text-[#2C2825]">{item.rank}</span>
+                            {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
+                              <Lock className="h-3 w-3 text-[#C69C6D]" />
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[11px] text-[#C69C6D] font-medium">{item.id}</div>
+                            <div className="text-[13px] font-medium text-[#2C2825] truncate leading-tight">
+                              {isRTL ? item.titleAr : item.titleEn}
+                            </div>
+                            <div className="text-[10px] text-[#9A9389] mt-0.5">
+                              {isRTL ? item.ownerAr : item.ownerEn}
+                              <span className="mx-1">·</span>
+                              <span style={{ color: statusColor }}>{isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}</span>
+                              <span className="mx-1">·</span>
+                              <span className="text-[#C69C6D]">{isRTL ? PLATFORM_INFO[item.platform]?.nameAr : item.platform}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Timeline Bar */}
+                      <div className="flex-1 relative py-3 px-2">
+                        {/* Date labels */}
+                        <div className="absolute text-[9px] text-[#9A9389]" style={{ left: barPos.left, top: '2px' }}>
+                          {formatDateLabel(item.startDate)}
+                        </div>
+                        <div 
+                          className="absolute text-[9px] text-[#9A9389]" 
+                          style={{ left: `calc(${barPos.left} + ${barPos.width})`, top: '2px', transform: 'translateX(-100%)' }}
+                        >
+                          {formatDateLabel(item.endDate)}
+                        </div>
+
+                        {/* Bar */}
+                        <div 
+                          className="absolute h-5 rounded-full"
+                          style={{ 
+                            left: barPos.left, 
+                            width: barPos.width, 
+                            top: '50%', 
+                            transform: 'translateY(-50%)',
+                            background: `linear-gradient(90deg, ${statusColor}40, ${statusColor}60)`,
+                            border: `1px solid ${statusColor}80`
+                          }}
+                        >
+                          {/* Milestones with date tooltip */}
+                          {showMilestones && item.milestones.map((ms) => {
+                            const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
+                            const msDate = new Date(ms.date);
+                            const dateLabel = msDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' });
+                            return (
+                              <div
+                                key={ms.step}
+                                className={cn(
+                                  "absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[9px] font-medium group cursor-pointer",
+                                  ms.state === 'complete' && "bg-[#C69C6D] border-[#C69C6D] text-white",
+                                  ms.state === 'current' && "bg-white border-[#C69C6D] text-[#C69C6D]",
+                                  ms.state === 'pending' && "bg-white border-[#C4BEB4] text-[#9A9389]"
+                                )}
+                                style={{ left: `${pos}%`, top: '50%', transform: 'translate(-50%, -50%)' }}
+                                title={dateLabel}
+                              >
+                                {ms.state === 'complete' ? '✓' : ms.step}
+                                {/* Date tooltip on hover */}
+                                <span className="absolute -top-6 left-1/2 -translate-x-1/2 bg-[#2C2825] text-white text-[9px] px-1.5 py-0.5 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                  {dateLabel}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  </TooltipTrigger>
+
+                  {/* Tooltip content - shows on hover */}
+                  <TooltipContent side="bottom" align="start" className="w-80 p-0 bg-white shadow-lg border border-[#E8E4DD]">
                     <div className="p-3 border-b border-[#E8E4DD]">
-                      <div className="text-[11px] font-medium text-[#5C5650] mb-1.5 flex items-center gap-2">
-                        {t.risks}
-                        <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.risks.length}</span>
-                      </div>
-                      {item.risks.map(risk => (
-                        <div key={risk.sno} className="flex items-center justify-between text-[11px] py-0.5">
-                          <span className="text-[#5C5650]">{risk.sno}. {risk.title}</span>
-                          <span className={cn(
-                            "text-[10px] px-1.5 py-0.5 rounded",
-                            risk.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
-                            risk.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
-                            risk.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
-                          )}>
-                            {risk.status}
-                          </span>
+                      <div className="text-[11px] text-[#C69C6D] font-medium">{item.id}</div>
+                      <div className="text-sm font-semibold text-[#2C2825]">{isRTL ? item.titleAr : item.titleEn}</div>
+                      <span 
+                        className="inline-block mt-1.5 px-2 py-0.5 text-[10px] rounded-full"
+                        style={{ backgroundColor: `${statusColor}20`, color: statusColor }}
+                      >
+                        {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
+                      </span>
+                    </div>
+                    {item.risks.length > 0 && (
+                      <div className="p-3 border-b border-[#E8E4DD]">
+                        <div className="text-[11px] font-medium text-[#5C5650] mb-1.5 flex items-center gap-2">
+                          {t.risks}
+                          <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.risks.length}</span>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                  {item.dependencies.length > 0 && (
-                    <div className="p-3">
-                      <div className="text-[11px] font-medium text-[#5C5650] mb-1.5 flex items-center gap-2">
-                        {t.dependencies}
-                        <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.dependencies.length}</span>
+                        {item.risks.map(risk => (
+                          <div key={risk.sno} className="flex items-center justify-between text-[11px] py-0.5">
+                            <span className="text-[#5C5650]">{risk.sno}. {risk.title}</span>
+                            <span className={cn(
+                              "text-[10px] px-1.5 py-0.5 rounded",
+                              risk.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
+                              risk.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
+                              risk.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
+                            )}>
+                              {risk.status}
+                            </span>
+                          </div>
+                        ))}
                       </div>
-                      {item.dependencies.map(dep => (
-                        <div key={dep.sno} className="flex items-center justify-between text-[11px] py-0.5">
-                          <span className="text-[#5C5650]">{dep.sno}. {dep.title}</span>
-                          <span className={cn(
-                            "text-[10px] px-1.5 py-0.5 rounded",
-                            dep.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
-                            dep.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
-                            dep.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
-                          )}>
-                            {dep.status}
-                          </span>
+                    )}
+                    {item.dependencies.length > 0 && (
+                      <div className="p-3">
+                        <div className="text-[11px] font-medium text-[#5C5650] mb-1.5 flex items-center gap-2">
+                          {t.dependencies}
+                          <span className="bg-[#F5F2ED] px-1.5 py-0.5 rounded text-[10px]">{item.dependencies.length}</span>
                         </div>
-                      ))}
-                    </div>
-                  )}
-                  {item.risks.length === 0 && item.dependencies.length === 0 && (
-                    <div className="p-3 text-[11px] text-[#9A9389] text-center">
-                      {isRTL ? 'لا توجد مخاطر أو اعتماديات' : 'No risks or dependencies'}
-                    </div>
-                  )}
-                </PopoverContent>
-              </Popover>
+                        {item.dependencies.map(dep => (
+                          <div key={dep.sno} className="flex items-center justify-between text-[11px] py-0.5">
+                            <span className="text-[#5C5650]">{dep.sno}. {dep.title}</span>
+                            <span className={cn(
+                              "text-[10px] px-1.5 py-0.5 rounded",
+                              dep.status === 'resolved' && "bg-[#EEF2EF] text-[#4A6355]",
+                              dep.status === 'pending' && "bg-[#F7F1E8] text-[#C69C6D]",
+                              dep.status === 'blocked' && "bg-[#FCEAEA] text-[#9B6B6B]"
+                            )}>
+                              {dep.status}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    {item.risks.length === 0 && item.dependencies.length === 0 && (
+                      <div className="p-3 text-[11px] text-[#9A9389] text-center">
+                        {isRTL ? 'لا توجد مخاطر أو اعتماديات' : 'No risks or dependencies'}
+                      </div>
+                    )}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             );
           })}
         </div>
