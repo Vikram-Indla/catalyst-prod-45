@@ -730,7 +730,7 @@ h3 {
 /* Content Area - Sunken surface */
 .executive-drawer-content {
   background-color: hsl(var(--surface-gray-50)); /* N10 - sunken background */
-  padding: 24px;                                  /* space.300 */
+  padding: 8px;                                   /* Reduced - let component control */
   overflow-y: auto;
 }
 

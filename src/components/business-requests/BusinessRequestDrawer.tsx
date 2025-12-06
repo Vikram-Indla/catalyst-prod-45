@@ -388,10 +388,10 @@ export function BusinessRequestDrawer({ isOpen, onClose, requestId, onRequestCha
     }
   };
 
-  // Get drawer width classes based on expanded state - reduced from 900px to 680px
+  // Get drawer width classes based on expanded state - maximized for real estate
   const drawerWidthClass = isExpanded 
-    ? 'w-full sm:max-w-full' 
-    : 'w-full sm:w-[60vw] sm:max-w-[60vw]';
+    ? 'w-screen sm:w-[98vw] sm:max-w-[1600px]' 
+    : 'w-screen sm:w-[94vw] sm:max-w-[1400px]';
 
   if (!isOpen) return null;
 

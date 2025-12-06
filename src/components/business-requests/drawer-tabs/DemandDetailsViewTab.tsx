@@ -59,10 +59,10 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4 p-4">
+    <div className="flex flex-col space-y-3 p-2 sm:p-3 md:p-4">
       {/* DETAILS Section - Consolidated Basic Info + Assignment */}
-      <Card className="border border-border/60 rounded-lg bg-card w-[99%]">
-        <CardContent className="p-4 space-y-4">
+      <Card className="border border-border/60 rounded-lg bg-card w-full">
+        <CardContent className="p-3 sm:p-4 space-y-4">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Details</h3>
           
           {/* Summary */}
@@ -146,8 +146,8 @@ export function DemandDetailsViewTab({ data, onChange }: DemandDetailsViewTabPro
       </Card>
 
       {/* PLANNING & DELIVERY Section - Consolidated Timeline + Delivery Context */}
-      <Card className="border border-border/60 rounded-lg bg-card w-[99%]">
-        <CardContent className="p-4 space-y-4">
+      <Card className="border border-border/60 rounded-lg bg-card w-full">
+        <CardContent className="p-3 sm:p-4 space-y-4">
           <h3 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Planning & Delivery</h3>
           
           {/* Dates - 3-column compact grid */}
