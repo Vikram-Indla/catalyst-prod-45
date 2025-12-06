@@ -66,12 +66,12 @@ export function PISelectorPanel() {
 
   return (
     <div className="w-[280px] h-full bg-[hsl(var(--sidebar-bg))] border-r border-border flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-border">
-        <div className="text-[11px] font-bold text-[hsl(var(--sidebar-section-header))] uppercase tracking-wide mb-3">
+      {/* Header - fixed height 72px to align with sidebar */}
+      <div className="h-[72px] px-4 border-b border-border flex flex-col justify-center shrink-0">
+        <div className="text-[11px] font-bold text-[hsl(var(--sidebar-section-header))] uppercase tracking-wide mb-2">
           PROGRAM INCREMENT
         </div>
-        <button className="w-full flex items-center justify-between px-3 py-2 text-sm bg-background border border-border rounded hover:bg-muted/50">
+        <button className="w-full flex items-center justify-between px-3 py-1.5 text-sm bg-background border border-border rounded hover:bg-muted/50">
           <span>All time</span>
           <ChevronDown className="w-4 h-4 text-muted-foreground" />
         </button>
