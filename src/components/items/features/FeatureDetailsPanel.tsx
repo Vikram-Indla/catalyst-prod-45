@@ -22,7 +22,7 @@ import { FeatureLinksTab } from './tabs/FeatureLinksTab';
 import { FeatureAuditTab } from './tabs/FeatureAuditTab';
 import { FeatureAdditionalOptionsTab } from './tabs/FeatureAdditionalOptionsTab';
 import { FeatureChildrenTab } from './tabs/FeatureChildrenTab';
-import { AIOTestsSection } from '@/components/test-management/AIOTestsSection';
+
 import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -292,9 +292,6 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               <TabsTrigger value="audit" className="executive-drawer-tab">
                 Audit
               </TabsTrigger>
-              <TabsTrigger value="tests" className="executive-drawer-tab">
-                Tests
-              </TabsTrigger>
               <TabsTrigger value="options" className="executive-drawer-tab">
                 Options
               </TabsTrigger>
@@ -354,16 +351,6 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
               <FeatureAuditTab featureId={feature?.id} />
             </TabsContent>
 
-            <TabsContent value="tests" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
-              {feature && (
-                <AIOTestsSection
-                  workItemId={feature.id}
-                  workItemType="feature"
-                  workItemTitle={feature.name}
-                  workItemDescription={feature.description || undefined}
-                />
-              )}
-            </TabsContent>
 
             <TabsContent value="options" className="mt-0 p-[var(--s4)] sm:p-[var(--s6)]">
               <FeatureAdditionalOptionsTab 

@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { EmailPreferencesPanel } from '@/components/settings/EmailPreferencesPanel';
 import { UserPreferencesPanel } from '@/components/settings/UserPreferencesPanel';
 import { NotificationCenter } from '@/components/settings/NotificationCenter';
 import { DEFAULT_THEME_PREFERENCES, ThemePreferences } from '@/types/userSettings.types';
 import { ThemeAppearancePanel } from '@/components/settings/ThemeAppearancePanel';
-import { Settings, Mail, Bell, Palette } from 'lucide-react';
+import { Settings, Bell, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function UserSettingsPage() {
@@ -36,10 +35,6 @@ export default function UserSettingsPage() {
             <Settings className="h-4 w-4" />
             Preferences
           </TabsTrigger>
-          <TabsTrigger value="email" className="gap-2">
-            <Mail className="h-4 w-4" />
-            Email
-          </TabsTrigger>
           <TabsTrigger value="notifications" className="gap-2">
             <Bell className="h-4 w-4" />
             Notifications
@@ -52,10 +47,6 @@ export default function UserSettingsPage() {
 
         <TabsContent value="preferences">
           <UserPreferencesPanel />
-        </TabsContent>
-
-        <TabsContent value="email">
-          <EmailPreferencesPanel />
         </TabsContent>
 
         <TabsContent value="notifications">
