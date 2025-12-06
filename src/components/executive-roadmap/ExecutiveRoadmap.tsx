@@ -143,7 +143,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
-  const [showLegend, setShowLegend] = useState(false);
+  const [showLegend, setShowLegend] = useState(true);
   const [isTimelineView, setIsTimelineView] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [firstColumnWidth, setFirstColumnWidth] = useState<number>(() => {
@@ -995,27 +995,31 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     {formatDateLabel(item.endDate)}
                   </div>
 
-                  {/* Bar with STATUS CHIP on it */}
+                  {/* Status label above bar - full name, centered */}
                   <div 
-                    className="absolute h-[28px] rounded-full overflow-hidden flex items-center"
+                    className="absolute text-[10px] font-semibold uppercase tracking-wide whitespace-nowrap"
+                    style={{ 
+                      left: `calc(${barPos.left} + ${barPos.width} / 2)`, 
+                      top: '6px', 
+                      transform: 'translateX(-50%)',
+                      color: STATUS_COLORS[item.status]
+                    }}
+                  >
+                    {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
+                  </div>
+
+                  {/* Bar - centered vertically */}
+                  <div 
+                    className="absolute h-[24px] rounded-full overflow-hidden flex items-center"
                     style={{ 
                       left: barPos.left, 
                       width: barPos.width, 
                       top: '50%', 
                       transform: 'translateY(-50%)',
+                      marginTop: '4px',
                       background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
                     }}
                   >
-                    {/* Status chip at start of bar */}
-                    <div 
-                      className="shrink-0 px-2 h-full flex items-center text-[10px] font-bold tracking-wider text-white"
-                      style={{ 
-                        backgroundColor: STATUS_COLORS[item.status],
-                        borderRadius: '9999px 0 0 9999px'
-                      }}
-                    >
-                      {STATUS_ABBR[item.status]}
-                    </div>
                     {/* Milestones - positioned inside the bar with padding */}
                     {showMilestones && item.milestones.map((ms, index) => {
                       // Keep milestones inside bar: distribute evenly within bounds
