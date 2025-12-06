@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback } from 'react';
+import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { 
   SEED_ROADMAP_ITEMS, 
@@ -22,7 +22,8 @@ import {
   Filter,
   Clock,
   Calendar,
-  Check
+  Check,
+  GripVertical
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -39,6 +40,10 @@ type TimeScale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 type Language = 'en' | 'ar';
 type SortField = 'rank' | 'platform' | 'submission' | 'score' | 'target' | 'quarter' | 'owner';
 type SortOrder = 'asc' | 'desc';
+
+const MIN_FIRST_COLUMN_WIDTH = 180;
+const MAX_FIRST_COLUMN_WIDTH = 500;
+const DEFAULT_FIRST_COLUMN_WIDTH = 280;
 
 const TRANSLATIONS = {
   en: {
@@ -132,10 +137,58 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [showFilters, setShowFilters] = useState(false);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [selectedRequestId, setSelectedRequestId] = useState<string | null>(null);
+  const [firstColumnWidth, setFirstColumnWidth] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('roadmap-first-column-width');
+      if (saved) return Math.max(MIN_FIRST_COLUMN_WIDTH, Math.min(MAX_FIRST_COLUMN_WIDTH, parseInt(saved, 10)));
+    } catch (e) {}
+    return DEFAULT_FIRST_COLUMN_WIDTH;
+  });
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeStartX = useRef(0);
+  const resizeStartWidth = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const t = TRANSLATIONS[language];
   const isRTL = language === 'ar';
+
+  // Column resize handlers
+  const handleResizeMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsResizing(true);
+    resizeStartX.current = e.clientX;
+    resizeStartWidth.current = firstColumnWidth;
+  }, [firstColumnWidth]);
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const delta = e.clientX - resizeStartX.current;
+      const newWidth = Math.max(MIN_FIRST_COLUMN_WIDTH, Math.min(MAX_FIRST_COLUMN_WIDTH, resizeStartWidth.current + delta));
+      setFirstColumnWidth(newWidth);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+      try {
+        localStorage.setItem('roadmap-first-column-width', String(firstColumnWidth));
+      } catch (e) {}
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing, firstColumnWidth]);
 
   // Fetch the selected business request ID from request_key
   const { data: selectedRequestDbId } = useQuery({
@@ -538,7 +591,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         <div className="min-w-[1200px]">
           {/* Timeline Header */}
           <div className="flex border-b border-[#E8E4DD] bg-white sticky top-0 z-10">
-            <div className="w-[280px] shrink-0 px-3 py-2 border-r border-[#E8E4DD] bg-[#F5F2ED]">
+            <div 
+              className="shrink-0 px-3 py-2 border-r border-[#E8E4DD] bg-[#F5F2ED] relative group"
+              style={{ width: `${firstColumnWidth}px` }}
+            >
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-medium text-[#5C5650]">{t.businessRequest}</span>
                 <button 
@@ -548,6 +604,19 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   {sortOrder === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                   {sortField === 'rank' ? t.rank : sortField === 'platform' ? t.platform : t.owner}
                 </button>
+              </div>
+              {/* Resize Handle */}
+              <div
+                className={cn(
+                  "absolute right-0 top-0 h-full w-1 cursor-col-resize z-20 transition-colors",
+                  "hover:bg-[#C69C6D]/60 active:bg-[#C69C6D]",
+                  isResizing && "bg-[#C69C6D]"
+                )}
+                onMouseDown={handleResizeMouseDown}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Wider hit area for easier grabbing */}
+                <div className="absolute -left-1 -right-1 top-0 h-full" />
               </div>
             </div>
             <div className="flex-1 flex">
@@ -579,7 +648,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 onMouseLeave={() => setHoveredItem(null)}
               >
                 {/* Request Info - No tooltip here */}
-                <div className="w-[280px] shrink-0 px-3 py-3 border-r border-[#E8E4DD]">
+                <div 
+                  className="shrink-0 px-3 py-3 border-r border-[#E8E4DD]"
+                  style={{ width: `${firstColumnWidth}px` }}
+                >
                   <div className="flex items-start gap-2">
                     <div className="flex items-center gap-0.5">
                       <span className="text-sm font-medium text-[#2C2825]">{item.rank}</span>
