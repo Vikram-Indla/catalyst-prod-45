@@ -4,8 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-
-import { ChevronUp } from 'lucide-react';
+import { ChevronUp, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PLATFORM_INFO, STAGE_NAMES } from '@/data/roadmapSeed';
 
@@ -89,7 +88,6 @@ export function RoadmapFiltersDialog({
   const countActiveFilters = () => {
     let count = 0;
     if (localFilters.activePlatformFilter) count++;
-    if (localFilters.platform && localFilters.platform !== 'all' && !localFilters.activePlatformFilter) count++;
     if (localFilters.status && localFilters.status !== 'all') count++;
     if (localFilters.owner && localFilters.owner !== 'all') count++;
     return count;
@@ -103,8 +101,14 @@ export function RoadmapFiltersDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px] p-0 gap-0 bg-white [&>button]:hidden">
         {/* Header */}
-        <DialogHeader className="px-6 py-4 border-b border-border">
+        <DialogHeader className="px-6 py-4 border-b border-border flex flex-row items-center justify-between">
           <DialogTitle className="text-lg font-semibold text-foreground">Filters</DialogTitle>
+          <button
+            onClick={() => onOpenChange(false)}
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+          >
+            <X className="h-5 w-5 text-muted-foreground" />
+          </button>
         </DialogHeader>
 
         {/* Content */}
@@ -148,20 +152,6 @@ export function RoadmapFiltersDialog({
             <CollapsibleContent>
               <div className="px-6 py-4 space-y-4 border-b border-border">
                 <div className="grid grid-cols-2 gap-4">
-                  {/* Platform */}
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Platform</label>
-                    <Select value={localFilters.platform || 'all'} onValueChange={(v) => updateFilter('platform', v)}>
-                      <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
-                      <SelectContent className="bg-white z-50">
-                        <SelectItem value="all">All Platforms</SelectItem>
-                        {Object.keys(PLATFORM_INFO).map(p => (
-                          <SelectItem key={p} value={p}>{p}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
                   {/* Status */}
                   <div>
                     <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Status</label>
@@ -191,7 +181,7 @@ export function RoadmapFiltersDialog({
                   </div>
 
                   {/* Sort By */}
-                  <div>
+                  <div className="col-span-2">
                     <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Sort By</label>
                     <Select value={localFilters.sortField || 'rank'} onValueChange={(v) => updateFilter('sortField', v)}>
                       <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
