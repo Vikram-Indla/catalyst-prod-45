@@ -226,16 +226,16 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full space-y-4 bg-white">
       {/* Header with Sort and Add button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Sort by</span>
+          <span className="text-xs font-medium text-muted-foreground">Sort by</span>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[120px] h-8">
+            <SelectTrigger className="w-[120px] h-9 text-sm">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-popover border shadow-lg z-50">
               {SORT_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -244,7 +244,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-9 w-9"
             onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
           >
             {sortDir === 'asc' ? (
@@ -257,7 +257,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
         <Button
           size="sm"
           variant="ghost"
-          className="text-foreground"
+          className="text-foreground text-sm"
           onClick={() => { resetForm(); setShowAddForm(true); setEditingId(null); }}
         >
           <Plus className="h-4 w-4 mr-1" />
@@ -303,13 +303,13 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
           return (
             <div
               key={milestone.id}
-              className="border rounded-lg bg-card overflow-hidden"
+              className="border border-neutral-200 rounded-xl bg-white overflow-hidden shadow-none"
             >
               <div className="p-4 hover:bg-muted/30 transition-colors">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-foreground">{milestone.title}</h4>
-                    <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground">
+                    <h4 className="text-sm font-medium text-foreground">{milestone.title}</h4>
+                    <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                       <Calendar className="h-3.5 w-3.5" />
                       <span>Start: {formatDate(milestone.start_date)}</span>
                       <span className="mx-1">—</span>
@@ -325,11 +325,11 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon" className="h-9 w-9">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align="end" className="bg-popover border shadow-lg z-50">
                         <DropdownMenuItem onClick={() => handleEdit(milestone)}>
                           <Pencil className="h-4 w-4 mr-2" />
                           Edit
@@ -351,7 +351,7 @@ export function MilestonesTab({ entityId, entityType, hideCategory = false }: Mi
         })}
 
         {sortedMilestones.length === 0 && !showAddForm && (
-          <div className="text-center py-8 text-sm text-muted-foreground">
+          <div className="text-center py-8 text-xs text-muted-foreground">
             No milestones defined yet. Click "Add milestone" to create one.
           </div>
         )}
@@ -402,20 +402,20 @@ function MilestoneForm({
   hideCategory?: boolean;
 }) {
   return (
-    <div className="border rounded-lg bg-card p-4 space-y-4">
+    <div className="border border-neutral-200 rounded-xl bg-white p-4 space-y-4 shadow-none">
       {/* Name Field */}
       <div>
-        <label className="text-sm font-medium">
+        <label className="text-xs font-medium">
           Name<span className="text-destructive">*</span>
         </label>
         <Input
           value={formData.title}
           onChange={e => setFormData({ ...formData, title: e.target.value })}
           placeholder="What is a name for your milestone?"
-          className="mt-1"
+          className="mt-1 h-9 text-sm"
         />
         {formError && formError.includes('name') && (
-          <div className="flex items-center gap-1 mt-1 text-destructive text-sm">
+          <div className="flex items-center gap-1 mt-1 text-destructive text-xs">
             <AlertCircle className="h-3.5 w-3.5" />
             <span>{formError}</span>
           </div>
@@ -423,9 +423,9 @@ function MilestoneForm({
       </div>
 
       {/* Date Fields */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-sm font-medium flex items-center gap-1">
+          <label className="text-xs font-medium flex items-center gap-1">
             Start date
             <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
           </label>
@@ -433,12 +433,12 @@ function MilestoneForm({
             type="date"
             value={formData.start_date}
             onChange={e => setFormData({ ...formData, start_date: e.target.value })}
-            className="mt-1"
+            className="mt-1 h-9 text-sm"
             placeholder="mm/dd/yyyy"
           />
         </div>
         <div>
-          <label className="text-sm font-medium flex items-center gap-1">
+          <label className="text-xs font-medium flex items-center gap-1">
             Due date
             <Calendar className="h-3.5 w-3.5 text-muted-foreground" />
           </label>
@@ -446,7 +446,7 @@ function MilestoneForm({
             type="date"
             value={formData.due_date}
             onChange={e => setFormData({ ...formData, due_date: e.target.value })}
-            className="mt-1"
+            className="mt-1 h-9 text-sm"
             placeholder="mm/dd/yyyy"
           />
         </div>
@@ -454,27 +454,27 @@ function MilestoneForm({
 
       {/* Description */}
       <div>
-        <label className="text-sm font-medium">Description</label>
+        <label className="text-xs font-medium">Description</label>
         <Textarea
           value={formData.description}
           onChange={e => setFormData({ ...formData, description: e.target.value })}
           placeholder="Add description"
-          className="mt-1 min-h-[80px]"
+          className="mt-1 min-h-[80px] text-sm"
         />
       </div>
 
       {/* State and Category */}
-      <div className={cn("grid gap-4", hideCategory ? "grid-cols-1" : "grid-cols-2")}>
+      <div className={cn("grid gap-3", hideCategory ? "grid-cols-1" : "grid-cols-2")}>
         <div>
-          <label className="text-sm font-medium">State</label>
+          <label className="text-xs font-medium">State</label>
           <Select
             value={formData.state}
             onValueChange={v => setFormData({ ...formData, state: v })}
           >
-            <SelectTrigger className="mt-1">
+            <SelectTrigger className="mt-1 h-9 text-sm">
               <SelectValue placeholder="Select state" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-popover border shadow-lg z-50">
               {MILESTONE_STATES.map(s => (
                 <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
               ))}
@@ -483,7 +483,7 @@ function MilestoneForm({
         </div>
         {!hideCategory && (
           <div>
-            <label className="text-sm font-medium flex items-center gap-1">
+            <label className="text-xs font-medium flex items-center gap-1">
               Category
               <span className="text-muted-foreground text-xs">ⓘ</span>
             </label>
@@ -491,10 +491,10 @@ function MilestoneForm({
               value={formData.category}
               onValueChange={v => setFormData({ ...formData, category: v })}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 h-9 text-sm">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover border shadow-lg z-50">
                 {MILESTONE_CATEGORIES.map(c => (
                   <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                 ))}

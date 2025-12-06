@@ -301,16 +301,16 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex flex-col h-full space-y-4 bg-white">
       {/* Header with Sort and Add button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Sort by</span>
+          <span className="text-xs font-medium text-muted-foreground">Sort by</span>
           <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-[160px] h-8">
+            <SelectTrigger className="w-[160px] h-9 text-sm">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-popover border shadow-lg z-50">
               {SORT_OPTIONS.map(opt => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
               ))}
@@ -319,7 +319,7 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-9 w-9"
             onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
           >
             {sortDir === 'asc' ? (
@@ -332,7 +332,7 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
         <Button
           size="sm"
           variant="ghost"
-          className="text-foreground"
+          className="text-foreground text-sm"
           onClick={() => { resetForm(); setShowAddForm(true); setEditingId(null); }}
         >
           <Plus className="h-4 w-4 mr-1" />
@@ -377,18 +377,18 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
           return (
             <div
               key={risk.id}
-              className="border rounded-lg bg-card overflow-hidden"
+              className="border border-neutral-200 rounded-xl bg-white overflow-hidden shadow-none"
             >
               <div className="p-4 hover:bg-muted/30 transition-colors">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
-                      <h4 className="font-medium text-foreground">
+                      <h4 className="text-sm font-medium text-foreground">
                         Risk #{risk.risk_number} – {risk.title}
                       </h4>
                     </div>
-                    <div className="flex items-center gap-1 mt-1 text-sm text-muted-foreground ml-6">
+                    <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground ml-6">
                       <span>Target Resolution: {formatDate(risk.target_resolution_date)}</span>
                       {risk.occurrence && (
                         <>
@@ -419,11 +419,11 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
                     </span>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Button variant="ghost" size="icon" className="h-9 w-9">
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align="end" className="bg-popover border shadow-lg z-50">
                         <DropdownMenuItem onClick={() => handleEdit(risk)}>
                           <Pencil className="h-4 w-4 mr-2" />
                           Edit
@@ -445,7 +445,7 @@ export function RisksViewTab({ requestId }: RisksViewTabProps) {
         })}
 
         {sortedRisks.length === 0 && !showAddForm && (
-          <div className="text-center py-8 text-sm text-muted-foreground">
+          <div className="text-center py-8 text-xs text-muted-foreground">
             No risks defined yet. Click "Add risk" to create one.
           </div>
         )}
@@ -498,23 +498,23 @@ function RiskForm({
   const showMitigationError = formError === 'mitigation_required';
   
   return (
-    <div className="border rounded-lg bg-card p-4 space-y-4">
+    <div className="border border-neutral-200 rounded-xl bg-white p-4 space-y-4 shadow-none">
       {/* Section: Risk Details */}
       <div className="space-y-4">
-        <h4 className="text-sm font-semibold text-foreground border-b pb-2">Risk Details</h4>
+        <h4 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Risk Details</h4>
         
         {/* Status and Resolution Method */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-sm font-medium">Status</label>
+            <label className="text-xs font-medium">Status</label>
             <Select 
               value={formData.status} 
               onValueChange={v => setFormData({ ...formData, status: v })}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 h-9 text-sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover border shadow-lg z-50">
                 {STATUS_OPTIONS.map(opt => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -522,15 +522,15 @@ function RiskForm({
             </Select>
           </div>
           <div>
-            <label className="text-sm font-medium">Resolution Method</label>
+            <label className="text-xs font-medium">Resolution Method</label>
             <Select 
               value={formData.resolution_method} 
               onValueChange={v => setFormData({ ...formData, resolution_method: v })}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 h-9 text-sm">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover border shadow-lg z-50">
                 {RESOLUTION_METHOD_OPTIONS.map(opt => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -541,42 +541,42 @@ function RiskForm({
 
         {/* Title */}
         <div>
-          <label className="text-sm font-medium">
+          <label className="text-xs font-medium">
             Title<span className="text-destructive">*</span>
           </label>
           <Input
             value={formData.title}
             onChange={e => setFormData({ ...formData, title: e.target.value })}
             placeholder="Risk title"
-            className="mt-1"
+            className="mt-1 h-9 text-sm"
           />
         </div>
 
         {/* Description */}
         <div>
-          <label className="text-sm font-medium">
+          <label className="text-xs font-medium">
             Description<span className="text-destructive">*</span>
           </label>
           <Textarea
             value={formData.description}
             onChange={e => setFormData({ ...formData, description: e.target.value })}
             placeholder="Describe the risk..."
-            className="mt-1 min-h-[80px]"
+            className="mt-1 min-h-[80px] text-sm"
           />
         </div>
 
         {/* Occurrence, Impact, Critical Path */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="text-sm font-medium">Occurrence</label>
+            <label className="text-xs font-medium">Occurrence</label>
             <Select 
               value={formData.occurrence} 
               onValueChange={v => setFormData({ ...formData, occurrence: v })}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 h-9 text-sm">
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover border shadow-lg z-50">
                 {SEVERITY_OPTIONS.map(opt => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -584,15 +584,15 @@ function RiskForm({
             </Select>
           </div>
           <div>
-            <label className="text-sm font-medium">Impact</label>
+            <label className="text-xs font-medium">Impact</label>
             <Select 
               value={formData.impact} 
               onValueChange={v => setFormData({ ...formData, impact: v })}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 h-9 text-sm">
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover border shadow-lg z-50">
                 {SEVERITY_OPTIONS.map(opt => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -600,15 +600,15 @@ function RiskForm({
             </Select>
           </div>
           <div>
-            <label className="text-sm font-medium">Critical Path</label>
+            <label className="text-xs font-medium">Critical Path</label>
             <Select 
               value={formData.critical_path} 
               onValueChange={v => setFormData({ ...formData, critical_path: v })}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1 h-9 text-sm">
                 <SelectValue placeholder="Select..." />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-popover border shadow-lg z-50">
                 {CRITICAL_PATH_OPTIONS.map(opt => (
                   <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
                 ))}
@@ -619,34 +619,34 @@ function RiskForm({
 
         {/* Target Resolution Date */}
         <div>
-          <label className="text-sm font-medium">Target Resolution Date</label>
+          <label className="text-xs font-medium">Target Resolution Date</label>
           <Input
             type="date"
             value={formData.target_resolution_date}
             onChange={e => setFormData({ ...formData, target_resolution_date: e.target.value })}
-            className="mt-1"
+            className="mt-1 h-9 text-sm"
           />
         </div>
 
         {/* Consequence */}
         <div>
-          <label className="text-sm font-medium">Consequence</label>
+          <label className="text-xs font-medium">Consequence</label>
           <Textarea
             value={formData.consequence}
             onChange={e => setFormData({ ...formData, consequence: e.target.value })}
             placeholder="What are the consequences if this risk occurs?"
-            className="mt-1 min-h-[60px]"
+            className="mt-1 min-h-[60px] text-sm"
           />
         </div>
       </div>
 
       {/* Section: Mitigation */}
       <div className="space-y-4 pt-2">
-        <h4 className="text-sm font-semibold text-foreground border-b pb-2">Mitigation</h4>
+        <h4 className="text-xs font-semibold uppercase tracking-wide text-brand-gold">Mitigation</h4>
         
         {/* Mitigation Plan */}
         <div>
-          <label className="text-sm font-medium">
+          <label className="text-xs font-medium">
             Mitigation Plan
             {isMitigationRequired && <span className="text-destructive">*</span>}
           </label>
@@ -655,12 +655,12 @@ function RiskForm({
             onChange={e => setFormData({ ...formData, mitigation: e.target.value })}
             placeholder="How will this risk be mitigated?"
             className={cn(
-              "mt-1 min-h-[60px]",
+              "mt-1 min-h-[60px] text-sm",
               showMitigationError && "border-destructive focus-visible:ring-destructive"
             )}
           />
           {showMitigationError && (
-            <div className="flex items-center gap-1 text-destructive text-sm mt-1">
+            <div className="flex items-center gap-1 text-destructive text-xs mt-1">
               <AlertCircle className="h-3.5 w-3.5" />
               <span>Mitigation Plan is required for this risk configuration. Please provide a mitigation plan.</span>
             </div>
@@ -669,30 +669,30 @@ function RiskForm({
 
         {/* Contingency Plan */}
         <div>
-          <label className="text-sm font-medium">Contingency Plan</label>
+          <label className="text-xs font-medium">Contingency Plan</label>
           <Textarea
             value={formData.contingency}
             onChange={e => setFormData({ ...formData, contingency: e.target.value })}
             placeholder="What is the backup plan if mitigation fails?"
-            className="mt-1 min-h-[60px]"
+            className="mt-1 min-h-[60px] text-sm"
           />
         </div>
 
         {/* Resolution Status */}
         <div>
-          <label className="text-sm font-medium">Resolution Status</label>
+          <label className="text-xs font-medium">Resolution Status</label>
           <Textarea
             value={formData.resolution_status}
             onChange={e => setFormData({ ...formData, resolution_status: e.target.value })}
             placeholder="Current resolution status..."
-            className="mt-1 min-h-[60px]"
+            className="mt-1 min-h-[60px] text-sm"
           />
         </div>
       </div>
 
       {/* Error message - show general errors but not mitigation_required (shown inline) */}
       {formError && formError !== 'mitigation_required' && (
-        <div className="flex items-center gap-1 text-destructive text-sm">
+        <div className="flex items-center gap-1 text-destructive text-xs">
           <AlertCircle className="h-3.5 w-3.5" />
           <span>{formError}</span>
         </div>
