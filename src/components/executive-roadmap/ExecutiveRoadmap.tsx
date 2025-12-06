@@ -384,28 +384,33 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* KPI Dashboard - Compact One-liner - hidden in print */}
-      <div className="flex gap-2 px-4 sm:px-6 py-3 border-b border-[#E8E4DD] bg-white print:hidden">
-        {kpiCards.map((kpi) => (
-          <button
-            key={kpi.status}
-            onClick={() => setActiveKPI(activeKPI === kpi.status ? null : kpi.status)}
-            className={cn(
-              "flex-1 text-left px-3 py-2 rounded border border-[#E8E4DD] transition-all cursor-pointer bg-white hover:bg-[#FAFAFA]",
-              activeKPI === kpi.status && "border-[#C69C6D] bg-[#FBF8F4]"
-            )}
-          >
-            <div className="text-[10px] text-[#5C5650] font-medium uppercase tracking-wide">
-              {kpi.label}
-            </div>
-            <div className="text-lg font-bold text-[#2C2825] leading-tight">
-              {statusCounts[kpi.status]}
-            </div>
-            <div className="text-[10px] text-[#9A9389]">
-              {kpi.subtitle}
-            </div>
-          </button>
-        ))}
+      {/* Status Pill Strip - hidden in print */}
+      <div className="flex items-center gap-2 px-4 sm:px-6 py-3 border-b border-[#E8E4DD] bg-white print:hidden">
+        <span className="text-xs font-medium text-[#5C5650] uppercase tracking-wide mr-1">
+          {isRTL ? 'الحالة:' : 'STATUS:'}
+        </span>
+        {kpiCards.map((kpi) => {
+          const isActive = activeKPI === kpi.status;
+          return (
+            <button
+              key={kpi.status}
+              onClick={() => setActiveKPI(isActive ? null : kpi.status)}
+              className={cn(
+                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border",
+                isActive 
+                  ? "bg-[#F5EFE6] border-[#C69C6D] text-[#2C2825]" 
+                  : "bg-[#F5F2ED] border-transparent text-[#5C5650] hover:bg-[#E8E4DD]"
+              )}
+            >
+              <span 
+                className="w-2 h-2 rounded-full" 
+                style={{ backgroundColor: STATUS_COLORS[kpi.status] }}
+              />
+              <span>{kpi.status === 'NEW' ? (isRTL ? 'جديد' : 'New') : kpi.status === 'ANALYSE' ? (isRTL ? 'تحليل' : 'Analyse') : kpi.status === 'APPROVED' ? (isRTL ? 'موافق' : 'Approved') : kpi.status === 'IMPLEMENT' ? (isRTL ? 'تنفيذ' : 'Implement') : (isRTL ? 'مغلق' : 'Closed')}</span>
+              <span className="font-bold">{statusCounts[kpi.status]}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Controls Bar */}
