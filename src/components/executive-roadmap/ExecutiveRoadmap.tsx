@@ -431,7 +431,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       </div>
 
       {/* Header with top controls - fixed height 72px to align with sidebar */}
-      <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-border bg-card print:hidden shrink-0">
+      <div className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b border-border bg-card print:hidden shrink-0 relative z-20">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-brand-gold flex items-center justify-center text-primary-foreground font-bold text-xs">
             MIM
@@ -443,7 +443,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
 
         {/* Floating Pills Toolbar */}
-        <div className="inline-flex items-center gap-2">
+        <div className="inline-flex items-center gap-2 relative z-30">
           {/* Milestones Toggle */}
           <button
             onClick={() => setShowMilestones(!showMilestones)}
