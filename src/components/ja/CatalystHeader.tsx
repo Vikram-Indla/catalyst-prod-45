@@ -102,9 +102,9 @@ export function CatalystHeader() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b bg-background">
         {/* CSS Grid: Logo | Nav (left-aligned) | Actions (right-aligned) */}
-        <div className="grid grid-cols-[auto_1fr_auto] items-center h-16 px-4 sm:px-6">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center h-14 sm:h-16 px-4 sm:px-6">
           {/* Left Column: Mobile Menu + Logo */}
           <div className="flex items-center gap-2 shrink-0">
             <MobileNavigationMenu />
@@ -125,8 +125,8 @@ export function CatalystHeader() {
             </div>
           </div>
 
-          {/* Middle Column: Main Navigation - packed left, not space-evenly */}
-          <nav className="hidden md:flex items-center justify-start gap-4 ml-6">
+          {/* Middle Column: Main Navigation - packed left with consistent gap */}
+          <nav className="hidden md:flex items-center justify-start gap-4 ml-6 overflow-x-auto">
             <TooltipProvider>
               {navItems.map((item) => {
                 // Disabled module rendering
@@ -136,7 +136,7 @@ export function CatalystHeader() {
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
-                          className="h-10 px-2.5 py-0 text-sm font-medium opacity-40 cursor-not-allowed hover:bg-transparent rounded-lg inline-flex items-center gap-2 leading-none"
+                          className="h-10 px-[10px] py-0 text-sm font-medium opacity-40 cursor-not-allowed hover:bg-transparent rounded-lg inline-flex items-center gap-2 leading-none"
                           onClick={() => handleDisabledModuleClick(item.label)}
                         >
                           {item.label}
@@ -153,11 +153,11 @@ export function CatalystHeader() {
                   );
                 }
 
-                // Enabled module rendering - consistent h-10 control height
-                const navButtonClass = "h-10 px-2.5 py-0 text-sm font-medium hover:bg-accent/50 rounded-lg inline-flex items-center gap-2 leading-none whitespace-nowrap";
+                // Enabled module rendering - consistent h-10 control height with proper alignment
+                const navButtonClass = "h-10 px-[10px] py-0 text-sm font-medium hover:bg-accent/50 rounded-lg inline-flex items-center gap-2 leading-none whitespace-nowrap";
                 
                 return (
-                  <div key={item.label} className="flex items-center">
+                  <div key={item.label} className="inline-flex items-center">
                     {item.label === "Product" ? (
                       <Popover
                         open={activeDropdown === item.label}
