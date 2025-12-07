@@ -25,7 +25,7 @@ import {
   Search
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { RoadmapFiltersDialog, RoadmapFilters } from './RoadmapFiltersDialog';
 import { RoadmapLegend } from './RoadmapLegend';
@@ -35,9 +35,57 @@ import { supabase } from '@/integrations/supabase/client';
 import { useRoadmapBusinessRequests } from '@/hooks/useRoadmapBusinessRequests';
 
 type TimeScale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+type TimePeriodMode = 'this_year' | 'this_and_next_year' | 'next_year' | 'year_2025' | 'year_2026';
 type Language = 'en' | 'ar';
 type SortField = 'rank' | 'platform' | 'submission' | 'score' | 'target' | 'quarter' | 'owner';
 type SortOrder = 'asc' | 'desc';
+
+// Helper to compute visible date range based on time period mode
+function getVisibleDateRange(timePeriodMode: TimePeriodMode): { start: Date; end: Date } {
+  const currentYear = new Date().getFullYear();
+  
+  switch (timePeriodMode) {
+    case 'this_year':
+      return {
+        start: new Date(currentYear, 0, 1),
+        end: new Date(currentYear, 11, 31)
+      };
+    case 'this_and_next_year':
+      return {
+        start: new Date(currentYear, 0, 1),
+        end: new Date(currentYear + 1, 11, 31)
+      };
+    case 'next_year':
+      return {
+        start: new Date(currentYear + 1, 0, 1),
+        end: new Date(currentYear + 1, 11, 31)
+      };
+    case 'year_2025':
+      return {
+        start: new Date(2025, 0, 1),
+        end: new Date(2025, 11, 31)
+      };
+    case 'year_2026':
+      return {
+        start: new Date(2026, 0, 1),
+        end: new Date(2026, 11, 31)
+      };
+    default:
+      return {
+        start: new Date(currentYear, 0, 1),
+        end: new Date(currentYear, 11, 31)
+      };
+  }
+}
+
+// Time period labels
+const TIME_PERIOD_LABELS: Record<TimePeriodMode, { en: string; ar: string }> = {
+  'this_year': { en: 'This Year', ar: 'هذه السنة' },
+  'this_and_next_year': { en: 'This & Next Year', ar: 'هذه والسنة القادمة' },
+  'next_year': { en: 'Next Year', ar: 'السنة القادمة' },
+  'year_2025': { en: '2025', ar: '2025' },
+  'year_2026': { en: '2026', ar: '2026' },
+};
 
 const MIN_FIRST_COLUMN_WIDTH = 180;
 const MAX_FIRST_COLUMN_WIDTH = 500;
@@ -140,7 +188,8 @@ interface ExecutiveRoadmapProps {
 
 export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps) {
   const [language, setLanguage] = useState<Language>('en');
-  const [timeScale, setTimeScale] = useState<TimeScale>('quarterly');
+  const [timeScale, setTimeScale] = useState<TimeScale>('monthly');
+  const [timePeriodMode, setTimePeriodMode] = useState<TimePeriodMode>('this_and_next_year');
   const [platform, setPlatform] = useState<string>('all');
   const [status, setStatus] = useState<string>('all');
   const [owner, setOwner] = useState<string>('all');
@@ -319,73 +368,97 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     return counts;
   }, [items, platform, owner]);
 
-  // Generate timeline columns
+  // Compute visible date range based on time period selection
+  const visibleRange = useMemo(() => getVisibleDateRange(timePeriodMode), [timePeriodMode]);
+
+  // Generate timeline columns based on time scale AND time period
   const timelineColumns = useMemo(() => {
     const cols: { label: string; subLabel: string }[] = [];
     const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const monthNamesAr = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 
+    const startYear = visibleRange.start.getFullYear();
+    const endYear = visibleRange.end.getFullYear();
+    const totalMonths = (endYear - startYear) * 12 + (visibleRange.end.getMonth() - visibleRange.start.getMonth() + 1);
+
     if (timeScale === 'monthly') {
-      for (let i = 0; i < 12; i++) {
+      // Generate monthly columns for the visible range
+      for (let i = 0; i < totalMonths; i++) {
+        const date = new Date(visibleRange.start);
+        date.setMonth(date.getMonth() + i);
+        const monthIndex = date.getMonth();
         cols.push({
-          label: isRTL ? monthNamesAr[i] : monthNames[i],
-          subLabel: '2025'
+          label: isRTL ? monthNamesAr[monthIndex] : monthNames[monthIndex],
+          subLabel: String(date.getFullYear())
         });
       }
     } else if (timeScale === 'weekly') {
-      for (let i = 1; i <= 12; i++) {
-        const startDate = new Date('2025-11-01');
-        startDate.setDate(startDate.getDate() + (i - 1) * 7);
+      // Generate 12 weeks starting from the visible range start
+      for (let i = 0; i < 12; i++) {
+        const weekStart = new Date(visibleRange.start);
+        weekStart.setDate(weekStart.getDate() + i * 7);
         cols.push({
-          label: isRTL ? `أ${i}` : `W${i}`,
-          subLabel: startDate.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })
+          label: isRTL ? `أ${i + 1}` : `W${i + 1}`,
+          subLabel: weekStart.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' })
         });
       }
     } else if (timeScale === 'quarterly') {
-      for (let i = 0; i < 12; i++) {
+      // Generate monthly columns (shown under quarters) for the visible range
+      for (let i = 0; i < totalMonths; i++) {
+        const date = new Date(visibleRange.start);
+        date.setMonth(date.getMonth() + i);
+        const monthIndex = date.getMonth();
         cols.push({
-          label: isRTL ? monthNamesAr[i] : monthNames[i],
+          label: isRTL ? monthNamesAr[monthIndex] : monthNames[monthIndex],
           subLabel: ''
         });
       }
     } else if (timeScale === 'yearly') {
-      cols.push({ label: '2025', subLabel: '' });
-      cols.push({ label: '2026', subLabel: '' });
+      // Generate yearly columns
+      for (let year = startYear; year <= endYear; year++) {
+        cols.push({ label: String(year), subLabel: '' });
+      }
     }
 
     return cols;
-  }, [timeScale, isRTL]);
+  }, [timeScale, isRTL, visibleRange, timePeriodMode]);
 
-  // Generate quarterly grouping data
+  // Generate quarterly grouping data based on visible range
   const quarterlyGroups = useMemo(() => {
     if (timeScale !== 'quarterly') return null;
-    return [
-      { label: 'Q1 2025', span: 3 },
-      { label: 'Q2 2025', span: 3 },
-      { label: 'Q3 2025', span: 3 },
-      { label: 'Q4 2025', span: 3 },
-    ];
-  }, [timeScale]);
+    
+    const groups: { label: string; span: number }[] = [];
+    const startYear = visibleRange.start.getFullYear();
+    const endYear = visibleRange.end.getFullYear();
+    
+    for (let year = startYear; year <= endYear; year++) {
+      const startMonth = year === startYear ? visibleRange.start.getMonth() : 0;
+      const endMonth = year === endYear ? visibleRange.end.getMonth() : 11;
+      
+      for (let q = 0; q < 4; q++) {
+        const qStartMonth = q * 3;
+        const qEndMonth = q * 3 + 2;
+        
+        if (qEndMonth >= startMonth && qStartMonth <= endMonth) {
+          const visibleStart = Math.max(qStartMonth, startMonth);
+          const visibleEnd = Math.min(qEndMonth, endMonth);
+          const span = visibleEnd - visibleStart + 1;
+          
+          if (span > 0) {
+            groups.push({ label: `Q${q + 1} ${year}`, span });
+          }
+        }
+      }
+    }
+    
+    return groups;
+  }, [timeScale, visibleRange]);
 
-  // Calculate today line position
+  // Calculate today line position using visible range
   const getTodayPosition = useCallback(() => {
     const today = new Date();
-    let rangeStart: Date, rangeEnd: Date;
-    
-    if (timeScale === 'monthly') {
-      // Updated range to include current date (Dec 2025)
-      rangeStart = new Date('2025-01-01');
-      rangeEnd = new Date('2025-12-31');
-    } else if (timeScale === 'weekly') {
-      rangeStart = new Date('2025-11-01');
-      rangeEnd = new Date('2026-01-24');
-    } else if (timeScale === 'quarterly') {
-      rangeStart = new Date('2025-01-01');
-      rangeEnd = new Date('2025-12-31');
-    } else {
-      rangeStart = new Date('2025-01-01');
-      rangeEnd = new Date('2026-12-31');
-    }
+    const rangeStart = visibleRange.start;
+    const rangeEnd = visibleRange.end;
 
     // If today is outside visible range, return null
     if (today < rangeStart || today > rangeEnd) {
@@ -395,7 +468,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     const totalDays = (rangeEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
     const daysSinceStart = (today.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
     return (daysSinceStart / totalDays) * 100;
-  }, [timeScale]);
+  }, [visibleRange]);
 
   const todayPosition = getTodayPosition();
   
@@ -405,35 +478,31 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     return today.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short', day: 'numeric' }).toUpperCase();
   }, [isRTL]);
 
-  // Calculate bar position
+  // Calculate bar position using visible range with clipping
   const getBarPosition = useCallback((item: BusinessRequestRoadmapItem) => {
-    const start = new Date(item.startDate);
-    const end = new Date(item.endDate);
-    
-    let rangeStart: Date, rangeEnd: Date;
-    if (timeScale === 'monthly') {
-      rangeStart = new Date('2024-10-01');
-      rangeEnd = new Date('2025-09-30');
-    } else if (timeScale === 'weekly') {
-      rangeStart = new Date('2024-11-01');
-      rangeEnd = new Date('2025-01-24');
-    } else if (timeScale === 'quarterly') {
-      rangeStart = new Date('2024-10-01');
-      rangeEnd = new Date('2025-09-30');
-    } else {
-      rangeStart = new Date('2024-01-01');
-      rangeEnd = new Date('2025-12-31');
+    const itemStart = new Date(item.startDate);
+    const itemEnd = new Date(item.endDate);
+    const rangeStart = visibleRange.start;
+    const rangeEnd = visibleRange.end;
+
+    // Check if item is completely outside the visible range
+    if (itemEnd < rangeStart || itemStart > rangeEnd) {
+      return null; // Don't render this bar
     }
 
+    // Clip dates to visible range
+    const clippedStart = itemStart < rangeStart ? rangeStart : itemStart;
+    const clippedEnd = itemEnd > rangeEnd ? rangeEnd : itemEnd;
+
     const totalDays = (rangeEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
-    const startOffset = Math.max(0, (start.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24));
-    const endOffset = Math.min(totalDays, (end.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24));
+    const startOffset = (clippedStart.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
+    const endOffset = (clippedEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
 
     const left = (startOffset / totalDays) * 100;
     const width = ((endOffset - startOffset) / totalDays) * 100;
 
     return { left: `${left}%`, width: `${Math.max(width, 2)}%` };
-  }, [timeScale]);
+  }, [visibleRange]);
 
   // Get milestone position within bar
   const getMilestonePosition = useCallback((milestoneDate: string, startDate: string, endDate: string) => {
@@ -658,18 +727,43 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 <TooltipContent side="bottom" className="text-xs">Time Period</TooltipContent>
               </Tooltip>
             </TooltipProvider>
-            <DropdownMenuContent align="end" className="w-36 bg-white z-50 shadow-lg rounded-lg" style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}>
+            <DropdownMenuContent align="end" className="w-48 bg-white z-50 shadow-lg rounded-lg" style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}>
+              {/* View Scale Section */}
+              <DropdownMenuLabel className="text-xs font-semibold px-3 py-1.5" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
+                {isRTL ? 'مقياس العرض' : 'View Scale'}
+              </DropdownMenuLabel>
               {(['weekly', 'monthly', 'quarterly', 'yearly'] as TimeScale[]).map((scale) => (
                 <DropdownMenuItem
                   key={scale}
                   onClick={() => setTimeScale(scale)}
-                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[hsl(var(--roadmap-parchment))]"
+                  className="flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-[hsl(var(--roadmap-parchment))]"
                 >
                   <span className="w-4">
                     {timeScale === scale && <Check className="w-4 h-4" style={{ color: 'hsl(var(--roadmap-status-new))' }} />}
                   </span>
                   <span className={cn("text-sm", timeScale === scale && "font-medium")} style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
                     {t[scale]}
+                  </span>
+                </DropdownMenuItem>
+              ))}
+              
+              <DropdownMenuSeparator className="my-1" style={{ backgroundColor: 'hsl(var(--roadmap-sandstone))' }} />
+              
+              {/* Time Period Section */}
+              <DropdownMenuLabel className="text-xs font-semibold px-3 py-1.5" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
+                {isRTL ? 'الفترة الزمنية' : 'Time Period'}
+              </DropdownMenuLabel>
+              {(['this_year', 'this_and_next_year', 'next_year', 'year_2025', 'year_2026'] as TimePeriodMode[]).map((period) => (
+                <DropdownMenuItem
+                  key={period}
+                  onClick={() => setTimePeriodMode(period)}
+                  className="flex items-center gap-2 px-3 py-1.5 cursor-pointer hover:bg-[hsl(var(--roadmap-parchment))]"
+                >
+                  <span className="w-4">
+                    {timePeriodMode === period && <Check className="w-4 h-4" style={{ color: 'hsl(var(--roadmap-status-new))' }} />}
+                  </span>
+                  <span className={cn("text-sm", timePeriodMode === period && "font-medium")} style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                    {TIME_PERIOD_LABELS[period][language]}
                   </span>
                 </DropdownMenuItem>
               ))}
@@ -1026,98 +1120,103 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     />
                   )}
                   
-                  {/* Date labels */}
-                  <div 
-                    className="absolute text-xs"
-                    style={{ left: barPos.left, top: '2px', color: 'hsl(var(--roadmap-fossil))' }}
-                  >
-                    {formatDateLabel(item.startDate)}
-                  </div>
-                  <div 
-                    className="absolute text-xs" 
-                    style={{ 
-                      left: `calc(${barPos.left} + ${barPos.width})`, 
-                      top: '2px', 
-                      transform: 'translateX(-100%)',
-                      color: 'hsl(var(--roadmap-fossil))'
-                    }}
-                  >
-                    {formatDateLabel(item.endDate)}
-                  </div>
+                  {/* Only render bar if it falls within visible range */}
+                  {barPos && (
+                    <>
+                      {/* Date labels */}
+                      <div 
+                        className="absolute text-xs"
+                        style={{ left: barPos.left, top: '2px', color: 'hsl(var(--roadmap-fossil))' }}
+                      >
+                        {formatDateLabel(item.startDate)}
+                      </div>
+                      <div 
+                        className="absolute text-xs" 
+                        style={{ 
+                          left: `calc(${barPos.left} + ${barPos.width})`, 
+                          top: '2px', 
+                          transform: 'translateX(-100%)',
+                          color: 'hsl(var(--roadmap-fossil))'
+                        }}
+                      >
+                        {formatDateLabel(item.endDate)}
+                      </div>
 
-                  {/* Status label sitting ABOVE the bar */}
-                  <div 
-                    className="absolute text-[10px] font-medium whitespace-nowrap pointer-events-none"
-                    style={{ 
-                      left: `calc(${barPos.left} + ${barPos.width} / 2)`, 
-                      top: '50%', 
-                      transform: 'translate(-50%, -100%)',
-                      marginTop: '-4px',
-                      color: 'hsl(var(--roadmap-charcoal))'
-                    }}
-                  >
-                    {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                  </div>
-                  
-                  {/* Bar with milestones - color based on status */}
-                  <div 
-                    className="absolute h-[24px] rounded-full overflow-visible flex items-center justify-center"
-                    style={{ 
-                      left: barPos.left, 
-                      width: barPos.width, 
-                      top: '50%', 
-                      transform: 'translateY(-50%)',
-                      marginTop: '6px',
-                      background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
-                    }}
-                  >
-                    {/* Milestones - positioned on the bar based on actual dates */}
-                    {showMilestones && item.milestones.length > 0 && item.milestones.map((ms, index) => {
-                      // Calculate position based on milestone date relative to item start/end dates
-                      const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
+                      {/* Status label sitting ABOVE the bar */}
+                      <div 
+                        className="absolute text-[10px] font-medium whitespace-nowrap pointer-events-none"
+                        style={{ 
+                          left: `calc(${barPos.left} + ${barPos.width} / 2)`, 
+                          top: '50%', 
+                          transform: 'translate(-50%, -100%)',
+                          marginTop: '-4px',
+                          color: 'hsl(var(--roadmap-charcoal))'
+                        }}
+                      >
+                        {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
+                      </div>
                       
-                      return (
-                        <TooltipProvider key={`${item.id}-ms-${index}`} delayDuration={100}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <div
-                                className="absolute w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center text-[10px] font-medium cursor-pointer z-10"
-                                style={{ 
-                                  left: `${pos}%`, 
-                                  top: '50%', 
-                                  transform: 'translate(-50%, -50%)',
-                                  backgroundColor: ms.state === 'complete' 
-                                    ? 'hsl(var(--roadmap-milestone-complete))' 
-                                    : 'white',
-                                  borderColor: ms.state === 'complete' 
-                                    ? 'hsl(var(--roadmap-milestone-complete))'
-                                    : ms.state === 'current'
-                                      ? 'hsl(var(--roadmap-milestone-current))'
-                                      : 'hsl(var(--roadmap-milestone-pending))',
-                                  color: ms.state === 'complete' 
-                                    ? 'white'
-                                    : ms.state === 'current'
-                                      ? 'hsl(var(--roadmap-milestone-current))'
-                                      : 'hsl(var(--roadmap-fossil))',
-                                  boxShadow: ms.state === 'current' 
-                                    ? '0 0 8px hsla(var(--roadmap-milestone-current) / 0.5)' 
-                                    : 'none'
-                                }}
-                              >
-                                {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : (index + 1)}
-                              </div>
-                            </TooltipTrigger>
-                            <TooltipContent side="top" className="text-xs">
-                              <div className="font-medium">Milestone {index + 1}</div>
-                              <div className="text-muted-foreground">
-                                {new Date(ms.date).toLocaleDateString()} · {ms.state}
-                              </div>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      );
-                    })}
-                  </div>
+                      {/* Bar with milestones - color based on status */}
+                      <div 
+                        className="absolute h-[24px] rounded-full overflow-visible flex items-center justify-center"
+                        style={{ 
+                          left: barPos.left, 
+                          width: barPos.width, 
+                          top: '50%', 
+                          transform: 'translateY(-50%)',
+                          marginTop: '6px',
+                          background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
+                        }}
+                      >
+                        {/* Milestones - positioned on the bar based on actual dates */}
+                        {showMilestones && item.milestones.length > 0 && item.milestones.map((ms, index) => {
+                          // Calculate position based on milestone date relative to item start/end dates
+                          const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
+                          
+                          return (
+                            <TooltipProvider key={`${item.id}-ms-${index}`} delayDuration={100}>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div
+                                    className="absolute w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center text-[10px] font-medium cursor-pointer z-10"
+                                    style={{ 
+                                      left: `${pos}%`, 
+                                      top: '50%', 
+                                      transform: 'translate(-50%, -50%)',
+                                      backgroundColor: ms.state === 'complete' 
+                                        ? 'hsl(var(--roadmap-milestone-complete))' 
+                                        : 'white',
+                                      borderColor: ms.state === 'complete' 
+                                        ? 'hsl(var(--roadmap-milestone-complete))'
+                                        : ms.state === 'current'
+                                          ? 'hsl(var(--roadmap-milestone-current))'
+                                          : 'hsl(var(--roadmap-milestone-pending))',
+                                      color: ms.state === 'complete' 
+                                        ? 'white'
+                                        : ms.state === 'current'
+                                          ? 'hsl(var(--roadmap-milestone-current))'
+                                          : 'hsl(var(--roadmap-fossil))',
+                                      boxShadow: ms.state === 'current' 
+                                        ? '0 0 8px hsla(var(--roadmap-milestone-current) / 0.5)' 
+                                        : 'none'
+                                    }}
+                                  >
+                                    {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : (index + 1)}
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="text-xs">
+                                  <div className="font-medium">Milestone {index + 1}</div>
+                                  <div className="text-muted-foreground">
+                                    {new Date(ms.date).toLocaleDateString()} · {ms.state}
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          );
+                        })}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             );

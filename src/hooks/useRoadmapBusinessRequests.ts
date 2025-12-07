@@ -95,7 +95,7 @@ export function useRoadmapBusinessRequests() {
         milestonesByRequest[ms.business_request_id].push(ms);
       });
 
-      // Transform to roadmap items
+      // Transform to roadmap items with date normalization
       const roadmapItems: BusinessRequestRoadmapItem[] = (requests || [])
         .filter(r => r.request_key) // Only include requests with a key
         .map((r, index) => {
@@ -115,12 +115,49 @@ export function useRoadmapBusinessRequests() {
             endDate = lastMs.due_date || lastMs.start_date;
           }
           
-          // Default fallback dates if still missing
-          if (!startDate) startDate = new Date().toISOString().split('T')[0];
-          if (!endDate) {
-            const defaultEnd = new Date();
-            defaultEnd.setMonth(defaultEnd.getMonth() + 3);
-            endDate = defaultEnd.toISOString().split('T')[0];
+          // --- DATE NORMALIZATION ---
+          // Normalize dates to fall within reasonable demo range (2025-2026)
+          const currentYear = new Date().getFullYear();
+          const demoStartYear = currentYear; // 2025
+          const demoEndYear = currentYear + 1; // 2026
+          
+          const normalizeDate = (dateStr: string | null, isEndDate: boolean): string => {
+            if (!dateStr) {
+              // Generate default date if missing
+              const baseMonth = Math.floor(Math.random() * 6) + (isEndDate ? 6 : 0); // Start: Jan-Jun, End: Jul-Dec
+              return `${demoStartYear}-${String(baseMonth + 1).padStart(2, '0')}-15`;
+            }
+            
+            const date = new Date(dateStr);
+            const year = date.getFullYear();
+            
+            // If date is too far in the past (before current year - 1)
+            if (year < demoStartYear - 1) {
+              const newYear = demoStartYear + (index % 2); // Distribute between 2025 and 2026
+              return `${newYear}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            }
+            
+            // If date is too far in the future (after 2027)
+            if (year > demoEndYear + 1) {
+              const newYear = demoStartYear + (index % 2);
+              return `${newYear}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            }
+            
+            return dateStr;
+          };
+          
+          // Normalize the dates
+          startDate = normalizeDate(startDate, false);
+          endDate = normalizeDate(endDate, true);
+          
+          // Ensure end date is after start date
+          const start = new Date(startDate);
+          const end = new Date(endDate);
+          if (end <= start) {
+            // Set end date to 60-90 days after start
+            const newEnd = new Date(start);
+            newEnd.setDate(newEnd.getDate() + 60 + Math.floor(Math.random() * 30));
+            endDate = newEnd.toISOString().split('T')[0];
           }
 
           // Transform milestones
