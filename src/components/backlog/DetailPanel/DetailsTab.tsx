@@ -5,14 +5,18 @@ import { ProgressIndicators } from './ProgressIndicators';
 import { QuickActions } from './QuickActions';
 import { ContainedInLink } from './ContainedInLink';
 import { EpicDetail } from '@/types/backlog.types';
-import { PROGRAMS } from '@/data/backlogSeedData';
-import { EPIC_TYPES, MVP_OPTIONS, OWNERS } from '@/data/epicDetailData';
+
+// Static configuration options - not seed data
+const EPIC_TYPES = ['Business', 'Enabler', 'Compliance'];
+const MVP_OPTIONS = ['Yes', 'No'];
 
 interface DetailsTabProps {
   epic: EpicDetail;
+  programs?: { id: string; name: string }[];
+  owners?: { id: string; name: string }[];
 }
 
-export function DetailsTab({ epic }: DetailsTabProps) {
+export function DetailsTab({ epic, programs = [], owners = [] }: DetailsTabProps) {
   return (
     <div className="grid grid-cols-[1fr_280px] gap-6 p-6">
       {/* Main Column */}
@@ -69,8 +73,9 @@ export function DetailsTab({ epic }: DetailsTabProps) {
           </label>
           <FormSelect
             value={epic.primaryProgram?.id || ''}
-            options={PROGRAMS.map(p => ({ value: p.id, label: p.name }))}
+            options={programs.map(p => ({ value: p.id, label: p.name }))}
             onChange={() => {}}
+            placeholder="Select program..."
           />
         </div>
 
@@ -89,8 +94,9 @@ export function DetailsTab({ epic }: DetailsTabProps) {
           <label className="text-xs font-semibold text-muted-foreground">Owner:</label>
           <FormSelect
             value={epic.owner?.id || ''}
-            options={OWNERS.map(o => ({ value: o.id, label: o.name }))}
+            options={owners.map(o => ({ value: o.id, label: o.name }))}
             onChange={() => {}}
+            placeholder="Select owner..."
           />
         </div>
       </div>

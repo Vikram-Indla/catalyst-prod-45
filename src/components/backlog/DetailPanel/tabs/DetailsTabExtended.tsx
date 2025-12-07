@@ -6,10 +6,13 @@ import { ProgressIndicators } from '../ProgressIndicators';
 import { QuickActions } from '../QuickActions';
 import { ContainedInLink } from '../ContainedInLink';
 import { EpicDetail, Program, User, Theme, ProgramIncrement, Feature } from '@/types/backlog.types';
-import { EPIC_TYPES, MVP_OPTIONS } from '@/data/epicDetailData';
 import { ChevronRight, ChevronDown, Plus, X, Info } from 'lucide-react';
 import { WSJFModal } from '../modals/WSJFModal';
 import { FeatureStatusModal } from '../modals/FeatureStatusModal';
+
+// Static configuration options - not seed data
+const EPIC_TYPES = ['Business', 'Enabler', 'Compliance'];
+const MVP_OPTIONS = ['Yes', 'No'];
 
 interface DetailsTabExtendedProps {
   epic: EpicDetail;

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { Star, Settings, Filter, Upload, Grid3x3, Calendar, List, ZoomIn, ZoomOut, Flag, Check, Settings2, Diamond, Undo, Redo, RefreshCw } from 'lucide-react';
+import { Star, Settings, Filter, Upload, Grid3x3, Calendar, List, ZoomIn, ZoomOut, Flag, Check, Settings2, Diamond, Undo, Redo, RefreshCw, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PISelectorPanel } from '@/components/roadmaps/PISelectorPanel';
@@ -18,7 +18,6 @@ import type {
   WorkItemState
 } from '@/types/roadmap.types';
 import { BAR_COLORS } from '@/types/roadmap.types';
-import { seedRoadmapItems, seedProgramIncrements, seedMilestones } from '@/data/roadmapSeedData';
 
 type ViewMode = TimelineView;
 
@@ -26,9 +25,9 @@ const MONTH_WIDTH = 100;
 const DAY_WIDTH = MONTH_WIDTH / 30;
 const SPRINT_WIDTH = 50;
 
-const programIncrements = seedProgramIncrements;
-
-const seedData = seedRoadmapItems;
+// Empty data - no mock/seed data
+const programIncrements: ProgramIncrement[] = [];
+const seedData: RoadmapItem[] = [];
 
 function getStateFill(state: string): number {
   switch (state) {

@@ -9,10 +9,19 @@ import { ColumnConfig } from '@/components/backlog/ColumnsDropdown';
 import { LabelConfig } from '@/components/backlog/LabelsDropdown';
 import { ApplyWSJFToRankDialog } from '@/components/prioritization/ApplyWSJFToRankDialog';
 import { PullRankDialog } from '@/components/backlog/PullRankDialog';
-import { VIEWING_OPTIONS, BACKLOG_SECTIONS, PROGRAMS } from '@/data/backlogSeedData';
-import { EPIC_DETAILS } from '@/data/epicDetailData';
-import { BacklogSection as BacklogSectionType, Epic } from '@/types/backlog.types';
+import { BacklogSection as BacklogSectionType, Epic, ViewingOption, Program } from '@/types/backlog.types';
 import { toast } from 'sonner';
+
+// Static configuration - not seed data
+const VIEWING_OPTIONS: ViewingOption[] = [
+  { id: 'theme', label: 'Theme Backlog', enabled: true },
+  { id: 'epic', label: 'Epic Backlog', enabled: true },
+  { id: 'feature', label: 'Feature Backlog', enabled: true },
+];
+
+const PROGRAMS: Program[] = [];
+const BACKLOG_SECTIONS: BacklogSectionType[] = [];
+const EPIC_DETAILS: Record<string, any> = {};
 
 const DEFAULT_COLUMNS: ColumnConfig[] = [
   { id: 'epic', label: 'Epic', visible: true, default: true },
