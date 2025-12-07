@@ -625,7 +625,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
 
         {/* Toolbar */}
-        <div className="inline-flex items-center gap-1.5 relative z-30" style={{ direction: 'ltr' }}>
+        <div className="inline-flex items-center gap-1.5 relative z-[100]" style={{ direction: 'ltr' }}>
           {/* Search */}
           <div className="flex items-center">
             {isSearchExpanded && (
