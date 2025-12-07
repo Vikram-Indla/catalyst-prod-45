@@ -37,7 +37,7 @@ const rooms: Room[] = [
   },
   { 
     id: 'program', 
-    label: 'Program', 
+    label: 'Project', 
     icon: GitBranch, 
     defaultPath: '/program-room' 
   },

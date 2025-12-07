@@ -406,14 +406,14 @@ export default function ProgramBoard() {
           <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
             <Grid3x3 className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-semibold">Program Board</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold">Project Board</h2>
           <p className="text-sm sm:text-base text-muted-foreground">
-            Select a Program and Program Increment to view the board
+            Select a Project and Project Increment to view the board
           </p>
           <div className="space-y-3 pt-4">
             <Select value={programId || ''} onValueChange={(val) => setSearchParams({ program: val, pi: piId || '' })}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select Program" />
+                <SelectValue placeholder="Select Project" />
               </SelectTrigger>
               <SelectContent>
                 {programs?.map((p) => (
@@ -448,7 +448,7 @@ export default function ProgramBoard() {
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3">
           <div className="flex items-center gap-2 sm:gap-4 w-full lg:w-auto min-w-0">
             <Grid3x3 className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
-            <h1 className="text-lg sm:text-xl font-semibold truncate">Program Board</h1>
+            <h1 className="text-lg sm:text-xl font-semibold truncate">Project Board</h1>
             <div className="relative hidden xl:block">
               <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 

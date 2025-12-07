@@ -91,7 +91,7 @@ export function CatalystHeader() {
     { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE" },
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT" },
     { label: "Portfolio", hasDropdown: true, moduleCode: "PORTFOLIO" },
-    { label: "Program", hasDropdown: true, moduleCode: "PROGRAM" },
+    { label: "Project", hasDropdown: true, moduleCode: "PROGRAM" },
     { label: "Release", hasDropdown: true, path: "/release", moduleCode: null }, // Always visible
   ];
 
@@ -189,7 +189,7 @@ export function CatalystHeader() {
                           <PortfolioSelectorDropdown onClose={() => setActiveDropdown(null)} />
                         </PopoverContent>
                       </Popover>
-                    ) : item.label === "Program" ? (
+                    ) : item.label === "Project" ? (
                       <Popover
                         open={activeDropdown === item.label}
                         onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}

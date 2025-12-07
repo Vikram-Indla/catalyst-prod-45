@@ -75,13 +75,13 @@ export function ProgramRoomSidebar({ programId }: ProgramRoomSidebarProps) {
   });
 
   const menuItems = [
-    { id: 'room', label: 'Program Room', icon: Layers, path: `/programs/${programId}/room` },
+    { id: 'room', label: 'Project Room', icon: Layers, path: `/programs/${programId}/room` },
     { id: 'features', label: 'Features', icon: Zap, path: `/programs/${programId}/features` },
     { id: 'backlog', label: 'Backlog', icon: Database, path: `/programs/${programId}/backlog` },
     { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: `/programs/${programId}/roadmaps` },
     { id: 'objective-tree', label: 'Objective Tree', icon: Lightbulb, path: `/programs/${programId}/objective-tree` },
     { id: 'work-tree', label: 'Work Tree', icon: Network, path: `/programs/${programId}/work-tree` },
-    { id: 'program-board', label: 'Program Board', icon: BarChart3, path: `/programs/${programId}/program-board` },
+    { id: 'program-board', label: 'Project Board', icon: BarChart3, path: `/programs/${programId}/program-board` },
     { id: 'forecast', label: 'Forecast', icon: Map, path: `/programs/${programId}/forecast` },
     { id: 'capacity', label: 'Capacity', icon: Users, path: `/programs/${programId}/capacity` },
   ];
@@ -116,13 +116,13 @@ export function ProgramRoomSidebar({ programId }: ProgramRoomSidebarProps) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold truncate">{program.name}</div>
-              <div className="text-xs text-muted-foreground">Program</div>
+              <div className="text-xs text-muted-foreground">Project</div>
             </div>
           </div>
 
-          {/* Program Increment Selector */}
+          {/* Project Increment Selector */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted-foreground">PROGRAM INCREMENT</label>
+            <label className="text-xs font-semibold text-muted-foreground">PROJECT INCREMENT</label>
             {piLoading ? (
               <Skeleton className="h-9 w-full" />
             ) : (
@@ -223,7 +223,7 @@ export function ProgramRoomSidebar({ programId }: ProgramRoomSidebarProps) {
                 size="sm"
                 className="w-full justify-start text-sm"
               >
-                Program Reports
+                Project Reports
               </Button>
             </CollapsibleContent>
           </Collapsible>
@@ -281,7 +281,7 @@ export function ProgramRoomSidebar({ programId }: ProgramRoomSidebarProps) {
           </Collapsible>
         </div>
 
-        {/* Programs Settings at Bottom */}
+        {/* Projects Settings at Bottom */}
         <div className="p-2 border-t mt-auto">
           <Button
             variant="ghost"
@@ -289,7 +289,7 @@ export function ProgramRoomSidebar({ programId }: ProgramRoomSidebarProps) {
             onClick={() => navigate(`/programs/${programId}/settings`)}
           >
             <Settings className="h-4 w-4" />
-            Programs settings
+            Projects settings
           </Button>
         </div>
       </ScrollArea>
