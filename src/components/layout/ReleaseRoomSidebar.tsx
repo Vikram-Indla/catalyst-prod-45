@@ -11,7 +11,7 @@ interface ReleaseRoomSidebarProps {
 }
 
 const menuItems = [
-  { title: 'Overview', path: '/release/overview', icon: LayoutDashboard, exact: true },
+  { title: 'Release Room', path: '/release/overview', icon: LayoutDashboard, exact: true },
   { title: 'Incidents', path: '/release/incidents', icon: AlertCircle, exact: false },
   { title: 'Versions', path: '/release/versions', icon: Tag, exact: false },
   { title: 'Calendar', path: '/release/calendar', icon: Calendar, exact: true },

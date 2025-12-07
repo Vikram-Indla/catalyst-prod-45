@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Calendar } from 'lucide-react';
-import { PageHeader } from '@/components/release/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -31,38 +30,41 @@ export default function VersionsList() {
   const projects = [...new Set(releases.map((r) => r.project))];
 
   return (
-    <div className="p-6 md:p-8">
-      <PageHeader
-        title="Releases"
-        subtitle="Manage versions and track release progress"
-        actions={
-          <div className="flex gap-3">
+    <div className="h-full flex flex-col bg-background">
+      {/* Header - fixed height 72px to align with sidebar */}
+      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
+        <div className="h-full px-4 sm:px-6 flex items-center justify-between">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Releases</h1>
+            <p className="text-sm text-muted-foreground truncate">Manage versions and track release progress</p>
+          </div>
+          <div className="flex gap-3 flex-shrink-0">
             <Link to="/release/calendar">
-              <Button variant="outline" className="border-[#E8E8E8] text-[#5C5C5C] gap-2">
+              <Button variant="outline" className="border-border text-muted-foreground gap-2">
                 <Calendar className="w-4 h-4" />
                 Calendar
               </Button>
             </Link>
-            <Button className="bg-[#C69C6D] hover:bg-[#B8894D] text-white">
+            <Button className="bg-brand-gold hover:bg-brand-gold-hover text-white">
               + Create Version
             </Button>
           </div>
-        }
-      />
+        </div>
+      </div>
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-4 mb-6">
+      <div className="flex flex-wrap items-center gap-4 px-4 sm:px-6 py-4 bg-card border-b border-border">
         <div className="relative w-[280px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C8C8C]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             placeholder="Search versions..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 border-[#E8E8E8] focus-visible:ring-[#C69C6D]"
+            className="pl-10 border-border focus-visible:ring-brand-gold"
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[140px] border-[#E8E8E8]">
+          <SelectTrigger className="w-[140px] border-border">
             <SelectValue placeholder="All Status" />
           </SelectTrigger>
           <SelectContent>
@@ -73,7 +75,7 @@ export default function VersionsList() {
           </SelectContent>
         </Select>
         <Select value={projectFilter} onValueChange={setProjectFilter}>
-          <SelectTrigger className="w-[160px] border-[#E8E8E8]">
+          <SelectTrigger className="w-[160px] border-border">
             <SelectValue placeholder="All Projects" />
           </SelectTrigger>
           <SelectContent>
@@ -85,39 +87,42 @@ export default function VersionsList() {
         </Select>
       </div>
 
-      {/* Unreleased Section */}
-      {unreleasedReleases.length > 0 && (
-        <section className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-base font-semibold">Unreleased</h2>
-            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-[rgba(198,156,109,0.1)] text-[#C69C6D]">
-              {unreleasedReleases.length}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {unreleasedReleases.map((release) => (
-              <ReleaseCard key={release.id} release={release} />
-            ))}
-          </div>
-        </section>
-      )}
+      {/* Content */}
+      <div className="flex-1 overflow-auto p-4 sm:p-6">
+        {/* Unreleased Section */}
+        {unreleasedReleases.length > 0 && (
+          <section className="mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-base font-semibold">Unreleased</h2>
+              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-gold/10 text-brand-gold">
+                {unreleasedReleases.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {unreleasedReleases.map((release) => (
+                <ReleaseCard key={release.id} release={release} />
+              ))}
+            </div>
+          </section>
+        )}
 
-      {/* Released Section */}
-      {releasedReleases.length > 0 && (
-        <section>
-          <div className="flex items-center gap-3 mb-4">
-            <h2 className="text-base font-semibold">Released</h2>
-            <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-[rgba(198,156,109,0.1)] text-[#C69C6D]">
-              {releasedReleases.length}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {releasedReleases.map((release) => (
-              <ReleaseCard key={release.id} release={release} />
-            ))}
-          </div>
-        </section>
-      )}
+        {/* Released Section */}
+        {releasedReleases.length > 0 && (
+          <section>
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-base font-semibold">Released</h2>
+              <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-gold/10 text-brand-gold">
+                {releasedReleases.length}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {releasedReleases.map((release) => (
+                <ReleaseCard key={release.id} release={release} />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }
@@ -130,11 +135,11 @@ function ReleaseCard({ release }: { release: Release }) {
   };
 
   return (
-    <div className="bg-white border border-[#E8E8E8] rounded-lg p-5 hover:border-[#C69C6D] hover:shadow-sm transition-all">
+    <div className="bg-card border border-border rounded-lg p-5 hover:border-brand-gold hover:shadow-sm transition-all">
       <div className="flex items-start justify-between mb-3">
         <Link
           to={`/release/versions/${release.id}`}
-          className="text-[17px] font-semibold hover:text-[#C69C6D] transition-colors"
+          className="text-[17px] font-semibold hover:text-brand-gold transition-colors"
         >
           {release.name}
         </Link>
@@ -146,29 +151,29 @@ function ReleaseCard({ release }: { release: Release }) {
         </span>
       </div>
 
-      <p className="text-sm text-[#5C5C5C] mb-4 line-clamp-2">
+      <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
         {release.description}
       </p>
 
       <div className="mb-4">
         <div className="flex justify-between mb-1.5 text-[13px]">
-          <span className="text-[#8C8C8C]">Progress</span>
+          <span className="text-muted-foreground">Progress</span>
           <span className="font-semibold">{release.progress}%</span>
         </div>
         <ProgressBar value={release.progress} />
       </div>
 
-      <div className="flex gap-4 mb-4 text-[13px] text-[#8C8C8C]">
+      <div className="flex gap-4 mb-4 text-[13px] text-muted-foreground">
         <span>📅 {new Date(release.releaseDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
         <span>📦 {release.stats.total} items</span>
       </div>
 
-      <div className="flex gap-2 pt-4 border-t border-[#F0F0F0]">
+      <div className="flex gap-2 pt-4 border-t border-border">
         <Link to={`/release/versions/${release.id}`}>
           <Button
             variant="outline"
             size="sm"
-            className="text-[13px] border-[#E8E8E8] text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)]"
+            className="text-[13px] border-border text-muted-foreground hover:bg-brand-gold/10"
           >
             {release.status === 'released' ? 'View Details' : 'Edit'}
           </Button>
@@ -176,7 +181,7 @@ function ReleaseCard({ release }: { release: Release }) {
         {release.status !== 'released' && (
           <Button
             size="sm"
-            className="text-[13px] bg-[#C69C6D] hover:bg-[#B8894D] text-white"
+            className="text-[13px] bg-brand-gold hover:bg-brand-gold-hover text-white"
           >
             Release
           </Button>
