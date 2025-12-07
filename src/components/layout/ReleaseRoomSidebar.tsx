@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight, LayoutDashboard, AlertCircle, Tag, Calendar, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LayoutDashboard, AlertCircle, Tag, Calendar, Settings, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -13,6 +13,7 @@ interface ReleaseRoomSidebarProps {
 const menuItems = [
   { title: 'Release Room', path: '/release/overview', icon: LayoutDashboard, exact: true },
   { title: 'Incidents', path: '/release/incidents', icon: AlertCircle, exact: false },
+  { title: 'Dashboard', path: '/release/incidents/dashboard', icon: BarChart3, exact: true },
   { title: 'Versions', path: '/release/versions', icon: Tag, exact: false },
   { title: 'Calendar', path: '/release/calendar', icon: Calendar, exact: true },
 ];
