@@ -1,17 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { IncidentHeader } from '@/components/incidents/IncidentHeader';
 import { IncidentDescription } from '@/components/incidents/IncidentDescription';
-import { IncidentTimeline } from '@/components/incidents/IncidentTimeline';
 import { IncidentAttachments } from '@/components/incidents/IncidentAttachments';
 import { IncidentDetailsPanel } from '@/components/incidents/IncidentDetailsPanel';
-import { MajorIncidentPanel } from '@/components/incidents/MajorIncidentPanel';
-import { SlackIntegrationPanel } from '@/components/incidents/SlackIntegrationPanel';
-import { LinkedItemsPanel } from '@/components/incidents/LinkedItemsPanel';
-import { WatchersPanel } from '@/components/incidents/WatchersPanel';
 import incidentsData from '@/data/incidents.json';
-import type { Incident, TimelineEvent, Attachment, Assignee } from '@/types/release';
+import type { Incident, Attachment } from '@/types/release';
 
 // Cast and enhance data
 const rawIncidents = incidentsData.incidents as any[];
@@ -162,13 +157,6 @@ export default function IncidentDetail() {
             onDescriptionChange={(value) => handleFieldChange('description', value)}
           />
 
-          {/* Activity & Timeline - Jira style */}
-          <IncidentTimeline
-            timeline={incident.timeline || []}
-            comments={incident.comments}
-            onAddComment={handleAddComment}
-          />
-
           {/* Attachments */}
           <div>
             <IncidentAttachments
@@ -209,33 +197,6 @@ export default function IncidentDetail() {
             editedData={editedData}
             onFieldChange={handleFieldChange}
             onStatusChange={handleStatusChange}
-          />
-
-          {/* Major Incident Panel */}
-          <MajorIncidentPanel
-            incident={incident}
-            isEditMode={isEditMode}
-            editedData={editedData}
-            onFieldChange={handleFieldChange}
-          />
-
-          {/* Slack Integration */}
-          <SlackIntegrationPanel incident={incident} />
-
-          {/* Linked Items */}
-          <LinkedItemsPanel
-            linkedItems={incident.linkedItems}
-            isEditMode={isEditMode}
-            onRemoveItem={handleRemoveLinkedItem}
-            onAddItem={() => toast.info('Link work item dialog would open')}
-          />
-
-          {/* Watchers */}
-          <WatchersPanel
-            watchers={incident.watcherDetails || []}
-            isEditMode={isEditMode}
-            onRemoveWatcher={handleRemoveWatcher}
-            onAddWatcher={() => toast.info('Add watcher dialog would open')}
           />
         </div>
       </div>
