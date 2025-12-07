@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Package, User, Clock, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+import { Calendar, Package, User, Clock, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ProgressBar } from '@/components/release/ProgressBar';
@@ -33,19 +33,14 @@ export default function VersionDetail() {
   };
 
   const getPipelineIcon = (status: string) => {
-    if (status === 'complete') return <CheckCircle2 className="w-5 h-5 text-green-600" />;
-    if (status === 'current') return <AlertCircle className="w-5 h-5 text-[#C69C6D]" />;
-    return <Circle className="w-5 h-5 text-[#8C8C8C]" />;
+    if (status === 'complete') return <CheckCircle2 className="w-4 h-4 text-green-600" />;
+    if (status === 'current') return <AlertCircle className="w-4 h-4 text-[#C69C6D]" />;
+    return <Circle className="w-4 h-4 text-[#8C8C8C]" />;
   };
 
   return (
     <div className="p-6 md:p-8">
       <div className="flex items-center gap-4 mb-6">
-        <Link to="/release/versions">
-          <Button variant="ghost" size="icon" className="text-[#5C5C5C]">
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-        </Link>
         <div className="flex-1">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-semibold">{release.name}</h1>
@@ -59,6 +54,11 @@ export default function VersionDetail() {
           <p className="text-sm text-[#8C8C8C]">{release.project}</p>
         </div>
         <div className="flex gap-3">
+          <Link to="/release/versions">
+            <Button variant="outline" className="border-[#E8E8E8] text-[#5C5C5C]">
+              Back
+            </Button>
+          </Link>
           <Button variant="outline" className="border-[#E8E8E8] text-[#5C5C5C]">
             Edit
           </Button>
@@ -72,69 +72,69 @@ export default function VersionDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4">
           {/* Description */}
           <Card className="border-[#E8E8E8]">
-            <CardHeader className="border-b border-[#E8E8E8] py-4">
+            <CardHeader className="border-b border-[#E8E8E8] py-3">
               <CardTitle className="text-[15px] font-semibold">Description</CardTitle>
             </CardHeader>
-            <CardContent className="p-5">
+            <CardContent className="p-4">
               <p className="text-sm text-[#5C5C5C]">{release.description}</p>
             </CardContent>
           </Card>
 
-          {/* Progress */}
+          {/* Progress - Compact */}
           <Card className="border-[#E8E8E8]">
-            <CardHeader className="border-b border-[#E8E8E8] py-4">
+            <CardHeader className="border-b border-[#E8E8E8] py-2.5">
               <CardTitle className="text-[15px] font-semibold">Progress</CardTitle>
             </CardHeader>
-            <CardContent className="p-5">
-              <div className="flex justify-between mb-3 text-sm">
-                <span className="text-[#8C8C8C]">Completion</span>
-                <span className="font-semibold">{release.progress}%</span>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <ProgressBar value={release.progress} className="h-2" />
+                </div>
+                <span className="font-semibold text-sm">{release.progress}%</span>
               </div>
-              <ProgressBar value={release.progress} className="h-3 mb-6" />
-              
-              <div className="grid grid-cols-3 gap-4 text-center">
-                <div className="p-4 rounded-lg bg-green-50">
-                  <div className="text-2xl font-bold text-green-700">{release.stats.done}</div>
-                  <div className="text-xs text-[#8C8C8C] uppercase font-medium">Done</div>
+              <div className="grid grid-cols-3 gap-2 mt-3">
+                <div className="py-2 px-3 rounded bg-green-50 text-center">
+                  <span className="text-lg font-bold text-green-700">{release.stats.done}</span>
+                  <span className="text-[10px] text-muted-foreground uppercase ml-1">Done</span>
                 </div>
-                <div className="p-4 rounded-lg bg-blue-50">
-                  <div className="text-2xl font-bold text-blue-700">{release.stats.inProgress}</div>
-                  <div className="text-xs text-[#8C8C8C] uppercase font-medium">In Progress</div>
+                <div className="py-2 px-3 rounded bg-blue-50 text-center">
+                  <span className="text-lg font-bold text-blue-700">{release.stats.inProgress}</span>
+                  <span className="text-[10px] text-muted-foreground uppercase ml-1">In Progress</span>
                 </div>
-                <div className="p-4 rounded-lg bg-gray-50">
-                  <div className="text-2xl font-bold text-gray-700">{release.stats.todo}</div>
-                  <div className="text-xs text-[#8C8C8C] uppercase font-medium">To Do</div>
+                <div className="py-2 px-3 rounded bg-gray-50 text-center">
+                  <span className="text-lg font-bold text-gray-700">{release.stats.todo}</span>
+                  <span className="text-[10px] text-muted-foreground uppercase ml-1">To Do</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Pipeline */}
+          {/* Pipeline - Compact */}
           <Card className="border-[#E8E8E8]">
-            <CardHeader className="border-b border-[#E8E8E8] py-4">
+            <CardHeader className="border-b border-[#E8E8E8] py-2.5">
               <CardTitle className="text-[15px] font-semibold">Release Pipeline</CardTitle>
             </CardHeader>
-            <CardContent className="p-5">
+            <CardContent className="p-3">
               <div className="flex items-center justify-between">
                 {pipelineStages.map((stage, index) => (
                   <div key={stage} className="flex items-center">
                     <div className="flex flex-col items-center">
                       <div className={cn(
-                        "w-12 h-12 rounded-full flex items-center justify-center",
+                        "w-8 h-8 rounded-full flex items-center justify-center",
                         release.pipeline[stage] === 'complete' && "bg-green-100",
                         release.pipeline[stage] === 'current' && "bg-[rgba(198,156,109,0.2)]",
                         release.pipeline[stage] === 'pending' && "bg-gray-100"
                       )}>
                         {getPipelineIcon(release.pipeline[stage])}
                       </div>
-                      <span className="mt-2 text-xs font-medium uppercase text-[#5C5C5C]">{stage}</span>
+                      <span className="mt-1 text-[10px] font-medium uppercase text-[#5C5C5C]">{stage}</span>
                     </div>
                     {index < pipelineStages.length - 1 && (
                       <div className={cn(
-                        "w-12 h-0.5 mx-2",
+                        "w-8 h-0.5 mx-1",
                         release.pipeline[stage] === 'complete' ? "bg-green-400" : "bg-[#E8E8E8]"
                       )} />
                     )}
