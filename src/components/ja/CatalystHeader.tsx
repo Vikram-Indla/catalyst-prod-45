@@ -125,8 +125,8 @@ export function CatalystHeader() {
             </div>
           </div>
 
-          {/* Middle Column: Main Navigation - packed left with consistent gap */}
-          <nav className="hidden md:flex items-center justify-start gap-4 ml-6 overflow-x-auto">
+          {/* Middle Column: Main Navigation - centered for balanced appearance */}
+          <nav className="hidden md:flex items-center justify-center gap-4">
             <TooltipProvider>
               {navItems.map((item) => {
                 // Disabled module rendering
