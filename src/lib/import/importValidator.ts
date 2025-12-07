@@ -25,6 +25,9 @@ export interface RowValidationResult {
   errors: ValidationError[];
 }
 
+// CRITICAL: Only mapped fields should be imported - unmapped fields are completely ignored
+const SKIP_MAPPING_VALUE = ''; // Empty string means "Don't map this field"
+
 export function validateRow(
   row: Record<string, string>,
   rowIndex: number,
@@ -35,30 +38,66 @@ export function validateRow(
   const errors: ValidationError[] = [];
   const data: Record<string, unknown> = {};
   
-  // Check required fields
+  // Build a reverse mapping: dbColumn -> csvColumn (ONLY for explicitly mapped fields)
+  const activeMappings = new Map<string, string>();
+  for (const [csvColumn, dbKey] of fieldMappings.entries()) {
+    // Skip unmapped fields (empty string or special marker)
+    if (!dbKey || dbKey === SKIP_MAPPING_VALUE || dbKey === 'skip' || dbKey === '__skip__') {
+      continue;
+    }
+    activeMappings.set(dbKey, csvColumn);
+  }
+  
+  // First: Check that all REQUIRED fields are mapped
   for (const field of moduleConfig.fields) {
-    const csvColumn = Array.from(fieldMappings.entries())
-      .find(([_, dbCol]) => dbCol === field.key)?.[0];
-    
-    const rawValue = csvColumn ? row[csvColumn]?.trim() : undefined;
-    
-    if (field.required && (!rawValue || rawValue === '')) {
-      errors.push({
-        row: rowIndex + 1,
-        field: field.label,
-        message: `Required field "${field.label}" is missing`,
-        severity: 'error',
-      });
+    if (field.required) {
+      const csvColumn = activeMappings.get(field.key);
+      const rawValue = csvColumn ? row[csvColumn]?.trim() : undefined;
+      
+      if (!csvColumn) {
+        // Required field is not mapped at all
+        errors.push({
+          row: rowIndex + 1,
+          field: field.label,
+          message: `Required field "${field.label}" is not mapped`,
+          severity: 'error',
+        });
+      } else if (!rawValue || rawValue === '') {
+        // Required field is mapped but has no value
+        errors.push({
+          row: rowIndex + 1,
+          field: field.label,
+          message: `Required field "${field.label}" is empty`,
+          severity: 'error',
+        });
+      }
+    }
+  }
+  
+  // Second: Process ONLY fields that are explicitly mapped
+  for (const [csvColumn, dbKey] of fieldMappings.entries()) {
+    // Skip unmapped fields
+    if (!dbKey || dbKey === SKIP_MAPPING_VALUE || dbKey === 'skip' || dbKey === '__skip__') {
       continue;
     }
     
+    // Find the field config for this mapping
+    const field = moduleConfig.fields.find(f => f.key === dbKey);
+    if (!field) {
+      // Unknown field key - skip (shouldn't happen with proper UI)
+      continue;
+    }
+    
+    const rawValue = row[csvColumn]?.trim();
+    
+    // If value is empty, skip it entirely (don't write null or default)
     if (!rawValue || rawValue === '') {
-      data[field.dbColumn] = field.defaultValue ?? null;
       continue;
     }
     
-    // Type validation
+    // Type validation and conversion
     let parsedValue: unknown = rawValue;
+    let hasError = false;
     
     switch (field.type) {
       case 'number':
@@ -70,6 +109,7 @@ export function validateRow(
             message: `"${rawValue}" is not a valid number`,
             severity: 'error',
           });
+          hasError = true;
         } else {
           parsedValue = num;
         }
@@ -98,6 +138,7 @@ export function validateRow(
             message: `"${rawValue}" is not a valid date (expected: ${dateFormat})`,
             severity: 'error',
           });
+          hasError = true;
         } else {
           parsedValue = parsed.toISOString().split('T')[0];
         }
@@ -135,11 +176,15 @@ export function validateRow(
             message: `"${rawValue}" is not a valid boolean (yes/no, true/false)`,
             severity: 'error',
           });
+          hasError = true;
         }
         break;
     }
     
-    data[field.dbColumn] = parsedValue;
+    // Only write to data if no error occurred
+    if (!hasError) {
+      data[field.dbColumn] = parsedValue;
+    }
   }
   
   return {
