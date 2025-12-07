@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Filter, ArrowUpDown, ThumbsUp, Smile, MoreHorizontal } from 'lucide-react';
+import { Filter, ArrowUpDown } from 'lucide-react';
 import type { Incident } from '@/types/release';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 interface IncidentActivitySectionProps {
@@ -140,9 +139,7 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
 
       {/* Comment Composer */}
       <div className="flex gap-3 mb-5">
-        <Avatar className="w-8 h-8 shrink-0">
-          <AvatarFallback className="bg-[#C69C6D] text-white text-xs font-medium">V</AvatarFallback>
-        </Avatar>
+        <div className="w-8 h-8 shrink-0 rounded-full bg-[#C69C6D] text-white text-xs font-medium flex items-center justify-center">V</div>
         <div className="flex-1">
           {!isComposerExpanded ? (
             <div 
@@ -213,11 +210,9 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
             key={activity.id}
             className="flex gap-3 py-4 border-t border-[#DFE1E6] first:border-t-0"
           >
-            <Avatar className="w-8 h-8 shrink-0">
-              <AvatarFallback className={cn("text-white text-xs font-medium", getAvatarColor(activity.author.initials))}>
-                {activity.author.initials}
-              </AvatarFallback>
-            </Avatar>
+            <div className={cn("w-8 h-8 shrink-0 rounded-full text-white text-xs font-medium flex items-center justify-center", getAvatarColor(activity.author.initials))}>
+              {activity.author.initials}
+            </div>
             <div className="flex-1">
               {/* Header */}
               <div className="flex flex-wrap items-baseline gap-1.5 mb-1">
@@ -257,20 +252,16 @@ export function IncidentActivitySection({ incident }: IncidentActivitySectionPro
               {activity.changeType === 'assignee' && activity.oldUser && activity.newUser && (
                 <div className="flex items-center gap-2 mt-2">
                   <div className="flex items-center gap-1.5">
-                    <Avatar className="w-5 h-5">
-                      <AvatarFallback className={cn("text-white text-[8px] font-medium", getAvatarColor(activity.oldUser.initials))}>
-                        {activity.oldUser.initials}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className={cn("w-5 h-5 rounded-full text-white text-[8px] font-medium flex items-center justify-center", getAvatarColor(activity.oldUser.initials))}>
+                      {activity.oldUser.initials}
+                    </div>
                     <span className="text-sm text-[#172B4D]">{activity.oldUser.name}</span>
                   </div>
                   <span className="text-[#A5ADBA]">→</span>
                   <div className="flex items-center gap-1.5">
-                    <Avatar className="w-5 h-5">
-                      <AvatarFallback className={cn("text-white text-[8px] font-medium", getAvatarColor(activity.newUser.initials))}>
-                        {activity.newUser.initials}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className={cn("w-5 h-5 rounded-full text-white text-[8px] font-medium flex items-center justify-center", getAvatarColor(activity.newUser.initials))}>
+                      {activity.newUser.initials}
+                    </div>
                     <span className="text-sm text-[#172B4D]">{activity.newUser.name}</span>
                   </div>
                 </div>
