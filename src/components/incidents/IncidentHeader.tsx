@@ -70,20 +70,20 @@ export function IncidentHeader({
         </div>
       )}
 
-      {/* Incident Title */}
-      <div className="px-6 py-4">
-        <div className="flex items-center gap-3 mb-3">
-          <Badge className="bg-brand-gold/10 text-brand-gold border-0 font-semibold">
+      {/* Incident Title - Fixed height for alignment */}
+      <div className="h-[72px] px-6 flex flex-col justify-center">
+        <div className="flex items-center gap-3 mb-1">
+          <Badge className="bg-brand-gold/10 text-brand-gold border-0 font-semibold text-xs">
             {incident.id}
           </Badge>
-          <Badge className={cn(getSeverityColor(incident.severity || 'SEV3'), 'text-white border-0 font-semibold')}>
+          <Badge className={cn(getSeverityColor(incident.severity || 'SEV3'), 'text-white border-0 font-semibold text-xs')}>
             {incident.severity || 'SEV3'}
           </Badge>
-          <Badge className={cn(statusColors.bg, statusColors.text, 'border-0 font-medium capitalize')}>
+          <Badge className={cn(statusColors.bg, statusColors.text, 'border-0 font-medium capitalize text-xs')}>
             {incident.status.replace('-', ' ')}
           </Badge>
           {incident.isMajorIncident && (
-            <Badge className="bg-red-500 text-white border-0 font-semibold">
+            <Badge className="bg-red-500 text-white border-0 font-semibold text-xs">
               🚨 Major Incident
             </Badge>
           )}
@@ -93,11 +93,11 @@ export function IncidentHeader({
           <Input
             value={editedSummary}
             onChange={(e) => onSummaryChange(e.target.value)}
-            className="text-xl font-semibold h-auto py-2 border-brand-gold focus:ring-brand-gold"
+            className="text-lg font-semibold h-8 py-1 border-brand-gold focus:ring-brand-gold"
             placeholder="Incident summary..."
           />
         ) : (
-          <h1 className="text-[22px] font-semibold text-foreground">{incident.summary}</h1>
+          <h1 className="text-lg font-semibold text-foreground truncate">{incident.summary}</h1>
         )}
       </div>
     </div>
