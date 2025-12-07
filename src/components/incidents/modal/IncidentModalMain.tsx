@@ -1,16 +1,8 @@
 import { useState, useRef } from 'react';
 import { Plus, MoreHorizontal, Download, Trash2, ChevronDown } from 'lucide-react';
-import type { Incident } from '@/types/release';
+import type { Incident, Attachment } from '@/types/release';
 import { IncidentActivitySection } from './IncidentActivitySection';
 import { toast } from 'sonner';
-
-interface AttachmentItem {
-  id: string;
-  name: string;
-  size: string;
-  uploadedBy: string;
-  uploadedAt: string;
-}
 
 interface IncidentModalMainProps {
   incident: Incident;
@@ -24,7 +16,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
 
   const handleFileUpload = (files: FileList | null) => {
     if (!files) return;
-    const newAttachments: AttachmentItem[] = Array.from(files).map((file, i) => ({
+    const newAttachments: Attachment[] = Array.from(files).map((file, i) => ({
       id: `att-${Date.now()}-${i}`,
       name: file.name,
       size: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
