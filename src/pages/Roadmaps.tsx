@@ -304,25 +304,27 @@ export default function Roadmaps() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <div className="h-[72px] border-b bg-card px-3 sm:px-4 md:px-6 flex items-center">
-          <div className="flex items-center justify-between w-full gap-3">
-            <div className="flex items-center gap-2 min-w-0">
-              <Star className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
-              <h1 className="text-lg sm:text-xl font-semibold truncate">Live Roadmap</h1>
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
-                <Settings className="h-4 w-4 mr-2" />
-                View Configuration
-              </Button>
-              <Button variant="ghost" size="sm">
-                <Filter className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Filter</span>
-              </Button>
-              <Button size="sm">
-                <Download className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Export</span>
-              </Button>
+        <div className="h-[72px] border-b bg-card flex-shrink-0">
+          <div className="h-full px-3 sm:px-4 md:px-6 flex items-center">
+            <div className="flex items-center justify-between w-full gap-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <Star className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+                <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Live Roadmap</h1>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
+                  <Settings className="h-4 w-4 mr-2" />
+                  View Configuration
+                </Button>
+                <Button variant="ghost" size="sm">
+                  <Filter className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Filter</span>
+                </Button>
+                <Button size="sm">
+                  <Download className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Export</span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>

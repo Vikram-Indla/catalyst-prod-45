@@ -22,10 +22,10 @@ export default function ProgressBars() {
   return (
     <AdminGuard>
       <div className="h-full w-full flex flex-col bg-background">
-        <div className="h-[72px] border-b bg-card px-6 flex items-center">
-          <div className="flex items-center justify-between w-full">
+        <div className="h-[72px] border-b bg-card flex-shrink-0">
+          <div className="h-full px-6 flex items-center justify-between">
             <div className="min-w-0">
-              <h1 className="text-2xl font-semibold text-foreground truncate">Progress Bars Configuration</h1>
+              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Progress Bars Configuration</h1>
               <p className="text-sm text-muted-foreground truncate">
                 Set progress alert thresholds for Late and Warning indicators
               </p>

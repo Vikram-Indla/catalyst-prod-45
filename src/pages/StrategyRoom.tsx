@@ -74,10 +74,10 @@ export default function StrategyRoom() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="h-[72px] border-b bg-card px-6 flex items-center">
-        <div className="flex items-center justify-between w-full">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold truncate">Strategy Room</h1>
+      <div className="h-[72px] border-b bg-card flex-shrink-0">
+        <div className="h-full px-6 flex items-center justify-between">
+          <div className="min-w-0 flex flex-col justify-center">
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Strategy Room</h1>
             <p className="text-sm text-muted-foreground truncate">Objectives and Key Results</p>
           </div>
           <PermissionGuard requiredRole="program_manager" showMessage={false}>

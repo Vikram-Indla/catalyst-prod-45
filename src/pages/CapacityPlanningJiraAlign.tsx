@@ -392,8 +392,8 @@ export default function CapacityPlanningJiraAlign() {
                 <Settings className="h-4 w-4 mr-2" />
                 Defaults
               </Button>
-            </div>
-          </div>
+        </div>
+      </div>
         </div>
 
         {/* Page Filters - SOURCE: docs section "Personalize your view with page filters" */}

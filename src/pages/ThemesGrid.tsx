@@ -181,8 +181,8 @@ export default function ThemesGrid() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
         </div>
+      </div>
       </div>
 
       {/* Table */}

@@ -693,10 +693,12 @@ export default function IndustryPage() {
     <TooltipProvider>
       <div className="h-full flex flex-col bg-background">
         {/* Header - fixed height 72px to align with sidebar */}
-        <div className="h-[72px] border-b border-border bg-card px-4 sm:px-6 flex items-center">
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Demand Intake</h1>
-            <p className="text-sm text-muted-foreground">Industry-specific demand requests</p>
+        <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
+          <div className="h-full px-4 sm:px-6 flex items-center">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Demand Intake</h1>
+              <p className="text-sm text-muted-foreground truncate">Industry-specific demand requests</p>
+            </div>
           </div>
         </div>
 

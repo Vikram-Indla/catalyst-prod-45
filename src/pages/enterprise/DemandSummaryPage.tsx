@@ -332,12 +332,13 @@ export default function DemandSummaryPage() {
   return (
     <div className={cn("min-h-screen bg-background", isArabic && "rtl")} style={{ fontFamily: "'Inter', sans-serif" }} dir={isArabic ? 'rtl' : 'ltr'}>
       {/* Header */}
-      <header className="h-[72px] bg-card border-b border-border px-4 sm:px-6 sticky top-0 z-50 flex items-center">
-        <div className="max-w-[1400px] mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-4 w-full">
-          <div className="min-w-0">
-            <p className="text-xs text-brand-gold font-medium truncate">{isArabic ? 'Good Morning' : 'صباح الخير'}</p>
-            <h1 className="text-lg sm:text-xl font-bold text-foreground truncate">{t.greeting}, <span className="text-brand-gold">{userName}</span></h1>
-          </div>
+      <header className="h-[72px] bg-card border-b border-border sticky top-0 z-50 flex-shrink-0">
+        <div className="h-full px-4 sm:px-6 flex items-center">
+          <div className="max-w-[1400px] mx-auto flex justify-between items-center flex-wrap gap-3 sm:gap-4 w-full">
+            <div className="min-w-0">
+              <p className="text-xs text-brand-gold font-medium truncate">{isArabic ? 'Good Morning' : 'صباح الخير'}</p>
+              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">{t.greeting}, <span className="text-brand-gold">{userName}</span></h1>
+            </div>
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
             <button 
               onClick={() => setIsArabic(!isArabic)}
@@ -351,6 +352,7 @@ export default function DemandSummaryPage() {
                 <button key={p.key} onClick={() => setActivePeriod(p.key)} className={cn('px-2 sm:px-3 py-1.5 rounded-md text-xs font-medium transition-all', activePeriod === p.key ? 'bg-brand-dark text-white' : 'text-muted-foreground hover:bg-border')}>{p.label}</button>
               ))}
             </div>
+          </div>
           </div>
         </div>
       </header>
