@@ -169,7 +169,7 @@ export default function ProgramBoard() {
     <div className="px-[var(--s4)] sm:px-[var(--s6)] lg:px-[var(--s8)] py-[var(--s4)] sm:py-[var(--s6)] space-y-[var(--s4)] sm:space-y-[var(--s6)]">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-[var(--s3)] sm:gap-[var(--s4)]">
         <div className="min-w-0">
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">Program Board</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold truncate">Project Board</h1>
           <p className="text-xs sm:text-sm text-muted-foreground mt-1">Plan features across iterations</p>
         </div>
         <div className="flex items-center gap-[var(--s2)] sm:gap-[var(--s4)] flex-shrink-0">

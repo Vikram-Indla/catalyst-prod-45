@@ -97,7 +97,7 @@ export function MobileNavigationMenu() {
               </CollapsibleContent>
             </Collapsible>
 
-            {/* Program */}
+            {/* Project */}
             <Collapsible
               open={activeSection === 'program'}
               onOpenChange={() => toggleSection('program')}
@@ -107,7 +107,7 @@ export function MobileNavigationMenu() {
                   variant="ghost"
                   className="w-full justify-between px-6 py-3 text-base font-medium"
                 >
-                  Program
+                  Project
                   <ChevronRight
                     className={`h-4 w-4 transition-transform ${
                       activeSection === 'program' ? 'rotate-90' : ''

@@ -52,7 +52,7 @@ export function ProgramSelectorDropdown({ onClose }: ProgramSelectorDropdownProp
       room_type: 'program',
       room_id: program.id,
       room_name: program.name,
-      room_subtitle: program.portfolios?.name || 'Program',
+      room_subtitle: program.portfolios?.name || 'Project',
       room_path: `/programs/${program.id}/room`,
       pi_label: null,
     });
@@ -61,11 +61,11 @@ export function ProgramSelectorDropdown({ onClose }: ProgramSelectorDropdownProp
   return (
     <div className="w-80 bg-popover border rounded-md shadow-lg">
       <div className="p-3 border-b">
-        <p className="text-xs font-semibold text-muted-foreground mb-2">PROGRAMS</p>
+        <p className="text-xs font-semibold text-muted-foreground mb-2">PROJECTS</p>
         <div className="relative">
           <Input
             type="text"
-            placeholder="Search programs..."
+            placeholder="Search projects..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pr-8 h-9"
@@ -82,8 +82,8 @@ export function ProgramSelectorDropdown({ onClose }: ProgramSelectorDropdownProp
               <Skeleton className="h-9 w-full" />
             </div>
           ) : filtered.length === 0 ? (
-            <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-              {search ? 'No programs found' : 'No programs available'}
+          <div className="px-3 py-8 text-center text-sm text-muted-foreground">
+              {search ? 'No projects found' : 'No projects available'}
             </div>
           ) : (
             filtered.map((program) => {
@@ -107,7 +107,7 @@ export function ProgramSelectorDropdown({ onClose }: ProgramSelectorDropdownProp
                     <button
                       onClick={(e) => handleToggleStar(e, program)}
                       className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand-gold"
-                      aria-label={starred ? "Unstar program" : "Star program"}
+                      aria-label={starred ? "Unstar project" : "Star project"}
                     >
                       <Star
                         className={`h-4 w-4 ${

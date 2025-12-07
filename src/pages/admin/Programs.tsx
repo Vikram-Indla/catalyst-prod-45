@@ -28,12 +28,12 @@ export default function Programs() {
     <AdminGuard>
       <ResponsivePageContainer>
         <ResponsivePageHeader
-          title="Programs"
-          description="Configure program structure and portfolio associations"
+          title="Projects"
+          description="Configure project structure and portfolio associations"
           actions={
             <Button className="bg-brand-gold hover:bg-brand-gold-hover">
               <Plus className="h-4 w-4 mr-2" />
-              Add Program
+              Add Project
             </Button>
           }
         />
@@ -41,7 +41,7 @@ export default function Programs() {
         <ResponsiveGrid cols={3}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Programs</CardTitle>
+              <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{programs?.length || 0}</div>
@@ -49,7 +49,7 @@ export default function Programs() {
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Programs</CardTitle>
+              <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{programs?.length || 0}</div>
@@ -69,9 +69,9 @@ export default function Programs() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Program Configuration</CardTitle>
+            <CardTitle>Project Configuration</CardTitle>
             <CardDescription>
-              Manage programs, their teams, and portfolio associations
+              Manage projects, their teams, and portfolio associations
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -79,20 +79,20 @@ export default function Programs() {
               <div className="relative flex-1">
                 <Search className="absolute left-[var(--s3)] top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search programs..."
+                  placeholder="Search projects..."
                   className="pl-10"
                 />
               </div>
             </div>
 
             {isLoading ? (
-              <div className="text-center py-[var(--s8)] text-muted-foreground">Loading programs...</div>
+              <div className="text-center py-[var(--s8)] text-muted-foreground">Loading projects...</div>
             ) : (
               <ResponsiveTableWrapper minWidth={600}>
                 <table className="w-full">
                   <thead className="bg-muted/50">
                     <tr>
-                      <th className="text-left p-3 text-sm font-medium">Program Name</th>
+                      <th className="text-left p-3 text-sm font-medium">Project Name</th>
                       <th className="text-left p-3 text-sm font-medium">Portfolio</th>
                       <th className="text-left p-3 text-sm font-medium">Teams</th>
                       <th className="text-left p-3 text-sm font-medium">Status</th>

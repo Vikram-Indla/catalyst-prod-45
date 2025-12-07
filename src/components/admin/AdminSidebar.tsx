@@ -60,7 +60,7 @@ const adminSections = [
     title: 'Basic Structure',
     items: [
       { label: 'Teams', path: '/admin/teams', icon: Users },
-      { label: 'Programs', path: '/admin/programs', icon: FolderTree },
+      { label: 'Projects', path: '/admin/programs', icon: FolderTree },
       { label: 'Portfolios', path: '/admin/portfolios', icon: Building2 },
       { label: 'Cities', path: '/admin/cities', icon: Building2 },
       { label: 'Customers', path: '/admin/customers', icon: Users },

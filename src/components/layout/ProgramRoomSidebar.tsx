@@ -46,10 +46,10 @@ type MenuItem =
   | { id: string; label: string; icon: any; expandable: true; path?: never; badge?: never };
 
 const menuItems: MenuItem[] = [
-  { id: 'room', label: 'Program Room', icon: LayoutDashboard, path: '/programs/:programId/room' },
+  { id: 'room', label: 'Project Room', icon: LayoutDashboard, path: '/programs/:programId/room' },
   { id: 'features', label: 'Features', icon: Layers3, path: '/programs/:programId/features' },
   { id: 'backlog', label: 'Backlog', icon: Diamond, path: '/programs/:programId/backlog' },
-  { id: 'program-board', label: 'Program board', icon: GitBranch, path: '/programs/:programId/program-board' },
+  { id: 'program-board', label: 'Project board', icon: GitBranch, path: '/programs/:programId/program-board' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/programs/:programId/roadmaps' },
   { id: 'objective-tree', label: 'Objective tree (OKR hub)', icon: Target, path: '/programs/:programId/objective-tree' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/programs/:programId/work-tree' },
@@ -57,7 +57,7 @@ const menuItems: MenuItem[] = [
   { id: 'tests', label: 'Tests', icon: FlaskConical, path: '/programs/:programId/tests' },
   { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/programs/:programId/forecast' },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/programs/:programId/capacity', badge: 'NEW' },
-  { id: 'increments', label: 'Program Increments', icon: Calendar, path: '/programs/:programId/increments' },
+  { id: 'increments', label: 'Project Increments', icon: Calendar, path: '/programs/:programId/increments' },
   { id: 'more-items', label: 'More items', icon: Menu, expandable: true },
   { id: 'reports', label: 'Reports', icon: FileText, expandable: true },
   { id: 'more-pages', label: 'More pages', icon: Menu, expandable: true },
@@ -91,7 +91,7 @@ export function ProgramRoomSidebar({
 
   const reportsSubMenu = [
     { id: 'feature-status', label: 'Feature status report', path: '/programs/:programId/reports/feature-status' },
-    { id: 'program-board-history', label: 'Program board history', path: '/programs/:programId/reports/board-history' },
+    { id: 'program-board-history', label: 'Project board history', path: '/programs/:programId/reports/board-history' },
     { id: 'work-tree', label: 'Work tree', path: '/programs/:programId/reports/work-tree' },
     { id: 'pi-objectives', label: 'PI objectives report', path: '/programs/:programId/reports/pi-objectives' },
     { id: 'work-spend-grid', label: 'Work spend grid', path: '/work-spend-grid' },
@@ -170,9 +170,9 @@ export function ProgramRoomSidebar({
                   </div>
                   <div className="flex-1 text-left min-w-0">
                     <div className="text-sm font-medium text-foreground truncate">
-                      {program?.name || 'Program'}
+                      {program?.name || 'Project'}
                     </div>
-                    <div className="text-xs text-muted-foreground">Program</div>
+                    <div className="text-xs text-muted-foreground">Project</div>
                   </div>
                 </div>
               </div>
@@ -180,7 +180,7 @@ export function ProgramRoomSidebar({
               {/* Program Increment Filter */}
               <div>
                 <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
-                  PROGRAM INCREMENT
+                  PROJECT INCREMENT
                 </label>
                 <Select value={selectedPI || undefined} onValueChange={onPIChange}>
                   <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
@@ -301,10 +301,10 @@ export function ProgramRoomSidebar({
           <div className="border-t">
             <button 
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
-              onClick={() => toast.info('Program Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
+              onClick={() => toast.info('Project Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
             >
               <Lock className="h-5 w-5 text-muted-foreground" />
-              <span className="text-left">Program Settings</span>
+              <span className="text-left">Project Settings</span>
             </button>
           </div>
         )}

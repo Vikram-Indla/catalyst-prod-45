@@ -51,7 +51,7 @@ export default function OrgSetup() {
     <div className="p-3 sm:p-4 md:p-6 lg:p-8 space-y-4 sm:space-y-6">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold">Organization Setup</h1>
-        <p className="text-sm sm:text-base text-muted-foreground">Configure portfolios, programs, and teams</p>
+        <p className="text-sm sm:text-base text-muted-foreground">Configure portfolios, projects, and teams</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -73,7 +73,7 @@ export default function OrgSetup() {
               <Layers className="h-10 w-10 text-primary" />
               <div>
                 <div className="text-3xl font-bold">{programs?.length || 0}</div>
-                <div className="text-sm text-muted-foreground">Programs</div>
+                <div className="text-sm text-muted-foreground">Projects</div>
               </div>
             </div>
           </CardContent>
@@ -112,7 +112,7 @@ export default function OrgSetup() {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Programs</TableHead>
+                <TableHead>Projects</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -150,12 +150,12 @@ export default function OrgSetup() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Programs</CardTitle>
-              <CardDescription>ARTs and program-level organization</CardDescription>
+              <CardTitle>Projects</CardTitle>
+              <CardDescription>ARTs and project-level organization</CardDescription>
             </div>
             <Button onClick={() => setProgramDialogOpen(true)} size="sm">
               <Plus className="h-4 w-4 mr-2" />
-              Add Program
+              Add Project
             </Button>
           </div>
         </CardHeader>
@@ -221,7 +221,7 @@ export default function OrgSetup() {
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
-                <TableHead>Program</TableHead>
+                <TableHead>Project</TableHead>
                 <TableHead>Velocity Baseline</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Actions</TableHead>

@@ -73,7 +73,7 @@ export default function ProgramRoom() {
       <div className="h-[72px] border-b bg-card px-3 sm:px-6 flex items-center flex-shrink-0">
         <div className="flex items-center justify-between w-full gap-3">
           <div className="min-w-0">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">Program Room</h1>
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold truncate">Project Room</h1>
             <p className="text-xs sm:text-sm text-muted-foreground truncate">
               For {program?.name}
               {program?.portfolios && ` · ${program.portfolios.name}`}
@@ -172,7 +172,7 @@ export default function ProgramRoom() {
                     );
                   })}
                 </div>
-                <Button variant="link" className="mt-4">View Program Board</Button>
+                <Button variant="link" className="mt-4">View Project Board</Button>
               </CardContent>
               </Card>
             </div>
