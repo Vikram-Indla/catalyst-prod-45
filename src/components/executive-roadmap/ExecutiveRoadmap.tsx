@@ -1160,12 +1160,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         }}
                         onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
                       >
-                        {/* Continuation indicator - Left arrow only */}
-                        {barPos.continuesLeft && (
-                          <div className="absolute -left-5 top-1/2 -translate-y-1/2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                            <ChevronLeft className="w-4 h-4" />
-                          </div>
-                        )}
 
                         {/* The Bar - Single unified bar with dates and status */}
                         <div 
@@ -1240,12 +1234,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           })}
                         </div>
 
-                        {/* Continuation indicator - Right arrow only */}
-                        {barPos.continuesRight && (
-                          <div className="absolute -right-5 top-1/2 -translate-y-1/2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                            <ChevronRight className="w-4 h-4" />
-                          </div>
-                        )}
                       </div>
                     );
                   })()}
