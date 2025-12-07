@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
 import incidentsData from '@/data/incidents.json';
 import type { Incident } from '@/types/release';
 import { IncidentsFiltersDialog, IncidentFilters } from '@/components/release/IncidentsFiltersDialog';
-import { IncidentDetailModal } from '@/components/incidents/modal';
+import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
 
 // Cast and enhance incidents data
 const rawIncidents = incidentsData.incidents as any[];
