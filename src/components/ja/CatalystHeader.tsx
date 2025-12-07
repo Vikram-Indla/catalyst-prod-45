@@ -15,7 +15,7 @@ import { NotificationsPanel } from "./NotificationsPanel";
 import { PersonasPopover } from "./PersonasPopover";
 import { PortfolioSelectorDropdown } from "./PortfolioSelectorDropdown";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
-import { TeamSelectorDropdown } from "./TeamSelectorDropdown";
+
 import { StarredDropdown } from "./StarredDropdown";
 import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
 import { MobileNavigationMenu } from "./MobileNavigationMenu";
@@ -92,7 +92,6 @@ export function CatalystHeader() {
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT" },
     { label: "Portfolio", hasDropdown: true, moduleCode: "PORTFOLIO" },
     { label: "Program", hasDropdown: true, moduleCode: "PROGRAM" },
-    { label: "Team", hasDropdown: true, path: "/teams", moduleCode: "TEAMS" },
     { label: "Release", hasDropdown: true, path: "/release", moduleCode: null }, // Always visible
   ];
 
@@ -203,21 +202,6 @@ export function CatalystHeader() {
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
                           <ProgramSelectorDropdown onClose={() => setActiveDropdown(null)} />
-                        </PopoverContent>
-                      </Popover>
-                    ) : item.label === "Team" && item.path ? (
-                      <Popover
-                        open={activeDropdown === item.label}
-                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button variant="ghost" className={navButtonClass}>
-                            {item.label}
-                            <ChevronDown className="h-3 w-3 block" />
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                          <TeamSelectorDropdown onClose={() => setActiveDropdown(null)} />
                         </PopoverContent>
                       </Popover>
                     ) : item.label === "Release" ? (
