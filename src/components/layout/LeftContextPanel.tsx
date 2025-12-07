@@ -469,8 +469,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
             <button 
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
               onClick={() => {
-                setExpanded(false); // Collapse sidebar when navigating to settings
-                navigate('/admin/enterprise-settings');
+                setExpanded(false);
+                navigate('/admin/org-setup');
               }}
             >
               <Settings className="h-5 w-5 text-muted-foreground" />
