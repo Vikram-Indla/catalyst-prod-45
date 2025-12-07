@@ -105,11 +105,7 @@ export function IncidentModalMain({ incident, onFieldChange }: IncidentModalMain
         <div 
           contentEditable
           suppressContentEditableWarning
-          className={`text-sm text-[#172B4D] leading-5 p-4 border rounded-lg min-h-[120px] cursor-text transition-all ${
-            isDescFocused 
-              ? 'border-[#C69C6D] shadow-[0_0_0_1px_#C69C6D] bg-white' 
-              : 'border-[#DFE1E6] hover:border-[#A5ADBA] bg-white'
-          }`}
+          className="text-sm text-[#172B4D] leading-5 p-4 border border-brand-gold rounded-xl min-h-[120px] cursor-text transition-all bg-white"
           onFocus={() => setIsDescFocused(true)}
           onBlur={(e) => {
             setIsDescFocused(false);
