@@ -47,8 +47,8 @@
   --secondary: 214 15% 96%;                   /* #F3F4F6 */
   --secondary-foreground: 217 19% 16%;        /* #111827 */
   
-  /* Muted - subtle gray for less prominent elements */
-  --muted: 214 15% 96%;                       /* #F3F4F6 */
+  /* Muted - now white to avoid grey backgrounds globally */
+  --muted: 0 0% 100%;                         /* #FFFFFF */
   --muted-foreground: 217 11% 46%;            /* #6B7280 */
   
   /* Accent - for hover states */
