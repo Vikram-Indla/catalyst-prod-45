@@ -14,9 +14,7 @@ import type { Incident } from '@/types/release';
 import { IncidentsFiltersDialog, IncidentFilters } from '@/components/release/IncidentsFiltersDialog';
 
 // Lazy load the modal to prevent bundle timeout
-const IncidentDetailModal = lazy(() => 
-  import('@/components/incidents/modal/IncidentDetailModal').then(mod => ({ default: mod.IncidentDetailModal }))
-);
+const IncidentDetailModal = lazy(() => import('@/components/incidents/modal/IncidentDetailModal'));
 
 // Cast and enhance incidents data
 const rawIncidents = incidentsData.incidents as any[];

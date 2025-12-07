@@ -21,7 +21,7 @@ interface IncidentDetailModalProps {
   parentIncidentId?: string;
 }
 
-export function IncidentDetailModal({ incident, isOpen, onClose, parentIncidentId }: IncidentDetailModalProps) {
+export default function IncidentDetailModal({ incident, isOpen, onClose, parentIncidentId }: IncidentDetailModalProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [localIncident, setLocalIncident] = useState<Incident>(incident);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
