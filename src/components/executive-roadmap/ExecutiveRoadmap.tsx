@@ -1259,7 +1259,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 {timelineColumns.map((col, i) => (
                   <div 
                     key={i} 
-                    className="flex-1 px-2 text-center border-r flex flex-col justify-center"
+                    className={cn(
+                      "flex-1 px-2 text-center flex flex-col justify-center",
+                      i < timelineColumns.length - 1 && "border-r"
+                    )}
                     style={{ borderColor: 'hsl(var(--roadmap-driftwood))', minWidth: getColumnMinWidth(), backgroundColor: 'white' }}
                   >
                     <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{col.label}</div>
@@ -1290,7 +1293,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   {/* Vertical grid lines */}
                   <div className="absolute inset-0 flex pointer-events-none">
                     {timelineColumns.map((_, i) => (
-                      <div key={i} className="flex-1 border-r" style={{ borderColor: 'hsl(var(--roadmap-sandstone) / 0.4)', minWidth: getColumnMinWidth() }} />
+                      <div 
+                        key={i} 
+                        className={cn("flex-1", i < timelineColumns.length - 1 && "border-r")}
+                        style={{ borderColor: 'hsl(var(--roadmap-sandstone) / 0.4)', minWidth: getColumnMinWidth() }} 
+                      />
                     ))}
                   </div>
                   
@@ -1315,6 +1322,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     const displayStartDate = barPos.continuesLeft ? visibleRange.start : startDate;
                     const displayEndDate = barPos.continuesRight ? visibleRange.end : endDate;
 
+                    // Calculate if bar is narrow (less than ~120px effective width)
+                    const barWidthPercent = parseFloat(barPos.width);
+                    const isNarrowBar = barWidthPercent < 15; // Less than 15% of timeline width
+                    const isVeryNarrowBar = barWidthPercent < 8; // Very narrow, show minimal info
+
                     return (
                       <TooltipProvider delayDuration={200}>
                         <Tooltip>
@@ -1330,29 +1342,61 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                               }}
                               onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
                             >
-                              {/* Labels Row - Above the bar: Start Date | Status | End Date */}
+                              {/* Labels Row - Adaptive based on bar width */}
                               <div 
-                                className="flex justify-between items-center mb-1 px-1 relative"
+                                className={cn(
+                                  "mb-1 px-1 relative",
+                                  isVeryNarrowBar ? "flex justify-center" : "flex justify-between items-center"
+                                )}
                                 style={{ zIndex: 20 }}
                               >
-                                <span 
-                                  className="text-[10px] font-bold whitespace-nowrap"
-                                  style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                                >
-                                  {formatShortDate(displayStartDate)}
-                                </span>
-                                <span 
-                                  className="text-[10px] font-semibold whitespace-nowrap truncate px-2"
-                                  style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                                >
-                                  {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                                </span>
-                                <span 
-                                  className="text-[10px] font-bold whitespace-nowrap"
-                                  style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                                >
-                                  {formatShortDate(displayEndDate)}
-                                </span>
+                                {isVeryNarrowBar ? (
+                                  // Very narrow: show only combined date range
+                                  <span 
+                                    className="text-[9px] font-bold whitespace-nowrap"
+                                    style={{ color: 'hsl(var(--roadmap-charcoal))' }}
+                                  >
+                                    {formatShortDate(displayStartDate)}
+                                  </span>
+                                ) : isNarrowBar ? (
+                                  // Narrow: show only start and end dates, no status
+                                  <>
+                                    <span 
+                                      className="text-[10px] font-bold whitespace-nowrap"
+                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
+                                    >
+                                      {formatShortDate(displayStartDate)}
+                                    </span>
+                                    <span 
+                                      className="text-[10px] font-bold whitespace-nowrap"
+                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
+                                    >
+                                      {formatShortDate(displayEndDate)}
+                                    </span>
+                                  </>
+                                ) : (
+                                  // Normal width: show all three elements
+                                  <>
+                                    <span 
+                                      className="text-[10px] font-bold whitespace-nowrap"
+                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
+                                    >
+                                      {formatShortDate(displayStartDate)}
+                                    </span>
+                                    <span 
+                                      className="text-[10px] font-semibold whitespace-nowrap truncate px-2 max-w-[60px]"
+                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
+                                    >
+                                      {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
+                                    </span>
+                                    <span 
+                                      className="text-[10px] font-bold whitespace-nowrap"
+                                      style={{ color: 'hsl(var(--roadmap-charcoal))' }}
+                                    >
+                                      {formatShortDate(displayEndDate)}
+                                    </span>
+                                  </>
+                                )}
                               </div>
 
                               {/* The Bar - No text, just color - lower z-index */}
