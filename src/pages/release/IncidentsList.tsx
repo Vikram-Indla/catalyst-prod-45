@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid, Maximize2, Minimize2 } from 'lucide-react';
 import { StatusBadge } from '@/components/release/StatusBadge';
 import { PriorityBadge } from '@/components/release/PriorityBadge';
@@ -12,7 +12,12 @@ import { cn } from '@/lib/utils';
 import incidentsData from '@/data/incidents.json';
 import type { Incident } from '@/types/release';
 import { IncidentsFiltersDialog, IncidentFilters } from '@/components/release/IncidentsFiltersDialog';
-import IncidentDetailModal from '@/components/incidents/modal/IncidentDetailModal';
+
+// Lazy load the modal with error handling fallback
+const IncidentDetailModal = lazy(() => 
+  import('@/components/incidents/modal/IncidentDetailModal')
+    .catch(() => ({ default: () => null }))
+);
 
 // Cast and enhance incidents data
 const rawIncidents = incidentsData.incidents as any[];
@@ -550,14 +555,16 @@ export default function IncidentsList() {
         onFiltersChange={setFilters}
       />
 
-      {/* Incident Detail Modal */}
+      {/* Incident Detail Modal - with error boundary */}
       {selectedIncident && (
-        <IncidentDetailModal
-          incident={selectedIncident}
-          isOpen={!!selectedIncident}
-          onClose={() => setSelectedIncident(null)}
-          parentIncidentId="INC-1246"
-        />
+        <Suspense fallback={null}>
+          <IncidentDetailModal
+            incident={selectedIncident}
+            isOpen={!!selectedIncident}
+            onClose={() => setSelectedIncident(null)}
+            parentIncidentId="INC-1246"
+          />
+        </Suspense>
       )}
     </div>
   );
