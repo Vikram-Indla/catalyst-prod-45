@@ -1090,7 +1090,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   <div 
                     key={i} 
                     className="flex-1 px-2 text-center border-r flex flex-col justify-center"
-                    style={{ borderColor: 'hsl(var(--roadmap-driftwood))', minWidth: getColumnMinWidth() }}
+                    style={{ borderColor: 'hsl(var(--roadmap-driftwood))', minWidth: getColumnMinWidth(), backgroundColor: 'white' }}
                   >
                     <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{col.label}</div>
                     {col.subLabel && <div className="text-[10px] mt-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>{col.subLabel}</div>}
