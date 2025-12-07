@@ -71,12 +71,14 @@ export default function AdminDashboard() {
   return (
     <AdminGuard>
       <div className="h-full w-full flex flex-col bg-background overflow-hidden">
-        <div className="h-[72px] border-b bg-card px-3 sm:px-6 flex items-center">
-          <div className="min-w-0">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground truncate">Administration Dashboard</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground truncate">
-              Manage system configuration, users, and integrations
-            </p>
+        <div className="h-[72px] border-b bg-card flex-shrink-0">
+          <div className="h-full px-3 sm:px-6 flex items-center">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Administration Dashboard</h1>
+              <p className="text-sm text-muted-foreground truncate">
+                Manage system configuration, users, and integrations
+              </p>
+            </div>
           </div>
         </div>
 

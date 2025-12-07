@@ -127,10 +127,10 @@ export default function JiraIntegrationConfig() {
   return (
     <AdminGuard>
       <div className="h-full w-full flex flex-col bg-background overflow-hidden">
-        <div className="h-[72px] border-b bg-card px-6 flex items-center">
-          <div className="flex items-center justify-between w-full">
+        <div className="h-[72px] border-b bg-card flex-shrink-0">
+          <div className="h-full px-6 flex items-center justify-between">
             <div className="min-w-0">
-              <h1 className="text-2xl font-semibold text-foreground truncate">Jira Integration Configuration</h1>
+              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Jira Integration Configuration</h1>
               <p className="text-sm text-muted-foreground truncate">
                 Configure bidirectional synchronization between Catalyst and Jira
               </p>

@@ -87,8 +87,8 @@ export default function TeamsDirectory() {
               >
                 <List className="w-4 h-4" />
               </Button>
-            </div>
-          </div>
+        </div>
+      </div>
         </div>
       </div>
 

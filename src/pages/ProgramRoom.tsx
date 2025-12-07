@@ -95,8 +95,8 @@ export default function ProgramRoom() {
               <Skeleton className="h-40" />
               <Skeleton className="h-40" />
               <Skeleton className="h-40" />
-            </div>
-          </div>
+        </div>
+      </div>
         </div>
       ) : program ? (
         <div className="flex-1 overflow-auto">

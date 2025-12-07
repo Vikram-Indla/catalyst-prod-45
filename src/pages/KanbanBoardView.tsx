@@ -76,8 +76,8 @@ export default function KanbanBoardView() {
               {board.description && (
                 <p className="text-sm text-muted-foreground truncate">{board.description}</p>
               )}
-            </div>
-          </div>
+        </div>
+      </div>
 
           <div className="flex items-center gap-2">
             <Button
