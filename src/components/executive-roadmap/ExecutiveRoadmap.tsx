@@ -120,7 +120,7 @@ function getVisibleDateRange(selection: TimePeriodSelection, scale: TimeScale): 
 const MIN_FIRST_COLUMN_WIDTH = 280;
 const MAX_FIRST_COLUMN_WIDTH = 420;
 const DEFAULT_FIRST_COLUMN_WIDTH = 340;
-const ROW_HEIGHT = 64; // Increased for better visibility
+const ROW_HEIGHT = 76; // Increased for 3-line content without overlap
 const HEADER_HEIGHT = 52;
 
 const TRANSLATIONS = {
