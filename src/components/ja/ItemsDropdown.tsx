@@ -11,17 +11,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Circle, Square, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, AlertCircle, FileCheck, Calendar, Package, Flag, Briefcase } from "lucide-react";
+import { Circle, Square, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, Calendar, Package, AlertOctagon } from "lucide-react";
 
 // Module mapping for each item - null means always visible
 const workItems = [
   { label: "Themes", icon: Circle, color: "text-workitem-theme", path: "/themes", moduleCode: "PORTFOLIO" },
-  { label: "Business Request", icon: Briefcase, color: "text-brand-gold", path: "/industry", moduleCode: "PRODUCT" },
+  { label: "Business Request", icon: Square, color: "text-brand-gold", path: "/industry", moduleCode: "PRODUCT" },
   { label: "Epics", icon: Square, color: "text-workitem-epic", path: "/items/epics", moduleCode: "PORTFOLIO" },
   { label: "Features", icon: Box, color: "text-workitem-feature", path: "/features", moduleCode: "PROGRAM" },
   { label: "Stories", icon: FileText, color: "text-workitem-story", path: "/stories", moduleCode: "TEAMS" },
   { label: "Defects", icon: Bug, color: "text-workitem-defect", path: "/items/defects", moduleCode: "TEAMS" },
   { label: "Tasks", icon: CheckSquare, color: "text-workitem-subtask", path: "/items/tasks", moduleCode: "TEAMS" },
+  { label: "Incidents", icon: AlertOctagon, color: "text-destructive", path: "/release/incidents", moduleCode: "TEAMS" },
 ];
 
 const otherItems = [
@@ -29,11 +30,8 @@ const otherItems = [
   { label: "Dependencies", icon: GitBranch, color: "text-warning", path: "/dependencies", moduleCode: "PROGRAM" },
   { label: "Ideation", icon: Lightbulb, color: "text-warning-600", path: "/items/ideation", moduleCode: "PRODUCT" },
   { label: "Risks", icon: AlertTriangle, color: "text-destructive", path: "/enterprise/risks", moduleCode: "ENTERPRISE" },
-  { label: "Impediments", icon: AlertCircle, color: "text-warning", path: "/items/impediments", moduleCode: "TEAMS" },
-  { label: "Specifications", icon: FileCheck, color: "text-success", path: "/items/success-criteria", moduleCode: null },
   { label: "Sprints", icon: Calendar, color: "text-info", path: "/sprints", moduleCode: "PROGRAM" },
   { label: "Program Increments", icon: Package, color: "text-workitem-theme", path: "/pis", moduleCode: "PROGRAM" },
-  { label: "Release Vehicles (Fix Versions)", icon: Flag, color: "text-success-600", path: "/items/release-vehicles", moduleCode: "PROGRAM" },
 ];
 
 export function ItemsDropdown() {
