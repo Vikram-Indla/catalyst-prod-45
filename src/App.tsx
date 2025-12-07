@@ -193,6 +193,18 @@ import KnowledgeHubDocumentPage from "./pages/KnowledgeHubDocumentPage";
 import KnowledgeHubPage from "./pages/KnowledgeHubPage";
 import KnowledgeHubSpacePage from "./pages/KnowledgeHubSpacePage";
 
+// Release Management Module
+import {
+  IncidentsList,
+  IncidentDetail,
+  IncidentsDashboard,
+  VersionsList,
+  VersionDetail,
+  ReleaseCalendar,
+  ReleaseOverview,
+  ReleaseSettings
+} from "./pages/release";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -516,6 +528,17 @@ const App = () => (
               <Route path="/knowledge-hub/spaces/:spaceId" element={<KnowledgeHubSpacePage />} />
               <Route path="/knowledge-hub/documents/:documentId" element={<KnowledgeHubDocumentPage />} />
               
+              {/* Release Management Routes */}
+              <Route path="/release" element={<Navigate to="/release/incidents" replace />} />
+              <Route path="/release/overview" element={<ReleaseOverview />} />
+              <Route path="/release/incidents" element={<IncidentsList />} />
+              <Route path="/release/incidents/dashboard" element={<IncidentsDashboard />} />
+              <Route path="/release/incidents/:id" element={<IncidentDetail />} />
+              <Route path="/release/versions" element={<VersionsList />} />
+              <Route path="/release/versions/calendar" element={<ReleaseCalendar />} />
+              <Route path="/release/versions/:id" element={<VersionDetail />} />
+              <Route path="/release/calendar" element={<ReleaseCalendar />} />
+              <Route path="/release/settings" element={<ReleaseSettings />} />
               {/* Kanban Boards Routes - Program Scoped */}
               <Route path="/programs/:programId/kanban-boards" element={<KanbanBoardsPage />} />
               <Route path="/programs/:programId/kanban-boards/:boardId" element={<KanbanBoardView />} />
