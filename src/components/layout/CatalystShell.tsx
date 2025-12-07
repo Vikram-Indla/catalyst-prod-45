@@ -89,8 +89,8 @@ function CatalystShellContent() {
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on Tier and Route */}
       <div className="flex flex-1 overflow-hidden">
-          {/* No sidebar for Home route - sidebars only show for enabled modules */}
-          {location.pathname !== '/home' && (
+          {/* No sidebar for Home route or Admin routes - sidebars only show for enabled modules */}
+          {location.pathname !== '/home' && !location.pathname.startsWith('/admin') && (
             <>
               {isProductRoute && isModuleEnabled('PRODUCT') ? (
                 <ProductRoomSidebar
