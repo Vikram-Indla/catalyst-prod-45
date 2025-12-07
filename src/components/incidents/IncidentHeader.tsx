@@ -1,14 +1,7 @@
-import { Edit, MoreVertical, Save, X, Check, AlertTriangle } from 'lucide-react';
+import { Edit, Save, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import type { Incident } from '@/types/release';
 
@@ -79,7 +72,7 @@ export function IncidentHeader({
 
       {/* Incident Title */}
       <div className="px-6 py-4">
-        <div className="flex items-start gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-3">
           <Badge className="bg-brand-gold/10 text-brand-gold border-0 font-semibold">
             {incident.id}
           </Badge>
@@ -93,43 +86,6 @@ export function IncidentHeader({
             <Badge className="bg-red-500 text-white border-0 font-semibold">
               🚨 Major Incident
             </Badge>
-          )}
-          
-          <div className="flex-1" />
-          
-          {!isEditMode && (
-            <>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 border-border">
-                    <MoreVertical className="w-4 h-4 mr-1.5" />
-                    Actions
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 bg-card">
-                  <DropdownMenuItem>
-                    <Check className="w-4 h-4 mr-2" />
-                    Resolve Incident
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <AlertTriangle className="w-4 h-4 mr-2" />
-                    Escalate
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-600">
-                    Cancel Incident
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <Button 
-                size="sm" 
-                onClick={onToggleEditMode}
-                className="h-9 bg-brand-gold hover:bg-brand-gold-hover text-white"
-              >
-                <Edit className="w-4 h-4 mr-1.5" />
-                Edit
-              </Button>
-            </>
           )}
         </div>
         
