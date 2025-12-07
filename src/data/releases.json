@@ -1,0 +1,195 @@
+{
+  "versions": [
+    {
+      "id": "v2.6.0",
+      "name": "v2.6.0",
+      "description": "Q4 2025 Major Release - New dashboard features and performance improvements. Includes redesigned analytics module and API rate limiting.",
+      "status": "overdue",
+      "project": "Catalyst Core",
+      "startDate": "2025-11-01",
+      "releaseDate": "2025-12-01",
+      "progress": 35,
+      "stats": {
+        "done": 14,
+        "inProgress": 12,
+        "todo": 14,
+        "total": 40
+      },
+      "owner": {
+        "id": "user-1",
+        "name": "Fahad Al-Rashid",
+        "initials": "FA"
+      },
+      "pipeline": {
+        "dev": "complete",
+        "qa": "complete",
+        "staging": "current",
+        "uat": "pending",
+        "prod": "pending"
+      },
+      "linkedItems": [
+        { "type": "epic", "id": "EPIC-42", "summary": "Dashboard Redesign", "status": "in-progress", "assignee": "Fahad Al-Rashid" },
+        { "type": "story", "id": "STORY-1892", "summary": "Connection pooling optimization", "status": "done", "assignee": "Sara Al-Mutairi" },
+        { "type": "story", "id": "STORY-1893", "summary": "API rate limiting implementation", "status": "in-progress", "assignee": "Ahmed Al-Harbi" },
+        { "type": "task", "id": "TASK-2103", "summary": "Increase pool size to 150", "status": "todo", "assignee": "Nadia Al-Salem" },
+        { "type": "defect", "id": "DEF-445", "summary": "Memory leak in DB connector", "status": "done", "assignee": "Omar Al-Fahad" }
+      ],
+      "releaseNotes": "## What's New\n\n- Redesigned analytics dashboard\n- API rate limiting\n- Performance improvements\n\n## Bug Fixes\n\n- Fixed memory leak in database connector\n- Resolved connection pool issues"
+    },
+    {
+      "id": "v2.5.1",
+      "name": "v2.5.1",
+      "description": "Hotfix release for critical security patches and bug fixes identified in v2.5.0.",
+      "status": "unreleased",
+      "project": "Catalyst Core",
+      "startDate": "2025-12-01",
+      "releaseDate": "2025-12-15",
+      "progress": 78,
+      "stats": {
+        "done": 9,
+        "inProgress": 2,
+        "todo": 1,
+        "total": 12
+      },
+      "owner": {
+        "id": "user-2",
+        "name": "Sara Al-Mutairi",
+        "initials": "SA"
+      },
+      "pipeline": {
+        "dev": "complete",
+        "qa": "complete",
+        "staging": "complete",
+        "uat": "current",
+        "prod": "pending"
+      },
+      "linkedItems": [],
+      "releaseNotes": ""
+    },
+    {
+      "id": "api-v3.1.0",
+      "name": "API v3.1.0",
+      "description": "API versioning and new endpoints for reporting module. Includes breaking changes to authentication flow.",
+      "status": "unreleased",
+      "project": "API Platform",
+      "startDate": "2025-11-15",
+      "releaseDate": "2025-12-19",
+      "progress": 45,
+      "stats": {
+        "done": 10,
+        "inProgress": 8,
+        "todo": 5,
+        "total": 23
+      },
+      "owner": {
+        "id": "user-3",
+        "name": "Ahmed Al-Harbi",
+        "initials": "AH"
+      },
+      "pipeline": {
+        "dev": "complete",
+        "qa": "current",
+        "staging": "pending",
+        "uat": "pending",
+        "prod": "pending"
+      },
+      "linkedItems": [],
+      "releaseNotes": ""
+    },
+    {
+      "id": "v2.5.0",
+      "name": "v2.5.0",
+      "description": "Major release with new reporting module, improved search functionality, and UI enhancements.",
+      "status": "released",
+      "project": "Catalyst Core",
+      "startDate": "2025-10-01",
+      "releaseDate": "2025-11-28",
+      "progress": 100,
+      "stats": {
+        "done": 35,
+        "inProgress": 0,
+        "todo": 0,
+        "total": 35
+      },
+      "owner": {
+        "id": "user-1",
+        "name": "Fahad Al-Rashid",
+        "initials": "FA"
+      },
+      "pipeline": {
+        "dev": "complete",
+        "qa": "complete",
+        "staging": "complete",
+        "uat": "complete",
+        "prod": "complete"
+      },
+      "linkedItems": [],
+      "releaseNotes": "## What's New\n\n- New reporting module\n- Improved search with filters\n- UI enhancements\n\n## Bug Fixes\n\n- Fixed pagination issues\n- Resolved date formatting bugs"
+    },
+    {
+      "id": "v2.4.2",
+      "name": "v2.4.2",
+      "description": "Bug fixes and stability improvements based on user feedback from v2.4.0.",
+      "status": "released",
+      "project": "Catalyst Core",
+      "startDate": "2025-11-01",
+      "releaseDate": "2025-11-15",
+      "progress": 100,
+      "stats": {
+        "done": 8,
+        "inProgress": 0,
+        "todo": 0,
+        "total": 8
+      },
+      "owner": {
+        "id": "user-4",
+        "name": "Nadia Al-Salem",
+        "initials": "NA"
+      },
+      "pipeline": {
+        "dev": "complete",
+        "qa": "complete",
+        "staging": "complete",
+        "uat": "complete",
+        "prod": "complete"
+      },
+      "linkedItems": [],
+      "releaseNotes": "## Bug Fixes\n\n- Fixed file upload issues\n- Resolved session timeout problems\n- Fixed mobile layout bugs"
+    },
+    {
+      "id": "mobile-v1.2.0",
+      "name": "Mobile v1.2.0",
+      "description": "Mobile app update with push notification improvements and offline mode support.",
+      "status": "unreleased",
+      "project": "Mobile App",
+      "startDate": "2025-12-01",
+      "releaseDate": "2025-12-30",
+      "progress": 25,
+      "stats": {
+        "done": 5,
+        "inProgress": 10,
+        "todo": 5,
+        "total": 20
+      },
+      "owner": {
+        "id": "user-5",
+        "name": "Omar Al-Fahad",
+        "initials": "OF"
+      },
+      "pipeline": {
+        "dev": "current",
+        "qa": "pending",
+        "staging": "pending",
+        "uat": "pending",
+        "prod": "pending"
+      },
+      "linkedItems": [],
+      "releaseNotes": ""
+    }
+  ],
+  "projects": [
+    { "id": "catalyst-core", "name": "Catalyst Core" },
+    { "id": "api-platform", "name": "API Platform" },
+    { "id": "mobile-app", "name": "Mobile App" }
+  ]
+}
