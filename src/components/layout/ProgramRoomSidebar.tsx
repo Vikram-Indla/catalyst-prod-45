@@ -19,8 +19,10 @@ import {
   Link2,
   Calendar,
   FileText,
-  FlaskConical
+  FlaskConical,
+  Lock
 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Select,
   SelectContent,
@@ -299,12 +301,9 @@ export function ProgramRoomSidebar({
           <div className="border-t">
             <button 
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
-              onClick={() => {
-                onToggle(); // Collapse sidebar when navigating to settings
-                navigate('/admin/program-settings');
-              }}
+              onClick={() => toast.info('Program Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
             >
-              <Settings className="h-5 w-5 text-muted-foreground" />
+              <Lock className="h-5 w-5 text-muted-foreground" />
               <span className="text-left">Program Settings</span>
             </button>
           </div>

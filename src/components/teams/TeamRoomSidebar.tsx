@@ -15,8 +15,10 @@ import {
   TrendingUp,
   Menu,
   ChevronDown,
-  Network
+  Network,
+  Lock
 } from 'lucide-react';
+import { toast } from 'sonner';
 import {
   Select,
   SelectContent,
@@ -339,9 +341,12 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
         {/* Footer */}
         {expanded && (
           <div className="border-t">
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors">
-              <Settings className="h-5 w-5 text-muted-foreground" />
-              <span className="text-left">Teams settings</span>
+            <button 
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
+              onClick={() => toast.info('Team Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
+            >
+              <Lock className="h-5 w-5 text-muted-foreground" />
+              <span className="text-left">Team Settings</span>
             </button>
           </div>
         )}
