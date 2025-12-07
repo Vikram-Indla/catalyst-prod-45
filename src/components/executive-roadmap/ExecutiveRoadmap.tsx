@@ -26,7 +26,6 @@ import {
   ChevronLeft
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator, DropdownMenuLabel } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { RoadmapFiltersDialog, RoadmapFilters } from './RoadmapFiltersDialog';
@@ -41,45 +40,68 @@ type Language = 'en' | 'ar';
 type SortField = 'rank' | 'platform' | 'submission' | 'score' | 'target' | 'quarter' | 'owner';
 type SortOrder = 'asc' | 'desc';
 
-// Month names for selection
+// Constants
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const MONTH_NAMES_AR = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
+const QUARTER_NAMES = ['Q1', 'Q2', 'Q3', 'Q4'];
 
-// Generate available years for selection
 const currentYear = new Date().getFullYear();
+const currentMonth = new Date().getMonth();
+const currentQuarter = Math.floor(currentMonth / 3);
 const AVAILABLE_YEARS = [currentYear - 1, currentYear, currentYear + 1, currentYear + 2];
 
+// Time period selection - adapts based on view scale
 interface TimePeriodSelection {
   years: number[];
-  months: number[]; // 0-11
+  months: number[]; // 0-11 for monthly/weekly
+  quarters: number[]; // 0-3 for quarterly
 }
 
-// Helper to compute visible date range based on selection
-function getVisibleDateRange(selection: TimePeriodSelection): { start: Date; end: Date } {
-  if (selection.years.length === 0) {
-    return { start: new Date(currentYear, 0, 1), end: new Date(currentYear, 11, 31) };
-  }
-  
-  const sortedYears = [...selection.years].sort((a, b) => a - b);
-  const sortedMonths = selection.months.length > 0 
-    ? [...selection.months].sort((a, b) => a - b) 
-    : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+// Compute visible date range based on selection AND scale
+function getVisibleDateRange(selection: TimePeriodSelection, scale: TimeScale): { start: Date; end: Date } {
+  const sortedYears = selection.years.length > 0 
+    ? [...selection.years].sort((a, b) => a - b)
+    : [currentYear];
   
   const startYear = sortedYears[0];
   const endYear = sortedYears[sortedYears.length - 1];
+
+  if (scale === 'yearly') {
+    return {
+      start: new Date(startYear, 0, 1),
+      end: new Date(endYear, 11, 31)
+    };
+  }
+
+  if (scale === 'quarterly') {
+    const sortedQuarters = selection.quarters.length > 0
+      ? [...selection.quarters].sort((a, b) => a - b)
+      : [0, 1, 2, 3];
+    const startQ = sortedQuarters[0];
+    const endQ = sortedQuarters[sortedQuarters.length - 1];
+    return {
+      start: new Date(startYear, startQ * 3, 1),
+      end: new Date(endYear, endQ * 3 + 3, 0)
+    };
+  }
+
+  // Monthly or Weekly - use months
+  const sortedMonths = selection.months.length > 0
+    ? [...selection.months].sort((a, b) => a - b)
+    : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   const startMonth = sortedMonths[0];
   const endMonth = sortedMonths[sortedMonths.length - 1];
-  
+
   return {
     start: new Date(startYear, startMonth, 1),
-    end: new Date(endYear, endMonth + 1, 0) // Last day of end month
+    end: new Date(endYear, endMonth + 1, 0)
   };
 }
 
-const MIN_FIRST_COLUMN_WIDTH = 220;
+const MIN_FIRST_COLUMN_WIDTH = 240;
 const MAX_FIRST_COLUMN_WIDTH = 400;
-const DEFAULT_FIRST_COLUMN_WIDTH = 280;
-const ROW_HEIGHT = 56; // Fixed row height for consistency
+const DEFAULT_FIRST_COLUMN_WIDTH = 300;
+const ROW_HEIGHT = 52;
 
 const TRANSLATIONS = {
   en: {
@@ -102,12 +124,19 @@ const TRANSLATIONS = {
     quarterly: 'Quarterly',
     yearly: 'Yearly',
     viewScale: 'View Scale',
-    timePeriod: 'Time Period',
+    quickSelect: 'Quick Select',
     selectYears: 'Select Years',
     selectMonths: 'Select Months',
-    allMonths: 'All Months',
+    selectQuarters: 'Select Quarters',
+    allMonths: 'All',
+    allQuarters: 'All',
+    thisMonth: 'This Month',
+    nextMonth: 'Next Month',
+    thisQuarter: 'This Quarter',
+    nextQuarter: 'Next Quarter',
     thisYear: 'This Year',
     nextYear: 'Next Year',
+    bothYears: 'This & Next',
     continues: 'continues',
   },
   ar: {
@@ -130,32 +159,29 @@ const TRANSLATIONS = {
     quarterly: 'ربع سنوي',
     yearly: 'سنوي',
     viewScale: 'مقياس العرض',
-    timePeriod: 'الفترة الزمنية',
+    quickSelect: 'اختيار سريع',
     selectYears: 'اختر السنوات',
     selectMonths: 'اختر الأشهر',
-    allMonths: 'كل الأشهر',
+    selectQuarters: 'اختر الأرباع',
+    allMonths: 'الكل',
+    allQuarters: 'الكل',
+    thisMonth: 'هذا الشهر',
+    nextMonth: 'الشهر القادم',
+    thisQuarter: 'هذا الربع',
+    nextQuarter: 'الربع القادم',
     thisYear: 'هذه السنة',
     nextYear: 'السنة القادمة',
+    bothYears: 'هذه والقادمة',
     continues: 'يستمر',
   }
 };
 
-// Status colors using CSS variables
-const STATUS_COLORS: Record<RoadmapStatus, string> = {
-  'NEW': 'hsl(var(--roadmap-status-new))',
-  'ANALYSE': 'hsl(var(--roadmap-status-analyse))',
-  'APPROVED': 'hsl(var(--roadmap-status-approved))',
-  'IMPLEMENT': 'hsl(var(--roadmap-status-implement))',
-  'CLOSED': 'hsl(var(--roadmap-status-closed))',
-};
-
-// Status bar gradient colors
 const STATUS_BAR_GRADIENTS: Record<RoadmapStatus, string> = {
-  'NEW': 'linear-gradient(90deg, hsl(var(--roadmap-status-new)), hsl(var(--roadmap-status-new) / 0.7))',
-  'ANALYSE': 'linear-gradient(90deg, hsl(var(--roadmap-status-analyse)), hsl(var(--roadmap-status-analyse) / 0.7))',
-  'APPROVED': 'linear-gradient(90deg, hsl(var(--roadmap-status-approved)), hsl(var(--roadmap-status-approved) / 0.7))',
-  'IMPLEMENT': 'linear-gradient(90deg, hsl(var(--roadmap-status-implement)), hsl(var(--roadmap-status-implement) / 0.7))',
-  'CLOSED': 'linear-gradient(90deg, hsl(var(--roadmap-status-closed)), hsl(var(--roadmap-status-closed) / 0.7))',
+  'NEW': 'linear-gradient(90deg, hsl(var(--roadmap-status-new)), hsl(var(--roadmap-status-new) / 0.8))',
+  'ANALYSE': 'linear-gradient(90deg, hsl(var(--roadmap-status-analyse)), hsl(var(--roadmap-status-analyse) / 0.8))',
+  'APPROVED': 'linear-gradient(90deg, hsl(var(--roadmap-status-approved)), hsl(var(--roadmap-status-approved) / 0.8))',
+  'IMPLEMENT': 'linear-gradient(90deg, hsl(var(--roadmap-status-implement)), hsl(var(--roadmap-status-implement) / 0.8))',
+  'CLOSED': 'linear-gradient(90deg, hsl(var(--roadmap-status-closed)), hsl(var(--roadmap-status-closed) / 0.8))',
 };
 
 interface ExecutiveRoadmapProps {
@@ -168,7 +194,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [timeScale, setTimeScale] = useState<TimeScale>('monthly');
   const [timePeriodSelection, setTimePeriodSelection] = useState<TimePeriodSelection>({
     years: [currentYear],
-    months: [] // Empty = all months
+    months: [],
+    quarters: []
   });
   const [platform, setPlatform] = useState<string>('all');
   const [status, setStatus] = useState<string>('all');
@@ -177,7 +204,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const [sortOrder, setSortOrder] = useState<SortOrder>('asc');
   const [showMilestones, setShowMilestones] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [activeKPI, setActiveKPI] = useState<RoadmapStatus | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [selectedRow, setSelectedRow] = useState<string | null>(null);
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
@@ -198,12 +224,35 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const resizeStartWidth = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const timelineScrollRef = useRef<HTMLDivElement>(null);
+  const leftPanelRef = useRef<HTMLDivElement>(null);
 
   const t = TRANSLATIONS[language];
   const isRTL = language === 'ar';
 
   // Fetch real business requests from database
   const { data: dbItems, isLoading: isLoadingDb } = useRoadmapBusinessRequests();
+
+  // Sync vertical scroll between left panel and timeline
+  useEffect(() => {
+    const leftPanel = leftPanelRef.current;
+    const timeline = timelineScrollRef.current;
+    if (!leftPanel || !timeline) return;
+
+    const syncScroll = (source: HTMLElement, target: HTMLElement) => {
+      target.scrollTop = source.scrollTop;
+    };
+
+    const handleLeftScroll = () => syncScroll(leftPanel, timeline);
+    const handleTimelineScroll = () => syncScroll(timeline, leftPanel);
+
+    leftPanel.addEventListener('scroll', handleLeftScroll);
+    timeline.addEventListener('scroll', handleTimelineScroll);
+
+    return () => {
+      leftPanel.removeEventListener('scroll', handleLeftScroll);
+      timeline.removeEventListener('scroll', handleTimelineScroll);
+    };
+  }, []);
 
   // Column resize handlers
   const handleResizeMouseDown = useCallback((e: React.MouseEvent) => {
@@ -276,9 +325,6 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const filteredItems = useMemo(() => {
     let result = [...items];
 
-    if (activeKPI) {
-      result = result.filter(item => item.status === activeKPI);
-    }
     if (platform !== 'all') {
       result = result.filter(item => item.platform === platform);
     }
@@ -321,98 +367,73 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     });
 
     return result;
-  }, [items, activeKPI, platform, status, owner, sortField, sortOrder, isRTL, searchQuery]);
+  }, [items, platform, status, owner, sortField, sortOrder, isRTL, searchQuery]);
 
-  // Compute visible date range based on time period selection
-  const visibleRange = useMemo(() => getVisibleDateRange(timePeriodSelection), [timePeriodSelection]);
+  // Compute visible date range based on time period selection AND scale
+  const visibleRange = useMemo(() => getVisibleDateRange(timePeriodSelection, timeScale), [timePeriodSelection, timeScale]);
 
-  // Generate timeline columns based on time scale AND time period
+  // Generate timeline columns based on time scale
   const timelineColumns = useMemo(() => {
-    const cols: { label: string; subLabel: string; date: Date }[] = [];
+    const cols: { label: string; subLabel?: string; date: Date; isQuarterStart?: boolean }[] = [];
     const monthNames = isRTL ? MONTH_NAMES_AR : MONTH_NAMES;
 
     const startYear = visibleRange.start.getFullYear();
     const endYear = visibleRange.end.getFullYear();
     const startMonth = visibleRange.start.getMonth();
     const endMonth = visibleRange.end.getMonth();
-    
-    if (timeScale === 'monthly' || timeScale === 'quarterly') {
+
+    if (timeScale === 'yearly') {
+      for (let year = startYear; year <= endYear; year++) {
+        cols.push({ label: String(year), date: new Date(year, 0, 1) });
+      }
+    } else if (timeScale === 'quarterly') {
+      for (let year = startYear; year <= endYear; year++) {
+        const qStart = year === startYear ? Math.floor(startMonth / 3) : 0;
+        const qEnd = year === endYear ? Math.floor(endMonth / 3) : 3;
+        for (let q = qStart; q <= qEnd; q++) {
+          cols.push({ 
+            label: `Q${q + 1}`, 
+            subLabel: String(year), 
+            date: new Date(year, q * 3, 1) 
+          });
+        }
+      }
+    } else if (timeScale === 'monthly') {
       for (let year = startYear; year <= endYear; year++) {
         const mStart = year === startYear ? startMonth : 0;
         const mEnd = year === endYear ? endMonth : 11;
-        
         for (let m = mStart; m <= mEnd; m++) {
           cols.push({
             label: monthNames[m],
-            subLabel: timeScale === 'quarterly' ? '' : String(year),
-            date: new Date(year, m, 1)
+            subLabel: String(year),
+            date: new Date(year, m, 1),
+            isQuarterStart: m % 3 === 0
           });
         }
       }
     } else if (timeScale === 'weekly') {
-      // Generate weeks for the visible range
       const weekStart = new Date(visibleRange.start);
+      let weekNum = 1;
       while (weekStart <= visibleRange.end) {
-        const weekNum = Math.ceil((weekStart.getDate() + new Date(weekStart.getFullYear(), weekStart.getMonth(), 1).getDay()) / 7);
         cols.push({
           label: isRTL ? `أ${weekNum}` : `W${weekNum}`,
           subLabel: weekStart.toLocaleDateString(isRTL ? 'ar-SA' : 'en-US', { month: 'short' }),
           date: new Date(weekStart)
         });
         weekStart.setDate(weekStart.getDate() + 7);
-      }
-    } else if (timeScale === 'yearly') {
-      for (let year = startYear; year <= endYear; year++) {
-        cols.push({ label: String(year), subLabel: '', date: new Date(year, 0, 1) });
+        weekNum++;
       }
     }
 
     return cols;
   }, [timeScale, isRTL, visibleRange]);
 
-  // Generate quarterly grouping data
-  const quarterlyGroups = useMemo(() => {
-    if (timeScale !== 'quarterly') return null;
-    
-    const groups: { label: string; span: number }[] = [];
-    const startYear = visibleRange.start.getFullYear();
-    const endYear = visibleRange.end.getFullYear();
-    
-    for (let year = startYear; year <= endYear; year++) {
-      const startMonth = year === startYear ? visibleRange.start.getMonth() : 0;
-      const endMonth = year === endYear ? visibleRange.end.getMonth() : 11;
-      
-      for (let q = 0; q < 4; q++) {
-        const qStartMonth = q * 3;
-        const qEndMonth = q * 3 + 2;
-        
-        if (qEndMonth >= startMonth && qStartMonth <= endMonth) {
-          const visibleStart = Math.max(qStartMonth, startMonth);
-          const visibleEnd = Math.min(qEndMonth, endMonth);
-          const span = visibleEnd - visibleStart + 1;
-          
-          if (span > 0) {
-            groups.push({ label: `Q${q + 1} ${year}`, span });
-          }
-        }
-      }
-    }
-    
-    return groups;
-  }, [timeScale, visibleRange]);
-
   // Calculate today line position
   const getTodayPosition = useCallback(() => {
     const today = new Date();
-    const rangeStart = visibleRange.start;
-    const rangeEnd = visibleRange.end;
-
-    if (today < rangeStart || today > rangeEnd) {
-      return null;
-    }
-    
-    const totalDays = (rangeEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
-    const daysSinceStart = (today.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
+    if (today < visibleRange.start || today > visibleRange.end) return null;
+    const totalDays = (visibleRange.end.getTime() - visibleRange.start.getTime()) / (1000 * 60 * 60 * 24);
+    const daysSinceStart = (today.getTime() - visibleRange.start.getTime()) / (1000 * 60 * 60 * 24);
     return (daysSinceStart / totalDays) * 100;
   }, [visibleRange]);
 
@@ -422,32 +443,24 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   const getBarPosition = useCallback((item: BusinessRequestRoadmapItem) => {
     const itemStart = new Date(item.startDate);
     const itemEnd = new Date(item.endDate);
-    const rangeStart = visibleRange.start;
-    const rangeEnd = visibleRange.end;
 
-    // Check if item is completely outside the visible range
-    if (itemEnd < rangeStart || itemStart > rangeEnd) {
-      return null;
-    }
+    if (itemEnd < visibleRange.start || itemStart > visibleRange.end) return null;
 
-    // Determine if bar extends beyond visible range
-    const continuesLeft = itemStart < rangeStart;
-    const continuesRight = itemEnd > rangeEnd;
+    const continuesLeft = itemStart < visibleRange.start;
+    const continuesRight = itemEnd > visibleRange.end;
+    const clippedStart = continuesLeft ? visibleRange.start : itemStart;
+    const clippedEnd = continuesRight ? visibleRange.end : itemEnd;
 
-    // Clip dates to visible range
-    const clippedStart = continuesLeft ? rangeStart : itemStart;
-    const clippedEnd = continuesRight ? rangeEnd : itemEnd;
-
-    const totalDays = (rangeEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
-    const startOffset = (clippedStart.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
-    const endOffset = (clippedEnd.getTime() - rangeStart.getTime()) / (1000 * 60 * 60 * 24);
+    const totalDays = (visibleRange.end.getTime() - visibleRange.start.getTime()) / (1000 * 60 * 60 * 24);
+    const startOffset = (clippedStart.getTime() - visibleRange.start.getTime()) / (1000 * 60 * 60 * 24);
+    const endOffset = (clippedEnd.getTime() - visibleRange.start.getTime()) / (1000 * 60 * 60 * 24);
 
     const left = (startOffset / totalDays) * 100;
     const width = ((endOffset - startOffset) / totalDays) * 100;
 
     return { 
       left: `${left}%`, 
-      width: `${Math.max(width, 3)}%`,
+      width: `${Math.max(width, 4)}%`,
       continuesLeft,
       continuesRight,
       originalStart: itemStart,
@@ -490,7 +503,17 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     });
   };
 
-  // Select all months or clear
+  // Toggle quarter selection
+  const toggleQuarter = (quarter: number) => {
+    setTimePeriodSelection(prev => {
+      const newQuarters = prev.quarters.includes(quarter)
+        ? prev.quarters.filter(q => q !== quarter)
+        : [...prev.quarters, quarter];
+      return { ...prev, quarters: newQuarters };
+    });
+  };
+
+  // Select all / clear months
   const toggleAllMonths = () => {
     setTimePeriodSelection(prev => ({
       ...prev,
@@ -498,25 +521,63 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     }));
   };
 
-  // Quick select presets
-  const selectThisYear = () => {
-    setTimePeriodSelection({ years: [currentYear], months: [] });
+  // Select all / clear quarters
+  const toggleAllQuarters = () => {
+    setTimePeriodSelection(prev => ({
+      ...prev,
+      quarters: prev.quarters.length === 4 ? [] : [0, 1, 2, 3]
+    }));
   };
 
-  const selectNextYear = () => {
-    setTimePeriodSelection({ years: [currentYear + 1], months: [] });
+  // Quick select presets - intelligent based on scale
+  const quickSelectThisMonth = () => {
+    setTimeScale('monthly');
+    setTimePeriodSelection({ years: [currentYear], months: [currentMonth], quarters: [] });
   };
 
-  const selectBothYears = () => {
-    setTimePeriodSelection({ years: [currentYear, currentYear + 1], months: [] });
+  const quickSelectNextMonth = () => {
+    const nextMonth = (currentMonth + 1) % 12;
+    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+    setTimeScale('monthly');
+    setTimePeriodSelection({ years: [nextYear], months: [nextMonth], quarters: [] });
   };
 
-  const handleExport = () => {
-    window.print();
+  const quickSelectThisQuarter = () => {
+    setTimeScale('quarterly');
+    setTimePeriodSelection({ years: [currentYear], months: [], quarters: [currentQuarter] });
   };
 
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
+  const quickSelectNextQuarter = () => {
+    const nextQ = (currentQuarter + 1) % 4;
+    const nextYear = currentQuarter === 3 ? currentYear + 1 : currentYear;
+    setTimeScale('quarterly');
+    setTimePeriodSelection({ years: [nextYear], months: [], quarters: [nextQ] });
+  };
+
+  const quickSelectThisYear = () => {
+    setTimePeriodSelection({ years: [currentYear], months: [], quarters: [] });
+  };
+
+  const quickSelectNextYear = () => {
+    setTimePeriodSelection({ years: [currentYear + 1], months: [], quarters: [] });
+  };
+
+  const quickSelectBothYears = () => {
+    setTimePeriodSelection({ years: [currentYear, currentYear + 1], months: [], quarters: [] });
+  };
+
+  const handleExport = () => window.print();
+  const toggleFullscreen = () => setIsFullscreen(!isFullscreen);
+
+  // Get column width based on scale
+  const getColumnMinWidth = () => {
+    switch (timeScale) {
+      case 'weekly': return 60;
+      case 'monthly': return 80;
+      case 'quarterly': return 120;
+      case 'yearly': return 180;
+      default: return 80;
+    }
   };
 
   return (
@@ -534,13 +595,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         backgroundColor: 'hsl(var(--roadmap-ivory))'
       }}
     >
-      {/* Print-only Header */}
+      {/* Print Header */}
       <div className="hidden print:flex items-center justify-between px-6 py-4 border-b bg-white" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
         <div className="flex items-center gap-3">
-          <div 
-            className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm"
-            style={{ background: 'linear-gradient(135deg, #C69C6D, #E8D5C0)' }}
-          >
+          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm" style={{ background: 'linear-gradient(135deg, #C69C6D, #E8D5C0)' }}>
             MIM
           </div>
           <div>
@@ -548,34 +606,20 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             <div className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>Industry Requests Portfolio</div>
           </div>
         </div>
-        <div className="text-xl font-semibold" style={{ letterSpacing: '-0.02em' }}>
-          <span style={{ color: '#1a1a1a' }}>Cata</span>
-          <span style={{ color: '#C69C6D' }}>lyst</span>
-        </div>
       </div>
 
-      {/* Header with top controls */}
+      {/* Header */}
       <div 
         className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b print:hidden shrink-0 relative z-20"
-        style={{ 
-          backgroundColor: 'white',
-          borderColor: 'hsl(var(--roadmap-sandstone))'
-        }}
+        style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))' }}
       >
         <div className="flex items-center gap-3">
-          <div 
-            className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm shadow-sm"
-            style={{ background: 'linear-gradient(135deg, #C69C6D, #E8D5C0)' }}
-          >
+          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center text-white font-bold text-sm shadow-sm" style={{ background: 'linear-gradient(135deg, #C69C6D, #E8D5C0)' }}>
             MIM
           </div>
           <div>
-            <div className="text-xs font-medium tracking-wider" style={{ color: 'hsl(var(--roadmap-status-new))' }}>
-              {t.executiveRoadmap}
-            </div>
-            <div className="text-base font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
-              {t.industryRequests}
-            </div>
+            <div className="text-xs font-medium tracking-wider" style={{ color: 'hsl(var(--roadmap-status-new))' }}>{t.executiveRoadmap}</div>
+            <div className="text-base font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{t.industryRequests}</div>
           </div>
         </div>
 
@@ -687,7 +731,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             </TooltipProvider>
             <PopoverContent 
               align="end" 
-              className="w-80 p-0 bg-white shadow-xl rounded-xl z-50"
+              className="w-[340px] p-0 bg-white shadow-xl rounded-xl z-50"
               style={{ border: '1px solid hsl(var(--roadmap-sandstone))' }}
             >
               {/* View Scale Section */}
@@ -695,13 +739,13 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 <div className="text-xs font-semibold mb-2" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
                   {t.viewScale}
                 </div>
-                <div className="flex gap-1">
+                <div className="grid grid-cols-4 gap-1">
                   {(['weekly', 'monthly', 'quarterly', 'yearly'] as TimeScale[]).map((scale) => (
                     <button
                       key={scale}
                       onClick={() => setTimeScale(scale)}
                       className={cn(
-                        "flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-all",
+                        "px-2 py-2 text-xs font-medium rounded-lg transition-all",
                         timeScale === scale 
                           ? "text-white" 
                           : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
@@ -717,32 +761,40 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 </div>
               </div>
 
-              {/* Quick Presets */}
+              {/* Quick Select - Context-aware shortcuts */}
               <div className="p-3 border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
                 <div className="text-xs font-semibold mb-2" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
-                  Quick Select
+                  {t.quickSelect}
                 </div>
-                <div className="flex gap-1">
-                  <button
-                    onClick={selectThisYear}
-                    className="flex-1 px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all"
-                    style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                  >
-                    {currentYear}
+                <div className="grid grid-cols-3 gap-1.5">
+                  {(timeScale === 'monthly' || timeScale === 'weekly') && (
+                    <>
+                      <button onClick={quickSelectThisMonth} className="px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                        {t.thisMonth}
+                      </button>
+                      <button onClick={quickSelectNextMonth} className="px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                        {t.nextMonth}
+                      </button>
+                    </>
+                  )}
+                  {timeScale === 'quarterly' && (
+                    <>
+                      <button onClick={quickSelectThisQuarter} className="px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                        {t.thisQuarter}
+                      </button>
+                      <button onClick={quickSelectNextQuarter} className="px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                        {t.nextQuarter}
+                      </button>
+                    </>
+                  )}
+                  <button onClick={quickSelectThisYear} className="px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                    {t.thisYear}
                   </button>
-                  <button
-                    onClick={selectNextYear}
-                    className="flex-1 px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all"
-                    style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                  >
-                    {currentYear + 1}
+                  <button onClick={quickSelectNextYear} className="px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                    {t.nextYear}
                   </button>
-                  <button
-                    onClick={selectBothYears}
-                    className="flex-1 px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all"
-                    style={{ color: 'hsl(var(--roadmap-charcoal))' }}
-                  >
-                    Both
+                  <button onClick={quickSelectBothYears} className="px-2 py-1.5 text-xs font-medium rounded-lg bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))] transition-all" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                    {t.bothYears}
                   </button>
                 </div>
               </div>
@@ -752,13 +804,13 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 <div className="text-xs font-semibold mb-2" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
                   {t.selectYears}
                 </div>
-                <div className="flex gap-1">
+                <div className="grid grid-cols-4 gap-1">
                   {AVAILABLE_YEARS.map(year => (
                     <button
                       key={year}
                       onClick={() => toggleYear(year)}
                       className={cn(
-                        "flex-1 px-2 py-1.5 text-xs font-medium rounded-lg transition-all",
+                        "px-2 py-1.5 text-xs font-medium rounded-lg transition-all",
                         timePeriodSelection.years.includes(year)
                           ? "text-white"
                           : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
@@ -774,44 +826,86 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 </div>
               </div>
 
-              {/* Month Selection - Excel-style grid */}
-              <div className="p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
-                    {t.selectMonths}
+              {/* Dynamic Time Unit Selection based on Scale */}
+              {(timeScale === 'monthly' || timeScale === 'weekly') && (
+                <div className="p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
+                      {t.selectMonths}
+                    </div>
+                    <button onClick={toggleAllMonths} className="text-xs font-medium hover:underline" style={{ color: 'hsl(var(--roadmap-status-new))' }}>
+                      {timePeriodSelection.months.length === 12 ? 'Clear' : t.allMonths}
+                    </button>
                   </div>
-                  <button
-                    onClick={toggleAllMonths}
-                    className="text-xs font-medium hover:underline"
-                    style={{ color: 'hsl(var(--roadmap-status-new))' }}
-                  >
-                    {timePeriodSelection.months.length === 12 ? 'Clear' : t.allMonths}
-                  </button>
+                  <div className="grid grid-cols-6 gap-1">
+                    {MONTH_NAMES.map((month, index) => {
+                      const isSelected = timePeriodSelection.months.length === 0 || timePeriodSelection.months.includes(index);
+                      return (
+                        <button
+                          key={month}
+                          onClick={() => toggleMonth(index)}
+                          className={cn(
+                            "px-1 py-1.5 text-xs font-medium rounded transition-all",
+                            isSelected ? "text-white" : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
+                          )}
+                          style={{
+                            backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
+                            color: isSelected ? 'white' : 'hsl(var(--roadmap-fossil))'
+                          }}
+                        >
+                          {month}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="grid grid-cols-6 gap-1">
-                  {MONTH_NAMES.map((month, index) => {
-                    const isSelected = timePeriodSelection.months.length === 0 || timePeriodSelection.months.includes(index);
-                    return (
-                      <button
-                        key={month}
-                        onClick={() => toggleMonth(index)}
-                        className={cn(
-                          "px-1.5 py-1.5 text-xs font-medium rounded transition-all",
-                          isSelected
-                            ? "text-white"
-                            : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
-                        )}
-                        style={{
-                          backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
-                          color: isSelected ? 'white' : 'hsl(var(--roadmap-fossil))'
-                        }}
-                      >
-                        {month}
-                      </button>
-                    );
-                  })}
+              )}
+
+              {timeScale === 'quarterly' && (
+                <div className="p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
+                      {t.selectQuarters}
+                    </div>
+                    <button onClick={toggleAllQuarters} className="text-xs font-medium hover:underline" style={{ color: 'hsl(var(--roadmap-status-new))' }}>
+                      {timePeriodSelection.quarters.length === 4 ? 'Clear' : t.allQuarters}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-4 gap-1">
+                    {QUARTER_NAMES.map((quarter, index) => {
+                      const isSelected = timePeriodSelection.quarters.length === 0 || timePeriodSelection.quarters.includes(index);
+                      return (
+                        <button
+                          key={quarter}
+                          onClick={() => toggleQuarter(index)}
+                          className={cn(
+                            "px-2 py-2 text-xs font-medium rounded-lg transition-all",
+                            isSelected ? "text-white" : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
+                          )}
+                          style={{
+                            backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
+                            color: isSelected ? 'white' : 'hsl(var(--roadmap-fossil))'
+                          }}
+                        >
+                          {quarter}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-                <div className="mt-2 text-xs text-center" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+              )}
+
+              {timeScale === 'yearly' && (
+                <div className="p-3">
+                  <div className="text-xs text-center py-2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                    Yearly view shows full year columns. Select years above.
+                  </div>
+                </div>
+              )}
+
+              {/* Range Summary */}
+              <div className="px-3 pb-3">
+                <div className="text-xs text-center py-2 rounded-lg" style={{ backgroundColor: 'hsl(var(--roadmap-parchment))', color: 'hsl(var(--roadmap-graphite))' }}>
                   {visibleRange.start.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} – {visibleRange.end.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </div>
               </div>
@@ -821,33 +915,18 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           <div className="w-px h-6 mx-1" style={{ backgroundColor: 'hsl(var(--roadmap-driftwood))' }} />
 
           {/* Language Toggle */}
-          <div 
-            className="flex rounded-[10px] p-0.5 gap-0.5 shadow-sm"
-            style={{ backgroundColor: 'hsl(var(--roadmap-parchment))', border: '1px solid hsl(var(--roadmap-sandstone))' }}
-          >
+          <div className="flex rounded-[10px] p-0.5 gap-0.5 shadow-sm" style={{ backgroundColor: 'hsl(var(--roadmap-parchment))', border: '1px solid hsl(var(--roadmap-sandstone))' }}>
             <button
               onClick={() => setLanguage('en')}
-              className={cn(
-                "w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all",
-                language === 'en' ? "text-white" : "bg-transparent hover:opacity-80"
-              )}
-              style={{ 
-                backgroundColor: language === 'en' ? 'hsl(var(--roadmap-status-new))' : 'transparent',
-                color: language === 'en' ? 'white' : 'hsl(var(--roadmap-fossil))'
-              }}
+              className={cn("w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all", language === 'en' ? "text-white" : "bg-transparent hover:opacity-80")}
+              style={{ backgroundColor: language === 'en' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'en' ? 'white' : 'hsl(var(--roadmap-fossil))' }}
             >
               EN
             </button>
             <button
               onClick={() => setLanguage('ar')}
-              className={cn(
-                "w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all",
-                language === 'ar' ? "text-white" : "bg-transparent hover:opacity-80"
-              )}
-              style={{ 
-                backgroundColor: language === 'ar' ? 'hsl(var(--roadmap-status-new))' : 'transparent',
-                color: language === 'ar' ? 'white' : 'hsl(var(--roadmap-fossil))'
-              }}
+              className={cn("w-7 h-7 flex items-center justify-center rounded-lg text-xs font-bold cursor-pointer transition-all", language === 'ar' ? "text-white" : "bg-transparent hover:opacity-80")}
+              style={{ backgroundColor: language === 'ar' ? 'hsl(var(--roadmap-status-new))' : 'transparent', color: language === 'ar' ? 'white' : 'hsl(var(--roadmap-fossil))' }}
             >
               ع
             </button>
@@ -859,11 +938,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  onClick={handleExport}
-                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-fossil))' }}
-                >
+                <button onClick={handleExport} className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white shadow-sm hover:shadow-md" style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-fossil))' }}>
                   <Download className="w-[18px] h-[18px]" />
                 </button>
               </TooltipTrigger>
@@ -877,14 +952,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               <TooltipTrigger asChild>
                 <button
                   onClick={() => setShowLegend(!showLegend)}
-                  className={cn(
-                    "w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md",
-                    showLegend ? "text-white" : "bg-white text-[hsl(var(--roadmap-fossil))]"
-                  )}
-                  style={{ 
-                    backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined,
-                    border: showLegend ? 'none' : '1px solid hsl(var(--roadmap-sandstone))'
-                  }}
+                  className={cn("w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all shadow-sm hover:shadow-md", showLegend ? "text-white" : "bg-white text-[hsl(var(--roadmap-fossil))]")}
+                  style={{ backgroundColor: showLegend ? 'hsl(var(--roadmap-status-new))' : undefined, border: showLegend ? 'none' : '1px solid hsl(var(--roadmap-sandstone))' }}
                 >
                   {showLegend ? <EyeOff className="w-[18px] h-[18px]" /> : <Eye className="w-[18px] h-[18px]" />}
                 </button>
@@ -897,11 +966,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           <TooltipProvider delayDuration={200}>
             <Tooltip>
               <TooltipTrigger asChild>
-                <button
-                  onClick={toggleFullscreen}
-                  className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white shadow-sm hover:shadow-md"
-                  style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-fossil))' }}
-                >
+                <button onClick={toggleFullscreen} className="w-9 h-9 flex items-center justify-center rounded-[10px] cursor-pointer transition-all bg-white shadow-sm hover:shadow-md" style={{ border: '1px solid hsl(var(--roadmap-sandstone))', color: 'hsl(var(--roadmap-fossil))' }}>
                   {isFullscreen ? <Minimize2 className="w-[18px] h-[18px]" /> : <Maximize2 className="w-[18px] h-[18px]" />}
                 </button>
               </TooltipTrigger>
@@ -911,25 +976,18 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
         </div>
       </div>
 
-      {/* Main Content Area - Freeze Pane Layout */}
+      {/* Main Content - Freeze Pane Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* FROZEN LEFT PANEL - Sticky, never scrolls horizontally */}
+        {/* FROZEN LEFT PANEL */}
         <div 
-          className="shrink-0 flex flex-col bg-white border-r overflow-y-auto"
-          style={{ 
-            width: `${firstColumnWidth}px`,
-            borderColor: 'hsl(var(--roadmap-sandstone))',
-            zIndex: 10
-          }}
+          ref={leftPanelRef}
+          className="shrink-0 flex flex-col bg-white border-r overflow-y-auto overflow-x-hidden"
+          style={{ width: `${firstColumnWidth}px`, borderColor: 'hsl(var(--roadmap-sandstone))', zIndex: 10 }}
         >
           {/* Left Panel Header */}
           <div 
-            className="sticky top-0 z-10 px-3 py-3 flex items-center justify-between border-b"
-            style={{ 
-              backgroundColor: 'hsl(var(--roadmap-parchment))',
-              borderColor: 'hsl(var(--roadmap-sandstone))',
-              minHeight: timeScale === 'quarterly' ? '60px' : '48px'
-            }}
+            className="sticky top-0 z-10 px-4 flex items-center justify-between border-b"
+            style={{ backgroundColor: 'hsl(var(--roadmap-parchment))', borderColor: 'hsl(var(--roadmap-sandstone))', height: '48px', minHeight: '48px' }}
           >
             <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
               {t.businessRequest}
@@ -944,10 +1002,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             </button>
             {/* Resize Handle */}
             <div
-              className={cn(
-                "absolute right-0 top-0 h-full w-1 cursor-col-resize z-20 transition-colors hover:bg-[hsl(var(--roadmap-status-new))]",
-                isResizing && "bg-[hsl(var(--roadmap-status-new))]"
-              )}
+              className={cn("absolute right-0 top-0 h-full w-1 cursor-col-resize z-20 transition-colors hover:bg-[hsl(var(--roadmap-status-new))]", isResizing && "bg-[hsl(var(--roadmap-status-new))]")}
               onMouseDown={handleResizeMouseDown}
               onClick={(e) => e.stopPropagation()}
             />
@@ -959,44 +1014,27 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
             return (
               <div 
                 key={item.id}
-                className={cn("border-b cursor-pointer transition-colors")}
+                className={cn("border-b cursor-pointer transition-colors flex-shrink-0")}
                 style={{ 
                   height: `${ROW_HEIGHT}px`,
+                  minHeight: `${ROW_HEIGHT}px`,
                   borderColor: 'hsl(var(--roadmap-sandstone))',
-                  backgroundColor: isSelected 
-                    ? 'hsla(var(--roadmap-status-new) / 0.08)' 
-                    : hoveredItem === item.id 
-                      ? 'hsla(var(--roadmap-status-new) / 0.04)' 
-                      : 'white',
+                  backgroundColor: isSelected ? 'hsla(var(--roadmap-status-new) / 0.08)' : hoveredItem === item.id ? 'hsla(var(--roadmap-status-new) / 0.04)' : 'white',
                   borderLeft: isSelected ? '3px solid hsl(var(--roadmap-status-new))' : '3px solid transparent'
                 }}
                 onClick={() => setSelectedRow(isSelected ? null : item.id)}
                 onMouseEnter={() => setHoveredItem(item.id)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
-                <div className="h-full px-3 py-2 flex flex-col justify-center">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
-                      #{item.rank}
-                    </span>
+                <div className="h-full px-4 py-1.5 flex flex-col justify-center overflow-hidden">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="text-xs font-bold shrink-0" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>#{item.rank}</span>
                     {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (
-                      <TooltipProvider delayDuration={100}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Lock className="h-3 w-3 cursor-help" style={{ color: 'hsl(var(--roadmap-status-new))' }} />
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="text-xs">
-                            Force Rank #{item.rank}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Lock className="h-3 w-3 shrink-0" style={{ color: 'hsl(var(--roadmap-status-new))' }} />
                     )}
                     <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedRequestId(item.id);
-                      }}
-                      className="text-xs font-medium hover:underline cursor-pointer bg-transparent border-none p-0"
+                      onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
+                      className="text-xs font-medium hover:underline cursor-pointer bg-transparent border-none p-0 shrink-0"
                       style={{ color: 'hsl(var(--roadmap-status-new))' }}
                     >
                       {item.id}
@@ -1005,12 +1043,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   <div className="text-sm font-medium truncate leading-tight mt-0.5" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
                     {isRTL ? item.titleAr : item.titleEn}
                   </div>
-                  <div className="text-xs mt-0.5 truncate" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                  <div className="text-[11px] mt-0.5 truncate" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                     {isRTL ? item.ownerAr : item.ownerEn}
                     <span className="mx-1">·</span>
-                    <span style={{ color: 'hsl(var(--roadmap-status-new))' }}>
-                      {isRTL ? PLATFORM_INFO[item.platform]?.nameAr : item.platform}
-                    </span>
+                    <span style={{ color: 'hsl(var(--roadmap-status-new))' }}>{isRTL ? PLATFORM_INFO[item.platform]?.nameAr : item.platform}</span>
                   </div>
                 </div>
               </div>
@@ -1018,82 +1054,31 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           })}
         </div>
 
-        {/* SCROLLABLE TIMELINE PANEL - Only this scrolls horizontally */}
-        <div 
-          ref={timelineScrollRef}
-          className="flex-1 overflow-x-auto overflow-y-auto"
-          style={{ scrollBehavior: 'smooth' }}
-        >
-          <div style={{ minWidth: Math.max(800, timelineColumns.length * 80) }}>
+        {/* SCROLLABLE TIMELINE PANEL */}
+        <div ref={timelineScrollRef} className="flex-1 overflow-x-auto overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
+          <div style={{ minWidth: Math.max(600, timelineColumns.length * getColumnMinWidth()) }}>
             {/* Timeline Header */}
-            <div 
-              className="sticky top-0 z-10 border-b"
-              style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))' }}
-            >
-              {/* Today indicator in header */}
+            <div className="sticky top-0 z-10 border-b" style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))', height: '48px', minHeight: '48px' }}>
+              {/* Today indicator */}
               {todayPosition !== null && (
-                <div
-                  className="absolute pointer-events-none z-20"
-                  style={{ 
-                    left: `${todayPosition}%`,
-                    top: '4px',
-                    transform: 'translateX(-50%)'
-                  }}
-                >
-                  <div 
-                    className="px-1.5 py-0.5 text-[9px] font-semibold rounded whitespace-nowrap"
-                    style={{ 
-                      backgroundColor: 'hsla(35, 46%, 60%, 0.2)',
-                      color: 'hsl(var(--roadmap-status-new))',
-                      border: '1px solid hsla(35, 46%, 60%, 0.4)'
-                    }}
-                  >
+                <div className="absolute pointer-events-none z-20" style={{ left: `${todayPosition}%`, top: '4px', transform: 'translateX(-50%)' }}>
+                  <div className="px-1.5 py-0.5 text-[9px] font-semibold rounded whitespace-nowrap" style={{ backgroundColor: 'hsla(35, 46%, 60%, 0.2)', color: 'hsl(var(--roadmap-status-new))', border: '1px solid hsla(35, 46%, 60%, 0.4)' }}>
                     {isRTL ? 'اليوم' : 'Today'}
                   </div>
                 </div>
               )}
-
-              {timeScale === 'quarterly' ? (
-                <div className="flex flex-col">
-                  {/* Quarters row */}
-                  <div className="flex border-b" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
-                    {quarterlyGroups?.map((quarter, i) => (
-                      <div 
-                        key={i} 
-                        className="px-1 py-1.5 text-center border-r"
-                        style={{ flex: quarter.span, borderColor: 'hsl(var(--roadmap-driftwood))' }}
-                      >
-                        <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{quarter.label}</div>
-                      </div>
-                    ))}
+              <div className="flex h-full">
+                {timelineColumns.map((col, i) => (
+                  <div 
+                    key={i} 
+                    className="flex-1 px-1 text-center border-r flex flex-col justify-center"
+                    style={{ borderColor: 'hsl(var(--roadmap-driftwood))', minWidth: getColumnMinWidth() }}
+                  >
+                    <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{col.label}</div>
+                    {col.subLabel && <div className="text-[10px]" style={{ color: 'hsl(var(--roadmap-fossil))' }}>{col.subLabel}</div>}
                   </div>
-                  {/* Months row */}
-                  <div className="flex">
-                    {timelineColumns.map((col, i) => (
-                      <div 
-                        key={i} 
-                        className="flex-1 px-1 py-1.5 text-center border-r"
-                        style={{ borderColor: 'hsl(var(--roadmap-driftwood))' }}
-                      >
-                        <div className="text-xs font-medium" style={{ color: 'hsl(var(--roadmap-fossil))' }}>{col.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="flex" style={{ minHeight: '48px' }}>
-                  {timelineColumns.map((col, i) => (
-                    <div 
-                      key={i} 
-                      className="flex-1 px-1 py-2 text-center border-r flex flex-col justify-center"
-                      style={{ borderColor: 'hsl(var(--roadmap-driftwood))' }}
-                    >
-                      <div className="text-xs font-medium" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>{col.label}</div>
-                      {col.subLabel && <div className="text-[10px]" style={{ color: 'hsl(var(--roadmap-fossil))' }}>{col.subLabel}</div>}
-                    </div>
-                  ))}
-                </div>
-              )}
+                ))}
+              </div>
             </div>
 
             {/* Timeline Rows */}
@@ -1104,15 +1089,12 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
               return (
                 <div 
                   key={item.id}
-                  className="relative border-b"
+                  className="relative border-b flex-shrink-0"
                   style={{ 
                     height: `${ROW_HEIGHT}px`,
+                    minHeight: `${ROW_HEIGHT}px`,
                     borderColor: 'hsl(var(--roadmap-sandstone))',
-                    backgroundColor: isSelected 
-                      ? 'hsla(var(--roadmap-status-new) / 0.08)' 
-                      : hoveredItem === item.id 
-                        ? 'hsla(var(--roadmap-status-new) / 0.04)' 
-                        : 'white'
+                    backgroundColor: isSelected ? 'hsla(var(--roadmap-status-new) / 0.08)' : hoveredItem === item.id ? 'hsla(var(--roadmap-status-new) / 0.04)' : 'white'
                   }}
                   onMouseEnter={() => setHoveredItem(item.id)}
                   onMouseLeave={() => setHoveredItem(null)}
@@ -1120,68 +1102,36 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   {/* Vertical grid lines */}
                   <div className="absolute inset-0 flex pointer-events-none">
                     {timelineColumns.map((_, i) => (
-                      <div 
-                        key={i} 
-                        className="flex-1 border-r" 
-                        style={{ borderColor: 'hsl(var(--roadmap-sandstone) / 0.5)' }} 
-                      />
+                      <div key={i} className="flex-1 border-r" style={{ borderColor: 'hsl(var(--roadmap-sandstone) / 0.4)', minWidth: getColumnMinWidth() }} />
                     ))}
                   </div>
                   
                   {/* Today line */}
                   {todayPosition !== null && (
-                    <div
-                      className="absolute top-0 bottom-0 pointer-events-none"
-                      style={{ 
-                        left: `${todayPosition}%`,
-                        width: '1px',
-                        borderLeft: '1px dashed hsla(35, 46%, 60%, 0.6)',
-                        zIndex: 5
-                      }}
-                    />
+                    <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: `${todayPosition}%`, width: '1px', borderLeft: '1px dashed hsla(35, 46%, 60%, 0.6)', zIndex: 5 }} />
                   )}
                   
                   {/* Timeline Bar */}
                   {barPos && (
-                    <div 
-                      className="absolute flex items-center"
-                      style={{ 
-                        left: barPos.left, 
-                        width: barPos.width, 
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        height: '28px',
-                        paddingLeft: '4px',
-                        paddingRight: '4px'
-                      }}
-                    >
+                    <div className="absolute flex items-center px-1" style={{ left: barPos.left, width: barPos.width, top: '50%', transform: 'translateY(-50%)', height: '24px' }}>
                       {/* Continuation indicator - Left */}
                       {barPos.continuesLeft && (
-                        <div 
-                          className="absolute -left-3 top-1/2 -translate-y-1/2 text-xs font-medium"
-                          style={{ color: 'hsl(var(--roadmap-fossil))' }}
-                        >
-                          <ChevronLeft className="w-4 h-4" />
+                        <div className="absolute -left-4 top-1/2 -translate-y-1/2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                          <ChevronLeft className="w-3.5 h-3.5" />
                         </div>
                       )}
 
                       {/* The Bar */}
                       <div 
-                        className={cn(
-                          "h-full w-full flex items-center justify-center overflow-hidden",
-                          barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
-                          barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
-                        )}
-                        style={{ 
-                          background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
-                        }}
+                        className={cn("h-full w-full flex items-center justify-center overflow-hidden relative", barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full", barPos.continuesRight ? "rounded-r-none" : "rounded-r-full")}
+                        style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)' }}
                       >
-                        {/* Status label inside bar */}
+                        {/* Status label */}
                         <span className="text-[10px] font-semibold text-white whitespace-nowrap px-2 truncate">
                           {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
                         </span>
 
-                        {/* Milestones on bar */}
+                        {/* Milestones */}
                         {showMilestones && item.milestones.length > 0 && item.milestones.map((ms, index) => {
                           const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
                           return (
@@ -1189,24 +1139,15 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <div
-                                    className="absolute w-[16px] h-[16px] rounded-full border-2 flex items-center justify-center text-[8px] font-medium cursor-pointer z-10"
+                                    className="absolute w-[14px] h-[14px] rounded-full border-2 flex items-center justify-center text-[7px] font-medium cursor-pointer"
                                     style={{ 
                                       left: `${pos}%`, 
                                       top: '50%', 
                                       transform: 'translate(-50%, -50%)',
-                                      backgroundColor: ms.state === 'complete' 
-                                        ? 'hsl(var(--roadmap-milestone-complete))' 
-                                        : 'white',
-                                      borderColor: ms.state === 'complete' 
-                                        ? 'hsl(var(--roadmap-milestone-complete))'
-                                        : ms.state === 'current'
-                                          ? 'hsl(var(--roadmap-milestone-current))'
-                                          : 'hsl(var(--roadmap-milestone-pending))',
-                                      color: ms.state === 'complete' 
-                                        ? 'white'
-                                        : ms.state === 'current'
-                                          ? 'hsl(var(--roadmap-milestone-current))'
-                                          : 'hsl(var(--roadmap-fossil))'
+                                      backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'white',
+                                      borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-milestone-pending))',
+                                      color: ms.state === 'complete' ? 'white' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-fossil))',
+                                      zIndex: 10
                                     }}
                                   >
                                     {ms.state === 'complete' ? <Check className="w-2 h-2" /> : (index + 1)}
@@ -1214,9 +1155,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                                 </TooltipTrigger>
                                 <TooltipContent side="top" className="text-xs">
                                   <div className="font-medium">Milestone {index + 1}</div>
-                                  <div className="text-muted-foreground">
-                                    {new Date(ms.date).toLocaleDateString()} · {ms.state}
-                                  </div>
+                                  <div className="text-muted-foreground">{new Date(ms.date).toLocaleDateString()} · {ms.state}</div>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
@@ -1226,14 +1165,9 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
                       {/* Continuation indicator - Right */}
                       {barPos.continuesRight && (
-                        <div 
-                          className="absolute -right-5 top-1/2 -translate-y-1/2 flex items-center gap-0.5"
-                          style={{ color: 'hsl(var(--roadmap-fossil))' }}
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                          <span className="text-[9px] font-medium whitespace-nowrap">
-                            {formatDateLabel(barPos.originalEnd)}
-                          </span>
+                        <div className="absolute -right-6 top-1/2 -translate-y-1/2 flex items-center gap-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                          <ChevronRight className="w-3.5 h-3.5" />
+                          <span className="text-[9px] font-medium whitespace-nowrap">{formatDateLabel(barPos.originalEnd)}</span>
                         </div>
                       )}
                     </div>
@@ -1262,13 +1196,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
       <RoadmapFiltersDialog
         open={filtersDialogOpen}
         onOpenChange={setFiltersDialogOpen}
-        filters={{
-          platform,
-          status,
-          owner,
-          sortField,
-          showMilestones,
-        }}
+        filters={{ platform, status, owner, sortField, showMilestones }}
         onFiltersChange={(newFilters: RoadmapFilters) => {
           if (newFilters.platform) setPlatform(newFilters.platform);
           if (newFilters.status) setStatus(newFilters.status);
