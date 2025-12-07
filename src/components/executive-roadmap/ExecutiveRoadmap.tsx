@@ -1129,82 +1129,120 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     <div className="absolute top-0 bottom-0 pointer-events-none" style={{ left: `${todayPosition}%`, width: '1px', borderLeft: '1px dashed hsla(35, 46%, 60%, 0.6)', zIndex: 5 }} />
                   )}
                   
-                  {/* Timeline Bar - Centered vertically with proper padding */}
-                  {barPos && (
-                    <div 
-                      className="absolute flex items-center"
-                      style={{ 
-                        left: barPos.left, 
-                        width: barPos.width, 
-                        top: '50%', 
-                        transform: 'translateY(-50%)',
-                        height: '32px', // Bar height
-                        paddingLeft: barPos.continuesLeft ? '0' : '4px',
-                        paddingRight: barPos.continuesRight ? '0' : '4px'
-                      }}
-                    >
-                      {/* Continuation indicator - Left */}
-                      {barPos.continuesLeft && (
-                        <div className="absolute -left-5 top-1/2 -translate-y-1/2 flex items-center" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                          <ChevronLeft className="w-4 h-4" />
-                        </div>
-                      )}
+                  {/* Timeline Bar - Centered vertically with dates */}
+                  {barPos && (() => {
+                    // Format short date labels (e.g., "13 Jan")
+                    const formatShortDate = (date: Date) => {
+                      const day = date.getDate();
+                      const monthShort = isRTL 
+                        ? MONTH_NAMES_AR[date.getMonth()].slice(0, 3)
+                        : MONTH_NAMES[date.getMonth()];
+                      return `${day} ${monthShort}`;
+                    };
 
-                      {/* The Bar */}
+                    const startDate = new Date(item.startDate);
+                    const endDate = new Date(item.endDate);
+                    const displayStartDate = barPos.continuesLeft ? visibleRange.start : startDate;
+                    const displayEndDate = barPos.continuesRight ? visibleRange.end : endDate;
+
+                    return (
                       <div 
-                        className={cn(
-                          "h-full w-full flex items-center justify-center overflow-visible relative",
-                          barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
-                          barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
-                        )}
-                        style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)' }}
+                        className="absolute flex items-center"
+                        style={{ 
+                          left: barPos.left, 
+                          width: barPos.width, 
+                          top: '50%', 
+                          transform: 'translateY(-50%)',
+                          height: '36px',
+                          paddingLeft: barPos.continuesLeft ? '0' : '2px',
+                          paddingRight: barPos.continuesRight ? '0' : '2px'
+                        }}
                       >
-                        {/* Status label - Centered */}
-                        <span className="text-[11px] font-semibold text-white whitespace-nowrap px-3 truncate">
-                          {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                        </span>
+                        {/* Continuation indicator - Left */}
+                        {barPos.continuesLeft && (
+                          <div className="absolute -left-5 top-1/2 -translate-y-1/2 flex items-center" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                            <ChevronLeft className="w-4 h-4" />
+                          </div>
+                        )}
 
-                        {/* Milestones - Properly centered on bar */}
-                        {showMilestones && item.milestones.length > 0 && item.milestones.map((ms, index) => {
-                          const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
-                          return (
-                            <TooltipProvider key={`${item.id}-ms-${index}`} delayDuration={100}>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div
-                                    className="absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[8px] font-bold cursor-pointer shadow-sm"
-                                    style={{ 
-                                      left: `${pos}%`, 
-                                      top: '50%', 
-                                      transform: 'translate(-50%, -50%)',
-                                      backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'white',
-                                      borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-milestone-pending))',
-                                      color: ms.state === 'complete' ? 'white' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-fossil))',
-                                      zIndex: 15
-                                    }}
-                                  >
-                                    {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : (index + 1)}
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent side="top" className="text-xs">
-                                  <div className="font-medium">Milestone {index + 1}</div>
-                                  <div className="text-muted-foreground">{new Date(ms.date).toLocaleDateString()} · {ms.state}</div>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          );
-                        })}
-                      </div>
+                        {/* The Bar with Dates */}
+                        <div 
+                          className={cn(
+                            "h-full w-full flex items-center overflow-visible relative",
+                            barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
+                            barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
+                          )}
+                          style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)' }}
+                        >
+                          {/* Start Date - Left Edge */}
+                          <span 
+                            className="absolute left-0 text-[9px] font-bold text-white/90 whitespace-nowrap z-10"
+                            style={{ 
+                              paddingLeft: barPos.continuesLeft ? '4px' : '10px',
+                              textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                            }}
+                          >
+                            {formatShortDate(displayStartDate)}
+                          </span>
 
-                      {/* Continuation indicator - Right with date */}
-                      {barPos.continuesRight && (
-                        <div className="absolute -right-16 top-1/2 -translate-y-1/2 flex items-center gap-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
-                          <ChevronRight className="w-4 h-4" />
-                          <span className="text-[10px] font-medium whitespace-nowrap">{formatDateLabel(barPos.originalEnd)}</span>
+                          {/* Status label - Centered */}
+                          <span className="flex-1 text-center text-[10px] font-semibold text-white whitespace-nowrap truncate px-12">
+                            {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
+                          </span>
+
+                          {/* End Date - Right Edge */}
+                          <span 
+                            className="absolute right-0 text-[9px] font-bold text-white/90 whitespace-nowrap z-10"
+                            style={{ 
+                              paddingRight: barPos.continuesRight ? '4px' : '10px',
+                              textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                            }}
+                          >
+                            {formatShortDate(displayEndDate)}
+                          </span>
+
+                          {/* Milestones - Properly centered on bar */}
+                          {showMilestones && item.milestones.length > 0 && item.milestones.map((ms, index) => {
+                            const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
+                            return (
+                              <TooltipProvider key={`${item.id}-ms-${index}`} delayDuration={100}>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      className="absolute w-5 h-5 rounded-full border-2 flex items-center justify-center text-[8px] font-bold cursor-pointer shadow-sm"
+                                      style={{ 
+                                        left: `${pos}%`, 
+                                        top: '50%', 
+                                        transform: 'translate(-50%, -50%)',
+                                        backgroundColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : 'white',
+                                        borderColor: ms.state === 'complete' ? 'hsl(var(--roadmap-milestone-complete))' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-milestone-pending))',
+                                        color: ms.state === 'complete' ? 'white' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-fossil))',
+                                        zIndex: 15
+                                      }}
+                                    >
+                                      {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : (index + 1)}
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="text-xs">
+                                    <div className="font-medium">Milestone {index + 1}</div>
+                                    <div className="text-muted-foreground">{new Date(ms.date).toLocaleDateString()} · {ms.state}</div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            );
+                          })}
                         </div>
-                      )}
-                    </div>
-                  )}
+
+                        {/* Continuation indicator - Right with original end date */}
+                        {barPos.continuesRight && (
+                          <div className="absolute -right-16 top-1/2 -translate-y-1/2 flex items-center gap-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                            <ChevronRight className="w-4 h-4" />
+                            <span className="text-[10px] font-medium whitespace-nowrap">{formatDateLabel(barPos.originalEnd)}</span>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             })}
