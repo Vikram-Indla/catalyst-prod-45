@@ -39,10 +39,10 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
           className
         )}
       >
-        {/* Toggle Handle */}
+        {/* Toggle Handle - positioned outside sidebar */}
         <button
           onClick={onToggle}
-          className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
+          className="absolute right-0 translate-x-1/2 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
           aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
         >
           {expanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
