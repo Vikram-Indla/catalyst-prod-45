@@ -311,26 +311,35 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
   // Fetch real business requests from database
   const { data: dbItems, isLoading: isLoadingDb } = useRoadmapBusinessRequests();
 
-  // Sync vertical scroll between left panel and timeline
+  // Sync vertical scroll between left panel and timeline - immediate sync without RAF delay
   useEffect(() => {
     const leftPanel = leftPanelRef.current;
     const timeline = timelineScrollRef.current;
     if (!leftPanel || !timeline) return;
 
-    let isSyncing = false;
+    let ticking = false;
+    let lastScrollSource: 'left' | 'timeline' | null = null;
     
-    const syncScroll = (source: HTMLElement, target: HTMLElement) => {
-      if (isSyncing) return;
-      isSyncing = true;
-      target.scrollTop = source.scrollTop;
-      requestAnimationFrame(() => { isSyncing = false; });
+    const handleLeftScroll = () => {
+      if (lastScrollSource === 'timeline') {
+        lastScrollSource = null;
+        return;
+      }
+      lastScrollSource = 'left';
+      timeline.scrollTop = leftPanel.scrollTop;
     };
 
-    const handleLeftScroll = () => syncScroll(leftPanel, timeline);
-    const handleTimelineScroll = () => syncScroll(timeline, leftPanel);
+    const handleTimelineScroll = () => {
+      if (lastScrollSource === 'left') {
+        lastScrollSource = null;
+        return;
+      }
+      lastScrollSource = 'timeline';
+      leftPanel.scrollTop = timeline.scrollTop;
+    };
 
-    leftPanel.addEventListener('scroll', handleLeftScroll);
-    timeline.addEventListener('scroll', handleTimelineScroll);
+    leftPanel.addEventListener('scroll', handleLeftScroll, { passive: true });
+    timeline.addEventListener('scroll', handleTimelineScroll, { passive: true });
 
     return () => {
       leftPanel.removeEventListener('scroll', handleLeftScroll);
