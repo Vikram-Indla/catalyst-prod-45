@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { X } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { X, Upload, Paperclip, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,12 +7,20 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 
 interface CreateIncidentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (incident: IncidentFormData) => void;
+}
+
+interface AttachmentFile {
+  id: string;
+  file: File;
+  name: string;
+  size: number;
 }
 
 export interface IncidentFormData {
@@ -22,9 +30,12 @@ export interface IncidentFormData {
   impact: 'High' | 'Medium' | 'Low';
   urgency: 'High' | 'Medium' | 'Low';
   priority: 'Critical' | 'High' | 'Medium' | 'Low';
+  reporterId: string;
   assigneeId?: string;
-  components: string[];
+  releaseVersion?: string;
   labels: string[];
+  isMajorIncident: boolean;
+  attachments: AttachmentFile[];
 }
 
 const SEVERITY_OPTIONS = [
@@ -71,6 +82,15 @@ const USERS = [
   { id: 'u5', name: 'Omar Al-Qahtani', email: 'o.qahtani@moi.gov.sa', initials: 'OQ' },
 ];
 
+const RELEASE_VERSIONS = [
+  { value: 'v2.5.0', label: 'v2.5.0 - Current Production' },
+  { value: 'v2.4.2', label: 'v2.4.2' },
+  { value: 'v2.4.1', label: 'v2.4.1' },
+  { value: 'v2.4.0', label: 'v2.4.0' },
+  { value: 'v2.3.5', label: 'v2.3.5' },
+  { value: 'v2.3.0', label: 'v2.3.0' },
+];
+
 // Priority calculation matrix
 const calculatePriority = (impact: string, urgency: string): 'Critical' | 'High' | 'Medium' | 'Low' | '' => {
   const matrix: Record<string, Record<string, 'Critical' | 'High' | 'Medium' | 'Low'>> = {
@@ -91,21 +111,30 @@ const getPriorityColor = (priority: string) => {
   }
 };
 
+const formatFileSize = (bytes: number): string => {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+};
+
 export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateIncidentModalProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<Partial<IncidentFormData>>({
     summary: '',
     description: '',
     severity: undefined,
     impact: undefined,
     urgency: undefined,
-    components: [],
     labels: [],
+    isMajorIncident: false,
+    attachments: [],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [componentInput, setComponentInput] = useState('');
   const [labelInput, setLabelInput] = useState('');
+  const [reporterSearch, setReporterSearch] = useState('');
   const [assigneeSearch, setAssigneeSearch] = useState('');
+  const [showReporterDropdown, setShowReporterDropdown] = useState(false);
   const [showAssigneeDropdown, setShowAssigneeDropdown] = useState(false);
 
   // Calculate priority when impact/urgency change
@@ -131,6 +160,9 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
       case 'urgency':
         if (!value) return 'Urgency is required';
         break;
+      case 'reporterId':
+        if (!value) return 'Reporter is required';
+        break;
     }
     return '';
   };
@@ -147,7 +179,8 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
       formData.description?.trim() &&
       formData.severity &&
       formData.impact &&
-      formData.urgency
+      formData.urgency &&
+      formData.reporterId
     );
   }, [formData]);
 
@@ -160,13 +193,14 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
         severity: undefined,
         impact: undefined,
         urgency: undefined,
-        components: [],
         labels: [],
+        isMajorIncident: false,
+        attachments: [],
       });
       setErrors({});
       setTouched({});
-      setComponentInput('');
       setLabelInput('');
+      setReporterSearch('');
       setAssigneeSearch('');
     }
   }, [isOpen]);
@@ -181,32 +215,14 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
       impact: formData.impact!,
       urgency: formData.urgency!,
       priority: calculatedPriority as 'Critical' | 'High' | 'Medium' | 'Low',
+      reporterId: formData.reporterId!,
       assigneeId: formData.assigneeId,
-      components: formData.components || [],
+      releaseVersion: formData.releaseVersion,
       labels: formData.labels || [],
+      isMajorIncident: formData.isMajorIncident || false,
+      attachments: formData.attachments || [],
     });
     onClose();
-  };
-
-  const handleAddComponent = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if ((e.key === 'Enter' || e.key === ',') && componentInput.trim()) {
-      e.preventDefault();
-      const value = componentInput.replace(',', '').trim();
-      if (value && !formData.components?.includes(value)) {
-        setFormData(prev => ({
-          ...prev,
-          components: [...(prev.components || []), value],
-        }));
-      }
-      setComponentInput('');
-    }
-  };
-
-  const handleRemoveComponent = (component: string) => {
-    setFormData(prev => ({
-      ...prev,
-      components: prev.components?.filter(c => c !== component) || [],
-    }));
   };
 
   const handleAddLabel = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -230,12 +246,45 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
     }));
   };
 
-  const filteredUsers = USERS.filter(user => 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const newAttachments: AttachmentFile[] = files.map(file => ({
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      file,
+      name: file.name,
+      size: file.size,
+    }));
+    
+    setFormData(prev => ({
+      ...prev,
+      attachments: [...(prev.attachments || []), ...newAttachments],
+    }));
+    
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleRemoveAttachment = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      attachments: prev.attachments?.filter(a => a.id !== id) || [],
+    }));
+  };
+
+  const filteredReporters = USERS.filter(user => 
+    user.name.toLowerCase().includes(reporterSearch.toLowerCase()) ||
+    user.email.toLowerCase().includes(reporterSearch.toLowerCase())
+  );
+
+  const filteredAssignees = USERS.filter(user => 
     user.name.toLowerCase().includes(assigneeSearch.toLowerCase()) ||
     user.email.toLowerCase().includes(assigneeSearch.toLowerCase())
   );
 
-  const selectedUser = USERS.find(u => u.id === formData.assigneeId);
+  const selectedReporter = USERS.find(u => u.id === formData.reporterId);
+  const selectedAssignee = USERS.find(u => u.id === formData.assigneeId);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -292,6 +341,21 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
             {touched.description && errors.description && (
               <span className="text-xs text-red-500 mt-1 block">{errors.description}</span>
             )}
+          </div>
+
+          {/* Major Incident Flag */}
+          <div className="mb-5 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label className="text-sm font-semibold text-red-700">Major Incident</Label>
+                <p className="text-xs text-red-600 mt-0.5">Flag this as a major incident requiring immediate attention</p>
+              </div>
+              <Switch
+                checked={formData.isMajorIncident || false}
+                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isMajorIncident: checked }))}
+                className="data-[state=checked]:bg-red-600"
+              />
+            </div>
           </div>
 
           {/* Severity */}
@@ -417,6 +481,63 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
           {/* Assignment & Categorization Section */}
           <h3 className="text-sm font-semibold text-[#172B4D] mb-4">Assignment & Categorization</h3>
 
+          {/* Reporter (Required) */}
+          <div className="mb-5 relative">
+            <Label className="text-[11px] font-semibold uppercase tracking-wide text-[#6B778C] mb-2 block">
+              Reporter <span className="text-red-500">*</span>
+            </Label>
+            <div className="relative">
+              <Input
+                value={selectedReporter ? selectedReporter.name : reporterSearch}
+                onChange={(e) => {
+                  setReporterSearch(e.target.value);
+                  setShowReporterDropdown(true);
+                  if (formData.reporterId) {
+                    setFormData(prev => ({ ...prev, reporterId: undefined }));
+                  }
+                }}
+                onFocus={() => setShowReporterDropdown(true)}
+                onBlur={() => {
+                  setTimeout(() => setShowReporterDropdown(false), 200);
+                  handleBlur('reporterId');
+                }}
+                placeholder="Search for reporter..."
+                className={cn(
+                  "bg-[#FAFBFC] border-[#DFE1E6] focus:border-[#4C9AFF] focus:ring-[#4C9AFF]",
+                  touched.reporterId && errors.reporterId && "border-red-500"
+                )}
+              />
+              {showReporterDropdown && filteredReporters.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#DFE1E6] rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                  {filteredReporters.map((user) => (
+                    <button
+                      key={user.id}
+                      type="button"
+                      onClick={() => {
+                        setFormData(prev => ({ ...prev, reporterId: user.id }));
+                        setReporterSearch('');
+                        setShowReporterDropdown(false);
+                        setErrors(prev => ({ ...prev, reporterId: '' }));
+                      }}
+                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-[#F4F5F7] text-left"
+                    >
+                      <div className="w-8 h-8 rounded-full bg-[#DFE1E6] flex items-center justify-center text-xs font-medium text-[#6B778C]">
+                        {user.initials}
+                      </div>
+                      <div>
+                        <div className="text-sm text-[#172B4D]">{user.name}</div>
+                        <div className="text-xs text-[#6B778C]">{user.email}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            {touched.reporterId && errors.reporterId && (
+              <span className="text-xs text-red-500 mt-1 block">{errors.reporterId}</span>
+            )}
+          </div>
+
           {/* Assignee */}
           <div className="mb-5 relative">
             <Label className="text-[11px] font-semibold uppercase tracking-wide text-[#6B778C] mb-2 block">
@@ -424,7 +545,7 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
             </Label>
             <div className="relative">
               <Input
-                value={selectedUser ? selectedUser.name : assigneeSearch}
+                value={selectedAssignee ? selectedAssignee.name : assigneeSearch}
                 onChange={(e) => {
                   setAssigneeSearch(e.target.value);
                   setShowAssigneeDropdown(true);
@@ -437,9 +558,9 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
                 placeholder="Search for assignee..."
                 className="bg-[#FAFBFC] border-[#DFE1E6] focus:border-[#4C9AFF] focus:ring-[#4C9AFF]"
               />
-              {showAssigneeDropdown && filteredUsers.length > 0 && (
+              {showAssigneeDropdown && filteredAssignees.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-[#DFE1E6] rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
-                  {filteredUsers.map((user) => (
+                  {filteredAssignees.map((user) => (
                     <button
                       key={user.id}
                       type="button"
@@ -464,32 +585,26 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
             </div>
           </div>
 
-          {/* Components */}
+          {/* Release Version */}
           <div className="mb-5">
             <Label className="text-[11px] font-semibold uppercase tracking-wide text-[#6B778C] mb-2 block">
-              Components
+              Release Version
             </Label>
-            <div className="flex flex-wrap gap-2 mb-2">
-              {formData.components?.map((component) => (
-                <Badge
-                  key={component}
-                  variant="secondary"
-                  className="bg-[#DFE1E6] text-[#172B4D] hover:bg-[#C1C7D0] cursor-pointer"
-                  onClick={() => handleRemoveComponent(component)}
-                >
-                  {component}
-                  <X className="w-3 h-3 ml-1" />
-                </Badge>
-              ))}
-            </div>
-            <Input
-              value={componentInput}
-              onChange={(e) => setComponentInput(e.target.value)}
-              onKeyDown={handleAddComponent}
-              placeholder="Type and press Enter to add..."
-              className="bg-[#FAFBFC] border-[#DFE1E6] focus:border-[#4C9AFF] focus:ring-[#4C9AFF]"
-            />
-            <span className="text-xs text-[#6B778C] mt-1 block">Press Enter or comma to add a component</span>
+            <Select
+              value={formData.releaseVersion}
+              onValueChange={(value) => setFormData(prev => ({ ...prev, releaseVersion: value }))}
+            >
+              <SelectTrigger className="bg-[#FAFBFC] border-[#DFE1E6]">
+                <SelectValue placeholder="Select release version..." />
+              </SelectTrigger>
+              <SelectContent className="bg-white border-[#DFE1E6]">
+                {RELEASE_VERSIONS.map((version) => (
+                  <SelectItem key={version.value} value={version.value}>
+                    {version.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Labels */}
@@ -518,6 +633,59 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
               className="bg-[#FAFBFC] border-[#DFE1E6] focus:border-[#4C9AFF] focus:ring-[#4C9AFF]"
             />
             <span className="text-xs text-[#6B778C] mt-1 block">Press Enter or comma to add a label</span>
+          </div>
+
+          {/* Attachments */}
+          <div className="mb-5">
+            <Label className="text-[11px] font-semibold uppercase tracking-wide text-[#6B778C] mb-2 block">
+              Attachments
+            </Label>
+            
+            {/* File List */}
+            {formData.attachments && formData.attachments.length > 0 && (
+              <div className="mb-3 space-y-2">
+                {formData.attachments.map((attachment) => (
+                  <div
+                    key={attachment.id}
+                    className="flex items-center justify-between p-2 bg-[#F4F5F7] rounded-lg border border-[#DFE1E6]"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Paperclip className="w-4 h-4 text-[#6B778C] flex-shrink-0" />
+                      <span className="text-sm text-[#172B4D] truncate">{attachment.name}</span>
+                      <span className="text-xs text-[#6B778C]">({formatFileSize(attachment.size)})</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveAttachment(attachment.id)}
+                      className="p-1 text-[#6B778C] hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Upload Button */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.txt,.log,.zip"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-[#DFE1E6] rounded-lg text-[#6B778C] hover:border-[#B3BAC5] hover:bg-[#FAFBFC] transition-colors"
+            >
+              <Upload className="w-4 h-4" />
+              <span className="text-sm">Click to upload files</span>
+            </button>
+            <span className="text-xs text-[#6B778C] mt-1 block">
+              Supported: PDF, DOC, DOCX, XLS, XLSX, Images, TXT, LOG, ZIP
+            </span>
           </div>
         </div>
 
