@@ -1147,28 +1147,31 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
                     return (
                       <div 
-                        className="absolute flex items-center"
+                        className="absolute flex items-center cursor-pointer"
                         style={{ 
                           left: barPos.left, 
                           width: barPos.width, 
                           top: '50%', 
                           transform: 'translateY(-50%)',
-                          height: '36px',
+                          height: '32px',
                           paddingLeft: barPos.continuesLeft ? '0' : '2px',
-                          paddingRight: barPos.continuesRight ? '0' : '2px'
+                          paddingRight: barPos.continuesRight ? '0' : '2px',
+                          zIndex: 10
                         }}
+                        onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
                       >
                         {/* Continuation indicator - Left */}
                         {barPos.continuesLeft && (
-                          <div className="absolute -left-5 top-1/2 -translate-y-1/2 flex items-center" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                          <div className="absolute -left-6 top-1/2 -translate-y-1/2 flex items-center gap-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                             <ChevronLeft className="w-4 h-4" />
+                            <span className="text-[9px] font-medium whitespace-nowrap">{formatDateLabel(barPos.originalStart)}</span>
                           </div>
                         )}
 
-                        {/* The Bar with Dates */}
+                        {/* The Bar - Single unified bar with dates and status */}
                         <div 
                           className={cn(
-                            "h-full w-full flex items-center overflow-visible relative",
+                            "h-full w-full flex items-center overflow-hidden relative transition-all hover:shadow-md",
                             barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
                             barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
                           )}
@@ -1176,9 +1179,9 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         >
                           {/* Start Date - Left Edge */}
                           <span 
-                            className="absolute left-0 text-[9px] font-bold text-white/90 whitespace-nowrap z-10"
+                            className="shrink-0 text-[9px] font-bold text-white/90 whitespace-nowrap z-10"
                             style={{ 
-                              paddingLeft: barPos.continuesLeft ? '4px' : '10px',
+                              paddingLeft: barPos.continuesLeft ? '6px' : '12px',
                               textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                             }}
                           >
@@ -1186,15 +1189,15 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           </span>
 
                           {/* Status label - Centered */}
-                          <span className="flex-1 text-center text-[10px] font-semibold text-white whitespace-nowrap truncate px-12">
+                          <span className="flex-1 text-center text-[10px] font-semibold text-white whitespace-nowrap truncate px-2">
                             {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
                           </span>
 
                           {/* End Date - Right Edge */}
                           <span 
-                            className="absolute right-0 text-[9px] font-bold text-white/90 whitespace-nowrap z-10"
+                            className="shrink-0 text-[9px] font-bold text-white/90 whitespace-nowrap z-10"
                             style={{ 
-                              paddingRight: barPos.continuesRight ? '4px' : '10px',
+                              paddingRight: barPos.continuesRight ? '6px' : '12px',
                               textShadow: '0 1px 2px rgba(0,0,0,0.3)'
                             }}
                           >
@@ -1204,6 +1207,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           {/* Milestones - Properly centered on bar */}
                           {showMilestones && item.milestones.length > 0 && item.milestones.map((ms, index) => {
                             const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
+                            // Only show if milestone is within clipped bar range
+                            const msDate = new Date(ms.date);
+                            if (msDate < displayStartDate || msDate > displayEndDate) return null;
+                            
                             return (
                               <TooltipProvider key={`${item.id}-ms-${index}`} delayDuration={100}>
                                 <Tooltip>
@@ -1219,6 +1226,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                                         color: ms.state === 'complete' ? 'white' : ms.state === 'current' ? 'hsl(var(--roadmap-milestone-current))' : 'hsl(var(--roadmap-fossil))',
                                         zIndex: 15
                                       }}
+                                      onClick={(e) => e.stopPropagation()}
                                     >
                                       {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : (index + 1)}
                                     </div>
@@ -1237,7 +1245,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         {barPos.continuesRight && (
                           <div className="absolute -right-16 top-1/2 -translate-y-1/2 flex items-center gap-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                             <ChevronRight className="w-4 h-4" />
-                            <span className="text-[10px] font-medium whitespace-nowrap">{formatDateLabel(barPos.originalEnd)}</span>
+                            <span className="text-[9px] font-medium whitespace-nowrap">{formatDateLabel(barPos.originalEnd)}</span>
                           </div>
                         )}
                       </div>
