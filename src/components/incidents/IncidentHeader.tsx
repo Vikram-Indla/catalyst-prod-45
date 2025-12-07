@@ -1,5 +1,4 @@
-import { ArrowLeft, Edit, MoreVertical, Save, X, Check, AlertTriangle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Edit, MoreVertical, Save, X, Check, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -57,7 +56,7 @@ export function IncidentHeader({
   const statusColors = getStatusColor(incident.status);
 
   return (
-    <div className="border-b border-[#E8E8E8] bg-white">
+    <div className="border-b border-border bg-card">
       {/* Edit Mode Banner */}
       {isEditMode && (
         <div className="bg-amber-50 border-b border-amber-200 px-6 py-3 flex items-center justify-between">
@@ -70,7 +69,7 @@ export function IncidentHeader({
               <X className="w-4 h-4 mr-1" />
               Cancel
             </Button>
-            <Button size="sm" onClick={onSave} className="h-8 bg-[#C69C6D] hover:bg-[#B8894D] text-white">
+            <Button size="sm" onClick={onSave} className="h-8 bg-brand-gold hover:bg-brand-gold-hover text-white">
               <Save className="w-4 h-4 mr-1" />
               Save
             </Button>
@@ -78,54 +77,10 @@ export function IncidentHeader({
         </div>
       )}
 
-      {/* Navigation */}
-      <div className="flex items-center gap-4 px-6 py-3 border-b border-[#F0F0F0]">
-        <Link to="/release/incidents" className="flex items-center gap-1.5 text-[#8C8C8C] hover:text-[#C69C6D] text-sm">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Incidents
-        </Link>
-        <div className="flex-1" />
-        
-        {!isEditMode ? (
-          <>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="h-9 border-[#E8E8E8]">
-                  <MoreVertical className="w-4 h-4 mr-1.5" />
-                  Actions
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48 bg-white">
-                <DropdownMenuItem>
-                  <Check className="w-4 h-4 mr-2" />
-                  Resolve Incident
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <AlertTriangle className="w-4 h-4 mr-2" />
-                  Escalate
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600">
-                  Cancel Incident
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button 
-              size="sm" 
-              onClick={onToggleEditMode}
-              className="h-9 bg-[#C69C6D] hover:bg-[#B8894D] text-white"
-            >
-              <Edit className="w-4 h-4 mr-1.5" />
-              Edit
-            </Button>
-          </>
-        ) : null}
-      </div>
-
       {/* Incident Title */}
       <div className="px-6 py-4">
         <div className="flex items-start gap-3 mb-3">
-          <Badge className="bg-[#C69C6D]/10 text-[#C69C6D] border-0 font-semibold">
+          <Badge className="bg-brand-gold/10 text-brand-gold border-0 font-semibold">
             {incident.id}
           </Badge>
           <Badge className={cn(getSeverityColor(incident.severity || 'SEV3'), 'text-white border-0 font-semibold')}>
@@ -139,17 +94,54 @@ export function IncidentHeader({
               🚨 Major Incident
             </Badge>
           )}
+          
+          <div className="flex-1" />
+          
+          {!isEditMode && (
+            <>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-9 border-border">
+                    <MoreVertical className="w-4 h-4 mr-1.5" />
+                    Actions
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 bg-card">
+                  <DropdownMenuItem>
+                    <Check className="w-4 h-4 mr-2" />
+                    Resolve Incident
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <AlertTriangle className="w-4 h-4 mr-2" />
+                    Escalate
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem className="text-red-600">
+                    Cancel Incident
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button 
+                size="sm" 
+                onClick={onToggleEditMode}
+                className="h-9 bg-brand-gold hover:bg-brand-gold-hover text-white"
+              >
+                <Edit className="w-4 h-4 mr-1.5" />
+                Edit
+              </Button>
+            </>
+          )}
         </div>
         
         {isEditMode ? (
           <Input
             value={editedSummary}
             onChange={(e) => onSummaryChange(e.target.value)}
-            className="text-xl font-semibold h-auto py-2 border-[#C69C6D] focus:ring-[#C69C6D]"
+            className="text-xl font-semibold h-auto py-2 border-brand-gold focus:ring-brand-gold"
             placeholder="Incident summary..."
           />
         ) : (
-          <h1 className="text-[22px] font-semibold text-[#172B4D]">{incident.summary}</h1>
+          <h1 className="text-[22px] font-semibold text-foreground">{incident.summary}</h1>
         )}
       </div>
     </div>
