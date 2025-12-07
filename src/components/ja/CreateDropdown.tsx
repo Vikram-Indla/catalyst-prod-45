@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Siren } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
@@ -12,8 +12,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Circle, Square, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, AlertCircle, FileCheck, Calendar, Package, Flag, Briefcase } from "lucide-react";
-import { CreateIncidentModal, IncidentFormData } from "@/components/incidents/CreateIncidentModal";
 import { toast } from "@/hooks/use-toast";
+import type { IncidentFormData } from "@/components/incidents/CreateIncidentModal";
+
+// Lazy load the heavy modal component
+const CreateIncidentModal = lazy(() => import("@/components/incidents/CreateIncidentModal").then(m => ({ default: m.CreateIncidentModal })));
 
 // Module mapping for each item - null means always visible
 const workItems = [
@@ -164,11 +167,15 @@ export function CreateDropdown() {
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <CreateIncidentModal
-        isOpen={incidentModalOpen}
-        onClose={() => setIncidentModalOpen(false)}
-        onSubmit={handleCreateIncident}
-      />
+      {incidentModalOpen && (
+        <Suspense fallback={null}>
+          <CreateIncidentModal
+            isOpen={incidentModalOpen}
+            onClose={() => setIncidentModalOpen(false)}
+            onSubmit={handleCreateIncident}
+          />
+        </Suspense>
+      )}
     </>
   );
 }
