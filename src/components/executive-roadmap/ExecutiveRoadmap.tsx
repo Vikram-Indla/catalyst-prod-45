@@ -1157,8 +1157,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         }}
                         onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
                       >
-                        {/* Labels Row - Above the bar: Start Date | Status | End Date */}
-                        <div className="flex justify-between items-center mb-1 px-1">
+                        {/* Labels Row - Above the bar: Start Date | Status | End Date - white bg to cover bars */}
+                        <div 
+                          className="flex justify-between items-center mb-1 px-1 relative"
+                          style={{ zIndex: 20, backgroundColor: 'white' }}
+                        >
                           <span 
                             className="text-[9px] font-bold whitespace-nowrap"
                             style={{ color: 'hsl(var(--roadmap-charcoal))' }}
@@ -1179,14 +1182,14 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           </span>
                         </div>
 
-                        {/* The Bar - No text, just color */}
+                        {/* The Bar - No text, just color - lower z-index */}
                         <div 
                           className={cn(
-                            "h-5 w-full overflow-hidden relative transition-all hover:shadow-md",
+                            "h-5 w-full overflow-hidden transition-all hover:shadow-md",
                             barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
                             barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
                           )}
-                          style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)' }}
+                          style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)', position: 'relative', zIndex: 5 }}
                         >
 
                           {/* Milestones - Properly centered on bar */}
