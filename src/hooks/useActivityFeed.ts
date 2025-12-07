@@ -51,18 +51,22 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
           .range(offset, offset + limit - 1);
 
         if (recentData) {
-          allItems = recentData.map((item) => ({
-            id: item.id,
-            type: (item.room_type === "program" ? "feature" : item.room_type) as ActivityType,
-            key: item.room_id.substring(0, 8).toUpperCase(),
-            title: item.room_name,
-            projectName: item.room_subtitle || "Project",
-            updatedAt: item.last_accessed_at,
-            createdAt: item.last_accessed_at,
-            ownerId: user.id,
-            createdBy: user.id,
-            action: "updated" as const,
-          }));
+          allItems = recentData.map((item) => {
+            // Format the room type nicely
+            const roomTypeLabel = item.room_type.charAt(0).toUpperCase() + item.room_type.slice(1);
+            return {
+              id: item.id,
+              type: (item.room_type === "program" ? "feature" : item.room_type) as ActivityType,
+              key: roomTypeLabel,
+              title: item.room_name,
+              projectName: item.room_subtitle || item.page_key || "Room",
+              updatedAt: item.last_accessed_at,
+              createdAt: item.last_accessed_at,
+              ownerId: user.id,
+              createdBy: user.id,
+              action: "updated" as "created" | "updated",
+            };
+          });
         }
       } else if (tab === "assigned") {
         // Fetch items assigned to current user from multiple tables
@@ -169,18 +173,21 @@ export function useActivityFeed(options: UseActivityFeedOptions) {
           .range(offset, offset + limit - 1);
 
         if (starredData) {
-          allItems = starredData.map((item) => ({
-            id: item.id,
-            type: (item.room_type === "program" ? "feature" : item.room_type) as ActivityType,
-            key: item.room_id.substring(0, 8).toUpperCase(),
-            title: item.room_name,
-            projectName: item.room_subtitle || "Project",
-            updatedAt: item.created_at,
-            createdAt: item.created_at,
-            ownerId: null,
-            createdBy: null,
-            action: "created" as const,
-          }));
+          allItems = starredData.map((item) => {
+            const roomTypeLabel = item.room_type.charAt(0).toUpperCase() + item.room_type.slice(1);
+            return {
+              id: item.id,
+              type: (item.room_type === "program" ? "feature" : item.room_type) as ActivityType,
+              key: roomTypeLabel,
+              title: item.room_name,
+              projectName: item.room_subtitle || "Room",
+              updatedAt: item.created_at,
+              createdAt: item.created_at,
+              ownerId: null,
+              createdBy: null,
+              action: "created" as "created" | "updated",
+            };
+          });
         }
       }
 
