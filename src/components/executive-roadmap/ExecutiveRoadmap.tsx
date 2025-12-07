@@ -1160,11 +1160,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         }}
                         onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
                       >
-                        {/* Continuation indicator - Left */}
+                        {/* Continuation indicator - Left arrow only */}
                         {barPos.continuesLeft && (
-                          <div className="absolute -left-6 top-1/2 -translate-y-1/2 flex items-center gap-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                          <div className="absolute -left-5 top-1/2 -translate-y-1/2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                             <ChevronLeft className="w-4 h-4" />
-                            <span className="text-[9px] font-medium whitespace-nowrap">{formatDateLabel(barPos.originalStart)}</span>
                           </div>
                         )}
 
@@ -1241,11 +1240,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           })}
                         </div>
 
-                        {/* Continuation indicator - Right with original end date */}
+                        {/* Continuation indicator - Right arrow only */}
                         {barPos.continuesRight && (
-                          <div className="absolute -right-16 top-1/2 -translate-y-1/2 flex items-center gap-0.5" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                          <div className="absolute -right-5 top-1/2 -translate-y-1/2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                             <ChevronRight className="w-4 h-4" />
-                            <span className="text-[9px] font-medium whitespace-nowrap">{formatDateLabel(barPos.originalEnd)}</span>
                           </div>
                         )}
                       </div>
