@@ -7,8 +7,6 @@ interface ReleaseDropdownProps {
 }
 
 const releaseItems = [
-  { label: 'Overview', icon: LayoutDashboard, path: '/release/overview' },
-  { label: 'Incidents', icon: AlertCircle, path: '/release/incidents' },
   { label: 'Versions', icon: Tag, path: '/release/versions' },
   { label: 'Calendar', icon: Calendar, path: '/release/calendar' },
 ];
