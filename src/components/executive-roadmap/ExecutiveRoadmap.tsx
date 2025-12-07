@@ -1069,7 +1069,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
           <div style={{ minWidth: Math.max(600, timelineColumns.length * getColumnMinWidth()) }}>
             {/* Timeline Header */}
             <div 
-              className="sticky top-0 z-10 border-b"
+              className="sticky top-0 z-30 border-b"
               style={{ 
                 backgroundColor: 'white', 
                 borderColor: 'hsl(var(--roadmap-sandstone))', 
