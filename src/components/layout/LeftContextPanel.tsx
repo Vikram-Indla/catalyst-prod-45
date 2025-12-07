@@ -466,9 +466,15 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
         {/* Footer */}
         {expanded && (
           <div className="border-t">
-            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors">
+            <button 
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
+              onClick={() => {
+                setExpanded(false); // Collapse sidebar when navigating to settings
+                navigate('/admin/enterprise-settings');
+              }}
+            >
               <Settings className="h-5 w-5 text-muted-foreground" />
-              <span className="text-left">Settings</span>
+              <span className="text-left">Enterprise Settings</span>
             </button>
           </div>
         )}
