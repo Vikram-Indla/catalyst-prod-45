@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
 import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid, Maximize2, Minimize2 } from 'lucide-react';
 import { StatusBadge } from '@/components/release/StatusBadge';
 import { PriorityBadge } from '@/components/release/PriorityBadge';
@@ -13,8 +12,21 @@ import { cn } from '@/lib/utils';
 import incidentsData from '@/data/incidents.json';
 import type { Incident } from '@/types/release';
 import { IncidentsFiltersDialog, IncidentFilters } from '@/components/release/IncidentsFiltersDialog';
+import { IncidentDetailModal } from '@/components/incidents/modal';
 
-const incidents = incidentsData.incidents as Incident[];
+// Cast and enhance incidents data
+const rawIncidents = incidentsData.incidents as any[];
+const incidents: Incident[] = rawIncidents.map(inc => ({
+  ...inc,
+  severity: inc.severity || 'SEV2',
+  labels: inc.labels || ['production'],
+  isMajorIncident: inc.isMajorIncident || false,
+  slackChannel: inc.slackChannel || null,
+  attachments: inc.attachments || [
+    { id: 'att-1', name: 'error_logs.txt', size: '2.3 MB', uploadedBy: inc.assignee?.name || 'User', uploadedAt: '07 Feb 2025 3:19am' },
+  ],
+  releaseVersion: inc.releaseVersion || 'Release 2 - Sectorial',
+}));
 
 type ViewMode = 'list' | 'kanban';
 
@@ -40,6 +52,7 @@ export default function IncidentsList() {
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(
     new Set(['analysis', 'implementing', 'pending', 'resolved', 'closed'])
   );
+  const [selectedIncident, setSelectedIncident] = useState<Incident | null>(null);
   const pageSize = 20;
 
   const filteredIncidents = useMemo(() => {
@@ -322,12 +335,12 @@ export default function IncidentsList() {
                           />
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
-                          <Link 
-                            to={`/release/incidents/${incident.id}`}
-                            className="font-mono text-sm font-medium text-brand-gold hover:underline"
+                          <button 
+                            onClick={() => setSelectedIncident(incident)}
+                            className="font-mono text-sm font-medium text-brand-gold hover:underline cursor-pointer"
                           >
                             {incident.id}
-                          </Link>
+                          </button>
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card max-w-[300px]">
                           <span className="text-sm text-foreground truncate block">{incident.summary}</span>
@@ -536,6 +549,16 @@ export default function IncidentsList() {
         filters={filters}
         onFiltersChange={setFilters}
       />
+
+      {/* Incident Detail Modal */}
+      {selectedIncident && (
+        <IncidentDetailModal
+          incident={selectedIncident}
+          isOpen={!!selectedIncident}
+          onClose={() => setSelectedIncident(null)}
+          parentIncidentId="INC-1246"
+        />
+      )}
     </div>
   );
 }
