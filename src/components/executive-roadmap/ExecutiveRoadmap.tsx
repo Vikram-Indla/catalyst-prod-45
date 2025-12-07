@@ -32,6 +32,7 @@ import { RoadmapLegend } from './RoadmapLegend';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useRoadmapBusinessRequests } from '@/hooks/useRoadmapBusinessRequests';
 
 type TimeScale = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 type Language = 'en' | 'ar';
@@ -114,6 +115,15 @@ const STATUS_COLORS: Record<RoadmapStatus, string> = {
   'CLOSED': 'hsl(var(--roadmap-status-closed))',
 };
 
+// Status bar gradient colors (main color + lighter version for gradient)
+const STATUS_BAR_GRADIENTS: Record<RoadmapStatus, string> = {
+  'NEW': 'linear-gradient(90deg, hsl(var(--roadmap-status-new)), hsl(var(--roadmap-status-new) / 0.6))',
+  'ANALYSE': 'linear-gradient(90deg, hsl(var(--roadmap-status-analyse)), hsl(var(--roadmap-status-analyse) / 0.6))',
+  'APPROVED': 'linear-gradient(90deg, hsl(var(--roadmap-status-approved)), hsl(var(--roadmap-status-approved) / 0.6))',
+  'IMPLEMENT': 'linear-gradient(90deg, hsl(var(--roadmap-status-implement)), hsl(var(--roadmap-status-implement) / 0.6))',
+  'CLOSED': 'linear-gradient(90deg, hsl(var(--roadmap-status-closed)), hsl(var(--roadmap-status-closed) / 0.6))',
+};
+
 // 3-letter status abbreviations
 const STATUS_ABBR: Record<RoadmapStatus, string> = {
   'NEW': 'NEW',
@@ -162,6 +172,9 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
   const t = TRANSLATIONS[language];
   const isRTL = language === 'ar';
+
+  // Fetch real business requests from database
+  const { data: dbItems, isLoading: isLoadingDb } = useRoadmapBusinessRequests();
 
   // Column resize handlers
   const handleResizeMouseDown = useCallback((e: React.MouseEvent) => {
@@ -217,10 +230,12 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     enabled: !!selectedRequestId,
   });
 
-  // Use API items if available, otherwise use seed data
+  // Use database items if available, fallback to API items, then seed data
   const items = useMemo(() => {
-    return apiItems && apiItems.length > 0 ? apiItems : SEED_ROADMAP_ITEMS;
-  }, [apiItems]);
+    if (dbItems && dbItems.length > 0) return dbItems;
+    if (apiItems && apiItems.length > 0) return apiItems;
+    return SEED_ROADMAP_ITEMS;
+  }, [dbItems, apiItems]);
 
   // Get unique owners
   const uniqueOwners = useMemo(() => {
@@ -1044,7 +1059,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                     {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
                   </div>
                   
-                  {/* Bar with milestones */}
+                  {/* Bar with milestones - color based on status */}
                   <div 
                     className="absolute h-[24px] rounded-full overflow-visible flex items-center justify-center"
                     style={{ 
@@ -1053,47 +1068,53 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       top: '50%', 
                       transform: 'translateY(-50%)',
                       marginTop: '6px',
-                      background: 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
+                      background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)'
                     }}
                   >
-                    {/* Milestones - positioned on the bar */}
-                    {showMilestones && item.milestones.map((ms, index) => {
-                      const totalMilestones = item.milestones.length;
-                      let pos: number;
-                      if (totalMilestones === 1) {
-                        pos = 50;
-                      } else {
-                        pos = 10 + (index * (80 / (totalMilestones - 1)));
-                      }
+                    {/* Milestones - positioned on the bar based on actual dates */}
+                    {showMilestones && item.milestones.length > 0 && item.milestones.map((ms, index) => {
+                      // Calculate position based on milestone date relative to item start/end dates
+                      const pos = getMilestonePosition(ms.date, item.startDate, item.endDate);
                       
                       return (
-                        <div
-                          key={ms.step}
-                          className="absolute w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center text-[10px] font-medium cursor-pointer"
-                          style={{ 
-                            left: `${pos}%`, 
-                            top: '50%', 
-                            transform: 'translate(-50%, -50%)',
-                            backgroundColor: ms.state === 'complete' 
-                              ? 'hsl(var(--roadmap-milestone-complete))' 
-                              : 'white',
-                            borderColor: ms.state === 'complete' 
-                              ? 'hsl(var(--roadmap-milestone-complete))'
-                              : ms.state === 'current'
-                                ? 'hsl(var(--roadmap-milestone-current))'
-                                : 'hsl(var(--roadmap-milestone-pending))',
-                            color: ms.state === 'complete' 
-                              ? 'white'
-                              : ms.state === 'current'
-                                ? 'hsl(var(--roadmap-milestone-current))'
-                                : 'hsl(var(--roadmap-fossil))',
-                            boxShadow: ms.state === 'current' 
-                              ? '0 0 8px hsla(var(--roadmap-milestone-current) / 0.5)' 
-                              : 'none'
-                          }}
-                        >
-                          {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : ms.step}
-                        </div>
+                        <TooltipProvider key={`${item.id}-ms-${index}`} delayDuration={100}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div
+                                className="absolute w-[18px] h-[18px] rounded-full border-2 flex items-center justify-center text-[10px] font-medium cursor-pointer z-10"
+                                style={{ 
+                                  left: `${pos}%`, 
+                                  top: '50%', 
+                                  transform: 'translate(-50%, -50%)',
+                                  backgroundColor: ms.state === 'complete' 
+                                    ? 'hsl(var(--roadmap-milestone-complete))' 
+                                    : 'white',
+                                  borderColor: ms.state === 'complete' 
+                                    ? 'hsl(var(--roadmap-milestone-complete))'
+                                    : ms.state === 'current'
+                                      ? 'hsl(var(--roadmap-milestone-current))'
+                                      : 'hsl(var(--roadmap-milestone-pending))',
+                                  color: ms.state === 'complete' 
+                                    ? 'white'
+                                    : ms.state === 'current'
+                                      ? 'hsl(var(--roadmap-milestone-current))'
+                                      : 'hsl(var(--roadmap-fossil))',
+                                  boxShadow: ms.state === 'current' 
+                                    ? '0 0 8px hsla(var(--roadmap-milestone-current) / 0.5)' 
+                                    : 'none'
+                                }}
+                              >
+                                {ms.state === 'complete' ? <Check className="w-2.5 h-2.5" /> : (index + 1)}
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="text-xs">
+                              <div className="font-medium">Milestone {index + 1}</div>
+                              <div className="text-muted-foreground">
+                                {new Date(ms.date).toLocaleDateString()} · {ms.state}
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       );
                     })}
                   </div>
