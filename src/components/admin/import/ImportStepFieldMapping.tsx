@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { ArrowRight, AlertTriangle } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,6 +15,12 @@ interface ImportStepFieldMappingProps {
   onFieldMappingChange: (csvColumn: string, dbField: string) => void;
   onValueMappingToggle: (csvColumn: string, enabled: boolean) => void;
 }
+
+// Fields that support value mapping (lookup/select fields)
+const isLookupField = (field: ImportFieldConfig | undefined): boolean => {
+  if (!field) return false;
+  return field.type === 'select' || field.type === 'relation';
+};
 
 export function ImportStepFieldMapping({
   moduleConfig,
@@ -39,6 +44,11 @@ export function ImportStepFieldMapping({
     .filter(f => f.required)
     .every(f => Array.from(fieldMappings.values()).includes(f.key));
   
+  // Get the first unmapped required field for the error message
+  const unmappedRequiredField = moduleConfig.fields
+    .filter(f => f.required)
+    .find(f => !Array.from(fieldMappings.values()).includes(f.key));
+  
   return (
     <div className="space-y-6">
       <div>
@@ -53,18 +63,24 @@ export function ImportStepFieldMapping({
         <Alert className="border-amber-200 bg-amber-50">
           <AlertTriangle className="h-4 w-4 text-amber-600" />
           <AlertDescription className="text-amber-700">
-            Please note: A Catalyst <strong>{moduleConfig.fields.find(f => f.required)?.label}</strong> field mapping is required to enable import.
+            Please note: A Catalyst <strong>{unmappedRequiredField?.label}</strong> field mapping is required to enable import.
           </AlertDescription>
         </Alert>
       )}
       
-      <div className="border-t pt-6">
+      <div className="border rounded-lg overflow-hidden">
         {/* Header */}
-        <div className="grid grid-cols-[1fr,32px,1fr,120px] gap-4 pb-3 border-b text-xs font-medium text-muted-foreground uppercase tracking-wide">
-          <div>CSV Field</div>
+        <div className="grid grid-cols-[40%,auto,40%,100px] gap-4 px-6 py-3 bg-muted/50 border-b">
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            CSV Field
+          </div>
           <div></div>
-          <div>Catalyst field</div>
-          <div className="text-center">Map field value</div>
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            Catalyst Field
+          </div>
+          <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide text-center">
+            Map Field Value
+          </div>
         </div>
         
         {/* Field rows */}
@@ -74,11 +90,12 @@ export function ImportStepFieldMapping({
             const selectedFieldConfig = moduleConfig.fields.find(f => f.key === mappedField);
             const hasValueMapping = valueMappingEnabled.get(header) || false;
             const sample = getSampleValue(header);
+            const canMapValues = isLookupField(selectedFieldConfig);
             
             return (
               <div
                 key={header}
-                className="grid grid-cols-[1fr,32px,1fr,120px] gap-4 py-4 items-center"
+                className="grid grid-cols-[40%,auto,40%,100px] gap-4 px-6 py-4 items-center hover:bg-muted/30"
               >
                 {/* CSV Field */}
                 <div>
@@ -99,7 +116,13 @@ export function ImportStepFieldMapping({
                 <div>
                   <Select
                     value={mappedField || 'skip'}
-                    onValueChange={(value) => onFieldMappingChange(header, value === 'skip' ? '' : value)}
+                    onValueChange={(value) => {
+                      onFieldMappingChange(header, value === 'skip' ? '' : value);
+                      // Auto-disable value mapping if field doesn't support it
+                      if (value === 'skip' || !isLookupField(moduleConfig.fields.find(f => f.key === value))) {
+                        onValueMappingToggle(header, false);
+                      }
+                    }}
                   >
                     <SelectTrigger className={cn(
                       'w-full',
@@ -122,15 +145,31 @@ export function ImportStepFieldMapping({
                 {/* Value Mapping Checkbox */}
                 <div className="flex justify-center">
                   <Checkbox
+                    id={`map-value-${header}`}
                     checked={hasValueMapping}
-                    onCheckedChange={(checked) => onValueMappingToggle(header, checked === true)}
-                    disabled={!mappedField || !selectedFieldConfig || selectedFieldConfig.type !== 'select'}
+                    onCheckedChange={(checked) => {
+                      onValueMappingToggle(header, checked === true);
+                    }}
+                    disabled={!canMapValues}
+                    className={cn(
+                      "h-5 w-5",
+                      !canMapValues && "opacity-40 cursor-not-allowed"
+                    )}
                   />
                 </div>
               </div>
             );
           })}
         </div>
+      </div>
+      
+      {/* Legend */}
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <span className="flex items-center gap-1.5">
+          <span className="text-red-500">*</span> Required field
+        </span>
+        <span>•</span>
+        <span>Map Field Value is available for lookup/status fields only</span>
       </div>
     </div>
   );
