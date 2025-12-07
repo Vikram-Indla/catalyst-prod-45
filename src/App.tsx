@@ -130,6 +130,7 @@ import UserRoles from "./pages/admin/UserRoles";
 import ReportsDiscovery from "./pages/admin/ReportsDiscovery";
 import PIWizard from "./pages/admin/PIWizard";
 import JiraIntegration from "./pages/admin/JiraIntegration";
+import ImportData from "./pages/admin/ImportData";
 import ProductSettings from "./pages/admin/ProductSettings";
 import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
@@ -598,6 +599,7 @@ const App = () => (
                 <Route path="security" element={<Security />} />
                 <Route path="jira-config" element={<JiraIntegrationConfig />} />
                 <Route path="product-settings" element={<ProductSettings />} />
+                <Route path="import-data" element={<ImportData />} />
               </Route>
               
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
