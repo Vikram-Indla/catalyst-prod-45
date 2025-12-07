@@ -126,11 +126,9 @@
   margin-left: 0;
 }
 
-/* Feed container */
+/* Feed container - no border, clean like Jira */
 .catalyst-for-you .feed-container {
   background: var(--jira-bg);
-  border: 1px solid var(--jira-border);
-  border-radius: 8px;
   overflow: hidden;
 }
 
