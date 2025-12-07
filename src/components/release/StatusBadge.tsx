@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 
-type IncidentStatus = 'open' | 'in-progress' | 'pending' | 'resolved' | 'closed' | 'implementing' | 'analysis';
+type IncidentStatus = 'open' | 'in-progress' | 'pending' | 'resolved' | 'closed' | 'implementing' | 'analysis' | 'reopened' | 'cancelled';
 type ReleaseStatus = 'unreleased' | 'released' | 'overdue';
 
 interface StatusBadgeProps {
@@ -17,6 +17,8 @@ const statusStyles: Record<string, { bg: string; text: string; label: string }> 
   'closed': { bg: '#F5F5F5', text: '#616161', label: 'Closed' },
   'implementing': { bg: '#F3E5F5', text: '#7B1FA2', label: 'Implementing' },
   'analysis': { bg: '#FFF8E1', text: '#F57F17', label: 'Analysis' },
+  'reopened': { bg: '#FFEBEE', text: '#C62828', label: 'Reopened' },
+  'cancelled': { bg: '#ECEFF1', text: '#546E7A', label: 'Cancelled' },
   // Release statuses
   'unreleased': { bg: '#E3F2FD', text: '#1565C0', label: 'Unreleased' },
   'released': { bg: '#E8F5E9', text: '#2E7D32', label: 'Released' },
