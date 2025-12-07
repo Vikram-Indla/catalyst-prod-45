@@ -611,7 +611,7 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
 
       {/* Header */}
       <div 
-        className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b print:hidden shrink-0 relative z-20"
+        className="h-[72px] flex items-center justify-between px-4 sm:px-6 border-b print:hidden shrink-0 relative z-[100]"
         style={{ backgroundColor: 'white', borderColor: 'hsl(var(--roadmap-sandstone))' }}
       >
         <div className="flex items-center gap-3">
