@@ -1,2 +1,12 @@
 export { CreateIncidentModal } from './CreateIncidentModal';
 export type { IncidentFormData } from './CreateIncidentModal';
+export { IncidentHeader } from './IncidentHeader';
+export { IncidentDetailsPanel } from './IncidentDetailsPanel';
+export { IncidentStatusDropdown } from './IncidentStatusDropdown';
+export { MajorIncidentPanel } from './MajorIncidentPanel';
+export { SlackIntegrationPanel } from './SlackIntegrationPanel';
+export { LinkedItemsPanel } from './LinkedItemsPanel';
+export { WatchersPanel } from './WatchersPanel';
+export { IncidentDescription } from './IncidentDescription';
+export { IncidentTimeline } from './IncidentTimeline';
+export { IncidentAttachments } from './IncidentAttachments';

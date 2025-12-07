@@ -1,11 +1,11 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { UserAvatar } from '@/components/release/UserAvatar';
 import { PriorityBadge } from '@/components/release/PriorityBadge';
-import { Pause, Check, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { IncidentStatusDropdown } from './IncidentStatusDropdown';
 import type { Incident, Assignee } from '@/types/release';
 
 interface IncidentDetailsPanelProps {
@@ -15,16 +15,6 @@ interface IncidentDetailsPanelProps {
   onFieldChange: (field: keyof Incident, value: any) => void;
   onStatusChange: (status: string) => void;
 }
-
-const STATUS_OPTIONS = [
-  { value: 'open', label: 'Open', color: '#5E9CD3' },
-  { value: 'in-progress', label: 'In Progress', color: '#FFA500' },
-  { value: 'pending', label: 'Pending', color: '#FFD700' },
-  { value: 'resolved', label: 'Resolved', color: '#4CAF50' },
-  { value: 'closed', label: 'Closed', color: '#808080' },
-  { value: 'reopened', label: 'Reopened', color: '#FF6347' },
-  { value: 'cancelled', label: 'Cancelled', color: '#696969' },
-];
 
 const IMPACT_OPTIONS = ['high', 'medium', 'low'];
 const URGENCY_OPTIONS = ['high', 'medium', 'low'];
@@ -82,72 +72,20 @@ export function IncidentDetailsPanel({
     }
   };
 
+  const handleAssignToMe = () => {
+    // In real app, this would get current user
+    onFieldChange('assignee', USERS[0]);
+  };
+
   return (
     <div className="space-y-4">
-      {/* Status Panel */}
+      {/* Status Panel - Jira style */}
       <div className="bg-white border border-[#E8E8E8] rounded-lg p-4">
-        <h4 className="text-[11px] font-semibold uppercase text-[#8C8C8C] mb-3">Status</h4>
-        {isEditMode ? (
-          <Select value={currentStatus} onValueChange={onStatusChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="bg-white">
-              {STATUS_OPTIONS.map(opt => (
-                <SelectItem key={opt.value} value={opt.value}>
-                  <div className="flex items-center gap-2">
-                    <span 
-                      className="w-2 h-2 rounded-full" 
-                      style={{ backgroundColor: opt.color }}
-                    />
-                    {opt.label}
-                  </div>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : (
-          <div className="space-y-3">
-            <Badge 
-              className={cn(
-                "capitalize font-medium",
-                currentStatus === 'open' && "bg-blue-100 text-blue-700",
-                currentStatus === 'in-progress' && "bg-orange-100 text-orange-700",
-                currentStatus === 'pending' && "bg-yellow-100 text-yellow-700",
-                currentStatus === 'resolved' && "bg-green-100 text-green-700",
-                currentStatus === 'closed' && "bg-gray-100 text-gray-700",
-              )}
-            >
-              {currentStatus.replace('-', ' ')}
-            </Badge>
-            
-            {/* Status Transition Buttons */}
-            <div className="flex gap-2 mt-2">
-              {currentStatus !== 'pending' && currentStatus !== 'resolved' && currentStatus !== 'closed' && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="h-8 text-xs"
-                  onClick={() => onStatusChange('pending')}
-                >
-                  <Pause className="w-3 h-3 mr-1" />
-                  Pending
-                </Button>
-              )}
-              {currentStatus !== 'resolved' && currentStatus !== 'closed' && (
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="h-8 text-xs bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
-                  onClick={() => onStatusChange('resolved')}
-                >
-                  <Check className="w-3 h-3 mr-1" />
-                  Resolve
-                </Button>
-              )}
-            </div>
-          </div>
-        )}
+        <IncidentStatusDropdown
+          currentStatus={currentStatus}
+          onStatusChange={onStatusChange}
+          onAssignToMe={handleAssignToMe}
+        />
       </div>
 
       {/* Details Panel */}
