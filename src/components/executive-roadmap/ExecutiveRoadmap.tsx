@@ -1163,19 +1163,19 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           style={{ zIndex: 20 }}
                         >
                           <span 
-                            className="text-[9px] font-bold whitespace-nowrap"
+                            className="text-[10px] font-bold whitespace-nowrap"
                             style={{ color: 'hsl(var(--roadmap-charcoal))' }}
                           >
                             {formatShortDate(displayStartDate)}
                           </span>
                           <span 
-                            className="text-[9px] font-semibold whitespace-nowrap truncate px-2"
+                            className="text-[10px] font-semibold whitespace-nowrap truncate px-2"
                             style={{ color: 'hsl(var(--roadmap-charcoal))' }}
                           >
                             {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
                           </span>
                           <span 
-                            className="text-[9px] font-bold whitespace-nowrap"
+                            className="text-[10px] font-bold whitespace-nowrap"
                             style={{ color: 'hsl(var(--roadmap-charcoal))' }}
                           >
                             {formatShortDate(displayEndDate)}
