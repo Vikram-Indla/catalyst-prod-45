@@ -1,15 +1,18 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid, Maximize2, Minimize2 } from 'lucide-react';
 import { StatusBadge } from '@/components/release/StatusBadge';
 import { PriorityBadge } from '@/components/release/PriorityBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import incidentsData from '@/data/incidents.json';
 import type { Incident } from '@/types/release';
+import { IncidentsFiltersDialog, IncidentFilters } from '@/components/release/IncidentsFiltersDialog';
 
 const incidents = incidentsData.incidents as Incident[];
 
@@ -31,18 +34,47 @@ export default function IncidentsList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
+  const [filters, setFilters] = useState<IncidentFilters>({});
+  const [kanbanExpanded, setKanbanExpanded] = useState<boolean | undefined>(undefined);
+  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(
+    new Set(['analysis', 'implementing', 'pending', 'resolved', 'closed'])
+  );
   const pageSize = 20;
 
   const filteredIncidents = useMemo(() => {
-    if (!searchQuery) return incidents;
-    const q = searchQuery.toLowerCase();
-    return incidents.filter(inc => 
-      inc.id.toLowerCase().includes(q) ||
-      inc.summary.toLowerCase().includes(q) ||
-      inc.component.toLowerCase().includes(q) ||
-      inc.assignee.name.toLowerCase().includes(q)
-    );
-  }, [searchQuery]);
+    let result = incidents;
+    
+    // Search filter
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(inc => 
+        inc.id.toLowerCase().includes(q) ||
+        inc.summary.toLowerCase().includes(q) ||
+        inc.component.toLowerCase().includes(q) ||
+        inc.assignee.name.toLowerCase().includes(q)
+      );
+    }
+    
+    // Status filter
+    if (filters.status && filters.status.length > 0) {
+      result = result.filter(inc => filters.status!.includes(inc.status));
+    }
+    
+    // Priority filter
+    if (filters.priority && filters.priority.length > 0) {
+      result = result.filter(inc => filters.priority!.includes(inc.priority));
+    }
+    
+    return result;
+  }, [searchQuery, filters]);
+
+  // Calculate active filter count
+  const activeFilterCount = Object.entries(filters).filter(([key, value]) => {
+    if (key === 'activeSmartFilter') return false;
+    if (Array.isArray(value)) return value.length > 0;
+    return value !== undefined && value !== '' && value !== null;
+  }).length;
 
   const totalPages = Math.ceil(filteredIncidents.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
@@ -87,6 +119,44 @@ export default function IncidentsList() {
     return grouped;
   }, [filteredIncidents]);
 
+  // Kanban column toggle
+  const toggleColumnCollapse = (columnId: string) => {
+    setCollapsedColumns(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(columnId)) {
+        newSet.delete(columnId);
+      } else {
+        newSet.add(columnId);
+      }
+      return newSet;
+    });
+  };
+
+  // Expand/Collapse all handler
+  const handleExpandCollapseAll = () => {
+    if (kanbanExpanded) {
+      // Collapse all
+      setCollapsedColumns(new Set(KANBAN_COLUMNS.map(c => c.id)));
+      setKanbanExpanded(false);
+    } else {
+      // Expand all
+      setCollapsedColumns(new Set());
+      setKanbanExpanded(true);
+    }
+  };
+
+  const getTimeInStatus = (updatedAt?: string) => {
+    if (!updatedAt) return null;
+    try {
+      const updated = new Date(updatedAt);
+      const now = new Date();
+      const diffTime = Math.abs(now.getTime() - updated.getTime());
+      return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    } catch {
+      return null;
+    }
+  };
+
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header - fixed height 72px to align with sidebar */}
@@ -100,7 +170,7 @@ export default function IncidentsList() {
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 bg-card">
+      <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 bg-card border-b border-border">
         <div className="flex items-center justify-between gap-4">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
@@ -156,11 +226,43 @@ export default function IncidentsList() {
             </button>
           </div>
 
+          {/* Expand All - only in kanban mode */}
+          {viewMode === 'kanban' && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="border-border"
+              onClick={handleExpandCollapseAll}
+            >
+              {kanbanExpanded ? (
+                <>
+                  <Minimize2 className="h-4 w-4 mr-2" />
+                  Collapse All
+                </>
+              ) : (
+                <>
+                  <Maximize2 className="h-4 w-4 mr-2" />
+                  Expand All
+                </>
+              )}
+            </Button>
+          )}
+
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="border-border">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={cn("border-border", activeFilterCount > 0 && "border-brand-gold text-brand-gold")}
+              onClick={() => setFiltersDialogOpen(true)}
+            >
               <Filter className="h-4 w-4 mr-2" />
               Filters
+              {activeFilterCount > 0 && (
+                <Badge variant="secondary" className="ml-1 h-5 px-1.5 bg-brand-gold text-white rounded-full text-xs">
+                  {activeFilterCount}
+                </Badge>
+              )}
             </Button>
             <Button variant="outline" size="sm" className="border-border">
               <Download className="h-4 w-4 mr-2" />
@@ -187,25 +289,25 @@ export default function IncidentsList() {
                         />
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
-                        Incident ID ↕
+                        Incident ID
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border min-w-[200px]">
-                        Summary ↕
+                        Summary
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
-                        Priority ↕
+                        Priority
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
-                        Status ↕
+                        Status
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
-                        Assignee ↕
+                        Assignee
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
-                        Target Date ↕
+                        Target Date
                       </th>
                       <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border whitespace-nowrap">
-                        Component ↕
+                        Component
                       </th>
                     </tr>
                   </thead>
@@ -222,13 +324,13 @@ export default function IncidentsList() {
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
                           <Link 
                             to={`/release/incidents/${incident.id}`}
-                            className="font-semibold text-foreground hover:text-brand-gold"
+                            className="font-mono text-sm font-medium text-brand-gold hover:underline"
                           >
                             {incident.id}
                           </Link>
                         </td>
-                        <td className="px-4 py-3.5 border-b border-r border-border bg-card max-w-[300px] truncate text-foreground">
-                          {incident.summary}
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card max-w-[300px]">
+                          <span className="text-sm text-foreground truncate block">{incident.summary}</span>
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
                           <PriorityBadge priority={incident.priority} />
@@ -236,19 +338,19 @@ export default function IncidentsList() {
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
                           <StatusBadge status={incident.status} />
                         </td>
-                        <td className="px-4 py-3.5 border-b border-r border-border bg-card text-foreground">
-                          {incident.assignee.name}
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
+                          <span className="text-sm text-foreground">{incident.assignee.name}</span>
                         </td>
                         <td className="px-4 py-3.5 border-b border-r border-border bg-card">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-foreground">{formatDate(incident.targetDate)}</span>
+                            <span className="text-sm text-foreground">{formatDate(incident.targetDate)}</span>
                             {isOverdue(incident.targetDate) && incident.status !== 'closed' && incident.status !== 'resolved' && (
-                              <span className="w-2 h-2 rounded-full bg-red-500" />
+                              <span className="w-2 h-2 rounded-full bg-destructive" />
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3.5 border-b border-border bg-card text-foreground">
-                          {incident.component}
+                        <td className="px-4 py-3.5 border-b border-border bg-card">
+                          <span className="text-sm text-foreground">{incident.component}</span>
                         </td>
                       </tr>
                     ))}
@@ -310,48 +412,130 @@ export default function IncidentsList() {
           </div>
         ) : (
           /* Kanban View */
-          <div className="flex-1 p-4 sm:p-6 min-h-0 overflow-auto">
-            <p className="text-sm text-muted-foreground mb-4">Click any column to expand</p>
-            <div className="flex gap-4 min-w-max">
-              {KANBAN_COLUMNS.map((column) => {
-                const columnIncidents = incidentsByStatus[column.id] || [];
-                return (
-                  <div key={column.id} className="w-[300px] flex-shrink-0">
-                    <div className="flex items-center gap-2 mb-3 px-1">
-                      <ChevronLeft className="w-4 h-4 text-muted-foreground" />
-                      <div className={cn("w-3 h-3 rounded-full", column.color)} />
-                      <span className="font-medium text-sm">{column.label}</span>
-                      <span className="ml-auto px-2 py-0.5 text-xs font-medium rounded-full bg-muted text-muted-foreground">
-                        {columnIncidents.length}
-                      </span>
-                    </div>
-                    <div className="space-y-3">
-                      {columnIncidents.map((incident) => (
-                        <Card key={incident.id} className="p-4 border-border hover:border-brand-gold hover:shadow-sm transition-all cursor-pointer">
-                          <div className="font-medium text-sm mb-1">{incident.summary}</div>
-                          <div className="text-xs text-brand-gold mb-2">{incident.id}</div>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-                            <span>👤 {incident.assignee.name}</span>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-                            <span>⏱ 0d in status</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <PriorityBadge priority={incident.priority} />
-                            <span className="text-xs text-muted-foreground">
-                              📅 {formatDate(incident.targetDate)}
-                            </span>
+          <TooltipProvider delayDuration={200}>
+            <div className="flex-1 p-4 sm:p-6 min-h-0 overflow-auto">
+              <p className="text-xs text-muted-foreground/60 mb-3 italic">Click any column header to expand/collapse</p>
+              <div className="flex gap-3 min-w-max pb-4">
+                {KANBAN_COLUMNS.map((column) => {
+                  const columnIncidents = incidentsByStatus[column.id] || [];
+                  const isCollapsed = collapsedColumns.has(column.id);
+                  
+                  if (isCollapsed) {
+                    return (
+                      <div 
+                        key={column.id} 
+                        className="flex-shrink-0 w-12 cursor-pointer group"
+                        onClick={() => toggleColumnCollapse(column.id)}
+                      >
+                        <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-brand-gold/30 transition-colors">
+                          <div className="h-full flex flex-col items-center py-4">
+                            <div className={cn("w-3 h-3 rounded-full shadow-sm mb-3", column.color)} />
+                            <Badge variant="secondary" className="rounded-full text-xs font-medium px-2 py-0.5 bg-muted/80 mb-3">
+                              {columnIncidents.length}
+                            </Badge>
+                            <div className="flex-1 flex items-center justify-center">
+                              <span 
+                                className="text-sm font-semibold tracking-tight text-foreground/80 whitespace-nowrap"
+                                style={{ 
+                                  writingMode: 'vertical-rl',
+                                  textOrientation: 'mixed',
+                                  transform: 'rotate(180deg)'
+                                }}
+                              >
+                                {column.label}
+                              </span>
+                            </div>
+                            <ChevronRight className="h-4 w-4 text-muted-foreground mt-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                           </div>
                         </Card>
-                      ))}
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div key={column.id} className="flex-shrink-0 w-[300px]">
+                      <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 flex flex-col max-h-[calc(100vh-280px)]">
+                        <CardHeader className="pb-3 bg-card/95 backdrop-blur-sm z-10 border-b border-border/30 flex-shrink-0">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <button 
+                                onClick={() => toggleColumnCollapse(column.id)}
+                                className="p-0.5 hover:bg-muted/50 rounded transition-colors"
+                              >
+                                <ChevronLeft className="h-4 w-4 text-muted-foreground" />
+                              </button>
+                              <div className={cn("w-3 h-3 rounded-full shadow-sm", column.color)} />
+                              <CardTitle className="text-sm font-semibold tracking-tight">{column.label}</CardTitle>
+                            </div>
+                            <Badge variant="secondary" className="rounded-full text-xs font-medium px-2.5 py-0.5 bg-muted/80">
+                              {columnIncidents.length}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="space-y-3 min-h-[200px] flex-1 overflow-y-auto p-3">
+                          {columnIncidents.map((incident) => (
+                            <Card 
+                              key={incident.id} 
+                              className="cursor-pointer hover:shadow-lg hover:border-brand-gold/30 transition-all duration-200 bg-card border-border/60"
+                            >
+                              <CardContent className="p-4 space-y-3">
+                                <div className="flex items-start justify-between gap-2">
+                                  <span className="text-sm font-medium line-clamp-2 text-foreground/90">{incident.summary}</span>
+                                </div>
+                                
+                                <div className="text-xs text-brand-gold font-mono font-medium">
+                                  {incident.id}
+                                </div>
+
+                                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                  <span>👤 {incident.assignee.name}</span>
+                                </div>
+
+                                {getTimeInStatus(incident.targetDate) !== null && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground cursor-help">
+                                        <span>⏱ {getTimeInStatus(incident.targetDate)}d in status</span>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="text-xs">
+                                      Time in current status: {getTimeInStatus(incident.targetDate)} days
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+
+                                <div className="flex items-center justify-between pt-1 border-t border-border/30">
+                                  <PriorityBadge priority={incident.priority} />
+                                  <span className="text-xs text-muted-foreground">
+                                    📅 {formatDate(incident.targetDate)}
+                                  </span>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                          {columnIncidents.length === 0 && (
+                            <div className="text-center py-12 text-sm text-muted-foreground/60 italic">
+                              No incidents
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          </TooltipProvider>
         )}
       </div>
+
+      {/* Filters Dialog */}
+      <IncidentsFiltersDialog
+        open={filtersDialogOpen}
+        onOpenChange={setFiltersDialogOpen}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
     </div>
   );
 }
