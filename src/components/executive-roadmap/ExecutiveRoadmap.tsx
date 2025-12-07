@@ -401,11 +401,11 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     enabled: !!selectedRequestId,
   });
 
-  // Use database items if available, fallback to API items, then seed data
+  // Use database items if available, fallback to API items - NO seed data fallback
   const items = useMemo(() => {
     if (dbItems && dbItems.length > 0) return dbItems;
     if (apiItems && apiItems.length > 0) return apiItems;
-    return SEED_ROADMAP_ITEMS;
+    return []; // Empty when no real data
   }, [dbItems, apiItems]);
 
   // Get unique owners
