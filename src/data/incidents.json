@@ -1,0 +1,245 @@
+{
+  "incidents": [
+    {
+      "id": "INC-1247",
+      "summary": "Production database connection pool exhausted",
+      "description": "Production database is experiencing connection pool exhaustion, causing service degradation across multiple applications. The connection pool is reaching its maximum limit of 100 connections, resulting in timeouts for new connection requests.",
+      "impact": "high",
+      "urgency": "high",
+      "priority": "critical",
+      "status": "open",
+      "assignee": {
+        "id": "user-1",
+        "name": "Fahad Al-Rashid",
+        "initials": "FA",
+        "email": "fahad@example.com"
+      },
+      "reporter": {
+        "id": "user-2",
+        "name": "Sara Al-Mutairi",
+        "initials": "SA",
+        "email": "sara@example.com"
+      },
+      "component": "Database",
+      "targetDate": "2025-12-07",
+      "createdAt": "2025-12-06T10:42:00Z",
+      "updatedAt": "2025-12-06T10:47:00Z",
+      "linkedItems": [
+        { "type": "story", "id": "STORY-1892", "summary": "Connection pooling optimization" },
+        { "type": "defect", "id": "DEF-445", "summary": "Memory leak in DB connector" },
+        { "type": "task", "id": "TASK-2103", "summary": "Increase pool size to 150" }
+      ],
+      "watchers": ["user-1", "user-2", "user-3", "user-4"],
+      "comments": [
+        {
+          "id": "comment-1",
+          "author": { "id": "user-1", "name": "Fahad Al-Rashid", "initials": "FA" },
+          "text": "Investigating the connection pool metrics. Current usage is at 98/100 connections with 47 requests waiting in queue.",
+          "createdAt": "2025-12-06T10:43:00Z"
+        },
+        {
+          "id": "comment-2",
+          "author": { "id": "user-2", "name": "Sara Al-Mutairi", "initials": "SA" },
+          "text": "@Fahad Al-Rashid I'm seeing the same pattern in the API logs. Looks like connections aren't being released properly after v2.5.1 deployment.",
+          "createdAt": "2025-12-06T10:45:00Z"
+        }
+      ]
+    },
+    {
+      "id": "INC-1246",
+      "summary": "API gateway returning 502 errors intermittently",
+      "description": "The API gateway is returning HTTP 502 Bad Gateway errors for approximately 5% of requests. This appears to be affecting all endpoints.",
+      "impact": "high",
+      "urgency": "high",
+      "priority": "critical",
+      "status": "in-progress",
+      "assignee": {
+        "id": "user-2",
+        "name": "Sara Al-Mutairi",
+        "initials": "SA",
+        "email": "sara@example.com"
+      },
+      "reporter": {
+        "id": "user-3",
+        "name": "Ahmed Al-Harbi",
+        "initials": "AH",
+        "email": "ahmed@example.com"
+      },
+      "component": "API Gateway",
+      "targetDate": "2025-12-08",
+      "createdAt": "2025-12-06T09:15:00Z",
+      "updatedAt": "2025-12-06T10:30:00Z",
+      "linkedItems": [],
+      "watchers": ["user-2", "user-3"],
+      "comments": []
+    },
+    {
+      "id": "INC-1245",
+      "summary": "Authentication service failing for SSO users",
+      "description": "Users attempting to log in via Single Sign-On (SSO) are experiencing authentication failures. Local authentication is working correctly.",
+      "impact": "high",
+      "urgency": "high",
+      "priority": "critical",
+      "status": "open",
+      "assignee": {
+        "id": "user-3",
+        "name": "Ahmed Al-Harbi",
+        "initials": "AH",
+        "email": "ahmed@example.com"
+      },
+      "reporter": {
+        "id": "user-1",
+        "name": "Fahad Al-Rashid",
+        "initials": "FA",
+        "email": "fahad@example.com"
+      },
+      "component": "Authentication",
+      "targetDate": "2025-12-07",
+      "createdAt": "2025-12-06T08:30:00Z",
+      "updatedAt": "2025-12-06T08:30:00Z",
+      "linkedItems": [],
+      "watchers": ["user-3"],
+      "comments": []
+    },
+    {
+      "id": "INC-1244",
+      "summary": "Email notification queue backlog exceeding threshold",
+      "description": "The email notification queue has grown to over 10,000 messages, causing significant delays in notification delivery.",
+      "impact": "medium",
+      "urgency": "high",
+      "priority": "high",
+      "status": "implementing",
+      "assignee": {
+        "id": "user-4",
+        "name": "Nadia Al-Salem",
+        "initials": "NA",
+        "email": "nadia@example.com"
+      },
+      "reporter": {
+        "id": "user-2",
+        "name": "Sara Al-Mutairi",
+        "initials": "SA",
+        "email": "sara@example.com"
+      },
+      "component": "Notifications",
+      "targetDate": "2025-12-10",
+      "createdAt": "2025-12-05T14:00:00Z",
+      "updatedAt": "2025-12-06T09:00:00Z",
+      "linkedItems": [],
+      "watchers": ["user-4"],
+      "comments": []
+    },
+    {
+      "id": "INC-1243",
+      "summary": "Dashboard widgets not loading for some users",
+      "description": "Some users report that dashboard widgets are not loading. The issue appears to be intermittent and may be related to browser caching.",
+      "impact": "medium",
+      "urgency": "high",
+      "priority": "high",
+      "status": "analysis",
+      "assignee": {
+        "id": "user-5",
+        "name": "Omar Al-Fahad",
+        "initials": "OF",
+        "email": "omar@example.com"
+      },
+      "reporter": {
+        "id": "user-4",
+        "name": "Nadia Al-Salem",
+        "initials": "NA",
+        "email": "nadia@example.com"
+      },
+      "component": "Frontend",
+      "targetDate": "2025-12-12",
+      "createdAt": "2025-12-05T11:00:00Z",
+      "updatedAt": "2025-12-05T15:00:00Z",
+      "linkedItems": [],
+      "watchers": ["user-5"],
+      "comments": []
+    },
+    {
+      "id": "INC-1242",
+      "summary": "File upload timing out for large files",
+      "description": "File uploads larger than 50MB are timing out. This is affecting users who need to upload large documents.",
+      "impact": "medium",
+      "urgency": "medium",
+      "priority": "medium",
+      "status": "pending",
+      "assignee": {
+        "id": "user-1",
+        "name": "Fahad Al-Rashid",
+        "initials": "FA",
+        "email": "fahad@example.com"
+      },
+      "reporter": {
+        "id": "user-5",
+        "name": "Omar Al-Fahad",
+        "initials": "OF",
+        "email": "omar@example.com"
+      },
+      "component": "Storage",
+      "targetDate": "2025-12-15",
+      "createdAt": "2025-12-04T16:00:00Z",
+      "updatedAt": "2025-12-05T10:00:00Z",
+      "linkedItems": [],
+      "watchers": ["user-1"],
+      "comments": []
+    },
+    {
+      "id": "INC-1241",
+      "summary": "Search indexing delayed by 30 minutes",
+      "description": "New content is taking approximately 30 minutes to appear in search results. Expected delay is under 5 minutes.",
+      "impact": "medium",
+      "urgency": "medium",
+      "priority": "medium",
+      "status": "resolved",
+      "assignee": {
+        "id": "user-2",
+        "name": "Sara Al-Mutairi",
+        "initials": "SA",
+        "email": "sara@example.com"
+      },
+      "reporter": {
+        "id": "user-3",
+        "name": "Ahmed Al-Harbi",
+        "initials": "AH",
+        "email": "ahmed@example.com"
+      },
+      "component": "Search",
+      "targetDate": "2025-12-05",
+      "createdAt": "2025-12-03T09:00:00Z",
+      "updatedAt": "2025-12-05T14:00:00Z",
+      "linkedItems": [],
+      "watchers": ["user-2"],
+      "comments": []
+    },
+    {
+      "id": "INC-1240",
+      "summary": "Mobile push notifications not delivered",
+      "description": "Push notifications are not being delivered to mobile devices. The issue affects both iOS and Android platforms.",
+      "impact": "low",
+      "urgency": "low",
+      "priority": "low",
+      "status": "closed",
+      "assignee": {
+        "id": "user-3",
+        "name": "Ahmed Al-Harbi",
+        "initials": "AH",
+        "email": "ahmed@example.com"
+      },
+      "reporter": {
+        "id": "user-4",
+        "name": "Nadia Al-Salem",
+        "initials": "NA",
+        "email": "nadia@example.com"
+      },
+      "component": "Mobile",
+      "targetDate": "2025-12-01",
+      "createdAt": "2025-11-28T10:00:00Z",
+      "updatedAt": "2025-12-01T16:00:00Z",
+      "linkedItems": [],
+      "watchers": ["user-3"],
+      "comments": []
+    }
+  ]
+}
