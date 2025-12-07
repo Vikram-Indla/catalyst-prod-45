@@ -91,7 +91,7 @@ function CatalystShellContent() {
       <div className="flex flex-1 overflow-hidden">
           {/* No sidebar for Home route or Admin routes - sidebars only show for enabled modules */}
           {location.pathname !== '/home' && !location.pathname.startsWith('/admin') && (
-            <div className="relative overflow-visible flex-shrink-0">
+            <div className="relative flex-shrink-0 mr-3">
               {isProductRoute && isModuleEnabled('PRODUCT') ? (
                 <ProductRoomSidebar
                   expanded={sidebarExpanded}
