@@ -82,49 +82,83 @@ function CatalystShellContent() {
     }
   }, [location.pathname, tier, setTier]);
 
+  // Determine if we have a sidebar for this route
+  const hasSidebar = location.pathname !== '/home' && !location.pathname.startsWith('/admin');
+  
+  // Render the appropriate sidebar based on tier and route
+  const renderSidebar = () => {
+    if (!hasSidebar) return null;
+    
+    if (isProductRoute && isModuleEnabled('PRODUCT')) {
+      return (
+        <ProductRoomSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          className="border-r-0" // Remove border-r, parent handles it
+        />
+      );
+    }
+    if (tier === 'enterprise' && isModuleEnabled('ENTERPRISE')) {
+      return <LeftContextPanel />;
+    }
+    if (tier === 'program' && currentProgramId && isModuleEnabled('PROGRAM')) {
+      return (
+        <ProgramRoomSidebar
+          programId={currentProgramId}
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          selectedPI={selectedPI || undefined}
+          onPIChange={(pi) => setSelectedPI(pi)}
+        />
+      );
+    }
+    if (tier === 'portfolio' && currentPortfolioId && isModuleEnabled('PORTFOLIO')) {
+      return (
+        <PortfolioRoomSidebar
+          portfolioId={currentPortfolioId}
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+          selectedPI={selectedPI || undefined}
+          onPIChange={(pi) => setSelectedPI(pi)}
+        />
+      );
+    }
+    if (tier === 'team' && currentTeamId && isModuleEnabled('TEAMS')) {
+      return (
+        <TeamRoomSidebar
+          teamId={currentTeamId}
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+    return null;
+  };
+
+  const sidebar = renderSidebar();
+
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-white">
       {/* Global Header - Catalyst Style */}
       <CatalystHeader />
+      
+      {/* Continuous divider under top header - spans full width */}
+      <div className="w-full border-b border-border" />
 
-      {/* Main Content with Context Panel - Conditional Sidebar Based on Tier and Route */}
-      <div className="flex flex-1 overflow-hidden">
-          {/* No sidebar for Home route or Admin routes - sidebars only show for enabled modules */}
-          {location.pathname !== '/home' && !location.pathname.startsWith('/admin') && (
-            <div className="relative flex-shrink-0 mr-3">
-              {isProductRoute && isModuleEnabled('PRODUCT') ? (
-                <ProductRoomSidebar
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                />
-              ) : tier === 'enterprise' && isModuleEnabled('ENTERPRISE') ? (
-                <LeftContextPanel />
-              ) : tier === 'program' && currentProgramId && isModuleEnabled('PROGRAM') ? (
-                <ProgramRoomSidebar
-                  programId={currentProgramId}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                  selectedPI={selectedPI || undefined}
-                  onPIChange={(pi) => setSelectedPI(pi)}
-                />
-              ) : tier === 'portfolio' && currentPortfolioId && isModuleEnabled('PORTFOLIO') ? (
-                <PortfolioRoomSidebar
-                  portfolioId={currentPortfolioId}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                  selectedPI={selectedPI || undefined}
-                  onPIChange={(pi) => setSelectedPI(pi)}
-                />
-              ) : tier === 'team' && currentTeamId && isModuleEnabled('TEAMS') ? (
-                <TeamRoomSidebar
-                  teamId={currentTeamId}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                />
-              ) : null}
-            </div>
-          )}
-        <main className="flex-1 overflow-auto">
+      {/* Main Content with Split Layout */}
+      <div className="flex flex-1 overflow-hidden bg-white">
+        {/* Left Panel (Sidebar) with vertical divider */}
+        {sidebar && (
+          <div 
+            className="relative flex-shrink-0 border-r border-border transition-all duration-300"
+            style={{ width: sidebarExpanded ? 192 : 64 }}
+          >
+            {sidebar}
+          </div>
+        )}
+        
+        {/* Right Body */}
+        <main className="flex-1 overflow-auto bg-white">
           <AnnouncementBanner />
           <Outlet />
         </main>
