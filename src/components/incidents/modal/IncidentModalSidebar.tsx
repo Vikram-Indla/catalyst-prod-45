@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, Settings } from 'lucide-react';
 import type { Incident } from '@/types/release';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 interface IncidentModalSidebarProps {
   incident: Incident;
-  onFieldChange: (field: keyof Incident, value: any) => void;
+  onFieldChange: (field: keyof Incident, value: unknown) => void;
 }
 
 const STATUS_OPTIONS = [
@@ -97,11 +96,9 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
             <div>
               <div className="text-[11px] text-[#42526E] mb-1">Assignee</div>
               <div className="flex items-center gap-2 p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-[#F4F5F7] hover:border-[#DFE1E6] cursor-pointer">
-                <Avatar className="w-6 h-6">
-                  <AvatarFallback className="bg-purple-600 text-white text-[10px] font-medium">
-                    {incident.assignee?.initials || 'RA'}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white text-[10px] font-medium flex items-center justify-center">
+                  {incident.assignee?.initials || 'RA'}
+                </div>
                 <span className="text-sm text-[#172B4D]">{incident.assignee?.name || 'Rahaf Alhejaili'}</span>
               </div>
               <a className="text-sm text-[#0052CC] hover:underline cursor-pointer mt-1 inline-block">
@@ -113,11 +110,9 @@ export function IncidentModalSidebar({ incident, onFieldChange }: IncidentModalS
             <div>
               <div className="text-[11px] text-[#42526E] mb-1">Reporter</div>
               <div className="flex items-center gap-2 p-1.5 -mx-1.5 rounded border-2 border-transparent hover:bg-[#F4F5F7] hover:border-[#DFE1E6] cursor-pointer">
-                <Avatar className="w-6 h-6">
-                  <AvatarFallback className="bg-purple-600 text-white text-[10px] font-medium">
-                    {incident.reporter?.initials || 'VI'}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="w-6 h-6 rounded-full bg-purple-600 text-white text-[10px] font-medium flex items-center justify-center">
+                  {incident.reporter?.initials || 'VI'}
+                </div>
                 <span className="text-sm text-[#172B4D]">{incident.reporter?.name || 'vikram indla'}</span>
               </div>
             </div>
