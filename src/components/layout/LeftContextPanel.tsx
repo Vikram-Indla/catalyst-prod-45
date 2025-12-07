@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   ChevronLeft,
@@ -82,13 +82,15 @@ interface LeftContextPanelProps {
 }
 
 export function LeftContextPanel({ className }: LeftContextPanelProps) {
-  const [expanded, setExpanded] = useState(true);
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Start collapsed when on admin routes
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const [expanded, setExpanded] = useState(!isAdminRoute);
   const [moreItemsExpanded, setMoreItemsExpanded] = useState(false);
   const [reportsExpanded, setReportsExpanded] = useState(false);
   const [morePagesExpanded, setMorePagesExpanded] = useState(false);
-
-  const navigate = useNavigate();
-  const location = useLocation();
   const {
     tier,
     portfolioId,
@@ -102,6 +104,13 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   } = useCatalystContext();
 
   const { isModuleEnabled } = useEnabledModules();
+
+  // Auto-collapse when navigating to admin routes
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin')) {
+      setExpanded(false);
+    }
+  }, [location.pathname]);
 
   // More items sub-menu for Enterprise with module codes
   const allMoreItemsSubMenu = [
