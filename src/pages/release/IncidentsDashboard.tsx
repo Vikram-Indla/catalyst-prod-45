@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { PageHeader } from '@/components/release/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -53,35 +52,40 @@ export default function IncidentsDashboard() {
   const total = statusData.reduce((acc, s) => acc + s.count, 0);
 
   return (
-    <div className="p-6 md:p-8">
-      <PageHeader
-        title="Incidents Dashboard"
-        actions={
+    <div className="h-full flex flex-col bg-background">
+      {/* Header - fixed height 72px to align with sidebar */}
+      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
+        <div className="h-full px-4 sm:px-6 flex items-center justify-between">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Incidents Dashboard</h1>
+          </div>
           <Link to="/release/incidents">
-            <Button variant="outline" className="border-[#E8E8E8] text-[#5C5C5C]">
+            <Button variant="outline" className="border-border text-muted-foreground">
               View List
             </Button>
           </Link>
-        }
-      />
-
-      {/* Time Filter */}
-      <div className="flex gap-1 mb-6">
-        {timeFilters.map((filter) => (
-          <button
-            key={filter}
-            onClick={() => setActiveFilter(filter)}
-            className={cn(
-              "px-4 py-2 text-sm rounded-md border transition-colors",
-              activeFilter === filter
-                ? "bg-[#C69C6D] border-[#C69C6D] text-white font-semibold"
-                : "bg-white border-[#E8E8E8] text-[#5C5C5C] hover:bg-[#FAFAFA]"
-            )}
-          >
-            {filter}
-          </button>
-        ))}
+        </div>
       </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-auto p-4 sm:p-6">
+        {/* Time Filter */}
+        <div className="flex gap-1 mb-6">
+          {timeFilters.map((filter) => (
+            <button
+              key={filter}
+              onClick={() => setActiveFilter(filter)}
+              className={cn(
+                "px-4 py-2 text-sm rounded-md border transition-colors",
+                activeFilter === filter
+                  ? "bg-brand-gold border-brand-gold text-white font-semibold"
+                  : "bg-white border-border text-muted-foreground hover:bg-muted/50"
+              )}
+            >
+              {filter}
+            </button>
+          ))}
+        </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-7">
@@ -277,6 +281,7 @@ export default function IncidentsDashboard() {
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
     </div>
   );
