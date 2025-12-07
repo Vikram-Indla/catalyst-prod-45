@@ -8,6 +8,7 @@ import {
   Database 
 } from 'lucide-react';
 import type { ProductSettingsTab } from '@/pages/admin/ProductSettings';
+import { useAdminSidebar } from '@/contexts/AdminSidebarContext';
 
 interface ProductSettingsNavProps {
   activeTab: ProductSettingsTab;
@@ -24,6 +25,13 @@ const navItems: Array<{ id: ProductSettingsTab; label: string; icon: React.Eleme
 ];
 
 export function ProductSettingsNav({ activeTab, onTabChange }: ProductSettingsNavProps) {
+  const { collapse } = useAdminSidebar();
+
+  const handleTabChange = (tab: ProductSettingsTab) => {
+    collapse();
+    onTabChange(tab);
+  };
+
   return (
     <nav className="w-56 flex-shrink-0">
       <div className="bg-card border rounded-lg p-2 sticky top-0">
@@ -35,7 +43,7 @@ export function ProductSettingsNav({ activeTab, onTabChange }: ProductSettingsNa
             return (
               <li key={item.id}>
                 <button
-                  onClick={() => onTabChange(item.id)}
+                  onClick={() => handleTabChange(item.id)}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
                     isActive 
