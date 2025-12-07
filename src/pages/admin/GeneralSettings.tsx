@@ -21,20 +21,20 @@ export default function GeneralSettings() {
   return (
     <AdminGuard>
       <div className="h-full w-full flex flex-col bg-background">
-        <div className="border-b bg-card px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-gold/10">
+        <div className="h-[72px] border-b bg-card px-6 flex items-center">
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-center gap-3 min-w-0">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-gold/10 flex-shrink-0">
                 <Settings className="h-5 w-5 text-brand-gold" />
               </div>
-              <div>
-                <h1 className="text-2xl font-semibold text-foreground">General Settings</h1>
-                <p className="text-sm text-muted-foreground mt-1">
+              <div className="min-w-0">
+                <h1 className="text-2xl font-semibold text-foreground truncate">General Settings</h1>
+                <p className="text-sm text-muted-foreground truncate">
                   Configure system-wide general settings and preferences
                 </p>
               </div>
             </div>
-            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover">
+            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
               Save Settings
             </Button>
           </div>

@@ -113,11 +113,11 @@ export default function Features() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="border-b bg-card px-3 sm:px-[var(--s6)] py-3 sm:py-[var(--s4)]">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="h-[72px] border-b bg-card px-3 sm:px-[var(--s6)] flex items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold">Features</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">Program-level features driving epic delivery</p>
+            <h1 className="text-xl sm:text-2xl font-bold truncate">Features</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground truncate">Program-level features driving epic delivery</p>
           </div>
           <PermissionGuard requiredRole="team_lead" showMessage={false}>
             <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm">

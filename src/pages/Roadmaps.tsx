@@ -304,36 +304,24 @@ export default function Roadmaps() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Header */}
-        <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-3 sm:py-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <Star className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-              <h1 className="text-lg sm:text-xl font-semibold">Live Roadmap</h1>
+        <div className="h-[72px] border-b bg-card px-3 sm:px-4 md:px-6 flex items-center">
+          <div className="flex items-center justify-between w-full gap-3">
+            <div className="flex items-center gap-2 min-w-0">
+              <Star className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
+              <h1 className="text-lg sm:text-xl font-semibold truncate">Live Roadmap</h1>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <Button variant="ghost" size="sm">
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Button variant="ghost" size="sm" className="hidden sm:inline-flex">
                 <Settings className="h-4 w-4 mr-2" />
                 View Configuration
               </Button>
               <Button variant="ghost" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
+                <Filter className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Filter</span>
               </Button>
-              <Button variant="ghost" size="sm">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Sync
-              </Button>
-              <Select defaultValue="main">
-                <SelectTrigger className="w-[160px]">
-                  <SelectValue placeholder="Detached Instance" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="main">Main Instance</SelectItem>
-                </SelectContent>
-              </Select>
               <Button size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export
+                <Download className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Export</span>
               </Button>
             </div>
           </div>

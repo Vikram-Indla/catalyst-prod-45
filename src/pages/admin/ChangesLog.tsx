@@ -127,14 +127,14 @@ export default function ChangesLog() {
   return (
     <AdminGuard>
       <div className="h-full flex flex-col bg-background">
-        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Changes Log</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+        <div className="h-[72px] flex items-center justify-between border-b bg-card px-6">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold text-foreground truncate">Changes Log</h1>
+            <p className="text-sm text-muted-foreground truncate">
               Track all system configuration and data changes
             </p>
           </div>
-          <Button variant="outline">
+          <Button variant="outline" className="flex-shrink-0">
             <Download className="h-4 w-4 mr-2" />
             Export Log
           </Button>

@@ -143,11 +143,11 @@ export default function PIObjectives() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">PI Objectives</h1>
-            <p className="text-sm text-muted-foreground">
+      <div className="h-[72px] border-b bg-card px-6 flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold truncate">PI Objectives</h1>
+            <p className="text-sm text-muted-foreground truncate">
               {pi?.name} • {pi?.portfolios?.name}
             </p>
           </div>
@@ -157,6 +157,7 @@ export default function PIObjectives() {
                 resetForm();
                 setDialogOpen(true);
               }}
+              className="flex-shrink-0"
             >
               <Plus className="h-4 w-4 mr-2" />
               New PI Objective

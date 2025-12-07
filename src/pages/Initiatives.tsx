@@ -96,14 +96,14 @@ export default function Initiatives() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Initiatives</h1>
-            <p className="text-sm text-muted-foreground">Strategic initiatives driving portfolio goals</p>
+      <div className="h-[72px] border-b bg-card px-6 flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold truncate">Initiatives</h1>
+            <p className="text-sm text-muted-foreground truncate">Strategic initiatives driving portfolio goals</p>
           </div>
           <PermissionGuard requiredRole="team_lead" showMessage={false}>
-            <Button onClick={handleCreate}><Plus className="h-4 w-4 mr-2" />New Initiative</Button>
+            <Button onClick={handleCreate} className="flex-shrink-0"><Plus className="h-4 w-4 mr-2" />New Initiative</Button>
           </PermissionGuard>
         </div>
       </div>

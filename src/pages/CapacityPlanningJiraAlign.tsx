@@ -372,15 +372,15 @@ export default function CapacityPlanningJiraAlign() {
         )}
 
         {/* Header */}
-        <div className="border-b bg-card px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Capacity</h1>
-              <p className="text-sm text-muted-foreground">
+        <div className="h-[72px] border-b bg-card px-6 flex items-center">
+          <div className="flex items-center justify-between w-full">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold truncate">Capacity</h1>
+              <p className="text-sm text-muted-foreground truncate">
                 {selectedPI?.name || 'Program Increment'} Capacity Plan
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-shrink-0">
               <Button variant="outline" onClick={() => setAuditLogOpen(true)}>
                 Audit Log
               </Button>

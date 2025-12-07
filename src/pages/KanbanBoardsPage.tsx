@@ -48,17 +48,17 @@ export default function KanbanBoardsPage() {
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-background px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Kanban Boards</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+      <div className="h-[72px] border-b border-border bg-background px-6 flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold text-foreground truncate">Kanban Boards</h1>
+            <p className="text-sm text-muted-foreground truncate">
               Manage and visualize work across teams
             </p>
           </div>
           <Button
             onClick={() => setCreateBoardOpen(true)}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+            className="bg-brand-gold hover:bg-brand-gold-hover text-white flex-shrink-0"
           >
             <Plus className="w-4 h-4 mr-2" />
             Create Board

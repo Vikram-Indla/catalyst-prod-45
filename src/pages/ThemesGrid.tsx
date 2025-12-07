@@ -143,9 +143,9 @@ export default function ThemesGrid() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-semibold">Themes</h1>
+      <div className="h-[72px] border-b bg-card px-6 flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-2xl font-semibold truncate">Themes</h1>
           <div className="flex items-center gap-2">
             <Button onClick={() => setAddThemeOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />

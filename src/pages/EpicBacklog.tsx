@@ -175,7 +175,7 @@ export default function EpicBacklog() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Top Action Bar - First Row */}
-      <div className="border-b bg-card px-3 sm:px-6 py-2 sm:py-3 flex-shrink-0">
+      <div className="h-[72px] border-b bg-card px-3 sm:px-6 flex items-center flex-shrink-0">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           {/* Left: Star and Viewing dropdown */}
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 overflow-x-auto">

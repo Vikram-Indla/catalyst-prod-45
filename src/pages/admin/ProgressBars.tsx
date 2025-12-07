@@ -22,15 +22,15 @@ export default function ProgressBars() {
   return (
     <AdminGuard>
       <div className="h-full w-full flex flex-col bg-background">
-        <div className="border-b bg-card px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-foreground">Progress Bars Configuration</h1>
-              <p className="text-sm text-muted-foreground mt-1">
-                Set progress alert thresholds for Late (red) and Warning (yellow) indicators
+        <div className="h-[72px] border-b bg-card px-6 flex items-center">
+          <div className="flex items-center justify-between w-full">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-semibold text-foreground truncate">Progress Bars Configuration</h1>
+              <p className="text-sm text-muted-foreground truncate">
+                Set progress alert thresholds for Late and Warning indicators
               </p>
             </div>
-            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover">
+            <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
               Save Configuration
             </Button>
           </div>
