@@ -90,7 +90,7 @@ export function HomeContent() {
 
   return (
     <div className="min-h-screen bg-muted/30">
-      <div className="container mx-auto px-6 py-5 max-w-[1400px]">
+      <div className="px-6 py-5">
         {/* Recent Rooms Section */}
         <section className="mb-6">
           <h2 className="text-[13px] font-semibold text-foreground mb-3">Recent rooms</h2>
