@@ -258,56 +258,40 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
       </button>
 
       <div className="h-full flex flex-col overflow-hidden">
-        {/* Context Header - aligned with page header */}
+        {/* Context Header - fixed height 72px to align with page header */}
+        <div className={cn("h-[72px] border-b border-border flex items-center", expanded ? "px-4" : "justify-center")}>
+          {!expanded && (
+            <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+              EN
+            </div>
+          )}
+          {expanded && tier === 'enterprise' && (
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+                EN
+              </div>
+              <div>
+                <div className="text-sm font-medium">Enterprise</div>
+                <div className="text-xs text-muted-foreground">Strategy</div>
+              </div>
+            </div>
+          )}
+          {expanded && (tier === 'portfolio' || tier === 'program') && currentPortfolio && (
+            <div className="flex items-center gap-3">
+              <div className={cn("w-8 h-8 rounded flex items-center justify-center text-white text-xs font-semibold flex-shrink-0", currentPortfolio.color)}>
+                {currentPortfolio.abbr}
+              </div>
+              <div className="flex-1 text-left min-w-0">
+                <div className="text-sm font-medium text-foreground truncate">{currentPortfolio.name}</div>
+                <div className="text-xs text-muted-foreground">Portfolio</div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Filters section - only when expanded */}
         {expanded && (
-          <div className="border-b border-border px-4 py-4">
-              {/* Portfolio/Program Selector */}
-              {(tier === 'portfolio' || tier === 'program') && currentPortfolio && (
-                <Select value={portfolioId || undefined} onValueChange={setPortfolioId}>
-                  <SelectTrigger className="h-auto bg-background border-border hover:bg-accent/50" style={{ padding: 'var(--s2) var(--s3)', marginBottom: 'var(--s3)' }}>
-                    <div className="flex items-center w-full" style={{ gap: 'var(--s3)' }}>
-                      <div className={cn("w-8 h-8 rounded flex items-center justify-center text-white text-xs font-semibold flex-shrink-0", currentPortfolio.color)}>
-                        {currentPortfolio.abbr}
-                      </div>
-                      <div className="flex-1 text-left min-w-0">
-                        <div className="text-sm font-medium text-foreground truncate">{currentPortfolio.name}</div>
-                        <div className="text-xs text-muted-foreground">Portfolio</div>
-                      </div>
-                    </div>
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border-border z-[100]">
-                    {portfolios.map(portfolio => (
-                      <SelectItem key={portfolio.id} value={portfolio.id}>
-                        <div className="flex items-center gap-3">
-                          <div className={cn("w-8 h-8 rounded flex items-center justify-center text-white text-xs font-semibold", portfolio.color)}>
-                            {portfolio.abbr}
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium">{portfolio.name}</div>
-                            <div className="text-xs text-muted-foreground">Portfolio</div>
-                          </div>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-
-              {/* Enterprise Header */}
-              {tier === 'enterprise' && (
-                <div className="mb-3">
-                  <div className="flex items-center gap-3 px-3 py-2">
-                    <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
-                      EN
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium">Enterprise</div>
-                      <div className="text-xs text-muted-foreground">Strategy</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
+          <div className="px-4 py-4 border-b border-border">
               {/* Program Increment Filter */}
               {(tier === 'portfolio' || tier === 'program') && (
                 <div>
