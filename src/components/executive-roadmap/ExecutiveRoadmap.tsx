@@ -1195,9 +1195,34 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                       {item.id}
                     </button>
                   </div>
-                  <div className="text-sm font-medium truncate leading-tight mt-1" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
-                    {isRTL ? item.titleAr : item.titleEn}
-                  </div>
+                  <TooltipProvider delayDuration={300}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="text-sm font-medium truncate leading-tight mt-1 cursor-default" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>
+                          {isRTL ? item.titleAr : item.titleEn}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent 
+                        side="top" 
+                        align="start"
+                        sideOffset={8}
+                        className="max-w-[400px] px-4 py-3 text-sm leading-relaxed rounded-xl shadow-2xl z-[9999] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+                        style={{ 
+                          backgroundColor: 'hsl(var(--roadmap-charcoal))',
+                          color: 'white',
+                          border: '1px solid hsla(35, 46%, 60%, 0.3)',
+                          boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px hsla(35, 46%, 60%, 0.15)'
+                        }}
+                      >
+                        <div className="font-semibold mb-1.5 text-xs uppercase tracking-wider" style={{ color: 'hsl(35, 46%, 70%)' }}>
+                          {item.id}
+                        </div>
+                        <div className="font-medium" style={{ color: 'white' }}>
+                          {isRTL ? item.titleAr : item.titleEn}
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <div className="text-[11px] mt-1 truncate" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
                     {isRTL ? item.ownerAr : item.ownerEn}
                     <span className="mx-1.5">·</span>
