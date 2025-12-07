@@ -29,24 +29,16 @@ const iconMap: Record<CatalystToastType, LucideIcon> = {
 
 const typeStyles = {
   info: {
-    borderGradient: 'bg-gradient-to-b from-brand-gold to-brand-gold-dark',
-    iconBg: 'bg-brand-gold/10',
-    iconColor: 'text-brand-gold-dark',
+    iconColor: 'text-brand-gold',
   },
   success: {
-    borderGradient: 'bg-gradient-to-b from-toast-success-border to-toast-success-border-dark',
-    iconBg: 'bg-toast-success-bg',
-    iconColor: 'text-toast-success-icon',
+    iconColor: 'text-emerald-500',
   },
   error: {
-    borderGradient: 'bg-gradient-to-b from-toast-error-border to-toast-error-border-dark',
-    iconBg: 'bg-toast-error-bg',
-    iconColor: 'text-toast-error-icon',
+    iconColor: 'text-red-500',
   },
   warning: {
-    borderGradient: 'bg-gradient-to-b from-toast-warning-border to-toast-warning-border-dark',
-    iconBg: 'bg-toast-warning-bg',
-    iconColor: 'text-toast-warning-icon',
+    iconColor: 'text-amber-500',
   },
 };
 
@@ -82,10 +74,10 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
   return (
     <div
       className={cn(
-        'relative flex items-start gap-3 p-4 pr-5 min-w-[360px] max-w-[450px]',
-        'bg-gradient-to-br from-white to-neutral-50 rounded-xl',
-        'border border-neutral-200 overflow-hidden',
-        'shadow-[0_4px_12px_rgba(0,0,0,0.15),0_2px_4px_rgba(0,0,0,0.1)]',
+        'relative flex items-start gap-4 px-5 py-4 min-w-[380px] max-w-[460px]',
+        'bg-white rounded-xl',
+        'border border-neutral-200/80',
+        'shadow-[0_8px_30px_rgba(0,0,0,0.08),0_4px_12px_rgba(0,0,0,0.05)]',
         'font-sans motion-reduce:animate-none',
         isExiting ? 'animate-toast-out' : 'animate-toast-in',
         isRTL ? 'rtl' : 'ltr'
@@ -96,43 +88,28 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
       onMouseLeave={() => setIsPaused(false)}
       dir={isRTL ? 'rtl' : 'ltr'}
     >
-      {/* Left Accent Bar */}
-      <div
-        className={cn(
-          'absolute top-0 bottom-0 w-1 rounded-l-xl',
-          styles.borderGradient,
-          isRTL ? 'right-0 rounded-l-none rounded-r-xl' : 'left-0'
-        )}
-        aria-hidden="true"
-      />
-
-      {/* Icon Container */}
-      <div
-        className={cn(
-          'flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-lg',
-          styles.iconBg
-        )}
-      >
-        <Icon size={24} className={styles.iconColor} aria-hidden="true" />
+      {/* Icon */}
+      <div className="flex-shrink-0 pt-0.5">
+        <Icon size={28} className={cn(styles.iconColor, 'stroke-[1.5]')} aria-hidden="true" />
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0 pt-0.5">
-        <p className="text-[15px] font-semibold text-catalyst-black leading-tight mb-1">
+        <p className="text-[15px] font-semibold text-neutral-900 leading-tight mb-1">
           {title}
         </p>
-        <p className="text-[13px] text-toast-message leading-relaxed">
+        <p className="text-[13px] text-neutral-500 leading-relaxed">
           {message}
         </p>
         
         {action && (
-          <div className="mt-3">
+          <div className="mt-2.5">
             <button
               onClick={action.onClick}
               className={cn(
-                'text-[13px] font-medium text-brand-gold-dark',
+                'text-[13px] font-medium text-brand-gold',
                 'bg-transparent border-none cursor-pointer p-0',
-                'hover:text-catalyst-black hover:underline',
+                'hover:text-brand-gold-dark hover:underline',
                 'transition-all duration-150 ease-out',
                 'focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2 rounded'
               )}
@@ -148,15 +125,14 @@ export const CatalystToast: React.FC<CatalystToastProps> = ({
         onClick={handleClose}
         aria-label="Dismiss notification"
         className={cn(
-          'absolute top-2 w-7 h-7 flex items-center justify-center',
-          'bg-transparent border-none cursor-pointer rounded',
-          'text-toast-close hover:text-catalyst-black hover:bg-neutral-100',
+          'flex-shrink-0 w-6 h-6 flex items-center justify-center',
+          'bg-transparent border-none cursor-pointer rounded-md',
+          'text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100',
           'transition-all duration-150 ease-out',
-          'focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2',
-          isRTL ? 'left-2' : 'right-2'
+          'focus:outline-none focus:ring-2 focus:ring-brand-gold focus:ring-offset-2'
         )}
       >
-        <X size={16} aria-hidden="true" />
+        <X size={18} strokeWidth={1.5} aria-hidden="true" />
       </button>
     </div>
   );
