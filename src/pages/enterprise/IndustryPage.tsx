@@ -23,6 +23,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useIndustryPreferences } from '@/hooks/useIndustryPreferences';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { BulkSelectionToolbar, BulkEditDialog, BulkTransitionDialog, BulkDeleteDialog, demandBulkConfig, BulkOperationType } from '@/components/bulk-operations';
+import { useBulkOperations } from '@/hooks/useBulkOperations';
 
 // Non-editable columns
 const NON_EDITABLE_COLUMNS = ['request_key', 'rank', 'title', 'submitted_date', 'ageing', 'business_score'];
@@ -308,8 +310,53 @@ export default function IndustryPage() {
     newRank: 0,
     score: null
   });
+  const [bulkEditOpen, setBulkEditOpen] = useState(false);
+  const [bulkTransitionOpen, setBulkTransitionOpen] = useState(false);
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Bulk operations hook
+  const { bulkEdit, bulkTransition, bulkDelete } = useBulkOperations({
+    queryKey: ['business-requests'],
+    softDelete: true,
+  });
+
+  // Get selected items for bulk operations
+  const selectedItems = useMemo(() => 
+    sortedRequests.filter(r => selectedRows.includes(r.id)),
+    [sortedRequests, selectedRows]
+  );
+
+  const handleBulkAction = (action: BulkOperationType) => {
+    switch (action) {
+      case 'edit':
+        setBulkEditOpen(true);
+        break;
+      case 'transition':
+        setBulkTransitionOpen(true);
+        break;
+      case 'delete':
+        setBulkDeleteOpen(true);
+        break;
+    }
+  };
+
+  const handleClearSelection = () => setSelectedRows([]);
+
+  // Toggle select all on current page
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      const pageIds = paginatedRequests.map(r => r.id);
+      setSelectedRows(prev => [...new Set([...prev, ...pageIds])]);
+    } else {
+      const pageIds = new Set(paginatedRequests.map(r => r.id));
+      setSelectedRows(prev => prev.filter(id => !pageIds.has(id)));
+    }
+  };
+
+  const allPageSelected = paginatedRequests.length > 0 && 
+    paginatedRequests.every(r => selectedRows.includes(r.id));
 
   // Handle create=true from URL (from global Create dropdown)
   useEffect(() => {
@@ -772,6 +819,18 @@ export default function IndustryPage() {
               </Button>
             </div>
           </div>
+
+          {/* Bulk Selection Toolbar */}
+          {selectedRows.length > 0 && (
+            <div className="px-4 sm:px-6 pb-3">
+              <BulkSelectionToolbar
+                selectedCount={selectedRows.length}
+                config={demandBulkConfig}
+                onAction={handleBulkAction}
+                onClearSelection={handleClearSelection}
+              />
+            </div>
+          )}
         </div>
 
         {/* Main Content - Single scroll container to fix drag-drop */}
@@ -799,9 +858,15 @@ export default function IndustryPage() {
                     {/* Table Header */}
                     <thead className="sticky top-0 z-40" style={{ position: 'sticky', background: 'hsl(35 46% 97%)' }}>
                       <tr style={{ background: 'hsl(35 46% 97%)' }}>
-                        {/* Checkbox header cell */}
+                        {/* Checkbox header cell - Select All */}
                         <th className="h-10 px-3 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border" style={{ width: '48px', minWidth: '48px', background: 'hsl(35 46% 97%)' }}>
-                          <div className="w-4" />
+                          <div className="flex items-center justify-center">
+                            <Checkbox 
+                              checked={allPageSelected} 
+                              onCheckedChange={handleSelectAll}
+                              className="h-4 w-4" 
+                            />
+                          </div>
                         </th>
                         
                         {/* Column headers */}
@@ -1199,6 +1264,41 @@ export default function IndustryPage() {
           onOpenChange={setFiltersDialogOpen}
           filters={filters}
           onFiltersChange={setFilters}
+        />
+
+        {/* Bulk Operation Dialogs */}
+        <BulkEditDialog
+          open={bulkEditOpen}
+          onOpenChange={setBulkEditOpen}
+          config={demandBulkConfig}
+          selectedIds={selectedRows}
+          selectedItems={selectedItems}
+          onExecute={(fields) => bulkEdit(selectedRows, selectedItems, fields).then(result => {
+            if (result.successCount > 0) handleClearSelection();
+            return result;
+          })}
+        />
+        <BulkTransitionDialog
+          open={bulkTransitionOpen}
+          onOpenChange={setBulkTransitionOpen}
+          config={demandBulkConfig}
+          selectedIds={selectedRows}
+          selectedItems={selectedItems}
+          onExecute={(status, comment) => bulkTransition(selectedRows, selectedItems, status, comment).then(result => {
+            if (result.successCount > 0) handleClearSelection();
+            return result;
+          })}
+        />
+        <BulkDeleteDialog
+          open={bulkDeleteOpen}
+          onOpenChange={setBulkDeleteOpen}
+          config={demandBulkConfig}
+          selectedIds={selectedRows}
+          selectedItems={selectedItems}
+          onExecute={() => bulkDelete(selectedRows, selectedItems).then(result => {
+            if (result.successCount > 0) handleClearSelection();
+            return result;
+          })}
         />
       </div>
     </TooltipProvider>
