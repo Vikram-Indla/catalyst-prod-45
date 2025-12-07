@@ -344,19 +344,6 @@ export default function IndustryPage() {
 
   const handleClearSelection = () => setSelectedRows([]);
 
-  // Toggle select all on current page
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      const pageIds = paginatedRequests.map(r => r.id);
-      setSelectedRows(prev => [...new Set([...prev, ...pageIds])]);
-    } else {
-      const pageIds = new Set(paginatedRequests.map(r => r.id));
-      setSelectedRows(prev => prev.filter(id => !pageIds.has(id)));
-    }
-  };
-
-  const allPageSelected = paginatedRequests.length > 0 && 
-    paginatedRequests.every(r => selectedRows.includes(r.id));
 
   // Handle create=true from URL (from global Create dropdown)
   useEffect(() => {
@@ -600,6 +587,20 @@ export default function IndustryPage() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedRequests = sortedRequests.slice(startIndex, endIndex);
+
+  // Toggle select all on current page
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      const pageIds = paginatedRequests.map(r => r.id);
+      setSelectedRows(prev => [...new Set([...prev, ...pageIds])]);
+    } else {
+      const pageIds = new Set(paginatedRequests.map(r => r.id));
+      setSelectedRows(prev => prev.filter(id => !pageIds.has(id)));
+    }
+  };
+
+  const allPageSelected = paginatedRequests.length > 0 && 
+    paginatedRequests.every(r => selectedRows.includes(r.id));
 
   const handleSort = (columnId: string) => {
     setColumnSort(prev => ({
