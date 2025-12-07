@@ -10,6 +10,7 @@ import { NavigationProvider } from "./contexts/NavigationContext";
 import { CatalystToastProvider } from "./contexts/CatalystToastContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CatalystShell } from "./components/layout/CatalystShell";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import Auth from "./pages/Auth";
 import Home from "./pages/jira-align/Home";
 import PortfolioRoomPageOld from "./pages/jira-align/PortfolioRoomPage";
@@ -209,6 +210,7 @@ import {
 const queryClient = new QueryClient();
 
 const App = () => (
+  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
@@ -632,6 +634,7 @@ const App = () => (
     </AuthProvider>
   </ThemeProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
