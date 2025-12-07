@@ -59,21 +59,22 @@ export default function KanbanBoardView() {
   return (
     <div className="flex flex-col h-full bg-background">
       {/* Header */}
-      <div className="border-b border-border bg-background px-6 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <div className="h-[72px] border-b border-border bg-background px-6 flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-4 min-w-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate(basePath)}
+              className="flex-shrink-0"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
-            <div>
-              <h1 className="text-lg font-semibold text-foreground">{board.title}</h1>
+            <div className="min-w-0">
+              <h1 className="text-lg font-semibold text-foreground truncate">{board.title}</h1>
               {board.description && (
-                <p className="text-sm text-muted-foreground">{board.description}</p>
+                <p className="text-sm text-muted-foreground truncate">{board.description}</p>
               )}
             </div>
           </div>

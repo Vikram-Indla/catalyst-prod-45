@@ -27,10 +27,10 @@ export default function TeamsDirectory() {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="border-b border-border bg-background px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4">
-          <h1 className="text-xl sm:text-2xl font-semibold text-foreground">Teams</h1>
-          <Button onClick={() => setCreateDialogOpen(true)} size="sm">
+      <div className="h-[72px] border-b border-border bg-background px-3 sm:px-6 flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Teams</h1>
+          <Button onClick={() => setCreateDialogOpen(true)} size="sm" className="flex-shrink-0">
             <Plus className="w-4 h-4 mr-2" />
             Create Team
           </Button>

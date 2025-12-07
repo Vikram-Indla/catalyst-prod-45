@@ -69,13 +69,13 @@ export default function KnowledgeHubPage() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BookOpen className="h-6 w-6 text-brand-gold" />
-            <h1 className="text-xl font-semibold">Knowledge Hub</h1>
+      <div className="h-[72px] border-b bg-card px-6 flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-3 min-w-0">
+            <BookOpen className="h-6 w-6 text-brand-gold flex-shrink-0" />
+            <h1 className="text-xl font-semibold truncate">Knowledge Hub</h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-shrink-0">
             <Button variant="outline" onClick={() => setCreateSpaceOpen(true)}>
               <FolderOpen className="h-4 w-4 mr-2" />
               New Space

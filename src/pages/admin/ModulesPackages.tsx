@@ -124,15 +124,15 @@ export default function ModulesPackages() {
   return (
     <AdminGuard>
       <div className="h-full flex flex-col bg-background">
-        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Modules & Packages</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Configure which Catalyst modules are available for this organization, and which solution package is applied.
+        <div className="h-[72px] flex items-center justify-between border-b bg-card px-6">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold text-foreground truncate">Modules & Packages</h1>
+            <p className="text-sm text-muted-foreground truncate">
+              Configure which Catalyst modules are available for this organization
             </p>
           </div>
           <Button 
-            className="bg-brand-gold hover:bg-brand-gold-hover"
+            className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0"
             onClick={handleSave}
             disabled={!hasChanges || updateSettings.isPending}
           >

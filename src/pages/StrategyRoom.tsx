@@ -74,11 +74,11 @@ export default function StrategyRoom() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Strategy Room</h1>
-            <p className="text-sm text-muted-foreground">Objectives and Key Results</p>
+      <div className="h-[72px] border-b bg-card px-6 flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold truncate">Strategy Room</h1>
+            <p className="text-sm text-muted-foreground truncate">Objectives and Key Results</p>
           </div>
           <PermissionGuard requiredRole="program_manager" showMessage={false}>
             <Button onClick={() => { setEditingObjectiveId(undefined); setObjectiveDialogOpen(true); }}>

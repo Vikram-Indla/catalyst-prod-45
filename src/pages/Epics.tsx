@@ -98,14 +98,14 @@ export default function Epics() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="h-[72px] border-b bg-card px-3 sm:px-6 flex items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
           <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl font-bold">Epics</h1>
-            <p className="text-xs sm:text-sm text-muted-foreground">Large initiatives broken into deliverable features</p>
+            <h1 className="text-xl sm:text-2xl font-bold truncate">Epics</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground truncate">Large initiatives broken into deliverable features</p>
           </div>
           <PermissionGuard requiredRole="program_manager" showMessage={false}>
-            <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm">
+            <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm flex-shrink-0">
               <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
               <span className="hidden sm:inline">New Epic</span>
               <span className="sm:hidden ml-1">New</span>

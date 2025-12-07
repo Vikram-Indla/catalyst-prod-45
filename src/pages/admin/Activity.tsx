@@ -56,14 +56,14 @@ export default function Activity() {
   return (
     <AdminGuard>
       <div className="h-full flex flex-col bg-background">
-        <div className="flex items-center justify-between border-b bg-card px-6 py-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-foreground">Activity</h1>
-            <p className="text-sm text-muted-foreground mt-1">
-              Track user activity by users' names and roles. Access user profiles, roles, and announcements.
+        <div className="h-[72px] flex items-center justify-between border-b bg-card px-6">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-semibold text-foreground truncate">Activity</h1>
+            <p className="text-sm text-muted-foreground truncate">
+              Track user activity by users' names and roles
             </p>
           </div>
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 flex-shrink-0">
             <Download className="h-4 w-4" />
             Export
           </Button>

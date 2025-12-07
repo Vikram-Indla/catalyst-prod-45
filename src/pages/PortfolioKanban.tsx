@@ -106,25 +106,18 @@ export default function PortfolioKanban() {
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Header */}
-      <div className="border-b bg-card px-6 py-4">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold">Portfolio Kanban</h1>
-            <p className="text-sm text-muted-foreground">Visualize portfolio work flow</p>
+      <div className="h-[72px] border-b bg-card px-6 flex items-center">
+        <div className="flex items-center justify-between w-full">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold truncate">Portfolio Kanban</h1>
+            <p className="text-sm text-muted-foreground truncate">Visualize portfolio work flow</p>
           </div>
           <PermissionGuard requiredRole="program_manager" showMessage={false}>
-            <Button>
+            <Button className="flex-shrink-0">
               <Plus className="h-4 w-4 mr-2" />
               New Item
             </Button>
           </PermissionGuard>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">View:</span>
-            <span className="text-sm text-muted-foreground">Epics by Theme</span>
-          </div>
         </div>
       </div>
 
