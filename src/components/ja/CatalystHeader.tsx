@@ -20,6 +20,7 @@ import { StarredDropdown } from "./StarredDropdown";
 import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
 import { MobileNavigationMenu } from "./MobileNavigationMenu";
 import { TestsDropdown } from "./TestsDropdown";
+import { ReleaseDropdown } from "./ReleaseDropdown";
 import { catalystToast } from "@/lib/catalystToast";
 import {
   DropdownMenu,
@@ -92,6 +93,7 @@ export function CatalystHeader() {
     { label: "Portfolio", hasDropdown: true, moduleCode: "PORTFOLIO" },
     { label: "Program", hasDropdown: true, moduleCode: "PROGRAM" },
     { label: "Team", hasDropdown: true, path: "/teams", moduleCode: "TEAMS" },
+    { label: "Release", hasDropdown: true, path: "/release", moduleCode: null }, // Always visible
   ];
 
   // Get all nav items with their enabled status
@@ -216,6 +218,24 @@ export function CatalystHeader() {
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
                           <TeamSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                        </PopoverContent>
+                      </Popover>
+                    ) : item.label === "Release" ? (
+                      <Popover
+                        open={activeDropdown === item.label}
+                        onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
+                      >
+                        <PopoverTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            className={`${navButtonClass} ${location.pathname.startsWith('/release') ? 'text-brand-gold font-semibold' : ''}`}
+                          >
+                            {item.label}
+                            <ChevronDown className="h-3 w-3 block" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="p-0 w-auto z-[60]" align="start">
+                          <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
                         </PopoverContent>
                       </Popover>
                     ) : item.label === "Starred" ? (

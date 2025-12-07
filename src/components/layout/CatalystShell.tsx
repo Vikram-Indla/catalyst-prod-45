@@ -8,6 +8,7 @@ import { ProgramRoomSidebar } from './ProgramRoomSidebar';
 import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
+import { ReleaseRoomSidebar } from './ReleaseRoomSidebar';
 import { CatalystContextProvider, useCatalystContext } from '@/contexts/CatalystContext';
 import { AnnouncementBanner } from '@/components/notifications/AnnouncementBanner';
 import { useTrackLastRoute } from '@/hooks/useSessionPersistence';
@@ -56,7 +57,9 @@ function CatalystShellContent() {
 
   // Check if on product/industry route
   const isProductRoute = location.pathname.startsWith('/industry');
-
+  
+  // Check if on release route
+  const isReleaseRoute = location.pathname.startsWith('/release');
   // Automatically set tier based on current route
   useEffect(() => {
     const path = location.pathname;
@@ -92,7 +95,12 @@ function CatalystShellContent() {
           {/* No sidebar for Home route or Admin routes - sidebars only show for enabled modules */}
           {location.pathname !== '/home' && !location.pathname.startsWith('/admin') && (
             <div className="relative flex-shrink-0 mr-3">
-              {isProductRoute && isModuleEnabled('PRODUCT') ? (
+              {isReleaseRoute ? (
+                <ReleaseRoomSidebar
+                  expanded={sidebarExpanded}
+                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+                />
+              ) : isProductRoute && isModuleEnabled('PRODUCT') ? (
                 <ProductRoomSidebar
                   expanded={sidebarExpanded}
                   onToggle={() => setSidebarExpanded(!sidebarExpanded)}
