@@ -171,98 +171,104 @@ export default function ImportData() {
   }
   
   return (
-    <div className="p-6">
-      <div className="h-[72px] flex items-center justify-between border-b mb-6">
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="h-[72px] flex items-center justify-between border-b px-6 shrink-0">
         <h1 className="text-2xl font-semibold text-foreground">Import {moduleConfig?.label}</h1>
         <ImportWizardStepper steps={wizardSteps} currentStep={currentStep} className="max-w-xl" />
       </div>
       
-      <div className="max-w-4xl">
-        {currentStep === 1 && (
-          <ImportStepSetup
-            file={file}
-            parsedData={parsedData}
-            headers={csvHeaders}
-            useExistingConfig={useExistingConfig}
-            onFileSelect={handleFileSelect}
-            onClearFile={() => { setFile(null); setParsedData([]); setCsvHeaders([]); }}
-            onUseExistingConfigChange={setUseExistingConfig}
-          />
-        )}
-        
-        {currentStep === 2 && moduleConfig && (
-          <ImportStepSettings
-            moduleConfig={moduleConfig}
-            encoding={encoding}
-            delimiter={delimiter}
-            dateFormat={dateFormat}
-            targetProject={targetProject}
-            onEncodingChange={setEncoding}
-            onDelimiterChange={setDelimiter}
-            onDateFormatChange={setDateFormat}
-            onTargetProjectChange={setTargetProject}
-            projects={[]}
-          />
-        )}
-        
-        {currentStep === 3 && moduleConfig && (
-          <ImportStepFieldMapping
-            moduleConfig={moduleConfig}
-            csvHeaders={csvHeaders}
-            parsedData={parsedData}
-            fieldMappings={fieldMappings}
-            valueMappingEnabled={valueMappingEnabled}
-            onFieldMappingChange={(csv, db) => setFieldMappings(prev => new Map(prev).set(csv, db))}
-            onValueMappingToggle={(csv, enabled) => setValueMappingEnabled(prev => new Map(prev).set(csv, enabled))}
-          />
-        )}
-        
-        {currentStep === 4 && moduleConfig && (
-          <ImportStepMapValues
-            moduleConfig={moduleConfig}
-            csvHeaders={csvHeaders}
-            parsedData={parsedData}
-            fieldMappings={fieldMappings}
-            valueMappingEnabled={valueMappingEnabled}
-            valueMappings={valueMappings}
-            onValueMappingChange={(csv, csvVal, target) => {
-              setValueMappings(prev => {
-                const newMap = new Map(prev);
-                const inner = newMap.get(csv) || new Map();
-                inner.set(csvVal, target);
-                newMap.set(csv, inner);
-                return newMap;
-              });
-            }}
-          />
-        )}
-        
-        {currentStep === 5 && moduleConfig && (
-          <ImportStepValidation
-            moduleConfig={moduleConfig}
-            parsedData={parsedData}
-            fieldMappings={fieldMappings}
-            dateFormat={dateFormat}
-            validationResults={validationResults}
-            onValidate={handleValidate}
-            onDownloadErrors={() => toast.info('Error report downloaded')}
-          />
-        )}
-        
-        {currentStep === 6 && moduleConfig && (
-          <ImportStepConfirm
-            moduleConfig={moduleConfig}
-            validationResults={validationResults}
-            isImporting={isImporting}
-            importProgress={importProgress}
-            importResult={importResult}
-            onBeginImport={handleBeginImport}
-            onDownloadPreview={() => toast.info('Preview downloaded')}
-          />
-        )}
-        
-        {/* Navigation */}
-        <div className="flex items-center gap-3 mt-8 pt-6 border-t">
+      {/* Content */}
+      <div className="flex-1 overflow-auto px-6 py-6">
+        <div className="max-w-4xl">
+          {currentStep === 1 && (
+            <ImportStepSetup
+              file={file}
+              parsedData={parsedData}
+              headers={csvHeaders}
+              useExistingConfig={useExistingConfig}
+              onFileSelect={handleFileSelect}
+              onClearFile={() => { setFile(null); setParsedData([]); setCsvHeaders([]); }}
+              onUseExistingConfigChange={setUseExistingConfig}
+            />
+          )}
+          
+          {currentStep === 2 && moduleConfig && (
+            <ImportStepSettings
+              moduleConfig={moduleConfig}
+              encoding={encoding}
+              delimiter={delimiter}
+              dateFormat={dateFormat}
+              targetProject={targetProject}
+              onEncodingChange={setEncoding}
+              onDelimiterChange={setDelimiter}
+              onDateFormatChange={setDateFormat}
+              onTargetProjectChange={setTargetProject}
+              projects={[]}
+            />
+          )}
+          
+          {currentStep === 3 && moduleConfig && (
+            <ImportStepFieldMapping
+              moduleConfig={moduleConfig}
+              csvHeaders={csvHeaders}
+              parsedData={parsedData}
+              fieldMappings={fieldMappings}
+              valueMappingEnabled={valueMappingEnabled}
+              onFieldMappingChange={(csv, db) => setFieldMappings(prev => new Map(prev).set(csv, db))}
+              onValueMappingToggle={(csv, enabled) => setValueMappingEnabled(prev => new Map(prev).set(csv, enabled))}
+            />
+          )}
+          
+          {currentStep === 4 && moduleConfig && (
+            <ImportStepMapValues
+              moduleConfig={moduleConfig}
+              csvHeaders={csvHeaders}
+              parsedData={parsedData}
+              fieldMappings={fieldMappings}
+              valueMappingEnabled={valueMappingEnabled}
+              valueMappings={valueMappings}
+              onValueMappingChange={(csv, csvVal, target) => {
+                setValueMappings(prev => {
+                  const newMap = new Map(prev);
+                  const inner = newMap.get(csv) || new Map();
+                  inner.set(csvVal, target);
+                  newMap.set(csv, inner);
+                  return newMap;
+                });
+              }}
+            />
+          )}
+          
+          {currentStep === 5 && moduleConfig && (
+            <ImportStepValidation
+              moduleConfig={moduleConfig}
+              parsedData={parsedData}
+              fieldMappings={fieldMappings}
+              dateFormat={dateFormat}
+              validationResults={validationResults}
+              onValidate={handleValidate}
+              onDownloadErrors={() => toast.info('Error report downloaded')}
+            />
+          )}
+          
+          {currentStep === 6 && moduleConfig && (
+            <ImportStepConfirm
+              moduleConfig={moduleConfig}
+              validationResults={validationResults}
+              isImporting={isImporting}
+              importProgress={importProgress}
+              importResult={importResult}
+              onBeginImport={handleBeginImport}
+              onDownloadPreview={() => toast.info('Preview downloaded')}
+            />
+          )}
+        </div>
+      </div>
+      
+      {/* Sticky Footer Navigation */}
+      <div className="shrink-0 border-t bg-background px-6 py-4 shadow-[0_-2px_8px_rgba(0,0,0,0.05)]">
+        <div className="max-w-4xl flex items-center justify-between">
           <Button
             onClick={() => currentStep === 1 ? setSelectedModule(null) : setCurrentStep(s => s - 1)}
             variant="outline"
