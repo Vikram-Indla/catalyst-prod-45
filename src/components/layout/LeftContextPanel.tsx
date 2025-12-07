@@ -16,7 +16,9 @@ import {
   Component,
   Link,
   Blocks,
+  Lock,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useEnabledModules } from '@/hooks/useModules';
 import {
   Select,
@@ -468,12 +470,9 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
           <div className="border-t">
             <button 
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-normal hover:bg-accent/50 transition-colors"
-              onClick={() => {
-                setExpanded(false);
-                navigate('/admin/org-setup');
-              }}
+              onClick={() => toast.info('Enterprise Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
             >
-              <Settings className="h-5 w-5 text-muted-foreground" />
+              <Lock className="h-5 w-5 text-muted-foreground" />
               <span className="text-left">Enterprise Settings</span>
             </button>
           </div>

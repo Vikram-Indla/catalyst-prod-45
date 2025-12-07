@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight, Box, ListTree, Map, BookOpen, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Box, ListTree, Map, BookOpen, Settings, Lock } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -127,34 +128,25 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
-                      variant="ghost"
+                  variant="ghost"
                       size="icon"
-                      onClick={() => navigate('/admin/product-settings')}
-                      className={cn(
-                        'w-full h-10 flex items-center justify-center',
-                        location.pathname === '/admin/product-settings' && 'bg-brand-gold-pale text-brand-gold'
-                      )}
+                      onClick={() => toast.info('Product Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
+                      className="w-full h-10 flex items-center justify-center"
                     >
-                      <Settings className="h-5 w-5" />
+                      <Lock className="h-5 w-5 text-muted-foreground" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="bg-popover border">
-                    Product Settings
+                    Product Settings (Coming Soon)
                   </TooltipContent>
                 </Tooltip>
               ) : (
                 <Button
                   variant="ghost"
-                  onClick={() => {
-                    onToggle(); // Collapse sidebar when navigating to settings
-                    navigate('/admin/product-settings');
-                  }}
-                  className={cn(
-                    'w-full justify-start gap-3 h-10',
-                    location.pathname === '/admin/product-settings' && 'bg-brand-gold-pale text-brand-gold'
-                  )}
+                  onClick={() => toast.info('Product Settings coming soon', { icon: <Lock className="h-4 w-4" /> })}
+                  className="w-full justify-start gap-3 h-10"
                 >
-                  <Settings className="h-5 w-5" />
+                  <Lock className="h-5 w-5 text-muted-foreground" />
                   <span>Product Settings</span>
                 </Button>
               )}
