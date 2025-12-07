@@ -13,7 +13,8 @@ import {
   BarChart3,
   Package,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Upload
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -89,6 +90,7 @@ const adminSections = [
     title: 'Other',
     items: [
       { label: 'Announcements', path: '/admin/announcements', icon: Megaphone },
+      { label: 'Import Data', path: '/admin/import-data', icon: Upload },
     ],
   },
 ];
