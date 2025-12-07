@@ -1,20 +1,33 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid, Plus } from 'lucide-react';
-import { PageHeader } from '@/components/release/PageHeader';
+import { Search, ChevronLeft, ChevronRight, Filter, Download, List, LayoutGrid } from 'lucide-react';
 import { StatusBadge } from '@/components/release/StatusBadge';
 import { PriorityBadge } from '@/components/release/PriorityBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import incidentsData from '@/data/incidents.json';
 import type { Incident } from '@/types/release';
 
 const incidents = incidentsData.incidents as Incident[];
 
+type ViewMode = 'list' | 'kanban';
+
+// Status columns for Kanban
+const KANBAN_COLUMNS = [
+  { id: 'open', label: 'Open', color: 'bg-blue-500' },
+  { id: 'in-progress', label: 'In Progress', color: 'bg-orange-500' },
+  { id: 'analysis', label: 'Analysis', color: 'bg-yellow-500' },
+  { id: 'implementing', label: 'Implementing', color: 'bg-purple-500' },
+  { id: 'pending', label: 'Pending', color: 'bg-amber-500' },
+  { id: 'resolved', label: 'Resolved', color: 'bg-green-500' },
+  { id: 'closed', label: 'Closed', color: 'bg-gray-500' },
+];
+
 export default function IncidentsList() {
-  const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -32,10 +45,9 @@ export default function IncidentsList() {
   }, [searchQuery]);
 
   const totalPages = Math.ceil(filteredIncidents.length / pageSize);
-  const paginatedIncidents = filteredIncidents.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedIncidents = filteredIncidents.slice(startIndex, endIndex);
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -62,72 +74,69 @@ export default function IncidentsList() {
     }
   };
 
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  // Group incidents by status for Kanban view
+  const incidentsByStatus = useMemo(() => {
+    const grouped: Record<string, Incident[]> = {};
+    KANBAN_COLUMNS.forEach(col => {
+      grouped[col.id] = filteredIncidents.filter(inc => inc.status === col.id);
+    });
+    return grouped;
+  }, [filteredIncidents]);
+
   return (
-    <div className="h-full flex flex-col bg-white">
-      <PageHeader 
-        title="Incidents" 
-        subtitle="Manage and track all incidents"
-        actions={
-          <Link to="/release/incidents/dashboard">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-9 border-[#E8E8E8] text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)] hover:text-[#1A1A1A]"
-            >
-              Dashboard
-            </Button>
-          </Link>
-        }
-      />
+    <div className="h-full flex flex-col bg-background">
+      {/* Header - fixed height 72px to align with sidebar */}
+      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
+        <div className="h-full px-4 sm:px-6 flex items-center">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Incidents</h1>
+            <p className="text-sm text-muted-foreground truncate">Manage and track all incidents</p>
+          </div>
+        </div>
+      </div>
 
       {/* Toolbar */}
-      <div className="px-6 py-4 border-b border-[#E8E8E8] bg-white">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 bg-card">
+        <div className="flex items-center justify-between gap-4">
           {/* Search */}
-          <div className="relative w-[280px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C8C8C]" />
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              type="text"
               placeholder="Search incidents..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-9 border-[#E8E8E8] focus:border-[#C69C6D] focus:ring-[#C69C6D] bg-white"
+              className="pl-9 bg-white border-border"
             />
           </div>
 
-          {/* Pagination */}
-          <div className="flex items-center border border-[#E8E8E8] rounded-md">
-            <button 
-              className="px-2 py-1.5 hover:bg-[#FAFAFA] text-[#8C8C8C] disabled:opacity-50"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="px-3 py-1.5 text-sm text-[#5C5C5C] border-x border-[#E8E8E8]">
-              {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, filteredIncidents.length)} of {filteredIncidents.length}
-            </span>
-            <button 
-              className="px-2 py-1.5 hover:bg-[#FAFAFA] text-[#8C8C8C] disabled:opacity-50"
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          {/* Spacer */}
-          <div className="flex-1" />
+          {/* Pagination - only in list mode */}
+          {viewMode === 'list' && (
+            <div className="flex items-center gap-1 border border-border rounded-md bg-white px-1">
+              <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="text-sm text-foreground px-2 whitespace-nowrap">
+                {filteredIncidents.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, filteredIncidents.length)} of ${filteredIncidents.length}` : '0 items'}
+              </span>
+              <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-8 w-8 p-0">
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
 
           {/* View Toggle */}
-          <div className="flex border border-[#E8E8E8] rounded-md overflow-hidden">
+          <div className="flex border border-border rounded-md overflow-hidden bg-white">
             <button
               onClick={() => setViewMode('list')}
               className={cn(
                 "px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-colors",
                 viewMode === 'list' 
-                  ? "text-[#C69C6D] bg-[rgba(198,156,109,0.1)]" 
-                  : "text-[#8C8C8C] hover:bg-[#FAFAFA]"
+                  ? "text-brand-gold bg-brand-gold/10" 
+                  : "text-muted-foreground hover:bg-muted/50"
               )}
             >
               <List className="w-4 h-4" />
@@ -136,10 +145,10 @@ export default function IncidentsList() {
             <button
               onClick={() => setViewMode('kanban')}
               className={cn(
-                "px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-colors border-l border-[#E8E8E8]",
+                "px-3 py-1.5 text-sm font-medium flex items-center gap-1.5 transition-colors border-l border-border",
                 viewMode === 'kanban' 
-                  ? "text-[#C69C6D] bg-[rgba(198,156,109,0.1)]" 
-                  : "text-[#8C8C8C] hover:bg-[#FAFAFA]"
+                  ? "text-brand-gold bg-brand-gold/10" 
+                  : "text-muted-foreground hover:bg-muted/50"
               )}
             >
               <LayoutGrid className="w-4 h-4" />
@@ -147,165 +156,201 @@ export default function IncidentsList() {
             </button>
           </div>
 
-          {/* Filters */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-9 border-[#E8E8E8] text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)] hover:text-[#1A1A1A]"
-          >
-            <Filter className="w-4 h-4 mr-1.5" />
-            Filters
-          </Button>
-
-          {/* Export */}
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-9 border-[#E8E8E8] text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)] hover:text-[#1A1A1A]"
-          >
-            <Download className="w-4 h-4 mr-1.5" />
-            Export
-          </Button>
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" className="border-border">
+              <Filter className="h-4 w-4 mr-2" />
+              Filters
+            </Button>
+            <Button variant="outline" size="sm" className="border-border">
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="flex-1 overflow-auto">
-        <table className="w-full border-collapse">
-          <thead className="sticky top-0 bg-white z-10">
-            <tr>
-              <th className="w-10 px-4 py-3 text-left border-b border-[#E8E8E8]">
-                <Checkbox 
-                  checked={selectedIds.length === paginatedIncidents.length && paginatedIncidents.length > 0}
-                  onCheckedChange={handleSelectAll}
-                  className="border-[#E8E8E8] data-[state=checked]:bg-[#C69C6D] data-[state=checked]:border-[#C69C6D]"
-                />
-              </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-[#8C8C8C] border-b border-[#E8E8E8] whitespace-nowrap">
-                Incident ID <span className="text-[#A3A3A3] ml-1">↕</span>
-              </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-[#8C8C8C] border-b border-[#E8E8E8]">
-                Summary <span className="text-[#A3A3A3] ml-1">↕</span>
-              </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-[#8C8C8C] border-b border-[#E8E8E8] whitespace-nowrap">
-                Priority <span className="text-[#A3A3A3] ml-1">↕</span>
-              </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-[#8C8C8C] border-b border-[#E8E8E8] whitespace-nowrap">
-                Status <span className="text-[#A3A3A3] ml-1">↕</span>
-              </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-[#8C8C8C] border-b border-[#E8E8E8] whitespace-nowrap">
-                Assignee <span className="text-[#A3A3A3] ml-1">↕</span>
-              </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-[#8C8C8C] border-b border-[#E8E8E8] whitespace-nowrap">
-                Target Date <span className="text-[#A3A3A3] ml-1">↕</span>
-              </th>
-              <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-[#8C8C8C] border-b border-[#E8E8E8] whitespace-nowrap">
-                Component <span className="text-[#A3A3A3] ml-1">↕</span>
-              </th>
-              <th className="w-10 px-4 py-3 text-left border-b border-[#E8E8E8]">
-                <button className="w-7 h-7 flex items-center justify-center text-[#8C8C8C] rounded hover:bg-[rgba(198,156,109,0.1)]">
-                  <Plus className="w-4 h-4" />
+      {/* Content */}
+      <div className="flex-1 flex flex-col min-h-0">
+        {viewMode === 'list' ? (
+          <div className="flex-1 p-4 sm:p-6 min-h-0 flex flex-col">
+            <Card className="flex-1 flex flex-col min-h-0 overflow-hidden border border-border rounded shadow-none">
+              <div className="flex-1 overflow-x-auto overflow-y-auto">
+                <table className="min-w-full w-max border-separate border-spacing-0">
+                  <thead className="sticky top-0 z-40" style={{ position: 'sticky', background: 'hsl(35 46% 97%)' }}>
+                    <tr>
+                      <th className="px-4 py-3 text-left border-b border-r border-border last:border-r-0 w-10">
+                        <Checkbox 
+                          checked={selectedIds.length === paginatedIncidents.length && paginatedIncidents.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="border-border data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
+                        />
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
+                        Incident ID ↕
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border min-w-[200px]">
+                        Summary ↕
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
+                        Priority ↕
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
+                        Status ↕
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
+                        Assignee ↕
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-r border-border whitespace-nowrap">
+                        Target Date ↕
+                      </th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wide text-muted-foreground border-b border-border whitespace-nowrap">
+                        Component ↕
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedIncidents.map((incident) => (
+                      <tr key={incident.id} className="hover:bg-muted/30 group">
+                        <td className="px-4 py-3.5 border-b border-r border-border last:border-r-0 bg-card">
+                          <Checkbox 
+                            checked={selectedIds.includes(incident.id)}
+                            onCheckedChange={(checked) => handleSelectOne(incident.id, !!checked)}
+                            className="border-border data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
+                          />
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
+                          <Link 
+                            to={`/release/incidents/${incident.id}`}
+                            className="font-semibold text-foreground hover:text-brand-gold"
+                          >
+                            {incident.id}
+                          </Link>
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card max-w-[300px] truncate text-foreground">
+                          {incident.summary}
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
+                          <PriorityBadge priority={incident.priority} />
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
+                          <StatusBadge status={incident.status} />
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card text-foreground">
+                          {incident.assignee.name}
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-r border-border bg-card">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-foreground">{formatDate(incident.targetDate)}</span>
+                            {isOverdue(incident.targetDate) && incident.status !== 'closed' && incident.status !== 'resolved' && (
+                              <span className="w-2 h-2 rounded-full bg-red-500" />
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3.5 border-b border-border bg-card text-foreground">
+                          {incident.component}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+
+            {/* Footer */}
+            <div className="pt-4 flex items-center justify-between">
+              <div className="text-sm text-muted-foreground">
+                Showing {startIndex + 1}-{Math.min(endIndex, filteredIncidents.length)} of {filteredIncidents.length} incidents
+              </div>
+              <div className="flex items-center gap-1">
+                <button 
+                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-gold/10"
+                  onClick={() => goToPage(1)}
+                  disabled={currentPage === 1}
+                >
+                  «
                 </button>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedIncidents.map((incident) => (
-              <tr key={incident.id} className="hover:bg-[#FAFAFA] group">
-                <td className="px-4 py-3.5 border-b border-[#F0F0F0]">
-                  <Checkbox 
-                    checked={selectedIds.includes(incident.id)}
-                    onCheckedChange={(checked) => handleSelectOne(incident.id, !!checked)}
-                    className="border-[#E8E8E8] data-[state=checked]:bg-[#C69C6D] data-[state=checked]:border-[#C69C6D]"
-                  />
-                </td>
-                <td className="px-4 py-3.5 border-b border-[#F0F0F0]">
-                  <Link 
-                    to={`/release/incidents/${incident.id}`}
-                    className="font-medium text-[#1A1A1A] hover:text-[#C69C6D]"
-                  >
-                    {incident.id}
-                  </Link>
-                </td>
-                <td className="px-4 py-3.5 border-b border-[#F0F0F0] max-w-[300px] truncate text-[#1A1A1A]">
-                  {incident.summary}
-                </td>
-                <td className="px-4 py-3.5 border-b border-[#F0F0F0]">
-                  <PriorityBadge priority={incident.priority} />
-                </td>
-                <td className="px-4 py-3.5 border-b border-[#F0F0F0]">
-                  <StatusBadge status={incident.status} />
-                </td>
-                <td className="px-4 py-3.5 border-b border-[#F0F0F0] text-[#1A1A1A]">
-                  {incident.assignee.name}
-                </td>
-                <td className="px-4 py-3.5 border-b border-[#F0F0F0]">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[#1A1A1A]">{formatDate(incident.targetDate)}</span>
-                    {isOverdue(incident.targetDate) && incident.status !== 'closed' && incident.status !== 'resolved' && (
-                      <span className="w-2 h-2 rounded-full bg-[#E53935]" />
+                <button 
+                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-gold/10"
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                >
+                  ‹
+                </button>
+                {Array.from({ length: Math.min(3, totalPages) }, (_, i) => i + 1).map(page => (
+                  <button 
+                    key={page}
+                    className={cn(
+                      "min-w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium",
+                      currentPage === page 
+                        ? "bg-brand-gold text-white" 
+                        : "text-muted-foreground hover:bg-brand-gold/10"
                     )}
+                    onClick={() => goToPage(page)}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button 
+                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-gold/10"
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                >
+                  ›
+                </button>
+                <button 
+                  className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-muted-foreground hover:bg-brand-gold/10"
+                  onClick={() => goToPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                >
+                  »
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Kanban View */
+          <div className="flex-1 p-4 sm:p-6 min-h-0 overflow-auto">
+            <p className="text-sm text-muted-foreground mb-4">Click any column to expand</p>
+            <div className="flex gap-4 min-w-max">
+              {KANBAN_COLUMNS.map((column) => {
+                const columnIncidents = incidentsByStatus[column.id] || [];
+                return (
+                  <div key={column.id} className="w-[300px] flex-shrink-0">
+                    <div className="flex items-center gap-2 mb-3 px-1">
+                      <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+                      <div className={cn("w-3 h-3 rounded-full", column.color)} />
+                      <span className="font-medium text-sm">{column.label}</span>
+                      <span className="ml-auto px-2 py-0.5 text-xs font-medium rounded-full bg-muted text-muted-foreground">
+                        {columnIncidents.length}
+                      </span>
+                    </div>
+                    <div className="space-y-3">
+                      {columnIncidents.map((incident) => (
+                        <Card key={incident.id} className="p-4 border-border hover:border-brand-gold hover:shadow-sm transition-all cursor-pointer">
+                          <div className="font-medium text-sm mb-1">{incident.summary}</div>
+                          <div className="text-xs text-brand-gold mb-2">{incident.id}</div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+                            <span>👤 {incident.assignee.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+                            <span>⏱ 0d in status</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <PriorityBadge priority={incident.priority} />
+                            <span className="text-xs text-muted-foreground">
+                              📅 {formatDate(incident.targetDate)}
+                            </span>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
                   </div>
-                </td>
-                <td className="px-4 py-3.5 border-b border-[#F0F0F0] text-[#1A1A1A]">
-                  {incident.component}
-                </td>
-                <td className="px-4 py-3.5 border-b border-[#F0F0F0]" />
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Footer */}
-      <div className="px-6 py-4 border-t border-[#E8E8E8] bg-white flex items-center justify-between">
-        <div className="text-sm text-[#8C8C8C]">
-          Showing {(currentPage - 1) * pageSize + 1}-{Math.min(currentPage * pageSize, filteredIncidents.length)} of {filteredIncidents.length} incidents
-        </div>
-        <div className="flex items-center gap-1">
-          <button 
-            className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)]"
-            onClick={() => setCurrentPage(1)}
-            disabled={currentPage === 1}
-          >
-            «
-          </button>
-          <button 
-            className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)]"
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-          >
-            ‹
-          </button>
-          {Array.from({ length: Math.min(3, totalPages) }, (_, i) => i + 1).map(page => (
-            <button 
-              key={page}
-              className={cn(
-                "min-w-8 h-8 flex items-center justify-center rounded-md text-sm font-medium",
-                currentPage === page 
-                  ? "bg-[#C69C6D] text-white" 
-                  : "text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)]"
-              )}
-              onClick={() => setCurrentPage(page)}
-            >
-              {page}
-            </button>
-          ))}
-          <button 
-            className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)]"
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-          >
-            ›
-          </button>
-          <button 
-            className="min-w-8 h-8 flex items-center justify-center rounded-md text-sm text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)]"
-            onClick={() => setCurrentPage(totalPages)}
-            disabled={currentPage === totalPages}
-          >
-            »
-          </button>
-        </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
