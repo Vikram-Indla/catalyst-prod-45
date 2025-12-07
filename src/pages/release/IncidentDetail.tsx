@@ -153,7 +153,7 @@ export default function IncidentDetail() {
       {/* Main Content - 70/30 Split */}
       <div className="flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-[1fr_340px]">
         {/* Left Column (70%) */}
-        <div className="p-6 overflow-y-auto space-y-6 border-r border-[#E8E8E8] bg-white">
+        <div className="p-6 overflow-y-auto space-y-6 border-r border-border bg-card">
           {/* Description */}
           <IncidentDescription
             description={incident.description}
@@ -162,17 +162,12 @@ export default function IncidentDetail() {
             onDescriptionChange={(value) => handleFieldChange('description', value)}
           />
 
-          {/* Activity & Timeline */}
-          <div>
-            <h3 className="text-[11px] font-semibold uppercase text-[#8C8C8C] tracking-wide mb-3">
-              Activity & Timeline
-            </h3>
-            <IncidentTimeline
-              timeline={incident.timeline || []}
-              comments={incident.comments}
-              onAddComment={handleAddComment}
-            />
-          </div>
+          {/* Activity & Timeline - Jira style */}
+          <IncidentTimeline
+            timeline={incident.timeline || []}
+            comments={incident.comments}
+            onAddComment={handleAddComment}
+          />
 
           {/* Attachments */}
           <div>
