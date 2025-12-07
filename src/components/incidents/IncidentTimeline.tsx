@@ -28,7 +28,7 @@ interface IncidentTimelineProps {
   onAddComment?: (text: string) => void;
 }
 
-type TabType = 'all' | 'comments' | 'history' | 'worklog' | 'timepiece' | 'sla' | 'approvals';
+type TabType = 'all' | 'comments' | 'history';
 
 const getEventIcon = (type: string) => {
   switch (type) {
@@ -93,10 +93,6 @@ export function IncidentTimeline({ timeline, comments, onAddComment }: IncidentT
     { key: 'all', label: 'All' },
     { key: 'comments', label: 'Comments' },
     { key: 'history', label: 'History' },
-    { key: 'worklog', label: 'Work log' },
-    { key: 'timepiece', label: 'Timepiece' },
-    { key: 'sla', label: 'SLA History' },
-    { key: 'approvals', label: 'Approvals' },
   ];
 
   return (
