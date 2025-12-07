@@ -34,7 +34,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
     <TooltipProvider>
       <aside
         className={cn(
-          'h-full bg-white transition-all duration-300 flex-shrink-0 relative flex flex-col overflow-visible',
+          'h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col overflow-visible',
           expanded ? 'w-48' : 'w-16',
           className
         )}
