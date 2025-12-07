@@ -140,7 +140,6 @@ export function CatalystHeader() {
                           onClick={() => handleDisabledModuleClick(item.label)}
                         >
                           {item.label}
-                          <Lock className="h-3 w-3 block" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
