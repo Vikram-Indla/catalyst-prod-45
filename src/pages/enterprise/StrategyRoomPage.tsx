@@ -16,9 +16,9 @@ import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawer } from '@/components/strategy/ObjectiveDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  ObjectiveLevel,
-} from '@/data/strategyMockData';
+
+// Type definition - not importing from mock data
+type ObjectiveLevel = "STRATEGIC" | "PORTFOLIO" | "PROGRAM" | "TEAM";
 
 export default function StrategyRoomPage() {
   const navigate = useNavigate();

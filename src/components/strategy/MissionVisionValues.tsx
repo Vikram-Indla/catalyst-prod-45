@@ -1,8 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { StrategySnapshot } from '@/data/strategyMockData';
 
 interface MissionVisionValuesProps {
-  snapshot: any;
+  snapshot: {
+    mission?: string | null;
+    vision?: string | null;
+    values?: unknown;
+  } | null;
 }
 
 export function MissionVisionValues({ snapshot }: MissionVisionValuesProps) {

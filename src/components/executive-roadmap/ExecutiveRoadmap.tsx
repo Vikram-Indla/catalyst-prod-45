@@ -1,13 +1,12 @@
 import React, { useState, useMemo, useRef, useCallback, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { 
-  SEED_ROADMAP_ITEMS, 
   PLATFORM_INFO, 
   STAGE_NAMES, 
   STAGE_NAMES_AR,
   BusinessRequestRoadmapItem,
   RoadmapStatus 
-} from '@/data/roadmapSeed';
+} from '@/types/roadmapTypes';
 import { 
   ChevronUp, 
   ChevronDown, 

@@ -1,16 +1,31 @@
 import { EpicDetail, EpicState } from '@/types/backlog.types';
 import { FormSelect } from './FormSelect';
-import { EPIC_STATES } from '@/data/epicDetailData';
+
+// Static configuration - not seed data
+const EPIC_STATES: EpicState[] = [
+  { id: 1, name: 'Funnel', color: '#6B778C' },
+  { id: 2, name: 'Backlog', color: '#0052CC' },
+  { id: 3, name: 'In Progress', color: '#0065FF' },
+  { id: 4, name: 'Done', color: '#36B37E' },
+];
 
 interface ProgressIndicatorsProps {
   epic: EpicDetail;
 }
 
 export function ProgressIndicators({ epic }: ProgressIndicatorsProps) {
-  const acceptedPercentage = (epic.storyPointsAccepted / epic.storyPointsTotal) * 100;
-  const featuresAcceptedPercentage = (epic.featuresAccepted / epic.featuresTotal) * 100;
-  const featuresInDeliveryPercentage = (epic.featuresInDelivery / epic.featuresTotal) * 100;
-  const featuresDeliveredPercentage = (epic.featuresDelivered / epic.featuresTotal) * 100;
+  const acceptedPercentage = epic.storyPointsTotal > 0 
+    ? (epic.storyPointsAccepted / epic.storyPointsTotal) * 100 
+    : 0;
+  const featuresAcceptedPercentage = epic.featuresTotal > 0 
+    ? (epic.featuresAccepted / epic.featuresTotal) * 100 
+    : 0;
+  const featuresInDeliveryPercentage = epic.featuresTotal > 0 
+    ? (epic.featuresInDelivery / epic.featuresTotal) * 100 
+    : 0;
+  const featuresDeliveredPercentage = epic.featuresTotal > 0 
+    ? (epic.featuresDelivered / epic.featuresTotal) * 100 
+    : 0;
 
   return (
     <div className="flex flex-col gap-4">

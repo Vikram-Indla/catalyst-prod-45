@@ -1,19 +1,40 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { mockExecutionAgainstOutcomes } from '@/data/strategyMockData';
+import { FileText } from 'lucide-react';
+
+interface ExecutionItem {
+  level: string;
+  workItemType: string;
+  completionPercent: number;
+}
 
 interface ExecutionAgainstOutcomesProps {
   onLevelClick: (level: string) => void;
+  data?: ExecutionItem[];
 }
 
-export function ExecutionAgainstOutcomes({ onLevelClick }: ExecutionAgainstOutcomesProps) {
+export function ExecutionAgainstOutcomes({ onLevelClick, data = [] }: ExecutionAgainstOutcomesProps) {
+  if (data.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Execution Against Outcomes</CardTitle>
+        </CardHeader>
+        <CardContent className="py-8 text-center">
+          <FileText className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+          <p className="text-sm text-muted-foreground">No execution data available</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">Execution Against Outcomes</CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {mockExecutionAgainstOutcomes.map((item, index) => (
+        {data.map((item, index) => (
           <Button
             key={index}
             variant="ghost"

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { BusinessRequestRoadmapItem, RoadmapStatus, MilestoneState } from '@/data/roadmapSeed';
+import { BusinessRequestRoadmapItem, RoadmapStatus, MilestoneState } from '@/types/roadmapTypes';
 
 // Map process_step to RoadmapStatus
 function mapProcessStepToStatus(processStep: string | null): RoadmapStatus {

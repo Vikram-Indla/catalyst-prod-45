@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronUp, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { PLATFORM_INFO, STAGE_NAMES } from '@/data/roadmapSeed';
+import { PLATFORM_INFO, STAGE_NAMES } from '@/types/roadmapTypes';
 
 export type SmartFilterType = 'inProgress' | 'highPriority' | 'upcoming' | 'blocked' | 'currentQuarter' | null;
 
