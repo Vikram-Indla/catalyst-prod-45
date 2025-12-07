@@ -368,22 +368,29 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
                 <button
                   key={option.value}
                   type="button"
+                  title={option.description}
                   onClick={() => {
                     setFormData(prev => ({ ...prev, severity: option.value as any }));
                     setTouched(prev => ({ ...prev, severity: true }));
                     setErrors(prev => ({ ...prev, severity: '' }));
                   }}
                   className={cn(
-                    "p-4 rounded-lg border-2 text-center transition-all",
+                    "relative group p-4 rounded-lg border-2 text-center transition-all",
                     formData.severity === option.value
                       ? option.borderColor + " bg-white"
                       : "border-[#DFE1E6] bg-[#FAFBFC] hover:border-[#B3BAC5]"
                   )}
                 >
-                  <Badge className={cn("mb-2", option.color, "text-white border-0 font-semibold")}>
+                  <Badge className={cn(option.color, "text-white border-0 font-semibold")}>
                     {option.label}
                   </Badge>
-                  <p className="text-xs text-[#6B778C] leading-tight">{option.description}</p>
+                  {/* Tooltip on hover */}
+                  <div className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 z-50 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <div className="bg-[#172B4D] text-white text-xs px-3 py-2 rounded shadow-lg whitespace-normal w-[180px] text-center">
+                      {option.description}
+                    </div>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-[#172B4D]" />
+                  </div>
                 </button>
               ))}
             </div>
