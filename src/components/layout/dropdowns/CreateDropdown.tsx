@@ -1,12 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { 
   Layers, Diamond, Box, Zap, BookOpen, AlertCircle, CheckSquare,
-  Target, GitBranch, Lightbulb, AlertTriangle, Shield, Calendar, Package, List, Clock, Truck, Users
+  Target, GitBranch, Lightbulb, AlertTriangle, Shield, Calendar, Package, List, Clock, Truck, Users, Siren
 } from 'lucide-react';
 
 const workItems = [
-  { label: 'Themes', icon: Layers, color: 'bg-workitem-theme' },
-  { label: 'Epics', icon: Diamond, color: 'bg-workitem-epic' },
+  { label: 'Business Request', icon: Layers, color: 'bg-workitem-theme' },
   { label: 'Features', icon: Zap, color: 'bg-workitem-theme' },
   { label: 'Stories', icon: BookOpen, color: 'bg-success' },
   { label: 'Defects', icon: AlertCircle, color: 'bg-destructive' },
@@ -16,22 +15,23 @@ const workItems = [
 const otherItems = [
   { label: 'Objectives', icon: Target, color: 'bg-secondary' },
   { label: 'Dependencies', icon: GitBranch, color: 'bg-secondary' },
-  { label: 'Teams', icon: Users, color: 'bg-secondary' },
   { label: 'Ideation', icon: Lightbulb, color: 'bg-secondary' },
   { label: 'Risks', icon: AlertTriangle, color: 'bg-secondary' },
   { label: 'Impediments', icon: Shield, color: 'bg-secondary' },
   { label: 'Specifications', icon: List, color: 'bg-secondary' },
   { label: 'Sprints', icon: Clock, color: 'bg-secondary' },
   { label: 'Program Increments', icon: Calendar, color: 'bg-secondary' },
-  { label: 'Release Vehicles', icon: Truck, color: 'bg-secondary' }
+  { label: 'Release Vehicles', icon: Truck, color: 'bg-secondary' },
+  { label: 'Incidents', icon: Siren, color: 'bg-red-600' }
 ];
 
 interface CreateDropdownProps {
   onClose: () => void;
   onCreateEpic?: () => void;
+  onCreateIncident?: () => void;
 }
 
-export function CreateDropdown({ onClose, onCreateEpic }: CreateDropdownProps) {
+export function CreateDropdown({ onClose, onCreateEpic, onCreateIncident }: CreateDropdownProps) {
   const navigate = useNavigate();
 
   const handleClick = (label: string) => {
@@ -43,9 +43,17 @@ export function CreateDropdown({ onClose, onCreateEpic }: CreateDropdownProps) {
       onClose();
       return;
     }
+
+    // Handle Incident creation specially if handler provided
+    if (label === 'Incidents' && onCreateIncident) {
+      onCreateIncident();
+      onClose();
+      return;
+    }
     
     // Navigate to the respective page for other items
     const routeMap: Record<string, string> = {
+      'Business Request': '/industry?create=true',
       'Themes': '/items/themes',
       'Epics': '/items/epics?create=true',
       'Features': '/features?create=true',
@@ -62,6 +70,7 @@ export function CreateDropdown({ onClose, onCreateEpic }: CreateDropdownProps) {
       'Sprints': '/items/sprints',
       'Program Increments': '/items/program-increments',
       'Release Vehicles': '/items/release-vehicles',
+      'Incidents': '/release/incidents',
     };
     
     if (routeMap[label]) {

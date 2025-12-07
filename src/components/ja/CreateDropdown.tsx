@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Siren } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
 import {
   DropdownMenu,
@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Circle, Square, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, AlertCircle, FileCheck, Calendar, Package, Flag, Briefcase } from "lucide-react";
+import { CreateIncidentModal, IncidentFormData } from "@/components/incidents/CreateIncidentModal";
+import { toast } from "@/hooks/use-toast";
 
 // Module mapping for each item - null means always visible
 const workItems = [
@@ -34,11 +36,13 @@ const otherItems = [
   { label: "Sprints", icon: Calendar, color: "text-info", type: "sprint", moduleCode: "PROGRAM" },
   { label: "Program Increments", icon: Package, color: "text-workitem-theme", type: "pi", moduleCode: "PROGRAM" },
   { label: "Release Vehicles", icon: Flag, color: "text-success-600", type: "release-vehicle", moduleCode: "PROGRAM" },
+  { label: "Incidents", icon: Siren, color: "text-red-600", type: "incident", moduleCode: null },
 ];
 
 export function CreateDropdown() {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [incidentModalOpen, setIncidentModalOpen] = useState(false);
   const { isModuleEnabled } = useEnabledModules();
 
   // Filter items based on enabled modules
@@ -54,6 +58,12 @@ export function CreateDropdown() {
 
   const handleItemClick = (type: string) => {
     setOpen(false);
+    
+    // Handle incident creation via modal
+    if (type === 'incident') {
+      setIncidentModalOpen(true);
+      return;
+    }
     
     // Route to the appropriate page with create parameter
     const routeMap: Record<string, string> = {
@@ -81,61 +91,84 @@ export function CreateDropdown() {
     }
   };
 
+  const handleCreateIncident = (data: IncidentFormData) => {
+    // Generate incident number
+    const incidentNumber = `INC-${1000 + Math.floor(Math.random() * 1000)}`;
+    
+    console.log('Creating incident:', { incidentNumber, ...data });
+    
+    toast({
+      title: "Incident Created",
+      description: `Incident ${incidentNumber} created successfully!`,
+    });
+    
+    // Optionally navigate to incidents list
+    navigate('/release/incidents');
+  };
+
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <Button
-          size="sm"
-          className="h-8 px-2.5 bg-primary hover:bg-primary/90 text-primary-foreground"
+    <>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            size="sm"
+            className="h-8 px-2.5 bg-primary hover:bg-primary/90 text-primary-foreground"
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Create
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          className="w-64 max-h-[600px] overflow-y-auto bg-popover z-50"
         >
-          <Plus className="h-4 w-4 mr-1" />
-          Create
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        align="end"
-        className="w-64 max-h-[600px] overflow-y-auto bg-popover z-50"
-      >
-        {filteredWorkItems.length > 0 && (
-          <>
-            <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
-              Work Items
-            </DropdownMenuLabel>
-            {filteredWorkItems.map((item) => (
-              <DropdownMenuItem
-                key={item.label}
-                onClick={() => handleItemClick(item.type)}
-                className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
-              >
-                <item.icon className={`h-5 w-5 ${item.color}`} />
-                <span className="text-sm">{item.label}</span>
-              </DropdownMenuItem>
-            ))}
-          </>
-        )}
+          {filteredWorkItems.length > 0 && (
+            <>
+              <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
+                Work Items
+              </DropdownMenuLabel>
+              {filteredWorkItems.map((item) => (
+                <DropdownMenuItem
+                  key={item.label}
+                  onClick={() => handleItemClick(item.type)}
+                  className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
+                >
+                  <item.icon className={`h-5 w-5 ${item.color}`} />
+                  <span className="text-sm">{item.label}</span>
+                </DropdownMenuItem>
+              ))}
+            </>
+          )}
 
-        {filteredWorkItems.length > 0 && filteredOtherItems.length > 0 && (
-          <DropdownMenuSeparator className="my-2" />
-        )}
+          {filteredWorkItems.length > 0 && filteredOtherItems.length > 0 && (
+            <DropdownMenuSeparator className="my-2" />
+          )}
 
-        {filteredOtherItems.length > 0 && (
-          <>
-            <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
-              Other
-            </DropdownMenuLabel>
-            {filteredOtherItems.map((item) => (
-              <DropdownMenuItem
-                key={item.label}
-                onClick={() => handleItemClick(item.type)}
-                className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
-              >
-                <item.icon className={`h-5 w-5 ${item.color}`} />
-                <span className="text-sm">{item.label}</span>
-              </DropdownMenuItem>
-            ))}
-          </>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+          {filteredOtherItems.length > 0 && (
+            <>
+              <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
+                Other
+              </DropdownMenuLabel>
+              {filteredOtherItems.map((item) => (
+                <DropdownMenuItem
+                  key={item.label}
+                  onClick={() => handleItemClick(item.type)}
+                  className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
+                >
+                  <item.icon className={`h-5 w-5 ${item.color}`} />
+                  <span className="text-sm">{item.label}</span>
+                </DropdownMenuItem>
+              ))}
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <CreateIncidentModal
+        isOpen={incidentModalOpen}
+        onClose={() => setIncidentModalOpen(false)}
+        onSubmit={handleCreateIncident}
+      />
+    </>
   );
 }
