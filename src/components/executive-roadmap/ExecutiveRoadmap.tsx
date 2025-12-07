@@ -1157,13 +1157,19 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         }}
                         onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
                       >
-                        {/* Dates Row - Above the bar */}
+                        {/* Labels Row - Above the bar: Start Date | Status | End Date */}
                         <div className="flex justify-between items-center mb-1 px-1">
                           <span 
                             className="text-[9px] font-bold whitespace-nowrap"
                             style={{ color: 'hsl(var(--roadmap-charcoal))' }}
                           >
                             {formatShortDate(displayStartDate)}
+                          </span>
+                          <span 
+                            className="text-[9px] font-semibold whitespace-nowrap truncate px-2"
+                            style={{ color: 'hsl(var(--roadmap-charcoal))' }}
+                          >
+                            {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
                           </span>
                           <span 
                             className="text-[9px] font-bold whitespace-nowrap"
@@ -1173,19 +1179,15 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                           </span>
                         </div>
 
-                        {/* The Bar - Status only */}
+                        {/* The Bar - No text, just color */}
                         <div 
                           className={cn(
-                            "h-6 w-full flex items-center justify-center overflow-hidden relative transition-all hover:shadow-md",
+                            "h-5 w-full overflow-hidden relative transition-all hover:shadow-md",
                             barPos.continuesLeft ? "rounded-l-none" : "rounded-l-full",
                             barPos.continuesRight ? "rounded-r-none" : "rounded-r-full"
                           )}
                           style={{ background: STATUS_BAR_GRADIENTS[item.status] || 'linear-gradient(90deg, #C69C6D, #E8D5C0)' }}
                         >
-                          {/* Status label - Centered */}
-                          <span className="text-[10px] font-semibold text-white whitespace-nowrap truncate px-3">
-                            {isRTL ? STAGE_NAMES_AR[item.status] : STAGE_NAMES[item.status]}
-                          </span>
 
                           {/* Milestones - Properly centered on bar */}
                           {showMilestones && item.milestones.length > 0 && item.milestones.map((ms, index) => {
