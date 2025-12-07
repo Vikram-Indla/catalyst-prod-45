@@ -103,21 +103,20 @@ export function CatalystHeader() {
   return (
     <>
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-14 items-center px-3 sm:px-6">
-          {/* Mobile Menu and Logo */}
+        {/* CSS Grid: Logo | Nav (left-aligned) | Actions (right-aligned) */}
+        <div className="grid grid-cols-[auto_1fr_auto] items-center h-16 px-4 sm:px-6">
+          {/* Left Column: Mobile Menu + Logo */}
           <div className="flex items-center gap-2 shrink-0">
             <MobileNavigationMenu />
             <div 
-              className="flex items-center cursor-pointer max-w-[140px] h-14"
+              className="flex items-center cursor-pointer h-10"
               onClick={() => navigate('/home')}
             >
               <span 
-                className="font-semibold whitespace-nowrap"
+                className="font-semibold whitespace-nowrap leading-none"
                 style={{ 
                   fontSize: '20px', 
-                  lineHeight: '24px', 
                   letterSpacing: '-0.02em',
-                  marginTop: '-1px' // baseline alignment nudge
                 }}
               >
                 <span className="text-foreground">Cata</span>
@@ -126,8 +125,8 @@ export function CatalystHeader() {
             </div>
           </div>
 
-          {/* Main Navigation - Visible on tablet and up, packed layout */}
-          <nav className="hidden md:flex items-center ml-6" style={{ gap: 'clamp(12px, 1.1vw, 14px)' }}>
+          {/* Middle Column: Main Navigation - packed left, not space-evenly */}
+          <nav className="hidden md:flex items-center justify-start gap-4 ml-6">
             <TooltipProvider>
               {navItems.map((item) => {
                 // Disabled module rendering
@@ -137,12 +136,11 @@ export function CatalystHeader() {
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
-                          size="sm"
-                          className="h-10 py-1.5 px-2.5 text-sm font-medium opacity-40 cursor-not-allowed hover:bg-transparent rounded-[10px] flex items-center gap-2"
+                          className="h-10 px-2.5 py-0 text-sm font-medium opacity-40 cursor-not-allowed hover:bg-transparent rounded-lg inline-flex items-center gap-2 leading-none"
                           onClick={() => handleDisabledModuleClick(item.label)}
                         >
                           {item.label}
-                          <Lock className="h-3 w-3" />
+                          <Lock className="h-3 w-3 block" />
                         </Button>
                       </TooltipTrigger>
                       <TooltipContent>
@@ -156,22 +154,20 @@ export function CatalystHeader() {
                   );
                 }
 
-                // Enabled module rendering
+                // Enabled module rendering - consistent h-10 control height
+                const navButtonClass = "h-10 px-2.5 py-0 text-sm font-medium hover:bg-accent/50 rounded-lg inline-flex items-center gap-2 leading-none whitespace-nowrap";
+                
                 return (
-                  <div key={item.label}>
+                  <div key={item.label} className="flex items-center">
                     {item.label === "Product" ? (
                       <Popover
                         open={activeDropdown === item.label}
                         onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
-                          >
+                          <Button variant="ghost" className={navButtonClass}>
                             {item.label}
-                            <ChevronDown className="h-3 w-3" />
+                            <ChevronDown className="h-3 w-3 block" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -184,13 +180,9 @@ export function CatalystHeader() {
                         onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
-                          >
+                          <Button variant="ghost" className={navButtonClass}>
                             {item.label}
-                            <ChevronDown className="h-3 w-3" />
+                            <ChevronDown className="h-3 w-3 block" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -203,13 +195,9 @@ export function CatalystHeader() {
                         onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
-                          >
+                          <Button variant="ghost" className={navButtonClass}>
                             {item.label}
-                            <ChevronDown className="h-3 w-3" />
+                            <ChevronDown className="h-3 w-3 block" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -222,13 +210,9 @@ export function CatalystHeader() {
                         onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
-                          >
+                          <Button variant="ghost" className={navButtonClass}>
                             {item.label}
-                            <ChevronDown className="h-3 w-3" />
+                            <ChevronDown className="h-3 w-3 block" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -241,13 +225,9 @@ export function CatalystHeader() {
                         onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
                         <PopoverTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 rounded-[10px] flex items-center gap-2"
-                          >
+                          <Button variant="ghost" className={navButtonClass}>
                             {item.label}
-                            <ChevronDown className="h-3 w-3" />
+                            <ChevronDown className="h-3 w-3 block" />
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -260,13 +240,9 @@ export function CatalystHeader() {
                         onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
                       >
                         <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 whitespace-nowrap rounded-[10px] flex items-center gap-2"
-                          >
+                          <Button variant="ghost" className={navButtonClass}>
                             {item.label}
-                            <ChevronDown className="h-3 w-3" />
+                            <ChevronDown className="h-3 w-3 block" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" className="w-48 bg-popover z-[60]">
@@ -278,8 +254,7 @@ export function CatalystHeader() {
                     ) : (
                       <Button
                         variant="ghost"
-                        size="sm"
-                        className="h-10 py-1.5 px-2.5 text-sm font-medium hover:bg-accent/50 whitespace-nowrap rounded-[10px] flex items-center"
+                        className={navButtonClass}
                         onClick={() => item.path && navigate(item.path)}
                       >
                         {item.label}
@@ -297,13 +272,13 @@ export function CatalystHeader() {
             <ItemsDropdown />
           </nav>
 
-          {/* Right Side Actions - margin-left:auto pushes to right, gap-3 = 12px */}
-          <div className="flex items-center gap-3 ml-auto shrink-0">
+          {/* Right Column: Actions - justify-self-end keeps it right-aligned */}
+          <div className="flex items-center gap-3 justify-self-end">
             {/* Create Button - Always visible */}
             <CreateDropdown />
 
             <TooltipProvider>
-              {/* Notifications - Always visible */}
+              {/* Notifications - h-10 w-10 for consistent control size */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <NotificationsPanel />
@@ -313,16 +288,16 @@ export function CatalystHeader() {
                 </TooltipContent>
               </Tooltip>
 
-              {/* Settings - Between Notifications and Search */}
+              {/* Settings - Fixed square control */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-10 w-10 grid place-items-center rounded-full"
                     onClick={() => navigate('/admin/activity')}
                   >
-                    <Settings className="h-4 w-4" />
+                    <Settings className="h-5 w-5 block" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -330,16 +305,16 @@ export function CatalystHeader() {
                 </TooltipContent>
               </Tooltip>
 
-              {/* Search - Always visible */}
+              {/* Search - Fixed square control */}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8"
+                    className="h-10 w-10 grid place-items-center rounded-full"
                     onClick={() => setIsSearchOpen(true)}
                   >
-                    <Search className="h-4 w-4" />
+                    <Search className="h-5 w-5 block" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
@@ -347,10 +322,10 @@ export function CatalystHeader() {
                 </TooltipContent>
               </Tooltip>
 
-              {/* User Profile Menu - Always visible */}
+              {/* User Profile Menu - Fixed square control */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full grid place-items-center">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback className="bg-brand-gold text-background text-sm font-semibold">
                         {user?.email?.charAt(0).toUpperCase() || 'U'}
