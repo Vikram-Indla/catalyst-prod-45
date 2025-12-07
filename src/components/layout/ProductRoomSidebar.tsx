@@ -139,14 +139,17 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
               ) : (
                 <Button
                   variant="ghost"
-                  onClick={() => navigate('/admin/product-settings')}
+                  onClick={() => {
+                    onToggle(); // Collapse sidebar when navigating to settings
+                    navigate('/admin/product-settings');
+                  }}
                   className={cn(
                     'w-full justify-start gap-3 h-10',
                     location.pathname === '/admin/product-settings' && 'bg-brand-gold-pale text-brand-gold'
                   )}
                 >
                   <Settings className="h-5 w-5" />
-                  <span>Settings</span>
+                  <span>Product Settings</span>
                 </Button>
               )}
             </div>
