@@ -352,7 +352,12 @@ export function CreateIncidentModal({ isOpen, onClose, onSubmit }: CreateInciden
               </div>
               <Switch
                 checked={formData.isMajorIncident || false}
-                onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isMajorIncident: checked }))}
+                onCheckedChange={(checked) => setFormData(prev => ({ 
+                  ...prev, 
+                  isMajorIncident: checked,
+                  // Auto-set impact and urgency to High when major incident is flagged
+                  ...(checked ? { impact: 'High' as const, urgency: 'High' as const } : {})
+                }))}
                 className="data-[state=checked]:bg-red-600"
               />
             </div>
