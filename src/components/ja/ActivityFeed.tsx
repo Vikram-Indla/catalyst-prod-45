@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Briefcase, GitBranch, BookOpen, FileText, Loader2 } from "lucide-react";
+import { Briefcase, GitBranch, BookOpen, FileText } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { catalystToast } from "@/lib/catalystToast";
 import type { ActivityItem, ActivityType } from "@/hooks/useActivityFeed";
@@ -9,12 +9,14 @@ interface ActivityFeedProps {
   loading: boolean;
 }
 
-const typeConfig: Record<ActivityType, { icon: React.ElementType; bgClass: string; textClass: string }> = {
-  epic: { icon: Briefcase, bgClass: "bg-purple-100", textClass: "text-purple-700" },
-  feature: { icon: GitBranch, bgClass: "bg-amber-100", textClass: "text-amber-700" },
-  story: { icon: BookOpen, bgClass: "bg-emerald-100", textClass: "text-emerald-700" },
-  demand: { icon: FileText, bgClass: "bg-blue-100", textClass: "text-blue-700" },
+const typeConfig: Record<ActivityType, { icon: React.ElementType; bgClass: string; iconClass: string }> = {
+  epic: { icon: Briefcase, bgClass: "bg-purple-100", iconClass: "text-purple-700" },
+  feature: { icon: GitBranch, bgClass: "bg-amber-100", iconClass: "text-amber-700" },
+  story: { icon: BookOpen, bgClass: "bg-emerald-100", iconClass: "text-emerald-700" },
+  demand: { icon: FileText, bgClass: "bg-blue-100", iconClass: "text-blue-700" },
 };
+
+const avatarColors = ["#C69C6D", "#5243AA", "#00875A", "#0052CC", "#FF5630"];
 
 function getTimeGroup(date: Date): string {
   const now = new Date();
@@ -35,6 +37,7 @@ function getTimeGroup(date: Date): string {
 function FeedRow({ item }: { item: ActivityItem }) {
   const config = typeConfig[item.type] || typeConfig.demand;
   const Icon = config.icon;
+  const avatarColor = avatarColors[item.id.charCodeAt(0) % avatarColors.length];
 
   const handleClick = () => {
     catalystToast.info("Opened", `Opened ${item.key}`);
@@ -43,7 +46,7 @@ function FeedRow({ item }: { item: ActivityItem }) {
   return (
     <div
       onClick={handleClick}
-      className="flex items-center px-4 py-1.5 border-b border-border/50 cursor-pointer hover:bg-muted/50 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-gold"
+      className="feed-row"
       tabIndex={0}
       role="button"
       onKeyDown={(e) => {
@@ -54,27 +57,27 @@ function FeedRow({ item }: { item: ActivityItem }) {
       }}
     >
       {/* Icon */}
-      <div className={`w-[22px] h-[22px] rounded flex items-center justify-center flex-shrink-0 mr-2.5 ${config.bgClass}`}>
-        <Icon className={`h-3 w-3 ${config.textClass}`} />
+      <div className={`feed-row-icon ${config.bgClass}`}>
+        <Icon className={`h-3 w-3 ${config.iconClass}`} />
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0 mr-3">
-        <p className="text-[13px] text-foreground truncate leading-tight">
-          {item.title}
-        </p>
-        <p className="text-[11px] text-muted-foreground truncate">
-          {item.key} · {item.projectName}
-        </p>
+      <div className="feed-row-content">
+        <p className="feed-row-title">{item.title}</p>
+        <p className="feed-row-meta">{item.key} • {item.projectName}</p>
       </div>
 
-      {/* Action */}
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <span className="text-[11px] text-muted-foreground capitalize">
-          {item.action}
-        </span>
-        <div className="w-[22px] h-[22px] rounded-full bg-brand-gold text-white text-[9px] font-semibold flex items-center justify-center">
-          U
+      {/* Right column - action + avatar */}
+      <div className="feed-row-right">
+        <span className="feed-row-action">{item.action}</span>
+        <div className="avatar-cluster">
+          <div 
+            className="avatar" 
+            style={{ backgroundColor: avatarColor }}
+            title="User"
+          >
+            U
+          </div>
         </div>
       </div>
     </div>
@@ -83,11 +86,11 @@ function FeedRow({ item }: { item: ActivityItem }) {
 
 function SkeletonRow() {
   return (
-    <div className="flex items-center px-4 py-1.5 border-b border-border/50 min-h-[44px]">
-      <Skeleton className="w-[22px] h-[22px] rounded mr-2.5" />
-      <div className="flex-1 min-w-0 mr-3">
+    <div className="feed-row" style={{ cursor: "default" }}>
+      <Skeleton className="w-5 h-5 rounded mr-2.5" />
+      <div className="feed-row-content">
         <Skeleton className="h-3.5 w-3/4 mb-1" />
-        <Skeleton className="h-2.5 w-1/2" />
+        <Skeleton className="h-3 w-1/2" />
       </div>
       <Skeleton className="w-16 h-3" />
     </div>
@@ -96,14 +99,13 @@ function SkeletonRow() {
 
 function GroupHeader({ label }: { label: string }) {
   return (
-    <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide px-4 py-2 bg-muted/50 border-b border-border/50">
+    <div className="feed-group-header">
       {label}
     </div>
   );
 }
 
 export function ActivityFeed({ items, loading }: ActivityFeedProps) {
-  // Group items by time
   const groupedItems = useMemo(() => {
     const groups: Record<string, ActivityItem[]> = {};
     const groupOrder = ["TODAY", "YESTERDAY", "IN THE LAST WEEK", "IN THE LAST MONTH", "OLDER"];
@@ -121,8 +123,8 @@ export function ActivityFeed({ items, loading }: ActivityFeedProps) {
 
   if (loading) {
     return (
-      <div className="bg-card border border-border/40 rounded overflow-hidden">
-        {Array.from({ length: 5 }).map((_, i) => (
+      <div className="feed-container">
+        {Array.from({ length: 6 }).map((_, i) => (
           <SkeletonRow key={i} />
         ))}
       </div>
@@ -131,16 +133,16 @@ export function ActivityFeed({ items, loading }: ActivityFeedProps) {
 
   if (items.length === 0) {
     return (
-      <div className="bg-card border border-border/40 rounded p-8 text-center">
-        <FileText className="h-8 w-8 text-muted-foreground/50 mx-auto mb-3" />
-        <p className="text-sm text-muted-foreground">No activity found</p>
-        <p className="text-xs text-muted-foreground/70 mt-1">Your activity will appear here</p>
+      <div className="empty-state">
+        <FileText className="h-8 w-8 empty-state-icon mx-auto" />
+        <p className="empty-state-title">No activity found</p>
+        <p className="empty-state-subtitle">Your activity will appear here</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-card border border-border/40 rounded overflow-hidden">
+    <div className="feed-container">
       {groupedItems.map((group) => (
         <div key={group.label}>
           <GroupHeader label={group.label} />
