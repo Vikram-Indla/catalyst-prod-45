@@ -118,14 +118,12 @@ export function ProgramRoomSidebar({
     enabled: !!programId,
   });
 
-  const handleNavigation = (path: string, autoCollapse = false) => {
+  const handleNavigation = (path: string) => {
     const resolvedPath = path.includes(':programId') 
       ? path.replace(':programId', programId)
       : path;
     navigate(resolvedPath + (selectedPI ? `?pi=${selectedPI}` : ''));
-    if (autoCollapse) {
-      onToggle();
-    }
+    onToggle(); // Always collapse sidebar on navigation
   };
 
   const isActive = (path?: string) => {
@@ -215,9 +213,7 @@ export function ProgramRoomSidebar({
                       if (isReports) setReportsExpanded(!reportsExpanded);
                       if (isMorePages) setMorePagesExpanded(!morePagesExpanded);
                     } else if ('path' in item && item.path) {
-                      // Auto-collapse sidebar when Tests is clicked
-                      const autoCollapse = item.id === 'tests';
-                      handleNavigation(item.path, autoCollapse);
+                      handleNavigation(item.path);
                     }
                   }}
                   className={cn(

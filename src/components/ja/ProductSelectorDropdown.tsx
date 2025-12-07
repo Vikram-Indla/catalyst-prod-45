@@ -36,17 +36,17 @@ const getIconForBusinessLine = (key: string) => {
   }
 };
 
-// Map business line keys to routes
+// Map business line keys to routes - navigates to "Room" (first sidebar item)
 const getPathForBusinessLine = (key: string) => {
   switch (key.toUpperCase()) {
     case 'IND':
     case 'INDUSTRY':
-      return '/industry';
+      return '/industry/demand-summary'; // Product Room - first sidebar item
     case 'MIN':
     case 'MINING':
-      return '/mining';
+      return '/mining/demand-summary';
     default:
-      return `/product/${key.toLowerCase()}`;
+      return `/product/${key.toLowerCase()}/demand-summary`;
   }
 };
 

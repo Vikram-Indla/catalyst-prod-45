@@ -142,6 +142,7 @@ export function TeamRoomSidebar({ teamId, expanded, onToggle, className }: TeamR
     if (path === '#') return;
     const resolvedPath = path.replace(':teamId', teamId);
     navigate(resolvedPath);
+    onToggle(); // Always collapse sidebar on navigation
   };
 
   const isActive = (path?: string) => {

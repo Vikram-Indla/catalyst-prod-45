@@ -23,7 +23,7 @@ function CatalystShellContent() {
   const location = useLocation();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
   const { tier, setTier } = useCatalystContext();
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const { isModuleEnabled } = useEnabledModules();
   
   // Extract IDs from URL params
