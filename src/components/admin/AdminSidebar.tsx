@@ -11,9 +11,19 @@ import {
   FolderTree,
   Megaphone,
   BarChart3,
-  Package
+  Package,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
+interface AdminSidebarProps {
+  expanded: boolean;
+  onToggle: () => void;
+  className?: string;
+}
 
 const adminSections = [
   {
@@ -83,48 +93,109 @@ const adminSections = [
   },
 ];
 
-export function AdminSidebar() {
+export function AdminSidebar({ expanded, onToggle, className }: AdminSidebarProps) {
   const location = useLocation();
 
   return (
-    <aside className="w-64 border-r bg-card flex flex-col">
-      <div className="p-4 border-b">
-        <h2 className="text-lg font-semibold text-foreground">Administration</h2>
-        <p className="text-xs text-muted-foreground mt-1">System Configuration</p>
-      </div>
-      
-      <nav className="flex-1 overflow-y-auto p-4 space-y-4">
-        {adminSections.map((section) => (
-          <div key={section.title}>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-              {section.title}
-            </h3>
-            <ul className="space-y-0.5">
-              {section.items.map((item) => {
-                const Icon = item.icon;
-                const isActive = location.pathname === item.path;
-                
-                return (
-                  <li key={item.path}>
-                    <Link
-                      to={item.path}
-                      className={cn(
-                        "flex items-center gap-3 px-3 py-1.5 rounded-md text-sm transition-colors",
-                        isActive 
-                          ? "bg-brand-gold text-white font-medium" 
-                          : "text-foreground hover:bg-muted"
-                      )}
-                    >
-                      <Icon className="h-4 w-4 flex-shrink-0" />
-                      <span>{item.label}</span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
-      </nav>
-    </aside>
+    <TooltipProvider>
+      <aside
+        className={cn(
+          'h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col',
+          expanded ? 'w-48' : 'w-16',
+          className
+        )}
+      >
+        {/* Toggle Handle */}
+        <button
+          onClick={onToggle}
+          className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
+          aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
+        >
+          {expanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        </button>
+
+        {/* Header - fixed height to align with page header (72px = py-4 + content) */}
+        <div className="h-[72px] px-4 border-b border-border flex items-center shrink-0">
+          {expanded ? (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm">
+                AD
+              </div>
+              <div className="flex flex-col">
+                <span className="font-semibold text-foreground">Admin</span>
+                <span className="text-xs text-muted-foreground">Configuration</span>
+              </div>
+            </div>
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm mx-auto">
+              AD
+            </div>
+          )}
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 overflow-y-auto p-2 space-y-3">
+          {adminSections.map((section) => (
+            <div key={section.title}>
+              {expanded && (
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5 px-2">
+                  {section.title}
+                </h3>
+              )}
+              <ul className="space-y-0.5">
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = location.pathname === item.path;
+
+                  if (!expanded) {
+                    return (
+                      <li key={item.path}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              asChild
+                              className={cn(
+                                'w-full h-10 flex items-center justify-center',
+                                isActive && 'bg-brand-gold-pale text-brand-gold'
+                              )}
+                            >
+                              <Link to={item.path}>
+                                <Icon className="h-5 w-5" />
+                              </Link>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="right" className="bg-popover border">
+                            {item.label}
+                          </TooltipContent>
+                        </Tooltip>
+                      </li>
+                    );
+                  }
+
+                  return (
+                    <li key={item.path}>
+                      <Link
+                        to={item.path}
+                        className={cn(
+                          'flex items-center gap-3 px-3 py-1.5 rounded-md text-sm transition-colors',
+                          isActive 
+                            ? 'bg-brand-gold-pale text-brand-gold font-medium' 
+                            : 'text-foreground hover:bg-muted'
+                        )}
+                      >
+                        <Icon className="h-4 w-4 flex-shrink-0" />
+                        <span>{item.label}</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </aside>
+    </TooltipProvider>
   );
 }
