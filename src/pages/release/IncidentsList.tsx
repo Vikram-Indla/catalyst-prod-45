@@ -169,8 +169,8 @@ export default function IncidentsList() {
         </div>
       </div>
 
-      {/* Toolbar */}
-      <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 bg-card border-b border-border">
+      {/* Toolbar - no top border, only bottom */}
+      <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 bg-card">
         <div className="flex items-center justify-between gap-4">
           {/* Search */}
           <div className="relative flex-1 max-w-md">
