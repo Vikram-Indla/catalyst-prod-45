@@ -1157,10 +1157,10 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                         }}
                         onClick={(e) => { e.stopPropagation(); setSelectedRequestId(item.id); }}
                       >
-                        {/* Labels Row - Above the bar: Start Date | Status | End Date - white bg to cover bars */}
+                        {/* Labels Row - Above the bar: Start Date | Status | End Date */}
                         <div 
                           className="flex justify-between items-center mb-1 px-1 relative"
-                          style={{ zIndex: 20, backgroundColor: 'white' }}
+                          style={{ zIndex: 20 }}
                         >
                           <span 
                             className="text-[9px] font-bold whitespace-nowrap"
