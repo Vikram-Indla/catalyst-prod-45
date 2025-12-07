@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { PageHeader } from '@/components/release/PageHeader';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import releasesData from '@/data/releases.json';
@@ -9,7 +8,7 @@ import type { Release } from '@/types/release';
 
 const releases = (releasesData as { versions: Release[] }).versions;
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
 export default function ReleaseCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date(2025, 11, 1)); // December 2025
@@ -67,33 +66,36 @@ export default function ReleaseCalendar() {
   };
 
   const getReleaseBarColor = (release: Release) => {
-    if (release.status === 'overdue') return 'bg-red-700';
-    if (release.status === 'released') return 'bg-green-700';
-    if (release.progress >= 50) return 'bg-[#C69C6D]';
+    if (release.status === 'overdue') return 'bg-red-600';
+    if (release.status === 'released') return 'bg-green-600';
+    if (release.progress >= 50) return 'bg-brand-gold';
     return 'bg-blue-600';
   };
 
   return (
-    <div className="p-6 md:p-8">
-      <PageHeader
-        title="Release Calendar"
-        actions={
+    <div className="h-full flex flex-col bg-background">
+      {/* Header - fixed height 72px to align with sidebar */}
+      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
+        <div className="h-full px-4 sm:px-6 flex items-center justify-between">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Release Calendar</h1>
+          </div>
           <Link to="/release/versions">
-            <Button variant="outline" className="border-[#E8E8E8] text-[#5C5C5C]">
+            <Button variant="outline" className="border-border text-muted-foreground">
               ← Back to List
             </Button>
           </Link>
-        }
-      />
+        </div>
+      </div>
 
       {/* Calendar Navigation */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-4 px-4 sm:px-6 py-4 bg-card border-b border-border">
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="icon"
             onClick={() => navigateMonth(-1)}
-            className="w-8 h-8 border-[#E8E8E8]"
+            className="w-8 h-8 border-border"
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
@@ -104,7 +106,7 @@ export default function ReleaseCalendar() {
             variant="outline"
             size="icon"
             onClick={() => navigateMonth(1)}
-            className="w-8 h-8 border-[#E8E8E8]"
+            className="w-8 h-8 border-border"
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -113,19 +115,19 @@ export default function ReleaseCalendar() {
         <Button
           variant="outline"
           onClick={goToToday}
-          className="border-[#E8E8E8] text-[#5C5C5C] hover:bg-[rgba(198,156,109,0.1)]"
+          className="border-border text-muted-foreground hover:bg-brand-gold/10"
         >
           Today
         </Button>
 
-        <div className="ml-auto flex border border-[#E8E8E8] rounded-md overflow-hidden">
+        <div className="ml-auto flex border border-border rounded-md overflow-hidden">
           <button
             onClick={() => setView('month')}
             className={cn(
-              "px-3.5 py-2 text-sm border-r border-[#E8E8E8]",
+              "px-3.5 py-2 text-sm border-r border-border",
               view === 'month'
-                ? "bg-[rgba(198,156,109,0.1)] text-[#C69C6D]"
-                : "bg-white text-[#8C8C8C]"
+                ? "bg-brand-gold/10 text-brand-gold"
+                : "bg-card text-muted-foreground"
             )}
           >
             Month
@@ -135,8 +137,8 @@ export default function ReleaseCalendar() {
             className={cn(
               "px-3.5 py-2 text-sm",
               view === 'quarter'
-                ? "bg-[rgba(198,156,109,0.1)] text-[#C69C6D]"
-                : "bg-white text-[#8C8C8C]"
+                ? "bg-brand-gold/10 text-brand-gold"
+                : "bg-card text-muted-foreground"
             )}
           >
             Quarter
@@ -145,56 +147,58 @@ export default function ReleaseCalendar() {
       </div>
 
       {/* Calendar Grid */}
-      <div className="border border-[#E8E8E8] rounded-lg overflow-hidden">
-        {/* Header */}
-        <div className="grid grid-cols-7 bg-white">
-          {DAYS.map((day) => (
-            <div
-              key={day}
-              className="p-3 text-center text-[11px] font-semibold uppercase text-[#8C8C8C] border-b border-[#E8E8E8]"
-            >
-              {day}
-            </div>
-          ))}
-        </div>
-
-        {/* Body */}
-        <div className="grid grid-cols-7">
-          {calendarDays.map((day, index) => (
-            <div
-              key={index}
-              className={cn(
-                "min-h-[120px] p-2 border-r border-b border-[#E8E8E8] last:border-r-0",
-                "[&:nth-child(7n)]:border-r-0",
-                !day.isCurrentMonth && "bg-[#FAFAFA]",
-                isToday(day.date) && "bg-[rgba(198,156,109,0.1)]"
-              )}
-            >
+      <div className="flex-1 overflow-auto p-4 sm:px-6 pb-6">
+        <div className="border border-border rounded-lg overflow-hidden">
+          {/* Header */}
+          <div className="grid grid-cols-7 bg-card">
+            {DAYS.map((day) => (
               <div
+                key={day}
+                className="p-3 text-center text-[11px] font-semibold uppercase text-muted-foreground border-b border-border"
+              >
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* Body */}
+          <div className="grid grid-cols-7">
+            {calendarDays.map((day, index) => (
+              <div
+                key={index}
                 className={cn(
-                  "text-[13px] font-medium mb-1.5",
-                  !day.isCurrentMonth && "text-[#8C8C8C]",
-                  isToday(day.date) && "w-7 h-7 rounded-full bg-[#C69C6D] text-white flex items-center justify-center"
+                  "min-h-[120px] p-2 border-r border-b border-border last:border-r-0",
+                  "[&:nth-child(7n)]:border-r-0",
+                  !day.isCurrentMonth && "bg-muted/30",
+                  isToday(day.date) && "bg-brand-gold/10"
                 )}
               >
-                {day.date.getDate()}
+                <div
+                  className={cn(
+                    "text-[13px] font-medium mb-1.5",
+                    !day.isCurrentMonth && "text-muted-foreground",
+                    isToday(day.date) && "w-7 h-7 rounded-full bg-brand-gold text-white flex items-center justify-center"
+                  )}
+                >
+                  {day.date.getDate()}
+                </div>
+                <div className="space-y-1">
+                  {day.releases.map((release) => (
+                    <Link
+                      key={release.id}
+                      to={`/release/versions/${release.id}`}
+                      className={cn(
+                        "block px-2 py-1 rounded text-[11px] font-semibold text-white truncate",
+                        getReleaseBarColor(release)
+                      )}
+                    >
+                      {release.name}
+                    </Link>
+                  ))}
+                </div>
               </div>
-              <div className="space-y-1">
-                {day.releases.map((release) => (
-                  <Link
-                    key={release.id}
-                    to={`/release/versions/${release.id}`}
-                    className={cn(
-                      "block px-2 py-1 rounded text-[11px] font-semibold text-white truncate",
-                      getReleaseBarColor(release)
-                    )}
-                  >
-                    {release.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
