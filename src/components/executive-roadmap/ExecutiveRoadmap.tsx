@@ -58,6 +58,46 @@ interface TimePeriodSelection {
   months: number[]; // 0-11 for monthly
   quarters: number[]; // 0-3 for quarterly
   weeks: number[]; // 1-52 for weekly
+  weeklyMonth: number | null; // 0-11 for weekly view month filter
+}
+
+// Helper to get weeks for a specific month in a year
+function getWeeksForMonth(year: number, month: number): { week: number; startDate: Date; label: string }[] {
+  const weeks: { week: number; startDate: Date; label: string }[] = [];
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+  
+  // Find the first day of the year to calculate week numbers
+  const firstDayOfYear = new Date(year, 0, 1);
+  
+  // Find all weeks that overlap with this month
+  let currentDate = new Date(firstDayOfMonth);
+  
+  // Go back to the start of the week containing the first day of month
+  const dayOfWeek = currentDate.getDay();
+  currentDate.setDate(currentDate.getDate() - dayOfWeek);
+  
+  while (currentDate <= lastDayOfMonth) {
+    // Calculate week number (ISO-style, week 1 starts Jan 1)
+    const daysSinceYearStart = Math.floor((currentDate.getTime() - firstDayOfYear.getTime()) / (24 * 60 * 60 * 1000));
+    const weekNum = Math.ceil((daysSinceYearStart + firstDayOfYear.getDay() + 1) / 7);
+    
+    // Only include if week overlaps with the selected month
+    const weekEnd = new Date(currentDate);
+    weekEnd.setDate(weekEnd.getDate() + 6);
+    
+    if (weekEnd >= firstDayOfMonth && currentDate <= lastDayOfMonth) {
+      weeks.push({
+        week: weekNum,
+        startDate: new Date(currentDate),
+        label: `W${weekNum}`
+      });
+    }
+    
+    currentDate.setDate(currentDate.getDate() + 7);
+  }
+  
+  return weeks;
 }
 
 // Compute visible date range based on selection AND scale
@@ -89,19 +129,48 @@ function getVisibleDateRange(selection: TimePeriodSelection, scale: TimeScale): 
   }
 
   if (scale === 'weekly') {
-    const sortedWeeks = selection.weeks.length > 0
-      ? [...selection.weeks].sort((a, b) => a - b)
-      : Array.from({ length: 52 }, (_, i) => i + 1);
-    const startWeek = sortedWeeks[0];
-    const endWeek = sortedWeeks[sortedWeeks.length - 1];
+    // Weekly view: use weeklyMonth to determine the range
+    if (selection.weeklyMonth !== null) {
+      const month = selection.weeklyMonth;
+      const weeksInMonth = getWeeksForMonth(startYear, month);
+      
+      if (selection.weeks.length > 0 && weeksInMonth.length > 0) {
+        // Filter to only selected weeks within the month
+        const selectedWeeksInMonth = weeksInMonth.filter(w => selection.weeks.includes(w.week));
+        if (selectedWeeksInMonth.length > 0) {
+          const firstWeek = selectedWeeksInMonth[0];
+          const lastWeek = selectedWeeksInMonth[selectedWeeksInMonth.length - 1];
+          const endDate = new Date(lastWeek.startDate);
+          endDate.setDate(endDate.getDate() + 6);
+          return { start: firstWeek.startDate, end: endDate };
+        }
+      }
+      
+      // If no weeks selected but month is selected, show all weeks of that month
+      if (weeksInMonth.length > 0) {
+        const firstWeek = weeksInMonth[0];
+        const lastWeek = weeksInMonth[weeksInMonth.length - 1];
+        const endDate = new Date(lastWeek.startDate);
+        endDate.setDate(endDate.getDate() + 6);
+        return { start: firstWeek.startDate, end: endDate };
+      }
+    }
     
-    const startDate = new Date(startYear, 0, 1);
-    startDate.setDate(startDate.getDate() + (startWeek - 1) * 7);
+    // Fallback: show current month's weeks if no month selected
+    const weeksInCurrentMonth = getWeeksForMonth(startYear, currentMonth);
+    if (weeksInCurrentMonth.length > 0) {
+      const firstWeek = weeksInCurrentMonth[0];
+      const lastWeek = weeksInCurrentMonth[weeksInCurrentMonth.length - 1];
+      const endDate = new Date(lastWeek.startDate);
+      endDate.setDate(endDate.getDate() + 6);
+      return { start: firstWeek.startDate, end: endDate };
+    }
     
-    const endDate = new Date(endYear, 0, 1);
-    endDate.setDate(endDate.getDate() + endWeek * 7 - 1);
-    
-    return { start: startDate, end: endDate };
+    // Ultimate fallback
+    return {
+      start: new Date(startYear, currentMonth, 1),
+      end: new Date(startYear, currentMonth + 1, 0)
+    };
   }
 
   // Monthly - use months
@@ -204,7 +273,8 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     years: [currentYear],
     months: [],
     quarters: [],
-    weeks: []
+    weeks: [],
+    weeklyMonth: null
   });
   const [platform, setPlatform] = useState<string>('all');
   const [status, setStatus] = useState<string>('all');
@@ -543,6 +613,15 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     });
   };
 
+  // Select weekly month (for filtering weeks in weekly view)
+  const selectWeeklyMonth = (month: number) => {
+    setTimePeriodSelection(prev => ({
+      ...prev,
+      weeklyMonth: prev.weeklyMonth === month ? null : month,
+      weeks: [] // Clear weeks when month changes
+    }));
+  };
+
   // Select all / clear months
   const toggleAllMonths = () => {
     setTimePeriodSelection(prev => ({
@@ -559,12 +638,25 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
     }));
   };
 
-  // Select all / clear weeks (first 12 weeks by default)
-  const toggleAllWeeks = () => {
-    setTimePeriodSelection(prev => ({
-      ...prev,
-      weeks: prev.weeks.length > 0 ? [] : Array.from({ length: 12 }, (_, i) => i + 1)
-    }));
+  // Get available weeks for the selected monthly context in weekly view
+  const availableWeeksForSelectedMonth = useMemo(() => {
+    if (timeScale !== 'weekly' || timePeriodSelection.weeklyMonth === null) {
+      return [];
+    }
+    const selectedYear = timePeriodSelection.years[0] || currentYear;
+    return getWeeksForMonth(selectedYear, timePeriodSelection.weeklyMonth);
+  }, [timeScale, timePeriodSelection.weeklyMonth, timePeriodSelection.years]);
+
+  // Select all / clear weeks for selected month
+  const toggleAllWeeksInMonth = () => {
+    setTimePeriodSelection(prev => {
+      const allWeekNumbers = availableWeeksForSelectedMonth.map(w => w.week);
+      const allSelected = allWeekNumbers.every(w => prev.weeks.includes(w));
+      return {
+        ...prev,
+        weeks: allSelected ? [] : allWeekNumbers
+      };
+    });
   };
 
   const handleExport = () => window.print();
@@ -859,38 +951,82 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                 </div>
               )}
 
-              {/* WEEKLY Scale: Show Weeks ONLY */}
+              {/* WEEKLY Scale: Show Months FIRST, then Weeks AFTER month selection */}
               {timeScale === 'weekly' && (
                 <div className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
-                      {t.selectWeeks}
+                  {/* Step 1: Select Month */}
+                  <div className="mb-4">
+                    <div className="text-xs font-semibold mb-3" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
+                      {t.selectMonths}
                     </div>
-                    <button onClick={toggleAllWeeks} className="text-xs font-medium hover:underline" style={{ color: 'hsl(var(--roadmap-status-new))' }}>
-                      {timePeriodSelection.weeks.length > 0 ? 'Clear' : t.allWeeks}
-                    </button>
+                    <div className="grid grid-cols-6 gap-1.5">
+                      {MONTH_NAMES.map((month, index) => {
+                        const isSelected = timePeriodSelection.weeklyMonth === index;
+                        return (
+                          <button
+                            key={month}
+                            onClick={() => selectWeeklyMonth(index)}
+                            className={cn(
+                              "px-1 py-2 text-xs font-medium rounded-lg transition-all",
+                              isSelected ? "text-white" : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
+                            )}
+                            style={{
+                              backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
+                              color: isSelected ? 'white' : 'hsl(var(--roadmap-fossil))'
+                            }}
+                          >
+                            {month}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                  <div className="grid grid-cols-6 gap-1 max-h-[180px] overflow-y-auto">
-                    {Array.from({ length: 52 }, (_, i) => i + 1).map((week) => {
-                      const isSelected = timePeriodSelection.weeks.length === 0 || timePeriodSelection.weeks.includes(week);
-                      return (
-                        <button
-                          key={week}
-                          onClick={() => toggleWeek(week)}
-                          className={cn(
-                            "px-1 py-1.5 text-[10px] font-medium rounded transition-all",
-                            isSelected ? "text-white" : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
-                          )}
-                          style={{
-                            backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
-                            color: isSelected ? 'white' : 'hsl(var(--roadmap-fossil))'
-                          }}
+
+                  {/* Step 2: Select Weeks (only visible after month is selected) */}
+                  {timePeriodSelection.weeklyMonth !== null && availableWeeksForSelectedMonth.length > 0 && (
+                    <div className="pt-3 border-t" style={{ borderColor: 'hsl(var(--roadmap-sandstone))' }}>
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="text-xs font-semibold" style={{ color: 'hsl(var(--roadmap-graphite))' }}>
+                          {t.selectWeeks} ({MONTH_NAMES[timePeriodSelection.weeklyMonth]})
+                        </div>
+                        <button 
+                          onClick={toggleAllWeeksInMonth} 
+                          className="text-xs font-medium hover:underline" 
+                          style={{ color: 'hsl(var(--roadmap-status-new))' }}
                         >
-                          W{week}
+                          {timePeriodSelection.weeks.length === availableWeeksForSelectedMonth.length ? 'Clear' : t.allWeeks}
                         </button>
-                      );
-                    })}
-                  </div>
+                      </div>
+                      <div className="grid grid-cols-4 gap-1.5">
+                        {availableWeeksForSelectedMonth.map((weekInfo) => {
+                          const isSelected = timePeriodSelection.weeks.includes(weekInfo.week);
+                          return (
+                            <button
+                              key={weekInfo.week}
+                              onClick={() => toggleWeek(weekInfo.week)}
+                              className={cn(
+                                "px-2 py-2 text-xs font-medium rounded-lg transition-all",
+                                isSelected ? "text-white" : "bg-[hsl(var(--roadmap-parchment))] hover:bg-[hsl(var(--roadmap-sandstone))]"
+                              )}
+                              style={{
+                                backgroundColor: isSelected ? 'hsl(var(--roadmap-status-new))' : undefined,
+                                color: isSelected ? 'white' : 'hsl(var(--roadmap-fossil))'
+                              }}
+                            >
+                              {weekInfo.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Hint when no month selected */}
+                  {timePeriodSelection.weeklyMonth === null && (
+                    <div className="text-xs text-center py-2" style={{ color: 'hsl(var(--roadmap-fossil))' }}>
+                      Select a month to view its weeks
+                    </div>
+                  )}
                 </div>
               )}
 
