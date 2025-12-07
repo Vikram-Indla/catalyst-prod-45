@@ -79,7 +79,10 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => navigate(item.path)}
+                      onClick={() => {
+                        navigate(item.path);
+                        onToggle(); // Collapse sidebar on click
+                      }}
                       className={cn(
                         'w-full h-10 flex items-center justify-center',
                         active && 'bg-brand-gold-pale text-brand-gold'
@@ -99,7 +102,10 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
               <Button
                 key={item.title}
                 variant="ghost"
-                onClick={() => navigate(item.path)}
+                onClick={() => {
+                  navigate(item.path);
+                  onToggle(); // Collapse sidebar on click
+                }}
                 className={cn(
                   'w-full justify-start gap-3 h-10',
                   active && 'bg-brand-gold-pale text-brand-gold'

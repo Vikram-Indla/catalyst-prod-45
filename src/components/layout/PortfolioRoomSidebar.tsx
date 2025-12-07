@@ -148,6 +148,7 @@ export function PortfolioRoomSidebar({
     }
     
     navigate(finalPath);
+    onToggle(); // Always collapse sidebar on navigation
   };
 
   const isActive = (path?: string) => {
