@@ -1,148 +1,151 @@
-import { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  LayoutDashboard, 
-  AlertCircle, 
-  Tag, 
-  Calendar, 
-  Settings 
-} from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { ChevronLeft, ChevronRight, LayoutDashboard, AlertCircle, Tag, Calendar, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ReleaseRoomSidebarProps {
-  expanded?: boolean;
-  onToggle?: () => void;
+  expanded: boolean;
+  onToggle: () => void;
+  className?: string;
 }
 
-const STORAGE_KEY = 'release-sidebar-collapsed';
-
-const navItems = [
-  { label: 'Overview', icon: LayoutDashboard, path: '/release/overview' },
-  { label: 'Incidents', icon: AlertCircle, path: '/release/incidents' },
-  { label: 'Versions', icon: Tag, path: '/release/versions' },
-  { label: 'Calendar', icon: Calendar, path: '/release/calendar' },
+const menuItems = [
+  { title: 'Overview', path: '/release/overview', icon: LayoutDashboard, exact: true },
+  { title: 'Incidents', path: '/release/incidents', icon: AlertCircle, exact: false },
+  { title: 'Versions', path: '/release/versions', icon: Tag, exact: false },
+  { title: 'Calendar', path: '/release/calendar', icon: Calendar, exact: true },
 ];
 
-export function ReleaseRoomSidebar({ expanded: controlledExpanded, onToggle }: ReleaseRoomSidebarProps) {
+export function ReleaseRoomSidebar({ expanded, onToggle, className }: ReleaseRoomSidebarProps) {
   const location = useLocation();
-  
-  // Use localStorage for persistence
-  const [internalExpanded, setInternalExpanded] = useState(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored !== 'true'; // Default expanded, stored as collapsed state
-  });
+  const navigate = useNavigate();
 
-  const expanded = controlledExpanded ?? internalExpanded;
-
-  const handleToggle = () => {
-    const newExpanded = !expanded;
-    setInternalExpanded(newExpanded);
-    localStorage.setItem(STORAGE_KEY, (!newExpanded).toString());
-    onToggle?.();
-  };
-
-  // Persist state changes
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, (!expanded).toString());
-  }, [expanded]);
-
-  const isActive = (path: string) => {
-    if (path === '/release/incidents') {
-      return location.pathname.startsWith('/release/incidents');
-    }
-    if (path === '/release/versions') {
-      return location.pathname.startsWith('/release/versions');
-    }
-    return location.pathname === path;
+  const isActive = (path: string, exact: boolean = false) => {
+    if (exact) return location.pathname === path;
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   };
 
   return (
-    <aside
-      className={cn(
-        "h-full bg-white border-r border-[#E8E8E8] flex flex-col transition-all duration-200",
-        expanded ? "w-[240px]" : "w-[56px]"
-      )}
-    >
-      {/* Header */}
-      <div className="h-[72px] border-b border-[#E8E8E8] flex items-center px-3 gap-3">
-        {/* Badge */}
-        <div 
-          className="w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0"
-          style={{ backgroundColor: 'rgba(198, 156, 109, 0.1)' }}
-        >
-          <span className="text-sm font-semibold" style={{ color: '#C69C6D' }}>PR</span>
-        </div>
-        
-        {expanded && (
-          <div className="flex-1 min-w-0">
-            <div className="text-sm font-semibold text-[#1A1A1A] truncate">Product</div>
-            <div className="text-xs text-[#8C8C8C] truncate">Industry</div>
-          </div>
+    <TooltipProvider>
+      <aside
+        className={cn(
+          'h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col overflow-visible',
+          expanded ? 'w-48' : 'w-16',
+          className
         )}
-        
-        {/* Collapse button */}
+      >
+        {/* Toggle Handle - positioned outside sidebar */}
         <button
-          onClick={handleToggle}
-          className="w-6 h-6 flex items-center justify-center text-[#5C5C5C] hover:text-[#1A1A1A] hover:bg-[#FAFAFA] rounded transition-colors flex-shrink-0"
+          onClick={onToggle}
+          className="absolute right-0 translate-x-1/2 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
+          aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
         >
-          {expanded ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          {expanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
-      </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 py-2">
-        {navItems.map((item) => {
-          const active = isActive(item.path);
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
+        {/* Header - fixed height to align with page header (72px) */}
+        <div className="h-[72px] px-4 border-b border-border flex items-center shrink-0">
+          {expanded ? (
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm">
+                RL
+              </div>
+              <div className="flex flex-col">
+                <span className="font-semibold text-foreground">Release</span>
+                <span className="text-xs text-muted-foreground">Industry</span>
+              </div>
+            </div>
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm mx-auto">
+              RL
+            </div>
+          )}
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="p-2 space-y-1">
+          {menuItems.map(item => {
+            const Icon = item.icon;
+            const active = isActive(item.path, item.exact);
+
+            if (!expanded) {
+              return (
+                <Tooltip key={item.title}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => navigate(item.path)}
+                      className={cn(
+                        'w-full h-10 flex items-center justify-center',
+                        active && 'bg-brand-gold-pale text-brand-gold'
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right" className="bg-popover border">
+                    {item.title}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            }
+
+            return (
+              <Button
+                key={item.title}
+                variant="ghost"
+                onClick={() => navigate(item.path)}
+                className={cn(
+                  'w-full justify-start gap-3 h-10',
+                  active && 'bg-brand-gold-pale text-brand-gold'
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{item.title}</span>
+              </Button>
+            );
+          })}
+        </nav>
+
+        {/* Settings at bottom */}
+        <div className="flex-1" />
+        <div className="p-2 border-t">
+          {!expanded ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate('/release/settings')}
+                  className={cn(
+                    'w-full h-10 flex items-center justify-center',
+                    isActive('/release/settings', true) && 'bg-brand-gold-pale text-brand-gold'
+                  )}
+                >
+                  <Settings className="h-5 w-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" className="bg-popover border">
+                Release Settings
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/release/settings')}
               className={cn(
-                "relative flex items-center gap-3 px-3 py-2 mx-2 rounded-md transition-colors",
-                active 
-                  ? "text-[#C69C6D]" 
-                  : "text-[#5C5C5C] hover:bg-[#FAFAFA] hover:text-[#1A1A1A]"
+                'w-full justify-start gap-3 h-10',
+                isActive('/release/settings', true) && 'bg-brand-gold-pale text-brand-gold'
               )}
-              style={active ? { backgroundColor: 'rgba(198, 156, 109, 0.1)' } : undefined}
             >
-              {/* Active indicator */}
-              {active && (
-                <div 
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] rounded-r"
-                  style={{ backgroundColor: '#C69C6D' }}
-                />
-              )}
-              <item.icon className="w-5 h-5 flex-shrink-0" />
-              {expanded && <span className="text-sm font-medium">{item.label}</span>}
-            </NavLink>
-          );
-        })}
-      </nav>
-
-      {/* Settings at bottom */}
-      <div className="border-t border-[#E8E8E8] py-2">
-        <NavLink
-          to="/release/settings"
-          className={cn(
-            "relative flex items-center gap-3 px-3 py-2 mx-2 rounded-md transition-colors",
-            isActive('/release/settings')
-              ? "text-[#C69C6D]"
-              : "text-[#5C5C5C] hover:bg-[#FAFAFA] hover:text-[#1A1A1A]"
+              <Settings className="h-5 w-5" />
+              <span>Release Settings</span>
+            </Button>
           )}
-          style={isActive('/release/settings') ? { backgroundColor: 'rgba(198, 156, 109, 0.1)' } : undefined}
-        >
-          {isActive('/release/settings') && (
-            <div 
-              className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-[60%] rounded-r"
-              style={{ backgroundColor: '#C69C6D' }}
-            />
-          )}
-          <Settings className="w-5 h-5 flex-shrink-0" />
-          {expanded && <span className="text-sm font-medium">Settings</span>}
-        </NavLink>
-      </div>
-    </aside>
+        </div>
+      </aside>
+    </TooltipProvider>
   );
 }
