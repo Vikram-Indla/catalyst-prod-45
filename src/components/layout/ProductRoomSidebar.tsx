@@ -80,10 +80,7 @@ export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoo
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => {
-                        navigate(item.path);
-                        onToggle(); // Collapse sidebar on click
-                      }}
+                      onClick={() => navigate(item.path)}
                       className={cn(
                         'w-full h-10 flex items-center justify-center',
                         active && 'bg-brand-gold-pale text-brand-gold'
