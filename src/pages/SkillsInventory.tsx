@@ -344,7 +344,7 @@ export default function SkillsInventory() {
         </div>
 
         {/* View Mode Tabs */}
-        <div className="flex gap-1 p-1 bg-brand-dark rounded-lg w-fit">
+        <div className="flex gap-1 p-1 bg-white border border-brand-gold rounded-lg w-fit">
           {viewTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = viewMode === tab.id;
@@ -355,7 +355,7 @@ export default function SkillsInventory() {
                 className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
                     ? 'bg-brand-gold text-white'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-white/10'
+                    : 'text-brand-dark hover:text-brand-gold hover:bg-brand-gold/10'
                 }`}
               >
                 <Icon className="h-4 w-4" />
