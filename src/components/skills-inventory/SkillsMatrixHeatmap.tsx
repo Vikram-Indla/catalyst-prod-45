@@ -132,18 +132,19 @@ export const SkillsMatrixHeatmap: React.FC = () => {
         </div>
       </div>
 
-      {/* Matrix Table */}
+      {/* Matrix Table - Catalyst Table Style */}
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b border-neutral-200">
-              <th className="w-[200px] bg-white text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+        <table className="w-full border-separate border-spacing-0">
+          <thead className="sticky top-0 z-10" style={{ background: 'hsl(35 46% 97%)' }}>
+            <tr style={{ background: 'hsl(35 46% 97%)' }}>
+              <th className="w-[200px] text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>
                 Team Member
               </th>
               {skills.map((skill) => (
                 <th
                   key={skill.id}
-                  className="bg-white text-center py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider"
+                  className="text-center py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200"
+                  style={{ background: 'hsl(35 46% 97%)' }}
                 >
                   {skill.name}
                 </th>
