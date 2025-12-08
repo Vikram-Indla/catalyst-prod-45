@@ -17,12 +17,12 @@ export function MisalignedWorkItems({ snapshotId }: MisalignedWorkItemsProps) {
       // associated with objectives/goals in the pyramid but not 
       // planned in an aligned PI
       
-      // Mock data for now matching documentation
+      // Empty data - populated from database
       return {
-        themes: 2,
+        themes: 0,
         epics: 0,
-        features: 7,
-        dependencies: 141
+        features: 0,
+        dependencies: 0
       };
     },
     enabled: !!snapshotId,

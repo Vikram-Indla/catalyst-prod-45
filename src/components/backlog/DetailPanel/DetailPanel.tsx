@@ -37,16 +37,8 @@ export function DetailPanel({
   const [showWSJFModal, setShowWSJFModal] = useState(false);
   const updateWSJF = useUpdateWSJF();
 
-  // Mock WSJF scores for current PI
-  const wsjfScores: WSJFScore[] = epic ? [{
-    piId: 'pi-5',
-    piName: 'PI-5',
-    businessValue: 0,
-    timeValue: 0,
-    rroeValue: 0,
-    jobSize: 0,
-    score: 0,
-  }] : [];
+  // WSJF scores - empty until populated from database
+  const wsjfScores: WSJFScore[] = [];
 
   const handleWSJFUpdate = (piId: string, updates: Partial<WSJFScore>) => {
     if (!epic) return;

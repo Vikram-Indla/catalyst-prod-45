@@ -25,12 +25,12 @@ interface FeatureDetailsTabProps {
 }
 
 export function FeatureDetailsTab({ feature, formData, updateField }: FeatureDetailsTabProps) {
-  // Mock progress data - in real implementation, this would come from child stories
+  // Empty progress - populated from child stories
   const mockProgress: FeatureProgress = {
-    totalStories: 12,
-    accepted: 8,
-    inProgress: 3,
-    notStarted: 1,
+    totalStories: 0,
+    accepted: 0,
+    inProgress: 0,
+    notStarted: 0,
   };
 
   return (

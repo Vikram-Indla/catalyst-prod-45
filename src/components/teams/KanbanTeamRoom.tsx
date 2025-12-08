@@ -9,13 +9,13 @@ interface KanbanTeamRoomProps {
 }
 
 export function KanbanTeamRoom({ team }: KanbanTeamRoomProps) {
-  // Mock data - will be replaced with actual data
+  // Metrics from team data or empty defaults
   const metrics = {
-    throughput: team.kanban_throughput || 12,
-    cycleTime: 4.2,
-    wip: 8,
-    wipLimit: team.kanban_wip_limit || 10,
-    leadTime: 6.5,
+    throughput: team.kanban_throughput || 0,
+    cycleTime: 0,
+    wip: 0,
+    wipLimit: team.kanban_wip_limit || 0,
+    leadTime: 0,
   };
 
   return (

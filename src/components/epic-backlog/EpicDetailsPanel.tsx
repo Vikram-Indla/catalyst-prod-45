@@ -41,142 +41,65 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
 
   if (!epic) return null;
 
-  // Mock data matching screenshots exactly - complete EpicDetail type
+  // Use actual epic data from database - empty arrays for related data
   const epicDetail = {
     id: epicId,
-    numericId: 1168,
-    title: 'AI for Improved Call Center Interactions',
-    description: 'Use natural language processing to perform in-call voice analysis and deliver real-time guidance to agents and new insight to managers.',
-    status: 'in_progress' as const,
-    processStep: 'Implementing' as const,
-    type: 'Business' as const,
-    mvp: false,
-    points: 0,
-    labels: [],
-    hasChildren: true,
-    rank: 2,
-    containedIn: { id: '1', name: 'User Experience', type: 'theme' },
-    primaryProgram: { id: 'mobile', name: 'Mobile' },
-    additionalPrograms: [{ id: 'ai', name: 'AI' }],
-    owner: { id: 'sean', name: 'Sean Duffy' },
-    state: { id: 2, name: '2 - In Progress', color: '#FF8B00' },
-    theme: { id: 'ux', name: 'User Experience' },
-    level1: [],
-    programIncrements: [
-      { id: 'pi-5', name: 'PI-5', startDate: '2024-01-01', endDate: '2024-03-31' },
-      { id: 'pi-6', name: 'PI-6', startDate: '2024-04-01', endDate: '2024-06-30' },
-      { id: 'pi-7', name: 'PI-7', startDate: '2024-07-01', endDate: '2024-09-30' }
-    ],
-    wsjfScores: [
-      { piId: 'pi-5', piName: 'PI-5', businessValue: 8, timeValue: 5, rroeValue: 3, jobSize: 3, score: 10 },
-      { piId: 'pi-6', piName: 'PI-6', businessValue: 3, timeValue: 2, rroeValue: 1, jobSize: 5, score: 2.5 },
-      { piId: 'pi-7', piName: 'PI-7', businessValue: 0, timeValue: 0, rroeValue: 0, jobSize: 1, score: 0 }
-    ],
-    initialEstimate: null,
-    piEstimates: [
-      { piId: 'pi-5', piName: 'PI-5', points: 475 },
-      { piId: 'pi-6', piName: 'PI-6', points: 1440 },
-      { piId: 'pi-7', piName: 'PI-7', points: 960 }
-    ],
-    totalEstimate: 2875,
-    features: [
-      { id: '5556', numericId: 5556, externalId: '', title: 'Feature 9', status: 'on_track', processStep: '2 - In Progress', progressPercent: 0, storyPointsAccepted: 0, storyPointsTotal: 8, storiesAccepted: 0, storiesTotal: 3, storiesDelivered: 0, scopeEstimate: 50, scopeActual: 15 },
-      { id: '5551', numericId: 5551, externalId: '', title: 'Feature 4', status: 'on_track', processStep: '2 - In Progress', progressPercent: 0, storyPointsAccepted: 0, storyPointsTotal: 8, storiesAccepted: 0, storiesTotal: 3, storiesDelivered: 0, scopeEstimate: 50, scopeActual: 15 },
-      { id: '5548', numericId: 5548, externalId: '', title: 'Feature 1', status: 'on_track', processStep: '2 - In Progress', progressPercent: 0, storyPointsAccepted: 0, storyPointsTotal: 8, storiesAccepted: 0, storiesTotal: 3, storiesDelivered: 0, scopeEstimate: 50, scopeActual: 15 },
-      { id: '5426', numericId: 5426, externalId: '', title: 'Implement Live call monitoring', status: 'on_track', processStep: '2 - In Progress', progressPercent: 100, storyPointsAccepted: 8, storyPointsTotal: 11, storiesAccepted: 2, storiesTotal: 3, storiesDelivered: 0, scopeEstimate: 85, scopeActual: 11 },
-      { id: '5425', numericId: 5425, externalId: '', title: 'Implement In-call speaking guidance', status: 'on_track', processStep: '2 - In Progress', progressPercent: 50, storyPointsAccepted: 5, storyPointsTotal: 10, storiesAccepted: 1, storiesTotal: 4, storiesDelivered: 1, scopeEstimate: 60, scopeActual: 25 },
-      { id: '5396', numericId: 5396, externalId: '', title: 'Confirm the performance of Kivox with different codecs', status: 'on_track', processStep: '2 - In Progress', progressPercent: 60, storyPointsAccepted: 6, storyPointsTotal: 10, storiesAccepted: 2, storiesTotal: 4, storiesDelivered: 1, scopeEstimate: 70, scopeActual: 30 },
-      { id: '5395', numericId: 5395, externalId: '', title: 'Easy Access call archiving functionality', status: 'at_risk', processStep: '3 - Testing', progressPercent: 80, storyPointsAccepted: 8, storyPointsTotal: 10, storiesAccepted: 3, storiesTotal: 4, storiesDelivered: 2, scopeEstimate: 75, scopeActual: 50 },
-      { id: '5394', numericId: 5394, externalId: '', title: 'Ensure alert testing through to end client', status: 'on_track', processStep: '4 - Delivered', progressPercent: 90, storyPointsAccepted: 9, storyPointsTotal: 10, storiesAccepted: 4, storiesTotal: 4, storiesDelivered: 3, scopeEstimate: 80, scopeActual: 70 },
-      { id: '5389', numericId: 5389, externalId: '', title: 'Large Data Set Collection & Testing', status: 'on_track', processStep: '2 - In Progress', progressPercent: 75, storyPointsAccepted: 7, storyPointsTotal: 9, storiesAccepted: 3, storiesTotal: 4, storiesDelivered: 2, scopeEstimate: 65, scopeActual: 45 },
-      { id: '4237', numericId: 4237, externalId: '', title: 'V2.1 L1 Package B P&S Tests', status: 'on_track', processStep: '2 - In Progress', progressPercent: 55, storyPointsAccepted: 6, storyPointsTotal: 11, storiesAccepted: 2, storiesTotal: 5, storiesDelivered: 1, scopeEstimate: 90, scopeActual: 35 }
-    ],
-    storyPointsAccepted: 75,
-    storyPointsTotal: 95,
-    featuresAccepted: 3,
+    numericId: parseInt(epic.epic_key?.replace(/\D/g, '') || '0'),
+    title: epic.name || '',
+    description: epic.description || '',
+    status: (epic.status || 'not_started') as 'not_started' | 'in_progress' | 'accepted' | 'done' | 'blocked',
+    processStep: (epic.process_step_id || 'Funnel') as 'Funnel' | 'Analyzing' | 'Implementing' | 'Done',
+    type: (epic.epic_type || 'Business') as 'Business' | 'Enabler' | 'Compliance',
+    mvp: epic.mvp || false,
+    points: epic.points_estimate || 0,
+    labels: [] as any[],
+    hasChildren: false,
+    rank: epic.global_rank || 0,
+    containedIn: null as { id: string; name: string; type: string } | null,
+    primaryProgram: null as { id: string; name: string } | null,
+    additionalPrograms: [] as { id: string; name: string }[],
+    owner: epic.owner_name ? { id: epic.owner_id || '', name: epic.owner_name } : null,
+    state: { id: 0, name: epic.state || '', color: '#666' },
+    theme: null as { id: string; name: string } | null,
+    level1: [] as any[],
+    programIncrements: [] as { id: string; name: string; startDate: string; endDate: string }[],
+    wsjfScores: [] as { piId: string; piName: string; businessValue: number; timeValue: number; rroeValue: number; jobSize: number; score: number }[],
+    initialEstimate: epic.estimate,
+    piEstimates: [] as { piId: string; piName: string; points: number }[],
+    totalEstimate: epic.estimate || 0,
+    features: [] as any[],
+    storyPointsAccepted: 0,
+    storyPointsTotal: 0,
+    featuresAccepted: 0,
     featuresInDelivery: 0,
     featuresDelivered: 0,
-    featuresTotal: 15,
-    intakeFields: [
-      { id: '1', number: 1, label: 'Justification', value: '', required: false },
-      { id: '2', number: 2, label: 'Department', value: '', required: false },
-      { id: '3', number: 3, label: 'Requestor', value: '', required: false },
-      { id: '4', number: 4, label: 'Reviewer', value: '', required: false }
-    ],
-    valueFields: [
-      { id: '1', number: 1, label: 'Cost', value: 'Low', score: 100, options: ['Low', 'Medium', 'High'] },
-      { id: '2', number: 2, label: 'Profit Potential', value: 'Medium', score: 66, options: ['Low', 'Medium', 'High'] },
-      { id: '3', number: 3, label: 'Time to Market', value: 'Low', score: 100, options: ['Low', 'Medium', 'High'] },
-      { id: '4', number: 4, label: 'Development Risks', value: 'Low', score: 100, options: ['Low', 'Medium', 'High'] }
-    ],
-    valueScore: 91.5,
-    valueScoreAverage: 91.6,
-    valueScoreComparison: 49,
-    milestones: [
-      { id: 'ms-1', name: 'pivot/persevere', startDate: null, dueDate: null, description: 'pivot/persevere', state: 'In Progress' as const, category: null },
-      { id: 'ms-2', name: 'Retro', startDate: null, dueDate: null, description: 'Retro', state: 'Complete' as const, category: null }
-    ],
-    budget: 1000000,
-    acceptedSpend: 280902,
-    forecastedSpend: 444156,
-    estimatedSpend: 12687290,
-    remaining: 719098,
-    acceptedStories: [
-      { id: '16613', numericId: 16613, title: 'UI: QA - Transcript Export Tool From TRS', team: 'None', spend: 1207, teamSprintName: 'Washington - Washington PI 5 Sprint 1', teamSpendPerPoint: 302, storyEstimate: 4 },
-      { id: '21186', numericId: 21186, title: 'G12: Document V2.1 Transcript Export Tool', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
-      { id: '22388', numericId: 22388, title: 'G12: Transcript Export API- Feature level testing (Split Part 2)', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
-      { id: '22715', numericId: 22715, title: 'MMA_OPS_JAVA - Upgrade from 8.5 Sp1 (L3)', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
-      { id: '22773', numericId: 22773, title: 'RFS - 8.5.5 Forecasting & Planning Guide Update - SP23', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
-      { id: '22774', numericId: 22774, title: 'RFS - 8.5.5 Scheduling Users Guide - SP23', team: 'None', spend: 0, teamSprintName: null, teamSpendPerPoint: 0, storyEstimate: 0 },
-      { id: '24004', numericId: 24004, title: 'MMA_GOAL L1 2.0sp1 Upgrade', team: 'Cloud', spend: 75300, teamSprintName: 'Cloud - Cloud PI 5 Sprint 2', teamSpendPerPoint: 250, storyEstimate: 301 },
-      { id: '24005', numericId: 24005, title: 'MMA_GOAL L3 2.0sp1 Upgrade', team: 'None', spend: 75300, teamSprintName: 'Cloud - Cloud PI 5 Sprint 3', teamSpendPerPoint: 250, storyEstimate: 301 }
-    ],
+    featuresTotal: 0,
+    intakeFields: [] as { id: string; number: number; label: string; value: string; required: boolean }[],
+    valueFields: [] as { id: string; number: number; label: string; value: string; score: number; options: string[] }[],
+    valueScore: 0,
+    valueScoreAverage: 0,
+    valueScoreComparison: 0,
+    milestones: [] as { id: string; name: string; startDate: string | null; dueDate: string | null; description: string; state: 'Pending' | 'In Progress' | 'Complete' | 'Blocked'; category: string | null }[],
+    budget: 0,
+    acceptedSpend: 0,
+    forecastedSpend: 0,
+    estimatedSpend: 0,
+    remaining: 0,
+    acceptedStories: [] as any[],
     forecastData: {
-      selectedPI: 'pi-5',
-      totalPts: 475,
-      programs: [
-        {
-          programId: 'ai',
-          programName: 'AI',
-          totalPts: 245,
-          isExpanded: true,
-          teams: [
-            { teamId: 'alpha', teamName: 'Alpha', pts: 10 },
-            { teamId: 'angry-birds', teamName: 'Angry Birds', pts: 50 },
-            { teamId: 'beta', teamName: 'Beta', pts: 75 },
-            { teamId: 'bush', teamName: 'Bush', pts: 50 },
-            { teamId: 'cloud', teamName: 'Cloud', pts: 60 }
-          ]
-        },
-        {
-          programId: 'mobile',
-          programName: 'Mobile',
-          totalPts: 230,
-          isExpanded: false,
-          teams: []
-        }
-      ]
+      selectedPI: '',
+      totalPts: 0,
+      programs: [] as any[]
     },
     discussionCount: 0,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
+    createdAt: epic.created_at || new Date().toISOString(),
+    updatedAt: epic.updated_at || new Date().toISOString()
   };
 
-  const mockPrograms = [
-    { id: 'mobile', name: 'Mobile' },
-    { id: 'web', name: 'Web' },
-    { id: 'ai', name: 'AI' }
-  ];
-
-  const mockUsers = [
-    { id: 'sean', name: 'Sean Duffy' },
-    { id: 'jane', name: 'Jane Doe' }
-  ];
-
-  const mockThemes = [
-    { id: 'ux', name: 'User Experience' },
-    { id: 'platform', name: 'Platform' }
-  ];
+  // Empty arrays - populated from database
+  const programs: { id: string; name: string }[] = [];
+  const users: { id: string; name: string }[] = [];
+  const themes: { id: string; name: string }[] = [];
 
 
   return (
@@ -249,9 +172,9 @@ export function EpicDetailsPanel({ epicId, onClose, onRefetch }: EpicDetailsPane
             <TabsContent value="details" className="m-0">
               <DetailsTabExtended 
                 epic={epicDetail}
-                programs={mockPrograms}
-                users={mockUsers}
-                themes={mockThemes}
+                programs={programs}
+                users={users}
+                themes={themes}
                 onUpdate={() => {}}
               />
             </TabsContent>

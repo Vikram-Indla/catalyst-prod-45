@@ -34,12 +34,8 @@ export function RisksSidebar({ className }: RisksSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Mock PI data
-  const pis = [
-    { id: 'pi-5', code: 'PI-5', dates: 'Dec 2024 – Feb 2025' },
-    { id: 'pi-6', code: 'PI-6', dates: 'Mar 2025 – May 2025' },
-    { id: 'pi-7', code: 'PI-7', dates: 'Jun 2025 – Aug 2025' },
-  ];
+  // PIs - empty until populated from database
+  const pis: { id: string; code: string; dates: string }[] = [];
 
   const [selectedPI, setSelectedPI] = useState(pis[0].id);
 
