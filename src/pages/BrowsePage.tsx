@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { findByHistoricalKey } from '@/hooks/useWorkItemKeyHistory';
 
 type WorkItemType = 'epic' | 'feature' | 'story' | 'subtask' | 'demand' | null;
 
@@ -17,6 +18,7 @@ interface WorkItemResult {
  * 
  * Resolves work item keys (e.g., PROJ-123, MIM-001) to their detail views
  * Searches across: epics, features, stories, subtasks, business_requests
+ * Also checks historical keys (renamed items)
  */
 export default function BrowsePage() {
   const { key } = useParams<{ key: string }>();
@@ -75,6 +77,18 @@ export default function BrowsePage() {
         result = { id: storyResult.data.id, type: 'story', key: storyResult.data.story_key || workItemKey };
       } else if (demandResult.data) {
         result = { id: demandResult.data.id, type: 'demand', key: demandResult.data.request_key || workItemKey };
+      }
+
+      // If not found, check historical keys
+      if (!result) {
+        const historicalResult = await findByHistoricalKey(normalizedKey);
+        if (historicalResult) {
+          result = {
+            id: historicalResult.workItemId,
+            type: historicalResult.workItemType as WorkItemType,
+            key: workItemKey,
+          };
+        }
       }
 
       if (result) {
