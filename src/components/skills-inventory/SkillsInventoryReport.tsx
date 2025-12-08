@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
-import { Users, Target, Star, Award, AlertTriangle, Download } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Users, Target, Star, Award, AlertTriangle, Download, Loader2 } from 'lucide-react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { toast } from 'sonner';
 
 interface ProgramFilter {
   id: string;
@@ -53,6 +56,8 @@ const maxCategoryCount = Math.max(...categoryData.map((c) => c.count));
 
 export const SkillsInventoryReport: React.FC = () => {
   const [selectedProgram, setSelectedProgram] = useState('all');
+  const [isExporting, setIsExporting] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
 
   // Generate conic-gradient for donut chart
   const generateConicGradient = () => {
@@ -67,6 +72,75 @@ export const SkillsInventoryReport: React.FC = () => {
   };
 
   const totalSkills = proficiencyData.reduce((sum, item) => sum + item.count, 0);
+
+  const handleExportPDF = async () => {
+    if (!reportRef.current) return;
+    
+    setIsExporting(true);
+    
+    try {
+      // Capture the report content as canvas
+      const canvas = await html2canvas(reportRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+      
+      const imgData = canvas.toDataURL('image/png');
+      
+      // Create PDF
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min((pdfWidth - 20) / imgWidth, (pdfHeight - 50) / imgHeight);
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      
+      // Add header
+      pdf.setFontSize(20);
+      pdf.setTextColor(198, 156, 109);
+      pdf.text('Skills Inventory Report', 14, 15);
+      
+      pdf.setFontSize(10);
+      pdf.setTextColor(107, 114, 128);
+      pdf.text(`Generated: ${new Date().toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })}`, 14, 22);
+      
+      const programName = programs.find(p => p.id === selectedProgram)?.name || 'All Programs';
+      pdf.text(`Program: ${programName}`, 14, 28);
+      
+      // Add the captured content
+      pdf.addImage(imgData, 'PNG', imgX, 35, imgWidth * ratio, imgHeight * ratio);
+      
+      // Add footer
+      pdf.setFontSize(8);
+      pdf.setTextColor(156, 163, 175);
+      pdf.text('Catalyst Portfolio Management Platform', 14, pdfHeight - 10);
+      pdf.text('Ministry of Investment', pdfWidth - 50, pdfHeight - 10);
+      
+      // Save the PDF
+      pdf.save(`skills-inventory-report-${new Date().toISOString().split('T')[0]}.pdf`);
+      
+      toast.success('Report exported successfully');
+    } catch (error) {
+      console.error('PDF export error:', error);
+      toast.error('Failed to export report');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   return (
     <div className="space-y-6 p-6">
@@ -87,113 +161,129 @@ export const SkillsInventoryReport: React.FC = () => {
             </button>
           ))}
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 border border-brand-gold-border text-muted-foreground rounded-lg font-medium text-sm hover:bg-secondary transition-colors">
-          <Download className="w-4 h-4" />
-          Export Report
+        <button 
+          onClick={handleExportPDF}
+          disabled={isExporting}
+          className="inline-flex items-center gap-3 px-6 py-3 bg-white border border-neutral-200 rounded-full shadow-sm hover:bg-neutral-50 hover:border-neutral-300 hover:shadow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isExporting ? (
+            <>
+              <Loader2 className="w-5 h-5 text-brand-gold animate-spin" />
+              <span className="text-neutral-500 font-medium">Generating PDF...</span>
+            </>
+          ) : (
+            <>
+              <Download className="w-5 h-5 text-neutral-400" />
+              <span className="text-neutral-500 font-medium">Export Report</span>
+            </>
+          )}
         </button>
       </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {statsData.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <div
-              key={stat.label}
-              className="bg-card rounded-xl p-5 border border-brand-gold-border"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-6 h-6 text-brand-gold" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                  <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
-                    {stat.label}
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Proficiency Distribution Donut Chart */}
-        <div className="bg-card rounded-xl border border-brand-gold-border p-6">
-          <h3 className="text-base font-semibold text-foreground mb-6">
-            Proficiency Distribution
-          </h3>
-
-          <div className="flex items-center gap-8">
-            {/* Donut Chart */}
-            <div className="relative w-48 h-48 flex-shrink-0">
+      {/* Exportable Content Area */}
+      <div ref={reportRef} className="space-y-6 bg-white rounded-xl p-4">
+        {/* Stats Row */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {statsData.map((stat) => {
+            const Icon = stat.icon;
+            return (
               <div
-                className="w-full h-full rounded-full"
-                style={{ background: generateConicGradient() }}
-              />
-              {/* Inner circle for donut effect */}
-              <div className="absolute inset-6 bg-card rounded-full flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-foreground">{totalSkills}</div>
-                  <div className="text-xs text-muted-foreground">Total</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Legend */}
-            <div className="flex-1 space-y-3">
-              {proficiencyData.map((item) => (
-                <div key={item.level} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-3 h-3 rounded-sm"
-                      style={{ backgroundColor: item.colorClass }}
-                    />
-                    <span className="text-sm text-muted-foreground">{item.level}</span>
+                key={stat.label}
+                className="bg-card rounded-xl p-5 border border-brand-gold-border"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-brand-gold/15 flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-6 h-6 text-brand-gold" />
                   </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm text-foreground font-medium w-8 text-right">
-                      {item.count}
-                    </span>
-                    <span className="text-sm text-muted-foreground w-12 text-right">
-                      {item.percentage}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Skills by Category Bar Chart */}
-        <div className="bg-card rounded-xl border border-brand-gold-border p-6">
-          <h3 className="text-base font-semibold text-foreground mb-6">
-            Skills by Category
-          </h3>
-
-          <div className="space-y-4">
-            {categoryData.map((category) => {
-              const widthPercentage = (category.count / maxCategoryCount) * 100;
-              return (
-                <div key={category.name} className="flex items-center gap-4">
-                  <span className="w-28 text-sm text-muted-foreground truncate flex-shrink-0">
-                    {category.name}
-                  </span>
-                  <div className="flex-1 h-8 bg-neutral-200 rounded-lg overflow-hidden">
-                    <div
-                      className="h-full bg-info rounded-lg flex items-center justify-end pr-3 transition-all"
-                      style={{ width: `${widthPercentage}%` }}
-                    >
-                      <span className="text-sm font-medium text-white">
-                        {category.count}
-                      </span>
+                  <div>
+                    <div className="text-2xl font-bold text-foreground">{stat.value}</div>
+                    <div className="text-xs text-muted-foreground uppercase tracking-wider mt-1">
+                      {stat.label}
                     </div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Charts Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Proficiency Distribution Donut Chart */}
+          <div className="bg-card rounded-xl border border-brand-gold-border p-6">
+            <h3 className="text-base font-semibold text-foreground mb-6">
+              Proficiency Distribution
+            </h3>
+
+            <div className="flex items-center gap-8">
+              {/* Donut Chart */}
+              <div className="relative w-48 h-48 flex-shrink-0">
+                <div
+                  className="w-full h-full rounded-full"
+                  style={{ background: generateConicGradient() }}
+                />
+                {/* Inner circle for donut effect */}
+                <div className="absolute inset-6 bg-card rounded-full flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-foreground">{totalSkills}</div>
+                    <div className="text-xs text-muted-foreground">Total</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Legend */}
+              <div className="flex-1 space-y-3">
+                {proficiencyData.map((item) => (
+                  <div key={item.level} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-3 h-3 rounded-sm"
+                        style={{ backgroundColor: item.colorClass }}
+                      />
+                      <span className="text-sm text-muted-foreground">{item.level}</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <span className="text-sm text-foreground font-medium w-8 text-right">
+                        {item.count}
+                      </span>
+                      <span className="text-sm text-muted-foreground w-12 text-right">
+                        {item.percentage}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Skills by Category Bar Chart */}
+          <div className="bg-card rounded-xl border border-brand-gold-border p-6">
+            <h3 className="text-base font-semibold text-foreground mb-6">
+              Skills by Category
+            </h3>
+
+            <div className="space-y-4">
+              {categoryData.map((category) => {
+                const widthPercentage = (category.count / maxCategoryCount) * 100;
+                return (
+                  <div key={category.name} className="flex items-center gap-4">
+                    <span className="w-28 text-sm text-muted-foreground truncate flex-shrink-0">
+                      {category.name}
+                    </span>
+                    <div className="flex-1 h-8 bg-neutral-200 rounded-lg overflow-hidden">
+                      <div
+                        className="h-full bg-info rounded-lg flex items-center justify-end pr-3 transition-all"
+                        style={{ width: `${widthPercentage}%` }}
+                      >
+                        <span className="text-sm font-medium text-white">
+                          {category.count}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
