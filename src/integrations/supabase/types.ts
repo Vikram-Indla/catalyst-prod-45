@@ -837,6 +837,66 @@ export type Database = {
           },
         ]
       }
+      certifications: {
+        Row: {
+          created_at: string | null
+          credential_id: string | null
+          credential_url: string | null
+          expiry_date: string | null
+          id: string
+          is_active: boolean | null
+          issue_date: string | null
+          issuing_organization: string | null
+          name: string
+          skill_id: string | null
+          team_member_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          credential_id?: string | null
+          credential_url?: string | null
+          expiry_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          issue_date?: string | null
+          issuing_organization?: string | null
+          name: string
+          skill_id?: string | null
+          team_member_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          credential_id?: string | null
+          credential_url?: string | null
+          expiry_date?: string | null
+          id?: string
+          is_active?: boolean | null
+          issue_date?: string | null
+          issuing_organization?: string | null
+          name?: string
+          skill_id?: string | null
+          team_member_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certifications_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certifications_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comment_mentions: {
         Row: {
           comment_id: string
@@ -7513,6 +7573,80 @@ export type Database = {
         }
         Relationships: []
       }
+      skill_requirements: {
+        Row: {
+          created_at: string | null
+          entity_id: string
+          entity_type: string
+          id: string
+          priority: string | null
+          required_count: number | null
+          required_proficiency: Database["public"]["Enums"]["skill_proficiency_level"]
+          skill_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          entity_id: string
+          entity_type: string
+          id?: string
+          priority?: string | null
+          required_count?: number | null
+          required_proficiency?: Database["public"]["Enums"]["skill_proficiency_level"]
+          skill_id: string
+        }
+        Update: {
+          created_at?: string | null
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          priority?: string | null
+          required_count?: number | null
+          required_proficiency?: Database["public"]["Enums"]["skill_proficiency_level"]
+          skill_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "skill_requirements_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      skills: {
+        Row: {
+          category: Database["public"]["Enums"]["skill_category"]
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          name_ar: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["skill_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          name_ar?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["skill_category"]
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          name_ar?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       starred_items: {
         Row: {
           created_at: string
@@ -8025,6 +8159,63 @@ export type Database = {
             columns: ["story_id"]
             isOneToOne: false
             referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      team_member_skills: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_primary_skill: boolean | null
+          manager_verified: boolean | null
+          notes: string | null
+          proficiency_level: Database["public"]["Enums"]["skill_proficiency_level"]
+          self_assessed: boolean | null
+          skill_id: string
+          team_member_id: string
+          updated_at: string | null
+          years_experience: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_primary_skill?: boolean | null
+          manager_verified?: boolean | null
+          notes?: string | null
+          proficiency_level?: Database["public"]["Enums"]["skill_proficiency_level"]
+          self_assessed?: boolean | null
+          skill_id: string
+          team_member_id: string
+          updated_at?: string | null
+          years_experience?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_primary_skill?: boolean | null
+          manager_verified?: boolean | null
+          notes?: string | null
+          proficiency_level?: Database["public"]["Enums"]["skill_proficiency_level"]
+          self_assessed?: boolean | null
+          skill_id?: string
+          team_member_id?: string
+          updated_at?: string | null
+          years_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_member_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "team_member_skills_team_member_id_fkey"
+            columns: ["team_member_id"]
+            isOneToOne: false
+            referencedRelation: "team_members"
             referencedColumns: ["id"]
           },
         ]
@@ -11592,6 +11783,21 @@ export type Database = {
         | "objective"
         | "roadmap"
         | "product"
+      skill_category:
+        | "technical"
+        | "cloud_infrastructure"
+        | "data_analytics"
+        | "security"
+        | "leadership"
+        | "soft_skills"
+        | "domain_knowledge"
+        | "methodology"
+      skill_proficiency_level:
+        | "awareness"
+        | "beginner"
+        | "intermediate"
+        | "advanced"
+        | "expert"
       story_status: "todo" | "in_progress" | "done"
       subtask_status: "todo" | "in_progress" | "done"
       team_status: "active" | "archived"
@@ -11859,6 +12065,23 @@ export const Constants = {
         "objective",
         "roadmap",
         "product",
+      ],
+      skill_category: [
+        "technical",
+        "cloud_infrastructure",
+        "data_analytics",
+        "security",
+        "leadership",
+        "soft_skills",
+        "domain_knowledge",
+        "methodology",
+      ],
+      skill_proficiency_level: [
+        "awareness",
+        "beginner",
+        "intermediate",
+        "advanced",
+        "expert",
       ],
       story_status: ["todo", "in_progress", "done"],
       subtask_status: ["todo", "in_progress", "done"],
