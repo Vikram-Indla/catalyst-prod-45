@@ -1,10 +1,10 @@
 /**
  * Capacity Preview Bar
  * Shows available capacity for current week + next 3 weeks
+ * Following Catalyst design system
  */
 
 import { cn } from '@/lib/utils';
-import { getWeekDateRange, getCapacityColorClass } from '@/lib/capacityUtils';
 
 interface CapacityPreviewProps {
   weeks: {
@@ -18,33 +18,54 @@ interface CapacityPreviewProps {
 }
 
 export function CapacityPreview({ weeks, currentWeek, totalPeople }: CapacityPreviewProps) {
+  const getCapacityColorClass = (available: number) => {
+    if (available >= 30) return 'text-success';
+    if (available >= 15) return 'text-warning';
+    return 'text-destructive';
+  };
+
+  const getCapacityBarClass = (available: number) => {
+    if (available >= 30) return 'bg-success';
+    if (available >= 15) return 'bg-warning';
+    return 'bg-destructive';
+  };
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-3 bg-card border border-border rounded-lg mb-4">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
       {weeks.map((w, idx) => {
         const isCurrent = idx === 0;
-        const colorClass = getCapacityColorClass(w.available);
         
         return (
           <div
             key={`${w.year}-${w.week}`}
             className={cn(
-              "text-center p-3 bg-muted rounded-md border",
+              "bg-card border rounded-lg p-4 transition-colors",
               isCurrent 
                 ? "border-brand-gold bg-brand-gold/5" 
                 : "border-border"
             )}
           >
-            <div className="text-[10px] font-semibold text-muted-foreground uppercase mb-1">
-              W{w.week}{isCurrent ? ' (Current)' : ''}
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                W{w.week}{isCurrent ? ' (Current)' : ''}
+              </span>
             </div>
-            <div className={cn("text-xl font-bold", colorClass)}>
+            <div className={cn("text-2xl font-bold", getCapacityColorClass(w.available))}>
               {w.available}%
             </div>
-            <div className="text-[10px] text-muted-foreground">
-              Available
+            <div className="text-xs text-muted-foreground mt-1">
+              Available Capacity
             </div>
-            <div className="text-[9px] text-muted-foreground mt-1">
-              {w.peopleWithCapacity} of {totalPeople} have capacity
+            <div className="mt-3">
+              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className={cn("h-full rounded-full transition-all", getCapacityBarClass(w.available))}
+                  style={{ width: `${Math.min(w.available, 100)}%` }}
+                />
+              </div>
+              <div className="text-[10px] text-muted-foreground mt-1.5">
+                {w.peopleWithCapacity} of {totalPeople} have capacity
+              </div>
             </div>
           </div>
         );
