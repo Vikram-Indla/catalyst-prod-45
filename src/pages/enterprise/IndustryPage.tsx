@@ -25,6 +25,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { cn } from '@/lib/utils';
 import { BulkSelectionToolbar, BulkEditDialog, BulkTransitionDialog, BulkDeleteDialog, demandBulkConfig, BulkOperationType } from '@/components/bulk-operations';
 import { useBulkOperations } from '@/hooks/useBulkOperations';
+import { SavedFiltersDropdown } from '@/components/shared/SavedFiltersDropdown';
 
 // Non-editable columns
 const NON_EDITABLE_COLUMNS = ['request_key', 'rank', 'title', 'submitted_date', 'ageing', 'business_score'];
@@ -800,6 +801,12 @@ export default function IndustryPage() {
             )}
 
             <div className="flex items-center gap-2">
+              <SavedFiltersDropdown
+                entityType="demand"
+                currentFilters={filters}
+                onApplyFilter={(savedFilters) => setFilters(savedFilters as SmartFilters)}
+                hasActiveFilters={activeFilterCount > 0}
+              />
               <Button 
                 variant="outline" 
                 size="sm" 
