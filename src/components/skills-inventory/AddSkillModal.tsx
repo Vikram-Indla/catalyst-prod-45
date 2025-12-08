@@ -1,6 +1,10 @@
 import { useState } from 'react';
-import { Target, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface TeamMember {
@@ -39,8 +43,6 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
   });
   const [isSaving, setIsSaving] = useState(false);
 
-  const selectedMember = teamMembers.find(m => m.id.toString() === formData.teamMemberId);
-
   const handleSave = async () => {
     if (!formData.teamMemberId || !formData.skillName) {
       toast.error('Please fill in all required fields');
@@ -77,49 +79,30 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
     onClose();
   };
 
-  if (!open) return null;
-
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2);
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-card rounded-lg w-full max-w-lg border border-brand-gold-border shadow-xl">
-        {/* Header */}
-        <div className="p-6 border-b border-brand-gold-border flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold to-brand-gold-dark flex items-center justify-center">
-              <Target className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">Add Skill Assessment</h2>
-              <p className="text-sm text-muted-foreground">Assign a new skill to a team member</p>
-            </div>
-          </div>
-          <button
-            onClick={handleClose}
-            className="p-2 hover:bg-secondary rounded-lg transition-colors text-muted-foreground hover:text-foreground"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Form */}
-        <div className="p-6 space-y-5">
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="max-w-lg bg-white">
+        <DialogHeader>
+          <DialogTitle className="text-foreground">Add Skill Assessment</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
           {/* Team Member Selection */}
-          <div>
-            <label className="text-[13px] font-medium text-brand-gold mb-2 block">Team Member *</label>
+          <div className="space-y-2">
+            <Label className="text-foreground">Team Member</Label>
             <Select
               value={formData.teamMemberId}
               onValueChange={(value) => setFormData({ ...formData, teamMemberId: value })}
             >
-              <SelectTrigger className="w-full border-brand-gold-border focus:ring-brand-gold">
-                <SelectValue placeholder="Select team member..." />
+              <SelectTrigger className="bg-white border-border">
+                <SelectValue placeholder="Select team member" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 {teamMembers.map((member) => (
                   <SelectItem key={member.id} value={member.id.toString()}>
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded bg-gradient-to-br from-brand-gold to-brand-gold-dark flex items-center justify-center text-[10px] text-white font-semibold">
+                      <div className="w-5 h-5 rounded bg-brand-gold flex items-center justify-center text-[9px] text-white font-medium">
                         {getInitials(member.name)}
                       </div>
                       <span>{member.name}</span>
@@ -131,90 +114,73 @@ export function AddSkillModal({ open, onClose, teamMembers, onSave }: AddSkillMo
             </Select>
           </div>
 
-          {/* Selected Member Preview */}
-          {selectedMember && (
-            <div className="flex items-center gap-3 px-4 py-3 bg-secondary/50 rounded-lg border border-brand-gold-border">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-gold to-brand-gold-dark flex items-center justify-center text-[11px] text-white font-semibold">
-                {getInitials(selectedMember.name)}
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[14px] font-semibold text-foreground">{selectedMember.name}</span>
-                <span className="text-[13px] text-muted-foreground">• {selectedMember.role}</span>
-              </div>
-            </div>
-          )}
-
           {/* Skill Name */}
-          <div>
-            <label className="text-[13px] font-medium text-brand-gold mb-2 block">Skill Name *</label>
-            <input
-              type="text"
+          <div className="space-y-2">
+            <Label className="text-foreground">Skill Name</Label>
+            <Input
               value={formData.skillName}
               onChange={(e) => setFormData({ ...formData, skillName: e.target.value })}
               placeholder="e.g., React, Python, AWS..."
-              className="w-full px-4 py-3 bg-background rounded-lg border border-brand-gold-border text-[14px] text-foreground placeholder-muted-foreground focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold/20 transition-all"
+              className="bg-white border-border"
             />
           </div>
 
-          {/* Proficiency Level - Visual Selector */}
-          <div>
-            <label className="text-[13px] font-medium text-brand-gold mb-3 block">Proficiency Level *</label>
-            <div className="grid grid-cols-4 gap-3">
+          {/* Proficiency Level */}
+          <div className="space-y-2">
+            <Label className="text-foreground">Proficiency Level</Label>
+            <div className="grid grid-cols-4 gap-2">
               {proficiencyOptions.map(({ level, label, color }) => (
                 <button
                   key={level}
                   type="button"
                   onClick={() => setFormData({ ...formData, proficiency: level })}
-                  className={`p-3 rounded-lg border-2 transition-all ${
+                  className={`p-2 rounded-md border transition-all ${
                     formData.proficiency === level
                       ? 'border-brand-gold bg-brand-gold/10'
-                      : 'border-brand-gold-border hover:border-brand-gold/50'
+                      : 'border-border hover:border-brand-gold/50 bg-white'
                   }`}
                 >
                   <div
-                    className="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center"
+                    className="w-6 h-6 rounded-full mx-auto mb-1.5 flex items-center justify-center"
                     style={{ backgroundColor: color }}
                   >
-                    <span className="text-white text-[13px] font-semibold">
+                    <span className="text-white text-xs font-medium">
                       {level === 'Beginner' ? '1' : level === 'Intermediate' ? '2' : level === 'Advanced' ? '3' : '4'}
                     </span>
                   </div>
-                  <span className="text-[13px] text-muted-foreground block text-center">{label}</span>
+                  <span className="text-xs text-muted-foreground block text-center">{label}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Notes */}
-          <div>
-            <label className="text-[13px] font-medium text-brand-gold mb-2 block">Notes</label>
-            <textarea
+          <div className="space-y-2">
+            <Label className="text-foreground">Notes</Label>
+            <Textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
-              placeholder="Additional notes about this skill assessment..."
-              className="w-full px-4 py-3 bg-background rounded-lg border border-brand-gold-border text-[14px] text-foreground placeholder-muted-foreground focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold/20 transition-all resize-none"
+              placeholder="Additional notes..."
+              className="bg-white border-border resize-none"
             />
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-brand-gold-border flex justify-end gap-3">
-          <button
-            onClick={handleClose}
-            className="px-4 py-2 border border-brand-gold-border rounded-lg text-muted-foreground hover:bg-secondary transition-colors font-medium"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={isSaving || !formData.teamMemberId || !formData.skillName}
-            className="px-5 py-2 bg-brand-gold hover:bg-brand-gold-hover rounded-lg text-white font-medium transition-colors disabled:opacity-50"
-          >
-            {isSaving ? 'Adding...' : 'Add Skill'}
-          </button>
+          {/* Actions */}
+          <div className="flex gap-2 pt-4">
+            <Button variant="outline" onClick={handleClose} className="flex-1">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={isSaving || !formData.teamMemberId || !formData.skillName}
+              className="flex-1 bg-brand-gold text-white hover:bg-brand-gold-hover"
+            >
+              {isSaving ? 'Adding...' : 'Add Skill'}
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Target, Trash2, X } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 
 interface SkillData {
   id: number;
@@ -62,127 +67,107 @@ export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditS
     }
   };
 
-  if (!open || !skill) return null;
+  if (!skill) return null;
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2);
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-      <div className="bg-card rounded-lg w-full max-w-lg border border-brand-gold-border shadow-xl">
-        {/* Header */}
-        <div className="p-6 border-b border-brand-gold-border flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold to-brand-gold-dark flex items-center justify-center">
-              <Target className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">Edit Skill Assessment</h2>
-              <p className="text-sm text-muted-foreground">{skill.name}</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-secondary rounded-lg transition-colors text-muted-foreground hover:text-foreground"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Form */}
-        <div className="p-6 space-y-5">
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="max-w-lg bg-white">
+        <DialogHeader>
+          <DialogTitle className="text-foreground">Edit Skill Assessment</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
           {/* Team Member - Read Only */}
-          <div>
-            <label className="text-[13px] font-medium text-brand-gold mb-2 block">Team Member</label>
-            <div className="flex items-center gap-3 px-4 py-3 bg-secondary/50 rounded-lg border border-brand-gold-border">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-gold to-brand-gold-dark flex items-center justify-center text-[11px] text-white font-semibold">
+          <div className="space-y-2">
+            <Label className="text-foreground">Team Member</Label>
+            <div className="flex items-center gap-3 px-3 py-2.5 bg-white rounded-md border border-border">
+              <div className="w-7 h-7 rounded bg-brand-gold flex items-center justify-center text-[10px] text-white font-medium">
                 {getInitials(skill.name)}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[14px] font-semibold text-foreground">{skill.name}</span>
-                <span className="text-[13px] text-muted-foreground">• {skill.role}</span>
+                <span className="text-sm text-foreground">{skill.name}</span>
+                <span className="text-sm text-muted-foreground">• {skill.role}</span>
               </div>
             </div>
           </div>
 
           {/* Skill Name */}
-          <div>
-            <label className="text-[13px] font-medium text-brand-gold mb-2 block">Skill Name *</label>
-            <input
-              type="text"
+          <div className="space-y-2">
+            <Label className="text-foreground">Skill Name</Label>
+            <Input
               value={formData.skillName}
               onChange={(e) => setFormData({ ...formData, skillName: e.target.value })}
-              className="w-full px-4 py-3 bg-background rounded-lg border border-brand-gold-border text-[14px] text-foreground focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold/20 transition-all"
+              className="bg-white border-border"
             />
           </div>
 
-          {/* Proficiency Level - Visual Selector */}
-          <div>
-            <label className="text-[13px] font-medium text-brand-gold mb-3 block">Proficiency Level *</label>
-            <div className="grid grid-cols-4 gap-3">
+          {/* Proficiency Level */}
+          <div className="space-y-2">
+            <Label className="text-foreground">Proficiency Level</Label>
+            <div className="grid grid-cols-4 gap-2">
               {proficiencyOptions.map(({ level, label, color }) => (
                 <button
                   key={level}
                   type="button"
                   onClick={() => setFormData({ ...formData, proficiency: level })}
-                  className={`p-3 rounded-lg border-2 transition-all ${
+                  className={`p-2 rounded-md border transition-all ${
                     formData.proficiency === level
                       ? 'border-brand-gold bg-brand-gold/10'
-                      : 'border-brand-gold-border hover:border-brand-gold/50'
+                      : 'border-border hover:border-brand-gold/50 bg-white'
                   }`}
                 >
                   <div
-                    className="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center"
+                    className="w-6 h-6 rounded-full mx-auto mb-1.5 flex items-center justify-center"
                     style={{ backgroundColor: color }}
                   >
-                    <span className="text-white text-[13px] font-semibold">
+                    <span className="text-white text-xs font-medium">
                       {level === 'Beginner' ? '1' : level === 'Intermediate' ? '2' : level === 'Advanced' ? '3' : '4'}
                     </span>
                   </div>
-                  <span className="text-[13px] text-muted-foreground block text-center">{label}</span>
+                  <span className="text-xs text-muted-foreground block text-center">{label}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Notes */}
-          <div>
-            <label className="text-[13px] font-medium text-brand-gold mb-2 block">Notes</label>
-            <textarea
+          <div className="space-y-2">
+            <Label className="text-foreground">Notes</Label>
+            <Textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows={3}
-              placeholder="Additional notes about this skill assessment..."
-              className="w-full px-4 py-3 bg-background rounded-lg border border-brand-gold-border text-[14px] text-foreground placeholder-muted-foreground focus:border-brand-gold focus:outline-none focus:ring-2 focus:ring-brand-gold/20 transition-all resize-none"
+              placeholder="Additional notes..."
+              className="bg-white border-border resize-none"
             />
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-brand-gold-border flex justify-between">
-          <button
-            onClick={onDelete}
-            className="px-4 py-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors flex items-center gap-2 font-medium"
-          >
-            <Trash2 className="w-4 h-4" />
-            Delete
-          </button>
-          <div className="flex gap-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 border border-brand-gold-border rounded-lg text-muted-foreground hover:bg-secondary transition-colors font-medium"
+          {/* Actions */}
+          <div className="flex justify-between pt-4">
+            <Button
+              variant="ghost"
+              onClick={onDelete}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
             >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={isSaving || !formData.skillName}
-              className="px-5 py-2 bg-brand-gold hover:bg-brand-gold-hover rounded-lg text-white font-medium transition-colors disabled:opacity-50"
-            >
-              {isSaving ? 'Saving...' : 'Save Changes'}
-            </button>
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
+            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={isSaving || !formData.skillName}
+                className="bg-brand-gold text-white hover:bg-brand-gold-hover"
+              >
+                {isSaving ? 'Saving...' : 'Save Changes'}
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
