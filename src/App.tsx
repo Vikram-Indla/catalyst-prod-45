@@ -578,8 +578,7 @@ const App = () => (
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Navigate to="/admin/overview" replace />} />
                 <Route path="overview" element={<AdminOverview />} />
-                <Route path="audit/activity" element={<AuditActivityPage />} />
-                <Route path="activity" element={<Activity />} />
+                <Route path="activity" element={<AuditActivityPage />} />
                 <Route path="changes" element={<Changes />} />
                 <Route path="changes-log" element={<ChangesLog />} />
                 <Route path="use-trend" element={<UseTrend />} />
