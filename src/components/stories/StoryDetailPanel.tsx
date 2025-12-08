@@ -16,6 +16,7 @@ import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, H
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection';
+import { SprintSelector } from '@/components/work-items/SprintSelector';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
@@ -427,6 +428,13 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
             <TimeTrackingSection 
               workItemId={story.id} 
               workItemType="story" 
+            />
+
+            {/* Sprint Assignment */}
+            <SprintSelector 
+              storyId={story.id}
+              currentSprintId={(story as any).sprint_id}
+              teamId={story.team_id}
             />
           </TabsContent>
 
