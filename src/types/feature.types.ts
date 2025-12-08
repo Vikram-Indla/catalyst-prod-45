@@ -16,6 +16,7 @@ export interface Feature {
   capability_id?: string | null;
   program_id: string;
   team_id?: string | null;
+  program_epic_inherited?: boolean | null; // When true, inherits program from parent epic
 
   // Planning
   pi_id?: string | null;

@@ -2673,6 +2673,7 @@ export type Database = {
           pi_id: string | null
           planned_end_date: string | null
           planned_start_date: string | null
+          program_epic_inherited: boolean | null
           program_id: string
           progress_pct: number | null
           rank_within_epic: number | null
@@ -2720,6 +2721,7 @@ export type Database = {
           pi_id?: string | null
           planned_end_date?: string | null
           planned_start_date?: string | null
+          program_epic_inherited?: boolean | null
           program_id: string
           progress_pct?: number | null
           rank_within_epic?: number | null
@@ -2767,6 +2769,7 @@ export type Database = {
           pi_id?: string | null
           planned_end_date?: string | null
           planned_start_date?: string | null
+          program_epic_inherited?: boolean | null
           program_id?: string
           progress_pct?: number | null
           rank_within_epic?: number | null
