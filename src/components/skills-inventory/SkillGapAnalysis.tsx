@@ -215,7 +215,7 @@ export const SkillGapAnalysis: React.FC = () => {
                     } hover:bg-neutral-50 transition-colors`}
                   >
                     <td className="py-4 px-4">
-                      <span className="font-medium text-brand-dark">{skill.skill}</span>
+                      <span className="font-normal text-foreground">{skill.skill}</span>
                     </td>
                     <td className="py-4 px-4">
                       <span className={`px-2.5 py-1 rounded text-xs font-medium capitalize ${severityClass}`}>
