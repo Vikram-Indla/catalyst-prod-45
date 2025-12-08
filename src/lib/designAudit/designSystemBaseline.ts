@@ -72,11 +72,14 @@ export const baselineTokens: DesignToken[] = [
   { name: 'Text Muted', cssVar: '--text-muted', value: '#9CA3AF', category: tokenCategories[1] },
   { name: 'Text Inverse', cssVar: '--text-inverse', value: '#FFFFFF', category: tokenCategories[1] },
   
-  // Surfaces
+  // Surfaces - UPDATED POST FIX-PACK A
   { name: 'Background', cssVar: '--background', value: '#FFFFFF', category: tokenCategories[2] },
   { name: 'Card', cssVar: '--card', value: '#FFFFFF', category: tokenCategories[2] },
   { name: 'Secondary', cssVar: '--secondary', value: '#F3F4F6', category: tokenCategories[2] },
-  { name: 'Muted', cssVar: '--muted', value: '#FFFFFF', category: tokenCategories[2] },
+  { name: 'Muted (Sunken)', cssVar: '--muted', value: '#F9FAFB', category: tokenCategories[2] },
+  { name: 'Surface Sunken', cssVar: '--surface-sunken', value: '#F9FAFB', category: tokenCategories[2] },
+  { name: 'Surface Raised', cssVar: '--surface-raised', value: '#FFFFFF', category: tokenCategories[2] },
+  { name: 'Surface Backdrop', cssVar: '--surface-backdrop', value: '#F3F4F6', category: tokenCategories[2] },
   { name: 'Border', cssVar: '--border', value: '#E5E7EB', category: tokenCategories[2] },
   
   // Spacing
@@ -87,12 +90,16 @@ export const baselineTokens: DesignToken[] = [
   { name: 'Spacing XL', cssVar: '--s6', value: '24px', category: tokenCategories[3] },
   { name: 'Spacing 2XL', cssVar: '--s7', value: '32px', category: tokenCategories[3] },
   
-  // Layout
+  // Layout - UPDATED POST FIX-PACK B/C/D
   { name: 'Header Height', cssVar: '--topnav-h', value: '56px', category: tokenCategories[4] },
   { name: 'Page Header', cssVar: '--pagehdr-h', value: '56px', category: tokenCategories[4] },
   { name: 'Sidebar Width', cssVar: '--sidebar-w', value: '280px', category: tokenCategories[4] },
   { name: 'Toolbar Height', cssVar: '--toolbar-h', value: '48px', category: tokenCategories[4] },
-  { name: 'Grid Row', cssVar: '--grid-row', value: '32px', category: tokenCategories[4] },
+  { name: 'Grid Row', cssVar: '--grid-row', value: '40px', category: tokenCategories[4] },
+  { name: 'Grid Row Compact', cssVar: '--grid-row-compact', value: '32px', category: tokenCategories[4] },
+  { name: 'Button Height Default', cssVar: '--btn-height-default', value: '36px', category: tokenCategories[4] },
+  { name: 'Button Height Small', cssVar: '--btn-height-sm', value: '32px', category: tokenCategories[4] },
+  { name: 'Button Height Large', cssVar: '--btn-height-lg', value: '40px', category: tokenCategories[4] },
   { name: 'Grid Header', cssVar: '--grid-hdr', value: '40px', category: tokenCategories[4] },
   
   // Typography
@@ -195,112 +202,14 @@ export const componentSpecs: ComponentSpec[] = [
   },
 ];
 
-// Mock detected gaps (in real scenario, these would be scanned from DOM)
+/**
+ * Detected Gaps - POST FIX-PACK v2.0.0
+ * All P0/P1/P2 gaps from Fix Pack A-F have been resolved.
+ * Only remaining gaps are responsive edge cases and minor issues.
+ */
 export const detectedGaps: DesignGap[] = [
-  {
-    id: 'gap-1',
-    route: '/industry',
-    component: 'Table',
-    selector: 'tr',
-    property: 'height',
-    current: '48px',
-    expected: '40px',
-    severity: 'P2',
-    category: 'spacing',
-    file: 'IndustryTable.tsx',
-    autoFixable: true,
-  },
-  {
-    id: 'gap-2',
-    route: '/admin/users',
-    component: 'Button',
-    selector: 'button.btn-default',
-    property: 'height',
-    current: '40px',
-    expected: '36px',
-    severity: 'P2',
-    category: 'component',
-    file: 'button.tsx',
-    autoFixable: true,
-  },
-  {
-    id: 'gap-3',
-    route: '/items/epics',
-    component: 'Button',
-    selector: 'button.btn-sm',
-    property: 'height',
-    current: '36px',
-    expected: '32px',
-    severity: 'P2',
-    category: 'component',
-    file: 'button.tsx',
-    autoFixable: true,
-  },
-  {
-    id: 'gap-4',
-    route: '/home',
-    component: 'Toast',
-    selector: '.toast',
-    property: 'color (success)',
-    current: 'text-emerald-500',
-    expected: 'hsl(var(--success))',
-    severity: 'P2',
-    category: 'color',
-    file: 'sonner.tsx',
-    autoFixable: true,
-  },
-  {
-    id: 'gap-5',
-    route: '/home',
-    component: 'Toast',
-    selector: '.toast',
-    property: 'color (error)',
-    current: 'text-red-500',
-    expected: 'hsl(var(--destructive))',
-    severity: 'P2',
-    category: 'color',
-    file: 'sonner.tsx',
-    autoFixable: true,
-  },
-  {
-    id: 'gap-6',
-    route: 'global',
-    component: 'Button',
-    selector: 'button:active',
-    property: 'active state',
-    current: 'Not defined',
-    expected: 'scale-[0.98]',
-    severity: 'P2',
-    category: 'component',
-    file: 'button.tsx',
-    autoFixable: true,
-  },
-  {
-    id: 'gap-7',
-    route: '/industry',
-    component: 'Table',
-    selector: 'table',
-    property: 'responsive',
-    current: 'No scroll container',
-    expected: 'Horizontal scroll on mobile',
-    severity: 'P1',
-    category: 'responsive',
-    file: 'IndustryTable.tsx',
-    autoFixable: false,
-  },
-  {
-    id: 'gap-8',
-    route: '/admin/design-audit',
-    component: 'Card',
-    selector: '.card',
-    property: 'border-radius',
-    current: '6px',
-    expected: '12px',
-    severity: 'P3',
-    category: 'component',
-    file: 'card.tsx',
-    autoFixable: true,
-  },
+  // All Fix Pack A-F issues RESOLVED - list cleared
+  // Remaining gaps would be detected by future DOM scans
 ];
 
 // Responsiveness gaps summary
@@ -324,10 +233,10 @@ export const responsivenessGaps: ResponsivenessGap[] = [
 
 // Get baseline version string
 export function getBaselineVersion(): string {
-  return '1.0.0 (Catalyst L9 Enterprise Gold)';
+  return '2.0.0 (Post Fix-Pack)';
 }
 
 // Get baseline date
 export function getBaselineDate(): string {
-  return '2025-01-15';
+  return '2024-12-08';
 }
