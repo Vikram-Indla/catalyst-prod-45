@@ -10,13 +10,15 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
-  Pin
+  Pin,
+  Palette
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useState, useMemo } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AdminSidebarV2Props {
   expanded: boolean;
@@ -24,7 +26,7 @@ interface AdminSidebarV2Props {
   className?: string;
 }
 
-// New IA: 7 top-level buckets
+// New IA: 7 top-level buckets + Design Audit
 const adminPockets = [
   {
     id: 'overview',
@@ -110,6 +112,12 @@ const adminPockets = [
     icon: Shield,
     path: '/admin/security',
   },
+  {
+    id: 'design-audit',
+    label: 'Design Audit',
+    icon: Palette,
+    path: '/admin/design-audit',
+  },
 ];
 
 // Flatten all paths for search
@@ -145,68 +153,75 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
     children?.some(c => location.pathname === c.path);
 
   return (
-    <TooltipProvider>
+    <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          'h-full border-r bg-card transition-all duration-300 flex-shrink-0 relative flex flex-col',
-          expanded ? 'w-56' : 'w-16',
+          'h-full border-r bg-card transition-all duration-200 flex-shrink-0 relative flex flex-col',
+          expanded ? 'w-60' : 'w-14',
           className
         )}
       >
-        {/* Toggle Handle */}
+        {/* Toggle Handle - Atlassian style */}
         <button
           onClick={onToggle}
-          className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-card border shadow-sm flex items-center justify-center hover:bg-accent transition-transform"
+          className={cn(
+            'absolute -right-3 top-5 z-50 h-6 w-6 rounded-full bg-card border shadow-sm',
+            'flex items-center justify-center hover:bg-accent transition-colors',
+            'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'
+          )}
           aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
         >
-          {expanded ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          {expanded ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
         </button>
 
-        {/* Header */}
-        <div className="h-[72px] px-4 border-b border-border flex items-center shrink-0">
+        {/* Header - Compact Atlassian style */}
+        <div className={cn(
+          'h-14 border-b border-border flex items-center shrink-0',
+          expanded ? 'px-4' : 'px-2 justify-center'
+        )}>
           {expanded ? (
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm">
-                AD
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-md bg-brand-gold/15 flex items-center justify-center">
+                <span className="text-brand-gold font-semibold text-xs">AD</span>
               </div>
-              <div className="flex flex-col">
-                <span className="font-semibold text-foreground text-sm">Admin</span>
-                <span className="text-xs text-muted-foreground">Configuration</span>
+              <div className="flex flex-col min-w-0">
+                <span className="font-semibold text-foreground text-sm leading-tight">Admin</span>
+                <span className="text-[11px] text-muted-foreground leading-tight">Configuration</span>
               </div>
             </div>
           ) : (
-            <div className="w-9 h-9 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm mx-auto">
-              AD
+            <div className="w-8 h-8 rounded-md bg-brand-gold/15 flex items-center justify-center">
+              <span className="text-brand-gold font-semibold text-xs">AD</span>
             </div>
           )}
         </div>
 
-        {/* Search */}
+        {/* Search - Only when expanded */}
         {expanded && (
           <div className="px-3 py-2 border-b border-border">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
               <Input
                 placeholder="Search settings..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 pl-8 text-sm bg-muted/50"
+                className="h-8 pl-7 text-sm bg-muted/40 border-transparent focus:border-border focus:bg-background"
               />
             </div>
             
             {/* Search Results */}
             {filteredPaths.length > 0 && (
-              <div className="mt-2 space-y-0.5 max-h-48 overflow-y-auto">
+              <div className="mt-2 space-y-0.5 max-h-40 overflow-y-auto">
                 {filteredPaths.map(item => (
                   <Link
                     key={item.path}
                     to={item.path}
                     onClick={() => setSearchQuery('')}
-                    className="flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-muted transition-colors"
+                    className="flex items-center gap-2 px-2 py-1.5 rounded text-sm hover:bg-accent transition-colors"
                   >
                     <span className="truncate">{item.label}</span>
                     {item.parent && (
-                      <span className="text-xs text-muted-foreground">in {item.parent}</span>
+                      <span className="text-[10px] text-muted-foreground">in {item.parent}</span>
                     )}
                   </Link>
                 ))}
@@ -215,28 +230,32 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
           </div>
         )}
 
-        {/* Pinned Items */}
+        {/* Pinned Items - Compact */}
         {expanded && pinnedItems.length > 0 && !searchQuery && (
           <div className="px-3 py-2 border-b border-border">
-            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1.5">
-              <Pin className="h-3 w-3" />
+            <div className="flex items-center gap-1 text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1">
+              <Pin className="h-2.5 w-2.5" />
               <span>Pinned</span>
             </div>
             <div className="space-y-0.5">
               {pinnedItems.map(path => {
                 const item = allPaths.find(p => p.path === path);
                 if (!item) return null;
+                const active = isActive(path);
                 return (
                   <Link
                     key={path}
                     to={path}
                     className={cn(
-                      'flex items-center gap-2 px-2 py-1.5 rounded text-sm transition-colors',
-                      isActive(path) 
+                      'flex items-center gap-2 px-2 py-1.5 rounded-md text-sm transition-colors relative',
+                      active 
                         ? 'bg-brand-gold/10 text-brand-gold font-medium' 
-                        : 'hover:bg-muted text-foreground'
+                        : 'hover:bg-accent text-foreground'
                     )}
                   >
+                    {active && (
+                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-brand-gold rounded-r" />
+                    )}
                     <span className="truncate">{item.label}</span>
                   </Link>
                 );
@@ -245,54 +264,63 @@ export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2
           </div>
         )}
 
-        {/* Navigation - Pockets */}
-        <nav className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          {adminPockets.map((pocket) => {
-            const Icon = pocket.icon;
-            const active = isActive(pocket.path) || isChildActive(pocket.children);
+        {/* Navigation - Compact Atlassian style */}
+        <ScrollArea className="flex-1">
+          <nav className="p-2 space-y-0.5">
+            {adminPockets.map((pocket) => {
+              const Icon = pocket.icon;
+              const active = isActive(pocket.path) || isChildActive(pocket.children);
 
-            if (!expanded) {
-              return (
-                <Tooltip key={pocket.id}>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      asChild
-                      className={cn(
-                        'w-full h-10 flex items-center justify-center',
-                        active && 'bg-brand-gold/10 text-brand-gold'
-                      )}
-                    >
-                      <Link to={pocket.children?.[0]?.path || pocket.path}>
-                        <Icon className="h-5 w-5" />
+              if (!expanded) {
+                return (
+                  <Tooltip key={pocket.id}>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to={pocket.children?.[0]?.path || pocket.path}
+                        className={cn(
+                          'flex items-center justify-center h-9 w-9 mx-auto rounded-md transition-colors relative',
+                          active 
+                            ? 'bg-brand-gold/10 text-brand-gold' 
+                            : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                        )}
+                      >
+                        {active && (
+                          <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-brand-gold rounded-r" />
+                        )}
+                        <Icon className="h-4 w-4" />
                       </Link>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" className="bg-popover border">
-                    {pocket.label}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={8}>
+                      {pocket.label}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              }
 
-            return (
-              <Link
-                key={pocket.id}
-                to={pocket.children?.[0]?.path || pocket.path}
-                className={cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors',
-                  active 
-                    ? 'bg-brand-gold/10 text-brand-gold font-medium' 
-                    : 'text-foreground hover:bg-muted'
-                )}
-              >
-                <Icon className="h-4 w-4 flex-shrink-0" />
-                <span className="truncate">{pocket.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
+              return (
+                <Link
+                  key={pocket.id}
+                  to={pocket.children?.[0]?.path || pocket.path}
+                  className={cn(
+                    'flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors relative group',
+                    active 
+                      ? 'bg-brand-gold/10 text-brand-gold font-medium' 
+                      : 'text-foreground hover:bg-accent'
+                  )}
+                >
+                  {active && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-brand-gold rounded-r" />
+                  )}
+                  <Icon className={cn(
+                    'h-4 w-4 flex-shrink-0',
+                    active ? 'text-brand-gold' : 'text-muted-foreground group-hover:text-foreground'
+                  )} />
+                  <span className="truncate">{pocket.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </ScrollArea>
       </aside>
     </TooltipProvider>
   );
