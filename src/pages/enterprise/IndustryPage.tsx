@@ -751,32 +751,33 @@ export default function IndustryPage() {
           </div>
         </div>
 
-        {/* Search & Filters Bar */}
+        {/* Search & Filters Bar - Mobile Responsive */}
         <div className="flex flex-col gap-3 px-4 sm:px-6 py-3 bg-card">
-          {/* Row 1: Search + Actions */}
-          <div className="flex items-center justify-between gap-4">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search industry requests..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9 bg-white border-border" />
-            </div>
+          {/* Row 1: Search - full width on mobile */}
+          <div className="relative w-full sm:max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input placeholder="Search industry requests..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="pl-9 bg-white border-border w-full" />
+          </div>
 
-            {/* Pagination - only in list mode */}
+          {/* Row 2: Actions - wrap on mobile */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+            {/* View Toggle */}
+            <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
+
+            {/* Pagination - only in list mode, hide on very small screens */}
             {viewMode === 'list' && (
-              <div className="flex items-center gap-1 border border-border rounded-md bg-white px-1">
-                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0">
+              <div className="hidden xs:flex items-center gap-1 border border-border rounded-md bg-white px-1">
+                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 1} className="h-8 w-8 p-0 min-w-[44px] min-h-[44px]">
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <span className="text-sm text-[#172B4D] px-2 whitespace-nowrap">
                   {sortedRequests.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, sortedRequests.length)} of ${sortedRequests.length}` : '0 items'}
                 </span>
-                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-8 w-8 p-0">
+                <Button variant="ghost" size="sm" onClick={() => goToPage(currentPage + 1)} disabled={currentPage === totalPages || totalPages === 0} className="h-8 w-8 p-0 min-w-[44px] min-h-[44px]">
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             )}
-
-            {/* View Toggle - separate container */}
-            <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
 
             {/* Expand/Collapse All - only visible in kanban mode */}
             {viewMode === 'kanban' && (
@@ -784,23 +785,27 @@ export default function IndustryPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setKanbanExpanded(prev => prev === true ? false : true)}
-                className="border-border gap-2"
+                className="border-border gap-2 min-h-[44px]"
               >
                 {kanbanExpanded ? (
                   <>
                     <Minimize2 className="h-4 w-4" />
-                    Collapse All
+                    <span className="hidden sm:inline">Collapse All</span>
                   </>
                 ) : (
                   <>
                     <Maximize2 className="h-4 w-4" />
-                    Expand All
+                    <span className="hidden sm:inline">Expand All</span>
                   </>
                 )}
               </Button>
             )}
 
-            <div className="flex items-center gap-2">
+            {/* Spacer to push filters to right on larger screens */}
+            <div className="flex-1 hidden sm:block" />
+
+            {/* Filter actions */}
+            <div className="flex items-center gap-2 flex-wrap">
               <SavedFiltersDropdown
                 entityType="demand"
                 currentFilters={filters}
@@ -811,19 +816,22 @@ export default function IndustryPage() {
                 variant="outline" 
                 size="sm" 
                 onClick={() => setFiltersDialogOpen(true)}
-                className={activeFilterCount > 0 ? "border-brand-gold text-brand-gold" : "border-border"}
+                className={cn(
+                  "min-h-[44px]",
+                  activeFilterCount > 0 ? "border-brand-gold text-brand-gold" : "border-border"
+                )}
               >
-                <Filter className="h-4 w-4 mr-2" />
-                Filters
+                <Filter className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Filters</span>
                 {activeFilterCount > 0 && (
                   <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-brand-gold text-white">
                     {activeFilterCount}
                   </span>
                 )}
               </Button>
-              <Button variant="outline" size="sm" onClick={handleExport} className="border-border">
-                <Download className="h-4 w-4 mr-2" />
-                Export
+              <Button variant="outline" size="sm" onClick={handleExport} className="border-border min-h-[44px]">
+                <Download className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Export</span>
               </Button>
             </div>
           </div>
@@ -855,14 +863,21 @@ export default function IndustryPage() {
               />
             ) : sortedRequests.length > 0 ? (
             <Card className="flex-1 flex flex-col min-h-0 overflow-hidden border border-border rounded shadow-none">
+                {/* Mobile scroll hint */}
+                <div className="sm:hidden px-3 py-2 bg-muted/50 text-xs text-muted-foreground flex items-center gap-2 border-b border-border">
+                  <ChevronLeft className="h-3 w-3" />
+                  <span>Swipe to view more columns</span>
+                  <ChevronRight className="h-3 w-3" />
+                </div>
+                
                 {/* Notification bar */}
                 <div className="sticky top-0 z-40">
                   <RankUpdateNotification show={notification.show} oldRank={notification.oldRank} newRank={notification.newRank} score={notification.score} onClose={closeNotification} />
                 </div>
                 
                 {/* Single scroll container for semantic table */}
-                <div className="flex-1 overflow-x-auto overflow-y-auto">
-                  <table className="border-separate border-spacing-0" style={{ tableLayout: 'fixed', minWidth: '100%' }}>
+                <div className="flex-1 overflow-x-auto overflow-y-auto -webkit-overflow-scrolling-touch">
+                  <table className="border-separate border-spacing-0" style={{ tableLayout: 'fixed', minWidth: '800px' }}>
                     {/* Table Header */}
                     <thead className="sticky top-0 z-40" style={{ position: 'sticky', background: 'hsl(35 46% 97%)' }}>
                       <tr style={{ background: 'hsl(35 46% 97%)' }}>
