@@ -10,6 +10,7 @@ import {
   DropdownMenuSeparator 
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical } from 'lucide-react';
+import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
 import { FeatureDetailsTab } from './tabs/FeatureDetailsTab';
 import { FeaturePlanningTab } from './tabs/FeaturePlanningTab';
 import { FeatureFinancialsTab } from './tabs/FeatureFinancialsTab';
@@ -191,15 +192,18 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
       <SheetContent className="executive-drawer w-full sm:w-[600px] md:w-[700px] lg:w-[900px] sm:max-w-[90vw] p-0 flex flex-col overflow-hidden bg-white">
         <div className="executive-drawer-header flex-shrink-0 bg-white px-3 md:px-4 py-2 border-b border-neutral-200">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex-1 min-w-0">
-              <h2 className="executive-drawer-title truncate">
-                {feature ? `Feature: ${formData.name || feature.name}` : 'New Feature'}
-              </h2>
-              {feature?.display_id && (
-                <div className="executive-drawer-subtitle font-mono mt-1">
-                  {feature.display_id}
-                </div>
-              )}
+            <div className="flex-1 min-w-0 flex items-center gap-2">
+              <div className="min-w-0">
+                <h2 className="executive-drawer-title truncate">
+                  {feature ? `Feature: ${formData.name || feature.name}` : 'New Feature'}
+                </h2>
+                {feature?.display_id && (
+                  <div className="executive-drawer-subtitle font-mono mt-1">
+                    {feature.display_id}
+                  </div>
+                )}
+              </div>
+              {feature?.id && <WorkItemPresence workItemType="features" workItemId={feature.id} />}
             </div>
             <div className="flex items-center flex-shrink-0 gap-[var(--s2)]">
               <Button 

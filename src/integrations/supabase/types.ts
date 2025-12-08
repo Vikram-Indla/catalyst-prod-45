@@ -11177,6 +11177,42 @@ export type Database = {
           },
         ]
       }
+      work_item_presence: {
+        Row: {
+          created_at: string
+          id: string
+          last_seen_at: string
+          status: string
+          user_email: string | null
+          user_id: string
+          user_name: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          status?: string
+          user_email?: string | null
+          user_id: string
+          user_name?: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          status?: string
+          user_email?: string | null
+          user_id?: string
+          user_name?: string | null
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: []
+      }
       work_item_rankings: {
         Row: {
           context_id: string | null
@@ -11375,6 +11411,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      clean_stale_presence: { Args: never; Returns: undefined }
       create_adhoc_cycle: { Args: never; Returns: string }
       create_notification: {
         Args: {

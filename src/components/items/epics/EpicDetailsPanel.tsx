@@ -57,6 +57,7 @@ import { SplitEpicDialog } from './dialogs/SplitEpicDialog';
 import { DuplicateEpicDialog } from './dialogs/DuplicateEpicDialog';
 import { AuditLogDialog } from './dialogs/AuditLogDialog';
 import { WhyPanelDialog } from './dialogs/WhyPanelDialog';
+import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
 import { useSubscriptions } from '@/hooks/useSubscriptions';
 import { toast } from 'sonner';
 
@@ -357,6 +358,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
                     <LinkIcon className="h-3.5 w-3.5" />
                   </button>
                 </div>
+                {epic?.id && <WorkItemPresence workItemType="epics" workItemId={epic.id} />}
               </div>
               
               {/* Action buttons row: Why?, Save, Save & Close, Expand, Close */}
