@@ -1,3 +1,8 @@
+/**
+ * FIX B: PageHeader Height Consistency
+ * Uses CSS variable --pagehdr-h (56px) as single source of truth
+ * No hardcoded 72px values
+ */
 import { ReactNode } from 'react';
 
 interface PageHeaderProps {
@@ -8,12 +13,15 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
   return (
-    <div className="h-[72px] border-b border-[#E8E8E8] bg-white">
+    <div 
+      className="border-b border-border bg-card flex-shrink-0"
+      style={{ height: 'var(--pagehdr-h, 56px)' }}
+    >
       <div className="h-full flex items-center justify-between px-6">
         <div>
-          <h1 className="text-xl sm:text-2xl font-semibold text-[#1A1A1A]">{title}</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold text-foreground">{title}</h1>
           {subtitle && (
-            <p className="text-sm text-[#8C8C8C]">{subtitle}</p>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
           )}
         </div>
         {actions && (

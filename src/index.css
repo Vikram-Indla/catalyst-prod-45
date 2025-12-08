@@ -34,10 +34,15 @@
   /* Background and foreground - mapped to surfaces */
   --background: 0 0% 100%;                    /* #FFFFFF - page background */
   --foreground: 217 19% 16%;                  /* #111827 - text */
-  --card: 0 0% 100%;                          /* #FFFFFF */
+  --card: 0 0% 100%;                          /* #FFFFFF - raised surface */
   --card-foreground: 217 19% 16%;
   --popover: 0 0% 100%;
   --popover-foreground: 217 19% 16%;
+  
+  /* FIX A: Surface Hierarchy - TRUE sunken/backdrop separation */
+  --surface-sunken: 210 20% 98%;              /* #F9FAFB - sunken containers */
+  --surface-raised: 0 0% 100%;                /* #FFFFFF - raised cards */
+  --surface-backdrop: 214 15% 96%;            /* #F3F4F6 - dense container backdrop */
   
   /* Primary - NOW USES BRAND GOLD */
   --primary: 35 46% 60%;                      /* #C69C6D - Catalyst accent */
@@ -47,8 +52,8 @@
   --secondary: 214 15% 96%;                   /* #F3F4F6 */
   --secondary-foreground: 217 19% 16%;        /* #111827 */
   
-  /* Muted - now white to avoid grey backgrounds globally */
-  --muted: 0 0% 100%;                         /* #FFFFFF */
+  /* Muted - now uses sunken surface for visual hierarchy (FIX A) */
+  --muted: 210 20% 98%;                       /* #F9FAFB - not pure white */
   --muted-foreground: 217 11% 46%;            /* #6B7280 */
   
   /* Accent - for hover states */
@@ -157,15 +162,22 @@
   --s8: 40px;     /* 5 units */
   --s9: 48px;     /* 6 units */
   
-  /* Layout Measurements */
+  /* Layout Measurements (FIX B: Unified header height) */
   --topnav-h: 56px;
-  --pagehdr-h: 56px;
+  --pagehdr-h: 56px;                          /* Single source of truth - NOT 72px */
   --sidebar-w: 280px;
   --toolbar-h: 48px;
-  --grid-row: 32px;
+  --grid-row: 40px;                           /* FIX C: Table row height = 40px */
+  --grid-row-compact: 32px;                   /* Compact variant */
   --grid-hdr: 40px;
   --timeline-hdr: 32px;
   --bar-h: 20px;
+  
+  /* FIX D: Button sizes (36px default, 32px small) */
+  --btn-height-default: 36px;
+  --btn-height-sm: 32px;
+  --btn-height-lg: 40px;
+  --btn-height-icon: 32px;
   
   /* Typography */
   --font-size-xs: 11px;

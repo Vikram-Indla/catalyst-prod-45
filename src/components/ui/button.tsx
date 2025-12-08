@@ -4,8 +4,16 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+/**
+ * FIX D: Button Sizes + Pressed State
+ * - Default height: 36px (h-9)
+ * - Small height: 32px (h-8)
+ * - Large height: 40px (h-10)
+ * - Icon: 32px (h-8 w-8)
+ * - Pressed state: active:scale-[0.98] + active:brightness-95
+ */
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] active:brightness-95",
   {
     variants: {
       variant: {
@@ -18,10 +26,11 @@ const buttonVariants = cva(
         gold: "bg-brand-gold text-white hover:bg-brand-gold-hover",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
+        // FIX D: Aligned to spec - default 36px, sm 32px, lg 40px, icon 32px
+        default: "h-9 px-4 py-2",      // 36px
+        sm: "h-8 rounded-md px-3",      // 32px
+        lg: "h-10 rounded-md px-8",     // 40px
+        icon: "h-8 w-8",                // 32px (was 36px)
       },
     },
     defaultVariants: {

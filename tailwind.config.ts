@@ -56,6 +56,12 @@ export default {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
         },
+        // FIX A: Surface hierarchy tokens
+        surface: {
+          sunken: "hsl(var(--surface-sunken))",
+          raised: "hsl(var(--surface-raised))",
+          backdrop: "hsl(var(--surface-backdrop))",
+        },
         accent: {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
