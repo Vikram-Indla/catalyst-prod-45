@@ -138,17 +138,38 @@ export function CreateEntityDialog({
         if (error) throw error;
         result = data;
       } else {
-        // project - needs portfolio_id (we'll use a default or first available)
+        // project - needs portfolio_id (NOT NULL constraint)
+        // First check if a portfolio (Program) exists
         const { data: portfolios } = await supabase
           .from('portfolios')
           .select('id')
           .limit(1);
         
+        let portfolioId = portfolios?.[0]?.id;
+        
+        // If no portfolio exists, create a default one automatically
+        if (!portfolioId) {
+          const { data: newPortfolio, error: portfolioError } = await supabase
+            .from('portfolios')
+            .insert({
+              name: 'Default Program',
+            })
+            .select()
+            .single();
+          
+          if (portfolioError) throw portfolioError;
+          portfolioId = newPortfolio.id;
+          
+          // Invalidate program queries so the new program appears
+          queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+          queryClient.invalidateQueries({ queryKey: ['programs-header'] });
+        }
+        
         const { data, error } = await supabase
           .from('programs')
           .insert({
             name: name.trim(),
-            portfolio_id: portfolios?.[0]?.id || null,
+            portfolio_id: portfolioId,
           })
           .select()
           .single();
