@@ -41,7 +41,6 @@ export function ProgramSelectorDropdown({ onClose }: ProgramSelectorDropdownProp
   };
 
   const handleCreateClick = () => {
-    onClose();
     setShowCreateDialog(true);
   };
 
