@@ -8,7 +8,7 @@ import { Slider } from '@/components/ui/slider';
 import { ChevronUp, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export type SkillsQuickFilter = 'myTeam' | 'expertsOnly' | 'criticalGaps' | 'uncertified' | 'lowCoverage' | null;
+export type SkillsQuickFilter = 'myTeam' | 'expertsOnly' | 'criticalGaps' | 'lowCoverage' | null;
 
 export interface SkillsInventoryFilters {
   activeQuickFilter?: SkillsQuickFilter;
@@ -17,9 +17,6 @@ export interface SkillsInventoryFilters {
   skillNames?: string[];
   skillCategoryIds?: string[];
   proficiencyLevels?: string[];
-  hasCertifications?: 'all' | 'with' | 'without';
-  certificationsMin?: number | null;
-  certificationsMax?: number | null;
   coverageMin?: number | null;
   coverageMax?: number | null;
 }
@@ -50,11 +47,6 @@ const QUICK_FILTER_CONFIG = [
     id: 'criticalGaps' as SkillsQuickFilter, 
     label: 'Critical Gaps', 
     tooltip: 'Shows team members with coverage below 70% OR proficiency "No Skill".' 
-  },
-  { 
-    id: 'uncertified' as SkillsQuickFilter, 
-    label: 'Uncertified', 
-    tooltip: 'Shows team members with zero certifications.' 
   },
   { 
     id: 'lowCoverage' as SkillsQuickFilter, 
@@ -196,7 +188,6 @@ export function SkillsFiltersDialog({
     people: true,
     skill: true,
     proficiency: true,
-    certifications: false,
     coverage: false,
   });
 
@@ -224,9 +215,6 @@ export function SkillsFiltersDialog({
         break;
       case 'criticalGaps':
         newFilters = { ...newFilters, coverageMax: 70, proficiencyLevels: ['No Skill', 'Beginner'] };
-        break;
-      case 'uncertified':
-        newFilters = { ...newFilters, hasCertifications: 'without' };
         break;
       case 'lowCoverage':
         newFilters = { ...newFilters, coverageMax: 70 };
@@ -387,56 +375,6 @@ export function SkillsFiltersDialog({
                   <span className="text-sm text-foreground">{level.label}</span>
                 </label>
               ))}
-            </div>
-          </AccordionSection>
-
-          {/* Certifications Section */}
-          <AccordionSection 
-            title="Certifications" 
-            isOpen={openSections.certifications} 
-            onToggle={() => toggleSection('certifications')}
-          >
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-medium text-muted-foreground">Has Certifications</label>
-                <Select
-                  value={localFilters.hasCertifications || 'all'}
-                  onValueChange={(value) => updateFilter('hasCertifications', value === 'all' ? undefined : value as 'all' | 'with' | 'without')}
-                >
-                  <SelectTrigger className="w-full border-border bg-white">
-                    <SelectValue placeholder="All" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-border">
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="with">With Certifications</SelectItem>
-                    <SelectItem value="without">Without Certifications</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Min Count</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={localFilters.certificationsMin ?? ''}
-                    onChange={(e) => updateFilter('certificationsMin', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-brand-gold"
-                    placeholder="0"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Max Count</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={localFilters.certificationsMax ?? ''}
-                    onChange={(e) => updateFilter('certificationsMax', e.target.value ? parseInt(e.target.value) : null)}
-                    className="w-full h-10 px-3 border border-border rounded-md text-sm bg-white focus:outline-none focus:ring-1 focus:ring-brand-gold"
-                    placeholder="∞"
-                  />
-                </div>
-              </div>
             </div>
           </AccordionSection>
 
