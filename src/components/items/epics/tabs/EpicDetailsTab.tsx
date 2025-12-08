@@ -20,6 +20,7 @@ import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
 import { WorkItemLabelSelector } from '@/components/work-items/WorkItemLabelSelector';
 import { WorkItemLinksSection } from '@/components/work-items/WorkItemLinksSection';
+import { WorkItemCommentsSection } from '@/components/work-items/WorkItemCommentsSection';
 import { WSJFInlineScores } from '@/components/wsjf';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
@@ -1191,6 +1192,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
       <WorkItemLinksSection 
         workItemType="epic" 
         workItemId={epic.id}
+      />
+
+      {/* Comments Section */}
+      <WorkItemCommentsSection 
+        entityType="epic" 
+        entityId={epic.id}
       />
 
       {/* Custom Fields Section */}

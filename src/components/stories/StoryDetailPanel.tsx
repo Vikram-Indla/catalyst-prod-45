@@ -20,6 +20,7 @@ import { SprintSelector } from '@/components/work-items/SprintSelector';
 import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
 import { WorkItemLabelSelector } from '@/components/work-items/WorkItemLabelSelector';
 import { WorkItemLinksSection } from '@/components/work-items/WorkItemLinksSection';
+import { WorkItemCommentsSection } from '@/components/work-items/WorkItemCommentsSection';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
@@ -455,6 +456,12 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
             <WorkItemLinksSection 
               workItemType="story" 
               workItemId={story.id}
+            />
+
+            {/* Comments Section */}
+            <WorkItemCommentsSection 
+              entityType="story" 
+              entityId={story.id}
             />
 
             {/* Custom Fields Section */}
