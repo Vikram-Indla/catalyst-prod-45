@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart, ChevronDown, FileSpreadsheet, FileText, Loader2 } from 'lucide-react';
+import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart, ChevronDown, FileSpreadsheet, FileText, Loader2, Edit2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,8 +8,22 @@ import { SkillsMatrixHeatmap } from '@/components/skills-inventory/SkillsMatrixH
 import { SkillGapAnalysis } from '@/components/skills-inventory/SkillGapAnalysis';
 import { SkillsInventoryReport } from '@/components/skills-inventory/SkillsInventoryReport';
 import { SkillsFiltersDialog, SkillsInventoryFilters } from '@/components/skills-inventory/SkillsFiltersDialog';
+import { EditSkillModal } from '@/components/skills-inventory/EditSkillModal';
+import { DeleteSkillDialog } from '@/components/skills-inventory/DeleteSkillDialog';
 import { toast } from 'sonner';
+
 type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report';
+
+type SkillData = {
+  id: number;
+  name: string;
+  role: string;
+  project: string;
+  skill: string;
+  proficiency: string;
+  coverage: number;
+  lastUpdated: string;
+};
 
 const viewTabs = [
   { id: 'table' as ViewMode, label: 'Table', icon: List },
@@ -74,6 +88,11 @@ export default function SkillsInventory() {
   const [advancedFilters, setAdvancedFilters] = useState<SkillsInventoryFilters>({});
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedSkill, setSelectedSkill] = useState<SkillData | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [skillsData, setSkillsData] = useState(teamMembersData);
   const exportMenuRef = useRef<HTMLDivElement>(null);
 
   // Close export menu when clicking outside
@@ -86,6 +105,36 @@ export default function SkillsInventory() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleEditClick = (skill: SkillData) => {
+    setSelectedSkill(skill);
+    setEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (skill: SkillData) => {
+    setSelectedSkill(skill);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!selectedSkill) return;
+    setIsDeleting(true);
+    // Simulate deletion
+    setTimeout(() => {
+      setSkillsData(prev => prev.filter(s => s.id !== selectedSkill.id));
+      toast.success('Skill assessment deleted');
+      setIsDeleting(false);
+      setDeleteDialogOpen(false);
+      setEditModalOpen(false);
+      setSelectedSkill(null);
+    }, 500);
+  };
+
+  const handleSaveSkill = (id: number, data: { skill: string; proficiency: string; notes: string }) => {
+    setSkillsData(prev => prev.map(s => 
+      s.id === id ? { ...s, skill: data.skill, proficiency: data.proficiency } : s
+    ));
+  };
 
   // Extract unique values for filter options
   const uniqueTeamMembers = useMemo(() => [...new Set(teamMembersData.map(m => m.name))], []);
@@ -103,7 +152,7 @@ export default function SkillsInventory() {
 
   // Filter data based on sidebar and advanced filters
   const filteredData = useMemo(() => {
-    return teamMembersData.filter(member => {
+    return skillsData.filter(member => {
       // Sidebar filters
       if (selectedProgram !== 'All Projects' && member.project !== selectedProgram) return false;
       if (selectedProficiencies.length > 0 && !selectedProficiencies.includes(member.proficiency)) return false;
@@ -113,17 +162,13 @@ export default function SkillsInventory() {
       if (advancedFilters.skillNames?.length && !advancedFilters.skillNames.includes(member.skill)) return false;
       if (advancedFilters.proficiencyLevels?.length && !advancedFilters.proficiencyLevels.includes(member.proficiency)) return false;
       
-      
-      // Coverage filter
-      if (advancedFilters.coverageMin !== null && advancedFilters.coverageMin !== undefined && member.coverage < advancedFilters.coverageMin) return false;
-      if (advancedFilters.coverageMax !== null && advancedFilters.coverageMax !== undefined && member.coverage > advancedFilters.coverageMax) return false;
       // Coverage filter
       if (advancedFilters.coverageMin !== null && advancedFilters.coverageMin !== undefined && member.coverage < advancedFilters.coverageMin) return false;
       if (advancedFilters.coverageMax !== null && advancedFilters.coverageMax !== undefined && member.coverage > advancedFilters.coverageMax) return false;
 
       return true;
     });
-  }, [selectedProgram, selectedProficiencies, advancedFilters]);
+  }, [skillsData, selectedProgram, selectedProficiencies, advancedFilters]);
 
   // Calculate stats
   const totalSkills = 48;
@@ -333,6 +378,7 @@ export default function SkillsInventory() {
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Proficiency</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Coverage</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Last Updated</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -342,18 +388,26 @@ export default function SkillsInventory() {
                     className="transition-colors hover:bg-brand-gold/5 border-b border-brand-gold-border"
                   >
                     <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => handleEditClick(member)}
+                        className="flex items-center gap-3 group cursor-pointer"
+                      >
                         <div className="h-9 w-9 rounded-lg flex items-center justify-center text-xs font-semibold bg-gradient-to-br from-brand-gold to-brand-gold-dark text-brand-dark">
                           {getInitials(member.name)}
                         </div>
-                        <div>
-                          <div className="text-sm font-medium text-foreground">{member.name}</div>
+                        <div className="text-left">
+                          <div className="text-sm font-medium text-foreground group-hover:text-brand-gold group-hover:underline transition-colors">{member.name}</div>
                           <div className="text-xs text-muted-foreground">{member.role}</div>
                         </div>
-                      </div>
+                      </button>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="text-sm text-foreground">{member.skill}</span>
+                      <button
+                        onClick={() => handleEditClick(member)}
+                        className="text-sm text-foreground hover:text-brand-gold hover:underline transition-colors cursor-pointer"
+                      >
+                        {member.skill}
+                      </button>
                     </td>
                     <td className="px-5 py-3.5">
                       <span
@@ -386,6 +440,24 @@ export default function SkillsInventory() {
                     </td>
                     <td className="px-5 py-3.5">
                       <span className="text-sm text-muted-foreground">{member.lastUpdated}</span>
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handleEditClick(member)}
+                          className="p-2 hover:bg-brand-gold/10 rounded-lg transition-colors text-muted-foreground hover:text-brand-gold"
+                          title="Edit skill"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(member)}
+                          className="p-2 hover:bg-destructive/10 rounded-lg transition-colors text-muted-foreground hover:text-destructive"
+                          title="Delete skill"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -493,6 +565,34 @@ export default function SkillsInventory() {
         skills={uniqueSkills}
         skillCategories={skillCategories.filter(c => c !== 'All Categories')}
         teams={uniqueTeams}
+      />
+
+      {/* Edit Skill Modal */}
+      <EditSkillModal
+        open={editModalOpen}
+        onClose={() => {
+          setEditModalOpen(false);
+          setSelectedSkill(null);
+        }}
+        skill={selectedSkill}
+        onDelete={() => {
+          setEditModalOpen(false);
+          setDeleteDialogOpen(true);
+        }}
+        onSave={handleSaveSkill}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <DeleteSkillDialog
+        open={deleteDialogOpen}
+        onClose={() => {
+          setDeleteDialogOpen(false);
+          setSelectedSkill(null);
+        }}
+        onConfirm={handleDeleteConfirm}
+        skillName={selectedSkill?.skill || ''}
+        teamMemberName={selectedSkill?.name || ''}
+        isDeleting={isDeleting}
       />
     </div>
   );
