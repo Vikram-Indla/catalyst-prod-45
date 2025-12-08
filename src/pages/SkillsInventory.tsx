@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { SkillsMatrixHeatmap } from '@/components/skills-inventory/SkillsMatrixHeatmap';
 import { SkillGapAnalysis } from '@/components/skills-inventory/SkillGapAnalysis';
 import { SkillsInventoryReport } from '@/components/skills-inventory/SkillsInventoryReport';
-
+import { SkillsFiltersDialog, SkillsInventoryFilters } from '@/components/skills-inventory/SkillsFiltersDialog';
 type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report';
 
 const viewTabs = [
@@ -69,13 +69,48 @@ export default function SkillsInventory() {
   const [selectedProficiencies, setSelectedProficiencies] = useState<string[]>([]);
   const [addSkillOpen, setAddSkillOpen] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
+  const [advancedFilters, setAdvancedFilters] = useState<SkillsInventoryFilters>({});
 
-  // Filter data based on selections
-  const filteredData = teamMembersData.filter(member => {
-    if (selectedProgram !== 'All Projects' && member.project !== selectedProgram) return false;
-    if (selectedProficiencies.length > 0 && !selectedProficiencies.includes(member.proficiency)) return false;
-    return true;
-  });
+  // Extract unique values for filter options
+  const uniqueTeamMembers = useMemo(() => [...new Set(teamMembersData.map(m => m.name))], []);
+  const uniqueSkills = useMemo(() => [...new Set(teamMembersData.map(m => m.skill))], []);
+  const uniqueTeams = useMemo(() => ['Backend', 'Frontend', 'Data', 'DevOps', 'QA'], []);
+
+  // Count active filters for badge
+  const activeFilterCount = useMemo(() => {
+    return Object.entries(advancedFilters).filter(([key, value]) => {
+      if (key === 'activeQuickFilter') return false;
+      if (Array.isArray(value)) return value.length > 0;
+      return value !== undefined && value !== '' && value !== null && value !== 'all';
+    }).length;
+  }, [advancedFilters]);
+
+  // Filter data based on sidebar and advanced filters
+  const filteredData = useMemo(() => {
+    return teamMembersData.filter(member => {
+      // Sidebar filters
+      if (selectedProgram !== 'All Projects' && member.project !== selectedProgram) return false;
+      if (selectedProficiencies.length > 0 && !selectedProficiencies.includes(member.proficiency)) return false;
+
+      // Advanced filters from dialog
+      if (advancedFilters.teamMemberNames?.length && !advancedFilters.teamMemberNames.includes(member.name)) return false;
+      if (advancedFilters.skillNames?.length && !advancedFilters.skillNames.includes(member.skill)) return false;
+      if (advancedFilters.proficiencyLevels?.length && !advancedFilters.proficiencyLevels.includes(member.proficiency)) return false;
+      
+      // Certifications filter
+      if (advancedFilters.hasCertifications === 'with' && member.certifications === 0) return false;
+      if (advancedFilters.hasCertifications === 'without' && member.certifications > 0) return false;
+      if (advancedFilters.certificationsMin !== null && advancedFilters.certificationsMin !== undefined && member.certifications < advancedFilters.certificationsMin) return false;
+      if (advancedFilters.certificationsMax !== null && advancedFilters.certificationsMax !== undefined && member.certifications > advancedFilters.certificationsMax) return false;
+      
+      // Coverage filter
+      if (advancedFilters.coverageMin !== null && advancedFilters.coverageMin !== undefined && member.coverage < advancedFilters.coverageMin) return false;
+      if (advancedFilters.coverageMax !== null && advancedFilters.coverageMax !== undefined && member.coverage > advancedFilters.coverageMax) return false;
+
+      return true;
+    });
+  }, [selectedProgram, selectedProficiencies, advancedFilters]);
 
   // Calculate stats
   const totalSkills = 48;
@@ -94,6 +129,7 @@ export default function SkillsInventory() {
     setSelectedTeam('All Teams');
     setSelectedCategory('All Categories');
     setSelectedProficiencies([]);
+    setAdvancedFilters({});
   };
 
   const exportToCSV = () => {
@@ -224,6 +260,20 @@ export default function SkillsInventory() {
           <div className="px-5 py-4 flex items-center justify-between border-b border-brand-gold-border">
             <h2 className="text-base font-semibold text-foreground">Skills Inventory</h2>
             <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-brand-gold-border text-muted-foreground hover:bg-secondary relative"
+                onClick={() => setFiltersDialogOpen(true)}
+              >
+                <Filter className="h-4 w-4 mr-2" />
+                Filters
+                {activeFilterCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-brand-gold text-white text-xs flex items-center justify-center font-medium">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </Button>
               <Button
                 variant="outline"
                 size="sm"
@@ -368,6 +418,18 @@ export default function SkillsInventory() {
 
       {/* Content */}
       {renderContent()}
+
+      {/* Skills Filters Dialog */}
+      <SkillsFiltersDialog
+        open={filtersDialogOpen}
+        onOpenChange={setFiltersDialogOpen}
+        filters={advancedFilters}
+        onFiltersChange={setAdvancedFilters}
+        teamMembers={uniqueTeamMembers}
+        skills={uniqueSkills}
+        skillCategories={skillCategories.filter(c => c !== 'All Categories')}
+        teams={uniqueTeams}
+      />
     </div>
   );
 }
