@@ -62,7 +62,6 @@ export function ProjectSelectorDropdown({ onClose }: ProjectSelectorDropdownProp
   };
 
   const handleCreateClick = () => {
-    onClose();
     setShowCreateDialog(true);
   };
 
