@@ -22,6 +22,7 @@ import { MobileNavigationMenu } from "./MobileNavigationMenu";
 import { TestsDropdown } from "./TestsDropdown";
 import { ReleaseDropdown } from "./ReleaseDropdown";
 import { catalystToast } from "@/lib/catalystToast";
+import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,6 +49,9 @@ export function CatalystHeader() {
   const { isAdmin } = useUserRole();
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
 
+  // Create entity dialog states - lifted from dropdowns
+  const [createDialogType, setCreateDialogType] = useState<'program' | 'project' | 'product' | null>(null);
+
   // Show Tests dropdown only when in program context with tests visible
   const isProgramRoute = location.pathname.startsWith('/programs/');
   const isTestsRoute = location.pathname.includes('/tests');
@@ -61,6 +65,24 @@ export function CatalystHeader() {
       return user;
     },
   });
+
+  // Handle create success callbacks
+  const handleCreateSuccess = (entity: { id: string; name: string; key?: string }) => {
+    if (createDialogType === 'program') {
+      navigate(`/program/${entity.id}/room`);
+    } else if (createDialogType === 'project') {
+      navigate(`/programs/${entity.id}/room`);
+    } else if (createDialogType === 'product') {
+      const key = entity.key || entity.name.toUpperCase().slice(0, 3);
+      const path = key.toUpperCase() === 'IND' || key.toUpperCase() === 'INDUSTRY' 
+        ? '/industry/demand-summary' 
+        : key.toUpperCase() === 'MIN' || key.toUpperCase() === 'MINING'
+          ? '/mining/demand-summary'
+          : `/product/${key.toLowerCase()}/demand-summary`;
+      navigate(path);
+    }
+    setCreateDialogType(null);
+  };
 
   const handleSignOut = async () => {
     try {
@@ -171,7 +193,10 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                          <ProductSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                          <ProductSelectorDropdown 
+                            onClose={() => setActiveDropdown(null)} 
+                            onCreateClick={() => setCreateDialogType('product')}
+                          />
                         </PopoverContent>
                       </Popover>
                     ) : item.label === "Program" ? (
@@ -186,7 +211,10 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                          <ProgramSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                          <ProgramSelectorDropdown 
+                            onClose={() => setActiveDropdown(null)} 
+                            onCreateClick={() => setCreateDialogType('program')}
+                          />
                         </PopoverContent>
                       </Popover>
                     ) : item.label === "Project" ? (
@@ -201,7 +229,10 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                          <ProjectSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                          <ProjectSelectorDropdown 
+                            onClose={() => setActiveDropdown(null)} 
+                            onCreateClick={() => setCreateDialogType('project')}
+                          />
                         </PopoverContent>
                       </Popover>
                     ) : item.label === "Release" ? (
@@ -363,6 +394,16 @@ export function CatalystHeader() {
 
       {/* Search Overlay */}
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      {/* Create Entity Dialog - lifted from dropdowns to prevent stacking */}
+      {createDialogType && (
+        <CreateEntityDialog
+          open={true}
+          onOpenChange={(open) => !open && setCreateDialogType(null)}
+          entityType={createDialogType}
+          onSuccess={handleCreateSuccess}
+        />
+      )}
     </>
   );
 }
