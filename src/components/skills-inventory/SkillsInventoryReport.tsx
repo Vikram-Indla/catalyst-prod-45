@@ -181,7 +181,7 @@ export const SkillsInventoryReport: React.FC = () => {
                   <span className="w-28 text-sm text-muted-foreground truncate flex-shrink-0">
                     {category.name}
                   </span>
-                  <div className="flex-1 h-8 bg-brand-dark rounded-lg overflow-hidden">
+                  <div className="flex-1 h-8 bg-neutral-200 rounded-lg overflow-hidden">
                     <div
                       className="h-full bg-info rounded-lg flex items-center justify-end pr-3 transition-all"
                       style={{ width: `${widthPercentage}%` }}
