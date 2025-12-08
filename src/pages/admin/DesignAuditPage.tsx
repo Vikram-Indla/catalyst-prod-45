@@ -3,7 +3,7 @@ import {
   Palette, Type, Ruler, Square, Layers, Eye, CheckCircle2, AlertTriangle, XCircle,
   ChevronDown, ChevronRight, Monitor, Tablet, Smartphone, Bell, BarChart3, 
   MousePointer2, Tag, RectangleHorizontal, Route, FileText, Download, RefreshCw,
-  Scan, Layout, PanelLeft, Maximize2, MessageSquare, Zap
+  Scan, Layout, PanelLeft, Maximize2, MessageSquare, Zap, Lock, Wrench, Target
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,9 @@ import { cn } from '@/lib/utils';
 import { auditRoutes, auditTargets, auditAreas } from '@/lib/designAudit/auditConfig';
 import { calculateScores, getScoreColor, getScoreBgColor, prioritizeFindings } from '@/lib/designAudit/auditScoring';
 import type { AuditFinding, AuditScores } from '@/lib/designAudit/auditTypes';
+import { DesignSystemBaseline } from '@/components/admin/design-audit/DesignSystemBaseline';
+import { GapDetectionGrid } from '@/components/admin/design-audit/GapDetectionGrid';
+import { FixIssuesPanel } from '@/components/admin/design-audit/FixIssuesPanel';
 
 /**
  * Design Audit Page - Comprehensive Atlassian-aligned design system audit
@@ -274,8 +277,11 @@ export function DesignAuditPage() {
 
       {/* Main Content */}
       <div className="p-6">
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs defaultValue="baseline" className="space-y-6">
           <TabsList className="flex-wrap h-auto gap-1 bg-secondary/50 p-1">
+            <TabsTrigger value="baseline" className="gap-1.5"><Lock className="h-3.5 w-3.5" />Baseline</TabsTrigger>
+            <TabsTrigger value="gaps" className="gap-1.5"><Target className="h-3.5 w-3.5" />Gaps</TabsTrigger>
+            <TabsTrigger value="fix" className="gap-1.5"><Wrench className="h-3.5 w-3.5" />Fix Issues</TabsTrigger>
             <TabsTrigger value="overview" className="gap-1.5"><Eye className="h-3.5 w-3.5" />Overview</TabsTrigger>
             <TabsTrigger value="routes" className="gap-1.5"><Route className="h-3.5 w-3.5" />Routes</TabsTrigger>
             <TabsTrigger value="core" className="gap-1.5"><Layout className="h-3.5 w-3.5" />Core UI</TabsTrigger>
@@ -287,6 +293,21 @@ export function DesignAuditPage() {
             <TabsTrigger value="buttons" className="gap-1.5"><RectangleHorizontal className="h-3.5 w-3.5" />Buttons</TabsTrigger>
             <TabsTrigger value="tokens" className="gap-1.5"><Zap className="h-3.5 w-3.5" />Tokens</TabsTrigger>
           </TabsList>
+
+          {/* Baseline Tab */}
+          <TabsContent value="baseline" className="space-y-6">
+            <DesignSystemBaseline />
+          </TabsContent>
+
+          {/* Gaps Tab */}
+          <TabsContent value="gaps" className="space-y-6">
+            <GapDetectionGrid />
+          </TabsContent>
+
+          {/* Fix Issues Tab */}
+          <TabsContent value="fix" className="space-y-6">
+            <FixIssuesPanel />
+          </TabsContent>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
