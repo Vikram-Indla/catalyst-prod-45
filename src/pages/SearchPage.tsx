@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery } from '@tanstack/react-query';
-import { Search, Filter, Save, Star, ChevronDown, Loader2, ExternalLink } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Search, Save, Star, ChevronDown, Loader2, ExternalLink, Trash2, StarOff } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,6 +20,13 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import {
   Table,
   TableBody,
   TableCell,
@@ -28,7 +35,10 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { useAuth } from '@/lib/auth';
 
 type WorkItemType = 'all' | 'epic' | 'feature' | 'story';
 type StatusFilter = 'all' | 'open' | 'in_progress' | 'done';
@@ -40,30 +50,24 @@ interface SearchResult {
   summary: string;
   status: string;
   assignee?: string;
-  priority?: string;
   updated_at?: string;
 }
 
 interface SavedFilter {
   id: string;
   name: string;
-  query: string;
-  type: WorkItemType;
-  status: StatusFilter;
-  is_starred: boolean;
+  query: string | null;
+  type: string | null;
+  status: string | null;
+  is_starred: boolean | null;
 }
 
-/**
- * SearchPage - Global Issue Navigator
- * Route: /search
- * 
- * Provides JQL-like search across all work items with saved filters
- */
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
   
-  // Parse URL params
   const initialQuery = searchParams.get('q') || '';
   const initialType = (searchParams.get('type') as WorkItemType) || 'all';
   const initialStatus = (searchParams.get('status') as StatusFilter) || 'all';
@@ -72,14 +76,14 @@ export default function SearchPage() {
   const [typeFilter, setTypeFilter] = useState<WorkItemType>(initialType);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialStatus);
   const [debouncedQuery, setDebouncedQuery] = useState(query);
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [filterName, setFilterName] = useState('');
 
-  // Debounce search query
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedQuery(query), 300);
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Update URL params when filters change
   useEffect(() => {
     const params = new URLSearchParams();
     if (debouncedQuery) params.set('q', debouncedQuery);
@@ -88,17 +92,59 @@ export default function SearchPage() {
     setSearchParams(params, { replace: true });
   }, [debouncedQuery, typeFilter, statusFilter, setSearchParams]);
 
-  // Fetch search results
   const { data: results, isLoading } = useQuery({
     queryKey: ['search-results', debouncedQuery, typeFilter, statusFilter],
     queryFn: () => searchWorkItems(debouncedQuery, typeFilter, statusFilter),
-    enabled: true,
   });
 
-  // Fetch saved filters
   const { data: savedFilters } = useQuery({
-    queryKey: ['saved-filters'],
+    queryKey: ['saved-filters', user?.id],
     queryFn: fetchSavedFilters,
+    enabled: !!user?.id,
+  });
+
+  const saveFilterMutation = useMutation({
+    mutationFn: async (name: string) => {
+      if (!user?.id) throw new Error('Not authenticated');
+      const { error } = await supabase.from('saved_filters').insert({
+        user_id: user.id,
+        name,
+        query: query || null,
+        type: typeFilter,
+        status: statusFilter,
+        is_starred: false,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['saved-filters'] });
+      toast.success('Filter saved');
+      setSaveDialogOpen(false);
+      setFilterName('');
+    },
+    onError: () => toast.error('Failed to save filter'),
+  });
+
+  const toggleStarMutation = useMutation({
+    mutationFn: async ({ id, starred }: { id: string; starred: boolean }) => {
+      const { error } = await supabase
+        .from('saved_filters')
+        .update({ is_starred: starred })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['saved-filters'] }),
+  });
+
+  const deleteFilterMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('saved_filters').delete().eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['saved-filters'] });
+      toast.success('Filter deleted');
+    },
   });
 
   async function searchWorkItems(
@@ -109,15 +155,6 @@ export default function SearchPage() {
     const results: SearchResult[] = [];
     const searchPattern = searchQuery ? `%${searchQuery}%` : '%';
 
-    // Build status filter
-    const statusMap: Record<StatusFilter, string[]> = {
-      all: [],
-      open: ['funnel', 'backlog', 'new', 'todo', 'open'],
-      in_progress: ['in_progress', 'implementing', 'in_development', 'review'],
-      done: ['done', 'accepted', 'closed', 'complete'],
-    };
-
-    // Search epics
     if (type === 'all' || type === 'epic') {
       const { data: epics } = await supabase
         .from('epics')
@@ -140,11 +177,10 @@ export default function SearchPage() {
       }
     }
 
-    // Search features
     if (type === 'all' || type === 'feature') {
       const { data: features } = await supabase
         .from('features')
-        .select('id, display_id, name, status, owner_id, updated_at')
+        .select('id, display_id, name, status, updated_at')
         .or(`name.ilike.${searchPattern},display_id.ilike.${searchPattern}`)
         .limit(50);
       if (features) {
@@ -161,11 +197,10 @@ export default function SearchPage() {
       }
     }
 
-    // Search stories
     if (type === 'all' || type === 'story') {
       const { data: stories } = await supabase
         .from('stories')
-        .select('id, story_key, name, status, assignee_id, updated_at')
+        .select('id, story_key, name, status, updated_at')
         .or(`name.ilike.${searchPattern},story_key.ilike.${searchPattern}`)
         .limit(50);
       if (stories) {
@@ -182,7 +217,6 @@ export default function SearchPage() {
       }
     }
 
-    // Sort by updated_at descending
     return results.sort((a, b) => {
       if (!a.updated_at) return 1;
       if (!b.updated_at) return -1;
@@ -191,9 +225,19 @@ export default function SearchPage() {
   }
 
   async function fetchSavedFilters(): Promise<SavedFilter[]> {
-    // TODO: Implement saved filters table
-    // For now, return empty array
-    return [];
+    const { data, error } = await supabase
+      .from('saved_filters')
+      .select('id, name, query, type, status, is_starred')
+      .order('is_starred', { ascending: false })
+      .order('name');
+    if (error) return [];
+    return data || [];
+  }
+
+  function applyFilter(filter: SavedFilter) {
+    setQuery(filter.query || '');
+    setTypeFilter((filter.type as WorkItemType) || 'all');
+    setStatusFilter((filter.status as StatusFilter) || 'all');
   }
 
   function handleRowClick(item: SearchResult) {
@@ -202,14 +246,10 @@ export default function SearchPage() {
 
   function getTypeBadgeColor(type: WorkItemType) {
     switch (type) {
-      case 'epic':
-        return 'bg-purple-100 text-purple-800';
-      case 'feature':
-        return 'bg-blue-100 text-blue-800';
-      case 'story':
-        return 'bg-green-100 text-green-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+      case 'epic': return 'bg-purple-100 text-purple-800';
+      case 'feature': return 'bg-blue-100 text-blue-800';
+      case 'story': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   }
 
@@ -226,7 +266,6 @@ export default function SearchPage() {
 
   return (
     <div className="flex flex-col h-full bg-white">
-      {/* Header */}
       <div className="border-b border-border px-6 py-4">
         <h1 className="text-xl font-semibold text-foreground">Issue Navigator</h1>
         <p className="text-sm text-muted-foreground mt-1">
@@ -234,10 +273,8 @@ export default function SearchPage() {
         </p>
       </div>
 
-      {/* Search & Filters */}
       <div className="border-b border-border px-6 py-4">
         <div className="flex items-center gap-4 flex-wrap">
-          {/* Search Input */}
           <div className="relative flex-1 min-w-[300px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -248,7 +285,6 @@ export default function SearchPage() {
             />
           </div>
 
-          {/* Type Filter */}
           <Select value={typeFilter} onValueChange={(v) => setTypeFilter(v as WorkItemType)}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Type" />
@@ -261,7 +297,6 @@ export default function SearchPage() {
             </SelectContent>
           </Select>
 
-          {/* Status Filter */}
           <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as StatusFilter)}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Status" />
@@ -274,7 +309,6 @@ export default function SearchPage() {
             </SelectContent>
           </Select>
 
-          {/* Saved Filters Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
@@ -283,26 +317,45 @@ export default function SearchPage() {
                 <ChevronDown className="h-4 w-4 ml-2" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-[200px]">
+            <DropdownMenuContent align="end" className="w-[250px]">
               {savedFilters && savedFilters.length > 0 ? (
                 savedFilters.map((filter) => (
-                  <DropdownMenuItem
-                    key={filter.id}
-                    onClick={() => {
-                      setQuery(filter.query);
-                      setTypeFilter(filter.type);
-                      setStatusFilter(filter.status);
-                    }}
-                  >
-                    {filter.is_starred && <Star className="h-3 w-3 mr-2 fill-brand-gold text-brand-gold" />}
-                    {filter.name}
-                  </DropdownMenuItem>
+                  <div key={filter.id} className="flex items-center px-2 py-1.5 hover:bg-muted/50 rounded-sm">
+                    <button
+                      className="flex-1 text-left text-sm"
+                      onClick={() => applyFilter(filter)}
+                    >
+                      {filter.name}
+                    </button>
+                    <button
+                      className="p-1 hover:bg-muted rounded"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleStarMutation.mutate({ id: filter.id, starred: !filter.is_starred });
+                      }}
+                    >
+                      {filter.is_starred ? (
+                        <Star className="h-3 w-3 fill-brand-gold text-brand-gold" />
+                      ) : (
+                        <StarOff className="h-3 w-3 text-muted-foreground" />
+                      )}
+                    </button>
+                    <button
+                      className="p-1 hover:bg-destructive/10 rounded"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteFilterMutation.mutate(filter.id);
+                      }}
+                    >
+                      <Trash2 className="h-3 w-3 text-destructive" />
+                    </button>
+                  </div>
                 ))
               ) : (
                 <DropdownMenuItem disabled>No saved filters</DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem disabled>
+              <DropdownMenuItem onClick={() => setSaveDialogOpen(true)}>
                 <Save className="h-4 w-4 mr-2" />
                 Save current filter
               </DropdownMenuItem>
@@ -310,34 +363,17 @@ export default function SearchPage() {
           </DropdownMenu>
         </div>
 
-        {/* Active filters summary */}
         {(query || typeFilter !== 'all' || statusFilter !== 'all') && (
           <div className="flex items-center gap-2 mt-3">
             <span className="text-sm text-muted-foreground">Active filters:</span>
-            {query && (
-              <Badge variant="secondary" className="text-xs">
-                text: "{query}"
-              </Badge>
-            )}
-            {typeFilter !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
-                type: {typeFilter}
-              </Badge>
-            )}
-            {statusFilter !== 'all' && (
-              <Badge variant="secondary" className="text-xs">
-                status: {statusFilter}
-              </Badge>
-            )}
+            {query && <Badge variant="secondary" className="text-xs">text: "{query}"</Badge>}
+            {typeFilter !== 'all' && <Badge variant="secondary" className="text-xs">type: {typeFilter}</Badge>}
+            {statusFilter !== 'all' && <Badge variant="secondary" className="text-xs">status: {statusFilter}</Badge>}
             <Button
               variant="ghost"
               size="sm"
               className="h-6 px-2 text-xs"
-              onClick={() => {
-                setQuery('');
-                setTypeFilter('all');
-                setStatusFilter('all');
-              }}
+              onClick={() => { setQuery(''); setTypeFilter('all'); setStatusFilter('all'); }}
             >
               Clear all
             </Button>
@@ -345,7 +381,6 @@ export default function SearchPage() {
         )}
       </div>
 
-      {/* Results */}
       <div className="flex-1 overflow-auto">
         {isLoading ? (
           <div className="flex items-center justify-center py-12">
@@ -371,28 +406,18 @@ export default function SearchPage() {
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => handleRowClick(item)}
                 >
-                  <TableCell className="font-medium text-brand-gold">
-                    {item.key}
-                  </TableCell>
+                  <TableCell className="font-medium text-brand-gold">{item.key}</TableCell>
                   <TableCell>
-                    <Badge className={cn('text-xs capitalize', getTypeBadgeColor(item.type))}>
-                      {item.type}
-                    </Badge>
+                    <Badge className={cn('text-xs capitalize', getTypeBadgeColor(item.type))}>{item.type}</Badge>
                   </TableCell>
-                  <TableCell className="max-w-[400px] truncate">
-                    {item.summary}
-                  </TableCell>
+                  <TableCell className="max-w-[400px] truncate">{item.summary}</TableCell>
                   <TableCell>
                     <Badge className={cn('text-xs capitalize', getStatusBadgeColor(item.status))}>
                       {item.status.replace(/_/g, ' ')}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {item.assignee || '—'}
-                  </TableCell>
-                  <TableCell>
-                    <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                  </TableCell>
+                  <TableCell className="text-muted-foreground">{item.assignee || '—'}</TableCell>
+                  <TableCell><ExternalLink className="h-4 w-4 text-muted-foreground" /></TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -403,14 +428,13 @@ export default function SearchPage() {
             <h3 className="text-lg font-medium">No results found</h3>
             <p className="text-sm text-muted-foreground mt-1 max-w-md">
               {query
-                ? `No work items match "${query}". Try a different search term or adjust your filters.`
+                ? `No work items match "${query}". Try a different search term.`
                 : 'Enter a search term or adjust filters to find work items.'}
             </p>
           </div>
         )}
       </div>
 
-      {/* Footer with result count */}
       {results && results.length > 0 && (
         <div className="border-t border-border px-6 py-3 bg-muted/30">
           <span className="text-sm text-muted-foreground">
@@ -418,6 +442,43 @@ export default function SearchPage() {
           </span>
         </div>
       )}
+
+      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save Filter</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="filter-name">Filter Name</Label>
+              <Input
+                id="filter-name"
+                value={filterName}
+                onChange={(e) => setFilterName(e.target.value)}
+                placeholder="My saved filter"
+              />
+            </div>
+            <div className="text-sm text-muted-foreground">
+              <p>This will save the current search:</p>
+              <ul className="list-disc list-inside mt-1">
+                {query && <li>Query: "{query}"</li>}
+                {typeFilter !== 'all' && <li>Type: {typeFilter}</li>}
+                {statusFilter !== 'all' && <li>Status: {statusFilter}</li>}
+                {!query && typeFilter === 'all' && statusFilter === 'all' && <li>All items (no filters)</li>}
+              </ul>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSaveDialogOpen(false)}>Cancel</Button>
+            <Button
+              onClick={() => saveFilterMutation.mutate(filterName)}
+              disabled={!filterName.trim() || saveFilterMutation.isPending}
+            >
+              {saveFilterMutation.isPending ? 'Saving...' : 'Save Filter'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
