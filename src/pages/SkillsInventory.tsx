@@ -3,13 +3,13 @@ import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, Trendi
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { SkillsMatrixHeatmap } from '@/components/skills-inventory/SkillsMatrixHeatmap';
 import { SkillGapAnalysis } from '@/components/skills-inventory/SkillGapAnalysis';
 import { SkillsInventoryReport } from '@/components/skills-inventory/SkillsInventoryReport';
 import { SkillsFiltersDialog, SkillsInventoryFilters } from '@/components/skills-inventory/SkillsFiltersDialog';
 import { EditSkillModal } from '@/components/skills-inventory/EditSkillModal';
 import { DeleteSkillDialog } from '@/components/skills-inventory/DeleteSkillDialog';
+import { AddSkillModal } from '@/components/skills-inventory/AddSkillModal';
 import { toast } from 'sonner';
 
 type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report';
@@ -135,6 +135,38 @@ export default function SkillsInventory() {
       s.id === id ? { ...s, skill: data.skill, proficiency: data.proficiency } : s
     ));
   };
+
+  const handleAddSkill = (data: { 
+    teamMemberId: number; 
+    teamMemberName: string;
+    teamMemberRole: string;
+    skill: string; 
+    proficiency: string; 
+    notes: string 
+  }) => {
+    const newId = Math.max(...skillsData.map(s => s.id)) + 1;
+    const newSkill: SkillData = {
+      id: newId,
+      name: data.teamMemberName,
+      role: data.teamMemberRole,
+      project: 'Unassigned',
+      skill: data.skill,
+      proficiency: data.proficiency,
+      coverage: 50,
+      lastUpdated: new Date().toISOString().split('T')[0]
+    };
+    setSkillsData(prev => [newSkill, ...prev]);
+  };
+
+  // Get unique team members for AddSkillModal dropdown
+  const teamMembersForDropdown = useMemo(() => {
+    const seen = new Set<string>();
+    return teamMembersData.filter(m => {
+      if (seen.has(m.name)) return false;
+      seen.add(m.name);
+      return true;
+    }).map(m => ({ id: m.id, name: m.name, role: m.role }));
+  }, []);
 
   // Extract unique values for filter options
   const uniqueTeamMembers = useMemo(() => [...new Set(teamMembersData.map(m => m.name))], []);
@@ -349,22 +381,10 @@ export default function SkillsInventory() {
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV
               </Button>
-              <Dialog open={addSkillOpen} onOpenChange={setAddSkillOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="gold" size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Skill
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="bg-card border-brand-gold-border">
-                  <DialogHeader>
-                    <DialogTitle className="text-foreground">Add New Skill</DialogTitle>
-                  </DialogHeader>
-                  <div className="py-4 text-center text-muted-foreground">
-                    Form implementation coming in next prompt
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <Button variant="gold" size="sm" onClick={() => setAddSkillOpen(true)}>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Skill
+              </Button>
             </div>
           </div>
 
@@ -546,6 +566,14 @@ export default function SkillsInventory() {
         skillName={selectedSkill?.skill || ''}
         teamMemberName={selectedSkill?.name || ''}
         isDeleting={isDeleting}
+      />
+
+      {/* Add Skill Modal */}
+      <AddSkillModal
+        open={addSkillOpen}
+        onClose={() => setAddSkillOpen(false)}
+        teamMembers={teamMembersForDropdown}
+        onSave={handleAddSkill}
       />
     </div>
   );
