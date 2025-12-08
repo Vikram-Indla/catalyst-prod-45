@@ -28,12 +28,43 @@ export interface RowValidationResult {
 // CRITICAL: Only mapped fields should be imported - unmapped fields are completely ignored
 const SKIP_MAPPING_VALUE = ''; // Empty string means "Don't map this field"
 
+/**
+ * Apply value mapping to transform CSV values to Catalyst values
+ * This is CRITICAL for lookup fields like Process Step, Delivery Platform, etc.
+ */
+function applyValueMapping(
+  rawValue: string,
+  csvColumn: string,
+  valueMappings: Map<string, Map<string, string>> | undefined
+): string {
+  if (!valueMappings) return rawValue;
+  
+  const columnMappings = valueMappings.get(csvColumn);
+  if (!columnMappings) return rawValue;
+  
+  // Check for exact match first
+  const mappedValue = columnMappings.get(rawValue);
+  if (mappedValue && mappedValue !== '') {
+    return mappedValue;
+  }
+  
+  // Check for case-insensitive match
+  for (const [csvVal, targetVal] of columnMappings.entries()) {
+    if (csvVal.toLowerCase() === rawValue.toLowerCase() && targetVal && targetVal !== '') {
+      return targetVal;
+    }
+  }
+  
+  return rawValue;
+}
+
 export function validateRow(
   row: Record<string, string>,
   rowIndex: number,
   fieldMappings: Map<string, string>,
   moduleConfig: ImportModuleConfig,
-  dateFormat: string
+  dateFormat: string,
+  valueMappings?: Map<string, Map<string, string>>
 ): RowValidationResult {
   const errors: ValidationError[] = [];
   const data: Record<string, unknown> = {};
@@ -95,13 +126,20 @@ export function validateRow(
       continue;
     }
     
+    // CRITICAL: Apply value mapping FIRST for lookup/select fields
+    // This transforms CSV values to Catalyst values based on user-configured mappings
+    let processedValue = rawValue;
+    if (field.type === 'select' || field.isLookup) {
+      processedValue = applyValueMapping(rawValue, csvColumn, valueMappings);
+    }
+    
     // Type validation and conversion
-    let parsedValue: unknown = rawValue;
+    let parsedValue: unknown = processedValue;
     let hasError = false;
     
     switch (field.type) {
       case 'number':
-        const num = parseFloat(rawValue);
+        const num = parseFloat(processedValue);
         if (isNaN(num)) {
           errors.push({
             row: rowIndex + 1,
@@ -121,7 +159,7 @@ export function validateRow(
         
         for (const fmt of dateFormats) {
           try {
-            const result = parse(rawValue, fmt, new Date());
+            const result = parse(processedValue, fmt, new Date());
             if (isValid(result)) {
               parsed = result;
               break;
@@ -145,29 +183,35 @@ export function validateRow(
         break;
         
       case 'select':
-        if (field.options && !field.options.some(opt => 
-          opt.toLowerCase() === rawValue.toLowerCase()
-        )) {
-          errors.push({
-            row: rowIndex + 1,
-            field: field.label,
-            message: `"${rawValue}" is not a valid option. Expected: ${field.options.join(', ')}`,
-            severity: 'warning',
-          });
-        } else {
-          // Normalize to the correct case from options
-          parsedValue = field.options?.find(opt => 
-            opt.toLowerCase() === rawValue.toLowerCase()
-          ) || rawValue;
+        // CRITICAL: Check if the MAPPED value (not raw value) is valid
+        // Only show warning if the mapped value is not in options
+        if (field.options) {
+          const normalizedOptions = field.options.map(opt => opt.toLowerCase());
+          const normalizedValue = processedValue.toLowerCase();
+          
+          if (!normalizedOptions.includes(normalizedValue)) {
+            // Only show warning - the value was already mapped or is unmapped
+            errors.push({
+              row: rowIndex + 1,
+              field: field.label,
+              message: `"${rawValue}" is not mapped to a valid option. Expected: ${field.options.join(', ')}`,
+              severity: 'warning',
+            });
+          } else {
+            // Normalize to the correct case from options
+            parsedValue = field.options.find(opt => 
+              opt.toLowerCase() === normalizedValue
+            ) || processedValue;
+          }
         }
         break;
         
       case 'boolean':
         const truthy = ['true', '1', 'yes', 'y'];
         const falsy = ['false', '0', 'no', 'n'];
-        if (truthy.includes(rawValue.toLowerCase())) {
+        if (truthy.includes(processedValue.toLowerCase())) {
           parsedValue = true;
-        } else if (falsy.includes(rawValue.toLowerCase())) {
+        } else if (falsy.includes(processedValue.toLowerCase())) {
           parsedValue = false;
         } else {
           errors.push({
@@ -199,7 +243,8 @@ export function validateAllRows(
   rows: Record<string, string>[],
   fieldMappings: Map<string, string>,
   moduleConfig: ImportModuleConfig,
-  dateFormat: string
+  dateFormat: string,
+  valueMappings?: Map<string, Map<string, string>>
 ): { results: RowValidationResult[]; summary: ValidationResult } {
   const results: RowValidationResult[] = [];
   let validRows = 0;
@@ -208,7 +253,7 @@ export function validateAllRows(
   const allErrors: ValidationError[] = [];
   
   for (let i = 0; i < rows.length; i++) {
-    const result = validateRow(rows[i], i, fieldMappings, moduleConfig, dateFormat);
+    const result = validateRow(rows[i], i, fieldMappings, moduleConfig, dateFormat, valueMappings);
     results.push(result);
     
     if (result.isValid) {
