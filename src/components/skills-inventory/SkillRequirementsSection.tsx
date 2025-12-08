@@ -51,11 +51,11 @@ const PROFICIENCY_LEVELS = ['awareness', 'beginner', 'intermediate', 'advanced',
 type ProficiencyLevel = typeof PROFICIENCY_LEVELS[number];
 
 const PROFICIENCY_COLORS: Record<string, string> = {
-  expert: '#22c55e',
-  advanced: '#3b82f6',
-  intermediate: '#f59e0b',
-  beginner: '#8b5cf6',
-  awareness: '#6b7280',
+  expert: 'hsl(var(--health-green))',
+  advanced: 'hsl(var(--info))',
+  intermediate: 'hsl(var(--warning))',
+  beginner: 'hsl(280 70% 50%)',
+  awareness: 'hsl(var(--muted-foreground))',
 };
 
 const PROFICIENCY_LABELS: Record<string, string> = {
@@ -67,13 +67,13 @@ const PROFICIENCY_LABELS: Record<string, string> = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  Technical: '#3b82f6',
-  'Cloud & Infrastructure': '#06b6d4',
-  Leadership: '#c69c6d',
-  'Soft Skills': '#ec4899',
-  'Data & Analytics': '#8b5cf6',
-  Security: '#ef4444',
-  Methodology: '#22c55e',
+  Technical: 'hsl(var(--info))',
+  'Cloud & Infrastructure': 'hsl(185 70% 50%)',
+  Leadership: 'hsl(var(--brand-gold))',
+  'Soft Skills': 'hsl(330 70% 55%)',
+  'Data & Analytics': 'hsl(280 70% 50%)',
+  Security: 'hsl(var(--destructive))',
+  Methodology: 'hsl(var(--health-green))',
 };
 
 export function SkillRequirementsSection({ 
@@ -261,7 +261,7 @@ export function SkillRequirementsSection({
 
   const renderProficiencyDots = (level: string) => {
     const levelIndex = PROFICIENCY_LEVELS.indexOf(level as ProficiencyLevel);
-    const color = PROFICIENCY_COLORS[level] || '#6b7280';
+    const color = PROFICIENCY_COLORS[level] || 'hsl(var(--muted-foreground))';
     
     return (
       <div className="flex gap-1">
@@ -270,7 +270,7 @@ export function SkillRequirementsSection({
             key={idx}
             className="w-2 h-2 rounded-full"
             style={{
-              background: idx <= levelIndex ? color : 'rgba(107, 114, 128, 0.3)',
+              background: idx <= levelIndex ? color : 'hsl(var(--muted-foreground) / 0.3)',
             }}
           />
         ))}
@@ -280,29 +280,26 @@ export function SkillRequirementsSection({
 
   if (isLoading) {
     return (
-      <div className="rounded-xl p-4" style={{ background: '#242938', border: '1px solid rgba(198, 156, 109, 0.15)' }}>
+      <div className="rounded-xl p-4 bg-secondary border border-brand-gold-border">
         <div className="animate-pulse space-y-3">
-          <div className="h-5 w-32 rounded" style={{ background: '#1a1f2e' }} />
-          <div className="h-12 rounded" style={{ background: '#1a1f2e' }} />
+          <div className="h-5 w-32 rounded bg-brand-dark" />
+          <div className="h-12 rounded bg-brand-dark" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl p-4" style={{ background: '#242938', border: '1px solid rgba(198, 156, 109, 0.15)' }}>
+    <div className="rounded-xl p-4 bg-secondary border border-brand-gold-border">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Target className="h-5 w-5" style={{ color: '#c69c6d' }} />
-          <h3 className="text-sm font-semibold" style={{ color: '#f5f5f7' }}>
+          <Target className="h-5 w-5 text-brand-gold" />
+          <h3 className="text-sm font-semibold text-foreground">
             Required Skills
           </h3>
           {requirements.length > 0 && (
-            <span 
-              className="text-xs px-2 py-0.5 rounded-full"
-              style={{ background: 'rgba(198, 156, 109, 0.15)', color: '#c69c6d' }}
-            >
+            <span className="text-xs px-2 py-0.5 rounded-full bg-brand-gold/15 text-brand-gold">
               {requirements.length}
             </span>
           )}
@@ -311,8 +308,7 @@ export function SkillRequirementsSection({
           <Button
             size="sm"
             onClick={() => setAddDialogOpen(true)}
-            className="h-7 text-xs"
-            style={{ background: '#c69c6d', color: '#1a1f2e' }}
+            className="h-7 text-xs bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
           >
             <Plus className="h-3.5 w-3.5 mr-1" />
             Add Skill
@@ -322,15 +318,12 @@ export function SkillRequirementsSection({
 
       {/* Empty State */}
       {requirements.length === 0 ? (
-        <div 
-          className="text-center py-8 rounded-lg"
-          style={{ background: '#1a1f2e' }}
-        >
-          <Target className="h-10 w-10 mx-auto mb-3" style={{ color: '#6b7280' }} />
-          <p className="text-sm font-medium" style={{ color: '#9ca3af' }}>
+        <div className="text-center py-8 rounded-lg bg-brand-dark">
+          <Target className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+          <p className="text-sm font-medium text-muted-foreground">
             No skills defined
           </p>
-          <p className="text-xs mt-1" style={{ color: '#6b7280' }}>
+          <p className="text-xs mt-1 text-muted-foreground">
             Define required skills to track capability gaps
           </p>
         </div>
@@ -340,28 +333,27 @@ export function SkillRequirementsSection({
           <div className="space-y-2">
             {requirements.map((req) => {
               const isGap = (req.currentCount || 0) < req.required_count;
-              const availabilityColor = isGap ? '#ef4444' : '#22c55e';
+              const availabilityColor = isGap ? 'hsl(var(--destructive))' : 'hsl(var(--health-green))';
               const availabilityPercent = Math.min(100, ((req.currentCount || 0) / req.required_count) * 100);
               
               return (
                 <div
                   key={req.id}
-                  className="flex items-center justify-between p-3 rounded-lg"
-                  style={{ background: '#1a1f2e' }}
+                  className="flex items-center justify-between p-3 rounded-lg bg-brand-dark"
                 >
                   {/* Left: Skill name + category */}
                   <div className="flex items-center gap-3 min-w-0 flex-1">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium truncate" style={{ color: '#f5f5f7' }}>
+                        <span className="text-sm font-medium truncate text-foreground">
                           {req.skill?.name || 'Unknown Skill'}
                         </span>
                         {req.skill?.category && (
                           <span
                             className="text-[10px] px-1.5 py-0.5 rounded"
                             style={{
-                              background: `${CATEGORY_COLORS[req.skill.category] || '#6b7280'}20`,
-                              color: CATEGORY_COLORS[req.skill.category] || '#6b7280',
+                              background: `${CATEGORY_COLORS[req.skill.category] || 'hsl(var(--muted-foreground))'}20`,
+                              color: CATEGORY_COLORS[req.skill.category] || 'hsl(var(--muted-foreground))',
                             }}
                           >
                             {req.skill.category}
@@ -377,11 +369,11 @@ export function SkillRequirementsSection({
                       <span
                         className="text-xs px-2 py-0.5 rounded-full font-medium"
                         style={{
-                          background: `${PROFICIENCY_COLORS[req.required_proficiency] || '#6b7280'}20`,
-                          color: PROFICIENCY_COLORS[req.required_proficiency] || '#6b7280',
+                          background: `${PROFICIENCY_COLORS[req.required_proficiency] || 'hsl(var(--muted-foreground))'}20`,
+                          color: PROFICIENCY_COLORS[req.required_proficiency] || 'hsl(var(--muted-foreground))',
                         }}
                       >
-                        {req.required_proficiency}
+                        {PROFICIENCY_LABELS[req.required_proficiency] || req.required_proficiency}
                       </span>
                       {renderProficiencyDots(req.required_proficiency)}
                     </div>
@@ -391,15 +383,15 @@ export function SkillRequirementsSection({
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       {isGap ? (
-                        <AlertTriangle className="h-4 w-4" style={{ color: '#ef4444' }} />
+                        <AlertTriangle className="h-4 w-4 text-destructive" />
                       ) : (
-                        <CheckCircle className="h-4 w-4" style={{ color: '#22c55e' }} />
+                        <CheckCircle className="h-4 w-4 text-health-green" />
                       )}
                       <div className="text-right">
                         <div className="text-xs" style={{ color: availabilityColor }}>
                           {req.currentCount || 0} of {req.required_count} available
                         </div>
-                        <div className="w-20 h-1.5 rounded-full mt-1" style={{ background: '#0f1219' }}>
+                        <div className="w-20 h-1.5 rounded-full mt-1 bg-background">
                           <div
                             className="h-full rounded-full transition-all"
                             style={{
@@ -416,15 +408,15 @@ export function SkillRequirementsSection({
                       <div className="flex items-center gap-1">
                         <button
                           onClick={() => openEditDialog(req)}
-                          className="p-1.5 rounded hover:bg-[#242938] transition-colors"
+                          className="p-1.5 rounded hover:bg-secondary transition-colors"
                         >
-                          <Edit2 className="h-3.5 w-3.5" style={{ color: '#9ca3af' }} />
+                          <Edit2 className="h-3.5 w-3.5 text-muted-foreground" />
                         </button>
                         <button
                           onClick={() => deleteRequirementMutation.mutate(req.id)}
-                          className="p-1.5 rounded hover:bg-[#242938] transition-colors"
+                          className="p-1.5 rounded hover:bg-secondary transition-colors"
                         >
-                          <Trash2 className="h-3.5 w-3.5" style={{ color: '#ef4444' }} />
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
                         </button>
                       </div>
                     )}
@@ -435,20 +427,16 @@ export function SkillRequirementsSection({
           </div>
 
           {/* Summary */}
-          <div 
-            className="flex items-center justify-between mt-4 pt-3"
-            style={{ borderTop: '1px solid rgba(198, 156, 109, 0.15)' }}
-          >
-            <span className="text-xs" style={{ color: '#9ca3af' }}>
+          <div className="flex items-center justify-between mt-4 pt-3 border-t border-brand-gold-border">
+            <span className="text-xs text-muted-foreground">
               {requirements.length} skill{requirements.length !== 1 ? 's' : ''} required
               {gapsCount > 0 && (
-                <span style={{ color: '#ef4444' }}>, {gapsCount} gap{gapsCount !== 1 ? 's' : ''} identified</span>
+                <span className="text-destructive">, {gapsCount} gap{gapsCount !== 1 ? 's' : ''} identified</span>
               )}
             </span>
             <Link
               to="/enterprise/skills-inventory?view=gap-analysis"
-              className="flex items-center gap-1 text-xs hover:underline"
-              style={{ color: '#c69c6d' }}
+              className="flex items-center gap-1 text-xs text-brand-gold hover:underline"
             >
               View Gap Analysis
               <ExternalLink className="h-3 w-3" />
@@ -468,12 +456,9 @@ export function SkillRequirementsSection({
           }
         }}
       >
-        <DialogContent 
-          className="sm:max-w-md"
-          style={{ background: '#2d3344', border: '1px solid rgba(198, 156, 109, 0.3)' }}
-        >
+        <DialogContent className="sm:max-w-md bg-card border border-brand-gold-border">
           <DialogHeader>
-            <DialogTitle style={{ color: '#f5f5f7' }}>
+            <DialogTitle className="text-foreground">
               {editingRequirement ? 'Edit Skill Requirement' : 'Add Skill Requirement'}
             </DialogTitle>
           </DialogHeader>
@@ -482,22 +467,19 @@ export function SkillRequirementsSection({
             {/* Skill Selection (only for new) */}
             {!editingRequirement && (
               <div>
-                <label className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: '#6b7280' }}>
+                <label className="text-xs font-medium uppercase tracking-wider mb-2 block text-muted-foreground">
                   Skill
                 </label>
                 <Select value={selectedSkillId} onValueChange={setSelectedSkillId}>
-                  <SelectTrigger 
-                    className="w-full"
-                    style={{ background: '#1a1f2e', border: '1px solid rgba(198, 156, 109, 0.3)', color: '#f5f5f7' }}
-                  >
+                  <SelectTrigger className="w-full bg-brand-dark border border-brand-gold-border text-foreground">
                     <SelectValue placeholder="Select a skill" />
                   </SelectTrigger>
-                  <SelectContent style={{ background: '#1a1f2e', border: '1px solid rgba(198, 156, 109, 0.3)' }}>
+                  <SelectContent className="bg-brand-dark border border-brand-gold-border">
                     {availableSkills.map((skill) => (
                       <SelectItem 
                         key={skill.id} 
                         value={skill.id}
-                        className="text-[#f5f5f7] focus:bg-[rgba(198,156,109,0.1)]"
+                        className="text-foreground focus:bg-brand-gold/10"
                       >
                         {skill.name} ({skill.category})
                       </SelectItem>
@@ -509,29 +491,29 @@ export function SkillRequirementsSection({
 
             {/* Proficiency Level */}
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: '#6b7280' }}>
+              <label className="text-xs font-medium uppercase tracking-wider mb-2 block text-muted-foreground">
                 Required Proficiency
               </label>
-              <Select value={selectedProficiency} onValueChange={(val) => setSelectedProficiency(val as ProficiencyLevel)}>
-                <SelectTrigger 
-                  className="w-full"
-                  style={{ background: '#1a1f2e', border: '1px solid rgba(198, 156, 109, 0.3)', color: '#f5f5f7' }}
-                >
+              <Select 
+                value={selectedProficiency} 
+                onValueChange={(value: ProficiencyLevel) => setSelectedProficiency(value)}
+              >
+                <SelectTrigger className="w-full bg-brand-dark border border-brand-gold-border text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ background: '#1a1f2e', border: '1px solid rgba(198, 156, 109, 0.3)' }}>
+                <SelectContent className="bg-brand-dark border border-brand-gold-border">
                   {PROFICIENCY_LEVELS.map((level) => (
                     <SelectItem 
                       key={level} 
                       value={level}
-                      className="text-[#f5f5f7] focus:bg-[rgba(198,156,109,0.1)]"
+                      className="text-foreground focus:bg-brand-gold/10"
                     >
                       <div className="flex items-center gap-2">
-                        <span 
+                        <div
                           className="w-2 h-2 rounded-full"
                           style={{ background: PROFICIENCY_COLORS[level] }}
                         />
-                        {level}
+                        {PROFICIENCY_LABELS[level]}
                       </div>
                     </SelectItem>
                   ))}
@@ -541,26 +523,21 @@ export function SkillRequirementsSection({
 
             {/* Required Count */}
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: '#6b7280' }}>
+              <label className="text-xs font-medium uppercase tracking-wider mb-2 block text-muted-foreground">
                 Required Count
               </label>
               <input
                 type="number"
                 min={1}
-                max={100}
+                max={50}
                 value={requiredCount}
-                onChange={(e) => setRequiredCount(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full h-10 px-3 rounded-md text-sm"
-                style={{ 
-                  background: '#1a1f2e', 
-                  border: '1px solid rgba(198, 156, 109, 0.3)', 
-                  color: '#f5f5f7' 
-                }}
+                onChange={(e) => setRequiredCount(parseInt(e.target.value) || 1)}
+                className="w-full h-10 px-3 rounded-md bg-brand-dark border border-brand-gold-border text-foreground focus:ring-2 focus:ring-brand-gold/30 focus:border-brand-gold"
               />
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="gap-2">
             <Button
               variant="outline"
               onClick={() => {
@@ -568,18 +545,14 @@ export function SkillRequirementsSection({
                 setEditingRequirement(null);
                 resetForm();
               }}
-              style={{ 
-                background: 'transparent', 
-                border: '1px solid rgba(198, 156, 109, 0.3)', 
-                color: '#9ca3af' 
-              }}
+              className="border-brand-gold-border text-muted-foreground hover:bg-secondary"
             >
               Cancel
             </Button>
             <Button
               onClick={editingRequirement ? handleUpdateRequirement : handleAddRequirement}
               disabled={!editingRequirement && !selectedSkillId}
-              style={{ background: '#c69c6d', color: '#1a1f2e' }}
+              className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover"
             >
               {editingRequirement ? 'Update' : 'Add'} Requirement
             </Button>

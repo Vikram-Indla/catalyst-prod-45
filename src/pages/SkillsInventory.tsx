@@ -42,12 +42,22 @@ const teamMembersData = [
 ];
 
 const proficiencyLevels = [
-  { label: 'Expert', color: '#22c55e' },
-  { label: 'Advanced', color: '#3b82f6' },
-  { label: 'Intermediate', color: '#f59e0b' },
-  { label: 'Beginner', color: '#ef4444' },
-  { label: 'No Skill', color: '#6b7280' },
+  { label: 'Expert', colorClass: 'bg-health-green' },
+  { label: 'Advanced', colorClass: 'bg-info' },
+  { label: 'Intermediate', colorClass: 'bg-warning' },
+  { label: 'Beginner', colorClass: 'bg-destructive' },
+  { label: 'No Skill', colorClass: 'bg-muted-foreground' },
 ];
+
+const getProficiencyColor = (level: string) => {
+  switch (level) {
+    case 'Expert': return 'hsl(var(--health-green))';
+    case 'Advanced': return 'hsl(var(--info))';
+    case 'Intermediate': return 'hsl(var(--warning))';
+    case 'Beginner': return 'hsl(var(--destructive))';
+    default: return 'hsl(var(--muted-foreground))';
+  }
+};
 
 const projects = ['All Projects', 'Tahommena', 'Sectorial', 'ICP', 'Inspection', 'Senaei', 'I360', 'Devops', 'MIM Website', 'IR platform'];
 const skillCategories = ['All Categories', 'Backend', 'Frontend', 'Data', 'DevOps', 'Mobile', 'QA', 'Management'];
@@ -101,11 +111,6 @@ export default function SkillsInventory() {
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2);
 
-  const getProficiencyColor = (level: string) => {
-    const found = proficiencyLevels.find(p => p.label === level);
-    return found?.color || '#6b7280';
-  };
-
   // Render the appropriate view based on viewMode
   const renderContent = () => {
     switch (viewMode) {
@@ -135,68 +140,68 @@ export default function SkillsInventory() {
       {/* Main Content */}
       <div className="px-8 pb-8 flex gap-6">
         {/* Filters Sidebar */}
-        <div className="w-[280px] flex-shrink-0 rounded-xl p-5" style={{ background: '#2d3344', border: '1px solid rgba(198, 156, 109, 0.15)' }}>
+        <div className="w-[280px] flex-shrink-0 rounded-xl p-5 bg-card border border-brand-gold-border">
           <div className="flex items-center gap-2 mb-5">
-            <Filter className="h-4 w-4" style={{ color: '#c69c6d' }} />
-            <span className="text-sm font-semibold" style={{ color: '#f5f5f7' }}>Filters</span>
+            <Filter className="h-4 w-4 text-brand-gold" />
+            <span className="text-sm font-semibold text-foreground">Filters</span>
           </div>
 
           <div className="space-y-5">
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: '#6b7280' }}>Program</label>
+              <label className="text-xs font-medium uppercase tracking-wider mb-2 block text-muted-foreground">Program</label>
               <Select value={selectedProgram} onValueChange={setSelectedProgram}>
-                <SelectTrigger className="w-full border-[rgba(198,156,109,0.3)] bg-[#242938] text-[#f5f5f7]">
+                <SelectTrigger className="w-full border-brand-gold-border bg-secondary text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#242938] border-[rgba(198,156,109,0.3)]">
+                <SelectContent className="bg-secondary border-brand-gold-border">
                   {projects.map(p => (
-                    <SelectItem key={p} value={p} className="text-[#f5f5f7] focus:bg-[rgba(198,156,109,0.1)]">{p}</SelectItem>
+                    <SelectItem key={p} value={p} className="text-foreground focus:bg-brand-gold/10">{p}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: '#6b7280' }}>Team</label>
+              <label className="text-xs font-medium uppercase tracking-wider mb-2 block text-muted-foreground">Team</label>
               <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-                <SelectTrigger className="w-full border-[rgba(198,156,109,0.3)] bg-[#242938] text-[#f5f5f7]">
+                <SelectTrigger className="w-full border-brand-gold-border bg-secondary text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#242938] border-[rgba(198,156,109,0.3)]">
-                  <SelectItem value="All Teams" className="text-[#f5f5f7] focus:bg-[rgba(198,156,109,0.1)]">All Teams</SelectItem>
-                  <SelectItem value="Backend" className="text-[#f5f5f7] focus:bg-[rgba(198,156,109,0.1)]">Backend</SelectItem>
-                  <SelectItem value="Frontend" className="text-[#f5f5f7] focus:bg-[rgba(198,156,109,0.1)]">Frontend</SelectItem>
-                  <SelectItem value="Data" className="text-[#f5f5f7] focus:bg-[rgba(198,156,109,0.1)]">Data</SelectItem>
+                <SelectContent className="bg-secondary border-brand-gold-border">
+                  <SelectItem value="All Teams" className="text-foreground focus:bg-brand-gold/10">All Teams</SelectItem>
+                  <SelectItem value="Backend" className="text-foreground focus:bg-brand-gold/10">Backend</SelectItem>
+                  <SelectItem value="Frontend" className="text-foreground focus:bg-brand-gold/10">Frontend</SelectItem>
+                  <SelectItem value="Data" className="text-foreground focus:bg-brand-gold/10">Data</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-2 block" style={{ color: '#6b7280' }}>Skill Category</label>
+              <label className="text-xs font-medium uppercase tracking-wider mb-2 block text-muted-foreground">Skill Category</label>
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full border-[rgba(198,156,109,0.3)] bg-[#242938] text-[#f5f5f7]">
+                <SelectTrigger className="w-full border-brand-gold-border bg-secondary text-foreground">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#242938] border-[rgba(198,156,109,0.3)]">
+                <SelectContent className="bg-secondary border-brand-gold-border">
                   {skillCategories.map(c => (
-                    <SelectItem key={c} value={c} className="text-[#f5f5f7] focus:bg-[rgba(198,156,109,0.1)]">{c}</SelectItem>
+                    <SelectItem key={c} value={c} className="text-foreground focus:bg-brand-gold/10">{c}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-3 block" style={{ color: '#6b7280' }}>Proficiency Level</label>
+              <label className="text-xs font-medium uppercase tracking-wider mb-3 block text-muted-foreground">Proficiency Level</label>
               <div className="space-y-2.5">
                 {proficiencyLevels.map(level => (
                   <label key={level.label} className="flex items-center gap-3 cursor-pointer">
                     <Checkbox
                       checked={selectedProficiencies.includes(level.label)}
                       onCheckedChange={() => handleProficiencyToggle(level.label)}
-                      className="border-[rgba(198,156,109,0.3)] data-[state=checked]:bg-[#c69c6d] data-[state=checked]:border-[#c69c6d]"
+                      className="border-brand-gold-border data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
                     />
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: level.color }} />
-                    <span className="text-sm" style={{ color: '#9ca3af' }}>{level.label}</span>
+                    <span className={`h-2.5 w-2.5 rounded-full ${level.colorClass}`} />
+                    <span className="text-sm text-muted-foreground">{level.label}</span>
                   </label>
                 ))}
               </div>
@@ -204,7 +209,7 @@ export default function SkillsInventory() {
 
             <Button
               variant="outline"
-              className="w-full mt-4 border-[rgba(198,156,109,0.3)] text-[#9ca3af] hover:bg-[#242938]"
+              className="w-full mt-4 border-brand-gold-border text-muted-foreground hover:bg-secondary"
               onClick={clearFilters}
             >
               <X className="h-4 w-4 mr-2" />
@@ -214,15 +219,15 @@ export default function SkillsInventory() {
         </div>
 
         {/* Table Area */}
-        <div className="flex-1 rounded-xl overflow-hidden" style={{ background: '#2d3344', border: '1px solid rgba(198, 156, 109, 0.15)' }}>
+        <div className="flex-1 rounded-xl overflow-hidden bg-card border border-brand-gold-border">
           {/* Table Header */}
-          <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: '1px solid rgba(198, 156, 109, 0.15)' }}>
-            <h2 className="text-base font-semibold" style={{ color: '#f5f5f7' }}>Skills Inventory</h2>
+          <div className="px-5 py-4 flex items-center justify-between border-b border-brand-gold-border">
+            <h2 className="text-base font-semibold text-foreground">Skills Inventory</h2>
             <div className="flex items-center gap-3">
               <Button
                 variant="outline"
                 size="sm"
-                className="border-[rgba(198,156,109,0.3)] text-[#9ca3af] hover:bg-[#242938]"
+                className="border-brand-gold-border text-muted-foreground hover:bg-secondary"
                 onClick={exportToCSV}
               >
                 <Download className="h-4 w-4 mr-2" />
@@ -230,16 +235,16 @@ export default function SkillsInventory() {
               </Button>
               <Dialog open={addSkillOpen} onOpenChange={setAddSkillOpen}>
                 <DialogTrigger asChild>
-                  <Button size="sm" className="bg-[#c69c6d] text-[#1a1f2e] hover:bg-[#d4b08c]">
+                  <Button size="sm" className="bg-brand-gold text-brand-dark hover:bg-brand-gold-hover">
                     <Plus className="h-4 w-4 mr-2" />
                     Add Skill
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-[#2d3344] border-[rgba(198,156,109,0.3)]">
+                <DialogContent className="bg-card border-brand-gold-border">
                   <DialogHeader>
-                    <DialogTitle className="text-[#f5f5f7]">Add New Skill</DialogTitle>
+                    <DialogTitle className="text-foreground">Add New Skill</DialogTitle>
                   </DialogHeader>
-                  <div className="py-4 text-center text-[#9ca3af]">
+                  <div className="py-4 text-center text-muted-foreground">
                     Form implementation coming in next prompt
                   </div>
                 </DialogContent>
@@ -251,38 +256,34 @@ export default function SkillsInventory() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr style={{ background: '#1a1f2e' }}>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: '#6b7280' }}>Team Member</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: '#6b7280' }}>Primary Skill</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: '#6b7280' }}>Proficiency</th>
-                  <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wider" style={{ color: '#6b7280' }}>Certifications</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: '#6b7280' }}>Coverage</th>
-                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: '#6b7280' }}>Last Updated</th>
+                <tr className="bg-brand-dark">
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Team Member</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Primary Skill</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Proficiency</th>
+                  <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">Certifications</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Coverage</th>
+                  <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Last Updated</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredData.map(member => (
                   <tr
                     key={member.id}
-                    className="transition-colors hover:bg-[rgba(198,156,109,0.05)]"
-                    style={{ borderBottom: '1px solid rgba(198, 156, 109, 0.15)' }}
+                    className="transition-colors hover:bg-brand-gold/5 border-b border-brand-gold-border"
                   >
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div
-                          className="h-9 w-9 rounded-lg flex items-center justify-center text-xs font-semibold"
-                          style={{ background: 'linear-gradient(135deg, #c69c6d 0%, #a67c4e 100%)', color: '#1a1f2e' }}
-                        >
+                        <div className="h-9 w-9 rounded-lg flex items-center justify-center text-xs font-semibold bg-gradient-to-br from-brand-gold to-brand-gold-dark text-brand-dark">
                           {getInitials(member.name)}
                         </div>
                         <div>
-                          <div className="text-sm font-medium" style={{ color: '#f5f5f7' }}>{member.name}</div>
-                          <div className="text-xs" style={{ color: '#6b7280' }}>{member.role}</div>
+                          <div className="text-sm font-medium text-foreground">{member.name}</div>
+                          <div className="text-xs text-muted-foreground">{member.role}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="text-sm" style={{ color: '#f5f5f7' }}>{member.skill}</span>
+                      <span className="text-sm text-foreground">{member.skill}</span>
                     </td>
                     <td className="px-5 py-3.5">
                       <span
@@ -296,24 +297,28 @@ export default function SkillsInventory() {
                       </span>
                     </td>
                     <td className="px-5 py-3.5 text-center">
-                      <span className="text-sm" style={{ color: '#f5f5f7' }}>{member.certifications}</span>
+                      <span className="text-sm text-foreground">{member.certifications}</span>
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-24 h-2 rounded-full overflow-hidden" style={{ background: '#1a1f2e' }}>
+                        <div className="w-24 h-2 rounded-full overflow-hidden bg-brand-dark">
                           <div
                             className="h-full rounded-full"
                             style={{
                               width: `${member.coverage}%`,
-                              background: member.coverage >= 80 ? '#22c55e' : member.coverage >= 60 ? '#f59e0b' : '#ef4444',
+                              background: member.coverage >= 80
+                                ? 'hsl(var(--health-green))'
+                                : member.coverage >= 60
+                                  ? 'hsl(var(--warning))'
+                                  : 'hsl(var(--destructive))',
                             }}
                           />
                         </div>
-                        <span className="text-xs" style={{ color: '#9ca3af' }}>{member.coverage}%</span>
+                        <span className="text-sm text-foreground">{member.coverage}%</span>
                       </div>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span className="text-sm" style={{ color: '#9ca3af' }}>{member.lastUpdated}</span>
+                      <span className="text-sm text-muted-foreground">{member.lastUpdated}</span>
                     </td>
                   </tr>
                 ))}
@@ -326,19 +331,21 @@ export default function SkillsInventory() {
   );
 
   return (
-    <div className="min-h-screen" style={{ background: '#0f1219' }}>
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="px-8 py-6 border-b" style={{ borderColor: 'rgba(198, 156, 109, 0.15)' }}>
+      <div className="px-8 py-6 border-b border-brand-gold-border">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: '#c69c6d' }}>Skills Inventory</h1>
-            <p className="text-sm mt-1" style={{ color: '#9ca3af' }}>Track team skills, proficiencies, and identify capability gaps</p>
+            <h1 className="text-2xl font-bold text-foreground">Skills Inventory</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Track and manage team skills, proficiency levels, and identify capability gaps
+            </p>
           </div>
         </div>
-        
+
         {/* View Mode Tabs */}
-        <div className="flex gap-1 p-1 rounded-lg" style={{ background: '#1a1f2e' }}>
-          {viewTabs.map(tab => {
+        <div className="flex gap-1 p-1 bg-brand-dark rounded-lg w-fit">
+          {viewTabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = viewMode === tab.id;
             return (
@@ -346,9 +353,9 @@ export default function SkillsInventory() {
                 key={tab.id}
                 onClick={() => setViewMode(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isActive 
-                    ? 'bg-[#c69c6d] text-[#1a1f2e]' 
-                    : 'text-[#9ca3af] hover:text-[#f5f5f7] hover:bg-[#242938]'
+                  isActive
+                    ? 'bg-brand-gold text-brand-dark'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
                 }`}
               >
                 <Icon className="h-4 w-4" />
@@ -359,7 +366,7 @@ export default function SkillsInventory() {
         </div>
       </div>
 
-      {/* Content based on view mode */}
+      {/* Content */}
       {renderContent()}
     </div>
   );
@@ -367,28 +374,26 @@ export default function SkillsInventory() {
 
 // Stats Card Component
 function StatsCard({ icon: Icon, label, value, change, positive }: {
-  icon: any;
+  icon: React.ElementType;
   label: string;
   value: string | number;
   change: string;
   positive: boolean;
 }) {
   return (
-    <div className="rounded-xl p-5" style={{ background: '#2d3344', border: '1px solid rgba(198, 156, 109, 0.15)' }}>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-medium uppercase tracking-wider" style={{ color: '#6b7280' }}>{label}</span>
-        <Icon className="h-5 w-5" style={{ color: '#c69c6d' }} />
-      </div>
-      <div className="flex items-end justify-between">
-        <span className="text-[28px] font-semibold" style={{ color: '#f5f5f7' }}>{value}</span>
-        <div className="flex items-center gap-1">
-          {positive ? (
-            <TrendingUp className="h-4 w-4 text-[#22c55e]" />
-          ) : (
-            <TrendingDown className="h-4 w-4 text-[#ef4444]" />
-          )}
-          <span className="text-xs" style={{ color: positive ? '#22c55e' : '#ef4444' }}>{change}</span>
+    <div className="rounded-xl p-5 bg-card border border-brand-gold-border">
+      <div className="flex items-start justify-between">
+        <div className="p-2.5 rounded-lg bg-brand-gold/15">
+          <Icon className="h-5 w-5 text-brand-gold" />
         </div>
+        <div className={`flex items-center gap-1 text-xs font-medium ${positive ? 'text-health-green' : 'text-destructive'}`}>
+          {positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+          {change}
+        </div>
+      </div>
+      <div className="mt-4">
+        <div className="text-2xl font-bold text-foreground">{value}</div>
+        <div className="text-xs text-muted-foreground mt-1">{label}</div>
       </div>
     </div>
   );
