@@ -354,8 +354,8 @@ export default function SkillsInventory() {
                 onClick={() => setViewMode(tab.id)}
                 className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                   isActive
-                    ? 'bg-brand-gold text-brand-dark'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                    ? 'bg-brand-gold text-brand-dark ring-2 ring-info ring-offset-2 ring-offset-brand-dark'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-white/10'
                 }`}
               >
                 <Icon className="h-4 w-4" />
