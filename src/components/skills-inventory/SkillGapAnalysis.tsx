@@ -173,17 +173,11 @@ export const SkillGapAnalysis: React.FC = () => {
 
       {/* Section 3: Critical Skills Table */}
       <div className="bg-white rounded-xl border border-brand-gold/20 p-6 shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="w-5 h-5 text-destructive" />
-            <h3 className="text-lg font-semibold text-brand-gold">
-              Critical Skills Requiring Attention
-            </h3>
-          </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-neutral-50 text-brand-dark rounded-lg font-medium text-sm hover:bg-neutral-100 transition-colors border border-neutral-200">
-            <FileText className="w-4 h-4" />
-            Create Training Plan
-          </button>
+        <div className="flex items-center gap-3 mb-6">
+          <AlertTriangle className="w-5 h-5 text-destructive" />
+          <h3 className="text-lg font-semibold text-brand-gold">
+            Critical Skills Requiring Attention
+          </h3>
         </div>
 
         <div className="overflow-x-auto">
