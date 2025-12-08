@@ -18,6 +18,7 @@ import { Link as LinkIcon, Lock, Unlock, Plus, Loader2, X, ChevronRight, Search 
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
+import { WorkItemLabelSelector } from '@/components/work-items/WorkItemLabelSelector';
 import { WSJFInlineScores } from '@/components/wsjf';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
@@ -1173,6 +1174,17 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         workItemType="epic" 
         currentKey={epic.epic_key || epic.id}
       />
+
+      {/* Labels Section */}
+      <Card className="border border-border/60 rounded-lg">
+        <CardContent className="p-5">
+          <Label className="mb-3 block">Labels</Label>
+          <WorkItemLabelSelector 
+            entityType="epic" 
+            entityId={epic.id}
+          />
+        </CardContent>
+      </Card>
 
       {/* Custom Fields Section */}
       <CustomFieldsSection 

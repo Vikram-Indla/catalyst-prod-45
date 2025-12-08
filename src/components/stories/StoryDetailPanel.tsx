@@ -18,6 +18,7 @@ import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection';
 import { SprintSelector } from '@/components/work-items/SprintSelector';
 import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
+import { WorkItemLabelSelector } from '@/components/work-items/WorkItemLabelSelector';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
@@ -437,6 +438,17 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
               currentSprintId={(story as any).sprint_id}
               teamId={story.team_id}
             />
+
+            {/* Labels Section */}
+            <Card className="border border-border/60 rounded-lg">
+              <CardContent className="p-5">
+                <label className="text-sm font-medium mb-3 block">Labels</label>
+                <WorkItemLabelSelector 
+                  entityType="story" 
+                  entityId={story.id}
+                />
+              </CardContent>
+            </Card>
 
             {/* Custom Fields Section */}
             <CustomFieldsSection 
