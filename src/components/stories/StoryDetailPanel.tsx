@@ -13,6 +13,8 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, History, Link as LinkIcon, Copy, ArrowDown, Trash2 } from 'lucide-react';
+import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -401,6 +403,16 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
             </div>
               </div>
             </div>
+
+            {/* Fix/Affects Versions Section */}
+            <Card className="border border-border/60 rounded-lg">
+              <CardContent className="p-5">
+                <WorkItemVersionsSection 
+                  workItemId={story.id} 
+                  workItemType="story" 
+                />
+              </CardContent>
+            </Card>
           </TabsContent>
 
             <TabsContent value="children" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">
