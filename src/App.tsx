@@ -12,6 +12,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CatalystShell } from "./components/layout/CatalystShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import Auth from "./pages/Auth";
+import BrowsePage from "./pages/BrowsePage";
 import Home from "./pages/jira-align/Home";
 import PortfolioRoomPageOld from "./pages/jira-align/PortfolioRoomPage";
 import PortfolioRoomPage from "./pages/PortfolioRoomPage";
@@ -221,10 +222,15 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
               <Routes>
-              <Route path="/" element={<Navigate to="/home" replace />} />
+<Route path="/" element={<Navigate to="/home" replace />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/request-access" element={<RequestAccess />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              
+              {/* Deep-link resolver for work items */}
+              <Route path="/browse/:key" element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
+                <Route index element={<BrowsePage />} />
+              </Route>
               
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
