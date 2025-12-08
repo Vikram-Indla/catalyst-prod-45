@@ -11047,6 +11047,44 @@ export type Database = {
         }
         Relationships: []
       }
+      work_item_versions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          link_type: string
+          release_id: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          link_type: string
+          release_id: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          link_type?: string
+          release_id?: string
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_item_versions_release_id_fkey"
+            columns: ["release_id"]
+            isOneToOne: false
+            referencedRelation: "releases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       workflow_rules: {
         Row: {
           architecture_review_required: boolean
