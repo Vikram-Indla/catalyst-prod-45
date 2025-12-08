@@ -1,0 +1,48 @@
+# Catalyst → Atlassian Semantic Alignment Matrix (by role, not exact ADS token names)
+
+| Catalyst CSS Var | Value | Category | ADS semantic bucket | Audit note |
+|---|---|---|---|---|
+| `--brand-dark` | `#1A1A1A` | Brand Colors | Brand accent (interaction/emphasis) |  |
+| `--brand-gold` | `#C69C6D` | Brand Colors | Brand accent (interaction/emphasis) |  |
+| `--brand-gold-hover` | `#B8905F` | Brand Colors | Brand accent (interaction/emphasis) |  |
+| `--brand-gold-pale` | `rgba(198,156,109,0.08)` | Brand Colors | Brand accent (interaction/emphasis) |  |
+| `--palette-advanced` | `#8b7355` | Chart Palette | Data-viz palette (categorical/ordinal usage) |  |
+| `--palette-beginner` | `#d4b896` | Chart Palette | Data-viz palette (categorical/ordinal usage) |  |
+| `--palette-expert` | `#5c7c5c` | Chart Palette | Data-viz palette (categorical/ordinal usage) |  |
+| `--palette-intermediate` | `#c69c6d` | Chart Palette | Data-viz palette (categorical/ordinal usage) |  |
+| `--palette-none` | `#c8ccd0` | Chart Palette | Data-viz palette (categorical/ordinal usage) |  |
+| `--shadow-lg` | `0 10px 15px -3px rgba(0,0,0,0.1)` | Elevation | Elevation roles (raised/overlay/panel shadows) |  |
+| `--shadow-md` | `0 4px 6px -1px rgba(0,0,0,0.1)` | Elevation | Elevation roles (raised/overlay/panel shadows) |  |
+| `--shadow-panel` | `0 8px 24px rgba(0,0,0,0.12)` | Elevation | Elevation roles (raised/overlay/panel shadows) |  |
+| `--shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` | Elevation | Elevation roles (raised/overlay/panel shadows) |  |
+| `--grid-hdr` | `40px` | Layout | Layout primitives (header/sidebar/toolbar sizing) |  |
+| `--grid-row` | `32px` | Layout | Layout primitives (header/sidebar/toolbar sizing) |  |
+| `--pagehdr-h` | `56px` | Layout | Layout primitives (header/sidebar/toolbar sizing) | P0: layouts frequently reference 72px page header; normalize across routes. |
+| `--sidebar-w` | `280px` | Layout | Layout primitives (header/sidebar/toolbar sizing) |  |
+| `--toolbar-h` | `48px` | Layout | Layout primitives (header/sidebar/toolbar sizing) |  |
+| `--topnav-h` | `56px` | Layout | Layout primitives (header/sidebar/toolbar sizing) | P0: layouts frequently reference 72px page header; normalize across routes. |
+| `--s1` | `4px` | Spacing | Spacing scale (8px-based system) |  |
+| `--s2` | `8px` | Spacing | Spacing scale (8px-based system) |  |
+| `--s3` | `12px` | Spacing | Spacing scale (8px-based system) |  |
+| `--s4` | `16px` | Spacing | Spacing scale (8px-based system) |  |
+| `--s6` | `24px` | Spacing | Spacing scale (8px-based system) |  |
+| `--s7` | `32px` | Spacing | Spacing scale (8px-based system) |  |
+| `--destructive` | `#DE350B` | Status Colors | Status semantics (success/warning/error/info) |  |
+| `--info` | `#0065FF` | Status Colors | Status semantics (success/warning/error/info) |  |
+| `--success` | `#36B37E` | Status Colors | Status semantics (success/warning/error/info) |  |
+| `--warning` | `#FFAB00` | Status Colors | Status semantics (success/warning/error/info) |  |
+| `--background` | `#FFFFFF` | Surfaces | Surface roles (default/raised/sunken) + borders | OK alone, but needs a distinct 'sunken' surface to create hierarchy. |
+| `--border` | `#E5E7EB` | Surfaces | Surface roles (default/raised/sunken) + borders | P0/P1: consider adding border-subtle vs border-bold for tables/grid clarity. |
+| `--card` | `#FFFFFF` | Surfaces | Surface roles (default/raised/sunken) + borders | OK alone, but needs a distinct 'sunken' surface to create hierarchy. |
+| `--muted` | `#FFFFFF` | Surfaces | Surface roles (default/raised/sunken) + borders | P0: muted == white; no sunken/backdrop separation → creates 'inundated' feel. |
+| `--secondary` | `#F3F4F6` | Surfaces | Surface roles (default/raised/sunken) + borders |  |
+| `--text-inverse` | `#FFFFFF` | Text Colors | Text roles (primary/secondary/tertiary/inverse) |  |
+| `--text-muted` | `#9CA3AF` | Text Colors | Text roles (primary/secondary/tertiary/inverse) |  |
+| `--text-primary` | `#111827` | Text Colors | Text roles (primary/secondary/tertiary/inverse) |  |
+| `--text-secondary` | `#4B5563` | Text Colors | Text roles (primary/secondary/tertiary/inverse) |  |
+| `--text-tertiary` | `#6B7280` | Text Colors | Text roles (primary/secondary/tertiary/inverse) |  |
+| `--font-size-lg` | `16px` | Typography | Typography roles (body/label/title sizes) |  |
+| `--font-size-md` | `14px` | Typography | Typography roles (body/label/title sizes) |  |
+| `--font-size-sm` | `12px` | Typography | Typography roles (body/label/title sizes) |  |
+| `--font-size-xl` | `18px` | Typography | Typography roles (body/label/title sizes) |  |
+| `--font-size-xs` | `11px` | Typography | Typography roles (body/label/title sizes) |  |
