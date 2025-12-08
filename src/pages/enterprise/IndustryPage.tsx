@@ -899,9 +899,9 @@ export default function IndustryPage() {
                                 sortDirection={columnSort.columnId === col.id ? columnSort.direction : null}
                                 onSort={handleSort}
                               />
-                              {/* Resize handle */}
+                              {/* Resize handle - wider hit area for easy grabbing */}
                               <div
-                                className="absolute right-0 top-0 h-full w-1.5 cursor-col-resize z-10 hover:bg-brand-gold/50 active:bg-brand-gold transition-colors"
+                                className="absolute right-0 top-0 h-full w-3 cursor-col-resize z-20 group/resize"
                                 onMouseDown={(e) => {
                                   e.preventDefault();
                                   e.stopPropagation();
@@ -926,7 +926,10 @@ export default function IndustryPage() {
                                   document.body.style.cursor = 'col-resize';
                                   document.body.style.userSelect = 'none';
                                 }}
-                              />
+                              >
+                                {/* Visual indicator line */}
+                                <div className="absolute right-0 top-0 h-full w-0.5 bg-transparent group-hover/resize:bg-brand-gold/60 transition-colors" />
+                              </div>
                             </th>
                           );
                         })}
