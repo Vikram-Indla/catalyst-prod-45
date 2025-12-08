@@ -136,16 +136,14 @@ export const SkillsMatrixHeatmap: React.FC = () => {
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
-            <tr>
-              <th className="w-[200px] bg-neutral-50 text-left p-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider rounded-tl-lg border-b border-neutral-200">
+            <tr className="border-b border-neutral-200">
+              <th className="w-[200px] bg-white text-left py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
                 Team Member
               </th>
-              {skills.map((skill, index) => (
+              {skills.map((skill) => (
                 <th
                   key={skill.id}
-                  className={`bg-neutral-50 text-center p-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200 ${
-                    index === skills.length - 1 ? 'rounded-tr-lg' : ''
-                  }`}
+                  className="bg-white text-center py-3 px-4 text-xs font-semibold text-neutral-500 uppercase tracking-wider"
                 >
                   {skill.name}
                 </th>
@@ -154,12 +152,8 @@ export const SkillsMatrixHeatmap: React.FC = () => {
           </thead>
           <tbody>
             {teamMembers.map((member, rowIndex) => (
-              <tr key={member.id}>
-                <td
-                  className={`w-[200px] bg-neutral-50 p-3 border-b border-neutral-100 ${
-                    rowIndex === teamMembers.length - 1 ? 'rounded-bl-lg' : ''
-                  }`}
-                >
+              <tr key={member.id} className="border-b border-neutral-100 last:border-b-0">
+                <td className="w-[200px] bg-white py-4 px-4">
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-brand-dark">
                       {member.name}
@@ -167,18 +161,10 @@ export const SkillsMatrixHeatmap: React.FC = () => {
                     <span className="text-xs text-neutral-500">{member.role}</span>
                   </div>
                 </td>
-                {skills.map((skill, colIndex) => {
+                {skills.map((skill) => {
                   const level = matrixData[member.id]?.[skill.id] || 1;
                   return (
-                    <td
-                      key={skill.id}
-                      className={`p-2 border-b border-neutral-100 ${
-                        rowIndex === teamMembers.length - 1 &&
-                        colIndex === skills.length - 1
-                          ? 'rounded-br-lg'
-                          : ''
-                      }`}
-                    >
+                    <td key={skill.id} className="py-2 px-2">
                       <div
                         className="h-14 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 hover:z-10 hover:shadow-lg relative"
                         style={{ backgroundColor: PROFICIENCY_COLORS[level] }}
