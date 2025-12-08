@@ -121,6 +121,22 @@ export default {
           800: "hsl(var(--neutral-800))",
           900: "hsl(var(--neutral-900))",
         },
+        // Golden Hour Secondary Palette - for charts, graphs, reports
+        palette: {
+          expert: "hsl(var(--palette-expert))",         // #5c7c5c - Olive green
+          advanced: "hsl(var(--palette-advanced))",     // #8b7355 - Bronze/brown
+          intermediate: "hsl(var(--palette-intermediate))", // #c69c6d - Catalyst gold
+          beginner: "hsl(var(--palette-beginner))",     // #d4b896 - Light champagne
+          none: "hsl(var(--palette-none))",             // #c8ccd0 - Cool grey
+        },
+        // Chart colors using Golden Hour palette
+        chartGolden: {
+          1: "hsl(var(--chart-golden-1))",  // Expert - Olive
+          2: "hsl(var(--chart-golden-2))",  // Advanced - Bronze
+          3: "hsl(var(--chart-golden-3))",  // Intermediate - Gold
+          4: "hsl(var(--chart-golden-4))",  // Beginner - Champagne
+          5: "hsl(var(--chart-golden-5))",  // None - Grey
+        },
         // Catalyst Toast Colors
         catalyst: {
           black: "#1a1a1a",

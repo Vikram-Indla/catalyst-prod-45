@@ -1,7 +1,26 @@
 // Risk Donut Chart Component
 // Source: Screenshot-RiskROAMReport
+// Uses Golden Hour secondary palette for data visualization
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+
+// Golden Hour Palette - USE THESE for all charts/graphs/reports
+export const GOLDEN_HOUR_PALETTE = {
+  expert: '#5c7c5c',      // Olive green (Level 5)
+  advanced: '#8b7355',    // Bronze/brown (Level 4)
+  intermediate: '#c69c6d', // Catalyst gold (Level 3)
+  beginner: '#d4b896',    // Light champagne (Level 2)
+  none: '#c8ccd0',        // Cool grey (Level 1)
+};
+
+// Array format for easy iteration in charts
+export const GOLDEN_HOUR_COLORS = [
+  '#5c7c5c',  // Expert - Olive
+  '#8b7355',  // Advanced - Bronze
+  '#c69c6d',  // Intermediate - Gold
+  '#d4b896',  // Beginner - Champagne
+  '#c8ccd0',  // None - Grey
+];
 
 interface RiskDonutChartProps {
   data: Array<{ name: string; value: number; color: string }>;
