@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { AdminSidebarV2 } from '@/components/admin/AdminSidebarV2';
 import { AdminSidebarProvider, useAdminSidebar } from '@/contexts/AdminSidebarContext';
 
 function AdminLayoutContent() {
@@ -7,7 +7,7 @@ function AdminLayoutContent() {
 
   return (
     <div className="flex h-screen bg-background">
-      <AdminSidebar 
+      <AdminSidebarV2 
         expanded={expanded} 
         onToggle={() => setExpanded(!expanded)} 
       />

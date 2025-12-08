@@ -135,6 +135,8 @@ import PIWizard from "./pages/admin/PIWizard";
 import JiraIntegration from "./pages/admin/JiraIntegration";
 import ImportData from "./pages/admin/ImportData";
 import ProductSettings from "./pages/admin/ProductSettings";
+import AdminOverview from "./pages/admin/AdminOverview";
+import AuditActivityPage from "./pages/admin/AuditActivityPage";
 import ValueStreamView from "./pages/ValueStreamView";
 import UserProfile from "./pages/UserProfile";
 import ProgramInsights from "./pages/insights/ProgramInsights";
@@ -574,7 +576,9 @@ const App = () => (
               <Route path="/admin/activity-log" element={<AdminGuard><ActivityLog /></AdminGuard>} />
               
               <Route path="/admin" element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
+                <Route index element={<Navigate to="/admin/overview" replace />} />
+                <Route path="overview" element={<AdminOverview />} />
+                <Route path="audit/activity" element={<AuditActivityPage />} />
                 <Route path="activity" element={<Activity />} />
                 <Route path="changes" element={<Changes />} />
                 <Route path="changes-log" element={<ChangesLog />} />
