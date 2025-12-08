@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import { PROFICIENCY_LEVELS, SkillProficiencyLevel } from '@/types/skills';
-
-interface MatrixCell {
-  memberId: string;
-  skillId: string;
-  level: number;
-}
+import { PROFICIENCY_LEVELS } from '@/types/skills';
 
 interface TeamMemberRow {
   id: string;
@@ -19,11 +13,11 @@ interface SkillColumn {
 }
 
 const PROFICIENCY_COLORS: Record<number, string> = {
-  1: 'rgba(107, 114, 128, 0.3)',
-  2: 'rgba(139, 92, 246, 0.7)',
-  3: 'rgba(245, 158, 11, 0.7)',
-  4: 'rgba(59, 130, 246, 0.7)',
-  5: 'rgba(34, 197, 94, 0.7)',
+  1: 'hsl(var(--muted-foreground) / 0.3)',
+  2: 'hsl(280 70% 50% / 0.7)',
+  3: 'hsl(var(--warning) / 0.7)',
+  4: 'hsl(var(--info) / 0.7)',
+  5: 'hsl(var(--health-green) / 0.7)',
 };
 
 const PROFICIENCY_LABELS: Record<number, string> = {
@@ -112,14 +106,14 @@ export const SkillsMatrixHeatmap: React.FC = () => {
   ];
 
   return (
-    <div className="bg-[#1a1f2e] rounded-xl border border-[rgba(198,156,109,0.15)] p-6">
+    <div className="bg-brand-dark rounded-xl border border-brand-gold-border p-6">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-[#f5f5f7]">
+          <h2 className="text-2xl font-semibold text-foreground">
             Skills Matrix - Platform Engineering Team
           </h2>
-          <p className="text-sm text-[#6b7280] mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Hover over cells for detailed proficiency information
           </p>
         </div>
@@ -132,7 +126,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
                 className="w-4 h-4 rounded"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-xs text-[#9ca3af]">{item.label}</span>
+              <span className="text-xs text-muted-foreground">{item.label}</span>
             </div>
           ))}
         </div>
@@ -143,13 +137,13 @@ export const SkillsMatrixHeatmap: React.FC = () => {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="w-[200px] bg-[#242938] text-left p-3 text-xs font-semibold text-[#6b7280] uppercase tracking-wider rounded-tl-lg">
+              <th className="w-[200px] bg-secondary text-left p-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider rounded-tl-lg">
                 Team Member
               </th>
               {skills.map((skill, index) => (
                 <th
                   key={skill.id}
-                  className={`bg-[#242938] text-center p-3 text-xs font-semibold text-[#6b7280] uppercase tracking-wider ${
+                  className={`bg-secondary text-center p-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider ${
                     index === skills.length - 1 ? 'rounded-tr-lg' : ''
                   }`}
                 >
@@ -162,15 +156,15 @@ export const SkillsMatrixHeatmap: React.FC = () => {
             {teamMembers.map((member, rowIndex) => (
               <tr key={member.id}>
                 <td
-                  className={`w-[200px] bg-[#242938] p-3 border-t border-[rgba(198,156,109,0.1)] ${
+                  className={`w-[200px] bg-secondary p-3 border-t border-brand-gold-border/30 ${
                     rowIndex === teamMembers.length - 1 ? 'rounded-bl-lg' : ''
                   }`}
                 >
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-[#f5f5f7]">
+                    <span className="text-sm font-medium text-foreground">
                       {member.name}
                     </span>
-                    <span className="text-xs text-[#6b7280]">{member.role}</span>
+                    <span className="text-xs text-muted-foreground">{member.role}</span>
                   </div>
                 </td>
                 {skills.map((skill, colIndex) => {
@@ -178,7 +172,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
                   return (
                     <td
                       key={skill.id}
-                      className={`p-2 border-t border-[rgba(198,156,109,0.1)] ${
+                      className={`p-2 border-t border-brand-gold-border/30 ${
                         rowIndex === teamMembers.length - 1 &&
                         colIndex === skills.length - 1
                           ? 'rounded-br-lg'
@@ -216,17 +210,16 @@ export const SkillsMatrixHeatmap: React.FC = () => {
             transform: 'translate(-50%, -100%)',
           }}
         >
-          <div className="bg-[#0f1219] border border-[rgba(198,156,109,0.3)] rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
-            <p className="font-semibold text-[#f5f5f7] text-sm">
+          <div className="bg-background border border-brand-gold-border rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
+            <p className="font-semibold text-foreground text-sm">
               {tooltip.memberName}
             </p>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-[#9ca3af] text-xs">{tooltip.skillName}:</span>
+              <span className="text-muted-foreground text-xs">{tooltip.skillName}:</span>
               <span
-                className="text-xs font-medium px-2 py-0.5 rounded"
+                className="text-xs font-medium px-2 py-0.5 rounded text-white"
                 style={{
                   backgroundColor: PROFICIENCY_COLORS[tooltip.level],
-                  color: '#fff',
                 }}
               >
                 {PROFICIENCY_LABELS[tooltip.level]}
@@ -235,12 +228,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
           </div>
           {/* Arrow */}
           <div
-            className="w-0 h-0 mx-auto"
-            style={{
-              borderLeft: '8px solid transparent',
-              borderRight: '8px solid transparent',
-              borderTop: '8px solid rgba(198, 156, 109, 0.3)',
-            }}
+            className="w-0 h-0 mx-auto border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-brand-gold-border"
           />
         </div>
       )}
