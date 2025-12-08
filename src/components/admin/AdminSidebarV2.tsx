@@ -96,9 +96,9 @@ const adminPockets = [
     id: 'audit-usage',
     label: 'Audit & Usage',
     icon: Activity,
-    path: '/admin/audit',
+    path: '/admin/activity',
     children: [
-      { label: 'Activity', path: '/admin/audit/activity' },
+      { label: 'Activity', path: '/admin/activity' },
       { label: 'Changes', path: '/admin/changes' },
       { label: 'Changes Log', path: '/admin/changes-log' },
       { label: 'Usage Trends', path: '/admin/usage-trends' },
@@ -127,7 +127,7 @@ const getAllPaths = () => {
 export function AdminSidebarV2({ expanded, onToggle, className }: AdminSidebarV2Props) {
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
-  const [pinnedItems] = useState<string[]>(['/admin/users', '/admin/audit/activity']);
+  const [pinnedItems] = useState<string[]>(['/admin/users', '/admin/activity']);
   
   const allPaths = useMemo(() => getAllPaths(), []);
   
