@@ -862,7 +862,7 @@ export default function IndustryPage() {
                 
                 {/* Single scroll container for semantic table */}
                 <div className="flex-1 overflow-x-auto overflow-y-auto">
-                  <table className="min-w-full w-max border-separate border-spacing-0">
+                  <table className="border-separate border-spacing-0" style={{ tableLayout: 'fixed', minWidth: '100%' }}>
                     {/* Table Header */}
                     <thead className="sticky top-0 z-40" style={{ position: 'sticky', background: 'hsl(35 46% 97%)' }}>
                       <tr style={{ background: 'hsl(35 46% 97%)' }}>
@@ -891,7 +891,7 @@ export default function IndustryPage() {
                               "h-10 px-3.5 text-xs font-medium text-text-secondary uppercase tracking-wide border-b border-r border-border relative group",
                                 isCentered && "text-center"
                               )}
-                              style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px`, background: 'hsl(35 46% 97%)' }}
+                              style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px`, maxWidth: `${width}px`, background: 'hsl(35 46% 97%)' }}
                             >
                               <SimpleColumnHeader
                                 label={colDef.label}
@@ -1183,9 +1183,9 @@ export default function IndustryPage() {
                                     "h-11 px-3.5 border-b border-r border-border overflow-hidden bg-inherit",
                                     isCentered && "text-center"
                                   )}
-                                  style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px` }}
+                                  style={{ width: `${width}px`, minWidth: `${colDef.minWidth}px`, maxWidth: `${width}px` }}
                                 >
-                                  <div className={cn("flex items-center h-full", isCentered && "justify-center")}>
+                                  <div className={cn("flex items-center h-full w-full overflow-hidden", isCentered && "justify-center")}>
                                     {renderColumnValue(col)}
                                   </div>
                                 </td>
