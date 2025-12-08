@@ -340,9 +340,9 @@ export default function SkillsInventory() {
 
   const renderTableView = () => (
     <>
-      {/* Stats Cards */}
-      <div className="px-8 py-6">
-        <div className="grid grid-cols-4 gap-5">
+      {/* Stats Cards - Compact */}
+      <div className="px-4 sm:px-6 py-4">
+        <div className="grid grid-cols-4 gap-3">
           <StatsCard icon={Target} label="Total Skills Tracked" value={totalSkills} change="+3" positive />
           <StatsCard icon={Users} label="Team Members" value={teamMembers} change="+2" positive />
           <StatsCard icon={BarChart3} label="Avg. Coverage" value={`${avgCoverage}%`} change="+5%" positive />
@@ -480,34 +480,37 @@ export default function SkillsInventory() {
     <div className="h-full flex flex-col bg-background">
       {/* Header - fixed height 72px to align with sidebar */}
       <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
-        <div className="h-full px-4 sm:px-6 flex items-center justify-between">
+        <div className="h-full px-4 sm:px-6 flex items-center">
           <div className="min-w-0">
             <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Skills Inventory</h1>
             <p className="text-sm text-muted-foreground truncate">
               Track and manage team skills, proficiency levels, and identify capability gaps
             </p>
           </div>
-          {/* View Mode Tabs */}
-          <div className="flex gap-1 p-1 bg-white border border-brand-gold rounded-lg w-fit flex-shrink-0">
-            {viewTabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = viewMode === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setViewMode(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                    isActive
-                      ? 'bg-brand-gold text-white'
-                      : 'text-brand-dark hover:text-brand-gold hover:bg-brand-gold/10'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
+        </div>
+      </div>
+
+      {/* View Mode Tabs - Below header */}
+      <div className="px-4 sm:px-6 py-3 bg-card border-b border-border">
+        <div className="flex gap-1 p-1 bg-white border border-brand-gold rounded-lg w-fit">
+          {viewTabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = viewMode === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setViewMode(tab.id)}
+                className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  isActive
+                    ? 'bg-brand-gold text-white'
+                    : 'text-brand-dark hover:text-brand-gold hover:bg-brand-gold/10'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -574,19 +577,19 @@ function StatsCard({ icon: Icon, label, value, change, positive }: {
   positive: boolean;
 }) {
   return (
-    <div className="rounded-xl p-5 bg-card border border-brand-gold-border">
+    <div className="rounded-lg p-3 bg-card border border-brand-gold-border">
       <div className="flex items-start justify-between">
-        <div className="p-2.5 rounded-lg bg-brand-gold/15">
-          <Icon className="h-5 w-5 text-brand-gold" />
+        <div className="p-2 rounded-md bg-brand-gold/15">
+          <Icon className="h-4 w-4 text-brand-gold" />
         </div>
         <div className="flex items-center gap-1 text-xs font-medium text-foreground">
           {positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
           {change}
         </div>
       </div>
-      <div className="mt-4">
-        <div className="text-2xl font-bold text-foreground">{value}</div>
-        <div className="text-xs text-muted-foreground mt-1">{label}</div>
+      <div className="mt-2">
+        <div className="text-xl font-bold text-foreground">{value}</div>
+        <div className="text-xs text-muted-foreground">{label}</div>
       </div>
     </div>
   );
