@@ -174,88 +174,9 @@ export default function SkillsInventory() {
       </div>
 
       {/* Main Content */}
-      <div className="px-8 pb-8 flex gap-6">
-        {/* Filters Sidebar */}
-        <div className="w-[280px] flex-shrink-0 rounded-xl p-5 bg-card border border-brand-gold-border">
-          <div className="flex items-center gap-2 mb-5">
-            <Filter className="h-4 w-4 text-brand-gold" />
-            <span className="text-sm font-semibold text-foreground">Filters</span>
-          </div>
-
-          <div className="space-y-5">
-            <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-2 block text-muted-foreground">Program</label>
-              <Select value={selectedProgram} onValueChange={setSelectedProgram}>
-                <SelectTrigger className="w-full border-brand-gold-border bg-secondary text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-secondary border-brand-gold-border">
-                  {projects.map(p => (
-                    <SelectItem key={p} value={p} className="text-foreground focus:bg-brand-gold/10">{p}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-2 block text-muted-foreground">Team</label>
-              <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-                <SelectTrigger className="w-full border-brand-gold-border bg-secondary text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-secondary border-brand-gold-border">
-                  <SelectItem value="All Teams" className="text-foreground focus:bg-brand-gold/10">All Teams</SelectItem>
-                  <SelectItem value="Backend" className="text-foreground focus:bg-brand-gold/10">Backend</SelectItem>
-                  <SelectItem value="Frontend" className="text-foreground focus:bg-brand-gold/10">Frontend</SelectItem>
-                  <SelectItem value="Data" className="text-foreground focus:bg-brand-gold/10">Data</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-2 block text-muted-foreground">Skill Category</label>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full border-brand-gold-border bg-secondary text-foreground">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-secondary border-brand-gold-border">
-                  {skillCategories.map(c => (
-                    <SelectItem key={c} value={c} className="text-foreground focus:bg-brand-gold/10">{c}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <label className="text-xs font-medium uppercase tracking-wider mb-3 block text-muted-foreground">Proficiency Level</label>
-              <div className="space-y-2.5">
-                {proficiencyLevels.map(level => (
-                  <label key={level.label} className="flex items-center gap-3 cursor-pointer">
-                    <Checkbox
-                      checked={selectedProficiencies.includes(level.label)}
-                      onCheckedChange={() => handleProficiencyToggle(level.label)}
-                      className="border-brand-gold-border data-[state=checked]:bg-brand-gold data-[state=checked]:border-brand-gold"
-                    />
-                    <span className={`h-2.5 w-2.5 rounded-full ${level.colorClass}`} />
-                    <span className="text-sm text-muted-foreground">{level.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <Button
-              variant="outline"
-              className="w-full mt-4 border-brand-gold-border text-muted-foreground hover:bg-secondary"
-              onClick={clearFilters}
-            >
-              <X className="h-4 w-4 mr-2" />
-              Clear Filters
-            </Button>
-          </div>
-        </div>
-
+      <div className="px-8 pb-8">
         {/* Table Area */}
-        <div className="flex-1 rounded-xl overflow-hidden bg-card border border-brand-gold-border">
+        <div className="rounded-xl overflow-hidden bg-card border border-brand-gold-border">
           {/* Table Header */}
           <div className="px-5 py-4 flex items-center justify-between border-b border-brand-gold-border">
             <h2 className="text-base font-semibold text-foreground">Skills Inventory</h2>
@@ -285,8 +206,8 @@ export default function SkillsInventory() {
               </Button>
               <Dialog open={addSkillOpen} onOpenChange={setAddSkillOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="gold" className="px-6 py-2.5 h-auto text-base font-medium">
-                    <Plus className="h-5 w-5 mr-2" />
+                  <Button variant="gold" size="sm">
+                    <Plus className="h-4 w-4 mr-2" />
                     Add Skill
                   </Button>
                 </DialogTrigger>
