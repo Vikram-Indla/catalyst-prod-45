@@ -5,8 +5,8 @@
 
 import { useState, useMemo } from 'react';
 import { 
-  AlertTriangle, CheckCircle2, XCircle, Filter, Wrench, 
-  ChevronDown, FileCode, Eye, Zap, Smartphone 
+  AlertTriangle, Filter, Wrench, 
+  FileCode, Zap, Smartphone, Copy, Send
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { 
   detectedGaps, 
@@ -25,6 +26,44 @@ import { toast } from 'sonner';
 
 interface GapDetectionGridProps {
   onFixSelected?: (gaps: DesignGap[]) => void;
+}
+
+// Generate fix instruction for a gap
+function generateFixInstruction(gap: DesignGap | ResponsivenessGap): string {
+  if ('component' in gap) {
+    // Design gap
+    return `Fix design system gap in ${gap.file || gap.component}:
+
+**Issue:** ${gap.component} uses ${gap.property}: ${gap.current}
+**Expected:** ${gap.property}: ${gap.expected} (per design baseline)
+**Route:** ${gap.route}
+**Category:** ${gap.category}
+**Severity:** ${gap.severity}
+
+Please update the ${gap.property} value from "${gap.current}" to "${gap.expected}" to align with the Catalyst design system baseline.`;
+  } else {
+    // Responsiveness gap
+    return `Fix responsive issue on ${gap.route}:
+
+**Route:** ${gap.route}
+**Viewport:** ${gap.viewport}
+**Score:** ${gap.score}%
+**Issues:** ${gap.issues} (P0: ${gap.p0}, P1: ${gap.p1})
+**Top Issue:** ${gap.topIssue}
+
+Please fix the "${gap.topIssue}" responsiveness issue on ${gap.route} at ${gap.viewport} viewport. Ensure the layout doesn't overflow, elements are properly sized, and touch targets meet minimum 44px requirements.`;
+  }
+}
+
+// Copy instruction to clipboard and show toast
+async function copyFixInstruction(gap: DesignGap | ResponsivenessGap) {
+  const instruction = generateFixInstruction(gap);
+  try {
+    await navigator.clipboard.writeText(instruction);
+    toast.success('Fix instruction copied! Paste it in the chat to fix this issue.');
+  } catch {
+    toast.error('Failed to copy instruction');
+  }
 }
 
 export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
@@ -264,6 +303,24 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                     {gap.file && (
                       <code className="text-[10px] text-muted-foreground shrink-0">{gap.file}</code>
                     )}
+
+                    {/* Fix Button */}
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 px-2 gap-1.5 shrink-0 hover:bg-brand-gold/10 hover:border-brand-gold/30 hover:text-brand-gold"
+                          onClick={() => copyFixInstruction(gap)}
+                        >
+                          <Send className="h-3.5 w-3.5" />
+                          <span className="text-xs">Fix</span>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="left" className="max-w-xs">
+                        <p className="text-xs">Copy fix instruction to clipboard, then paste in chat to fix this issue</p>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                 ))}
               </div>
@@ -291,6 +348,7 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                     <th className="text-center font-medium px-4 py-2">Issues</th>
                     <th className="text-center font-medium px-4 py-2">P0/P1</th>
                     <th className="text-left font-medium px-4 py-2">Top Issue</th>
+                    <th className="text-right font-medium px-4 py-2">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -317,6 +375,24 @@ export function GapDetectionGrid({ onFixSelected }: GapDetectionGridProps) {
                         {gap.p0 === 0 && gap.p1 === 0 && <span className="text-muted-foreground">-</span>}
                       </td>
                       <td className="px-4 py-2 text-xs text-muted-foreground">{gap.topIssue}</td>
+                      <td className="px-4 py-2 text-right">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 px-2 gap-1.5 hover:bg-brand-gold/10 hover:border-brand-gold/30 hover:text-brand-gold"
+                              onClick={() => copyFixInstruction(gap)}
+                            >
+                              <Send className="h-3.5 w-3.5" />
+                              <span className="text-xs">Fix</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent side="left" className="max-w-xs">
+                            <p className="text-xs">Copy fix instruction to clipboard, then paste in chat</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
