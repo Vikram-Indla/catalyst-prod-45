@@ -1,6 +1,7 @@
 /**
  * Capacity & Allocation Planning Page
  * Main component integrating all capacity planning features
+ * Following Skills Inventory layout pattern
  */
 
 import { useState } from 'react';
@@ -16,11 +17,11 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Search, Filter, Copy, UserPlus, Plus, ChevronLeft, ChevronRight, 
-  ChevronsLeft, ChevronsRight, Unlock, Lock
+  ChevronsLeft, ChevronsRight, Unlock, Lock, Users, LayoutGrid, 
+  Calendar, AlertCircle, Download
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { getWeekDateRange } from '@/lib/capacityUtils';
 
 type CapacityTab = 'roster' | 'grid' | 'timeline' | 'vacancies';
 
@@ -90,144 +91,198 @@ export function CapacityPlanningPage() {
     }
   };
 
+  const tabItems = [
+    { value: 'roster', label: 'People Roster', icon: Users },
+    { value: 'grid', label: 'Project Grid', icon: LayoutGrid },
+    { value: 'timeline', label: 'Timeline', icon: Calendar },
+    { value: 'vacancies', label: 'Vacancies', icon: AlertCircle, badge: openVacancies > 0 ? openVacancies : undefined },
+  ];
+
   return (
-    <div className="space-y-4">
-      {/* Summary Cards */}
-      <CapacitySummaryCards
-        totalMembers={stats.total}
-        underallocated={stats.under}
-        fullyAllocated={stats.full}
-        overallocated={stats.over}
-        openVacancies={openVacancies}
-      />
-
-      {/* Capacity Preview */}
-      <CapacityPreview 
-        weeks={capacityPreview}
-        currentWeek={currentWeek}
-        totalPeople={allResources.length}
-      />
-
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search resources..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-[200px] pl-9 h-9"
-            />
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          {/* Week Navigation */}
-          <div className="flex items-center gap-1 bg-card border border-border rounded-md p-1">
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateWeeks(-4)}>
-              <ChevronsLeft className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateWeeks(-1)}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="px-3 text-sm font-medium min-w-[120px] text-center">
-              W{startWeek} · {startYear}
-            </div>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateWeeks(1)}>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateWeeks(4)}>
-              <ChevronsRight className="h-4 w-4" />
-            </Button>
-          </div>
-          
-          <Button variant="outline" size="sm" className="h-8" onClick={goToCurrentWeek}>
-            Today
-          </Button>
-
-          <Button 
-            variant={adminMode ? "default" : "outline"} 
-            size="sm" 
-            className={cn("h-8", adminMode && "bg-warning text-warning-foreground")}
-            onClick={handleAdminToggle}
-          >
-            {adminMode ? <Unlock className="h-3.5 w-3.5 mr-1.5" /> : <Lock className="h-3.5 w-3.5 mr-1.5" />}
-            {adminMode ? 'Unlock Past' : 'Lock Past'}
-          </Button>
-
-          <Button variant="outline" size="sm" className="h-8" onClick={handleCopyWeek}>
-            <Copy className="h-3.5 w-3.5 mr-1.5" />
-            Copy Week
-          </Button>
-
-          <Button size="sm" className="h-8 bg-brand-gold hover:bg-brand-gold/90 text-white">
-            <Plus className="h-3.5 w-3.5 mr-1.5" />
-            New Allocation
-          </Button>
-        </div>
+    <div className="space-y-6">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-semibold text-foreground">Capacity & Allocation</h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Plan and manage team capacity, allocations, and identify resource gaps
+        </p>
       </div>
 
-      {/* Tabs */}
+      {/* View Tabs - Top level like Skills Inventory */}
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CapacityTab)}>
-        <TabsList className="bg-card border border-border">
-          <TabsTrigger value="roster">People Roster</TabsTrigger>
-          <TabsTrigger value="grid">Project Grid</TabsTrigger>
-          <TabsTrigger value="timeline">Timeline</TabsTrigger>
-          <TabsTrigger value="vacancies" className="relative">
-            Vacancies
-            {openVacancies > 0 && (
-              <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-semibold bg-destructive/10 text-destructive rounded-full">
-                {openVacancies}
-              </span>
-            )}
-          </TabsTrigger>
+        <TabsList className="bg-muted p-1 h-auto rounded-lg">
+          {tabItems.map((tab) => (
+            <TabsTrigger 
+              key={tab.value}
+              value={tab.value}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                "data-[state=active]:bg-brand-gold data-[state=active]:text-white",
+                "data-[state=inactive]:text-muted-foreground data-[state=inactive]:hover:text-foreground"
+              )}
+            >
+              <tab.icon className="h-4 w-4" />
+              {tab.label}
+              {tab.badge && (
+                <span className="ml-1 px-1.5 py-0.5 text-[10px] font-semibold bg-destructive/20 text-destructive rounded-full">
+                  {tab.badge}
+                </span>
+              )}
+            </TabsTrigger>
+          ))}
         </TabsList>
 
-        <div className="mt-4 bg-card border border-border rounded-lg p-4">
-          <TabsContent value="roster" className="m-0">
-            <PeopleRoster
-              resources={resources}
-              projects={projects}
-              startWeek={startWeek}
-              startYear={startYear}
-              onAllocate={handleAllocate}
-            />
-          </TabsContent>
+        {/* Summary Cards */}
+        <div className="mt-6">
+          <CapacitySummaryCards
+            totalMembers={stats.total}
+            underallocated={stats.under}
+            fullyAllocated={stats.full}
+            overallocated={stats.over}
+            openVacancies={openVacancies}
+          />
+        </div>
 
-          <TabsContent value="grid" className="m-0">
-            <ProjectGrid
-              resources={resources}
-              projects={projects}
-              startWeek={startWeek}
-              startYear={startYear}
-              currentWeek={currentWeek}
-              currentYear={currentYear}
-              adminMode={adminMode}
-              gridChanges={gridChanges}
-              onGridChange={handleGridChange}
-              onSave={handleSaveGrid}
-              onReset={handleResetGrid}
-            />
-          </TabsContent>
+        {/* Capacity Preview */}
+        <div className="mt-4">
+          <CapacityPreview 
+            weeks={capacityPreview}
+            currentWeek={currentWeek}
+            totalPeople={allResources.length}
+          />
+        </div>
 
-          <TabsContent value="timeline" className="m-0">
-            <TimelineView
-              resources={resources}
-              projects={projects}
-              startWeek={startWeek}
-              startYear={startYear}
-              currentWeek={currentWeek}
-            />
-          </TabsContent>
+        {/* Content Card */}
+        <div className="mt-4 bg-card border border-border rounded-lg">
+          {/* Toolbar Header */}
+          <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-border">
+            <h2 className="text-base font-semibold text-foreground">
+              {activeTab === 'roster' && 'People Roster'}
+              {activeTab === 'grid' && 'Project Grid'}
+              {activeTab === 'timeline' && 'Timeline View'}
+              {activeTab === 'vacancies' && 'Open Vacancies'}
+            </h2>
+            
+            <div className="flex items-center gap-2">
+              {/* Week Navigation - only for grid/timeline */}
+              {(activeTab === 'grid' || activeTab === 'timeline') && (
+                <>
+                  <div className="flex items-center gap-1 bg-muted border border-border rounded-md p-1">
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateWeeks(-4)}>
+                      <ChevronsLeft className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateWeeks(-1)}>
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <div className="px-3 text-sm font-medium min-w-[100px] text-center">
+                      W{startWeek} · {startYear}
+                    </div>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateWeeks(1)}>
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => navigateWeeks(4)}>
+                      <ChevronsRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <Button variant="outline" size="sm" className="h-8" onClick={goToCurrentWeek}>
+                    Today
+                  </Button>
 
-          <TabsContent value="vacancies" className="m-0">
-            <VacancyCards
-              vacancies={vacancies}
-              projects={projects}
-              onFillGap={handleFillGap}
-            />
-          </TabsContent>
+                  <Button 
+                    variant={adminMode ? "default" : "outline"} 
+                    size="sm" 
+                    className={cn("h-8", adminMode && "bg-warning text-warning-foreground hover:bg-warning/90")}
+                    onClick={handleAdminToggle}
+                  >
+                    {adminMode ? <Unlock className="h-3.5 w-3.5 mr-1.5" /> : <Lock className="h-3.5 w-3.5 mr-1.5" />}
+                    {adminMode ? 'Unlock' : 'Lock'}
+                  </Button>
+
+                  <Button variant="outline" size="sm" className="h-8" onClick={handleCopyWeek}>
+                    <Copy className="h-3.5 w-3.5 mr-1.5" />
+                    Copy Week
+                  </Button>
+                </>
+              )}
+
+              {/* Common actions */}
+              <Button variant="outline" size="sm" className="h-8">
+                <Filter className="h-3.5 w-3.5 mr-1.5" />
+                Filters
+              </Button>
+
+              <Button variant="outline" size="sm" className="h-8">
+                <Download className="h-3.5 w-3.5 mr-1.5" />
+                Export CSV
+              </Button>
+
+              <Button size="sm" className="h-8 bg-brand-gold hover:bg-brand-gold-hover text-white">
+                <UserPlus className="h-3.5 w-3.5 mr-1.5" />
+                Add Resource
+              </Button>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="px-4 py-3 border-b border-border">
+            <div className="relative max-w-xs">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search resources..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 h-9 bg-muted border-border"
+              />
+            </div>
+          </div>
+
+          {/* Tab Content */}
+          <div className="p-4">
+            <TabsContent value="roster" className="m-0">
+              <PeopleRoster
+                resources={resources}
+                projects={projects}
+                startWeek={startWeek}
+                startYear={startYear}
+                onAllocate={handleAllocate}
+              />
+            </TabsContent>
+
+            <TabsContent value="grid" className="m-0">
+              <ProjectGrid
+                resources={resources}
+                projects={projects}
+                startWeek={startWeek}
+                startYear={startYear}
+                currentWeek={currentWeek}
+                currentYear={currentYear}
+                adminMode={adminMode}
+                gridChanges={gridChanges}
+                onGridChange={handleGridChange}
+                onSave={handleSaveGrid}
+                onReset={handleResetGrid}
+              />
+            </TabsContent>
+
+            <TabsContent value="timeline" className="m-0">
+              <TimelineView
+                resources={resources}
+                projects={projects}
+                startWeek={startWeek}
+                startYear={startYear}
+                currentWeek={currentWeek}
+              />
+            </TabsContent>
+
+            <TabsContent value="vacancies" className="m-0">
+              <VacancyCards
+                vacancies={vacancies}
+                projects={projects}
+                onFillGap={handleFillGap}
+              />
+            </TabsContent>
+          </div>
         </div>
       </Tabs>
     </div>
