@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
+import { useNavigation } from "@/contexts/NavigationContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,13 +12,39 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Circle, Square, Box, FileText, Bug, CheckSquare, Target, GitBranch, Lightbulb, AlertTriangle, Calendar, Package, AlertOctagon } from "lucide-react";
+import { 
+  Circle, Square, Box, FileText, Bug, CheckSquare, Target, 
+  GitBranch, Lightbulb, AlertTriangle, Calendar, Package, AlertOctagon 
+} from "lucide-react";
 
-// Module mapping for each item - null means always visible
-const workItems = [
+type WorkContext = 'enterprise' | 'program' | 'project' | 'product';
+
+interface ItemConfig {
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  path: string;
+  moduleCode: string | null;
+}
+
+// Define items for each context
+const enterpriseItems: ItemConfig[] = [
   { label: "Themes", icon: Circle, color: "text-workitem-theme", path: "/themes", moduleCode: "PORTFOLIO" },
-  { label: "Business Request", icon: Square, color: "text-brand-gold", path: "/industry", moduleCode: "PRODUCT" },
+  { label: "Objectives", icon: Target, color: "text-brand-gold", path: "/enterprise/objectives", moduleCode: "ENTERPRISE" },
+  { label: "Ideation", icon: Lightbulb, color: "text-warning-600", path: "/items/ideation", moduleCode: "PRODUCT" },
+];
+
+const programItems: ItemConfig[] = [
   { label: "Epics", icon: Square, color: "text-workitem-epic", path: "/items/epics", moduleCode: "PORTFOLIO" },
+  { label: "Program Incidents", icon: AlertOctagon, color: "text-destructive", path: "/release/incidents", moduleCode: "PROGRAM" },
+  { label: "Risks", icon: AlertTriangle, color: "text-destructive", path: "/enterprise/risks", moduleCode: "ENTERPRISE" },
+  { label: "Dependencies", icon: GitBranch, color: "text-warning", path: "/dependencies", moduleCode: "PROGRAM" },
+];
+
+const projectItems: ItemConfig[] = [
+  { label: "Sprints", icon: Calendar, color: "text-info", path: "/sprints", moduleCode: "PROGRAM" },
+  { label: "Risks", icon: AlertTriangle, color: "text-destructive", path: "/enterprise/risks", moduleCode: "ENTERPRISE" },
+  { label: "Dependencies", icon: GitBranch, color: "text-warning", path: "/dependencies", moduleCode: "PROGRAM" },
   { label: "Features", icon: Box, color: "text-workitem-feature", path: "/features", moduleCode: "PROGRAM" },
   { label: "Stories", icon: FileText, color: "text-workitem-story", path: "/stories", moduleCode: "TEAMS" },
   { label: "Defects", icon: Bug, color: "text-workitem-defect", path: "/items/defects", moduleCode: "TEAMS" },
@@ -25,35 +52,114 @@ const workItems = [
   { label: "Incidents", icon: AlertOctagon, color: "text-destructive", path: "/release/incidents", moduleCode: "TEAMS" },
 ];
 
-const otherItems = [
-  { label: "Objectives", icon: Target, color: "text-brand-gold", path: "/enterprise/objectives", moduleCode: "ENTERPRISE" },
-  { label: "Dependencies", icon: GitBranch, color: "text-warning", path: "/dependencies", moduleCode: "PROGRAM" },
-  { label: "Ideation", icon: Lightbulb, color: "text-warning-600", path: "/items/ideation", moduleCode: "PRODUCT" },
-  { label: "Risks", icon: AlertTriangle, color: "text-destructive", path: "/enterprise/risks", moduleCode: "ENTERPRISE" },
-  { label: "Sprints", icon: Calendar, color: "text-info", path: "/sprints", moduleCode: "PROGRAM" },
-  { label: "Program Increments", icon: Package, color: "text-workitem-theme", path: "/pis", moduleCode: "PROGRAM" },
+const productItems: ItemConfig[] = [
+  { label: "Business Requests", icon: Square, color: "text-brand-gold", path: "/industry", moduleCode: "PRODUCT" },
 ];
+
+// Other items that appear across multiple contexts
+const otherItemsByContext: Record<WorkContext, ItemConfig[]> = {
+  enterprise: [],
+  program: [
+    { label: "Program Increments", icon: Package, color: "text-workitem-theme", path: "/pis", moduleCode: "PROGRAM" },
+  ],
+  project: [
+    { label: "Program Increments", icon: Package, color: "text-workitem-theme", path: "/pis", moduleCode: "PROGRAM" },
+  ],
+  product: [],
+};
+
+function getWorkContext(pathname: string, selectedProgramId: string | null, selectedProjectId: string | null): WorkContext {
+  // Check route first
+  if (pathname.startsWith('/enterprise') || pathname.startsWith('/strategy')) {
+    return 'enterprise';
+  }
+  if (pathname.startsWith('/product') || pathname.startsWith('/industry')) {
+    return 'product';
+  }
+  if (pathname.startsWith('/program')) {
+    return 'program';
+  }
+  if (pathname.startsWith('/project')) {
+    return 'project';
+  }
+  
+  // Check selected context from navigation
+  if (selectedProjectId) {
+    return 'project';
+  }
+  if (selectedProgramId) {
+    return 'program';
+  }
+  
+  // Default to enterprise for home/generic routes
+  return 'enterprise';
+}
 
 export function ItemsDropdown() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const { isModuleEnabled } = useEnabledModules();
+  const { selectedProgramId, selectedProjectId } = useNavigation();
+
+  // Determine current work context
+  const workContext = useMemo(() => 
+    getWorkContext(location.pathname, selectedProgramId, selectedProjectId),
+    [location.pathname, selectedProgramId, selectedProjectId]
+  );
+
+  // Get items based on context
+  const contextWorkItems = useMemo(() => {
+    switch (workContext) {
+      case 'enterprise':
+        return enterpriseItems;
+      case 'program':
+        return programItems;
+      case 'project':
+        return projectItems;
+      case 'product':
+        return productItems;
+      default:
+        return enterpriseItems;
+    }
+  }, [workContext]);
+
+  const contextOtherItems = useMemo(() => 
+    otherItemsByContext[workContext] || [],
+    [workContext]
+  );
 
   // Filter items based on enabled modules
   const filteredWorkItems = useMemo(() => 
-    workItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
-    [isModuleEnabled]
+    contextWorkItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
+    [contextWorkItems, isModuleEnabled]
   );
 
   const filteredOtherItems = useMemo(() => 
-    otherItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
-    [isModuleEnabled]
+    contextOtherItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
+    [contextOtherItems, isModuleEnabled]
   );
 
   const handleItemClick = (path: string) => {
     setOpen(false);
     navigate(path);
   };
+
+  // Context label for the dropdown header
+  const contextLabel = useMemo(() => {
+    switch (workContext) {
+      case 'enterprise':
+        return 'Enterprise Items';
+      case 'program':
+        return 'Program Items';
+      case 'project':
+        return 'Project Items';
+      case 'product':
+        return 'Product Items';
+      default:
+        return 'Work Items';
+    }
+  }, [workContext]);
 
   // Don't render dropdown if no items are available
   if (filteredWorkItems.length === 0 && filteredOtherItems.length === 0) {
@@ -79,7 +185,7 @@ export function ItemsDropdown() {
         {filteredWorkItems.length > 0 && (
           <>
             <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
-              Work Items
+              {contextLabel}
             </DropdownMenuLabel>
             {filteredWorkItems.map((item) => (
               <DropdownMenuItem
