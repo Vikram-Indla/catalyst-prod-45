@@ -169,6 +169,7 @@ import EnterpriseRisks from "./pages/enterprise/EnterpriseRisks";
 import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
 import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
+import SkillsInventoryPage from "./pages/enterprise/SkillsInventoryPage";
 import BusinessRequests from "./pages/enterprise/BusinessRequests";
 import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
 import IndustryPage from "./pages/enterprise/IndustryPage";
@@ -302,7 +303,7 @@ const App = () => (
               <Route path="/enterprise/goals" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/vision" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/personas" element={<EnterpriseComingSoon />} />
-              <Route path="/enterprise/skills-inventory" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/skills-inventory" element={<SkillsInventoryPage />} />
               
               {/* Enterprise Reports - Placeholder Routes */}
               <Route path="/enterprise/reports/assessment" element={<EnterpriseComingSoon />} />
