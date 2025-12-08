@@ -127,6 +127,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     { id: 'risks', label: 'Risks', path: '/risks', moduleCode: 'PORTFOLIO' },
     { id: 'impediments', label: 'Impediments', path: '/enterprise/impediments', moduleCode: 'TEAM' },
     { id: 'kanban-boards', label: 'Kanban Boards', path: '/enterprise/kanban-boards', moduleCode: 'ENTERPRISE' },
+    { id: 'skills-inventory', label: 'Skills Inventory', path: '/enterprise/skills-inventory', moduleCode: 'ENTERPRISE' },
     { id: 'epics', label: 'Epics', path: '/enterprise/epics', moduleCode: 'PORTFOLIO' },
     { id: 'features', label: 'Features', path: '/enterprise/features', moduleCode: 'PROGRAM' },
     { id: 'stories', label: 'Stories', path: '/enterprise/stories', moduleCode: 'TEAM' },
