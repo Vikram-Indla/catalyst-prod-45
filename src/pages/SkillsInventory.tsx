@@ -1,9 +1,21 @@
 import { useState } from 'react';
-import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X } from 'lucide-react';
+import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { SkillsMatrixHeatmap } from '@/components/skills-inventory/SkillsMatrixHeatmap';
+import { SkillGapAnalysis } from '@/components/skills-inventory/SkillGapAnalysis';
+import { SkillsInventoryReport } from '@/components/skills-inventory/SkillsInventoryReport';
+
+type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report';
+
+const viewTabs = [
+  { id: 'table' as ViewMode, label: 'Table', icon: List },
+  { id: 'matrix' as ViewMode, label: 'Matrix', icon: Grid3X3 },
+  { id: 'gap-analysis' as ViewMode, label: 'Gap Analysis', icon: AlertTriangle },
+  { id: 'report' as ViewMode, label: 'Report', icon: PieChart },
+];
 
 // Sample data based on the Excel file
 const teamMembersData = [
@@ -46,6 +58,7 @@ export default function SkillsInventory() {
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedProficiencies, setSelectedProficiencies] = useState<string[]>([]);
   const [addSkillOpen, setAddSkillOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
 
   // Filter data based on selections
   const filteredData = teamMembersData.filter(member => {
@@ -93,14 +106,22 @@ export default function SkillsInventory() {
     return found?.color || '#6b7280';
   };
 
-  return (
-    <div className="min-h-screen" style={{ background: '#0f1219' }}>
-      {/* Header */}
-      <div className="px-8 py-6 border-b" style={{ borderColor: 'rgba(198, 156, 109, 0.15)' }}>
-        <h1 className="text-2xl font-bold" style={{ color: '#c69c6d' }}>Skills Inventory</h1>
-        <p className="text-sm mt-1" style={{ color: '#9ca3af' }}>Track team skills, proficiencies, and identify capability gaps</p>
-      </div>
+  // Render the appropriate view based on viewMode
+  const renderContent = () => {
+    switch (viewMode) {
+      case 'matrix':
+        return <SkillsMatrixHeatmap />;
+      case 'gap-analysis':
+        return <SkillGapAnalysis />;
+      case 'report':
+        return <SkillsInventoryReport />;
+      default:
+        return renderTableView();
+    }
+  };
 
+  const renderTableView = () => (
+    <>
       {/* Stats Cards */}
       <div className="px-8 py-6">
         <div className="grid grid-cols-4 gap-5">
@@ -301,6 +322,45 @@ export default function SkillsInventory() {
           </div>
         </div>
       </div>
+    </>
+  );
+
+  return (
+    <div className="min-h-screen" style={{ background: '#0f1219' }}>
+      {/* Header */}
+      <div className="px-8 py-6 border-b" style={{ borderColor: 'rgba(198, 156, 109, 0.15)' }}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-2xl font-bold" style={{ color: '#c69c6d' }}>Skills Inventory</h1>
+            <p className="text-sm mt-1" style={{ color: '#9ca3af' }}>Track team skills, proficiencies, and identify capability gaps</p>
+          </div>
+        </div>
+        
+        {/* View Mode Tabs */}
+        <div className="flex gap-1 p-1 rounded-lg" style={{ background: '#1a1f2e' }}>
+          {viewTabs.map(tab => {
+            const Icon = tab.icon;
+            const isActive = viewMode === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setViewMode(tab.id)}
+                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  isActive 
+                    ? 'bg-[#c69c6d] text-[#1a1f2e]' 
+                    : 'text-[#9ca3af] hover:text-[#f5f5f7] hover:bg-[#242938]'
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Content based on view mode */}
+      {renderContent()}
     </div>
   );
 }
