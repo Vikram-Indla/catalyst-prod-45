@@ -17,6 +17,7 @@ import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Link as LinkIcon, Lock, Unlock, Plus, Loader2, X, ChevronRight, Search } from 'lucide-react';
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
+import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
 import { WSJFInlineScores } from '@/components/wsjf';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
@@ -1171,6 +1172,12 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
         workItemId={epic.id} 
         workItemType="epic" 
         currentKey={epic.epic_key || epic.id}
+      />
+
+      {/* Custom Fields Section */}
+      <CustomFieldsSection 
+        entityType="epic" 
+        entityId={epic.id}
       />
 
       <AddPIDialog

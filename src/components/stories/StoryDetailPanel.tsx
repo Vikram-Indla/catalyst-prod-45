@@ -17,6 +17,7 @@ import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersion
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection';
 import { SprintSelector } from '@/components/work-items/SprintSelector';
+import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
@@ -435,6 +436,12 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
               storyId={story.id}
               currentSprintId={(story as any).sprint_id}
               teamId={story.team_id}
+            />
+
+            {/* Custom Fields Section */}
+            <CustomFieldsSection 
+              entityType="story" 
+              entityId={story.id}
             />
           </TabsContent>
 
