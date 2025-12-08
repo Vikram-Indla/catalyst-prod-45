@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart, ChevronDown, FileSpreadsheet, FileText, Loader2, Edit2, Trash2 } from 'lucide-react';
+import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart, ChevronDown, FileSpreadsheet, FileText, Loader2, Edit2, Trash2, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,10 +10,11 @@ import { SkillsFiltersDialog, SkillsInventoryFilters } from '@/components/skills
 import { EditSkillModal } from '@/components/skills-inventory/EditSkillModal';
 import { DeleteSkillDialog } from '@/components/skills-inventory/DeleteSkillDialog';
 import { AddTeamMemberModal, STANDARD_SKILLS } from '@/components/skills-inventory/AddTeamMemberModal';
+import { CapacityPlanningPage } from '@/components/capacity/CapacityPlanningPage';
 import { toast } from 'sonner';
 import { UserPlus } from 'lucide-react';
 
-type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report';
+type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report' | 'capacity';
 
 type SkillData = {
   id: number;
@@ -31,6 +32,7 @@ const viewTabs = [
   { id: 'matrix' as ViewMode, label: 'Matrix', icon: Grid3X3 },
   { id: 'gap-analysis' as ViewMode, label: 'Gap Analysis', icon: AlertTriangle },
   { id: 'report' as ViewMode, label: 'Report', icon: PieChart },
+  { id: 'capacity' as ViewMode, label: 'Capacity & Allocation', icon: Calendar },
 ];
 
 // Sample data based on the Excel file
@@ -324,6 +326,8 @@ export default function SkillsInventory() {
         return <SkillGapAnalysis />;
       case 'report':
         return <SkillsInventoryReport />;
+      case 'capacity':
+        return <CapacityPlanningPage />;
       default:
         return renderTableView();
     }

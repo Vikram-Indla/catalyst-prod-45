@@ -1,0 +1,212 @@
+/**
+ * Capacity & Allocation Utility Functions
+ * Following specification from LOVABLE-AI-PROMPT.md
+ */
+
+import { Resource, Allocation, AllocationStatusInfo, CapacityProject } from '@/types/capacity';
+
+// Get current ISO week number
+export function getCurrentWeek(): number {
+  const now = new Date();
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const days = Math.floor((now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+  return Math.ceil((days + startOfYear.getDay() + 1) / 7);
+}
+
+// Get current year
+export function getCurrentYear(): number {
+  return new Date().getFullYear();
+}
+
+// Calculate total utilization for a resource
+export function calculateUtilization(allocations: Allocation[], weekNumber?: number, year?: number): number {
+  const filtered = weekNumber && year 
+    ? allocations.filter(a => a.weekNumber === weekNumber && a.year === year)
+    : allocations;
+  return filtered.reduce((sum, a) => sum + a.percentage, 0);
+}
+
+// Get allocation status based on percentage
+export function getStatus(percentage: number): AllocationStatusInfo {
+  if (percentage > 100) {
+    return { status: 'over', label: 'Overallocated', colorClass: 'text-destructive bg-destructive/10' };
+  }
+  if (percentage >= 80) {
+    return { status: 'full', label: 'Fully Allocated', colorClass: 'text-health-green bg-health-green/10' };
+  }
+  return { status: 'under', label: 'Underallocated', colorClass: 'text-warning bg-warning/10' };
+}
+
+// Check if a week is editable
+export function isWeekEditable(weekNumber: number, year: number, currentWeek: number, currentYear: number, adminMode: boolean): boolean {
+  if (year > currentYear) return true;
+  if (year < currentYear) return adminMode;
+  if (weekNumber > currentWeek) return true;
+  if (weekNumber === currentWeek) return true;
+  return adminMode;
+}
+
+// Get week date range string
+export function getWeekDateRange(weekNumber: number, year: number): string {
+  const firstDayOfYear = new Date(year, 0, 1);
+  const daysOffset = (weekNumber - 1) * 7 - firstDayOfYear.getDay() + 1;
+  const weekStart = new Date(year, 0, 1 + daysOffset);
+  const weekEnd = new Date(weekStart);
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  
+  const formatDate = (d: Date) => {
+    const day = d.getDate().toString().padStart(2, '0');
+    const month = d.toLocaleString('en', { month: 'short' });
+    return `${day} ${month}`;
+  };
+  
+  return `${formatDate(weekStart)}–${formatDate(weekEnd)}`;
+}
+
+// Get available capacity for a resource in a week
+export function getAvailableCapacity(resource: Resource, weekNumber: number, year: number): number {
+  const used = calculateUtilization(resource.allocations, weekNumber, year);
+  return Math.max(0, resource.capacity - used);
+}
+
+// Generate initials from name
+export function getInitials(name: string): string {
+  return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+}
+
+// Get capacity status color class
+export function getCapacityColorClass(available: number): string {
+  if (available >= 50) return 'text-health-green';
+  if (available >= 20) return 'text-warning';
+  if (available > 0) return 'text-destructive';
+  return 'text-muted-foreground';
+}
+
+// Get capacity bar fill class
+export function getCapacityBarClass(available: number): string {
+  if (available >= 50) return 'bg-health-green';
+  if (available >= 20) return 'bg-warning';
+  if (available > 0) return 'bg-destructive';
+  return 'bg-muted-foreground';
+}
+
+// Mock data for initial implementation
+export const MOCK_PROJECTS: CapacityProject[] = [
+  { id: 'intl', name: 'International Relations', shortName: 'International', color: 'hsl(var(--gh-expert))', status: 'Active' },
+  { id: 'mim', name: 'MIM Website', shortName: 'MIM', color: 'hsl(var(--gh-advanced))', status: 'Active' },
+  { id: 'innov', name: 'Innovation Platform', shortName: 'Innovation', color: 'hsl(var(--brand-gold))', status: 'Active' },
+  { id: 'senaei', name: 'Senaei BAU-SS', shortName: 'Senaei', color: 'hsl(var(--gh-beginner))', status: 'Active' },
+  { id: 'mobile', name: 'Senaei Mobile', shortName: 'Mobile', color: 'hsl(var(--gh-expert))', status: 'Active' },
+  { id: 'icp', name: 'ICP Project', shortName: 'ICP', color: 'hsl(var(--gh-advanced))', status: 'Active' },
+];
+
+export const MOCK_RESOURCES: Resource[] = [
+  { 
+    id: 'dreni', 
+    name: 'Dreni Djini', 
+    initials: 'DD', 
+    role: 'Senior Frontend Developer', 
+    primarySkill: 'Frontend', 
+    location: 'Onsite', 
+    department: 'Engineering',
+    capacity: 100,
+    startDate: '2024-01-01',
+    allocations: [
+      { id: 'a1', resourceId: 'dreni', projectId: 'intl', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a2', resourceId: 'dreni', projectId: 'mim', weekNumber: 50, year: 2024, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
+    ],
+    createdAt: '2024-01-01',
+    updatedAt: '2024-12-01'
+  },
+  { 
+    id: 'faisal', 
+    name: 'Faisal Javed', 
+    initials: 'FJ', 
+    role: 'Full Stack Developer', 
+    primarySkill: 'Full Stack', 
+    location: 'Onsite', 
+    department: 'Engineering',
+    capacity: 100,
+    startDate: '2024-01-01',
+    allocations: [
+      { id: 'a3', resourceId: 'faisal', projectId: 'intl', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a4', resourceId: 'faisal', projectId: 'icp', weekNumber: 50, year: 2024, percentage: 50, type: 'SOFT', createdAt: '2024-12-01' },
+    ],
+    createdAt: '2024-01-01',
+    updatedAt: '2024-12-01'
+  },
+  { 
+    id: 'andrew', 
+    name: 'Andrew Fayyaz', 
+    initials: 'AF', 
+    role: 'Backend Developer', 
+    primarySkill: 'Backend', 
+    location: 'Onsite', 
+    department: 'Engineering',
+    capacity: 100,
+    startDate: '2024-01-01',
+    allocations: [
+      { id: 'a5', resourceId: 'andrew', projectId: 'innov', weekNumber: 50, year: 2024, percentage: 30, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a6', resourceId: 'andrew', projectId: 'senaei', weekNumber: 50, year: 2024, percentage: 30, type: 'SOFT', createdAt: '2024-12-01' },
+    ],
+    createdAt: '2024-01-01',
+    updatedAt: '2024-12-01'
+  },
+  { 
+    id: 'syed', 
+    name: 'Syed Habib', 
+    initials: 'SH', 
+    role: 'DevOps Engineer', 
+    primarySkill: 'DevOps', 
+    location: 'Onsite', 
+    department: 'Engineering',
+    capacity: 100,
+    startDate: '2024-01-01',
+    allocations: [
+      { id: 'a7', resourceId: 'syed', projectId: 'innov', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a8', resourceId: 'syed', projectId: 'senaei', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+    ],
+    createdAt: '2024-01-01',
+    updatedAt: '2024-12-01'
+  },
+  { 
+    id: 'sikander', 
+    name: 'Sikander Ahmad', 
+    initials: 'SA', 
+    role: 'Mobile Developer', 
+    primarySkill: 'Frontend', 
+    location: 'Onsite', 
+    department: 'Engineering',
+    capacity: 100,
+    startDate: '2024-01-01',
+    allocations: [
+      { id: 'a9', resourceId: 'sikander', projectId: 'mobile', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a10', resourceId: 'sikander', projectId: 'icp', weekNumber: 50, year: 2024, percentage: 25, type: 'SOFT', createdAt: '2024-12-01' },
+    ],
+    createdAt: '2024-01-01',
+    updatedAt: '2024-12-01'
+  },
+  { 
+    id: 'vikram', 
+    name: 'Vikram Indla', 
+    initials: 'VI', 
+    role: 'Product Manager', 
+    primarySkill: 'Product', 
+    location: 'Onsite', 
+    department: 'Product',
+    capacity: 100,
+    startDate: '2024-01-01',
+    allocations: [
+      { id: 'a11', resourceId: 'vikram', projectId: 'senaei', weekNumber: 50, year: 2024, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a12', resourceId: 'vikram', projectId: 'icp', weekNumber: 50, year: 2024, percentage: 35, type: 'SOFT', createdAt: '2024-12-01' },
+    ],
+    createdAt: '2024-01-01',
+    updatedAt: '2024-12-01'
+  },
+];
+
+export const MOCK_VACANCIES = [
+  { id: 'v1', projectId: 'senaei', skill: 'Backend', proficiencyLevel: 'Expert' as const, percentageNeeded: 50, location: 'Onsite' as const, startWeek: 50, endWeek: 4, year: 2024, severity: 'critical' as const, status: 'OPEN' as const },
+  { id: 'v2', projectId: 'icp', skill: 'DevOps', proficiencyLevel: 'Advanced' as const, percentageNeeded: 30, location: 'Any' as const, startWeek: 50, endWeek: 8, year: 2024, severity: 'high' as const, status: 'OPEN' as const },
+  { id: 'v3', projectId: 'innov', skill: 'QA', proficiencyLevel: 'Intermediate' as const, percentageNeeded: 25, location: 'Offshore' as const, startWeek: 51, endWeek: 2, year: 2024, severity: 'medium' as const, status: 'OPEN' as const },
+];

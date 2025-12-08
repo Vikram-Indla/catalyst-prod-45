@@ -1,0 +1,133 @@
+/**
+ * Timeline View (Gantt-style)
+ * Displays allocations as horizontal bars per week
+ */
+
+import { Resource, CapacityProject } from '@/types/capacity';
+import { getWeekDateRange } from '@/lib/capacityUtils';
+import { cn } from '@/lib/utils';
+
+interface TimelineViewProps {
+  resources: Resource[];
+  projects: CapacityProject[];
+  startWeek: number;
+  startYear: number;
+  currentWeek: number;
+}
+
+export function TimelineView({ 
+  resources, 
+  projects, 
+  startWeek, 
+  startYear,
+  currentWeek 
+}: TimelineViewProps) {
+  // Display 4 weeks starting from startWeek
+  const weeks = Array.from({ length: 4 }, (_, i) => {
+    let weekNum = startWeek + i;
+    let yearNum = startYear;
+    if (weekNum > 52) {
+      weekNum = weekNum - 52;
+      yearNum++;
+    }
+    return { week: weekNum, year: yearNum };
+  });
+
+  const getProjectColor = (projectId: string): string => {
+    const project = projects.find(p => p.id === projectId);
+    return project?.color || 'hsl(var(--muted-foreground))';
+  };
+
+  const getProjectShortName = (projectId: string): string => {
+    const project = projects.find(p => p.id === projectId);
+    return project?.shortName || 'Unknown';
+  };
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full min-w-[900px] border-collapse">
+        <thead>
+          <tr>
+            <th className="text-left font-semibold text-xs text-muted-foreground p-2 border border-border bg-muted min-w-[180px] sticky left-0 z-10">
+              Resource
+            </th>
+            {weeks.map((w, idx) => {
+              const isCurrent = w.week === currentWeek && w.year === startYear;
+              return (
+                <th 
+                  key={`${w.year}-${w.week}`}
+                  className={cn(
+                    "text-center font-semibold text-xs p-2 border border-border bg-muted min-w-[140px]",
+                    isCurrent && "bg-brand-gold/10 text-brand-gold"
+                  )}
+                >
+                  <div className="flex flex-col items-center">
+                    <span className="font-semibold">W{w.week}</span>
+                    <span className="text-[10px] text-muted-foreground font-normal">
+                      {getWeekDateRange(w.week, w.year)}
+                    </span>
+                  </div>
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {resources.map((resource) => (
+            <tr key={resource.id} className="hover:bg-muted/50">
+              <td className="p-2 border border-border sticky left-0 bg-card z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                    {resource.initials}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-medium text-sm text-foreground whitespace-nowrap">
+                      {resource.name}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground whitespace-nowrap">
+                      {resource.role}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              {weeks.map((w) => {
+                const weekAllocations = resource.allocations.filter(
+                  a => a.weekNumber === w.week && a.year === w.year
+                );
+
+                return (
+                  <td key={`${w.year}-${w.week}`} className="p-1 border border-border min-h-[50px]">
+                    <div className="flex gap-0.5 h-full items-center p-1">
+                      {weekAllocations.map(allocation => (
+                        <div
+                          key={allocation.id}
+                          className="h-7 rounded flex items-center justify-center text-white text-[11px] font-medium min-w-[40px]"
+                          style={{ 
+                            backgroundColor: getProjectColor(allocation.projectId),
+                            flex: allocation.percentage
+                          }}
+                          title={`${getProjectShortName(allocation.projectId)}: ${allocation.percentage}%`}
+                        >
+                          {allocation.percentage}%
+                        </div>
+                      ))}
+                      {weekAllocations.length === 0 && (
+                        <div className="text-xs text-muted-foreground">—</div>
+                      )}
+                    </div>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {resources.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground">
+          No resources found matching your filters
+        </div>
+      )}
+    </div>
+  );
+}
