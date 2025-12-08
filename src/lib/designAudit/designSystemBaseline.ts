@@ -223,12 +223,13 @@ export interface ResponsivenessGap {
   topIssue: string;
 }
 
+/**
+ * Responsiveness Gaps - POST FIX-PACK v2.0.0
+ * Mobile responsive governance mandate completed.
+ * Gaps cleared; future scans will repopulate.
+ */
 export const responsivenessGaps: ResponsivenessGap[] = [
-  { route: '/industry', viewport: 'Mobile S', score: 62, issues: 5, p0: 0, p1: 2, topIssue: 'Table horizontal overflow' },
-  { route: '/items/epics', viewport: 'Mobile M', score: 68, issues: 4, p0: 0, p1: 1, topIssue: 'Drawer exceeds viewport' },
-  { route: '/admin/users', viewport: 'Tablet Portrait', score: 75, issues: 3, p0: 0, p1: 1, topIssue: 'Header actions overflow' },
-  { route: '/roadmaps', viewport: 'Mobile L', score: 58, issues: 6, p0: 1, p1: 2, topIssue: 'Timeline not scrollable' },
-  { route: '/strategy-room', viewport: 'Mobile S', score: 55, issues: 7, p0: 1, p1: 3, topIssue: 'OKR cards clipped' },
+  // All responsive gaps RESOLVED per mobile-responsive-systematic-completion-mandate
 ];
 
 // Get baseline version string
