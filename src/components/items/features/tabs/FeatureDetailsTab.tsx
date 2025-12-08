@@ -11,6 +11,7 @@ import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection
 import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
 import { WorkItemLabelSelector } from '@/components/work-items/WorkItemLabelSelector';
 import { WorkItemLinksSection } from '@/components/work-items/WorkItemLinksSection';
+import { WorkItemCommentsSection } from '@/components/work-items/WorkItemCommentsSection';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureFormData {
@@ -217,6 +218,14 @@ export function FeatureDetailsTab({ feature, formData, updateField }: FeatureDet
         <WorkItemLinksSection 
           workItemType="feature" 
           workItemId={feature.id}
+        />
+      )}
+
+      {/* Comments Section */}
+      {feature?.id && (
+        <WorkItemCommentsSection 
+          entityType="feature" 
+          entityId={feature.id}
         />
       )}
 
