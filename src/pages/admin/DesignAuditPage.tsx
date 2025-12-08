@@ -3,33 +3,21 @@ import {
   Palette, Type, Ruler, Square, Layers, Eye, CheckCircle2, AlertTriangle, XCircle,
   ChevronDown, ChevronRight, Monitor, Tablet, Smartphone, Bell, BarChart3, 
   MousePointer2, Tag, RectangleHorizontal, Route, FileText, Download, RefreshCw,
-  Scan, Layout, PanelLeft, Maximize2, MessageSquare, Zap, Lock, Wrench, Target
+  Scan, Layout, PanelLeft, Maximize2, Zap, Lock, Wrench, Target, Settings2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
-import { auditRoutes, auditTargets, auditAreas } from '@/lib/designAudit/auditConfig';
-import { calculateScores, getScoreColor, getScoreBgColor, prioritizeFindings } from '@/lib/designAudit/auditScoring';
-import type { AuditFinding, AuditScores } from '@/lib/designAudit/auditTypes';
+import { auditRoutes } from '@/lib/designAudit/auditConfig';
+import { getScoreColor, getScoreBgColor } from '@/lib/designAudit/auditScoring';
+import type { AuditFinding } from '@/lib/designAudit/auditTypes';
 import { DesignSystemBaseline } from '@/components/admin/design-audit/DesignSystemBaseline';
 import { GapDetectionGrid } from '@/components/admin/design-audit/GapDetectionGrid';
 import { FixIssuesPanel } from '@/components/admin/design-audit/FixIssuesPanel';
-
-/**
- * Design Audit Page - Comprehensive Atlassian-aligned design system audit
- * 
- * Features:
- * - Route scanning across all modules
- * - Element-level CSS extraction
- * - Before/after comparison
- * - Accessibility checks
- * - Toast, Chart, Interaction, Status, Button audits
- */
 
 // Core UI findings
 const coreFindings: AuditFinding[] = [
@@ -164,6 +152,60 @@ const tokenCategories = [
   },
 ];
 
+// Navigation sections
+const navSections = [
+  { 
+    id: 'baseline', 
+    label: 'Design Baseline', 
+    icon: Lock, 
+    description: 'Locked design system tokens'
+  },
+  { 
+    id: 'gaps', 
+    label: 'Gap Detection', 
+    icon: Target, 
+    description: 'Pages/components not aligned'
+  },
+  { 
+    id: 'fix', 
+    label: 'Fix Issues', 
+    icon: Wrench, 
+    description: 'Apply fixes to selected issues'
+  },
+  { 
+    id: 'overview', 
+    label: 'Overview', 
+    icon: Eye, 
+    description: 'Scores & summary'
+  },
+  { 
+    id: 'components', 
+    label: 'Components', 
+    icon: Settings2, 
+    subItems: [
+      { id: 'core', label: 'Core UI', icon: Layout },
+      { id: 'overlays', label: 'Modals/Drawers', icon: Maximize2 },
+      { id: 'buttons', label: 'Buttons', icon: RectangleHorizontal },
+      { id: 'toasts', label: 'Toasts', icon: Bell },
+      { id: 'charts', label: 'Charts', icon: BarChart3 },
+      { id: 'status', label: 'Status Colors', icon: Tag },
+      { id: 'interactions', label: 'Interaction States', icon: MousePointer2 },
+    ]
+  },
+  { 
+    id: 'tokens', 
+    label: 'Design Tokens', 
+    icon: Zap, 
+    description: 'Token reference'
+  },
+  { 
+    id: 'routes', 
+    label: 'Routes', 
+    icon: Route, 
+    description: 'Configured audit routes'
+  },
+];
+
 // Calculate scores
 function calcScore(items: { status: string }[]): number {
   const passed = items.filter(i => i.status === 'pass' || i.status === 'fixed').length;
@@ -171,6 +213,8 @@ function calcScore(items: { status: string }[]): number {
 }
 
 export function DesignAuditPage() {
+  const [activeSection, setActiveSection] = useState('baseline');
+  const [expandedNav, setExpandedNav] = useState<string | null>('components');
   const [expandedCategory, setExpandedCategory] = useState<string | null>('Surfaces');
   const [selectedViewport, setSelectedViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop');
   const [isScanning, setIsScanning] = useState(false);
@@ -220,492 +264,606 @@ export function DesignAuditPage() {
     URL.revokeObjectURL(url);
   };
 
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'baseline':
+        return <DesignSystemBaseline />;
+      case 'gaps':
+        return <GapDetectionGrid />;
+      case 'fix':
+        return <FixIssuesPanel />;
+      case 'overview':
+        return <OverviewContent scores={scores} overallScore={overallScore} />;
+      case 'core':
+        return <AuditTable title="Core UI Findings" description="Side navigation, header, layout measurements" findings={coreFindings} columns={['status', 'area', 'element', 'current', 'target', 'delta', 'severity']} />;
+      case 'overlays':
+        return <OverlaysContent />;
+      case 'toasts':
+        return <ToastsContent scores={scores} toastFindings={toastFindings} />;
+      case 'charts':
+        return <ChartsContent scores={scores} chartFindings={chartFindings} />;
+      case 'interactions':
+        return <InteractionsContent scores={scores} interactionFindings={interactionFindings} />;
+      case 'status':
+        return <StatusContent scores={scores} statusFindings={statusFindings} />;
+      case 'buttons':
+        return <ButtonsContent scores={scores} buttonFindings={buttonFindings} />;
+      case 'tokens':
+        return <TokensContent tokenCategories={tokenCategories} expandedCategory={expandedCategory} setExpandedCategory={setExpandedCategory} />;
+      case 'routes':
+        return <RoutesContent />;
+      default:
+        return <DesignSystemBaseline />;
+    }
+  };
+
   return (
-    <div className="flex-1 overflow-auto bg-background">
-      {/* Page Header */}
-      <div className="h-[72px] border-b bg-card flex items-center px-6 shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-brand-gold/10 flex items-center justify-center">
-            <Palette className="h-5 w-5 text-brand-gold" />
+    <div className="flex h-[calc(100vh-64px)] bg-background">
+      {/* Left Sidebar Navigation */}
+      <aside className="w-64 border-r bg-card flex flex-col shrink-0">
+        {/* Sidebar Header */}
+        <div className="h-[72px] border-b flex items-center px-4 gap-3">
+          <div className="h-9 w-9 rounded-lg bg-brand-gold/10 flex items-center justify-center">
+            <Palette className="h-4.5 w-4.5 text-brand-gold" />
           </div>
-          <div>
-            <h1 className="text-lg font-semibold text-foreground">Design Audit Mode</h1>
-            <p className="text-xs text-muted-foreground">Atlassian Parity Audit · {auditRoutes.length} routes configured</p>
+          <div className="min-w-0">
+            <h1 className="text-sm font-semibold text-foreground truncate">Design Audit</h1>
+            <p className="text-xs text-muted-foreground">{auditRoutes.length} routes</p>
           </div>
         </div>
-        
-        <div className="ml-auto flex items-center gap-3">
-          {/* Viewport Toggle */}
-          <div className="flex items-center gap-1 bg-secondary rounded-lg p-1">
-            {(['desktop', 'tablet', 'mobile'] as const).map((vp) => (
-              <Button
-                key={vp}
-                variant={selectedViewport === vp ? 'secondary' : 'ghost'}
-                size="sm"
-                className="h-7 px-2"
-                onClick={() => setSelectedViewport(vp)}
-              >
-                {vp === 'desktop' && <Monitor className="h-4 w-4" />}
-                {vp === 'tablet' && <Tablet className="h-4 w-4" />}
-                {vp === 'mobile' && <Smartphone className="h-4 w-4" />}
-              </Button>
-            ))}
-          </div>
-          
-          <Separator orientation="vertical" className="h-6" />
-          
-          <Button variant="outline" size="sm" onClick={handleRunAudit} disabled={isScanning}>
-            {isScanning ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : <Scan className="h-4 w-4 mr-2" />}
-            {isScanning ? 'Scanning...' : 'Run Audit'}
-          </Button>
-          
-          <Button variant="outline" size="sm" onClick={handleExportReport}>
-            <Download className="h-4 w-4 mr-2" />
-            Export Report
-          </Button>
-          
-          {/* Overall Score */}
-          <div className={cn("flex items-center gap-3 px-4 py-2 rounded-lg", getScoreBgColor(overallScore))}>
-            <div className="text-right">
+
+        {/* Score Summary */}
+        <div className="p-3 border-b">
+          <div className={cn("flex items-center gap-3 px-3 py-2 rounded-lg", getScoreBgColor(overallScore))}>
+            <div className="flex-1">
               <div className="text-xs text-muted-foreground">Overall Score</div>
               <div className={cn("text-lg font-semibold", getScoreColor(overallScore))}>{overallScore}%</div>
             </div>
-            <Progress value={overallScore} className="w-20 h-2" />
+            <Progress value={overallScore} className="w-16 h-2" />
           </div>
         </div>
-      </div>
+
+        {/* Navigation */}
+        <ScrollArea className="flex-1">
+          <nav className="p-2 space-y-0.5">
+            {navSections.map((section) => {
+              const Icon = section.icon;
+              const hasSubItems = 'subItems' in section && section.subItems;
+              const isExpanded = expandedNav === section.id;
+              const isActive = activeSection === section.id || 
+                (hasSubItems && section.subItems?.some(sub => sub.id === activeSection));
+
+              return (
+                <div key={section.id}>
+                  <button
+                    onClick={() => {
+                      if (hasSubItems) {
+                        setExpandedNav(isExpanded ? null : section.id);
+                      } else {
+                        setActiveSection(section.id);
+                      }
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-sm transition-colors text-left",
+                      isActive && !hasSubItems 
+                        ? "bg-brand-gold/10 text-brand-gold font-medium border-l-2 border-brand-gold -ml-0.5 pl-[14px]" 
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span className="flex-1 truncate">{section.label}</span>
+                    {hasSubItems && (
+                      isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />
+                    )}
+                  </button>
+
+                  {/* Sub Items */}
+                  {hasSubItems && isExpanded && (
+                    <div className="ml-4 mt-0.5 space-y-0.5 border-l pl-2">
+                      {section.subItems?.map((sub) => {
+                        const SubIcon = sub.icon;
+                        return (
+                          <button
+                            key={sub.id}
+                            onClick={() => setActiveSection(sub.id)}
+                            className={cn(
+                              "w-full flex items-center gap-2 px-2.5 py-1.5 rounded-md text-xs transition-colors text-left",
+                              activeSection === sub.id 
+                                ? "bg-brand-gold/10 text-brand-gold font-medium" 
+                                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                            )}
+                          >
+                            <SubIcon className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate">{sub.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
+        </ScrollArea>
+
+        {/* Sidebar Footer Actions */}
+        <div className="p-3 border-t space-y-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-start gap-2" 
+            onClick={handleRunAudit} 
+            disabled={isScanning}
+          >
+            {isScanning ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Scan className="h-4 w-4" />}
+            {isScanning ? 'Scanning...' : 'Run Audit'}
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full justify-start gap-2"
+            onClick={handleExportReport}
+          >
+            <Download className="h-4 w-4" />
+            Export Report
+          </Button>
+        </div>
+      </aside>
 
       {/* Main Content */}
-      <div className="p-6">
-        <Tabs defaultValue="baseline" className="space-y-6">
-          <TabsList className="flex-wrap h-auto gap-1 bg-secondary/50 p-1">
-            <TabsTrigger value="baseline" className="gap-1.5"><Lock className="h-3.5 w-3.5" />Baseline</TabsTrigger>
-            <TabsTrigger value="gaps" className="gap-1.5"><Target className="h-3.5 w-3.5" />Gaps</TabsTrigger>
-            <TabsTrigger value="fix" className="gap-1.5"><Wrench className="h-3.5 w-3.5" />Fix Issues</TabsTrigger>
-            <TabsTrigger value="overview" className="gap-1.5"><Eye className="h-3.5 w-3.5" />Overview</TabsTrigger>
-            <TabsTrigger value="routes" className="gap-1.5"><Route className="h-3.5 w-3.5" />Routes</TabsTrigger>
-            <TabsTrigger value="core" className="gap-1.5"><Layout className="h-3.5 w-3.5" />Core UI</TabsTrigger>
-            <TabsTrigger value="overlays" className="gap-1.5"><Maximize2 className="h-3.5 w-3.5" />Modals/Drawers</TabsTrigger>
-            <TabsTrigger value="toasts" className="gap-1.5"><Bell className="h-3.5 w-3.5" />Toasts</TabsTrigger>
-            <TabsTrigger value="charts" className="gap-1.5"><BarChart3 className="h-3.5 w-3.5" />Charts</TabsTrigger>
-            <TabsTrigger value="interactions" className="gap-1.5"><MousePointer2 className="h-3.5 w-3.5" />States</TabsTrigger>
-            <TabsTrigger value="status" className="gap-1.5"><Tag className="h-3.5 w-3.5" />Status</TabsTrigger>
-            <TabsTrigger value="buttons" className="gap-1.5"><RectangleHorizontal className="h-3.5 w-3.5" />Buttons</TabsTrigger>
-            <TabsTrigger value="tokens" className="gap-1.5"><Zap className="h-3.5 w-3.5" />Tokens</TabsTrigger>
-          </TabsList>
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Content Header */}
+        <div className="h-[72px] border-b bg-card flex items-center justify-between px-6 shrink-0">
+          <div>
+            <h2 className="text-lg font-semibold text-foreground">
+              {navSections.find(s => s.id === activeSection)?.label || 
+               navSections.flatMap(s => 'subItems' in s ? s.subItems || [] : []).find(s => s.id === activeSection)?.label || 
+               'Design Audit'}
+            </h2>
+            <p className="text-xs text-muted-foreground">
+              {navSections.find(s => s.id === activeSection)?.description || 'Component analysis'}
+            </p>
+          </div>
 
-          {/* Baseline Tab */}
-          <TabsContent value="baseline" className="space-y-6">
-            <DesignSystemBaseline />
-          </TabsContent>
-
-          {/* Gaps Tab */}
-          <TabsContent value="gaps" className="space-y-6">
-            <GapDetectionGrid />
-          </TabsContent>
-
-          {/* Fix Issues Tab */}
-          <TabsContent value="fix" className="space-y-6">
-            <FixIssuesPanel />
-          </TabsContent>
-
-          {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
-            {/* Score Cards Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {[
-                { label: 'Core UI', score: scores.core, icon: Layout },
-                { label: 'Toasts', score: scores.toast, icon: Bell },
-                { label: 'Charts', score: scores.chart, icon: BarChart3 },
-                { label: 'Interactions', score: scores.interaction, icon: MousePointer2 },
-                { label: 'Status Colors', score: scores.status, icon: Tag },
-                { label: 'Buttons', score: scores.button, icon: RectangleHorizontal },
-              ].map(({ label, score, icon: Icon }) => (
-                <Card key={label} className="border-border/50">
-                  <CardContent className="pt-4">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", getScoreBgColor(score))}>
-                        <Icon className={cn("h-5 w-5", getScoreColor(score))} />
-                      </div>
-                      <div>
-                        <div className={cn("text-2xl font-bold", getScoreColor(score))}>{score}%</div>
-                        <div className="text-xs text-muted-foreground">{label}</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+          {/* Viewport Toggle */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 bg-secondary rounded-lg p-1">
+              {(['desktop', 'tablet', 'mobile'] as const).map((vp) => (
+                <Button
+                  key={vp}
+                  variant={selectedViewport === vp ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-7 px-2"
+                  onClick={() => setSelectedViewport(vp)}
+                >
+                  {vp === 'desktop' && <Monitor className="h-4 w-4" />}
+                  {vp === 'tablet' && <Tablet className="h-4 w-4" />}
+                  {vp === 'mobile' && <Smartphone className="h-4 w-4" />}
+                </Button>
               ))}
             </div>
+          </div>
+        </div>
 
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <Card>
-                <CardHeader className="py-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-brand-gold" />
-                    Audit Summary
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Routes Audited:</span>
-                      <span className="font-medium">{auditRoutes.length}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Toast Score:</span>
-                      <span className={cn("font-medium", getScoreColor(scores.toast))}>{scores.toast}%</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Palette Drift:</span>
-                      <Badge variant="outline" className="bg-success/10 text-success border-success/20">None</Badge>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Button Density:</span>
-                      <span className={cn("font-medium", getScoreColor(scores.button))}>{scores.button}%</span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+        {/* Scrollable Content Area */}
+        <ScrollArea className="flex-1">
+          <div className="p-6">
+            {renderContent()}
+          </div>
+        </ScrollArea>
+      </main>
+    </div>
+  );
+}
 
-              <Card>
-                <CardHeader className="py-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <AlertTriangle className="h-4 w-4 text-warning" />
-                    Top Priorities
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {[
-                      { text: 'Button heights need reduction (-4px each)', severity: 'P1' },
-                      { text: 'Toast colors should use semantic tokens', severity: 'P2' },
-                      { text: 'Add active/pressed states to buttons', severity: 'P2' },
-                      { text: 'Table row height needs density fix', severity: 'P2' },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm">
-                        <Badge className={cn("text-xs shrink-0", 
-                          item.severity === 'P1' ? 'bg-warning text-warning-foreground' : 'bg-info text-info-foreground'
-                        )}>
-                          {item.severity}
-                        </Badge>
-                        <span className="text-muted-foreground">{item.text}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
-
-          {/* Routes Tab */}
-          <TabsContent value="routes" className="space-y-4">
-            <Card>
-              <CardHeader className="py-3">
-                <CardTitle className="text-base">Configured Routes ({auditRoutes.length})</CardTitle>
-                <CardDescription>Routes discovered for audit scanning</CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <ScrollArea className="h-[400px]">
-                  <table className="w-full text-sm">
-                    <thead className="sticky top-0 bg-card border-b">
-                      <tr>
-                        <th className="text-left font-medium px-4 py-2">Route</th>
-                        <th className="text-left font-medium px-4 py-2">Name</th>
-                        <th className="text-left font-medium px-4 py-2">Category</th>
-                        <th className="text-left font-medium px-4 py-2">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {auditRoutes.map((route) => (
-                        <tr key={route.path} className="border-b hover:bg-secondary/30">
-                          <td className="px-4 py-2">
-                            <code className="text-xs px-1.5 py-0.5 bg-secondary rounded">{route.path}</code>
-                          </td>
-                          <td className="px-4 py-2 font-medium">{route.name}</td>
-                          <td className="px-4 py-2">
-                            <Badge variant="outline" className="text-xs capitalize">{route.category}</Badge>
-                          </td>
-                          <td className="px-4 py-2">
-                            <Badge className="bg-success/10 text-success text-xs">Configured</Badge>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Core UI Tab */}
-          <TabsContent value="core" className="space-y-4">
-            <AuditTable
-              title="Core UI Findings"
-              description="Side navigation, header, layout measurements"
-              findings={coreFindings}
-              columns={['status', 'area', 'element', 'current', 'target', 'delta', 'severity']}
-            />
-          </TabsContent>
-
-          {/* Overlays Tab */}
-          <TabsContent value="overlays" className="space-y-4">
-            <Card>
-              <CardHeader className="py-3">
-                <CardTitle className="text-base">Modal/Dialog/Drawer Audit</CardTitle>
-                <CardDescription>Overlay anatomy, sizing, and behavior consistency</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-medium mb-3">Modal Sizes</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between"><span>Small:</span><code className="bg-secondary px-1.5 rounded">384px</code></div>
-                      <div className="flex justify-between"><span>Medium:</span><code className="bg-secondary px-1.5 rounded">512px</code></div>
-                      <div className="flex justify-between"><span>Large:</span><code className="bg-secondary px-1.5 rounded">640px</code></div>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-3">Drawer Widths</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between"><span>Narrow:</span><code className="bg-secondary px-1.5 rounded">360px</code></div>
-                      <div className="flex justify-between"><span>Medium:</span><code className="bg-secondary px-1.5 rounded">480px</code></div>
-                      <div className="flex justify-between"><span>Wide:</span><code className="bg-secondary px-1.5 rounded">640px</code></div>
-                    </div>
-                  </div>
+// Sub-components for each section
+function OverviewContent({ scores, overallScore }: { scores: Record<string, number>; overallScore: number }) {
+  return (
+    <div className="space-y-6">
+      {/* Score Cards Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {[
+          { label: 'Core UI', score: scores.core, icon: Layout },
+          { label: 'Toasts', score: scores.toast, icon: Bell },
+          { label: 'Charts', score: scores.chart, icon: BarChart3 },
+          { label: 'Interactions', score: scores.interaction, icon: MousePointer2 },
+          { label: 'Status Colors', score: scores.status, icon: Tag },
+          { label: 'Buttons', score: scores.button, icon: RectangleHorizontal },
+        ].map(({ label, score, icon: Icon }) => (
+          <Card key={label} className="border-border/50">
+            <CardContent className="pt-4">
+              <div className="flex items-center gap-3">
+                <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center", getScoreBgColor(score))}>
+                  <Icon className={cn("h-5 w-5", getScoreColor(score))} />
                 </div>
-                <Separator className="my-4" />
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-success" />
-                    <span>Focus trap implemented</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-success" />
-                    <span>ESC key closes overlay</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-success" />
-                    <span>Backdrop click close (configurable)</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-success" />
-                    <span>Consistent elevation/shadow tokens</span>
-                  </div>
+                <div>
+                  <div className={cn("text-2xl font-bold", getScoreColor(score))}>{score}%</div>
+                  <div className="text-xs text-muted-foreground">{label}</div>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-          {/* Toasts Tab */}
-          <TabsContent value="toasts" className="space-y-4">
-            <div className="flex items-center gap-4 mb-2">
-              <Badge className={cn("gap-1.5", getScoreBgColor(scores.toast), getScoreColor(scores.toast))}>
-                <Bell className="h-3.5 w-3.5" />
-                Toast Consistency: {scores.toast}%
-              </Badge>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <FileText className="h-4 w-4 text-brand-gold" />
+              Audit Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Routes Audited:</span>
+                <span className="font-medium">{auditRoutes.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Toast Score:</span>
+                <span className={cn("font-medium", getScoreColor(scores.toast))}>{scores.toast}%</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Palette Drift:</span>
+                <Badge variant="outline" className="bg-success/10 text-success border-success/20">None</Badge>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">Button Density:</span>
+                <span className={cn("font-medium", getScoreColor(scores.button))}>{scores.button}%</span>
+              </div>
             </div>
-            <SimpleAuditTable title="Toast/Flag/Banner Audit" items={toastFindings} />
-          </TabsContent>
+          </CardContent>
+        </Card>
 
-          {/* Charts Tab */}
-          <TabsContent value="charts" className="space-y-4">
-            <div className="flex items-center gap-4 mb-2">
-              <Badge className="bg-success/10 text-success gap-1.5">
-                <BarChart3 className="h-3.5 w-3.5" />
-                Chart Score: {scores.chart}%
-              </Badge>
-              <Badge variant="outline" className="bg-success/10 text-success border-success/20">No Palette Drift</Badge>
-            </div>
-            
-            {/* Palette Preview */}
-            <Card>
-              <CardHeader className="py-3">
-                <CardTitle className="text-base">Golden Hour Palette</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-3">
-                  {[
-                    { name: 'Expert', color: 'hsl(120 15% 43%)', level: 5 },
-                    { name: 'Advanced', color: 'hsl(28 26% 44%)', level: 4 },
-                    { name: 'Intermediate', color: 'hsl(35 46% 60%)', level: 3 },
-                    { name: 'Beginner', color: 'hsl(35 42% 71%)', level: 2 },
-                    { name: 'None', color: 'hsl(210 8% 80%)', level: 1 },
-                  ].map((item) => (
-                    <div key={item.name} className="flex-1 text-center">
-                      <div className="h-10 rounded-md mb-2" style={{ backgroundColor: item.color }} />
-                      <div className="text-xs font-medium">{item.name}</div>
-                      <div className="text-xs text-muted-foreground">L{item.level}</div>
-                    </div>
-                  ))}
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-warning" />
+              Top Priorities
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {[
+                { text: 'Button heights need reduction (-4px each)', severity: 'P1' },
+                { text: 'Toast colors should use semantic tokens', severity: 'P2' },
+                { text: 'Add active/pressed states to buttons', severity: 'P2' },
+                { text: 'Table row height needs density fix', severity: 'P2' },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-2 text-sm">
+                  <Badge className={cn("text-xs shrink-0", 
+                    item.severity === 'P1' ? 'bg-warning text-warning-foreground' : 'bg-info text-info-foreground'
+                  )}>
+                    {item.severity}
+                  </Badge>
+                  <span className="text-muted-foreground">{item.text}</span>
                 </div>
-              </CardContent>
-            </Card>
-            
-            <SimpleAuditTable title="Chart/Report Color Audit" items={chartFindings} />
-          </TabsContent>
-
-          {/* Interactions Tab */}
-          <TabsContent value="interactions" className="space-y-4">
-            <div className="flex items-center gap-4 mb-2">
-              <Badge className={cn("gap-1.5", getScoreBgColor(scores.interaction), getScoreColor(scores.interaction))}>
-                <MousePointer2 className="h-3.5 w-3.5" />
-                Interaction States: {scores.interaction}%
-              </Badge>
+              ))}
             </div>
-            <Card>
-              <CardHeader className="py-3">
-                <CardTitle className="text-base">Hover/Pressed/Selected/Focus States</CardTitle>
-              </CardHeader>
-              <CardContent className="p-0">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b bg-secondary/50">
-                      <th className="text-left font-medium px-4 py-2 w-8">✓</th>
-                      <th className="text-left font-medium px-4 py-2">Element</th>
-                      <th className="text-left font-medium px-4 py-2">Current</th>
-                      <th className="text-left font-medium px-4 py-2">Target</th>
-                      <th className="text-left font-medium px-4 py-2">Computed</th>
-                      <th className="text-left font-medium px-4 py-2">Notes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {interactionFindings.map((f) => (
-                      <tr key={f.id} className="border-b hover:bg-secondary/30">
-                        <td className="px-4 py-2">{f.status === 'pass' ? <CheckCircle2 className="h-4 w-4 text-success" /> : <AlertTriangle className="h-4 w-4 text-warning" />}</td>
-                        <td className="px-4 py-2 font-medium">{f.element}</td>
-                        <td className="px-4 py-2"><code className="text-xs px-1.5 py-0.5 bg-secondary rounded">{f.current}</code></td>
-                        <td className="px-4 py-2"><code className="text-xs px-1.5 py-0.5 bg-success/10 text-success rounded">{f.target}</code></td>
-                        <td className="px-4 py-2"><code className="text-xs text-muted-foreground">{f.computed}</code></td>
-                        <td className="px-4 py-2 text-muted-foreground">{f.notes}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Status Tab */}
-          <TabsContent value="status" className="space-y-4">
-            <div className="flex items-center gap-4 mb-2">
-              <Badge className="bg-success/10 text-success gap-1.5">
-                <Tag className="h-3.5 w-3.5" />
-                Status Color Score: {scores.status}%
-              </Badge>
-            </div>
-            
-            {/* Status Preview */}
-            <Card>
-              <CardHeader className="py-3">
-                <CardTitle className="text-base">Status Color Palette</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-4">
-                  {[
-                    { name: 'Success', bg: 'bg-success', text: 'text-success-foreground' },
-                    { name: 'Warning', bg: 'bg-warning', text: 'text-warning-foreground' },
-                    { name: 'Error', bg: 'bg-destructive', text: 'text-destructive-foreground' },
-                    { name: 'Info', bg: 'bg-info', text: 'text-info-foreground' },
-                    { name: 'Neutral', bg: 'bg-muted-foreground', text: 'text-white' },
-                  ].map((item) => (
-                    <div key={item.name} className="flex-1">
-                      <div className={cn("h-10 rounded-md flex items-center justify-center text-xs font-medium", item.bg, item.text)}>
-                        {item.name}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            
-            <SimpleAuditTable title="Status Color Consistency" items={statusFindings} />
-          </TabsContent>
-
-          {/* Buttons Tab */}
-          <TabsContent value="buttons" className="space-y-4">
-            <div className="flex items-center gap-4 mb-2">
-              <Badge className={cn("gap-1.5", getScoreBgColor(scores.button), getScoreColor(scores.button))}>
-                <RectangleHorizontal className="h-3.5 w-3.5" />
-                Button Density: {scores.button}%
-              </Badge>
-              <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20">Heights need reduction</Badge>
-            </div>
-            
-            {/* Button Preview */}
-            <Card>
-              <CardHeader className="py-3">
-                <CardTitle className="text-base">Button Sizes (Current → Target)</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-end gap-4">
-                  <div className="text-center">
-                    <Button size="sm">Small</Button>
-                    <div className="text-xs text-muted-foreground mt-2">36px → 32px</div>
-                  </div>
-                  <div className="text-center">
-                    <Button>Default</Button>
-                    <div className="text-xs text-muted-foreground mt-2">40px → 36px</div>
-                  </div>
-                  <div className="text-center">
-                    <Button size="lg">Large</Button>
-                    <div className="text-xs text-muted-foreground mt-2">44px → 40px</div>
-                  </div>
-                  <div className="text-center">
-                    <Button size="icon"><Eye className="h-4 w-4" /></Button>
-                    <div className="text-xs text-muted-foreground mt-2">40px → 32px</div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <SimpleAuditTable title="Button Sizing Audit" items={buttonFindings} />
-          </TabsContent>
-
-          {/* Tokens Tab */}
-          <TabsContent value="tokens" className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {tokenCategories.map((category) => {
-                const Icon = category.icon;
-                const isExpanded = expandedCategory === category.name;
-                
-                return (
-                  <Card key={category.name}>
-                    <CardHeader 
-                      className="py-3 cursor-pointer hover:bg-secondary/30 transition-colors"
-                      onClick={() => setExpandedCategory(isExpanded ? null : category.name)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Icon className="h-4 w-4 text-brand-gold" />
-                          <CardTitle className="text-base">{category.name}</CardTitle>
-                        </div>
-                        {isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-                      </div>
-                    </CardHeader>
-                    {isExpanded && (
-                      <CardContent className="pt-0">
-                        <div className="space-y-2">
-                          {category.tokens.map((token) => (
-                            <div key={token.name} className="flex items-center justify-between py-2 px-3 rounded-md bg-secondary/30">
-                              <div>
-                                <div className="font-medium text-sm">{token.name}</div>
-                                <code className="text-xs text-muted-foreground">{token.value}</code>
-                              </div>
-                              <code className="text-xs bg-secondary px-1.5 py-0.5 rounded">{token.computed}</code>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
-        </Tabs>
+          </CardContent>
+        </Card>
       </div>
     </div>
+  );
+}
+
+function OverlaysContent() {
+  return (
+    <Card>
+      <CardHeader className="py-3">
+        <CardTitle className="text-base">Modal/Dialog/Drawer Audit</CardTitle>
+        <CardDescription>Overlay anatomy, sizing, and behavior consistency</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-6">
+          <div>
+            <h4 className="font-medium mb-3">Modal Sizes</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between"><span>Small:</span><code className="bg-secondary px-1.5 rounded">384px</code></div>
+              <div className="flex justify-between"><span>Medium:</span><code className="bg-secondary px-1.5 rounded">512px</code></div>
+              <div className="flex justify-between"><span>Large:</span><code className="bg-secondary px-1.5 rounded">640px</code></div>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-medium mb-3">Drawer Widths</h4>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between"><span>Narrow:</span><code className="bg-secondary px-1.5 rounded">360px</code></div>
+              <div className="flex justify-between"><span>Medium:</span><code className="bg-secondary px-1.5 rounded">480px</code></div>
+              <div className="flex justify-between"><span>Wide:</span><code className="bg-secondary px-1.5 rounded">640px</code></div>
+            </div>
+          </div>
+        </div>
+        <Separator className="my-4" />
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            <span>Focus trap implemented</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            <span>ESC key closes overlay</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            <span>Backdrop click close (configurable)</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4 text-success" />
+            <span>Consistent elevation/shadow tokens</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ToastsContent({ scores, toastFindings }: { scores: Record<string, number>; toastFindings: any[] }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Badge className={cn("gap-1.5", getScoreBgColor(scores.toast), getScoreColor(scores.toast))}>
+          <Bell className="h-3.5 w-3.5" />
+          Toast Consistency: {scores.toast}%
+        </Badge>
+      </div>
+      <SimpleAuditTable title="Toast/Flag/Banner Audit" items={toastFindings} />
+    </div>
+  );
+}
+
+function ChartsContent({ scores, chartFindings }: { scores: Record<string, number>; chartFindings: any[] }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Badge className="bg-success/10 text-success gap-1.5">
+          <BarChart3 className="h-3.5 w-3.5" />
+          Chart Score: {scores.chart}%
+        </Badge>
+        <Badge variant="outline" className="bg-success/10 text-success border-success/20">No Palette Drift</Badge>
+      </div>
+      
+      {/* Palette Preview */}
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base">Golden Hour Palette</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-3">
+            {[
+              { name: 'Expert', color: 'hsl(120 15% 43%)', level: 5 },
+              { name: 'Advanced', color: 'hsl(28 26% 44%)', level: 4 },
+              { name: 'Intermediate', color: 'hsl(35 46% 60%)', level: 3 },
+              { name: 'Beginner', color: 'hsl(35 42% 71%)', level: 2 },
+              { name: 'None', color: 'hsl(210 8% 80%)', level: 1 },
+            ].map((item) => (
+              <div key={item.name} className="flex-1 text-center">
+                <div className="h-10 rounded-md mb-2" style={{ backgroundColor: item.color }} />
+                <div className="text-xs font-medium">{item.name}</div>
+                <div className="text-xs text-muted-foreground">L{item.level}</div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+      
+      <SimpleAuditTable title="Chart/Report Color Audit" items={chartFindings} />
+    </div>
+  );
+}
+
+function InteractionsContent({ scores, interactionFindings }: { scores: Record<string, number>; interactionFindings: any[] }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Badge className={cn("gap-1.5", getScoreBgColor(scores.interaction), getScoreColor(scores.interaction))}>
+          <MousePointer2 className="h-3.5 w-3.5" />
+          Interaction States: {scores.interaction}%
+        </Badge>
+      </div>
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base">Hover/Pressed/Selected/Focus States</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b bg-secondary/50">
+                <th className="text-left font-medium px-4 py-2 w-8">✓</th>
+                <th className="text-left font-medium px-4 py-2">Element</th>
+                <th className="text-left font-medium px-4 py-2">Current</th>
+                <th className="text-left font-medium px-4 py-2">Target</th>
+                <th className="text-left font-medium px-4 py-2">Computed</th>
+                <th className="text-left font-medium px-4 py-2">Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {interactionFindings.map((f) => (
+                <tr key={f.id} className="border-b hover:bg-secondary/30">
+                  <td className="px-4 py-2">{f.status === 'pass' ? <CheckCircle2 className="h-4 w-4 text-success" /> : <AlertTriangle className="h-4 w-4 text-warning" />}</td>
+                  <td className="px-4 py-2 font-medium">{f.element}</td>
+                  <td className="px-4 py-2"><code className="text-xs px-1.5 py-0.5 bg-secondary rounded">{f.current}</code></td>
+                  <td className="px-4 py-2"><code className="text-xs px-1.5 py-0.5 bg-success/10 text-success rounded">{f.target}</code></td>
+                  <td className="px-4 py-2"><code className="text-xs text-muted-foreground">{f.computed}</code></td>
+                  <td className="px-4 py-2 text-muted-foreground">{f.notes}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function StatusContent({ scores, statusFindings }: { scores: Record<string, number>; statusFindings: any[] }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Badge className="bg-success/10 text-success gap-1.5">
+          <Tag className="h-3.5 w-3.5" />
+          Status Color Score: {scores.status}%
+        </Badge>
+      </div>
+      
+      {/* Status Preview */}
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base">Status Color Palette</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex gap-4">
+            {[
+              { name: 'Success', bg: 'bg-success', text: 'text-success-foreground' },
+              { name: 'Warning', bg: 'bg-warning', text: 'text-warning-foreground' },
+              { name: 'Error', bg: 'bg-destructive', text: 'text-destructive-foreground' },
+              { name: 'Info', bg: 'bg-info', text: 'text-info-foreground' },
+              { name: 'Neutral', bg: 'bg-muted-foreground', text: 'text-white' },
+            ].map((item) => (
+              <div key={item.name} className="flex-1">
+                <div className={cn("h-10 rounded-md flex items-center justify-center text-xs font-medium", item.bg, item.text)}>
+                  {item.name}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+      
+      <SimpleAuditTable title="Status Color Consistency" items={statusFindings} />
+    </div>
+  );
+}
+
+function ButtonsContent({ scores, buttonFindings }: { scores: Record<string, number>; buttonFindings: any[] }) {
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-4">
+        <Badge className={cn("gap-1.5", getScoreBgColor(scores.button), getScoreColor(scores.button))}>
+          <RectangleHorizontal className="h-3.5 w-3.5" />
+          Button Density: {scores.button}%
+        </Badge>
+        <Badge variant="outline" className="bg-warning/10 text-warning border-warning/20">Heights need reduction</Badge>
+      </div>
+      
+      {/* Button Preview */}
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base">Button Sizes (Current → Target)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-end gap-4">
+            <div className="text-center">
+              <Button size="sm">Small</Button>
+              <div className="text-xs text-muted-foreground mt-2">36px → 32px</div>
+            </div>
+            <div className="text-center">
+              <Button>Default</Button>
+              <div className="text-xs text-muted-foreground mt-2">40px → 36px</div>
+            </div>
+            <div className="text-center">
+              <Button size="lg">Large</Button>
+              <div className="text-xs text-muted-foreground mt-2">44px → 40px</div>
+            </div>
+            <div className="text-center">
+              <Button size="icon"><Eye className="h-4 w-4" /></Button>
+              <div className="text-xs text-muted-foreground mt-2">40px → 32px</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+      
+      <SimpleAuditTable title="Button Sizing Audit" items={buttonFindings} />
+    </div>
+  );
+}
+
+function TokensContent({ tokenCategories, expandedCategory, setExpandedCategory }: { 
+  tokenCategories: any[]; 
+  expandedCategory: string | null; 
+  setExpandedCategory: (v: string | null) => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-4">
+      {tokenCategories.map((category) => {
+        const Icon = category.icon;
+        const isExpanded = expandedCategory === category.name;
+        
+        return (
+          <Card key={category.name}>
+            <CardHeader 
+              className="py-3 cursor-pointer hover:bg-secondary/30 transition-colors"
+              onClick={() => setExpandedCategory(isExpanded ? null : category.name)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Icon className="h-4 w-4 text-brand-gold" />
+                  <CardTitle className="text-base">{category.name}</CardTitle>
+                </div>
+                {isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+              </div>
+            </CardHeader>
+            {isExpanded && (
+              <CardContent className="pt-0">
+                <div className="space-y-2">
+                  {category.tokens.map((token: any) => (
+                    <div key={token.name} className="flex items-center justify-between py-2 px-3 rounded-md bg-secondary/30">
+                      <div>
+                        <div className="font-medium text-sm">{token.name}</div>
+                        <code className="text-xs text-muted-foreground">{token.value}</code>
+                      </div>
+                      <code className="text-xs bg-secondary px-1.5 py-0.5 rounded">{token.computed}</code>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            )}
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+function RoutesContent() {
+  return (
+    <Card>
+      <CardHeader className="py-3">
+        <CardTitle className="text-base">Configured Routes ({auditRoutes.length})</CardTitle>
+        <CardDescription>Routes discovered for audit scanning</CardDescription>
+      </CardHeader>
+      <CardContent className="p-0">
+        <ScrollArea className="h-[400px]">
+          <table className="w-full text-sm">
+            <thead className="sticky top-0 bg-card border-b">
+              <tr>
+                <th className="text-left font-medium px-4 py-2">Route</th>
+                <th className="text-left font-medium px-4 py-2">Name</th>
+                <th className="text-left font-medium px-4 py-2">Category</th>
+                <th className="text-left font-medium px-4 py-2">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {auditRoutes.map((route) => (
+                <tr key={route.path} className="border-b hover:bg-secondary/30">
+                  <td className="px-4 py-2">
+                    <code className="text-xs px-1.5 py-0.5 bg-secondary rounded">{route.path}</code>
+                  </td>
+                  <td className="px-4 py-2 font-medium">{route.name}</td>
+                  <td className="px-4 py-2">
+                    <Badge variant="outline" className="text-xs capitalize">{route.category}</Badge>
+                  </td>
+                  <td className="px-4 py-2">
+                    <Badge className="bg-success/10 text-success text-xs">Configured</Badge>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </ScrollArea>
+      </CardContent>
+    </Card>
   );
 }
 
