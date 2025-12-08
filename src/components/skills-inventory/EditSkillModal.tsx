@@ -92,21 +92,21 @@ export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditS
         <div className="p-6 space-y-5">
           {/* Team Member - Read Only */}
           <div>
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">Team Member</label>
+            <label className="text-sm text-muted-foreground mb-2 block">Team Member</label>
             <div className="flex items-center gap-3 px-4 py-3 bg-secondary/50 rounded-lg border border-brand-gold-border">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-gold to-brand-gold-dark flex items-center justify-center text-xs text-white font-semibold">
                 {getInitials(skill.name)}
               </div>
-              <div>
-                <span className="text-foreground font-medium">{skill.name}</span>
-                <span className="text-muted-foreground text-sm ml-2">• {skill.role}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-foreground font-semibold">{skill.name}</span>
+                <span className="text-muted-foreground text-sm">• {skill.role}</span>
               </div>
             </div>
           </div>
 
           {/* Skill Name */}
           <div>
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">Skill Name *</label>
+            <label className="text-sm text-muted-foreground mb-2 block">Skill Name *</label>
             <input
               type="text"
               value={formData.skillName}
@@ -117,7 +117,7 @@ export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditS
 
           {/* Proficiency Level - Visual Selector */}
           <div>
-            <label className="text-sm font-medium text-muted-foreground mb-3 block">Proficiency Level *</label>
+            <label className="text-sm text-muted-foreground mb-3 block">Proficiency Level *</label>
             <div className="grid grid-cols-4 gap-3">
               {proficiencyOptions.map(({ level, label, color }) => (
                 <button
@@ -134,11 +134,11 @@ export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditS
                     className="w-8 h-8 rounded-full mx-auto mb-2 flex items-center justify-center"
                     style={{ backgroundColor: color }}
                   >
-                    <span className="text-white text-xs font-bold">
+                    <span className="text-white text-sm font-semibold">
                       {level === 'Beginner' ? '1' : level === 'Intermediate' ? '2' : level === 'Advanced' ? '3' : '4'}
                     </span>
                   </div>
-                  <span className="text-xs text-muted-foreground block text-center">{label}</span>
+                  <span className="text-sm text-muted-foreground block text-center">{label}</span>
                 </button>
               ))}
             </div>
@@ -146,7 +146,7 @@ export function EditSkillModal({ open, onClose, skill, onDelete, onSave }: EditS
 
           {/* Notes */}
           <div>
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">Notes</label>
+            <label className="text-sm text-muted-foreground mb-2 block">Notes</label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
