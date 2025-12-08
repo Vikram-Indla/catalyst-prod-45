@@ -1,7 +1,9 @@
 # Catalyst Fix Pack Summary
 
-**Generated:** 2024-12-08
-**Version:** 1.0.0
+**Generated:** 2024-12-08  
+**Version:** 2.0.0  
+**Baseline:** [catalyst-design-system.md](./catalyst-design-system.md)  
+**Alignment Matrix:** [catalyst_to_ads_alignment_matrix.md](./catalyst_to_ads_alignment_matrix.md)
 
 ---
 

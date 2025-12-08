@@ -28,7 +28,8 @@ import { DesignSystemBaseline } from '@/components/admin/design-audit/DesignSyst
 import { GapDetectionGrid } from '@/components/admin/design-audit/GapDetectionGrid';
 import { FixIssuesPanel } from '@/components/admin/design-audit/FixIssuesPanel';
 
-// Core UI findings - UPDATED POST FIX-PACK
+// Core UI findings - UPDATED POST FIX-PACK v2.0.0
+// Baseline: docs/catalyst-design-system.md | Alignment: docs/catalyst_to_ads_alignment_matrix.md
 const coreFindings: AuditFinding[] = [
   { id: 'nav-density', route: '/home', area: 'SideNav', element: 'Nav Item Height', selector: '[data-ui="NavItem"]', current: '32px', target: '32px', delta: '0', severity: 'P1', status: 'fixed', recommendation: 'Use compact 32px nav items for Atlassian density', file: 'AdminSidebarV2.tsx' },
   { id: 'nav-spacing', route: '/home', area: 'SideNav', element: 'Section Gap', selector: '.nav-section', current: '8px', target: '8px', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Reduce section gaps for tighter grouping', file: 'AdminSidebarV2.tsx' },
