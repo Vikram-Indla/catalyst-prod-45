@@ -164,17 +164,17 @@ export const SkillsInventoryReport: React.FC = () => {
         <button 
           onClick={handleExportPDF}
           disabled={isExporting}
-          className="inline-flex items-center gap-3 px-6 py-3 bg-white border border-neutral-200 rounded-full shadow-sm hover:bg-neutral-50 hover:border-neutral-300 hover:shadow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-4 py-2 border border-brand-gold-border text-muted-foreground rounded-lg font-medium text-sm hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isExporting ? (
             <>
-              <Loader2 className="w-5 h-5 text-brand-gold animate-spin" />
-              <span className="text-neutral-500 font-medium">Generating PDF...</span>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Generating...
             </>
           ) : (
             <>
-              <Download className="w-5 h-5 text-neutral-400" />
-              <span className="text-neutral-500 font-medium">Export Report</span>
+              <Download className="w-4 h-4" />
+              Export Report
             </>
           )}
         </button>
