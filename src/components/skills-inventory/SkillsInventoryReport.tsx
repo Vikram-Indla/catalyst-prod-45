@@ -29,7 +29,7 @@ const statsData = [
   { icon: Users, value: 68, label: 'Team Members' },
   { icon: Target, value: 247, label: 'Total Skills' },
   { icon: Star, value: 52, label: 'Expert Level' },
-  { icon: Award, value: 89, label: 'Certifications' },
+  { icon: Award, value: 89, label: 'Skills Tracked' },
   { icon: AlertTriangle, value: 5, label: 'Critical Gaps' },
 ];
 

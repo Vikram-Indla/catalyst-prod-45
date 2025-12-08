@@ -19,26 +19,26 @@ const viewTabs = [
 
 // Sample data based on the Excel file
 const teamMembersData = [
-  { id: 1, name: 'Hasan Elsherby', role: '.Net Developer', project: 'Tahommena', skill: 'C# / .NET', proficiency: 'Expert', certifications: 2, coverage: 92, lastUpdated: '2024-12-01' },
-  { id: 2, name: 'Yousif Shalaby', role: '.Net Developer', project: 'Tahommena', skill: 'ASP.NET Core', proficiency: 'Advanced', certifications: 1, coverage: 85, lastUpdated: '2024-11-28' },
-  { id: 3, name: 'Mohammed Alaa', role: '.Net Developer', project: 'Tahommena', skill: 'Entity Framework', proficiency: 'Advanced', certifications: 1, coverage: 78, lastUpdated: '2024-11-25' },
-  { id: 4, name: 'Ahmed Yousry', role: '.Net Developer', project: 'Tahommena', skill: 'Azure DevOps', proficiency: 'Intermediate', certifications: 0, coverage: 65, lastUpdated: '2024-12-02' },
-  { id: 5, name: 'Ayaz Muhammad', role: 'Backend Developer', project: 'Sectorial', skill: 'Node.js', proficiency: 'Expert', certifications: 3, coverage: 95, lastUpdated: '2024-12-03' },
-  { id: 6, name: 'Mazen Yehia', role: 'Backend Developer', project: 'ICP', skill: 'Python', proficiency: 'Advanced', certifications: 2, coverage: 88, lastUpdated: '2024-11-30' },
-  { id: 7, name: 'Raza Bangi', role: 'Backend Developer', project: 'Sectorial', skill: 'Java', proficiency: 'Intermediate', certifications: 1, coverage: 72, lastUpdated: '2024-11-27' },
-  { id: 8, name: 'Syed Habib', role: 'Backend Developer', project: 'Sectorial', skill: 'PostgreSQL', proficiency: 'Advanced', certifications: 1, coverage: 82, lastUpdated: '2024-12-01' },
-  { id: 9, name: 'Ubaid Nawab', role: 'Backend Developer', project: 'Inspection', skill: 'MongoDB', proficiency: 'Intermediate', certifications: 0, coverage: 68, lastUpdated: '2024-11-29' },
-  { id: 10, name: 'Waqas Ali', role: 'Backend Developer', project: 'Senaei', skill: 'GraphQL', proficiency: 'Beginner', certifications: 0, coverage: 45, lastUpdated: '2024-12-02' },
-  { id: 11, name: 'Hassan Raza Hasrat', role: 'Backend Lead', project: 'Senaei', skill: 'System Design', proficiency: 'Expert', certifications: 4, coverage: 96, lastUpdated: '2024-12-03' },
-  { id: 12, name: 'Amadou Ndiaye', role: 'Data Engineer', project: 'Inspection', skill: 'Apache Spark', proficiency: 'Advanced', certifications: 2, coverage: 84, lastUpdated: '2024-11-26' },
-  { id: 13, name: 'Maaz Majid', role: 'Data Engineer', project: 'I360', skill: 'ETL Pipelines', proficiency: 'Expert', certifications: 3, coverage: 91, lastUpdated: '2024-12-01' },
-  { id: 14, name: 'Arslan Malik', role: 'Devops', project: 'Devops', skill: 'Kubernetes', proficiency: 'Expert', certifications: 5, coverage: 98, lastUpdated: '2024-12-03' },
-  { id: 15, name: 'Andrew Fayyaz', role: 'Frontend', project: 'Sectorial', skill: 'React', proficiency: 'Advanced', certifications: 1, coverage: 86, lastUpdated: '2024-11-28' },
-  { id: 16, name: 'Adnan Ali', role: 'Frontend developer', project: 'ICP', skill: 'TypeScript', proficiency: 'Expert', certifications: 2, coverage: 93, lastUpdated: '2024-12-02' },
-  { id: 17, name: 'Divyam Kshatriya', role: 'Frontend developer', project: 'Senaei', skill: 'Vue.js', proficiency: 'Intermediate', certifications: 0, coverage: 70, lastUpdated: '2024-11-30' },
-  { id: 18, name: 'Menna Tula Nasser', role: 'Frontend developer', project: 'ICP', skill: 'CSS/Tailwind', proficiency: 'Advanced', certifications: 1, coverage: 81, lastUpdated: '2024-12-01' },
-  { id: 19, name: 'Sherif Gjini', role: 'Frontend developer', project: 'MIM Website', skill: 'Next.js', proficiency: 'Advanced', certifications: 1, coverage: 79, lastUpdated: '2024-11-27' },
-  { id: 20, name: 'Waseem Ahmad', role: 'Frontend developer', project: 'Sectorial', skill: 'Angular', proficiency: 'Intermediate', certifications: 0, coverage: 62, lastUpdated: '2024-12-03' },
+  { id: 1, name: 'Hasan Elsherby', role: '.Net Developer', project: 'Tahommena', skill: 'C# / .NET', proficiency: 'Expert', coverage: 92, lastUpdated: '2024-12-01' },
+  { id: 2, name: 'Yousif Shalaby', role: '.Net Developer', project: 'Tahommena', skill: 'ASP.NET Core', proficiency: 'Advanced', coverage: 85, lastUpdated: '2024-11-28' },
+  { id: 3, name: 'Mohammed Alaa', role: '.Net Developer', project: 'Tahommena', skill: 'Entity Framework', proficiency: 'Advanced', coverage: 78, lastUpdated: '2024-11-25' },
+  { id: 4, name: 'Ahmed Yousry', role: '.Net Developer', project: 'Tahommena', skill: 'Azure DevOps', proficiency: 'Intermediate', coverage: 65, lastUpdated: '2024-12-02' },
+  { id: 5, name: 'Ayaz Muhammad', role: 'Backend Developer', project: 'Sectorial', skill: 'Node.js', proficiency: 'Expert', coverage: 95, lastUpdated: '2024-12-03' },
+  { id: 6, name: 'Mazen Yehia', role: 'Backend Developer', project: 'ICP', skill: 'Python', proficiency: 'Advanced', coverage: 88, lastUpdated: '2024-11-30' },
+  { id: 7, name: 'Raza Bangi', role: 'Backend Developer', project: 'Sectorial', skill: 'Java', proficiency: 'Intermediate', coverage: 72, lastUpdated: '2024-11-27' },
+  { id: 8, name: 'Syed Habib', role: 'Backend Developer', project: 'Sectorial', skill: 'PostgreSQL', proficiency: 'Advanced', coverage: 82, lastUpdated: '2024-12-01' },
+  { id: 9, name: 'Ubaid Nawab', role: 'Backend Developer', project: 'Inspection', skill: 'MongoDB', proficiency: 'Intermediate', coverage: 68, lastUpdated: '2024-11-29' },
+  { id: 10, name: 'Waqas Ali', role: 'Backend Developer', project: 'Senaei', skill: 'GraphQL', proficiency: 'Beginner', coverage: 45, lastUpdated: '2024-12-03' },
+  { id: 11, name: 'Hassan Raza Hasrat', role: 'Backend Lead', project: 'Senaei', skill: 'System Design', proficiency: 'Expert', coverage: 96, lastUpdated: '2024-12-03' },
+  { id: 12, name: 'Amadou Ndiaye', role: 'Data Engineer', project: 'Inspection', skill: 'Apache Spark', proficiency: 'Advanced', coverage: 84, lastUpdated: '2024-11-26' },
+  { id: 13, name: 'Maaz Majid', role: 'Data Engineer', project: 'I360', skill: 'ETL Pipelines', proficiency: 'Expert', coverage: 91, lastUpdated: '2024-12-01' },
+  { id: 14, name: 'Arslan Malik', role: 'Devops', project: 'Devops', skill: 'Kubernetes', proficiency: 'Expert', coverage: 98, lastUpdated: '2024-12-03' },
+  { id: 15, name: 'Andrew Fayyaz', role: 'Frontend', project: 'Sectorial', skill: 'React', proficiency: 'Advanced', coverage: 86, lastUpdated: '2024-11-28' },
+  { id: 16, name: 'Adnan Ali', role: 'Frontend developer', project: 'ICP', skill: 'TypeScript', proficiency: 'Expert', coverage: 93, lastUpdated: '2024-12-02' },
+  { id: 17, name: 'Divyam Kshatriya', role: 'Frontend developer', project: 'Senaei', skill: 'Vue.js', proficiency: 'Intermediate', coverage: 70, lastUpdated: '2024-11-30' },
+  { id: 18, name: 'Menna Tula Nasser', role: 'Frontend developer', project: 'ICP', skill: 'CSS/Tailwind', proficiency: 'Advanced', coverage: 81, lastUpdated: '2024-12-01' },
+  { id: 19, name: 'Sherif Gjini', role: 'Frontend developer', project: 'MIM Website', skill: 'Next.js', proficiency: 'Advanced', coverage: 79, lastUpdated: '2024-11-27' },
+  { id: 20, name: 'Waseem Ahmad', role: 'Frontend developer', project: 'Sectorial', skill: 'Angular', proficiency: 'Intermediate', coverage: 62, lastUpdated: '2024-12-03' },
 ];
 
 const proficiencyLevels = [
@@ -98,12 +98,10 @@ export default function SkillsInventory() {
       if (advancedFilters.skillNames?.length && !advancedFilters.skillNames.includes(member.skill)) return false;
       if (advancedFilters.proficiencyLevels?.length && !advancedFilters.proficiencyLevels.includes(member.proficiency)) return false;
       
-      // Certifications filter
-      if (advancedFilters.hasCertifications === 'with' && member.certifications === 0) return false;
-      if (advancedFilters.hasCertifications === 'without' && member.certifications > 0) return false;
-      if (advancedFilters.certificationsMin !== null && advancedFilters.certificationsMin !== undefined && member.certifications < advancedFilters.certificationsMin) return false;
-      if (advancedFilters.certificationsMax !== null && advancedFilters.certificationsMax !== undefined && member.certifications > advancedFilters.certificationsMax) return false;
       
+      // Coverage filter
+      if (advancedFilters.coverageMin !== null && advancedFilters.coverageMin !== undefined && member.coverage < advancedFilters.coverageMin) return false;
+      if (advancedFilters.coverageMax !== null && advancedFilters.coverageMax !== undefined && member.coverage > advancedFilters.coverageMax) return false;
       // Coverage filter
       if (advancedFilters.coverageMin !== null && advancedFilters.coverageMin !== undefined && member.coverage < advancedFilters.coverageMin) return false;
       if (advancedFilters.coverageMax !== null && advancedFilters.coverageMax !== undefined && member.coverage > advancedFilters.coverageMax) return false;
@@ -133,8 +131,8 @@ export default function SkillsInventory() {
   };
 
   const exportToCSV = () => {
-    const headers = ['Name', 'Role', 'Project', 'Primary Skill', 'Proficiency', 'Certifications', 'Coverage %', 'Last Updated'];
-    const rows = filteredData.map(m => [m.name, m.role, m.project, m.skill, m.proficiency, m.certifications, m.coverage, m.lastUpdated]);
+    const headers = ['Name', 'Role', 'Project', 'Primary Skill', 'Proficiency', 'Coverage %', 'Last Updated'];
+    const rows = filteredData.map(m => [m.name, m.role, m.project, m.skill, m.proficiency, m.coverage, m.lastUpdated]);
     const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -231,7 +229,6 @@ export default function SkillsInventory() {
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Team Member</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Primary Skill</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Proficiency</th>
-                  <th className="px-5 py-3 text-center text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Certifications</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Coverage</th>
                   <th className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-500 border-b border-neutral-200" style={{ background: 'hsl(35 46% 97%)' }}>Last Updated</th>
                 </tr>
@@ -266,9 +263,6 @@ export default function SkillsInventory() {
                       >
                         {member.proficiency}
                       </span>
-                    </td>
-                    <td className="px-5 py-3.5 text-center">
-                      <span className="text-sm text-foreground">{member.certifications}</span>
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
