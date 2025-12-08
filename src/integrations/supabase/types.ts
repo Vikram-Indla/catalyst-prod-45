@@ -2666,6 +2666,7 @@ export type Database = {
           job_size: number | null
           name: string
           notes: string | null
+          original_minutes: number | null
           orphan_board_teams: string[] | null
           owner_id: string | null
           parked_at: string | null
@@ -2675,7 +2676,9 @@ export type Database = {
           program_id: string
           progress_pct: number | null
           rank_within_epic: number | null
+          remaining_minutes: number | null
           risk_reduction: number | null
+          spent_minutes: number | null
           status: Database["public"]["Enums"]["feature_status"] | null
           team_id: string | null
           team_target_completion_sprint_id: string | null
@@ -2710,6 +2713,7 @@ export type Database = {
           job_size?: number | null
           name: string
           notes?: string | null
+          original_minutes?: number | null
           orphan_board_teams?: string[] | null
           owner_id?: string | null
           parked_at?: string | null
@@ -2719,7 +2723,9 @@ export type Database = {
           program_id: string
           progress_pct?: number | null
           rank_within_epic?: number | null
+          remaining_minutes?: number | null
           risk_reduction?: number | null
+          spent_minutes?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
           team_id?: string | null
           team_target_completion_sprint_id?: string | null
@@ -2754,6 +2760,7 @@ export type Database = {
           job_size?: number | null
           name?: string
           notes?: string | null
+          original_minutes?: number | null
           orphan_board_teams?: string[] | null
           owner_id?: string | null
           parked_at?: string | null
@@ -2763,7 +2770,9 @@ export type Database = {
           program_id?: string
           progress_pct?: number | null
           rank_within_epic?: number | null
+          remaining_minutes?: number | null
           risk_reduction?: number | null
+          spent_minutes?: number | null
           status?: Database["public"]["Enums"]["feature_status"] | null
           team_id?: string | null
           team_target_completion_sprint_id?: string | null
@@ -7502,12 +7511,15 @@ export type Database = {
           health: string | null
           id: string
           name: string
+          original_minutes: number | null
           owner_id: string | null
           parked_at: string | null
           points_loe: number | null
           priority: string | null
           progress_pct: number | null
           rank_order: number | null
+          remaining_minutes: number | null
+          spent_minutes: number | null
           sprint_id: string | null
           state: string | null
           status: Database["public"]["Enums"]["story_status"] | null
@@ -7532,12 +7544,15 @@ export type Database = {
           health?: string | null
           id?: string
           name: string
+          original_minutes?: number | null
           owner_id?: string | null
           parked_at?: string | null
           points_loe?: number | null
           priority?: string | null
           progress_pct?: number | null
           rank_order?: number | null
+          remaining_minutes?: number | null
+          spent_minutes?: number | null
           sprint_id?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["story_status"] | null
@@ -7562,12 +7577,15 @@ export type Database = {
           health?: string | null
           id?: string
           name?: string
+          original_minutes?: number | null
           owner_id?: string | null
           parked_at?: string | null
           points_loe?: number | null
           priority?: string | null
           progress_pct?: number | null
           rank_order?: number | null
+          remaining_minutes?: number | null
+          spent_minutes?: number | null
           sprint_id?: string | null
           state?: string | null
           status?: Database["public"]["Enums"]["story_status"] | null
@@ -11075,6 +11093,39 @@ export type Database = {
           pi_id?: string | null
           rank?: number
           updated_at?: string | null
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: []
+      }
+      work_item_time_logs: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          logged_by: string | null
+          minutes_logged: number
+          work_date: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          logged_by?: string | null
+          minutes_logged?: number
+          work_date?: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          logged_by?: string | null
+          minutes_logged?: number
+          work_date?: string
           work_item_id?: string
           work_item_type?: string
         }

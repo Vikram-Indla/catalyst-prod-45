@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, History, Link as LinkIcon, Copy, ArrowDown, Trash2 } from 'lucide-react';
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
+import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
@@ -420,6 +421,12 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
               workItemId={story.id} 
               workItemType="story" 
               currentKey={(story as any).story_key || `STY-${story.id.slice(0, 4)}`}
+            />
+
+            {/* Time Tracking Section */}
+            <TimeTrackingSection 
+              workItemId={story.id} 
+              workItemType="story" 
             />
           </TabsContent>
 
