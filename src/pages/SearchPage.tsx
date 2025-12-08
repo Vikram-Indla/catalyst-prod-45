@@ -40,7 +40,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useAuth } from '@/lib/auth';
 
-type WorkItemType = 'all' | 'epic' | 'feature' | 'story';
+type WorkItemType = 'all' | 'epic' | 'feature' | 'story' | 'subtask' | 'demand';
 type StatusFilter = 'all' | 'open' | 'in_progress' | 'done';
 
 interface SearchResult {
@@ -217,6 +217,50 @@ export default function SearchPage() {
       }
     }
 
+    // Search subtasks
+    if (type === 'all' || type === 'subtask') {
+      const { data: subtasks } = await supabase
+        .from('subtasks')
+        .select('id, name, status, updated_at')
+        .ilike('name', searchPattern)
+        .limit(50);
+      if (subtasks) {
+        results.push(
+          ...subtasks.map((st) => ({
+            id: st.id,
+            key: `SUB-${st.id.slice(0, 8)}`,
+            type: 'subtask' as WorkItemType,
+            summary: st.name,
+            status: st.status || 'unknown',
+            updated_at: st.updated_at || undefined,
+          }))
+        );
+      }
+    }
+
+    // Search business requests (demands)
+    if (type === 'all' || type === 'demand') {
+      const { data: demands } = await supabase
+        .from('business_requests')
+        .select('id, request_key, title, process_step, assignee, updated_at')
+        .or(`title.ilike.${searchPattern},request_key.ilike.${searchPattern}`)
+        .is('deleted_at', null)
+        .limit(50);
+      if (demands) {
+        results.push(
+          ...demands.map((d) => ({
+            id: d.id,
+            key: d.request_key || `REQ-${d.id.slice(0, 8)}`,
+            type: 'demand' as WorkItemType,
+            summary: d.title,
+            status: d.process_step || 'unknown',
+            assignee: d.assignee || undefined,
+            updated_at: d.updated_at || undefined,
+          }))
+        );
+      }
+    }
+
     return results.sort((a, b) => {
       if (!a.updated_at) return 1;
       if (!b.updated_at) return -1;
@@ -249,6 +293,8 @@ export default function SearchPage() {
       case 'epic': return 'bg-purple-100 text-purple-800';
       case 'feature': return 'bg-blue-100 text-blue-800';
       case 'story': return 'bg-green-100 text-green-800';
+      case 'subtask': return 'bg-cyan-100 text-cyan-800';
+      case 'demand': return 'bg-amber-100 text-amber-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   }
@@ -294,6 +340,8 @@ export default function SearchPage() {
               <SelectItem value="epic">Epic</SelectItem>
               <SelectItem value="feature">Feature</SelectItem>
               <SelectItem value="story">Story</SelectItem>
+              <SelectItem value="subtask">Subtask</SelectItem>
+              <SelectItem value="demand">Demand</SelectItem>
             </SelectContent>
           </Select>
 
