@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, CheckCircle, FileText } from 'lucide-react';
+import { AlertTriangle, FileText } from 'lucide-react';
 
 interface SkillGap {
   skill: string;
@@ -70,29 +70,22 @@ const criticalSkills: CriticalSkill[] = [
 const getSeverityStyles = (severity: CriticalSkill['severity']) => {
   switch (severity) {
     case 'critical':
-      return { bg: 'hsl(var(--destructive) / 0.1)', color: 'hsl(var(--destructive))' };
+      return 'bg-destructive text-white';
     case 'warning':
-      return { bg: 'hsl(var(--warning) / 0.1)', color: 'hsl(var(--warning))' };
+      return 'bg-warning text-brand-dark';
     case 'healthy':
-      return { bg: 'hsl(var(--health-green) / 0.1)', color: 'hsl(var(--health-green))' };
+      return 'bg-health-green text-white';
   }
 };
 
 const getCoverageColor = (percentage: number) => {
-  if (percentage >= 75) return 'hsl(var(--health-green))';
-  if (percentage >= 50) return 'hsl(var(--warning))';
-  return 'hsl(var(--destructive))';
-};
-
-const getGapBadgeStyles = (gapCount: number) => {
-  if (gapCount > 3) return { bg: 'hsl(var(--destructive) / 0.1)', color: 'hsl(var(--destructive))' };
-  if (gapCount >= 1) return { bg: 'hsl(var(--warning) / 0.1)', color: 'hsl(var(--warning))' };
-  return { bg: 'hsl(var(--health-green) / 0.1)', color: 'hsl(var(--health-green))' };
+  if (percentage >= 75) return 'bg-health-green';
+  if (percentage >= 50) return 'bg-warning';
+  return 'bg-destructive';
 };
 
 export const SkillGapAnalysis: React.FC = () => {
   const gapCount = skillGaps.filter((s) => s.gap < 0).length;
-  const gapBadgeStyles = getGapBadgeStyles(gapCount);
 
   const overallCoverage = Math.round(
     skillCoverages.reduce((sum, s) => sum + s.percentage, 0) / skillCoverages.length
@@ -108,10 +101,7 @@ export const SkillGapAnalysis: React.FC = () => {
             <h3 className="text-lg font-semibold text-foreground">
               Current vs Required Skills
             </h3>
-            <span
-              className="px-3 py-1 rounded-full text-xs font-medium"
-              style={{ backgroundColor: gapBadgeStyles.bg, color: gapBadgeStyles.color }}
-            >
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-health-green text-white">
               {gapCount} Gaps Identified
             </span>
           </div>
@@ -124,7 +114,7 @@ export const SkillGapAnalysis: React.FC = () => {
                   <span className="w-32 text-sm text-muted-foreground truncate">
                     {skill.skill}
                   </span>
-                  <div className="flex-1 h-6 bg-brand-gold/30 rounded-full overflow-hidden">
+                  <div className="flex-1 h-6 bg-brand-gold-pale rounded-full overflow-hidden">
                     <div
                       className="h-full bg-info rounded-full transition-all"
                       style={{ width: `${percentage}%` }}
@@ -149,35 +139,29 @@ export const SkillGapAnalysis: React.FC = () => {
             <h3 className="text-lg font-semibold text-foreground">
               Team Skill Coverage
             </h3>
-            <span
-              className="px-3 py-1 rounded-full text-xs font-medium"
-              style={{ backgroundColor: 'hsl(var(--health-green) / 0.1)', color: 'hsl(var(--health-green))' }}
-            >
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-health-green text-white">
               {overallCoverage}% Overall
             </span>
           </div>
 
           <div className="grid grid-cols-2 xl:grid-cols-3 gap-3">
             {skillCoverages.map((skill) => {
-              const color = getCoverageColor(skill.percentage);
+              const colorClass = getCoverageColor(skill.percentage);
               return (
                 <div
                   key={skill.skill}
-                  className="bg-secondary rounded-lg p-4"
+                  className="bg-white rounded-lg p-4"
                 >
-                  <span className="font-medium text-foreground text-sm">
+                  <span className="font-medium text-brand-dark text-sm">
                     {skill.skill}
                   </span>
-                  <div className="h-2 bg-card rounded-full mt-2 overflow-hidden">
+                  <div className="h-2 bg-neutral-200 rounded-full mt-2 overflow-hidden">
                     <div
-                      className="h-full rounded-full transition-all"
-                      style={{
-                        width: `${skill.percentage}%`,
-                        backgroundColor: color,
-                      }}
+                      className={`h-full rounded-full transition-all ${colorClass}`}
+                      style={{ width: `${skill.percentage}%` }}
                     />
                   </div>
-                  <span className="text-xs text-muted-foreground mt-2 block">
+                  <span className="text-xs text-neutral-500 mt-2 block">
                     {skill.covered}/{skill.total} members
                   </span>
                 </div>
@@ -192,11 +176,11 @@ export const SkillGapAnalysis: React.FC = () => {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <AlertTriangle className="w-5 h-5 text-destructive" />
-            <h3 className="text-lg font-semibold text-foreground">
+            <h3 className="text-lg font-semibold text-brand-gold">
               Critical Skills Requiring Attention
             </h3>
           </div>
-          <button className="flex items-center gap-2 px-4 py-2 bg-brand-gold text-brand-dark rounded-lg font-medium text-sm hover:bg-brand-gold-hover transition-colors">
+          <button className="flex items-center gap-2 px-4 py-2 bg-white text-brand-dark rounded-lg font-medium text-sm hover:bg-neutral-100 transition-colors border border-neutral-200">
             <FileText className="w-4 h-4" />
             Create Training Plan
           </button>
@@ -225,8 +209,8 @@ export const SkillGapAnalysis: React.FC = () => {
             </thead>
             <tbody>
               {criticalSkills.map((skill, index) => {
-                const severityStyles = getSeverityStyles(skill.severity);
-                const coverageColor = getCoverageColor(skill.coverage);
+                const severityClass = getSeverityStyles(skill.severity);
+                const coverageColorClass = getCoverageColor(skill.coverage);
                 return (
                   <tr
                     key={skill.skill}
@@ -237,16 +221,10 @@ export const SkillGapAnalysis: React.FC = () => {
                     } hover:bg-brand-gold/5 transition-colors`}
                   >
                     <td className="py-4 px-4">
-                      <span className="font-medium text-foreground">{skill.skill}</span>
+                      <span className="font-medium text-brand-gold">{skill.skill}</span>
                     </td>
                     <td className="py-4 px-4">
-                      <span
-                        className="px-2 py-1 rounded text-xs font-medium capitalize"
-                        style={{
-                          backgroundColor: severityStyles.bg,
-                          color: severityStyles.color,
-                        }}
-                      >
+                      <span className={`px-2.5 py-1 rounded text-xs font-medium capitalize ${severityClass}`}>
                         {skill.severity}
                       </span>
                     </td>
@@ -255,13 +233,10 @@ export const SkillGapAnalysis: React.FC = () => {
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-20 h-2 bg-card rounded-full overflow-hidden">
+                        <div className="w-20 h-2 bg-neutral-700 rounded-full overflow-hidden">
                           <div
-                            className="h-full rounded-full transition-all"
-                            style={{
-                              width: `${skill.coverage}%`,
-                              backgroundColor: coverageColor,
-                            }}
+                            className={`h-full rounded-full transition-all ${coverageColorClass}`}
+                            style={{ width: `${skill.coverage}%` }}
                           />
                         </div>
                         <span className="text-sm text-muted-foreground">{skill.coverage}%</span>
