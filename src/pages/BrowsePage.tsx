@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 
-type WorkItemType = 'epic' | 'feature' | 'story' | 'task' | 'defect' | null;
+type WorkItemType = 'epic' | 'feature' | 'story' | 'subtask' | 'demand' | null;
 
 interface WorkItemResult {
   id: string;
@@ -15,8 +15,8 @@ interface WorkItemResult {
  * BrowsePage - Deep-link resolver for work items
  * Route: /browse/:key
  * 
- * Resolves work item keys (e.g., PROJ-123) to their detail views
- * Searches across: epics (epic_key), features (display_id), stories (story_key)
+ * Resolves work item keys (e.g., PROJ-123, MIM-001) to their detail views
+ * Searches across: epics, features, stories, subtasks, business_requests
  */
 export default function BrowsePage() {
   const { key } = useParams<{ key: string }>();
@@ -39,11 +39,10 @@ export default function BrowsePage() {
     setError(null);
 
     try {
-      // Normalize key to uppercase for case-insensitive matching
       const normalizedKey = workItemKey.toUpperCase();
 
       // Search across all work item tables in parallel
-      const [epicResult, featureResult, storyResult] = await Promise.all([
+      const [epicResult, featureResult, storyResult, demandResult] = await Promise.all([
         supabase
           .from('epics')
           .select('id, epic_key')
@@ -59,9 +58,13 @@ export default function BrowsePage() {
           .select('id, story_key')
           .ilike('story_key', normalizedKey)
           .maybeSingle(),
+        supabase
+          .from('business_requests')
+          .select('id, request_key')
+          .ilike('request_key', normalizedKey)
+          .maybeSingle(),
       ]);
 
-      // Check results and navigate to appropriate detail view
       let result: WorkItemResult | null = null;
 
       if (epicResult.data) {
@@ -70,6 +73,8 @@ export default function BrowsePage() {
         result = { id: featureResult.data.id, type: 'feature', key: featureResult.data.display_id || workItemKey };
       } else if (storyResult.data) {
         result = { id: storyResult.data.id, type: 'story', key: storyResult.data.story_key || workItemKey };
+      } else if (demandResult.data) {
+        result = { id: demandResult.data.id, type: 'demand', key: demandResult.data.request_key || workItemKey };
       }
 
       if (result) {
@@ -86,8 +91,6 @@ export default function BrowsePage() {
   }
 
   function navigateToWorkItem(item: WorkItemResult) {
-    // Navigate to appropriate route based on work item type
-    // Using query params to open detail drawer on the respective backlog page
     switch (item.type) {
       case 'epic':
         navigate(`/items/epics?selected=${item.id}`, { replace: true });
@@ -98,11 +101,11 @@ export default function BrowsePage() {
       case 'story':
         navigate(`/items/stories?selected=${item.id}`, { replace: true });
         break;
-      case 'task':
-        navigate(`/items/tasks?selected=${item.id}`, { replace: true });
+      case 'subtask':
+        navigate(`/items/stories?subtask=${item.id}`, { replace: true });
         break;
-      case 'defect':
-        navigate(`/items/defects?selected=${item.id}`, { replace: true });
+      case 'demand':
+        navigate(`/industry?selected=${item.id}`, { replace: true });
         break;
       default:
         setError(`Unknown work item type: ${item.type}`);
