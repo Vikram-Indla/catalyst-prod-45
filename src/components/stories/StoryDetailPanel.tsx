@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, History, Link as LinkIcon, Copy, ArrowDown, Trash2 } from 'lucide-react';
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
+import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
@@ -413,6 +414,13 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                 />
               </CardContent>
             </Card>
+
+            {/* Key History Section */}
+            <KeyHistorySection 
+              workItemId={story.id} 
+              workItemType="story" 
+              currentKey={(story as any).story_key || `STY-${story.id.slice(0, 4)}`}
+            />
           </TabsContent>
 
             <TabsContent value="children" className="m-0 p-[var(--s3)] sm:p-[var(--s4)] md:p-[var(--s6)] focus-visible:outline-none">

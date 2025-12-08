@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
 import { FeatureProgressVisualization, type FeatureProgress } from '../FeatureProgressVisualization';
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
+import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureFormData {
@@ -175,6 +176,15 @@ export function FeatureDetailsTab({ feature, formData, updateField }: FeatureDet
             />
           </CardContent>
         </Card>
+      )}
+
+      {/* Key History Section */}
+      {feature?.id && feature?.display_id && (
+        <KeyHistorySection 
+          workItemId={feature.id} 
+          workItemType="feature" 
+          currentKey={feature.display_id}
+        />
       )}
     </div>
   );
