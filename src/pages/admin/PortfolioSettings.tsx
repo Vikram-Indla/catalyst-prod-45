@@ -8,7 +8,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
 
 /**
- * Portfolio Settings Page - Configure portfolio-level settings
+ * Program Settings Page - Configure program-level settings
  * Source: Administration guide PDF, Page 21
  */
 export default function PortfolioSettings() {
@@ -16,8 +16,8 @@ export default function PortfolioSettings() {
   const [displayWeeksIn, setDisplayWeeksIn] = useState<string>('member_weeks');
   
   const handleSave = () => {
-    // TODO: Save to portfolio_estimation_settings table
-    toast.success('Portfolio estimation settings saved');
+    // TODO: Save to program_estimation_settings table
+    toast.success('Program estimation settings saved');
   };
 
   return (
@@ -26,9 +26,9 @@ export default function PortfolioSettings() {
         <div className="h-[72px] border-b bg-card flex-shrink-0">
           <div className="h-full px-6 flex items-center justify-between">
             <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Portfolio Settings</h1>
+              <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Program Settings</h1>
               <p className="text-sm text-muted-foreground truncate">
-                Configure portfolio-level estimation and forecasting settings
+                Configure program-level estimation and forecasting settings
               </p>
             </div>
             <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold-hover flex-shrink-0">
@@ -62,7 +62,7 @@ export default function PortfolioSettings() {
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    This system will be used across all work items in the portfolio unless overridden
+                    This system will be used across all work items in the program unless overridden
                   </p>
                 </div>
 
@@ -90,9 +90,9 @@ export default function PortfolioSettings() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Portfolio Configuration</CardTitle>
+                <CardTitle>Program Configuration</CardTitle>
                 <CardDescription>
-                  Additional portfolio-specific settings
+                  Additional program-specific settings
                 </CardDescription>
               </CardHeader>
               <CardContent>

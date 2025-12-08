@@ -5,12 +5,12 @@ import { createContext, useContext, useState, useEffect, ReactNode } from 'react
  * Source: https://help.jiraalign.com/hc/en-us/articles/17158556046612-Navigate-Jira-Align
  * 
  * Provides persistent filtering across all rooms and views:
- * - Scope filter: Portfolio/Program/Team selection
+ * - Scope filter: Program/Project/Team selection
  * - Time filter: Program Increment (PI) selection
  * - These persist as users navigate between rooms
  */
 
-export type RoomType = 'strategy' | 'portfolio' | 'program' | 'team';
+export type RoomType = 'strategy' | 'program' | 'project' | 'team';
 
 interface NavigationContextValue {
   // Current room
@@ -18,11 +18,11 @@ interface NavigationContextValue {
   setCurrentRoom: (room: RoomType) => void;
   
   // Scope filters (persist across navigation)
-  selectedPortfolioId: string | null;
-  setSelectedPortfolioId: (id: string | null) => void;
-  
   selectedProgramId: string | null;
   setSelectedProgramId: (id: string | null) => void;
+  
+  selectedProjectId: string | null;
+  setSelectedProjectId: (id: string | null) => void;
   
   selectedTeamId: string | null;
   setSelectedTeamId: (id: string | null) => void;
@@ -38,15 +38,15 @@ interface NavigationContextValue {
 const NavigationContext = createContext<NavigationContextValue | undefined>(undefined);
 
 export function NavigationProvider({ children }: { children: ReactNode }) {
-  const [currentRoom, setCurrentRoom] = useState<RoomType>('portfolio');
+  const [currentRoom, setCurrentRoom] = useState<RoomType>('program');
   
   // Load persisted filters from localStorage
-  const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(() => {
-    return localStorage.getItem('catalyst_portfolio_id') || null;
-  });
-  
   const [selectedProgramId, setSelectedProgramId] = useState<string | null>(() => {
     return localStorage.getItem('catalyst_program_id') || null;
+  });
+  
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(() => {
+    return localStorage.getItem('catalyst_project_id') || null;
   });
   
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(() => {
@@ -60,20 +60,20 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   
   // Persist filters to localStorage
   useEffect(() => {
-    if (selectedPortfolioId) {
-      localStorage.setItem('catalyst_portfolio_id', selectedPortfolioId);
-    } else {
-      localStorage.removeItem('catalyst_portfolio_id');
-    }
-  }, [selectedPortfolioId]);
-  
-  useEffect(() => {
     if (selectedProgramId) {
       localStorage.setItem('catalyst_program_id', selectedProgramId);
     } else {
       localStorage.removeItem('catalyst_program_id');
     }
   }, [selectedProgramId]);
+  
+  useEffect(() => {
+    if (selectedProjectId) {
+      localStorage.setItem('catalyst_project_id', selectedProjectId);
+    } else {
+      localStorage.removeItem('catalyst_project_id');
+    }
+  }, [selectedProjectId]);
   
   useEffect(() => {
     if (selectedTeamId) {
@@ -92,8 +92,8 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
   }, [selectedPIIds]);
   
   const resetFilters = () => {
-    setSelectedPortfolioId(null);
     setSelectedProgramId(null);
+    setSelectedProjectId(null);
     setSelectedTeamId(null);
     setSelectedPIIds([]);
   };
@@ -103,10 +103,10 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       value={{
         currentRoom,
         setCurrentRoom,
-        selectedPortfolioId,
-        setSelectedPortfolioId,
         selectedProgramId,
         setSelectedProgramId,
+        selectedProjectId,
+        setSelectedProjectId,
         selectedTeamId,
         setSelectedTeamId,
         selectedPIIds,

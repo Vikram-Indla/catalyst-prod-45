@@ -7,30 +7,30 @@ import { Progress } from "@/components/ui/progress";
 import { TrendingUp, Clock, Zap, Activity } from "lucide-react";
 
 export default function ValueStreamView() {
-  const { selectedPortfolioId } = useNavigation();
+  const { selectedProgramId } = useNavigation();
 
   const { data: valueStreamData, isLoading } = useQuery({
-    queryKey: ["value-stream-metrics", selectedPortfolioId],
+    queryKey: ["value-stream-metrics", selectedProgramId],
     queryFn: async () => {
-      if (!selectedPortfolioId) return [];
+      if (!selectedProgramId) return [];
       
       const { data, error } = await supabase
         .from("value_stream_metrics")
         .select("*")
-        .eq("portfolio_id", selectedPortfolioId)
+        .eq("portfolio_id", selectedProgramId)
         .order("metric_date", { ascending: false })
         .limit(30);
 
       if (error) throw error;
       return data;
     },
-    enabled: !!selectedPortfolioId,
+    enabled: !!selectedProgramId,
   });
 
   const { data: features } = useQuery({
-    queryKey: ["features-flow", selectedPortfolioId],
+    queryKey: ["features-flow", selectedProgramId],
     queryFn: async () => {
-      if (!selectedPortfolioId) return [];
+      if (!selectedProgramId) return [];
       
       const { data, error } = await supabase
         .from("features")
@@ -38,13 +38,13 @@ export default function ValueStreamView() {
           *,
           programs!inner(portfolio_id)
         `)
-        .eq("programs.portfolio_id", selectedPortfolioId)
+        .eq("programs.portfolio_id", selectedProgramId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
     },
-    enabled: !!selectedPortfolioId,
+    enabled: !!selectedProgramId,
   });
 
   const calculateFlowMetrics = () => {
