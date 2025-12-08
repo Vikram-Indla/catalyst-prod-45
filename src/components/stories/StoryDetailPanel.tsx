@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Edit2, Save, Calendar, User, Flag, MoreVertical, Bell, MessageSquare, History, Link as LinkIcon, Copy, ArrowDown, Trash2 } from 'lucide-react';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
+import { WorkItemWatchers } from '@/components/work-items/WorkItemWatchers';
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection';
@@ -129,6 +130,7 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
               )}
             </div>
             {story.id && <WorkItemPresence workItemType="stories" workItemId={story.id} />}
+            {story.id && <WorkItemWatchers workItemType="story" workItemId={story.id} />}
           </div>
           <div className="flex items-center gap-[var(--s2)] flex-shrink-0">
             {isEditing && (
