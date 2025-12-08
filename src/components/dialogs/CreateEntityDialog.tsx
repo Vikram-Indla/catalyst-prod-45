@@ -177,7 +177,7 @@ export function CreateEntityDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] bg-white">
+      <DialogContent className="sm:max-w-[480px] bg-white z-[100]">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">{config.title}</DialogTitle>
           <DialogDescription className="text-muted-foreground">
