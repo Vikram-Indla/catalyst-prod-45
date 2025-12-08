@@ -33,10 +33,11 @@ export const spacing = {
 // SURFACE TOKENS
 // ============================================
 export const surface = {
-  // App backgrounds
+  // App backgrounds (FIX A: Surface hierarchy)
   app: 'hsl(var(--background))',
-  sunken: 'hsl(var(--neutral-50))',
-  raised: 'hsl(var(--card))',
+  sunken: 'hsl(var(--surface-sunken))',         // #F9FAFB - sunken containers
+  raised: 'hsl(var(--surface-raised))',         // #FFFFFF - raised cards
+  backdrop: 'hsl(var(--surface-backdrop))',     // #F3F4F6 - dense container backdrop
   overlay: 'hsl(var(--popover))',
   
   // Interactive surfaces
@@ -170,11 +171,12 @@ export const typography = {
 } as const;
 
 // ============================================
-// LAYOUT MEASUREMENTS (Atlassian-aligned)
+// LAYOUT MEASUREMENTS (FIX B: Unified heights)
 // ============================================
 export const layout = {
-  // Header
+  // Header (FIX B: Single source of truth = 56px)
   headerHeight: '56px',
+  pageHeaderHeight: '56px',                      // NOT 72px - use var(--pagehdr-h)
   headerHeightCompact: '48px',
   
   // Sidebar
@@ -203,13 +205,19 @@ export const layout = {
   contentPadding: '24px',
   contentPaddingMobile: '16px',
   
-  // Table
+  // Table (FIX C: 40px row height)
   tableRowHeight: '40px',
   tableRowHeightCompact: '32px',
   tableHeaderHeight: '40px',
   
   // Toolbar
   toolbarHeight: '48px',
+  
+  // Button heights (FIX D)
+  buttonHeightDefault: '36px',
+  buttonHeightSm: '32px',
+  buttonHeightLg: '40px',
+  buttonHeightIcon: '32px',
 } as const;
 
 // ============================================

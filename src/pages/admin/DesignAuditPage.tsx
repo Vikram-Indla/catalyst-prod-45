@@ -28,31 +28,32 @@ import { DesignSystemBaseline } from '@/components/admin/design-audit/DesignSyst
 import { GapDetectionGrid } from '@/components/admin/design-audit/GapDetectionGrid';
 import { FixIssuesPanel } from '@/components/admin/design-audit/FixIssuesPanel';
 
-// Core UI findings
+// Core UI findings - UPDATED POST FIX-PACK
 const coreFindings: AuditFinding[] = [
-  { id: 'nav-density', route: '/home', area: 'SideNav', element: 'Nav Item Height', selector: '[data-ui="NavItem"]', current: '44px', target: '32px', delta: '+12px', severity: 'P1', status: 'fixed', recommendation: 'Use compact 32px nav items for Atlassian density', file: 'AdminSidebarV2.tsx' },
-  { id: 'nav-spacing', route: '/home', area: 'SideNav', element: 'Section Gap', selector: '.nav-section', current: '16px', target: '8px', delta: '+8px', severity: 'P2', status: 'fixed', recommendation: 'Reduce section gaps for tighter grouping', file: 'AdminSidebarV2.tsx' },
-  { id: 'nav-selected', route: '/home', area: 'SideNav', element: 'Selected State', selector: '[aria-selected="true"]', current: 'bg-primary/10', target: 'Left bar + subtle bg', delta: 'Pattern', severity: 'P1', status: 'fixed', recommendation: 'Add 3px left indicator bar on selected nav', file: 'AdminSidebarV2.tsx' },
-  { id: 'nav-collapsed', route: '/home', area: 'SideNav', element: 'Collapsed Width', selector: 'aside', current: '64px', target: '56px', delta: '+8px', severity: 'P2', status: 'fixed', recommendation: 'Reduce collapsed sidebar to 56px', file: 'AdminSidebarV2.tsx' },
-  { id: 'header-height', route: '/home', area: 'Header', element: 'Header Height', selector: 'header', current: '64px', target: '56px', delta: '+8px', severity: 'P1', status: 'fixed', recommendation: 'Use 56px compact header', file: 'CatalystHeader.tsx' },
-  { id: 'header-spacing', route: '/home', area: 'Header', element: 'Action Spacing', selector: '.header-actions', current: '16px', target: '12px', delta: '+4px', severity: 'P2', status: 'fixed', recommendation: 'Reduce action button gaps', file: 'CatalystHeader.tsx' },
-  { id: 'modal-padding', route: '/admin/users', area: 'Modal', element: 'Content Padding', selector: '[role="dialog"]', current: '24px', target: '20px', delta: '+4px', severity: 'P2', status: 'fixed', recommendation: 'Slightly reduce modal padding', file: 'dialog.tsx' },
-  { id: 'modal-radius', route: '/admin/users', area: 'Modal', element: 'Border Radius', selector: '[role="dialog"]', current: '8px', target: '12px', delta: '-4px', severity: 'P3', status: 'fixed', recommendation: 'Increase modal radius to 12px', file: 'dialog.tsx' },
-  { id: 'drawer-width', route: '/industry', area: 'Drawer', element: 'Default Width', selector: '.sheet-content', current: 'max-w-sm', target: '480px (medium)', delta: 'Pattern', severity: 'P2', status: 'fixed', recommendation: 'Use semantic drawer widths', file: 'sheet.tsx' },
+  { id: 'nav-density', route: '/home', area: 'SideNav', element: 'Nav Item Height', selector: '[data-ui="NavItem"]', current: '32px', target: '32px', delta: '0', severity: 'P1', status: 'fixed', recommendation: 'Use compact 32px nav items for Atlassian density', file: 'AdminSidebarV2.tsx' },
+  { id: 'nav-spacing', route: '/home', area: 'SideNav', element: 'Section Gap', selector: '.nav-section', current: '8px', target: '8px', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Reduce section gaps for tighter grouping', file: 'AdminSidebarV2.tsx' },
+  { id: 'nav-selected', route: '/home', area: 'SideNav', element: 'Selected State', selector: '[aria-selected="true"]', current: 'Left bar + bg', target: 'Left bar + subtle bg', delta: '0', severity: 'P1', status: 'fixed', recommendation: 'Add 3px left indicator bar on selected nav', file: 'AdminSidebarV2.tsx' },
+  { id: 'nav-collapsed', route: '/home', area: 'SideNav', element: 'Collapsed Width', selector: 'aside', current: '56px', target: '56px', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Reduce collapsed sidebar to 56px', file: 'AdminSidebarV2.tsx' },
+  { id: 'header-height', route: '/home', area: 'Header', element: 'Header Height', selector: 'header', current: '56px', target: '56px', delta: '0', severity: 'P1', status: 'fixed', recommendation: 'Use 56px compact header (FIX B)', file: 'CatalystHeader.tsx' },
+  { id: 'header-spacing', route: '/home', area: 'Header', element: 'Action Spacing', selector: '.header-actions', current: '12px', target: '12px', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Reduce action button gaps', file: 'CatalystHeader.tsx' },
+  { id: 'modal-padding', route: '/admin/users', area: 'Modal', element: 'Content Padding', selector: '[role="dialog"]', current: '20px', target: '20px', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Slightly reduce modal padding', file: 'dialog.tsx' },
+  { id: 'modal-radius', route: '/admin/users', area: 'Modal', element: 'Border Radius', selector: '[role="dialog"]', current: '12px', target: '12px', delta: '0', severity: 'P3', status: 'fixed', recommendation: 'Increase modal radius to 12px', file: 'dialog.tsx' },
+  { id: 'drawer-width', route: '/industry', area: 'Drawer', element: 'Default Width', selector: '.sheet-content', current: '480px', target: '480px (medium)', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Use semantic drawer widths', file: 'sheet.tsx' },
   { id: 'focus-ring', route: 'global', area: 'Button', element: 'Focus Ring', selector: 'button:focus-visible', current: 'ring-2 ring-ring', target: '2px brand-gold ring', delta: 'Token', severity: 'P1', status: 'fixed', recommendation: 'Consistent brand-gold focus rings', file: 'button.tsx' },
   { id: 'card-shadow', route: '/home', area: 'Elevation', element: 'Card Shadow', selector: '.card', current: 'shadow-sm', target: 'shadow-md', delta: 'Elevation', severity: 'P3', status: 'pass', recommendation: 'Use subtle md elevation for cards', file: 'card.tsx' },
-  { id: 'table-density', route: '/industry', area: 'Typography', element: 'Table Row Height', selector: 'tr', current: '48px', target: '40px', delta: '+8px', severity: 'P2', status: 'warn', recommendation: 'Reduce table row height for density', file: 'table.tsx' },
+  { id: 'table-density', route: '/industry', area: 'Table', element: 'Table Row Height', selector: 'tr', current: '40px', target: '40px', delta: '0', severity: 'P2', status: 'fixed', recommendation: 'Table row height set to 40px (FIX C)', file: 'table.tsx' },
+  { id: 'surface-hierarchy', route: 'global', area: 'Color', element: 'Muted/Sunken Surface', selector: '.bg-muted', current: '#F9FAFB', target: 'Distinct from white', delta: '0', severity: 'P0', status: 'fixed', recommendation: 'Surface hierarchy with sunken/raised tokens (FIX A)', file: 'index.css' },
 ];
 
-// Toast findings
+// Toast findings - UPDATED POST FIX-PACK (FIX E)
 const toastFindings = [
-  { id: 'toast-placement', element: 'Placement', current: 'Top-right, fixed', target: 'Top-right, 16px offset', status: 'pass' as const, notes: 'Correct placement pattern' },
+  { id: 'toast-placement', element: 'Placement', current: 'Top-center, fixed', target: 'Top-center, 16px offset', status: 'pass' as const, notes: 'Correct placement pattern' },
   { id: 'toast-stacking', element: 'Stacking', current: '8px gap, LIFO', target: '8px gap, LIFO', status: 'pass' as const, notes: 'Proper stacking order' },
-  { id: 'toast-width', element: 'Width', current: '380-460px', target: '360-420px', status: 'warn' as const, notes: 'Slightly wide; reduce for density' },
-  { id: 'toast-success', element: 'Success Color', current: 'text-emerald-500', target: 'hsl(var(--success))', status: 'warn' as const, notes: 'Use semantic token' },
-  { id: 'toast-error', element: 'Error Color', current: 'text-red-500', target: 'hsl(var(--destructive))', status: 'warn' as const, notes: 'Use semantic token' },
-  { id: 'toast-warning', element: 'Warning Color', current: 'text-amber-500', target: 'hsl(var(--warning))', status: 'warn' as const, notes: 'Use semantic token' },
-  { id: 'toast-info', element: 'Info Color', current: 'text-brand-gold', target: 'hsl(var(--brand-gold))', status: 'pass' as const, notes: 'Correct brand token' },
+  { id: 'toast-width', element: 'Width', current: '360-420px', target: '360-420px', status: 'pass' as const, notes: 'Width aligned to spec' },
+  { id: 'toast-success', element: 'Success Color', current: 'hsl(var(--success))', target: 'hsl(var(--success))', status: 'fixed' as const, notes: 'FIX E: Now uses semantic token' },
+  { id: 'toast-error', element: 'Error Color', current: 'hsl(var(--destructive))', target: 'hsl(var(--destructive))', status: 'fixed' as const, notes: 'FIX E: Now uses semantic token' },
+  { id: 'toast-warning', element: 'Warning Color', current: 'hsl(var(--warning))', target: 'hsl(var(--warning))', status: 'fixed' as const, notes: 'FIX E: Now uses semantic token' },
+  { id: 'toast-info', element: 'Info Color', current: 'hsl(var(--info))', target: 'hsl(var(--info))', status: 'fixed' as const, notes: 'FIX E: Now uses semantic token' },
   { id: 'toast-dismiss', element: 'Auto-dismiss', current: '5000ms', target: '5000ms', status: 'pass' as const, notes: 'Standard duration' },
   { id: 'toast-pause', element: 'Pause on Hover', current: 'Implemented', target: 'Required', status: 'pass' as const, notes: 'UX best practice' },
   { id: 'toast-contrast', element: 'Text Contrast', current: '7.2:1 ratio', target: 'WCAG AA (4.5:1)', status: 'pass' as const, notes: 'Exceeds minimum' },
@@ -72,10 +73,10 @@ const chartFindings = [
   { id: 'chart-drift', element: 'Palette Drift', current: 'No third-party', target: 'Golden Hour only', status: 'pass' as const, notes: 'Governance enforced' },
 ];
 
-// Interaction state findings
+// Interaction state findings - UPDATED POST FIX-PACK (FIX D)
 const interactionFindings = [
   { id: 'btn-hover', element: 'Button Hover', current: 'hover:bg-brand-gold-hover', target: 'Darken 8%', computed: 'hsl(35 41% 55%)', status: 'pass' as const, notes: '#B8905F - correct' },
-  { id: 'btn-active', element: 'Button Active', current: 'Not defined', target: 'Darken 12%', computed: 'N/A', status: 'warn' as const, notes: 'Add active:scale-[0.98]' },
+  { id: 'btn-active', element: 'Button Active', current: 'active:scale-[0.98] active:brightness-95', target: 'Scale + brightness', computed: 'Implemented', status: 'fixed' as const, notes: 'FIX D: Pressed state added' },
   { id: 'btn-focus', element: 'Button Focus', current: 'ring-2 ring-ring', target: '2px brand-gold ring', computed: 'hsl(35 46% 60%)', status: 'pass' as const, notes: 'Correct token' },
   { id: 'btn-disabled', element: 'Button Disabled', current: 'opacity-50', target: 'opacity-50 + not-allowed', computed: '0.5', status: 'pass' as const, notes: 'Standard pattern' },
   { id: 'link-hover', element: 'Link Hover', current: 'hover:underline', target: 'Underline + color shift', computed: 'text-decoration: underline', status: 'pass' as const, notes: 'Accessible' },
@@ -100,12 +101,12 @@ const statusFindings = [
   { id: 'health-red', element: 'Health Off Track', current: 'var(--health-red)', hex: '#DE350B', usage: 'Health indicators', status: 'pass' as const, notes: 'Consistent' },
 ];
 
-// Button size findings
+// Button size findings - UPDATED POST FIX-PACK (FIX D)
 const buttonFindings = [
-  { id: 'btn-default-height', element: 'Default Height', current: '40px (h-10)', target: '36px', delta: '+4px', status: 'warn' as const, notes: 'Slightly tall for Atlassian' },
-  { id: 'btn-sm-height', element: 'Small Height', current: '36px (h-9)', target: '32px', delta: '+4px', status: 'warn' as const, notes: 'Reduce for density' },
-  { id: 'btn-lg-height', element: 'Large Height', current: '44px (h-11)', target: '40px', delta: '+4px', status: 'warn' as const, notes: 'Reduce for density' },
-  { id: 'btn-icon-size', element: 'Icon-only Size', current: '40px (h-10 w-10)', target: '32px', delta: '+8px', status: 'warn' as const, notes: 'Oversized for icons' },
+  { id: 'btn-default-height', element: 'Default Height', current: '36px (h-9)', target: '36px', delta: '0', status: 'fixed' as const, notes: 'FIX D: Aligned to spec' },
+  { id: 'btn-sm-height', element: 'Small Height', current: '32px (h-8)', target: '32px', delta: '0', status: 'fixed' as const, notes: 'FIX D: Aligned to spec' },
+  { id: 'btn-lg-height', element: 'Large Height', current: '40px (h-10)', target: '40px', delta: '0', status: 'fixed' as const, notes: 'FIX D: Aligned to spec' },
+  { id: 'btn-icon-size', element: 'Icon-only Size', current: '32px (h-8 w-8)', target: '32px', delta: '0', status: 'fixed' as const, notes: 'FIX D: Aligned to spec' },
   { id: 'btn-padding-x', element: 'Horizontal Padding', current: '16px (px-4)', target: '12-16px', delta: '-', status: 'pass' as const, notes: 'Within range' },
   { id: 'btn-font-size', element: 'Font Size', current: '14px (text-sm)', target: '14px', delta: '-', status: 'pass' as const, notes: 'Correct' },
   { id: 'btn-font-weight', element: 'Font Weight', current: '500 (medium)', target: '500-600', delta: '-', status: 'pass' as const, notes: 'Correct' },
