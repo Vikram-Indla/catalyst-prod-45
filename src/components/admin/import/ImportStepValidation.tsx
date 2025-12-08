@@ -157,28 +157,29 @@ export function ImportStepValidation({
                 ))}
               </div>
               
-              {/* Results Table with horizontal scroll */}
+              {/* Results Table with horizontal scroll - CRITICAL: ensure full horizontal scrolling */}
               <div className="border rounded-lg overflow-hidden">
-                <div className="overflow-x-auto overflow-y-auto max-h-[400px]">
-                  <table className="w-full min-w-max border-collapse">
+                <div className="overflow-x-auto overflow-y-auto max-h-[400px]" style={{ minWidth: 0 }}>
+                  <table className="w-full border-collapse" style={{ minWidth: `${mappedFields.length * 150 + 400}px` }}>
                     <thead className="sticky top-0 z-10 bg-muted">
                       <tr className="border-b">
-                        <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide w-14">
+                        <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide" style={{ width: '60px', minWidth: '60px' }}>
                           Row
                         </th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide w-20">
+                        <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide" style={{ width: '80px', minWidth: '80px' }}>
                           Status
                         </th>
                         {mappedFields.map(f => (
                           <th 
                             key={f.dbColumn} 
-                            className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide min-w-[120px] max-w-[180px]"
+                            className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide"
+                            style={{ minWidth: '120px', maxWidth: '200px' }}
                           >
                             {f.label}
                           </th>
                         ))}
-                        <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide min-w-[200px]">
-                          Errors
+                        <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase tracking-wide" style={{ minWidth: '300px' }}>
+                          Errors / Warnings
                         </th>
                       </tr>
                     </thead>
@@ -234,39 +235,37 @@ export function ImportStepValidation({
                                 </td>
                               );
                             })}
-                            <td className="px-3 py-1.5 text-[10px] max-w-[250px]">
-                              <div className="space-y-0.5">
-                                {result.errors.slice(0, 2).map((e, i) => (
-                                  <div 
-                                    key={i} 
-                                    className={cn(
-                                      "truncate",
-                                      e.severity === 'error' ? 'text-destructive' : 'text-amber-600'
-                                    )}
-                                  >
-                                    {e.message}
-                                  </div>
-                                ))}
-                                {result.errors.length > 2 && (
-                                  <Tooltip>
+                            <td className="px-3 py-1.5 text-xs" style={{ minWidth: '300px' }}>
+                              <div className="space-y-1">
+                                {result.errors.map((e, i) => (
+                                  <Tooltip key={i}>
                                     <TooltipTrigger asChild>
-                                      <span className="text-muted-foreground cursor-help">
-                                        +{result.errors.length - 2} more...
-                                      </span>
+                                      <div 
+                                        className={cn(
+                                          "text-xs leading-tight cursor-help",
+                                          e.severity === 'error' ? 'text-destructive' : 'text-amber-600'
+                                        )}
+                                        style={{ 
+                                          display: '-webkit-box',
+                                          WebkitLineClamp: 2,
+                                          WebkitBoxOrient: 'vertical',
+                                          overflow: 'hidden'
+                                        }}
+                                      >
+                                        <span className="font-medium">[{e.field}]</span> {e.message}
+                                      </div>
                                     </TooltipTrigger>
-                                    <TooltipContent side="left" className="max-w-[300px] text-xs bg-popover text-popover-foreground border shadow-md z-50">
-                                      {result.errors.map((e, i) => (
-                                        <div 
-                                          key={i}
-                                          className={cn(
-                                            e.severity === 'error' ? 'text-destructive' : 'text-amber-600'
-                                          )}
-                                        >
-                                          • {e.message}
-                                        </div>
-                                      ))}
+                                    <TooltipContent 
+                                      side="left" 
+                                      className="max-w-[400px] text-xs bg-popover text-popover-foreground border shadow-md z-50 whitespace-pre-wrap"
+                                    >
+                                      <p className="font-medium mb-1">{e.field}</p>
+                                      <p>{e.message}</p>
                                     </TooltipContent>
                                   </Tooltip>
+                                ))}
+                                {result.errors.length === 0 && (
+                                  <span className="text-muted-foreground">—</span>
                                 )}
                               </div>
                             </td>

@@ -82,10 +82,11 @@ export default function ImportData() {
   
   const handleValidate = useCallback(() => {
     if (!moduleConfig) return;
-    // CRITICAL: Pass valueMappings to apply user-configured value transformations
-    const { results } = validateAllRows(parsedData, fieldMappings, moduleConfig, dateFormat, valueMappings);
+    // CRITICAL: Pass valueMappings AND csvHeaders to apply user-configured value transformations
+    // and detect duplicate header rows
+    const { results } = validateAllRows(parsedData, fieldMappings, moduleConfig, dateFormat, valueMappings, csvHeaders);
     setValidationResults(results);
-  }, [parsedData, fieldMappings, moduleConfig, dateFormat, valueMappings]);
+  }, [parsedData, fieldMappings, moduleConfig, dateFormat, valueMappings, csvHeaders]);
   
   const handleBeginImport = useCallback(async () => {
     if (!moduleConfig || !validationResults) return;
@@ -93,7 +94,10 @@ export default function ImportData() {
     setIsImporting(true);
     setImportProgress(0);
     
-    const validRows = validationResults.filter(r => r.errors.filter(e => e.severity === 'error').length === 0);
+    // CRITICAL: Filter out header rows and rows with errors - only import valid rows
+    const validRows = validationResults.filter(r => 
+      !r.isHeaderRow && r.errors.filter(e => e.severity === 'error').length === 0
+    );
     let success = 0;
     let failed = 0;
     
