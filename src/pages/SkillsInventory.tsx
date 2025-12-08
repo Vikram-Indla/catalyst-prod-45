@@ -480,53 +480,6 @@ export default function SkillsInventory() {
               Track and manage team skills, proficiency levels, and identify capability gaps
             </p>
           </div>
-          {/* Export Report Button */}
-          <div className="relative" ref={exportMenuRef}>
-            <button
-              onClick={() => setExportMenuOpen(!exportMenuOpen)}
-              disabled={isExporting}
-              className="inline-flex items-center gap-3 px-6 py-3 bg-white border border-neutral-200 rounded-full shadow-sm hover:bg-neutral-50 hover:border-neutral-300 hover:shadow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isExporting ? (
-                <>
-                  <Loader2 className="w-5 h-5 text-neutral-400 animate-spin" />
-                  <span className="text-neutral-500 font-medium">Exporting...</span>
-                </>
-              ) : (
-                <>
-                  <Download className="w-5 h-5 text-neutral-400" />
-                  <span className="text-neutral-500 font-medium">Export Report</span>
-                  <ChevronDown className="w-4 h-4 text-neutral-400" />
-                </>
-              )}
-            </button>
-            
-            {exportMenuOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-50">
-                <button
-                  onClick={exportToCSV}
-                  className="w-full px-4 py-2 text-left text-neutral-700 hover:bg-neutral-50 flex items-center gap-3"
-                >
-                  <FileSpreadsheet className="w-4 h-4 text-neutral-400" />
-                  Export as CSV
-                </button>
-                <button
-                  onClick={handleExportReport}
-                  className="w-full px-4 py-2 text-left text-neutral-700 hover:bg-neutral-50 flex items-center gap-3"
-                >
-                  <FileText className="w-4 h-4 text-neutral-400" />
-                  Full Report
-                </button>
-                <button
-                  onClick={handleExportMatrix}
-                  className="w-full px-4 py-2 text-left text-neutral-700 hover:bg-neutral-50 flex items-center gap-3"
-                >
-                  <Grid3X3 className="w-4 h-4 text-neutral-400" />
-                  Skills Matrix
-                </button>
-              </div>
-            )}
-          </div>
         </div>
 
         {/* View Mode Tabs */}
