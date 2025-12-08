@@ -13,19 +13,16 @@ interface ScrumTeamRoomProps {
 export function ScrumTeamRoom({ team }: ScrumTeamRoomProps) {
   const [selectedSprintId, setSelectedSprintId] = useState<string>('');
 
-  // Mock data - will be replaced with actual data
-  const sprints = [
-    { id: 'sprint-1', name: 'Sprint 23', status: 'active' },
-    { id: 'sprint-2', name: 'Sprint 22', status: 'completed' },
-  ];
+  // Empty data - populated from database
+  const sprints: { id: string; name: string; status: string }[] = [];
 
   const metrics = {
-    velocity: 45,
-    commitment: 52,
-    completed: 38,
-    inProgress: 8,
-    todo: 6,
-    burndownTrend: 73,
+    velocity: 0,
+    commitment: 0,
+    completed: 0,
+    inProgress: 0,
+    todo: 0,
+    burndownTrend: 0,
   };
 
   return (

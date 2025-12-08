@@ -18,15 +18,8 @@ interface ProgramIncrementSelectorPanelProps {
   onPIsChange: (piIds: string[]) => void;
 }
 
-const mockPIs: ProgramIncrement[] = [
-  { id: 'pi-5', name: 'PI-5', startDate: '3/12/2024', endDate: '6/3/2024', status: 'selected' },
-  { id: 'pi-9', name: 'PI-9', startDate: '6/22/2024', endDate: '7/22/2024', status: 'planning' },
-  { id: 'pi-6', name: 'PI-6', startDate: '6/4/2024', endDate: '8/26/2024', status: 'planning' },
-  { id: 'pi-10', name: 'PI-10', startDate: '7/23/2024', endDate: '10/14/2024', status: 'planning' },
-  { id: 'pi-8', name: 'PI-8', startDate: '10/7/2024', endDate: '10/22/2024', status: 'planning' },
-  { id: 'pi-7', name: 'PI-7', startDate: '8/27/2024', endDate: '11/26/2024', status: 'planning' },
-  { id: 'pi-1', name: 'PI-1', startDate: '3/12/2023', endDate: '5/9/2023', status: 'done' },
-];
+// Empty PIs - populated from database
+const mockPIs: ProgramIncrement[] = [];
 
 export function ProgramIncrementSelectorPanel({
   selectedPIs,

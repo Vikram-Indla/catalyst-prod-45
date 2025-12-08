@@ -34,17 +34,8 @@ export function GlobalSearch({ open, onOpenChange }: GlobalSearchProps) {
     }
 
     // TODO: Implement actual search API call
-    // Mock results for demonstration
-    const mockResults: SearchResult[] = [
-      { id: 'epic-1', type: 'Epic', title: 'Platform Modernization', subtitle: 'E-101', path: '/epics/epic-1' },
-      { id: 'feature-1', type: 'Feature', title: 'User Authentication', subtitle: 'F-234', path: '/features/feature-1' },
-      { id: 'story-1', type: 'Story', title: 'Login page redesign', subtitle: 'S-567', path: '/stories/story-1' },
-    ].filter(item => 
-      item.title.toLowerCase().includes(query.toLowerCase()) ||
-      (item.subtitle && item.subtitle.toLowerCase().includes(query.toLowerCase()))
-    );
-
-    setResults(mockResults);
+    // Empty results until search API is implemented
+    setResults([]);
   }, [query]);
 
   const handleSelect = (result: SearchResult) => {

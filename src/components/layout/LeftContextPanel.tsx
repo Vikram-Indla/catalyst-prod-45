@@ -171,28 +171,11 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     { id: 'story-point-progress', label: 'Story point progress by team', path: '/enterprise/pages/story-point-progress' },
   ];
 
-  // Mock data - in production these would come from API
-  const portfolios = [
-    { id: '1', name: 'Digital Services', abbr: 'DS', color: 'bg-primary' },
-    { id: '2', name: 'Innovation', abbr: 'IN', color: 'bg-workitem-theme' },
-  ];
-
-  const programs = [
-    { id: 'prog-1', name: 'Platform Engineering', portfolioId: '1' },
-    { id: 'prog-2', name: 'Customer Experience', portfolioId: '1' },
-  ];
-
-  const pis = [
-    { id: 'pi-5', code: 'PI-5', dates: 'Dec 2024 – Feb 2025', status: 'selected' },
-    { id: 'pi-6', code: 'PI-6', dates: 'Mar 2025 – May 2025', status: 'in-progress' },
-    { id: 'pi-7', code: 'PI-7', dates: 'Jun 2025 – Aug 2025', status: 'planning' },
-    { id: 'pi-4', code: 'PI-4', dates: 'Sep 2024 – Nov 2024', status: 'done' },
-  ];
-
-  const snapshots = [
-    { id: 'snap-1', name: 'Corporate Strategy 2024' },
-    { id: 'snap-2', name: 'Corporate Strategy 2025' },
-  ];
+  // Empty data - populated from database
+  const portfolios: { id: string; name: string; abbr: string; color: string }[] = [];
+  const programs: { id: string; name: string; portfolioId: string }[] = [];
+  const pis: { id: string; code: string; dates: string; status: string }[] = [];
+  const snapshots: { id: string; name: string }[] = [];
 
   const currentPortfolio = portfolios.find(p => p.id === portfolioId);
   const currentProgram = programs.find(p => p.id === programId);
