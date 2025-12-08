@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { FeatureProgressVisualization, type FeatureProgress } from '../FeatureProgressVisualization';
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
+import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureFormData {
@@ -184,6 +185,14 @@ export function FeatureDetailsTab({ feature, formData, updateField }: FeatureDet
           workItemId={feature.id} 
           workItemType="feature" 
           currentKey={feature.display_id}
+        />
+      )}
+
+      {/* Time Tracking Section */}
+      {feature?.id && (
+        <TimeTrackingSection 
+          workItemId={feature.id} 
+          workItemType="feature" 
         />
       )}
     </div>
