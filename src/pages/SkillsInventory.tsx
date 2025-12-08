@@ -9,8 +9,9 @@ import { SkillsInventoryReport } from '@/components/skills-inventory/SkillsInven
 import { SkillsFiltersDialog, SkillsInventoryFilters } from '@/components/skills-inventory/SkillsFiltersDialog';
 import { EditSkillModal } from '@/components/skills-inventory/EditSkillModal';
 import { DeleteSkillDialog } from '@/components/skills-inventory/DeleteSkillDialog';
-import { AddSkillModal } from '@/components/skills-inventory/AddSkillModal';
+import { AddTeamMemberModal, STANDARD_SKILLS } from '@/components/skills-inventory/AddTeamMemberModal';
 import { toast } from 'sonner';
+import { UserPlus } from 'lucide-react';
 
 type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report';
 
@@ -136,37 +137,27 @@ export default function SkillsInventory() {
     ));
   };
 
-  const handleAddSkill = (data: { 
-    teamMemberId: number; 
-    teamMemberName: string;
-    teamMemberRole: string;
-    skill: string; 
-    proficiency: string; 
-    notes: string 
+  // NEW: Handle adding a team member with multiple skills
+  const handleAddTeamMember = (data: { 
+    name: string;
+    role: string;
+    project: string;
+    skills: { id: string; skill: string; proficiency: string }[];
+    notes: string;
   }) => {
-    const newId = Math.max(...skillsData.map(s => s.id)) + 1;
-    const newSkill: SkillData = {
-      id: newId,
-      name: data.teamMemberName,
-      role: data.teamMemberRole,
-      project: 'Unassigned',
-      skill: data.skill,
-      proficiency: data.proficiency,
+    const baseId = Math.max(...skillsData.map(s => s.id), 0) + 1;
+    const newEntries = data.skills.map((skillEntry, index) => ({
+      id: baseId + index,
+      name: data.name,
+      role: data.role,
+      project: data.project,
+      skill: skillEntry.skill,
+      proficiency: skillEntry.proficiency,
       coverage: 50,
       lastUpdated: new Date().toISOString().split('T')[0]
-    };
-    setSkillsData(prev => [newSkill, ...prev]);
+    }));
+    setSkillsData(prev => [...newEntries, ...prev]);
   };
-
-  // Get unique team members for AddSkillModal dropdown
-  const teamMembersForDropdown = useMemo(() => {
-    const seen = new Set<string>();
-    return teamMembersData.filter(m => {
-      if (seen.has(m.name)) return false;
-      seen.add(m.name);
-      return true;
-    }).map(m => ({ id: m.id, name: m.name, role: m.role }));
-  }, []);
 
   // Extract unique values for filter options
   const uniqueTeamMembers = useMemo(() => [...new Set(teamMembersData.map(m => m.name))], []);
@@ -382,8 +373,8 @@ export default function SkillsInventory() {
                 Export CSV
               </Button>
               <Button variant="gold" size="sm" onClick={() => setAddSkillOpen(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Add Skill
+                <UserPlus className="h-4 w-4 mr-2" />
+                Add Team Member
               </Button>
             </div>
           </div>
@@ -557,12 +548,12 @@ export default function SkillsInventory() {
         isDeleting={isDeleting}
       />
 
-      {/* Add Skill Modal */}
-      <AddSkillModal
+      {/* NEW: Add Team Member Modal */}
+      <AddTeamMemberModal
         open={addSkillOpen}
         onClose={() => setAddSkillOpen(false)}
-        teamMembers={teamMembersForDropdown}
-        onSave={handleAddSkill}
+        projects={projects}
+        onSave={handleAddTeamMember}
       />
     </div>
   );
