@@ -436,17 +436,10 @@ export default function SkillsInventory() {
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-24 h-2 rounded-full overflow-hidden bg-brand-dark">
+                        <div className="w-24 h-2 rounded-full overflow-hidden bg-white border border-brand-gold/30">
                           <div
-                            className="h-full rounded-full"
-                            style={{
-                              width: `${member.coverage}%`,
-                              background: member.coverage >= 80
-                                ? 'hsl(var(--brand-gold))'
-                                : member.coverage >= 60
-                                  ? 'hsl(var(--warning))'
-                                  : 'hsl(var(--destructive))',
-                            }}
+                            className="h-full rounded-full bg-brand-gold"
+                            style={{ width: `${member.coverage}%` }}
                           />
                         </div>
                         <span className="text-sm text-foreground">{member.coverage}%</span>
