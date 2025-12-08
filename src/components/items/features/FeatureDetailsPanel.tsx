@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { MoreVertical } from 'lucide-react';
 import { WorkItemPresence } from '@/components/work-items/WorkItemPresence';
+import { WorkItemWatchers } from '@/components/work-items/WorkItemWatchers';
 import { FeatureDetailsTab } from './tabs/FeatureDetailsTab';
 import { FeaturePlanningTab } from './tabs/FeaturePlanningTab';
 import { FeatureFinancialsTab } from './tabs/FeatureFinancialsTab';
@@ -204,6 +205,7 @@ export function FeatureDetailsPanel({ feature, open, onClose }: FeatureDetailsPa
                 )}
               </div>
               {feature?.id && <WorkItemPresence workItemType="features" workItemId={feature.id} />}
+              {feature?.id && <WorkItemWatchers workItemType="feature" workItemId={feature.id} />}
             </div>
             <div className="flex items-center flex-shrink-0 gap-[var(--s2)]">
               <Button 

@@ -11320,6 +11320,30 @@ export type Database = {
           },
         ]
       }
+      work_item_watchers: {
+        Row: {
+          created_at: string
+          id: string
+          user_id: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          user_id: string
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          user_id?: string
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: []
+      }
       workflow_rules: {
         Row: {
           architecture_review_required: boolean
