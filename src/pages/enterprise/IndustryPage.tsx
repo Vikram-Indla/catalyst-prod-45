@@ -989,7 +989,30 @@ export default function IndustryPage() {
                                 </span>
                               );
                             case 'title':
-                              return <span className="text-sm text-text-primary truncate">{request.title}</span>;
+                              // Show tooltip for long titles that get truncated
+                              const titleText = request.title || '-';
+                              const isTitleLong = titleText.length > 40;
+                              return isTitleLong ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <span 
+                                      className="text-sm text-text-primary block truncate cursor-default"
+                                      style={{ maxWidth: '100%' }}
+                                    >
+                                      {titleText}
+                                    </span>
+                                  </TooltipTrigger>
+                                  <TooltipContent 
+                                    side="top" 
+                                    className="max-w-md bg-brand-dark text-white text-sm p-3 z-50"
+                                    style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                                  >
+                                    {titleText}
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <span className="text-sm text-text-primary truncate">{titleText}</span>
+                              );
                             case 'process_step':
                               return (
                                 <InlineEditableCell

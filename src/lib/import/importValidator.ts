@@ -23,6 +23,7 @@ export interface RowValidationResult {
   isValid: boolean;
   data: Record<string, unknown>;
   errors: ValidationError[];
+  isHeaderRow?: boolean; // Flag to identify header rows
 }
 
 // CRITICAL: Only mapped fields should be imported - unmapped fields are completely ignored
@@ -37,25 +38,61 @@ function applyValueMapping(
   csvColumn: string,
   valueMappings: Map<string, Map<string, string>> | undefined
 ): string {
-  if (!valueMappings) return rawValue;
+  if (!valueMappings || !rawValue) return rawValue;
   
   const columnMappings = valueMappings.get(csvColumn);
-  if (!columnMappings) return rawValue;
+  if (!columnMappings || columnMappings.size === 0) return rawValue;
+  
+  // Normalize the raw value for matching
+  const normalizedRaw = rawValue.trim();
   
   // Check for exact match first
-  const mappedValue = columnMappings.get(rawValue);
-  if (mappedValue && mappedValue !== '') {
-    return mappedValue;
+  const exactMatch = columnMappings.get(normalizedRaw);
+  if (exactMatch && exactMatch !== '') {
+    return exactMatch;
   }
   
   // Check for case-insensitive match
   for (const [csvVal, targetVal] of columnMappings.entries()) {
-    if (csvVal.toLowerCase() === rawValue.toLowerCase() && targetVal && targetVal !== '') {
+    if (csvVal.toLowerCase().trim() === normalizedRaw.toLowerCase() && targetVal && targetVal !== '') {
       return targetVal;
     }
   }
   
   return rawValue;
+}
+
+/**
+ * Check if a row appears to be a header row (all values match column names)
+ * This prevents accidentally importing the header row as data
+ */
+function isLikelyHeaderRow(
+  row: Record<string, string>,
+  csvHeaders: string[]
+): boolean {
+  // If more than half of the values match their column names, it's likely a header
+  let matchCount = 0;
+  let totalValues = 0;
+  
+  for (const [key, value] of Object.entries(row)) {
+    if (value && typeof value === 'string') {
+      totalValues++;
+      const normalizedValue = value.trim().toLowerCase();
+      const normalizedKey = key.trim().toLowerCase();
+      
+      // Check if value matches its own column name
+      if (normalizedValue === normalizedKey) {
+        matchCount++;
+      }
+      // Check if value matches any header
+      if (csvHeaders.some(h => h.trim().toLowerCase() === normalizedValue)) {
+        matchCount++;
+      }
+    }
+  }
+  
+  // If 50%+ of values match header names, it's likely a duplicate header row
+  return totalValues > 0 && (matchCount / totalValues) >= 0.5;
 }
 
 export function validateRow(
@@ -64,10 +101,27 @@ export function validateRow(
   fieldMappings: Map<string, string>,
   moduleConfig: ImportModuleConfig,
   dateFormat: string,
-  valueMappings?: Map<string, Map<string, string>>
+  valueMappings?: Map<string, Map<string, string>>,
+  csvHeaders?: string[]
 ): RowValidationResult {
   const errors: ValidationError[] = [];
   const data: Record<string, unknown> = {};
+  
+  // Check if this is a header row (duplicate header detection)
+  if (csvHeaders && isLikelyHeaderRow(row, csvHeaders)) {
+    return {
+      rowIndex,
+      isValid: false,
+      data: {},
+      errors: [{
+        row: rowIndex + 1,
+        field: 'Row',
+        message: 'This row appears to be a header row and will be skipped',
+        severity: 'error',
+      }],
+      isHeaderRow: true,
+    };
+  }
   
   // Build a reverse mapping: dbColumn -> csvColumn (ONLY for explicitly mapped fields)
   const activeMappings = new Map<string, string>();
@@ -129,8 +183,14 @@ export function validateRow(
     // CRITICAL: Apply value mapping FIRST for lookup/select fields
     // This transforms CSV values to Catalyst values based on user-configured mappings
     let processedValue = rawValue;
+    let wasMapped = false;
+    
     if (field.type === 'select' || field.isLookup) {
-      processedValue = applyValueMapping(rawValue, csvColumn, valueMappings);
+      const mappedValue = applyValueMapping(rawValue, csvColumn, valueMappings);
+      if (mappedValue !== rawValue) {
+        processedValue = mappedValue;
+        wasMapped = true;
+      }
     }
     
     // Type validation and conversion
@@ -183,20 +243,28 @@ export function validateRow(
         break;
         
       case 'select':
-        // CRITICAL: Check if the MAPPED value (not raw value) is valid
-        // Only show warning if the mapped value is not in options
+        // CRITICAL: Check if the MAPPED value (processedValue) is valid
         if (field.options) {
           const normalizedOptions = field.options.map(opt => opt.toLowerCase());
           const normalizedValue = processedValue.toLowerCase();
           
           if (!normalizedOptions.includes(normalizedValue)) {
-            // Only show warning - the value was already mapped or is unmapped
-            errors.push({
-              row: rowIndex + 1,
-              field: field.label,
-              message: `"${rawValue}" is not mapped to a valid option. Expected: ${field.options.join(', ')}`,
-              severity: 'warning',
-            });
+            // Show clear message: if mapped, show both values; otherwise just show raw
+            if (wasMapped) {
+              errors.push({
+                row: rowIndex + 1,
+                field: field.label,
+                message: `"${rawValue}" was mapped to "${processedValue}", but "${processedValue}" is not a valid option. Valid options: ${field.options.join(', ')}`,
+                severity: 'warning',
+              });
+            } else {
+              errors.push({
+                row: rowIndex + 1,
+                field: field.label,
+                message: `"${rawValue}" is not mapped and is not a valid option. Valid options: ${field.options.join(', ')}`,
+                severity: 'warning',
+              });
+            }
           } else {
             // Normalize to the correct case from options
             parsedValue = field.options.find(opt => 
@@ -226,6 +294,7 @@ export function validateRow(
     }
     
     // Only write to data if no error occurred
+    // CRITICAL: Use the MAPPED/PROCESSED value, not the raw value
     if (!hasError) {
       data[field.dbColumn] = parsedValue;
     }
@@ -236,6 +305,7 @@ export function validateRow(
     isValid: errors.filter(e => e.severity === 'error').length === 0,
     data,
     errors,
+    isHeaderRow: false,
   };
 }
 
@@ -244,7 +314,8 @@ export function validateAllRows(
   fieldMappings: Map<string, string>,
   moduleConfig: ImportModuleConfig,
   dateFormat: string,
-  valueMappings?: Map<string, Map<string, string>>
+  valueMappings?: Map<string, Map<string, string>>,
+  csvHeaders?: string[]
 ): { results: RowValidationResult[]; summary: ValidationResult } {
   const results: RowValidationResult[] = [];
   let validRows = 0;
@@ -252,8 +323,20 @@ export function validateAllRows(
   let warningRows = 0;
   const allErrors: ValidationError[] = [];
   
+  // Get headers from the first row's keys if not provided
+  const headers = csvHeaders || (rows.length > 0 ? Object.keys(rows[0]) : []);
+  
   for (let i = 0; i < rows.length; i++) {
-    const result = validateRow(rows[i], i, fieldMappings, moduleConfig, dateFormat, valueMappings);
+    const result = validateRow(rows[i], i, fieldMappings, moduleConfig, dateFormat, valueMappings, headers);
+    
+    // Skip header rows from results count
+    if (result.isHeaderRow) {
+      results.push(result);
+      invalidRows++;
+      allErrors.push(...result.errors);
+      continue;
+    }
+    
     results.push(result);
     
     if (result.isValid) {
@@ -291,6 +374,9 @@ export function detectDuplicates(
   const seen = new Map<string, number>();
   
   for (const row of rows) {
+    // Skip header rows
+    if (row.isHeaderRow) continue;
+    
     const keyValue = row.data[uniqueKeyField] as string;
     if (!keyValue) continue;
     
