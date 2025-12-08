@@ -107,6 +107,7 @@ export function ProductSelectorDropdown({ onClose }: ProductSelectorDropdownProp
   };
 
   const handleCreateClick = () => {
+    onClose();
     setShowCreateDialog(true);
   };
 
