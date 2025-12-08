@@ -155,7 +155,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
     // Also check navigation context from URL params
     const teamId = params.teamId || navigationContext.selectedTeamId;
     const programId = params.programId || navigationContext.selectedProgramId;
-    const portfolioId = params.portfolioId || navigationContext.selectedPortfolioId;
+    const portfolioId = params.portfolioId || navigationContext.selectedProgramId;
 
     if (teamId && !baseFilters.teamIds) {
       baseFilters.teamIds = [teamId];

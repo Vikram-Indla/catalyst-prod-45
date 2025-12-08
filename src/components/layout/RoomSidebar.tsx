@@ -177,7 +177,7 @@ export function RoomSidebar() {
     switch (currentRoom) {
       case 'strategy':
         return strategyViews;
-      case 'portfolio':
+      case 'program':
         return portfolioViews;
       case 'program':
         return programViews;
