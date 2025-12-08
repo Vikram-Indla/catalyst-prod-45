@@ -98,6 +98,7 @@ import Changes from "./pages/admin/Changes";
 import UseTrend from "./pages/admin/UseTrend";
 import UsageTrends from "./pages/admin/UsageTrends";
 import ChangesLog from "./pages/admin/ChangesLog";
+import { DesignAuditPage } from "./pages/admin/DesignAuditPage";
 import ProgressBarsConfig from "./pages/admin/ProgressBarsConfig";
 import GeneralConfig from "./pages/admin/GeneralConfig";
 import WorkCodes from "./pages/admin/WorkCodes";
@@ -616,8 +617,9 @@ const App = () => (
                 <Route path="jira-config" element={<JiraIntegrationConfig />} />
                 <Route path="product-settings" element={<ProductSettings />} />
                 <Route path="import-data" element={<ImportData />} />
+                <Route path="design-audit" element={<DesignAuditPage />} />
               </Route>
-              
+
               <Route path="/items/epics/:epicId/status-report" element={<EpicStatusReport />} />
               <Route path="/items/epics/:epicId/trace" element={<EpicTraceReport />} />
               <Route path="/items/epics/:epicId/requirement-hierarchy" element={<EpicRequirementHierarchy />} />
