@@ -8,6 +8,7 @@ import { FeatureProgressVisualization, type FeatureProgress } from '../FeaturePr
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection';
+import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureFormData {
@@ -193,6 +194,14 @@ export function FeatureDetailsTab({ feature, formData, updateField }: FeatureDet
         <TimeTrackingSection 
           workItemId={feature.id} 
           workItemType="feature" 
+        />
+      )}
+
+      {/* Custom Fields Section */}
+      {feature?.id && (
+        <CustomFieldsSection 
+          entityType="feature" 
+          entityId={feature.id}
         />
       )}
     </div>

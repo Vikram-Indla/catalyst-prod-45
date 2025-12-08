@@ -870,33 +870,51 @@ export type Database = {
       custom_field_defs: {
         Row: {
           created_at: string | null
+          default_value: Json | null
+          description: string | null
+          display_order: number | null
           entity_type: string
           field_type: Database["public"]["Enums"]["field_type"]
           id: string
+          is_active: boolean | null
           name: string
           options_json: Json | null
+          placeholder: string | null
           required: boolean | null
           updated_at: string | null
+          validation_rules: Json | null
         }
         Insert: {
           created_at?: string | null
+          default_value?: Json | null
+          description?: string | null
+          display_order?: number | null
           entity_type: string
           field_type: Database["public"]["Enums"]["field_type"]
           id?: string
+          is_active?: boolean | null
           name: string
           options_json?: Json | null
+          placeholder?: string | null
           required?: boolean | null
           updated_at?: string | null
+          validation_rules?: Json | null
         }
         Update: {
           created_at?: string | null
+          default_value?: Json | null
+          description?: string | null
+          display_order?: number | null
           entity_type?: string
           field_type?: Database["public"]["Enums"]["field_type"]
           id?: string
+          is_active?: boolean | null
           name?: string
           options_json?: Json | null
+          placeholder?: string | null
           required?: boolean | null
           updated_at?: string | null
+          validation_rules?: Json | null
         }
         Relationships: []
       }
