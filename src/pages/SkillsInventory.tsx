@@ -285,7 +285,7 @@ export default function SkillsInventory() {
               </Button>
               <Dialog open={addSkillOpen} onOpenChange={setAddSkillOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-white text-brand-dark border-2 border-brand-gold hover:bg-brand-gold/10 px-6 py-2.5 h-auto text-base font-medium">
+                  <Button variant="gold" className="px-6 py-2.5 h-auto text-base font-medium">
                     <Plus className="h-5 w-5 mr-2" />
                     Add Skill
                   </Button>
