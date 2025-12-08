@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart } from 'lucide-react';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { Target, Users, BarChart3, AlertTriangle, Filter, Download, Plus, TrendingUp, TrendingDown, X, List, Grid3X3, PieChart, ChevronDown, FileSpreadsheet, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -8,6 +8,7 @@ import { SkillsMatrixHeatmap } from '@/components/skills-inventory/SkillsMatrixH
 import { SkillGapAnalysis } from '@/components/skills-inventory/SkillGapAnalysis';
 import { SkillsInventoryReport } from '@/components/skills-inventory/SkillsInventoryReport';
 import { SkillsFiltersDialog, SkillsInventoryFilters } from '@/components/skills-inventory/SkillsFiltersDialog';
+import { toast } from 'sonner';
 type ViewMode = 'table' | 'matrix' | 'gap-analysis' | 'report';
 
 const viewTabs = [
@@ -71,6 +72,20 @@ export default function SkillsInventory() {
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [filtersDialogOpen, setFiltersDialogOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<SkillsInventoryFilters>({});
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close export menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setExportMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Extract unique values for filter options
   const uniqueTeamMembers = useMemo(() => [...new Set(teamMembersData.map(m => m.name))], []);
@@ -138,9 +153,96 @@ export default function SkillsInventory() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'skills_inventory.csv';
+    a.download = `skills_inventory_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
+    toast.success('CSV exported successfully');
+  };
+
+  const handleExportReport = async () => {
+    setIsExporting(true);
+    try {
+      // Calculate summary statistics
+      const totalSkillsCount = filteredData.length;
+      const uniqueMembers = [...new Set(filteredData.map(m => m.name))].length;
+      const avgCoverageVal = Math.round(filteredData.reduce((sum, m) => sum + m.coverage, 0) / totalSkillsCount) || 0;
+      const expertCount = filteredData.filter(m => m.proficiency === 'Expert').length;
+      const advancedCount = filteredData.filter(m => m.proficiency === 'Advanced').length;
+      const intermediateCount = filteredData.filter(m => m.proficiency === 'Intermediate').length;
+      const beginnerCount = filteredData.filter(m => m.proficiency === 'Beginner').length;
+
+      // Skills by project
+      const projectDist = filteredData.reduce((acc, m) => {
+        acc[m.project] = (acc[m.project] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      // Build comprehensive report CSV
+      const reportSections = [
+        '=== SKILLS INVENTORY REPORT ===',
+        `Generated: ${new Date().toLocaleString()}`,
+        '',
+        '=== SUMMARY STATISTICS ===',
+        `Total Skills Tracked,${totalSkillsCount}`,
+        `Team Members,${uniqueMembers}`,
+        `Average Coverage,${avgCoverageVal}%`,
+        `Critical Gaps (< 50% coverage),${filteredData.filter(m => m.coverage < 50).length}`,
+        '',
+        '=== PROFICIENCY DISTRIBUTION ===',
+        `Expert,${expertCount}`,
+        `Advanced,${advancedCount}`,
+        `Intermediate,${intermediateCount}`,
+        `Beginner,${beginnerCount}`,
+        '',
+        '=== SKILLS BY PROJECT ===',
+        ...Object.entries(projectDist).map(([proj, count]) => `${proj},${count}`),
+        '',
+        '=== DETAILED SKILLS DATA ===',
+        'Name,Role,Project,Primary Skill,Proficiency,Coverage %,Last Updated',
+        ...filteredData.map(m => 
+          `${m.name},${m.role},${m.project},${m.skill},${m.proficiency},${m.coverage},${m.lastUpdated}`
+        )
+      ];
+
+      const csvContent = reportSections.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `skills-inventory-report-${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success('Skills report exported successfully');
+    } finally {
+      setIsExporting(false);
+      setExportMenuOpen(false);
+    }
+  };
+
+  const handleExportMatrix = () => {
+    const skills = [...new Set(teamMembersData.map(m => m.skill))];
+    const members = [...new Set(teamMembersData.map(m => m.name))];
+    
+    const headers = ['Team Member', ...skills];
+    const rows = members.map(member => {
+      const memberData = teamMembersData.filter(m => m.name === member);
+      const skillLevels = skills.map(skill => {
+        const found = memberData.find(m => m.skill === skill);
+        return found ? found.proficiency : '-';
+      });
+      return [member, ...skillLevels];
+    });
+
+    const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `skills-matrix-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success('Skills matrix exported successfully');
+    setExportMenuOpen(false);
   };
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2);
@@ -305,6 +407,53 @@ export default function SkillsInventory() {
             <p className="text-sm text-muted-foreground mt-1">
               Track and manage team skills, proficiency levels, and identify capability gaps
             </p>
+          </div>
+          {/* Export Report Button */}
+          <div className="relative" ref={exportMenuRef}>
+            <button
+              onClick={() => setExportMenuOpen(!exportMenuOpen)}
+              disabled={isExporting}
+              className="inline-flex items-center gap-3 px-6 py-3 bg-white border border-neutral-200 rounded-full shadow-sm hover:bg-neutral-50 hover:border-neutral-300 hover:shadow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isExporting ? (
+                <>
+                  <Loader2 className="w-5 h-5 text-neutral-400 animate-spin" />
+                  <span className="text-neutral-500 font-medium">Exporting...</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-5 h-5 text-neutral-400" />
+                  <span className="text-neutral-500 font-medium">Export Report</span>
+                  <ChevronDown className="w-4 h-4 text-neutral-400" />
+                </>
+              )}
+            </button>
+            
+            {exportMenuOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-50">
+                <button
+                  onClick={exportToCSV}
+                  className="w-full px-4 py-2 text-left text-neutral-700 hover:bg-neutral-50 flex items-center gap-3"
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-neutral-400" />
+                  Export as CSV
+                </button>
+                <button
+                  onClick={handleExportReport}
+                  className="w-full px-4 py-2 text-left text-neutral-700 hover:bg-neutral-50 flex items-center gap-3"
+                >
+                  <FileText className="w-4 h-4 text-neutral-400" />
+                  Full Report
+                </button>
+                <button
+                  onClick={handleExportMatrix}
+                  className="w-full px-4 py-2 text-left text-neutral-700 hover:bg-neutral-50 flex items-center gap-3"
+                >
+                  <Grid3X3 className="w-4 h-4 text-neutral-400" />
+                  Skills Matrix
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
