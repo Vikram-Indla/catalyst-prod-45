@@ -477,38 +477,37 @@ export default function SkillsInventory() {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="px-8 py-6 border-b border-brand-gold-border">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Skills Inventory</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+    <div className="h-full flex flex-col bg-background">
+      {/* Header - fixed height 72px to align with sidebar */}
+      <div className="h-[72px] border-b border-border bg-card flex-shrink-0">
+        <div className="h-full px-4 sm:px-6 flex items-center justify-between">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-semibold text-foreground truncate">Skills Inventory</h1>
+            <p className="text-sm text-muted-foreground truncate">
               Track and manage team skills, proficiency levels, and identify capability gaps
             </p>
           </div>
-        </div>
-
-        {/* View Mode Tabs */}
-        <div className="flex gap-1 p-1 bg-white border border-brand-gold rounded-lg w-fit">
-          {viewTabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = viewMode === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setViewMode(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                  isActive
-                    ? 'bg-brand-gold text-white'
-                    : 'text-brand-dark hover:text-brand-gold hover:bg-brand-gold/10'
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {tab.label}
-              </button>
-            );
-          })}
+          {/* View Mode Tabs */}
+          <div className="flex gap-1 p-1 bg-white border border-brand-gold rounded-lg w-fit flex-shrink-0">
+            {viewTabs.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = viewMode === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setViewMode(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    isActive
+                      ? 'bg-brand-gold text-white'
+                      : 'text-brand-dark hover:text-brand-gold hover:bg-brand-gold/10'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
