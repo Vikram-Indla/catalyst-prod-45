@@ -3,8 +3,17 @@ import {
   Palette, Type, Ruler, Square, Layers, Eye, CheckCircle2, AlertTriangle, XCircle,
   ChevronDown, ChevronRight, Monitor, Tablet, Smartphone, Bell, BarChart3, 
   MousePointer2, Tag, RectangleHorizontal, Route, FileText, Download, RefreshCw,
-  Scan, Layout, PanelLeft, Maximize2, Zap, Lock, Wrench, Target, Settings2
+  Scan, Layout, Maximize2, Zap, Lock, Wrench, Target, Settings2, FolderDown
 } from 'lucide-react';
+import {
+  generateDesignSystemMarkdown,
+  generatePageLayoutsJSON,
+  generateModalSpecsJSON,
+  generateFullDesignSystemJSON,
+  downloadFile,
+  pageLayouts,
+  modalSpecs,
+} from '@/lib/designAudit/designSystemExports';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -204,6 +213,12 @@ const navSections = [
     icon: Route, 
     description: 'Configured audit routes'
   },
+  { 
+    id: 'downloads', 
+    label: 'Downloads', 
+    icon: FolderDown, 
+    description: 'Export design system docs'
+  },
 ];
 
 // Calculate scores
@@ -292,6 +307,8 @@ export function DesignAuditPage() {
         return <TokensContent tokenCategories={tokenCategories} expandedCategory={expandedCategory} setExpandedCategory={setExpandedCategory} />;
       case 'routes':
         return <RoutesContent />;
+      case 'downloads':
+        return <DownloadsContent />;
       default:
         return <DesignSystemBaseline />;
     }
@@ -864,6 +881,145 @@ function RoutesContent() {
         </ScrollArea>
       </CardContent>
     </Card>
+  );
+}
+
+function DownloadsContent() {
+  const downloadItems = [
+    {
+      title: 'Design System Markdown',
+      description: 'Complete design system documentation including tokens, components, and specifications',
+      filename: 'catalyst-design-system.md',
+      icon: FileText,
+      action: () => {
+        const md = generateDesignSystemMarkdown();
+        downloadFile(md, 'catalyst-design-system.md', 'text/markdown');
+      },
+    },
+    {
+      title: 'Page Layouts (JSON)',
+      description: 'Layout specifications for all major pages including routes, components, and structure',
+      filename: 'catalyst-page-layouts.json',
+      icon: Layout,
+      action: () => {
+        const json = generatePageLayoutsJSON();
+        downloadFile(json, 'catalyst-page-layouts.json', 'application/json');
+      },
+    },
+    {
+      title: 'Modal & Dialog Specs (JSON)',
+      description: 'All modal, dialog, and drawer specifications with sizes and anatomy',
+      filename: 'catalyst-modal-specs.json',
+      icon: Maximize2,
+      action: () => {
+        const json = generateModalSpecsJSON();
+        downloadFile(json, 'catalyst-modal-specs.json', 'application/json');
+      },
+    },
+    {
+      title: 'Full Design System (JSON)',
+      description: 'Complete design system export including tokens, components, layouts, modals, and gaps',
+      filename: 'catalyst-design-system-full.json',
+      icon: FolderDown,
+      action: () => {
+        const json = generateFullDesignSystemJSON();
+        downloadFile(json, 'catalyst-design-system-full.json', 'application/json');
+      },
+    },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Download Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {downloadItems.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Card key={item.filename} className="hover:border-brand-gold/30 transition-colors">
+              <CardHeader className="pb-2">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-lg bg-brand-gold/10 flex items-center justify-center shrink-0">
+                    <Icon className="h-5 w-5 text-brand-gold" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <CardTitle className="text-base">{item.title}</CardTitle>
+                    <CardDescription className="mt-1">{item.description}</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-2">
+                <div className="flex items-center justify-between">
+                  <code className="text-xs text-muted-foreground bg-secondary px-2 py-1 rounded">
+                    {item.filename}
+                  </code>
+                  <Button size="sm" onClick={item.action} className="gap-1.5">
+                    <Download className="h-4 w-4" />
+                    Download
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+
+      {/* Quick Reference Tables */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Page Layouts Summary */}
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Layout className="h-4 w-4 text-brand-gold" />
+              Page Layouts ({pageLayouts.length})
+            </CardTitle>
+            <CardDescription>Key page structures</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ScrollArea className="h-[250px]">
+              <div className="divide-y">
+                {pageLayouts.map((page) => (
+                  <div key={page.route} className="px-4 py-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-sm">{page.name}</span>
+                      <code className="text-[10px] text-muted-foreground bg-secondary px-1 rounded">{page.route}</code>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{page.description}</p>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+
+        {/* Modal Specs Summary */}
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Maximize2 className="h-4 w-4 text-brand-gold" />
+              Modal & Dialog Specs ({modalSpecs.length})
+            </CardTitle>
+            <CardDescription>Overlay component specifications</CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <ScrollArea className="h-[250px]">
+              <div className="divide-y">
+                {modalSpecs.map((modal) => (
+                  <div key={modal.name} className="px-4 py-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-medium text-sm">{modal.name}</span>
+                      <code className="text-[10px] text-muted-foreground bg-secondary px-1 rounded">{modal.file}</code>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Sizes: {Object.entries(modal.sizes).map(([k, v]) => `${k}: ${v}`).join(', ')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }
 
