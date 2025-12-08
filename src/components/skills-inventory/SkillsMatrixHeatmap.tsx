@@ -14,10 +14,10 @@ interface SkillColumn {
 
 const PROFICIENCY_COLORS: Record<number, string> = {
   1: 'hsl(var(--muted-foreground) / 0.3)',
-  2: 'hsl(280 70% 50% / 0.7)',
-  3: 'hsl(var(--warning) / 0.7)',
-  4: 'hsl(var(--info) / 0.7)',
-  5: 'hsl(var(--health-green) / 0.7)',
+  2: 'hsl(280 70% 50%)',
+  3: 'hsl(var(--warning))',
+  4: 'hsl(var(--info))',
+  5: 'hsl(var(--health-green))',
 };
 
 const PROFICIENCY_LABELS: Record<number, string> = {
@@ -106,14 +106,14 @@ export const SkillsMatrixHeatmap: React.FC = () => {
   ];
 
   return (
-    <div className="bg-brand-dark rounded-xl border border-brand-gold-border p-6">
+    <div className="bg-white rounded-xl border border-brand-gold/20 p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-semibold text-foreground">
+          <h2 className="text-xl font-semibold text-brand-dark">
             Skills Matrix - Platform Engineering Team
           </h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-sm text-neutral-500 mt-1">
             Hover over cells for detailed proficiency information
           </p>
         </div>
@@ -126,7 +126,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
                 className="w-4 h-4 rounded"
                 style={{ backgroundColor: item.color }}
               />
-              <span className="text-xs text-muted-foreground">{item.label}</span>
+              <span className="text-xs text-neutral-600">{item.label}</span>
             </div>
           ))}
         </div>
@@ -137,13 +137,13 @@ export const SkillsMatrixHeatmap: React.FC = () => {
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="w-[200px] bg-secondary text-left p-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider rounded-tl-lg">
+              <th className="w-[200px] bg-neutral-50 text-left p-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider rounded-tl-lg border-b border-neutral-200">
                 Team Member
               </th>
               {skills.map((skill, index) => (
                 <th
                   key={skill.id}
-                  className={`bg-secondary text-center p-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider ${
+                  className={`bg-neutral-50 text-center p-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider border-b border-neutral-200 ${
                     index === skills.length - 1 ? 'rounded-tr-lg' : ''
                   }`}
                 >
@@ -156,15 +156,15 @@ export const SkillsMatrixHeatmap: React.FC = () => {
             {teamMembers.map((member, rowIndex) => (
               <tr key={member.id}>
                 <td
-                  className={`w-[200px] bg-secondary p-3 border-t border-brand-gold-border/30 ${
+                  className={`w-[200px] bg-neutral-50 p-3 border-b border-neutral-100 ${
                     rowIndex === teamMembers.length - 1 ? 'rounded-bl-lg' : ''
                   }`}
                 >
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-foreground">
+                    <span className="text-sm font-medium text-brand-dark">
                       {member.name}
                     </span>
-                    <span className="text-xs text-muted-foreground">{member.role}</span>
+                    <span className="text-xs text-neutral-500">{member.role}</span>
                   </div>
                 </td>
                 {skills.map((skill, colIndex) => {
@@ -172,7 +172,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
                   return (
                     <td
                       key={skill.id}
-                      className={`p-2 border-t border-brand-gold-border/30 ${
+                      className={`p-2 border-b border-neutral-100 ${
                         rowIndex === teamMembers.length - 1 &&
                         colIndex === skills.length - 1
                           ? 'rounded-br-lg'
@@ -180,7 +180,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
                       }`}
                     >
                       <div
-                        className="h-14 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 hover:z-10 hover:shadow-lg hover:shadow-black/40 relative"
+                        className="h-14 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 hover:z-10 hover:shadow-lg relative"
                         style={{ backgroundColor: PROFICIENCY_COLORS[level] }}
                         onMouseEnter={(e) =>
                           handleCellHover(e, member.name, skill.name, level)
@@ -210,12 +210,12 @@ export const SkillsMatrixHeatmap: React.FC = () => {
             transform: 'translate(-50%, -100%)',
           }}
         >
-          <div className="bg-background border border-brand-gold-border rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
-            <p className="font-semibold text-foreground text-sm">
+          <div className="bg-white border border-neutral-200 rounded-xl px-4 py-3 shadow-xl min-w-[180px]">
+            <p className="font-semibold text-brand-dark text-sm">
               {tooltip.memberName}
             </p>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-muted-foreground text-xs">{tooltip.skillName}:</span>
+              <span className="text-neutral-500 text-xs">{tooltip.skillName}:</span>
               <span
                 className="text-xs font-medium px-2 py-0.5 rounded text-white"
                 style={{
@@ -228,7 +228,7 @@ export const SkillsMatrixHeatmap: React.FC = () => {
           </div>
           {/* Arrow */}
           <div
-            className="w-0 h-0 mx-auto border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-brand-gold-border"
+            className="w-0 h-0 mx-auto border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-neutral-200"
           />
         </div>
       )}
