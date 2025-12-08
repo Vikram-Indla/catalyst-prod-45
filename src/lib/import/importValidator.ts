@@ -63,36 +63,59 @@ function applyValueMapping(
 }
 
 /**
- * Check if a row appears to be a header row (all values match column names)
- * This prevents accidentally importing the header row as data
+ * Common header terms that indicate a row is a header, not data
  */
-function isLikelyHeaderRow(
+const COMMON_HEADER_TERMS = [
+  'summary', 'title', 'name', 'description', 'status', 'state',
+  'id', 'key', 'priority', 'type', 'assignee', 'reporter',
+  'created', 'updated', 'due', 'date', 'owner', 'department'
+];
+
+/**
+ * Check if a row is the header row by checking if values match header names
+ * This is critical because sometimes CSV data includes a literal header row
+ */
+function isHeaderRow(
   row: Record<string, string>,
-  csvHeaders: string[]
+  csvHeaders: string[],
+  rowIndex: number
 ): boolean {
-  // If more than half of the values match their column names, it's likely a header
-  let matchCount = 0;
-  let totalValues = 0;
+  // Only check the first row (index 0)
+  if (rowIndex !== 0) return false;
   
-  for (const [key, value] of Object.entries(row)) {
-    if (value && typeof value === 'string') {
-      totalValues++;
-      const normalizedValue = value.trim().toLowerCase();
-      const normalizedKey = key.trim().toLowerCase();
-      
-      // Check if value matches its own column name
-      if (normalizedValue === normalizedKey) {
-        matchCount++;
-      }
-      // Check if value matches any header
-      if (csvHeaders.some(h => h.trim().toLowerCase() === normalizedValue)) {
-        matchCount++;
-      }
+  const rowValues = Object.values(row).map(v => (v || '').trim().toLowerCase());
+  const headerValues = csvHeaders.map(h => (h || '').trim().toLowerCase());
+  
+  // Method 1: Check if row values ARE the header names (exact match)
+  let exactHeaderMatches = 0;
+  for (const val of rowValues) {
+    if (val && headerValues.includes(val)) {
+      exactHeaderMatches++;
     }
   }
   
-  // If 50%+ of values match header names, it's likely a duplicate header row
-  return totalValues > 0 && (matchCount / totalValues) >= 0.5;
+  const nonEmptyValues = rowValues.filter(v => v).length;
+  if (nonEmptyValues === 0) return false;
+  
+  // If >50% of values match header names, it's definitely the header row
+  if ((exactHeaderMatches / nonEmptyValues) >= 0.5) {
+    return true;
+  }
+  
+  // Method 2: Check if values are common header terms (like "Summary", "Status")
+  let headerTermMatches = 0;
+  for (const val of rowValues) {
+    if (val && COMMON_HEADER_TERMS.some(term => val === term || val.includes(term))) {
+      headerTermMatches++;
+    }
+  }
+  
+  // If multiple values look like common header terms, likely a header row
+  if (headerTermMatches >= 2 && (headerTermMatches / nonEmptyValues) >= 0.3) {
+    return true;
+  }
+  
+  return false;
 }
 
 export function validateRow(
@@ -107,8 +130,9 @@ export function validateRow(
   const errors: ValidationError[] = [];
   const data: Record<string, unknown> = {};
   
-  // Check if this is a header row (duplicate header detection)
-  if (csvHeaders && isLikelyHeaderRow(row, csvHeaders)) {
+  // CRITICAL: Check if this is the header row (should only be row 0)
+  // Papaparse with header:true should exclude headers, but we double-check
+  if (csvHeaders && isHeaderRow(row, csvHeaders, rowIndex)) {
     return {
       rowIndex,
       isValid: false,
@@ -116,7 +140,7 @@ export function validateRow(
       errors: [{
         row: rowIndex + 1,
         field: 'Row',
-        message: 'This row appears to be a header row and will be skipped',
+        message: 'Header row detected - will be skipped',
         severity: 'error',
       }],
       isHeaderRow: true,
