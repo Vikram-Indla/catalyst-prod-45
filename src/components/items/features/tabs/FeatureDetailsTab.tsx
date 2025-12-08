@@ -9,6 +9,7 @@ import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersion
 import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection';
 import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
+import { WorkItemLabelSelector } from '@/components/work-items/WorkItemLabelSelector';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureFormData {
@@ -195,6 +196,19 @@ export function FeatureDetailsTab({ feature, formData, updateField }: FeatureDet
           workItemId={feature.id} 
           workItemType="feature" 
         />
+      )}
+
+      {/* Labels Section */}
+      {feature?.id && (
+        <Card className="border border-border/60 rounded-lg">
+          <CardContent className="p-5">
+            <Label className="mb-3 block">Labels</Label>
+            <WorkItemLabelSelector 
+              entityType="feature" 
+              entityId={feature.id}
+            />
+          </CardContent>
+        </Card>
       )}
 
       {/* Custom Fields Section */}
