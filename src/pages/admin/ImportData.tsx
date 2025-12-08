@@ -82,9 +82,10 @@ export default function ImportData() {
   
   const handleValidate = useCallback(() => {
     if (!moduleConfig) return;
-    const { results } = validateAllRows(parsedData, fieldMappings, moduleConfig, dateFormat);
+    // CRITICAL: Pass valueMappings to apply user-configured value transformations
+    const { results } = validateAllRows(parsedData, fieldMappings, moduleConfig, dateFormat, valueMappings);
     setValidationResults(results);
-  }, [parsedData, fieldMappings, moduleConfig, dateFormat]);
+  }, [parsedData, fieldMappings, moduleConfig, dateFormat, valueMappings]);
   
   const handleBeginImport = useCallback(async () => {
     if (!moduleConfig || !validationResults) return;
