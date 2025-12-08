@@ -16,6 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { HealthBadge } from '@/components/shared/HealthBadge';
 import { Link as LinkIcon, Lock, Unlock, Plus, Loader2, X, ChevronRight, Search } from 'lucide-react';
 import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
+import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { WSJFInlineScores } from '@/components/wsjf';
 import { AddPIDialog } from '../dialogs/AddPIDialog';
 import { AddProgramDialog } from '../dialogs/AddProgramDialog';
@@ -1164,6 +1165,13 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
           />
         </CardContent>
       </Card>
+
+      {/* Key History Section */}
+      <KeyHistorySection 
+        workItemId={epic.id} 
+        workItemType="epic" 
+        currentKey={epic.epic_key || epic.id}
+      />
 
       <AddPIDialog
         epicId={epic.id}
