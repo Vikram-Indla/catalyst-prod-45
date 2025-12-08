@@ -430,13 +430,7 @@ export default function SkillsInventory() {
                       </button>
                     </td>
                     <td className="px-5 py-3.5">
-                      <span
-                        className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
-                        style={{
-                          background: `${getProficiencyColor(member.proficiency)}20`,
-                          color: getProficiencyColor(member.proficiency),
-                        }}
-                      >
+                      <span className="text-sm font-medium text-foreground">
                         {member.proficiency}
                       </span>
                     </td>
@@ -448,7 +442,7 @@ export default function SkillsInventory() {
                             style={{
                               width: `${member.coverage}%`,
                               background: member.coverage >= 80
-                                ? 'hsl(var(--health-green))'
+                                ? 'hsl(var(--brand-gold))'
                                 : member.coverage >= 60
                                   ? 'hsl(var(--warning))'
                                   : 'hsl(var(--destructive))',
@@ -593,7 +587,7 @@ function StatsCard({ icon: Icon, label, value, change, positive }: {
         <div className="p-2.5 rounded-lg bg-brand-gold/15">
           <Icon className="h-5 w-5 text-brand-gold" />
         </div>
-        <div className={`flex items-center gap-1 text-xs font-medium ${positive ? 'text-health-green' : 'text-destructive'}`}>
+        <div className="flex items-center gap-1 text-xs font-medium text-foreground">
           {positive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
           {change}
         </div>
