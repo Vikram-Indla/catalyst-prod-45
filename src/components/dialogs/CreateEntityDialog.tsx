@@ -147,12 +147,12 @@ export function CreateEntityDialog({
         
         let portfolioId = portfolios?.[0]?.id;
         
-        // If no portfolio exists, create a default one automatically
+        // If no portfolio (Program) exists, create a default one automatically
         if (!portfolioId) {
           const { data: newPortfolio, error: portfolioError } = await supabase
             .from('portfolios')
             .insert({
-              name: 'Default Program',
+              name: 'Default Project',  // User-facing: Project's default parent
             })
             .select()
             .single();
