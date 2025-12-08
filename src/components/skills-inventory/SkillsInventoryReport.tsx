@@ -21,11 +21,14 @@ interface CategoryData {
   count: number;
 }
 
+// NEW: Updated project names for Catalyst
 const programs: ProgramFilter[] = [
-  { id: 'all', name: 'All Programs' },
-  { id: 'digital', name: 'Digital Transformation' },
-  { id: 'investment', name: 'Investment Portal' },
-  { id: 'data', name: 'Data Platform' },
+  { id: 'all', name: 'All Projects' },
+  { id: 'tahommena', name: 'Tahommena' },
+  { id: 'sectorial', name: 'Sectorial' },
+  { id: 'icp', name: 'ICP' },
+  { id: 'senaei', name: 'Senaei' },
+  { id: 'inspection', name: 'Inspection' },
 ];
 
 const statsData = [
@@ -124,11 +127,11 @@ export const SkillsInventoryReport: React.FC = () => {
       // Add the captured content
       pdf.addImage(imgData, 'PNG', imgX, 35, imgWidth * ratio, imgHeight * ratio);
       
-      // Add footer
+      // Add footer - NEW: Updated project name
       pdf.setFontSize(8);
       pdf.setTextColor(156, 163, 175);
-      pdf.text('Catalyst Portfolio Management Platform', 14, pdfHeight - 10);
-      pdf.text('Ministry of Investment', pdfWidth - 50, pdfHeight - 10);
+      pdf.text('Catalyst Skills Inventory', 14, pdfHeight - 10);
+      pdf.text('Skills Management Report', pdfWidth - 50, pdfHeight - 10);
       
       // Save the PDF
       pdf.save(`skills-inventory-report-${new Date().toISOString().split('T')[0]}.pdf`);
