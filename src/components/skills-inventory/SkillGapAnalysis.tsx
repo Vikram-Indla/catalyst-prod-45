@@ -101,7 +101,7 @@ export const SkillGapAnalysis: React.FC = () => {
             <h3 className="text-lg font-semibold text-brand-dark">
               Current vs Required Skills
             </h3>
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-health-green text-white">
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-brand-gold text-white">
               {gapCount} Gaps Identified
             </span>
           </div>
@@ -139,7 +139,7 @@ export const SkillGapAnalysis: React.FC = () => {
             <h3 className="text-lg font-semibold text-brand-dark">
               Team Skill Coverage
             </h3>
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-health-green text-white">
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-brand-gold text-white">
               {overallCoverage}% Overall
             </span>
           </div>
