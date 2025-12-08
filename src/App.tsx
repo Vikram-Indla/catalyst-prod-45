@@ -13,6 +13,7 @@ import { CatalystShell } from "./components/layout/CatalystShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import Auth from "./pages/Auth";
 import BrowsePage from "./pages/BrowsePage";
+import SearchPage from "./pages/SearchPage";
 import Home from "./pages/jira-align/Home";
 import PortfolioRoomPageOld from "./pages/jira-align/PortfolioRoomPage";
 import PortfolioRoomPage from "./pages/PortfolioRoomPage";
@@ -235,6 +236,7 @@ const App = () => (
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
               <Route path="/home" element={<Home />} />
+              <Route path="/search" element={<SearchPage />} />
               <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
               <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
               <Route path="/portfolio/:portfolioId/epics" element={<EpicsPage />} />
