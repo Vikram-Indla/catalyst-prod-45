@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
 import { Calendar, Filter, ChevronRight, Layers, Target, TrendingUp, AlertCircle } from 'lucide-react';
 
 export default function PortfolioRoadmap() {
-  const { selectedPortfolioId, selectedProgramId } = useNavigation();
+  const { selectedProgramId, selectedProjectId } = useNavigation();
   const [viewMode, setViewMode] = useState<'quarters' | 'months'>('quarters');
   const [swimlaneBy, setSwimlaneBy] = useState<'theme' | 'program' | 'epic'>('theme');
   const [selectedItem, setSelectedItem] = useState<any>(null);
@@ -33,28 +33,28 @@ export default function PortfolioRoadmap() {
 
   // Fetch epics with relationships
   const { data: epics } = useQuery({
-    queryKey: ['roadmap-epics', selectedPortfolioId, selectedProgramId],
+    queryKey: ['roadmap-epics', selectedProgramId, selectedProjectId],
     queryFn: async () => {
       let query = supabase
         .from('epics')
         .select('*, strategic_themes(id, name, color_tag), programs(id, name, portfolio_id)');
       
-      if (selectedProgramId) {
-        query = query.eq('primary_program_id', selectedProgramId);
-      } else if (selectedPortfolioId) {
-        query = query.eq('programs.portfolio_id', selectedPortfolioId);
+      if (selectedProjectId) {
+        query = query.eq('primary_program_id', selectedProjectId);
+      } else if (selectedProgramId) {
+        query = query.eq('programs.portfolio_id', selectedProgramId);
       }
       
       const { data, error } = await query.order('start_date');
       if (error) throw error;
       return data;
     },
-    enabled: !!selectedPortfolioId || !!selectedProgramId,
+    enabled: !!selectedProgramId || !!selectedProjectId,
   });
 
   // Fetch features for Work View
   const { data: features } = useQuery({
-    queryKey: ['roadmap-features', selectedPortfolioId, selectedProgramId],
+    queryKey: ['roadmap-features', selectedProgramId, selectedProjectId],
     queryFn: async () => {
       let query = supabase
         .from('features')
@@ -64,17 +64,17 @@ export default function PortfolioRoadmap() {
           programs(id, name, portfolio_id)
         `);
       
-      if (selectedProgramId) {
-        query = query.eq('program_id', selectedProgramId);
-      } else if (selectedPortfolioId) {
-        query = query.eq('programs.portfolio_id', selectedPortfolioId);
+      if (selectedProjectId) {
+        query = query.eq('program_id', selectedProjectId);
+      } else if (selectedProgramId) {
+        query = query.eq('programs.portfolio_id', selectedProgramId);
       }
       
       const { data, error } = await query.order('planned_start_date');
       if (error) throw error;
       return data;
     },
-    enabled: !!selectedPortfolioId || !!selectedProgramId,
+    enabled: !!selectedProgramId || !!selectedProjectId,
   });
 
   // Calculate timeline position
@@ -232,12 +232,12 @@ export default function PortfolioRoadmap() {
     );
   };
 
-  if (!selectedPortfolioId && !selectedProgramId) {
+  if (!selectedProgramId && !selectedProjectId) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-muted-foreground">Select a Portfolio or Program to view roadmap</p>
+          <p className="text-muted-foreground">Select a Program or Project to view roadmap</p>
         </div>
       </div>
     );

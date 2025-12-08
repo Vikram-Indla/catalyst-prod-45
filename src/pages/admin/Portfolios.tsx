@@ -8,12 +8,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveGrid, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
 
 /**
- * Portfolios Management Page - Configure portfolio structure and settings
+ * Programs Management Page - Configure program structure and settings
  * Source: Administration guide PDF, Basic Structure section
  */
 export default function Portfolios() {
-  const { data: portfolios, isLoading } = useQuery({
-    queryKey: ['admin-portfolios'],
+  const { data: programs, isLoading } = useQuery({
+    queryKey: ['admin-programs'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('portfolios')
@@ -28,12 +28,12 @@ export default function Portfolios() {
     <AdminGuard>
       <ResponsivePageContainer>
         <ResponsivePageHeader
-          title="Portfolios"
-          description="Configure portfolio structure and enterprise associations"
+          title="Programs"
+          description="Configure program structure and enterprise associations"
           actions={
             <Button className="bg-brand-gold hover:bg-brand-gold-hover">
               <Plus className="h-4 w-4 mr-2" />
-              Add Portfolio
+              Add Program
             </Button>
           }
         />
@@ -41,23 +41,23 @@ export default function Portfolios() {
         <ResponsiveGrid cols={3}>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Portfolios</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{portfolios?.length || 0}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Portfolios</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{portfolios?.length || 0}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Programs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{programs?.length || 0}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Programs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{programs?.length || 0}</div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Total Projects</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">-</div>
@@ -67,9 +67,9 @@ export default function Portfolios() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Portfolio Configuration</CardTitle>
+            <CardTitle>Program Configuration</CardTitle>
             <CardDescription>
-              Manage portfolios, their programs, and strategic alignment
+              Manage programs, their projects, and strategic alignment
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -77,30 +77,30 @@ export default function Portfolios() {
               <div className="relative flex-1">
                 <Search className="absolute left-[var(--s3)] top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search portfolios..."
+                  placeholder="Search programs..."
                   className="pl-10"
                 />
               </div>
             </div>
 
             {isLoading ? (
-              <div className="text-center py-[var(--s8)] text-muted-foreground">Loading portfolios...</div>
+              <div className="text-center py-[var(--s8)] text-muted-foreground">Loading programs...</div>
             ) : (
               <ResponsiveTableWrapper minWidth={600}>
                 <table className="w-full">
                   <thead className="bg-muted/50">
                     <tr>
-                      <th className="text-left p-3 text-sm font-medium">Portfolio Name</th>
-                      <th className="text-left p-3 text-sm font-medium">Programs</th>
+                      <th className="text-left p-3 text-sm font-medium">Program Name</th>
+                      <th className="text-left p-3 text-sm font-medium">Projects</th>
                       <th className="text-left p-3 text-sm font-medium">Themes</th>
                       <th className="text-left p-3 text-sm font-medium">Status</th>
                       <th className="text-right p-3 text-sm font-medium">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {portfolios?.map((portfolio) => (
-                      <tr key={portfolio.id} className="border-t hover:bg-muted/50">
-                        <td className="p-3 text-sm">{portfolio.name}</td>
+                    {programs?.map((program) => (
+                      <tr key={program.id} className="border-t hover:bg-muted/50">
+                        <td className="p-3 text-sm">{program.name}</td>
                         <td className="p-3 text-sm">-</td>
                         <td className="p-3 text-sm">-</td>
                         <td className="p-3 text-sm">

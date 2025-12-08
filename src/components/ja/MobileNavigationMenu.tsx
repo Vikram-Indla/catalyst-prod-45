@@ -6,8 +6,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { CreateDropdown } from "./CreateDropdown";
 import { ItemsDropdown } from "./ItemsDropdown";
-import { PortfolioSelectorDropdown } from "./PortfolioSelectorDropdown";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
+import { ProjectSelectorDropdown } from "./ProjectSelectorDropdown";
 import { TeamSelectorDropdown } from "./TeamSelectorDropdown";
 import { StarredDropdown } from "./StarredDropdown";
 import {
@@ -72,32 +72,7 @@ export function MobileNavigationMenu() {
               Enterprise
             </Button>
 
-            {/* Portfolio */}
-            <Collapsible
-              open={activeSection === 'portfolio'}
-              onOpenChange={() => toggleSection('portfolio')}
-            >
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-between px-6 py-3 text-base font-medium"
-                >
-                  Portfolio
-                  <ChevronRight
-                    className={`h-4 w-4 transition-transform ${
-                      activeSection === 'portfolio' ? 'rotate-90' : ''
-                    }`}
-                  />
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="px-4">
-                <div onClick={() => setOpen(false)}>
-                  <PortfolioSelectorDropdown onClose={() => setOpen(false)} />
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-
-            {/* Project */}
+            {/* Program */}
             <Collapsible
               open={activeSection === 'program'}
               onOpenChange={() => toggleSection('program')}
@@ -107,7 +82,7 @@ export function MobileNavigationMenu() {
                   variant="ghost"
                   className="w-full justify-between px-6 py-3 text-base font-medium"
                 >
-                  Project
+                  Program
                   <ChevronRight
                     className={`h-4 w-4 transition-transform ${
                       activeSection === 'program' ? 'rotate-90' : ''
@@ -118,6 +93,31 @@ export function MobileNavigationMenu() {
               <CollapsibleContent className="px-4">
                 <div onClick={() => setOpen(false)}>
                   <ProgramSelectorDropdown onClose={() => setOpen(false)} />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            {/* Project */}
+            <Collapsible
+              open={activeSection === 'project'}
+              onOpenChange={() => toggleSection('project')}
+            >
+              <CollapsibleTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="w-full justify-between px-6 py-3 text-base font-medium"
+                >
+                  Project
+                  <ChevronRight
+                    className={`h-4 w-4 transition-transform ${
+                      activeSection === 'project' ? 'rotate-90' : ''
+                    }`}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="px-4">
+                <div onClick={() => setOpen(false)}>
+                  <ProjectSelectorDropdown onClose={() => setOpen(false)} />
                 </div>
               </CollapsibleContent>
             </Collapsible>

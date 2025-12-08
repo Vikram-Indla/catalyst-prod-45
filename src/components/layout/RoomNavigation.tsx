@@ -30,16 +30,16 @@ const rooms: Room[] = [
     defaultPath: '/strategy-room' 
   },
   { 
-    id: 'portfolio', 
-    label: 'Portfolio', 
+    id: 'program', 
+    label: 'Program', 
     icon: Briefcase, 
-    defaultPath: '/portfolio-room' 
+    defaultPath: '/program-room' 
   },
   { 
-    id: 'program', 
+    id: 'project', 
     label: 'Project', 
     icon: GitBranch, 
-    defaultPath: '/program-room' 
+    defaultPath: '/project-room' 
   },
   { 
     id: 'team', 
@@ -57,9 +57,9 @@ export function RoomNavigation() {
   // Determine current room from path
   const determineCurrentRoom = (pathname: string): RoomType => {
     if (pathname.includes('strategy')) return 'strategy';
-    if (pathname.includes('program')) return 'program';
+    if (pathname.includes('project') || pathname.includes('programs/')) return 'project';
     if (pathname.includes('team') || pathname.includes('backlog') || pathname.includes('sprint') || pathname.includes('work-items')) return 'team';
-    return 'portfolio';
+    return 'program';
   };
   
   const activeRoom = determineCurrentRoom(location.pathname);

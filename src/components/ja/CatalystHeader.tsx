@@ -13,8 +13,8 @@ import { CreateDropdown } from "./CreateDropdown";
 import { SearchOverlay } from "./SearchOverlay";
 import { NotificationsPanel } from "./NotificationsPanel";
 import { PersonasPopover } from "./PersonasPopover";
-import { PortfolioSelectorDropdown } from "./PortfolioSelectorDropdown";
 import { ProgramSelectorDropdown } from "./ProgramSelectorDropdown";
+import { ProjectSelectorDropdown } from "./ProjectSelectorDropdown";
 
 import { StarredDropdown } from "./StarredDropdown";
 import { ProductSelectorDropdown } from "./ProductSelectorDropdown";
@@ -90,7 +90,7 @@ export function CatalystHeader() {
     { label: "Home", path: "/home", moduleCode: null }, // Always visible
     { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE" },
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT" },
-    { label: "Portfolio", hasDropdown: true, moduleCode: "PORTFOLIO" },
+    { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO" },
     { label: "Project", hasDropdown: true, moduleCode: "PROGRAM" },
     { label: "Release", hasDropdown: true, path: "/release", moduleCode: null }, // Always visible
   ];
@@ -174,7 +174,7 @@ export function CatalystHeader() {
                           <ProductSelectorDropdown onClose={() => setActiveDropdown(null)} />
                         </PopoverContent>
                       </Popover>
-                    ) : item.label === "Portfolio" ? (
+                    ) : item.label === "Program" ? (
                       <Popover
                         open={activeDropdown === item.label}
                         onOpenChange={(open) => setActiveDropdown(open ? item.label : null)}
@@ -186,7 +186,7 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                          <PortfolioSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                          <ProgramSelectorDropdown onClose={() => setActiveDropdown(null)} />
                         </PopoverContent>
                       </Popover>
                     ) : item.label === "Project" ? (
@@ -201,7 +201,7 @@ export function CatalystHeader() {
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
-                          <ProgramSelectorDropdown onClose={() => setActiveDropdown(null)} />
+                          <ProjectSelectorDropdown onClose={() => setActiveDropdown(null)} />
                         </PopoverContent>
                       </Popover>
                     ) : item.label === "Release" ? (
