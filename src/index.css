@@ -212,6 +212,21 @@
   --roadmap-milestone-complete: 146 31% 42%;  /* #4A8C6A - green */
   --roadmap-milestone-current: 35 46% 60%;    /* #C69C6D - gold */
   --roadmap-milestone-pending: 36 9% 76%;     /* #C4BEB4 - driftwood */
+  
+  /* === GOLDEN HOUR SECONDARY PALETTE === */
+  /* For charts, graphs, reports, and data visualizations */
+  --palette-expert: 120 15% 43%;              /* #5c7c5c - Olive green (Level 5) */
+  --palette-advanced: 28 26% 44%;             /* #8b7355 - Bronze/brown (Level 4) */
+  --palette-intermediate: 35 46% 60%;         /* #c69c6d - Catalyst gold (Level 3) */
+  --palette-beginner: 35 42% 71%;             /* #d4b896 - Light champagne (Level 2) */
+  --palette-none: 210 8% 80%;                 /* #c8ccd0 - Cool grey (Level 1) */
+  
+  /* Chart-specific aliases for Golden Hour palette */
+  --chart-golden-1: 120 15% 43%;              /* Expert - Olive */
+  --chart-golden-2: 28 26% 44%;               /* Advanced - Bronze */
+  --chart-golden-3: 35 46% 60%;               /* Intermediate - Gold */
+  --chart-golden-4: 35 42% 71%;               /* Beginner - Champagne */
+  --chart-golden-5: 210 8% 80%;               /* None - Grey */
 }
 
 .dark {
