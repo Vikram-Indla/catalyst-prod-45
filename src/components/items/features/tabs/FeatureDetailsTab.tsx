@@ -3,7 +3,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Card, CardContent } from '@/components/ui/card';
 import { FeatureProgressVisualization, type FeatureProgress } from '../FeatureProgressVisualization';
+import { WorkItemVersionsSection } from '@/components/work-items/WorkItemVersionsSection';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureFormData {
@@ -162,6 +164,18 @@ export function FeatureDetailsTab({ feature, formData, updateField }: FeatureDet
           rows={3}
         />
       </div>
+
+      {/* Fix/Affects Versions Section */}
+      {feature?.id && (
+        <Card className="border border-border/60 rounded-lg">
+          <CardContent className="p-5">
+            <WorkItemVersionsSection 
+              workItemId={feature.id} 
+              workItemType="feature" 
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
