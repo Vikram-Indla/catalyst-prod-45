@@ -19,6 +19,7 @@ import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection
 import { SprintSelector } from '@/components/work-items/SprintSelector';
 import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
 import { WorkItemLabelSelector } from '@/components/work-items/WorkItemLabelSelector';
+import { WorkItemLinksSection } from '@/components/work-items/WorkItemLinksSection';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
@@ -449,6 +450,12 @@ export function StoryDetailPanel({ story, open, onClose, onUpdate }: StoryDetail
                 />
               </CardContent>
             </Card>
+
+            {/* Linked Items Section */}
+            <WorkItemLinksSection 
+              workItemType="story" 
+              workItemId={story.id}
+            />
 
             {/* Custom Fields Section */}
             <CustomFieldsSection 

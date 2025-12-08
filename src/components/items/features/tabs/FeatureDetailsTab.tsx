@@ -10,6 +10,7 @@ import { KeyHistorySection } from '@/components/work-items/KeyHistorySection';
 import { TimeTrackingSection } from '@/components/work-items/TimeTrackingSection';
 import { CustomFieldsSection } from '@/components/work-items/CustomFieldsSection';
 import { WorkItemLabelSelector } from '@/components/work-items/WorkItemLabelSelector';
+import { WorkItemLinksSection } from '@/components/work-items/WorkItemLinksSection';
 import type { Feature } from '@/types/feature.types';
 
 interface FeatureFormData {
@@ -209,6 +210,14 @@ export function FeatureDetailsTab({ feature, formData, updateField }: FeatureDet
             />
           </CardContent>
         </Card>
+      )}
+
+      {/* Linked Items Section */}
+      {feature?.id && (
+        <WorkItemLinksSection 
+          workItemType="feature" 
+          workItemId={feature.id}
+        />
       )}
 
       {/* Custom Fields Section */}
