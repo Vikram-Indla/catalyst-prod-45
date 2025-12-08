@@ -10951,6 +10951,39 @@ export type Database = {
           },
         ]
       }
+      work_item_key_history: {
+        Row: {
+          changed_at: string
+          changed_by: string | null
+          id: string
+          new_key: string
+          old_key: string
+          reason: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_key: string
+          old_key: string
+          reason?: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          changed_at?: string
+          changed_by?: string | null
+          id?: string
+          new_key?: string
+          old_key?: string
+          reason?: string | null
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: []
+      }
       work_item_links: {
         Row: {
           created_at: string | null
