@@ -1,61 +1,72 @@
 /**
- * Catalyst Design Tokens - Atlassian-aligned semantic system
+ * Catalyst Design System - Semantic Tokens
+ * Atlassian-aligned with Catalyst brand identity
  * 
- * This file defines the semantic token layer that maps to CSS variables.
- * Use these tokens for consistent styling across all components.
+ * These tokens map to CSS variables in index.css and provide
+ * a consistent, theme-able design system.
  */
 
 // ============================================
-// SPACING SCALE (8px base)
+// SPACING SCALE (8px base unit)
 // ============================================
 export const spacing = {
   none: '0',
-  '0.5': '2px',    // 0.25 unit
-  '1': '4px',      // 0.5 unit
-  '1.5': '6px',    // 0.75 unit
-  '2': '8px',      // 1 unit (base)
-  '2.5': '10px',   // 1.25 units
-  '3': '12px',     // 1.5 units
-  '4': '16px',     // 2 units
-  '5': '20px',     // 2.5 units
-  '6': '24px',     // 3 units
-  '8': '32px',     // 4 units
-  '10': '40px',    // 5 units
-  '12': '48px',    // 6 units
-  '16': '64px',    // 8 units
+  '0.5': '2px',   // 0.25 unit
+  '1': '4px',     // 0.5 unit
+  '1.5': '6px',   // 0.75 unit
+  '2': '8px',     // 1 unit (base)
+  '2.5': '10px',  // 1.25 units
+  '3': '12px',    // 1.5 units
+  '4': '16px',    // 2 units
+  '5': '20px',    // 2.5 units
+  '6': '24px',    // 3 units
+  '7': '28px',    // 3.5 units
+  '8': '32px',    // 4 units
+  '9': '36px',    // 4.5 units
+  '10': '40px',   // 5 units
+  '12': '48px',   // 6 units
+  '14': '56px',   // 7 units
+  '16': '64px',   // 8 units
 } as const;
 
 // ============================================
 // SURFACE TOKENS
 // ============================================
 export const surface = {
-  // App-level surfaces
-  app: 'hsl(var(--background))',           // Main app background
-  sunken: 'hsl(var(--neutral-50))',        // Recessed areas
-  raised: 'hsl(var(--card))',              // Cards, panels
-  overlay: 'hsl(var(--popover))',          // Modals, popovers, drawers
+  // App backgrounds
+  app: 'hsl(var(--background))',
+  sunken: 'hsl(var(--neutral-50))',
+  raised: 'hsl(var(--card))',
+  overlay: 'hsl(var(--popover))',
   
   // Interactive surfaces
   hovered: 'hsl(var(--accent))',
   pressed: 'hsl(var(--accent))',
-  selected: 'hsl(var(--brand-gold-pale))', // Selected state background
+  selected: 'hsl(var(--brand-gold-pale))',
+  selectedHovered: 'hsl(35 46% 60% / 0.12)',
   
   // Brand surfaces
-  brandSubtle: 'hsl(var(--brand-gold-pale))',
-  brand: 'hsl(var(--brand-gold))',
+  brandSubtle: 'hsl(35 46% 60% / 0.08)',
+  brandBold: 'hsl(var(--brand-gold))',
+  
+  // Status surfaces
+  successSubtle: 'hsl(var(--success) / 0.1)',
+  warningSubtle: 'hsl(var(--warning) / 0.1)',
+  dangerSubtle: 'hsl(var(--destructive) / 0.1)',
+  infoSubtle: 'hsl(var(--info) / 0.1)',
 } as const;
 
 // ============================================
 // TEXT TOKENS
 // ============================================
 export const text = {
-  // Primary text hierarchy
-  primary: 'hsl(var(--text-primary))',     // Main body text
-  secondary: 'hsl(var(--text-secondary))', // Secondary info
-  tertiary: 'hsl(var(--text-tertiary))',   // Placeholders, hints
-  muted: 'hsl(var(--text-muted))',         // Disabled, very subtle
+  // Primary text colors
+  primary: 'hsl(var(--foreground))',
+  secondary: 'hsl(var(--text-secondary))',
+  tertiary: 'hsl(var(--text-tertiary))',
+  disabled: 'hsl(var(--text-muted))',
   
-  // Inverse (on dark backgrounds)
+  // Inverse text (on dark backgrounds)
   inverse: 'hsl(var(--text-inverse))',
   
   // Brand text
@@ -65,6 +76,13 @@ export const text = {
   // Link text
   link: 'hsl(var(--brand-gold))',
   linkHover: 'hsl(var(--brand-gold-hover))',
+  linkPressed: 'hsl(35 46% 50%)',
+  
+  // Status text
+  success: 'hsl(var(--success))',
+  warning: 'hsl(var(--warning))',
+  danger: 'hsl(var(--destructive))',
+  info: 'hsl(var(--info))',
 } as const;
 
 // ============================================
@@ -73,27 +91,35 @@ export const text = {
 export const border = {
   // Structural borders
   default: 'hsl(var(--border))',
-  subtle: 'hsl(var(--neutral-100))',
-  strong: 'hsl(var(--neutral-300))',
+  subtle: 'hsl(218 14% 91% / 0.5)',
+  strong: 'hsl(var(--neutral-400))',
   
-  // Focus ring
+  // Focus borders
   focus: 'hsl(var(--ring))',
+  focusInset: 'hsl(var(--background))',
   
   // Brand borders
-  brand: 'hsl(var(--brand-gold-border))',
-  brandSolid: 'hsl(var(--brand-gold))',
+  brand: 'hsl(var(--brand-gold))',
+  brandSubtle: 'hsl(var(--brand-gold-border))',
+  
+  // Status borders
+  success: 'hsl(var(--success))',
+  warning: 'hsl(var(--warning))',
+  danger: 'hsl(var(--destructive))',
+  info: 'hsl(var(--info))',
 } as const;
 
 // ============================================
-// ELEVATION (SHADOWS)
+// ELEVATION TOKENS
 // ============================================
 export const elevation = {
   none: 'none',
-  sm: 'var(--shadow-sm)',                  // Subtle lift
-  md: 'var(--shadow-md)',                  // Cards, raised surfaces
-  lg: 'var(--shadow-lg)',                  // Dropdowns, popovers
-  xl: 'var(--shadow-xl)',                  // Modals, drawers
-  overlay: '0 0 0 1px hsl(var(--border)), var(--shadow-xl)', // Overlay components
+  sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+  md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+  lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+  xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+  overlay: '0 8px 24px rgba(0, 0, 0, 0.12)',
+  drawer: '-4px 0 20px rgba(26, 26, 26, 0.08)',
 } as const;
 
 // ============================================
@@ -101,99 +127,99 @@ export const elevation = {
 // ============================================
 export const radius = {
   none: '0',
-  xs: '2px',
-  sm: '4px',       // Small elements, inputs
-  md: '6px',       // Cards, buttons
-  lg: '8px',       // Large panels
-  xl: '12px',      // Modals, drawers
-  full: '9999px',  // Pills, avatars
+  sm: '4px',
+  md: '6px',
+  lg: '8px',
+  xl: '12px',
+  '2xl': '16px',
+  full: '9999px',
 } as const;
 
 // ============================================
-// TYPOGRAPHY
+// TYPOGRAPHY TOKENS
 // ============================================
 export const typography = {
-  // Font families
   fontFamily: {
-    sans: '"IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    mono: 'Menlo, Monaco, Consolas, "Liberation Mono", monospace',
+    sans: "'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+    mono: "'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, monospace",
   },
-  
-  // Font sizes
   fontSize: {
-    xs: '11px',      // Helpers, badges
-    sm: '12px',      // Grid cells, secondary
-    base: '13px',    // Default body
-    md: '14px',      // Row titles
-    lg: '16px',      // Page titles
-    xl: '18px',      // Section headers
-    '2xl': '20px',   // Main headings
-    '3xl': '24px',   // Hero headings
+    xs: '11px',
+    sm: '12px',
+    base: '14px',
+    lg: '16px',
+    xl: '18px',
+    '2xl': '20px',
+    '3xl': '24px',
+    '4xl': '30px',
   },
-  
-  // Font weights
   fontWeight: {
     normal: '400',
     medium: '500',
     semibold: '600',
     bold: '700',
   },
-  
-  // Line heights
   lineHeight: {
     none: '1',
     tight: '1.25',
     snug: '1.375',
     normal: '1.5',
     relaxed: '1.625',
+    loose: '2',
   },
 } as const;
 
 // ============================================
-// LAYOUT MEASUREMENTS
+// LAYOUT MEASUREMENTS (Atlassian-aligned)
 // ============================================
 export const layout = {
-  // Header/Nav
+  // Header
   headerHeight: '56px',
-  pageHeaderHeight: '56px',
+  headerHeightCompact: '48px',
   
   // Sidebar
-  sidebarWidthCollapsed: '56px',
   sidebarWidthExpanded: '240px',
+  sidebarWidthCollapsed: '56px',
+  sidebarWidthNarrow: '200px',
   
-  // Navigation
+  // Nav items
   navItemHeight: '32px',
   navItemHeightCompact: '28px',
   
-  // Grid/Table
-  gridRowHeight: '32px',
-  gridHeaderHeight: '40px',
-  
-  // Modal/Drawer widths
+  // Drawer widths
   drawerWidthNarrow: '360px',
   drawerWidthMedium: '480px',
   drawerWidthWide: '640px',
+  drawerWidthXl: '800px',
   
+  // Modal widths
   modalWidthSm: '384px',
   modalWidthMd: '512px',
   modalWidthLg: '640px',
   modalWidthXl: '768px',
   
   // Content
-  contentMaxWidth: '1200px',
+  contentMaxWidth: '1280px',
   contentPadding: '24px',
+  contentPaddingMobile: '16px',
+  
+  // Table
+  tableRowHeight: '40px',
+  tableRowHeightCompact: '32px',
+  tableHeaderHeight: '40px',
+  
+  // Toolbar
+  toolbarHeight: '48px',
 } as const;
 
 // ============================================
 // TRANSITIONS
 // ============================================
 export const transitions = {
-  fast: '100ms',
-  normal: '150ms',
-  slow: '200ms',
-  slower: '300ms',
+  fast: '150ms',
+  normal: '200ms',
+  slow: '300ms',
   
-  // Easing
   easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
   easeOut: 'cubic-bezier(0, 0, 0.2, 1)',
   easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)',
@@ -207,11 +233,11 @@ export const zIndex = {
   dropdown: '50',
   sticky: '100',
   fixed: '150',
-  overlay: '200',
+  drawer: '200',
   modal: '250',
   popover: '300',
   tooltip: '400',
-  notification: '500',
+  toast: '500',
 } as const;
 
 // ============================================
@@ -220,45 +246,100 @@ export const zIndex = {
 export const interactive = {
   // Default state
   default: {
-    background: 'transparent',
+    bg: 'transparent',
     text: 'hsl(var(--foreground))',
     border: 'hsl(var(--border))',
   },
   
   // Hover state
-  hovered: {
-    background: 'hsl(var(--accent))',
-    text: 'hsl(var(--accent-foreground))',
+  hover: {
+    bg: 'hsl(var(--accent))',
+    text: 'hsl(var(--foreground))',
+    border: 'hsl(var(--neutral-400))',
   },
   
-  // Pressed/Active state
+  // Pressed/active state
   pressed: {
-    background: 'hsl(var(--accent))',
-    text: 'hsl(var(--accent-foreground))',
+    bg: 'hsl(var(--accent))',
+    text: 'hsl(var(--foreground))',
+    border: 'hsl(var(--neutral-500))',
   },
   
   // Selected state
   selected: {
-    background: 'hsl(var(--brand-gold-pale))',
-    text: 'hsl(var(--brand-gold))',
+    bg: 'hsl(var(--brand-gold-pale))',
+    text: 'hsl(var(--foreground))',
     border: 'hsl(var(--brand-gold))',
+    indicator: 'hsl(var(--brand-gold))',
   },
   
   // Disabled state
   disabled: {
-    background: 'transparent',
+    bg: 'transparent',
     text: 'hsl(var(--text-muted))',
+    border: 'hsl(var(--border))',
     opacity: '0.5',
   },
   
   // Focus state
   focus: {
-    ring: '0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring))',
-    ringInset: 'inset 0 0 0 2px hsl(var(--ring))',
+    ring: 'hsl(var(--ring))',
+    ringWidth: '2px',
+    ringOffset: '2px',
+    outline: 'none',
   },
 } as const;
 
-// Export all tokens
+// ============================================
+// STATUS COLORS (Atlassian-aligned)
+// ============================================
+export const status = {
+  success: {
+    bg: 'hsl(var(--success) / 0.1)',
+    text: 'hsl(var(--success))',
+    border: 'hsl(var(--success) / 0.3)',
+    icon: 'hsl(var(--success))',
+  },
+  warning: {
+    bg: 'hsl(var(--warning) / 0.1)',
+    text: 'hsl(var(--warning))',
+    border: 'hsl(var(--warning) / 0.3)',
+    icon: 'hsl(var(--warning))',
+  },
+  danger: {
+    bg: 'hsl(var(--destructive) / 0.1)',
+    text: 'hsl(var(--destructive))',
+    border: 'hsl(var(--destructive) / 0.3)',
+    icon: 'hsl(var(--destructive))',
+  },
+  info: {
+    bg: 'hsl(var(--info) / 0.1)',
+    text: 'hsl(var(--info))',
+    border: 'hsl(var(--info) / 0.3)',
+    icon: 'hsl(var(--info))',
+  },
+  neutral: {
+    bg: 'hsl(var(--neutral-100))',
+    text: 'hsl(var(--neutral-600))',
+    border: 'hsl(var(--neutral-200))',
+    icon: 'hsl(var(--neutral-500))',
+  },
+} as const;
+
+// ============================================
+// GOLDEN HOUR CHART PALETTE
+// ============================================
+export const chartPalette = {
+  expert: '#5c7c5c',      // Olive green - Level 5
+  advanced: '#8b7355',    // Bronze/brown - Level 4
+  intermediate: '#c69c6d', // Catalyst gold - Level 3
+  beginner: '#d4b896',    // Light champagne - Level 2
+  none: '#c8ccd0',        // Cool grey - Level 1
+} as const;
+
+// ============================================
+// EXPORT ALL TOKENS
+// ============================================
 export const tokens = {
   spacing,
   surface,
@@ -271,6 +352,8 @@ export const tokens = {
   transitions,
   zIndex,
   interactive,
+  status,
+  chartPalette,
 } as const;
 
 export default tokens;
