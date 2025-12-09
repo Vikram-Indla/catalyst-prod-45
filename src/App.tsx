@@ -180,6 +180,7 @@ import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
 import IndustryPage from "./pages/enterprise/IndustryPage";
 import DemandSummaryPage from "./pages/industry/DemandSummaryPage";
 import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
+import ProductRoomPage from "./pages/ProductRoomPage";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import RequestAccess from "./pages/RequestAccess";
 import ResetPassword from "./pages/ResetPassword";
@@ -276,11 +277,13 @@ const App = () => (
               {/* Mining */}
               <Route path="/mining" element={<MiningComingSoon />} />
               
-              {/* Industry */}
-              <Route path="/industry" element={<IndustryPage />} />
-              <Route path="/industry/demand-summary" element={<DemandSummaryPage />} />
-              <Route path="/industry/roadmaps" element={<ExecutiveRoadmapPage />} />
-              <Route path="/industry/reports" element={<IndustryComingSoon />} />
+{/* Industry / Product */}
+<Route path="/industry" element={<IndustryPage />} />
+<Route path="/industry/demand-summary" element={<DemandSummaryPage />} />
+<Route path="/industry/roadmaps" element={<ExecutiveRoadmapPage />} />
+<Route path="/industry/reports" element={<IndustryComingSoon />} />
+<Route path="/product/room" element={<ProductRoomPage />} />
+<Route path="/product/:productId/room" element={<ProductRoomPage />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
