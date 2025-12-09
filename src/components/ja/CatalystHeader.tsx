@@ -49,7 +49,7 @@ export function CatalystHeader() {
   const location = useLocation();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const { isAdmin } = useUserRole();
+  const { isAdmin, canAccessEnterprise } = useUserRole();
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
   const { workspaceType } = useCatalystContext();
   
@@ -117,7 +117,7 @@ export function CatalystHeader() {
   // Define nav items with their module codes - each module has its own code
   const allNavItems = [
     { label: "Home", path: "/home", moduleCode: null }, // Always visible
-    { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE" },
+    { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE", requiresEnterpriseAccess: true },
     { label: "Product", hasDropdown: true, moduleCode: "PRODUCT" },
     { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO" },
     { label: "Project", hasDropdown: true, moduleCode: "PROGRAM" },
@@ -125,9 +125,14 @@ export function CatalystHeader() {
   ];
 
   // Get all nav items with their enabled status
+  // Enterprise requires both module enabled AND role-based access (admin, super_admin, product_admin, general_manager)
   const navItems = allNavItems.map(item => ({
     ...item,
-    isEnabled: item.moduleCode === null ? true : isModuleEnabled(item.moduleCode),
+    isEnabled: item.moduleCode === null 
+      ? true 
+      : item.requiresEnterpriseAccess 
+        ? isModuleEnabled(item.moduleCode) && canAccessEnterprise
+        : isModuleEnabled(item.moduleCode),
   }));
 
   return (
