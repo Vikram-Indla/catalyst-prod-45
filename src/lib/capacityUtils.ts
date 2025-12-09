@@ -1,9 +1,19 @@
 /**
  * Capacity & Allocation Utility Functions
  * Following specification from LOVABLE-AI-PROMPT.md
+ * Using ONLY Golden Hour palette colors
  */
 
 import { Resource, Allocation, AllocationStatusInfo, CapacityProject } from '@/types/capacity';
+
+// Golden Hour palette colors (CSS variables must be defined in index.css)
+export const GOLDEN_HOUR = {
+  expert: '#5c7c5c',      // Olive - Full allocation, success
+  advanced: '#8b7355',    // Bronze - Warnings, underallocation
+  intermediate: '#c69c6d', // Gold - Brand accent
+  beginner: '#d4b896',    // Champagne - Light states
+  none: '#c8ccd0',        // Grey - Neutral
+} as const;
 
 // Get current ISO week number
 export function getCurrentWeek(): number {
@@ -26,15 +36,27 @@ export function calculateUtilization(allocations: Allocation[], weekNumber?: num
   return filtered.reduce((sum, a) => sum + a.percentage, 0);
 }
 
-// Get allocation status based on percentage
+// Get allocation status based on percentage - Using Golden Hour colors
 export function getStatus(percentage: number): AllocationStatusInfo {
   if (percentage > 100) {
-    return { status: 'over', label: 'Overallocated', colorClass: 'text-destructive bg-destructive/10' };
+    return { 
+      status: 'over', 
+      label: 'Overallocated', 
+      colorClass: 'text-[#c69c6d] bg-[#c69c6d]/10' // Gold for over
+    };
   }
   if (percentage >= 80) {
-    return { status: 'full', label: 'Fully Allocated', colorClass: 'text-health-green bg-health-green/10' };
+    return { 
+      status: 'full', 
+      label: 'Fully Allocated', 
+      colorClass: 'text-[#5c7c5c] bg-[#5c7c5c]/10' // Olive for full
+    };
   }
-  return { status: 'under', label: 'Underallocated', colorClass: 'text-warning bg-warning/10' };
+  return { 
+    status: 'under', 
+    label: 'Underallocated', 
+    colorClass: 'text-[#8b7355] bg-[#8b7355]/10' // Bronze for under
+  };
 }
 
 // Check if a week is editable
@@ -74,30 +96,14 @@ export function getInitials(name: string): string {
   return name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 }
 
-// Get capacity status color class
-export function getCapacityColorClass(available: number): string {
-  if (available >= 50) return 'text-health-green';
-  if (available >= 20) return 'text-warning';
-  if (available > 0) return 'text-destructive';
-  return 'text-muted-foreground';
-}
-
-// Get capacity bar fill class
-export function getCapacityBarClass(available: number): string {
-  if (available >= 50) return 'bg-health-green';
-  if (available >= 20) return 'bg-warning';
-  if (available > 0) return 'bg-destructive';
-  return 'bg-muted-foreground';
-}
-
 // Mock data for initial implementation
 export const MOCK_PROJECTS: CapacityProject[] = [
-  { id: 'intl', name: 'International Relations', shortName: 'International', color: 'hsl(var(--gh-expert))', status: 'Active' },
-  { id: 'mim', name: 'MIM Website', shortName: 'MIM', color: 'hsl(var(--gh-advanced))', status: 'Active' },
-  { id: 'innov', name: 'Innovation Platform', shortName: 'Innovation', color: 'hsl(var(--brand-gold))', status: 'Active' },
-  { id: 'senaei', name: 'Senaei BAU-SS', shortName: 'Senaei', color: 'hsl(var(--gh-beginner))', status: 'Active' },
-  { id: 'mobile', name: 'Senaei Mobile', shortName: 'Mobile', color: 'hsl(var(--gh-expert))', status: 'Active' },
-  { id: 'icp', name: 'ICP Project', shortName: 'ICP', color: 'hsl(var(--gh-advanced))', status: 'Active' },
+  { id: 'intl', name: 'International Relations', shortName: 'International', color: GOLDEN_HOUR.expert, status: 'Active' },
+  { id: 'mim', name: 'MIM Website', shortName: 'MIM', color: GOLDEN_HOUR.advanced, status: 'Active' },
+  { id: 'innov', name: 'Innovation Platform', shortName: 'Innovation', color: GOLDEN_HOUR.intermediate, status: 'Active' },
+  { id: 'senaei', name: 'Senaei BAU-SS', shortName: 'Senaei', color: GOLDEN_HOUR.beginner, status: 'Active' },
+  { id: 'mobile', name: 'Senaei Mobile', shortName: 'Mobile', color: GOLDEN_HOUR.expert, status: 'Active' },
+  { id: 'icp', name: 'ICP Project', shortName: 'ICP', color: GOLDEN_HOUR.advanced, status: 'Active' },
 ];
 
 export const MOCK_RESOURCES: Resource[] = [
