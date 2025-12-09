@@ -4,7 +4,7 @@
  * Using ONLY Golden Hour palette colors
  */
 
-import { Resource, Allocation, AllocationStatusInfo, CapacityProject } from '@/types/capacity';
+import { Resource, Allocation, AllocationStatusInfo, CapacityProject, Vacancy } from '@/types/capacity';
 
 // Golden Hour palette colors (CSS variables must be defined in index.css)
 export const GOLDEN_HOUR = {
@@ -502,4 +502,31 @@ export const MOCK_RESOURCES: Resource[] = [
   },
 ];
 
-export const MOCK_VACANCIES = [];
+export const MOCK_VACANCIES: Vacancy[] = [
+  {
+    id: 'vacancy-1',
+    projectId: 'proj-1',
+    skill: 'Data Engineer',
+    proficiencyLevel: 'Advanced',
+    percentageNeeded: 100,
+    location: 'Any',
+    startWeek: 50,
+    endWeek: 4,
+    year: 2024,
+    severity: 'high',
+    status: 'OPEN'
+  },
+  {
+    id: 'vacancy-2',
+    projectId: 'proj-2',
+    skill: 'QA Tester',
+    proficiencyLevel: 'Intermediate',
+    percentageNeeded: 50,
+    location: 'Any',
+    startWeek: 51,
+    endWeek: 6,
+    year: 2024,
+    severity: 'medium',
+    status: 'OPEN'
+  }
+];

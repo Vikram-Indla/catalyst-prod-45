@@ -151,7 +151,7 @@ export function CapacityPlanningPage() {
             />
           </div>
 
-          {/* Week Navigation - 3 weeks: previous, current, next */}
+          {/* Week Navigation - Show week ending dates (Thursday) */}
           <div className="flex items-center gap-2 bg-muted/50 rounded-lg px-2 py-1">
             <Button 
               variant="ghost" 
@@ -175,10 +175,32 @@ export function CapacityPlanningPage() {
                 }
                 const isCurrentWeek = offset === 0;
                 
+                // Calculate week ending date (Thursday)
+                const getWeekEndingDate = (week: number, year: number): string => {
+                  // Get first day of year
+                  const jan1 = new Date(year, 0, 1);
+                  // Get the day of week (0=Sun, 1=Mon, ..., 4=Thu)
+                  const jan1DayOfWeek = jan1.getDay();
+                  // Calculate days to first Thursday
+                  const daysToFirstThursday = (4 - jan1DayOfWeek + 7) % 7;
+                  // Get first Thursday of year
+                  const firstThursday = new Date(year, 0, 1 + daysToFirstThursday);
+                  // Calculate target Thursday (week ending)
+                  const targetThursday = new Date(firstThursday);
+                  targetThursday.setDate(firstThursday.getDate() + (week - 1) * 7);
+                  
+                  // Format as DD-MMM
+                  const day = targetThursday.getDate().toString().padStart(2, '0');
+                  const month = targetThursday.toLocaleDateString('en-US', { month: 'short' });
+                  return `${day}-${month}`;
+                };
+                
+                const weekEndingDate = getWeekEndingDate(weekNum, yearNum);
+                
                 return (
                   <div
                     key={`${yearNum}-${weekNum}`}
-                    className={`px-4 py-1.5 text-sm font-medium rounded-md cursor-pointer transition-colors ${
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md cursor-pointer transition-colors ${
                       isCurrentWeek 
                         ? 'bg-brand-gold text-white' 
                         : 'text-muted-foreground hover:bg-card hover:text-foreground'
@@ -187,7 +209,7 @@ export function CapacityPlanningPage() {
                       if (offset !== 0) navigateWeeks(offset);
                     }}
                   >
-                    W{weekNum}
+                    {weekEndingDate}
                   </div>
                 );
               })}

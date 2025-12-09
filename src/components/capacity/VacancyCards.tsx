@@ -26,35 +26,8 @@ interface VacancyCardsProps {
   onAddNewPerson?: (data: Omit<Resource, 'id' | 'createdAt' | 'updatedAt' | 'allocations'>, vacancyId: string) => void;
 }
 
-// Seed vacancies data
-const SEED_VACANCIES: Vacancy[] = [
-  {
-    id: 'vacancy-1',
-    projectId: 'proj-1',
-    skill: 'Data Engineer',
-    proficiencyLevel: 'Advanced',
-    percentageNeeded: 100,
-    location: 'Any',
-    startWeek: 50,
-    endWeek: 4,
-    year: 2024,
-    severity: 'high',
-    status: 'OPEN'
-  },
-  {
-    id: 'vacancy-2',
-    projectId: 'proj-2',
-    skill: 'QA Tester',
-    proficiencyLevel: 'Intermediate',
-    percentageNeeded: 50,
-    location: 'Any',
-    startWeek: 51,
-    endWeek: 6,
-    year: 2024,
-    severity: 'medium',
-    status: 'OPEN'
-  }
-];
+// Note: Seed vacancies are now in MOCK_VACANCIES in capacityUtils.ts
+// Only local additions (not in external list) are tracked here
 
 const SKILL_OPTIONS = [
   'Data Engineer',
@@ -81,8 +54,9 @@ export function VacancyCards({
   onAddVacancy,
   onAddNewPerson 
 }: VacancyCardsProps) {
-  // Combine external vacancies with seed data
-  const [localVacancies, setLocalVacancies] = useState<Vacancy[]>(SEED_VACANCIES);
+  // Track locally added vacancies (in addition to those from hook)
+  const [localVacancies, setLocalVacancies] = useState<Vacancy[]>([]);
+  const [localFilledIds, setLocalFilledIds] = useState<string[]>([]);
   const [fillGapModalOpen, setFillGapModalOpen] = useState(false);
   const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
   const [newVacancy, setNewVacancy] = useState({
@@ -97,8 +71,9 @@ export function VacancyCards({
     severity: 'medium' as Vacancy['severity']
   });
 
+  // Combine external and local vacancies, filter out filled ones
   const allVacancies = [...externalVacancies, ...localVacancies];
-  const openVacancies = allVacancies.filter(v => v.status !== 'FILLED');
+  const openVacancies = allVacancies.filter(v => v.status !== 'FILLED' && !localFilledIds.includes(v.id));
 
   const handleFillGapClick = (vacancy: Vacancy) => {
     setSelectedVacancy(vacancy);
@@ -108,9 +83,7 @@ export function VacancyCards({
   const handleAssignResource = (vacancyId: string, resourceId: string, percentage: number) => {
     onFillGap(vacancyId, resourceId, percentage);
     // Mark vacancy as filled locally
-    setLocalVacancies(prev => prev.map(v => 
-      v.id === vacancyId ? { ...v, status: 'FILLED' as const } : v
-    ));
+    setLocalFilledIds(prev => [...prev, vacancyId]);
     toast.success('Resource assigned successfully');
     setFillGapModalOpen(false);
   };
@@ -118,9 +91,7 @@ export function VacancyCards({
   const handleAddNewPerson = (data: Omit<Resource, 'id' | 'createdAt' | 'updatedAt' | 'allocations'>, vacancyId: string) => {
     onAddNewPerson?.(data, vacancyId);
     // Mark vacancy as filled locally
-    setLocalVacancies(prev => prev.map(v => 
-      v.id === vacancyId ? { ...v, status: 'FILLED' as const } : v
-    ));
+    setLocalFilledIds(prev => [...prev, vacancyId]);
     toast.success('New team member added and assigned');
     setFillGapModalOpen(false);
   };
