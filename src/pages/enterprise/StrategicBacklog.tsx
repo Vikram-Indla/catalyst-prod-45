@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Plus, ChevronDown, Archive, CheckCircle2 } from 'lucide-react';
+import { Plus, ChevronDown, Archive, CheckCircle2, LayoutGrid, Target, Palette, ListTree, Boxes } from 'lucide-react';
 import { OverviewTab } from '@/components/strategic-backlog/OverviewTab';
 import { MVVTab } from '@/components/strategic-backlog/MVVTab';
 import { GoalsTab } from '@/components/strategic-backlog/GoalsTab';
@@ -121,15 +121,43 @@ export default function StrategicBacklog() {
       ) : (
         <div className="flex-1 overflow-auto p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="mvv">Mission / Vision / Values</TabsTrigger>
-              <TabsTrigger value="goals">Strategic Goals</TabsTrigger>
-              <TabsTrigger value="themes" className="flex items-center gap-1.5">
-                Themes
-                {themes.length === 0 && <Badge variant="destructive" className="text-[10px] px-1 py-0 h-4">Required</Badge>}
+            <TabsList className="mb-6 h-auto p-1 bg-muted/50 rounded-full gap-1">
+              <TabsTrigger 
+                value="overview" 
+                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+              >
+                <LayoutGrid className="h-4 w-4" />
+                Overview
               </TabsTrigger>
-              <TabsTrigger value="epics">Epics</TabsTrigger>
+              <TabsTrigger 
+                value="mvv"
+                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+              >
+                <Target className="h-4 w-4" />
+                Mission / Vision / Values
+              </TabsTrigger>
+              <TabsTrigger 
+                value="goals"
+                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+              >
+                <Palette className="h-4 w-4" />
+                Strategic Goals
+              </TabsTrigger>
+              <TabsTrigger 
+                value="themes" 
+                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+              >
+                <ListTree className="h-4 w-4" />
+                Themes
+                {themes.length === 0 && <Badge variant="destructive" className="text-[10px] px-1 py-0 h-4 ml-1">Required</Badge>}
+              </TabsTrigger>
+              <TabsTrigger 
+                value="epics"
+                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+              >
+                <Boxes className="h-4 w-4" />
+                Epics
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">
