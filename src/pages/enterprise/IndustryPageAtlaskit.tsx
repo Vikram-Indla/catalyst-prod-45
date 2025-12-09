@@ -18,6 +18,10 @@ import EmptyState from '@atlaskit/empty-state';
 // Icons
 import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Bell, Settings, Home, Briefcase, Folder, Layers, Box, MoreHorizontal, AlertTriangle } from 'lucide-react';
 
+// Atlaskit layout components
+import { TopNav } from '@/components/atlaskit/TopNav';
+import { Sidebar } from '@/components/atlaskit/Sidebar';
+
 // Local components
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
 import { useBusinessRequests } from '@/hooks/useBusinessRequests';
@@ -121,150 +125,6 @@ const getStatusAppearance = (status: string): LozengeAppearance => {
   return mapping[statusUpper] || 'default';
 };
 
-// SidebarItem component with blue selected state
-interface SidebarItemProps {
-  children: React.ReactNode;
-  icon: React.ReactNode;
-  isSelected?: boolean;
-  onClick?: () => void;
-}
-
-const SidebarItem = ({ children, icon, isSelected = false, onClick }: SidebarItemProps) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        gap: token('space.150', '12px'),
-        padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
-        background: isSelected 
-          ? token('color.background.selected', '#DEEBFF')
-          : isHovered 
-            ? token('color.background.neutral.hovered', '#EBECF0')
-            : 'transparent',
-        borderRadius: token('border.radius', '3px'),
-        color: isSelected 
-          ? token('color.text.selected', '#0052CC')
-          : token('color.text', '#172B4D'),
-        fontSize: '14px',
-        fontWeight: isSelected ? 600 : 400,
-        cursor: 'pointer',
-        textAlign: 'left' as const,
-        border: 'none',
-        marginBottom: token('space.050', '4px'),
-        transition: 'all 150ms ease-in-out',
-      }}
-    >
-      {icon}
-      {children}
-    </button>
-  );
-};
-
-// LeftSidebar component
-const LeftSidebar = () => {
-  return (
-    <aside style={{
-      width: '240px',
-      minWidth: '240px',
-      maxWidth: '240px',
-      background: token('color.background.neutral.subtle', '#FAFBFC'),
-      borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
-      display: 'flex',
-      flexDirection: 'column',
-      flexShrink: 0,
-      overflow: 'auto',
-    }}>
-      {/* Sidebar Header */}
-      <div style={{
-        padding: token('space.300', '24px'),
-        paddingTop: token('space.200', '16px'),
-        paddingBottom: token('space.200', '16px'),
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-        display: 'flex',
-        alignItems: 'center',
-        gap: token('space.150', '12px'),
-      }}>
-        {/* PR Badge - Warm tan color */}
-        <div style={{
-          width: '32px',
-          height: '32px',
-          background: '#FFF4E6',
-          color: '#D4A574',
-          borderRadius: '3px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 600,
-          fontSize: '12px',
-          flexShrink: 0,
-        }}>
-          PR
-        </div>
-        
-        {/* Project Info */}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{
-            fontSize: '14px',
-            fontWeight: 600,
-            color: token('color.text', '#172B4D'),
-            lineHeight: '20px',
-          }}>
-            Product
-          </div>
-          <div style={{
-            fontSize: '12px',
-            color: token('color.text.subtlest', '#6B778C'),
-            lineHeight: '16px',
-          }}>
-            Industry
-          </div>
-        </div>
-        
-        {/* Collapse Button */}
-        <button style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          padding: token('space.050', '4px'),
-          color: token('color.text.subtle', '#6B778C'),
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          <ChevronLeft size={16} />
-        </button>
-      </div>
-      
-      {/* Navigation Items */}
-      <nav style={{
-        flex: 1,
-        padding: token('space.100', '8px'),
-      }}>
-        <SidebarItem icon={<Home size={16} />}>Product Room</SidebarItem>
-        <SidebarItem icon={<Briefcase size={16} />} isSelected>Backlog</SidebarItem>
-        <SidebarItem icon={<Layers size={16} />}>Roadmap</SidebarItem>
-        <SidebarItem icon={<Box size={16} />}>Capacity</SidebarItem>
-        <SidebarItem icon={<Folder size={16} />}>Knowledge Hub</SidebarItem>
-        
-        {/* Separator */}
-        <div style={{
-          height: '1px',
-          background: token('color.border', '#DFE1E6'),
-          margin: `${token('space.200', '16px')} 0`,
-        }} />
-        
-        <SidebarItem icon={<Settings size={16} />}>Product Settings</SidebarItem>
-      </nav>
-    </aside>
-  );
-};
 
 const calculateAgeing = (createdAt: string | null): number => {
   if (!createdAt) return 0;
@@ -285,119 +145,6 @@ const formatDate = (dateStr: string | null) => {
 
 const ITEMS_PER_PAGE = 20;
 
-// NavButton component for top navigation
-interface NavButtonProps {
-  children: React.ReactNode;
-  isSelected?: boolean;
-  href?: string;
-}
-
-const NavButton = ({ children, isSelected = false, href = '#' }: NavButtonProps) => {
-  return (
-    <a
-      href={href}
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        height: '56px',
-        padding: `0 ${token('space.150', '12px')}`,
-        color: isSelected ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
-        fontSize: '14px',
-        fontWeight: isSelected ? 600 : 400,
-        textDecoration: 'none',
-        borderBottom: isSelected 
-          ? `3px solid ${token('color.border.selected', '#0052CC')}` 
-          : '3px solid transparent',
-        boxSizing: 'border-box',
-        transition: 'all 150ms ease-in-out',
-        cursor: 'pointer',
-      }}
-    >
-      {children}
-    </a>
-  );
-};
-
-// TopNavigationBar component
-interface TopNavigationBarProps {
-  isMobile: boolean;
-}
-
-const TopNavigationBar = ({ isMobile }: TopNavigationBarProps) => {
-  return (
-    <nav style={{
-      height: '56px',
-      minHeight: '56px',
-      maxHeight: '56px',
-      backgroundColor: token('elevation.surface', '#FFFFFF'),
-      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: `0 ${token('space.300', '24px')}`,
-      flexShrink: 0,
-      zIndex: 100,
-    }}>
-      {/* Left Section */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: token('space.400', '32px'),
-      }}>
-        {/* Logo */}
-        <div style={{
-          fontSize: '20px',
-          fontWeight: 600,
-          color: token('color.text', '#172B4D'),
-          letterSpacing: '-0.5px',
-        }}>
-          Catalyst
-        </div>
-        
-        {/* Navigation Items */}
-        {!isMobile && (
-          <div style={{ display: 'flex', gap: token('space.050', '4px') }}>
-            <NavButton href="/home">Home</NavButton>
-            <NavButton href="/enterprise">Enterprise</NavButton>
-            <NavButton href="/product" isSelected>Product</NavButton>
-            <NavButton href="/program">Program</NavButton>
-            <NavButton href="/project">Project</NavButton>
-            <NavButton href="/release">Release</NavButton>
-            <NavButton href="/items">Items</NavButton>
-          </div>
-        )}
-      </div>
-      
-      {/* Right Section */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: token('space.200', '16px'),
-      }}>
-        <Button appearance="primary" iconBefore={<Plus size={16} />}>
-          Create
-        </Button>
-        <Button appearance="subtle" iconBefore={<Bell size={20} />} />
-        <Button appearance="subtle" iconBefore={<Settings size={20} />} />
-        <Button appearance="subtle" iconBefore={<Search size={20} />} />
-        <div style={{
-          width: '32px',
-          height: '32px',
-          borderRadius: '50%',
-          background: '#D4A574',
-          color: '#FFFFFF',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 600,
-          fontSize: '14px',
-        }}>
-          V
-        </div>
-      </div>
-    </nav>
-  );
-};
 
 // Responsive hook for mobile detection
 const useResponsive = () => {
@@ -706,7 +453,7 @@ export default function IndustryPageAtlaskit() {
       background: token('color.background.neutral', '#F4F5F7'),
     }}>
       {/* Top Navigation Bar - 56px height */}
-      <TopNavigationBar isMobile={isMobile} />
+      <TopNav isMobile={isMobile} />
       
       {/* Main Container with Sidebar */}
       <div style={{
@@ -715,7 +462,7 @@ export default function IndustryPageAtlaskit() {
         overflow: 'hidden',
       }}>
         {/* Left Sidebar - 240px width */}
-        {!isMobile && <LeftSidebar />}
+        {!isMobile && <Sidebar />}
         
         {/* Main Content Area */}
         <main style={{
