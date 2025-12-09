@@ -92,16 +92,17 @@ const tableStyles = `
     cursor: pointer;
   }
   
-  /* Header styling */
+  /* Header styling - Correct Jira styling */
   [data-testid="dynamic-table"] th {
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    color: ${token('color.text.subtle', '#6B778C')} !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    background: ${token('color.background.neutral.subtle', '#FAFBFC')} !important;
-    padding: ${token('space.200', '16px')} !important;
-    border-bottom: 2px solid ${token('color.border', '#DFE1E6')} !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: #5E6C84 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    background: #FAFBFC !important;
+    padding: 8px 16px !important;
+    border-bottom: 2px solid #DFE1E6 !important;
+    line-height: 20px !important;
   }
   
   /* Cell styling */
