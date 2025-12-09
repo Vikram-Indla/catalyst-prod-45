@@ -3,13 +3,13 @@
  * Editable grid showing resource allocations per project
  */
 
-import { useState } from 'react';
 import { Resource, CapacityProject } from '@/types/capacity';
 import { calculateUtilization, getStatus, isWeekEditable } from '@/lib/capacityUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RotateCcw, Save } from 'lucide-react';
+import { RotateCcw, Save, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface ProjectGridProps {
   resources: Resource[];
@@ -23,6 +23,8 @@ interface ProjectGridProps {
   onGridChange: (resourceId: string, projectId: string, value: number) => void;
   onSave: () => void;
   onReset: () => void;
+  isLocked?: boolean;
+  lockedBy?: string | null;
 }
 
 export function ProjectGrid({
@@ -36,10 +38,12 @@ export function ProjectGrid({
   gridChanges,
   onGridChange,
   onSave,
-  onReset
+  onReset,
+  isLocked = false,
+  lockedBy
 }: ProjectGridProps) {
   const hasChanges = Object.keys(gridChanges).length > 0;
-  const editable = isWeekEditable(startWeek, startYear, currentWeek, currentYear, adminMode);
+  const editable = isWeekEditable(startWeek, startYear, currentWeek, currentYear, adminMode) && !isLocked;
 
   const getOriginalValue = (resource: Resource, projectId: string): number => {
     const allocation = resource.allocations.find(
@@ -59,28 +63,37 @@ export function ProjectGrid({
   };
 
   return (
+    <TooltipProvider>
     <div>
-      {/* Action buttons */}
-      <div className="flex justify-end gap-2 mb-3">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={onReset}
-          disabled={!hasChanges}
-          className="h-8"
-        >
-          <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-          Reset
-        </Button>
-        <Button 
-          size="sm" 
-          onClick={onSave}
-          disabled={!hasChanges}
-          className="h-8 bg-brand-gold hover:bg-brand-gold/90 text-white"
-        >
-          <Save className="h-3.5 w-3.5 mr-1.5" />
-          Save
-        </Button>
+      {/* Lock indicator + Action buttons */}
+      <div className="flex items-center justify-between gap-2 mb-3">
+        {isLocked && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-md">
+            <Lock className="h-4 w-4" />
+            <span>Locked by {lockedBy}</span>
+          </div>
+        )}
+        <div className="flex items-center gap-2 ml-auto">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onReset}
+            disabled={!hasChanges || isLocked}
+            className="h-8"
+          >
+            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+            Reset
+          </Button>
+          <Button 
+            size="sm" 
+            onClick={onSave}
+            disabled={!hasChanges || isLocked}
+            className="h-8 bg-brand-gold hover:bg-brand-gold/90 text-white"
+          >
+            <Save className="h-3.5 w-3.5 mr-1.5" />
+            Save
+          </Button>
+        </div>
       </div>
 
       {/* Grid table */}
@@ -139,19 +152,27 @@ export function ProjectGrid({
 
                     return (
                       <td key={project.id} className="p-2 border-b border-border/50 text-center">
-                        <Input
-                          type="number"
-                          min={0}
-                          max={100}
-                          step={5}
-                          value={display}
-                          disabled={!editable}
-                          onChange={(e) => onGridChange(resource.id, project.id, parseInt(e.target.value) || 0)}
-                          className={cn(
-                            "w-16 h-8 text-center text-sm mx-auto",
-                            changed && "bg-brand-gold/10 border-brand-gold"
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Input
+                              type="number"
+                              min={0}
+                              max={100}
+                              step={5}
+                              value={display}
+                              disabled={!editable}
+                              onChange={(e) => onGridChange(resource.id, project.id, parseInt(e.target.value) || 0)}
+                              className={cn(
+                                "w-16 h-8 text-center text-sm mx-auto",
+                                changed && "bg-brand-gold/10 border-brand-gold",
+                                isLocked && "bg-muted text-muted-foreground cursor-not-allowed"
+                              )}
+                            />
+                          </TooltipTrigger>
+                          {isLocked && (
+                            <TooltipContent>Locked by {lockedBy}</TooltipContent>
                           )}
-                        />
+                        </Tooltip>
                       </td>
                     );
                   })}
@@ -176,5 +197,6 @@ export function ProjectGrid({
         )}
       </div>
     </div>
+    </TooltipProvider>
   );
 }

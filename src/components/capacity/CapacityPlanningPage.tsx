@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
 type CapacityTab = 'roster' | 'grid' | 'timeline' | 'available' | 'vacancies' | 'reports';
@@ -63,6 +63,9 @@ export function CapacityPlanningPage() {
     activeQuickFilters,
     toggleQuickFilter,
     clearAllFilters,
+    isLocked,
+    lockedBy,
+    toggleLock,
   } = useCapacity();
 
   const selectedResource = selectedResourceId 
@@ -194,7 +197,7 @@ export function CapacityPlanningPage() {
           <div className="flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" onClick={() => setCopyModalOpen(true)}>
+                <Button variant="outline" size="icon" onClick={() => setCopyModalOpen(true)} disabled={isLocked}>
                   <Copy className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -202,7 +205,25 @@ export function CapacityPlanningPage() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" onClick={() => setAddMemberOpen(true)}>
+                <Button 
+                  variant={isLocked ? "default" : "outline"} 
+                  size="icon" 
+                  onClick={() => {
+                    toggleLock('Current User');
+                    toast.success(isLocked ? 'Allocations unlocked' : 'Allocations locked');
+                  }}
+                  className={isLocked ? "bg-muted-foreground hover:bg-muted-foreground/80 text-white" : ""}
+                >
+                  {isLocked ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isLocked ? `Locked by ${lockedBy}` : 'Lock Allocations'}
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" onClick={() => setAddMemberOpen(true)} disabled={isLocked}>
                   <UserPlus className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -210,7 +231,12 @@ export function CapacityPlanningPage() {
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button size="icon" onClick={() => setNewAllocationOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+                <Button 
+                  size="icon" 
+                  onClick={() => setNewAllocationOpen(true)} 
+                  className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                  disabled={isLocked}
+                >
                   <Plus className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
@@ -291,6 +317,8 @@ export function CapacityPlanningPage() {
                 onGridChange={handleGridChange}
                 onSave={handleSave}
                 onReset={handleReset}
+                isLocked={isLocked}
+                lockedBy={lockedBy}
               />
             </TabsContent>
 
