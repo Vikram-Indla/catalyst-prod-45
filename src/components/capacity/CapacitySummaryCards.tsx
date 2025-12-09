@@ -60,21 +60,21 @@ export function CapacitySummaryCards({
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
       {cards.map((card) => (
         <div 
           key={card.label}
-          className="bg-card border border-border rounded-lg p-4 flex items-start gap-3"
+          className="bg-card border border-border rounded-md p-3 flex items-center gap-2"
         >
           <div className={cn(
-            "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
+            "w-8 h-8 rounded-md flex items-center justify-center flex-shrink-0",
             card.iconBg
           )}>
-            <card.icon className={cn("h-5 w-5", card.iconColor)} />
+            <card.icon className={cn("h-4 w-4", card.iconColor)} />
           </div>
           <div className="flex-1 min-w-0">
-            <span className="text-2xl font-semibold text-foreground">{card.value}</span>
-            <p className="text-sm text-muted-foreground">{card.label}</p>
+            <span className="text-lg font-semibold text-foreground">{card.value}</span>
+            <p className="text-xs text-muted-foreground">{card.label}</p>
           </div>
         </div>
       ))}
