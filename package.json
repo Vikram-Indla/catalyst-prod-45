@@ -26,6 +26,7 @@
     "@atlaskit/lozenge": "^11.14.0",
     "@atlaskit/modal-dialog": "^14.7.3",
     "@atlaskit/page-layout": "^3.12.5",
+    "@atlaskit/popup": "^1.32.0",
     "@atlaskit/radio": "^8.3.14",
     "@atlaskit/select": "^17.19.3",
     "@atlaskit/side-navigation": "^3.6.8",
