@@ -1,0 +1,117 @@
+import { ProjectData } from '../types/project.types';
+
+export const mockProjectData: ProjectData = {
+  key: 'TEST',
+  name: 'Test Project',
+  features: [
+    {
+      key: 'FEAT-1',
+      summary: 'User Authentication System',
+      status: 'IN PROGRESS',
+      assignee: 'John Doe',
+      priority: 'High',
+      created: 'Oct 22, 2024',
+      stories: [
+        {
+          key: 'STORY-1',
+          summary: 'Implement login page',
+          status: 'DONE',
+          assignee: 'Jane Smith',
+          priority: 'High',
+          created: 'Oct 23, 2024',
+          subtasks: [
+            {
+              key: 'SUB-1',
+              summary: 'Design login form',
+              status: 'DONE',
+              assignee: 'Jane Smith',
+              priority: 'Medium',
+              created: 'Oct 24, 2024',
+            },
+            {
+              key: 'SUB-2',
+              summary: 'Implement form validation',
+              status: 'DONE',
+              assignee: 'Jane Smith',
+              priority: 'Medium',
+              created: 'Oct 24, 2024',
+            },
+          ],
+        },
+        {
+          key: 'STORY-2',
+          summary: 'Add password reset functionality',
+          status: 'IN PROGRESS',
+          assignee: 'Bob Johnson',
+          priority: 'Medium',
+          created: 'Oct 25, 2024',
+          subtasks: [],
+        },
+      ],
+    },
+    {
+      key: 'FEAT-2',
+      summary: 'Payment Gateway Integration',
+      status: 'TO DO',
+      assignee: 'Alice Brown',
+      priority: 'High',
+      created: 'Oct 20, 2024',
+      stories: [
+        {
+          key: 'STORY-3',
+          summary: 'Implement OAuth integration',
+          status: 'TO DO',
+          assignee: 'Alice Brown',
+          priority: 'Low',
+          created: 'Oct 27, 2024',
+          subtasks: [],
+        },
+      ],
+    },
+    {
+      key: 'FEAT-3',
+      summary: 'Dashboard Analytics Module',
+      status: 'IN PROGRESS',
+      assignee: 'Charlie Davis',
+      priority: 'Medium',
+      created: 'Oct 18, 2024',
+      stories: [
+        {
+          key: 'STORY-6',
+          summary: 'Create chart components',
+          status: 'DONE',
+          assignee: 'Charlie Davis',
+          priority: 'Medium',
+          created: 'Oct 19, 2024',
+          subtasks: [
+            {
+              key: 'SUB-6',
+              summary: 'Bar chart component',
+              status: 'DONE',
+              assignee: 'Charlie Davis',
+              priority: 'Medium',
+              created: 'Oct 19, 2024',
+            },
+            {
+              key: 'SUB-7',
+              summary: 'Pie chart component',
+              status: 'DONE',
+              assignee: 'Charlie Davis',
+              priority: 'Medium',
+              created: 'Oct 19, 2024',
+            },
+          ],
+        },
+        {
+          key: 'STORY-7',
+          summary: 'Implement data fetching',
+          status: 'IN PROGRESS',
+          assignee: 'Charlie Davis',
+          priority: 'High',
+          created: 'Oct 20, 2024',
+          subtasks: [],
+        },
+      ],
+    },
+  ],
+};
