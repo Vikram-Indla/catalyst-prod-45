@@ -100,7 +100,7 @@ export function NewAllocationDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] sm:max-w-[400px] bg-card border-l border-border shadow-xl">
+      <SheetContent className="w-[400px] sm:max-w-[400px] p-6">
         <SheetHeader className="border-b border-border pb-4">
           <SheetTitle>New Allocation</SheetTitle>
         </SheetHeader>
