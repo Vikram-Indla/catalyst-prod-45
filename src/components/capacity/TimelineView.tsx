@@ -101,31 +101,71 @@ export function TimelineView({
                   const weekAllocations = resource.allocations.filter(
                     a => a.weekNumber === w.week && a.year === w.year
                   );
+                  
+                  // Show first 2 allocations, then "+N" for rest
+                  const visibleAllocations = weekAllocations.slice(0, 2);
+                  const hiddenCount = weekAllocations.length - 2;
 
                   return (
-                    <td key={`${w.year}-${w.week}`} className="p-2 border border-border align-middle">
-                      <div className="flex gap-1 items-center justify-center">
-                        {weekAllocations.length > 0 ? (
-                          weekAllocations.map(allocation => (
-                            <Tooltip key={allocation.id}>
-                              <TooltipTrigger asChild>
-                                <div
-                                  className="h-8 rounded flex items-center justify-center text-white text-xs font-medium px-3 cursor-default min-w-[50px]"
-                                  style={{ 
-                                    backgroundColor: getProjectColor(allocation.projectId),
-                                  }}
-                                >
-                                  {allocation.percentage}%
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" className="bg-foreground text-background text-xs">
-                                <p className="font-medium">{getProjectName(allocation.projectId)}</p>
-                                <p>{allocation.percentage}% allocation</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          ))
+                    <td key={`${w.year}-${w.week}`} className="p-2 border border-border align-top">
+                      <div className="flex flex-col gap-1.5">
+                        {visibleAllocations.length > 0 ? (
+                          <>
+                            {visibleAllocations.map((allocation, idx) => {
+                              const projectColor = getProjectColor(allocation.projectId);
+                              const projectName = getProjectName(allocation.projectId);
+                              const isFirst = idx === 0;
+                              
+                              return (
+                                <Tooltip key={allocation.id}>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      className={cn(
+                                        "rounded-lg px-3 py-2 text-xs font-medium cursor-default flex items-center gap-2",
+                                        isFirst 
+                                          ? "border-2 bg-opacity-10" 
+                                          : "border border-dashed bg-white"
+                                      )}
+                                      style={{ 
+                                        borderColor: projectColor,
+                                        backgroundColor: isFirst ? `${projectColor}15` : 'white',
+                                        color: isFirst ? projectColor : '#1a1a1a',
+                                      }}
+                                    >
+                                      <span 
+                                        className="w-2 h-2 rounded-full flex-shrink-0"
+                                        style={{ backgroundColor: projectColor }}
+                                      />
+                                      <span className="truncate">
+                                        {projects.find(p => p.id === allocation.projectId)?.shortName || projectName}
+                                      </span>
+                                      <span className="ml-auto font-semibold">{allocation.percentage}%</span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="top" className="bg-foreground text-background text-xs">
+                                    <p className="font-medium">{projectName}</p>
+                                    <p>{allocation.percentage}% allocation ({allocation.type})</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              );
+                            })}
+                            {hiddenCount > 0 && (
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="text-xs text-muted-foreground font-medium px-2 py-1 bg-muted rounded cursor-default w-fit">
+                                    +{hiddenCount}
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="bg-foreground text-background text-xs">
+                                  {weekAllocations.slice(2).map(a => (
+                                    <p key={a.id}>{getProjectName(a.projectId)}: {a.percentage}%</p>
+                                  ))}
+                                </TooltipContent>
+                              </Tooltip>
+                            )}
+                          </>
                         ) : (
-                          <div className="text-sm text-muted-foreground">—</div>
+                          <div className="text-sm text-muted-foreground text-center py-2">—</div>
                         )}
                       </div>
                     </td>
