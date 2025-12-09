@@ -88,6 +88,149 @@ const getStatusAppearance = (status: string): LozengeAppearance => {
   return mapping[statusUpper] || 'default';
 };
 
+// SidebarItem component with blue selected state
+interface SidebarItemProps {
+  children: React.ReactNode;
+  icon: React.ReactNode;
+  isSelected?: boolean;
+  onClick?: () => void;
+}
+
+const SidebarItem = ({ children, icon, isSelected = false, onClick }: SidebarItemProps) => {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        width: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        gap: token('space.150', '12px'),
+        padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
+        background: isSelected 
+          ? token('color.background.selected', '#DEEBFF')
+          : isHovered 
+            ? token('color.background.neutral.hovered', '#EBECF0')
+            : 'transparent',
+        borderRadius: token('border.radius', '3px'),
+        color: isSelected 
+          ? token('color.text.selected', '#0052CC')
+          : token('color.text', '#172B4D'),
+        fontSize: '14px',
+        fontWeight: isSelected ? 600 : 400,
+        cursor: 'pointer',
+        textAlign: 'left' as const,
+        border: 'none',
+        marginBottom: token('space.050', '4px'),
+        transition: 'all 150ms ease-in-out',
+      }}
+    >
+      {icon}
+      {children}
+    </button>
+  );
+};
+
+// LeftSidebar component
+const LeftSidebar = () => {
+  return (
+    <aside style={{
+      width: '240px',
+      background: token('color.background.neutral.subtle', '#F4F5F7'),
+      borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+      display: 'flex',
+      flexDirection: 'column',
+      flexShrink: 0,
+      overflow: 'auto',
+    }}>
+      {/* Sidebar Header */}
+      <div style={{
+        padding: token('space.300', '24px'),
+        paddingTop: token('space.200', '16px'),
+        paddingBottom: token('space.200', '16px'),
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        display: 'flex',
+        alignItems: 'center',
+        gap: token('space.150', '12px'),
+      }}>
+        {/* PR Badge */}
+        <div style={{
+          width: '32px',
+          height: '32px',
+          background: token('color.background.accent.orange.subtle', '#FFEBE6'),
+          color: token('color.text.accent.orange', '#DE350B'),
+          borderRadius: token('border.radius', '3px'),
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 600,
+          fontSize: '12px',
+          flexShrink: 0,
+        }}>
+          PR
+        </div>
+        
+        {/* Project Info */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: token('color.text', '#172B4D'),
+            lineHeight: '20px',
+          }}>
+            Product
+          </div>
+          <div style={{
+            fontSize: '12px',
+            color: token('color.text.subtlest', '#6B778C'),
+            lineHeight: '16px',
+          }}>
+            Industry
+          </div>
+        </div>
+        
+        {/* Collapse Button */}
+        <button style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: token('space.050', '4px'),
+          color: token('color.text.subtle', '#6B778C'),
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <ChevronLeft size={16} />
+        </button>
+      </div>
+      
+      {/* Navigation Items */}
+      <nav style={{
+        flex: 1,
+        padding: token('space.100', '8px'),
+      }}>
+        <SidebarItem icon={<Home size={16} />}>Product Room</SidebarItem>
+        <SidebarItem icon={<Briefcase size={16} />} isSelected>Backlog</SidebarItem>
+        <SidebarItem icon={<Layers size={16} />}>Roadmap</SidebarItem>
+        <SidebarItem icon={<Box size={16} />}>Capacity</SidebarItem>
+        <SidebarItem icon={<Folder size={16} />}>Knowledge Hub</SidebarItem>
+        
+        {/* Separator */}
+        <div style={{
+          height: '1px',
+          background: token('color.border', '#DFE1E6'),
+          margin: `${token('space.200', '16px')} 0`,
+        }} />
+        
+        <SidebarItem icon={<Settings size={16} />}>Product Settings</SidebarItem>
+      </nav>
+    </aside>
+  );
+};
+
 const calculateAgeing = (createdAt: string | null): number => {
   if (!createdAt) return 0;
   const created = new Date(createdAt);
@@ -537,113 +680,7 @@ export default function IndustryPageAtlaskit() {
         overflow: 'hidden',
       }}>
         {/* Left Sidebar - 240px width */}
-        {!isMobile && (
-          <div style={{ 
-            width: '240px',
-            backgroundColor: token('color.background.neutral.subtle', '#F4F5F7'),
-            borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
-            flexShrink: 0,
-            overflow: 'auto',
-          }}>
-            {/* Sidebar Header */}
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '12px',
-              padding: '16px',
-              borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-            }}>
-              <div style={{
-                width: '36px',
-                height: '36px',
-                backgroundColor: token('color.background.accent.blue.subtle', '#DEEBFF'),
-                borderRadius: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '12px',
-                fontWeight: 600,
-                color: token('color.text.brand', '#0052CC'),
-              }}>
-                PR
-              </div>
-              <div>
-                <div style={{ 
-                  fontSize: '14px', 
-                  fontWeight: 600, 
-                  color: token('color.text', '#172B4D'),
-                }}>
-                  Product
-                </div>
-                <div style={{ 
-                  fontSize: '12px', 
-                  color: token('color.text.subtlest', '#6B778C'),
-                }}>
-                  Industry
-                </div>
-              </div>
-            </div>
-            
-            {/* Sidebar Menu */}
-            <div style={{ padding: '8px' }}>
-              {[
-                { icon: Home, label: 'Product Room', isActive: false },
-                { icon: Briefcase, label: 'Backlog', isActive: true },
-                { icon: Layers, label: 'Roadmap', isActive: false },
-                { icon: Box, label: 'Capacity', isActive: false },
-                { icon: Folder, label: 'Knowledge Hub', isActive: false },
-              ].map((item) => (
-                <button
-                  key={item.label}
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '8px 12px',
-                    backgroundColor: item.isActive ? token('color.background.selected', '#DEEBFF') : 'transparent',
-                    color: item.isActive ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
-                    border: 'none',
-                    borderRadius: '3px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: item.isActive ? 500 : 400,
-                    textAlign: 'left',
-                  }}
-                >
-                  <item.icon size={16} />
-                  {item.label}
-                </button>
-              ))}
-              
-              <div style={{ 
-                borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-                marginTop: '8px',
-                paddingTop: '8px',
-              }}>
-                <button
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '8px 12px',
-                    backgroundColor: 'transparent',
-                    color: token('color.text', '#172B4D'),
-                    border: 'none',
-                    borderRadius: '3px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    textAlign: 'left',
-                  }}
-                >
-                  <Settings size={16} />
-                  Product Settings
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {!isMobile && <LeftSidebar />}
         
         {/* Main Content Area */}
         <main style={{
