@@ -23,6 +23,8 @@ import { TestsDropdown } from "./TestsDropdown";
 import { ReleaseDropdown } from "./ReleaseDropdown";
 import { catalystToast } from "@/lib/catalystToast";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
+import { useCatalystContext } from "@/contexts/CatalystContext";
+import { getActiveNavItem } from "@/lib/workspaceContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,6 +42,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 export function CatalystHeader() {
   const navigate = useNavigate();
@@ -48,6 +51,10 @@ export function CatalystHeader() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const { isAdmin } = useUserRole();
   const { isModuleEnabled, isLoading: modulesLoading } = useEnabledModules();
+  const { workspaceType } = useCatalystContext();
+  
+  // Get active nav item based on workspace context
+  const activeNavItem = getActiveNavItem(workspaceType);
 
   // Create entity dialog states - lifted from dropdowns
   const [createDialogType, setCreateDialogType] = useState<'program' | 'project' | 'product' | null>(null);
@@ -176,11 +183,18 @@ export function CatalystHeader() {
                   );
                 }
 
-                // Enabled module rendering - consistent h-10 control height with proper alignment
-                const navButtonClass = "h-10 px-[10px] py-0 text-sm font-medium hover:bg-accent/50 rounded-lg inline-flex items-center gap-2 leading-none whitespace-nowrap";
+                // Enabled module rendering - with gold underline for active workspace
+                const isActive = item.label === activeNavItem;
+                const navButtonClass = cn(
+                  "h-10 px-[10px] py-0 text-sm font-medium hover:bg-accent/50 rounded-lg inline-flex items-center gap-2 leading-none whitespace-nowrap relative",
+                  isActive && "text-brand-gold font-semibold"
+                );
+                const activeUnderline = isActive ? (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-0.5 bg-brand-gold rounded-full" />
+                ) : null;
                 
                 return (
-                  <div key={item.label} className="inline-flex items-center">
+                  <div key={item.label} className="inline-flex items-center relative">
                     {item.label === "Product" ? (
                       <Popover
                         open={activeDropdown === item.label}
@@ -190,6 +204,7 @@ export function CatalystHeader() {
                           <Button variant="ghost" className={navButtonClass}>
                             {item.label}
                             <ChevronDown className="h-3 w-3 block" />
+                            {activeUnderline}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -208,6 +223,7 @@ export function CatalystHeader() {
                           <Button variant="ghost" className={navButtonClass}>
                             {item.label}
                             <ChevronDown className="h-3 w-3 block" />
+                            {activeUnderline}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">
@@ -226,6 +242,7 @@ export function CatalystHeader() {
                           <Button variant="ghost" className={navButtonClass}>
                             {item.label}
                             <ChevronDown className="h-3 w-3 block" />
+                            {activeUnderline}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="p-0 w-auto z-[60]" align="start">

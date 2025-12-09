@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { useEnabledModules } from "@/hooks/useModules";
-import { useNavigation } from "@/contexts/NavigationContext";
+import { useCatalystContext } from "@/contexts/CatalystContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,8 +16,7 @@ import {
   Circle, Square, Box, FileText, Bug, CheckSquare, Target, 
   GitBranch, Lightbulb, AlertTriangle, Calendar, Package, AlertOctagon 
 } from "lucide-react";
-
-type WorkContext = 'enterprise' | 'program' | 'project' | 'product';
+import { WorkspaceType } from "@/lib/workspaceContext";
 
 interface ItemConfig {
   label: string;
@@ -27,142 +26,110 @@ interface ItemConfig {
   moduleCode: string | null;
 }
 
-// Define items for each context
+// Enterprise Items
 const enterpriseItems: ItemConfig[] = [
   { label: "Themes", icon: Circle, color: "text-workitem-theme", path: "/themes", moduleCode: "PORTFOLIO" },
   { label: "Objectives", icon: Target, color: "text-brand-gold", path: "/enterprise/objectives", moduleCode: "ENTERPRISE" },
   { label: "Ideation", icon: Lightbulb, color: "text-warning-600", path: "/items/ideation", moduleCode: "PRODUCT" },
 ];
 
+// Program Items - Epics, Risks, Dependencies only (no Program Incidents)
 const programItems: ItemConfig[] = [
   { label: "Epics", icon: Square, color: "text-workitem-epic", path: "/items/epics", moduleCode: "PORTFOLIO" },
-  { label: "Program Incidents", icon: AlertOctagon, color: "text-destructive", path: "/release/incidents", moduleCode: "PROGRAM" },
   { label: "Risks", icon: AlertTriangle, color: "text-destructive", path: "/enterprise/risks", moduleCode: "ENTERPRISE" },
   { label: "Dependencies", icon: GitBranch, color: "text-warning", path: "/dependencies", moduleCode: "PROGRAM" },
 ];
 
+// Project Items - NO Epics, NO Program Incidents, Quarters instead of PI
 const projectItems: ItemConfig[] = [
-  { label: "Sprints", icon: Calendar, color: "text-info", path: "/sprints", moduleCode: "PROGRAM" },
-  { label: "Risks", icon: AlertTriangle, color: "text-destructive", path: "/enterprise/risks", moduleCode: "ENTERPRISE" },
-  { label: "Dependencies", icon: GitBranch, color: "text-warning", path: "/dependencies", moduleCode: "PROGRAM" },
   { label: "Features", icon: Box, color: "text-workitem-feature", path: "/features", moduleCode: "PROGRAM" },
   { label: "Stories", icon: FileText, color: "text-workitem-story", path: "/stories", moduleCode: "TEAMS" },
   { label: "Defects", icon: Bug, color: "text-workitem-defect", path: "/items/defects", moduleCode: "TEAMS" },
-  { label: "Tasks", icon: CheckSquare, color: "text-workitem-subtask", path: "/items/tasks", moduleCode: "TEAMS" },
   { label: "Incidents", icon: AlertOctagon, color: "text-destructive", path: "/release/incidents", moduleCode: "TEAMS" },
+  { label: "Risks", icon: AlertTriangle, color: "text-destructive", path: "/enterprise/risks", moduleCode: "ENTERPRISE" },
+  { label: "Dependencies", icon: GitBranch, color: "text-warning", path: "/dependencies", moduleCode: "PROGRAM" },
+  { label: "Quarters", icon: Calendar, color: "text-info", path: "/quarters", moduleCode: "PROGRAM" },
 ];
 
+// Product Items
 const productItems: ItemConfig[] = [
   { label: "Business Requests", icon: Square, color: "text-brand-gold", path: "/industry", moduleCode: "PRODUCT" },
 ];
 
-// Other items that appear across multiple contexts
-const otherItemsByContext: Record<WorkContext, ItemConfig[]> = {
-  enterprise: [],
-  program: [
-    { label: "Program Increments", icon: Package, color: "text-workitem-theme", path: "/pis", moduleCode: "PROGRAM" },
-  ],
-  project: [
-    { label: "Program Increments", icon: Package, color: "text-workitem-theme", path: "/pis", moduleCode: "PROGRAM" },
-  ],
-  product: [],
-};
+// Get context label
+function getContextLabel(workspaceType: WorkspaceType): string {
+  switch (workspaceType) {
+    case 'enterprise':
+      return 'ENTERPRISE ITEMS';
+    case 'program':
+      return 'PROGRAM ITEMS';
+    case 'project':
+      return 'PROJECT ITEMS';
+    case 'product':
+      return 'PRODUCT ITEMS';
+    default:
+      return 'WORK ITEMS';
+  }
+}
 
-function getWorkContext(pathname: string, selectedProgramId: string | null, selectedProjectId: string | null): WorkContext {
-  // Check route first
-  if (pathname.startsWith('/enterprise') || pathname.startsWith('/strategy')) {
-    return 'enterprise';
+// Get items for workspace type
+function getItemsForContext(workspaceType: WorkspaceType): ItemConfig[] {
+  switch (workspaceType) {
+    case 'enterprise':
+      return enterpriseItems;
+    case 'program':
+      return programItems;
+    case 'project':
+      return projectItems;
+    case 'product':
+      return productItems;
+    default:
+      return enterpriseItems;
   }
-  if (pathname.startsWith('/product') || pathname.startsWith('/industry')) {
-    return 'product';
-  }
-  if (pathname.startsWith('/program')) {
-    return 'program';
-  }
-  if (pathname.startsWith('/project')) {
-    return 'project';
-  }
-  
-  // Check selected context from navigation
-  if (selectedProjectId) {
-    return 'project';
-  }
-  if (selectedProgramId) {
-    return 'program';
-  }
-  
-  // Default to enterprise for home/generic routes
-  return 'enterprise';
 }
 
 export function ItemsDropdown() {
   const navigate = useNavigate();
-  const location = useLocation();
   const [open, setOpen] = useState(false);
   const { isModuleEnabled } = useEnabledModules();
-  const { selectedProgramId, selectedProjectId } = useNavigation();
+  const { workspaceType, projectId, programId } = useCatalystContext();
 
-  // Determine current work context
-  const workContext = useMemo(() => 
-    getWorkContext(location.pathname, selectedProgramId, selectedProjectId),
-    [location.pathname, selectedProgramId, selectedProjectId]
+  // Get items based on workspace context
+  const contextItems = useMemo(() => 
+    getItemsForContext(workspaceType),
+    [workspaceType]
   );
 
-  // Get items based on context
-  const contextWorkItems = useMemo(() => {
-    switch (workContext) {
-      case 'enterprise':
-        return enterpriseItems;
-      case 'program':
-        return programItems;
-      case 'project':
-        return projectItems;
-      case 'product':
-        return productItems;
-      default:
-        return enterpriseItems;
-    }
-  }, [workContext]);
-
-  const contextOtherItems = useMemo(() => 
-    otherItemsByContext[workContext] || [],
-    [workContext]
+  // Get context label
+  const contextLabel = useMemo(() => 
+    getContextLabel(workspaceType),
+    [workspaceType]
   );
 
   // Filter items based on enabled modules
-  const filteredWorkItems = useMemo(() => 
-    contextWorkItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
-    [contextWorkItems, isModuleEnabled]
+  const filteredItems = useMemo(() => 
+    contextItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
+    [contextItems, isModuleEnabled]
   );
 
-  const filteredOtherItems = useMemo(() => 
-    contextOtherItems.filter(item => item.moduleCode === null || isModuleEnabled(item.moduleCode)),
-    [contextOtherItems, isModuleEnabled]
-  );
+  // Check if context requires selection
+  const needsSelection = useMemo(() => {
+    if (workspaceType === 'project' && !projectId) {
+      return 'Select a Project to view Project Items';
+    }
+    if (workspaceType === 'program' && !programId) {
+      return 'Select a Program to view Program Items';
+    }
+    return null;
+  }, [workspaceType, projectId, programId]);
 
   const handleItemClick = (path: string) => {
     setOpen(false);
     navigate(path);
   };
 
-  // Context label for the dropdown header
-  const contextLabel = useMemo(() => {
-    switch (workContext) {
-      case 'enterprise':
-        return 'Enterprise Items';
-      case 'program':
-        return 'Program Items';
-      case 'project':
-        return 'Project Items';
-      case 'product':
-        return 'Product Items';
-      default:
-        return 'Work Items';
-    }
-  }, [workContext]);
-
   // Don't render dropdown if no items are available
-  if (filteredWorkItems.length === 0 && filteredOtherItems.length === 0) {
+  if (filteredItems.length === 0 && !needsSelection) {
     return null;
   }
 
@@ -182,44 +149,25 @@ export function ItemsDropdown() {
         align="start"
         className="w-64 max-h-[600px] overflow-y-auto bg-popover z-50"
       >
-        {filteredWorkItems.length > 0 && (
-          <>
-            <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
-              {contextLabel}
-            </DropdownMenuLabel>
-            {filteredWorkItems.map((item) => (
-              <DropdownMenuItem
-                key={item.label}
-                onClick={() => handleItemClick(item.path)}
-                className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
-              >
-                <item.icon className={`h-5 w-5 ${item.color}`} />
-                <span className="text-sm">{item.label}</span>
-              </DropdownMenuItem>
-            ))}
-          </>
-        )}
-
-        {filteredWorkItems.length > 0 && filteredOtherItems.length > 0 && (
-          <DropdownMenuSeparator className="my-2" />
-        )}
-
-        {filteredOtherItems.length > 0 && (
-          <>
-            <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
-              Other
-            </DropdownMenuLabel>
-            {filteredOtherItems.map((item) => (
-              <DropdownMenuItem
-                key={item.label}
-                onClick={() => handleItemClick(item.path)}
-                className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
-              >
-                <item.icon className={`h-5 w-5 ${item.color}`} />
-                <span className="text-sm">{item.label}</span>
-              </DropdownMenuItem>
-            ))}
-          </>
+        <DropdownMenuLabel className="text-xs font-semibold text-muted-foreground uppercase">
+          {contextLabel}
+        </DropdownMenuLabel>
+        
+        {needsSelection ? (
+          <DropdownMenuItem disabled className="text-muted-foreground text-sm py-3">
+            {needsSelection}
+          </DropdownMenuItem>
+        ) : (
+          filteredItems.map((item) => (
+            <DropdownMenuItem
+              key={item.label}
+              onClick={() => handleItemClick(item.path)}
+              className="flex items-center gap-3 py-2 cursor-pointer hover:bg-accent"
+            >
+              <item.icon className={`h-5 w-5 ${item.color}`} />
+              <span className="text-sm">{item.label}</span>
+            </DropdownMenuItem>
+          ))
         )}
       </DropdownMenuContent>
     </DropdownMenu>
