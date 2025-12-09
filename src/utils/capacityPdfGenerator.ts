@@ -65,11 +65,14 @@ export const generateCapacityPDF = async (data: CapacityReportData): Promise<jsP
   
   // Logo placeholder (gold circle with C)
   doc.setFillColor(...brandGold);
-  doc.circle(margin + 8, 17.5, 8, 'F');
+  const circleX = margin + 8;
+  const circleY = 17.5;
+  doc.circle(circleX, circleY, 8, 'F');
   doc.setTextColor(...white);
   doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
-  doc.text('C', margin + 5.5, 21);
+  // Center the "C" text in the circle
+  doc.text('C', circleX, circleY + 4, { align: 'center' });
   
   // Title
   doc.setTextColor(...white);
