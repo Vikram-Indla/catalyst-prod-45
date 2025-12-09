@@ -1,11 +1,17 @@
 /**
  * Timeline View (Gantt-style)
- * Displays allocations as horizontal bars per week
+ * Displays allocations as horizontal bars per week with tooltips
  */
 
 import { Resource, CapacityProject } from '@/types/capacity';
 import { getWeekDateRange } from '@/lib/capacityUtils';
 import { cn } from '@/lib/utils';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface TimelineViewProps {
   resources: Resource[];
@@ -38,96 +44,104 @@ export function TimelineView({
     return project?.color || 'hsl(var(--muted-foreground))';
   };
 
-  const getProjectShortName = (projectId: string): string => {
+  const getProjectName = (projectId: string): string => {
     const project = projects.find(p => p.id === projectId);
-    return project?.shortName || 'Unknown';
+    return project?.name || 'Unknown';
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[900px] border-collapse">
-        <thead>
-          <tr>
-            <th className="text-left font-semibold text-xs text-muted-foreground p-2 border border-border bg-muted min-w-[180px] sticky left-0 z-10">
-              Resource
-            </th>
-            {weeks.map((w, idx) => {
-              const isCurrent = w.week === currentWeek && w.year === startYear;
-              return (
-                <th 
-                  key={`${w.year}-${w.week}`}
-                  className={cn(
-                    "text-center font-semibold text-xs p-2 border border-border bg-muted min-w-[140px]",
-                    isCurrent && "bg-brand-gold/10 text-brand-gold"
-                  )}
-                >
-                  <div className="flex flex-col items-center">
-                    <span className="font-semibold">W{w.week}</span>
-                    <span className="text-[10px] text-muted-foreground font-normal">
-                      {getWeekDateRange(w.week, w.year)}
-                    </span>
-                  </div>
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {resources.map((resource) => (
-            <tr key={resource.id} className="hover:bg-muted/50">
-              <td className="p-2 border border-border sticky left-0 bg-card z-10">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-xs font-semibold flex-shrink-0">
-                    {resource.initials}
-                  </div>
-                  <div className="min-w-0">
-                    <div className="font-medium text-sm text-foreground whitespace-nowrap">
-                      {resource.name}
-                    </div>
-                    <div className="text-[11px] text-muted-foreground whitespace-nowrap">
-                      {resource.role}
-                    </div>
-                  </div>
-                </div>
-              </td>
+    <TooltipProvider>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[900px] border-collapse">
+          <thead>
+            <tr>
+              <th className="text-left font-semibold text-xs text-muted-foreground p-3 border border-border bg-muted min-w-[220px] sticky left-0 z-10">
+                Resource
+              </th>
               {weeks.map((w) => {
-                const weekAllocations = resource.allocations.filter(
-                  a => a.weekNumber === w.week && a.year === w.year
-                );
-
+                const isCurrent = w.week === currentWeek && w.year === startYear;
                 return (
-                  <td key={`${w.year}-${w.week}`} className="p-1 border border-border min-h-[50px]">
-                    <div className="flex gap-0.5 h-full items-center p-1">
-                      {weekAllocations.map(allocation => (
-                        <div
-                          key={allocation.id}
-                          className="h-7 rounded flex items-center justify-center text-white text-[11px] font-medium min-w-[40px]"
-                          style={{ 
-                            backgroundColor: getProjectColor(allocation.projectId),
-                            flex: allocation.percentage
-                          }}
-                          title={`${getProjectShortName(allocation.projectId)}: ${allocation.percentage}%`}
-                        >
-                          {allocation.percentage}%
-                        </div>
-                      ))}
-                      {weekAllocations.length === 0 && (
-                        <div className="text-xs text-muted-foreground">—</div>
-                      )}
+                  <th 
+                    key={`${w.year}-${w.week}`}
+                    className={cn(
+                      "text-center font-semibold text-xs p-3 border border-border bg-muted min-w-[180px]",
+                      isCurrent && "bg-brand-gold/10 text-brand-gold"
+                    )}
+                  >
+                    <div className="flex flex-col items-center">
+                      <span className="font-semibold">W{w.week}</span>
+                      <span className="text-[10px] text-muted-foreground font-normal">
+                        {getWeekDateRange(w.week, w.year)}
+                      </span>
                     </div>
-                  </td>
+                  </th>
                 );
               })}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {resources.map((resource) => (
+              <tr key={resource.id} className="hover:bg-muted/50">
+                <td className="p-3 border border-border sticky left-0 bg-card z-10">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-brand-gold/10 text-brand-gold flex items-center justify-center text-xs font-semibold flex-shrink-0">
+                      {resource.initials}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium text-sm text-foreground whitespace-nowrap">
+                        {resource.name}
+                      </div>
+                      <div className="text-xs text-muted-foreground whitespace-nowrap">
+                        {resource.role}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                {weeks.map((w) => {
+                  const weekAllocations = resource.allocations.filter(
+                    a => a.weekNumber === w.week && a.year === w.year
+                  );
 
-      {resources.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground">
-          No resources found matching your filters
-        </div>
-      )}
-    </div>
+                  return (
+                    <td key={`${w.year}-${w.week}`} className="p-2 border border-border align-middle">
+                      <div className="flex gap-1 items-center justify-center">
+                        {weekAllocations.length > 0 ? (
+                          weekAllocations.map(allocation => (
+                            <Tooltip key={allocation.id}>
+                              <TooltipTrigger asChild>
+                                <div
+                                  className="h-8 rounded flex items-center justify-center text-white text-xs font-medium px-3 cursor-default min-w-[50px]"
+                                  style={{ 
+                                    backgroundColor: getProjectColor(allocation.projectId),
+                                  }}
+                                >
+                                  {allocation.percentage}%
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" className="bg-foreground text-background text-xs">
+                                <p className="font-medium">{getProjectName(allocation.projectId)}</p>
+                                <p>{allocation.percentage}% allocation</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          ))
+                        ) : (
+                          <div className="text-sm text-muted-foreground">—</div>
+                        )}
+                      </div>
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {resources.length === 0 && (
+          <div className="text-center py-12 text-muted-foreground">
+            No resources found matching your filters
+          </div>
+        )}
+      </div>
+    </TooltipProvider>
   );
 }

@@ -118,8 +118,13 @@ export const MOCK_RESOURCES: Resource[] = [
     capacity: 100,
     startDate: '2024-01-01',
     allocations: [
-      { id: 'a1', resourceId: 'dreni', projectId: 'intl', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
-      { id: 'a2', resourceId: 'dreni', projectId: 'mim', weekNumber: 50, year: 2024, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a1', resourceId: 'dreni', projectId: 'intl', weekNumber: 49, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a2', resourceId: 'dreni', projectId: 'mim', weekNumber: 49, year: 2025, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a1b', resourceId: 'dreni', projectId: 'intl', weekNumber: 50, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a2b', resourceId: 'dreni', projectId: 'mim', weekNumber: 50, year: 2025, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a2c', resourceId: 'dreni', projectId: 'innov', weekNumber: 50, year: 2025, percentage: 20, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a1c', resourceId: 'dreni', projectId: 'intl', weekNumber: 51, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a2d', resourceId: 'dreni', projectId: 'mim', weekNumber: 51, year: 2025, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
     ],
     createdAt: '2024-01-01',
     updatedAt: '2024-12-01'
@@ -135,8 +140,12 @@ export const MOCK_RESOURCES: Resource[] = [
     capacity: 100,
     startDate: '2024-01-01',
     allocations: [
-      { id: 'a3', resourceId: 'faisal', projectId: 'intl', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
-      { id: 'a4', resourceId: 'faisal', projectId: 'icp', weekNumber: 50, year: 2024, percentage: 50, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a3', resourceId: 'faisal', projectId: 'intl', weekNumber: 49, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a4', resourceId: 'faisal', projectId: 'icp', weekNumber: 49, year: 2025, percentage: 50, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a3b', resourceId: 'faisal', projectId: 'intl', weekNumber: 50, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a4b', resourceId: 'faisal', projectId: 'icp', weekNumber: 50, year: 2025, percentage: 50, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a3c', resourceId: 'faisal', projectId: 'intl', weekNumber: 51, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a4c', resourceId: 'faisal', projectId: 'icp', weekNumber: 51, year: 2025, percentage: 50, type: 'SOFT', createdAt: '2024-12-01' },
     ],
     createdAt: '2024-01-01',
     updatedAt: '2024-12-01'
@@ -152,8 +161,12 @@ export const MOCK_RESOURCES: Resource[] = [
     capacity: 100,
     startDate: '2024-01-01',
     allocations: [
-      { id: 'a5', resourceId: 'andrew', projectId: 'innov', weekNumber: 50, year: 2024, percentage: 30, type: 'HARD', createdAt: '2024-12-01' },
-      { id: 'a6', resourceId: 'andrew', projectId: 'senaei', weekNumber: 50, year: 2024, percentage: 30, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a5', resourceId: 'andrew', projectId: 'innov', weekNumber: 49, year: 2025, percentage: 30, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a6', resourceId: 'andrew', projectId: 'senaei', weekNumber: 49, year: 2025, percentage: 30, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a5b', resourceId: 'andrew', projectId: 'innov', weekNumber: 50, year: 2025, percentage: 30, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a6b', resourceId: 'andrew', projectId: 'senaei', weekNumber: 50, year: 2025, percentage: 30, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a5c', resourceId: 'andrew', projectId: 'innov', weekNumber: 51, year: 2025, percentage: 30, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a6c', resourceId: 'andrew', projectId: 'senaei', weekNumber: 51, year: 2025, percentage: 30, type: 'SOFT', createdAt: '2024-12-01' },
     ],
     createdAt: '2024-01-01',
     updatedAt: '2024-12-01'
@@ -169,8 +182,12 @@ export const MOCK_RESOURCES: Resource[] = [
     capacity: 100,
     startDate: '2024-01-01',
     allocations: [
-      { id: 'a7', resourceId: 'syed', projectId: 'innov', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
-      { id: 'a8', resourceId: 'syed', projectId: 'senaei', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a7', resourceId: 'syed', projectId: 'innov', weekNumber: 49, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a8', resourceId: 'syed', projectId: 'senaei', weekNumber: 49, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a7b', resourceId: 'syed', projectId: 'innov', weekNumber: 50, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a8b', resourceId: 'syed', projectId: 'senaei', weekNumber: 50, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a7c', resourceId: 'syed', projectId: 'innov', weekNumber: 51, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a8c', resourceId: 'syed', projectId: 'senaei', weekNumber: 51, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
     ],
     createdAt: '2024-01-01',
     updatedAt: '2024-12-01'
@@ -186,8 +203,12 @@ export const MOCK_RESOURCES: Resource[] = [
     capacity: 100,
     startDate: '2024-01-01',
     allocations: [
-      { id: 'a9', resourceId: 'sikander', projectId: 'mobile', weekNumber: 50, year: 2024, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
-      { id: 'a10', resourceId: 'sikander', projectId: 'icp', weekNumber: 50, year: 2024, percentage: 25, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a9', resourceId: 'sikander', projectId: 'mobile', weekNumber: 49, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a10', resourceId: 'sikander', projectId: 'icp', weekNumber: 49, year: 2025, percentage: 25, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a9b', resourceId: 'sikander', projectId: 'mobile', weekNumber: 50, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a10b', resourceId: 'sikander', projectId: 'icp', weekNumber: 50, year: 2025, percentage: 25, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a9c', resourceId: 'sikander', projectId: 'mobile', weekNumber: 51, year: 2025, percentage: 50, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a10c', resourceId: 'sikander', projectId: 'icp', weekNumber: 51, year: 2025, percentage: 50, type: 'SOFT', createdAt: '2024-12-01' },
     ],
     createdAt: '2024-01-01',
     updatedAt: '2024-12-01'
@@ -203,8 +224,12 @@ export const MOCK_RESOURCES: Resource[] = [
     capacity: 100,
     startDate: '2024-01-01',
     allocations: [
-      { id: 'a11', resourceId: 'vikram', projectId: 'senaei', weekNumber: 50, year: 2024, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
-      { id: 'a12', resourceId: 'vikram', projectId: 'icp', weekNumber: 50, year: 2024, percentage: 35, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a11', resourceId: 'vikram', projectId: 'senaei', weekNumber: 49, year: 2025, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a12', resourceId: 'vikram', projectId: 'icp', weekNumber: 49, year: 2025, percentage: 35, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a11b', resourceId: 'vikram', projectId: 'senaei', weekNumber: 50, year: 2025, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a12b', resourceId: 'vikram', projectId: 'icp', weekNumber: 50, year: 2025, percentage: 35, type: 'SOFT', createdAt: '2024-12-01' },
+      { id: 'a11c', resourceId: 'vikram', projectId: 'senaei', weekNumber: 51, year: 2025, percentage: 40, type: 'HARD', createdAt: '2024-12-01' },
+      { id: 'a12c', resourceId: 'vikram', projectId: 'icp', weekNumber: 51, year: 2025, percentage: 35, type: 'SOFT', createdAt: '2024-12-01' },
     ],
     createdAt: '2024-01-01',
     updatedAt: '2024-12-01'
