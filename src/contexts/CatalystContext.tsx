@@ -226,3 +226,8 @@ export function useCatalystContext() {
   }
   return context;
 }
+
+// Optional version that returns null when outside provider (useful for shared components)
+export function useCatalystContextOptional() {
+  return useContext(CatalystContext);
+}
