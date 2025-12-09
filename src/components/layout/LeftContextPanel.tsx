@@ -161,6 +161,9 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   const handleNavigation = (path: string) => {
     if (path === '#') return; // Don't navigate for expandable items
     
+    // Collapse sidebar when navigating
+    setExpanded(false);
+    
     // For program board, add program and pi query params from context
     if (path.includes('program-board')) {
       const params = new URLSearchParams();
