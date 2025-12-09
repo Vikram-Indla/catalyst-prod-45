@@ -6,7 +6,6 @@
 import { useState } from 'react';
 import { useCapacity } from '@/hooks/useCapacity';
 import { CapacitySummaryCards } from './CapacitySummaryCards';
-import { CapacityPreview } from './CapacityPreview';
 import { PeopleRoster } from './PeopleRoster';
 import { ProjectGrid } from './ProjectGrid';
 import { TimelineView } from './TimelineView';
@@ -42,15 +41,11 @@ export function CapacityPlanningPage() {
     vacancies,
     stats,
     openVacancies,
-    capacityPreview,
     currentWeek,
     currentYear,
     startWeek,
     startYear,
-    navigateWeeks,
-    goToCurrentWeek,
     adminMode,
-    toggleAdminMode,
     gridChanges,
     handleGridChange,
     resetGridChanges,
@@ -136,14 +131,6 @@ export function CapacityPlanningPage() {
           fullyAllocated={stats.full}
           overallocated={stats.over}
           openVacancies={openVacancies}
-        />
-
-        {/* Capacity Preview - 4 weeks (clickable to Available Capacity tab) */}
-        <CapacityPreview
-          weeks={capacityPreview}
-          currentWeek={currentWeek}
-          totalPeople={stats.total}
-          onWeekClick={() => setActiveTab('available')}
         />
 
         {/* Search and Filter */}
