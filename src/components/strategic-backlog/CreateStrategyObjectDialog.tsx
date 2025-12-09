@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { ConfluenceEditor } from '@/components/knowledge-hub/editor/ConfluenceEditor';
 import { Target, Eye, Heart } from 'lucide-react';
 import { useCreateMission, useCreateVision, useCreateValue, useUpsertSnapshotLinks, useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 
@@ -113,11 +113,10 @@ export function CreateStrategyObjectDialog({ open, onOpenChange, type, snapshotI
 
           <div className="space-y-2">
             <Label>Statement</Label>
-            <Textarea
-              value={statement}
-              onChange={(e) => setStatement(e.target.value)}
+            <ConfluenceEditor
+              content={statement}
+              onChange={setStatement}
               placeholder={`Enter ${type} statement (optional)`}
-              rows={4}
             />
           </div>
         </div>
