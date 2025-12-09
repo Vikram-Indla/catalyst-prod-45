@@ -51,18 +51,8 @@ export function CreateSnapshotModal({ open, onClose }: CreateSnapshotModalProps)
     },
   });
 
-  // Fetch products
-  const { data: products = [] } = useQuery({
-    queryKey: ['products-for-snapshot'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('products')
-        .select('id, name')
-        .order('name');
-      if (error) throw error;
-      return (data || []) as Array<{ id: string; name: string }>;
-    },
-  });
+  // Products - empty for now as table may not exist
+  const products: Array<{ id: string; name: string }> = [];
 
   const handleClose = () => {
     setStep(1);
