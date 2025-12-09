@@ -711,11 +711,16 @@ export default function IndustryPageAtlaskit() {
                 />
               ) : (
                 <EmptyState
-                  header="No requests found"
-                  description="There are no demand requests matching your criteria."
+                  header="No demand requests found"
+                  description="Create your first demand request or adjust your filters"
                   primaryAction={
                     <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
                       Create Request
+                    </Button>
+                  }
+                  secondaryAction={
+                    <Button appearance="subtle" onClick={() => setFilters({})}>
+                      Clear filters
                     </Button>
                   }
                 />
