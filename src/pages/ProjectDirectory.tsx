@@ -336,7 +336,7 @@ export default function ProjectDirectory() {
           >
             <DropdownItemGroup>
               <DropdownItem onClick={() => handleProjectClick(project.id)}>View project</DropdownItem>
-              <DropdownItem>Project settings</DropdownItem>
+              <DropdownItem onClick={() => navigate(`/projects/${project.key}/settings`)}>Project settings</DropdownItem>
               <DropdownItem>Copy URL</DropdownItem>
               <DropdownItem>Archive</DropdownItem>
             </DropdownItemGroup>
