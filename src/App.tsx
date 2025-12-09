@@ -148,6 +148,7 @@ import NotFound from "./pages/NotFound";
 import ProgramDirectory from "./pages/ProgramDirectory";
 import ProjectDirectory from "./pages/ProjectDirectory";
 import ProjectSettingsPage from "./pages/ProjectSettingsPage";
+import ProjectSummaryPage from "./pages/projects/ProjectSummaryPage";
 import { AdminGuard } from "./components/admin/AdminGuard";
 import OKRHeatmap from "./pages/enterprise/OKRHeatmap";
 import OKRTree from "./pages/enterprise/OKRTree";
@@ -398,7 +399,8 @@ const App = () => (
               <Route path="/program-backlog" element={<div className="p-8"><h1 className="text-2xl font-bold">Program Backlog</h1><p className="text-muted-foreground">Coming soon</p></div>} />
               <Route path="/programs" element={<ProgramDirectory />} />
               <Route path="/projects" element={<ProjectDirectory />} />
-              <Route path="/projects/:projectKey" element={<ProjectSettingsPage />} />
+              <Route path="/projects/:projectKey" element={<ProjectSummaryPage />} />
+              <Route path="/projects/:projectKey/summary" element={<ProjectSummaryPage />} />
               <Route path="/projects/:projectKey/settings" element={<ProjectSettingsPage />} />
               <Route path="/teams" element={<TeamsDirectory />} />
               <Route path="/teams/:teamId/room" element={<TeamRoomDetail />} />
