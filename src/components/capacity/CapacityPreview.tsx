@@ -19,13 +19,13 @@ interface CapacityPreviewProps {
 
 export function CapacityPreview({ weeks, currentWeek, totalPeople }: CapacityPreviewProps) {
   const getCapacityColorClass = (available: number) => {
-    if (available >= 30) return 'text-success';
+    if (available >= 30) return 'text-brand-gold';
     if (available >= 15) return 'text-warning';
     return 'text-destructive';
   };
 
   const getCapacityBarClass = (available: number) => {
-    if (available >= 30) return 'bg-success';
+    if (available >= 30) return 'bg-brand-gold';
     if (available >= 15) return 'bg-warning';
     return 'bg-destructive';
   };

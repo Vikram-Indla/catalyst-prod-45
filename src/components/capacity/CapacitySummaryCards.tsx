@@ -78,7 +78,7 @@ export function CapacitySummaryCards({
               <span className="text-2xl font-semibold text-foreground">{card.value}</span>
               <div className={cn(
                 "flex items-center gap-0.5 text-xs font-medium",
-                card.trendUp ? "text-success" : "text-destructive"
+                card.trendUp ? "text-brand-gold" : "text-destructive"
               )}>
                 {card.trendUp ? (
                   <TrendingUp className="h-3 w-3" />
