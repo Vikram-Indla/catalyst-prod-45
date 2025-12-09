@@ -247,7 +247,7 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
         };
       }
 
-      // Fetch snapshot strategy links to get linked themes
+      // Fetch snapshot strategy links to get linked theme IDs (for epic links)
       const { data: snapshotLinks } = await supabase
         .from('snapshot_strategy_links')
         .select('theme_ids')
@@ -256,14 +256,20 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
 
       const linkedThemeIds = snapshotLinks?.theme_ids || [];
 
-      // Count strategic goals
+      // Count strategic goals linked to snapshot
       const { count: strategicGoalsCount } = await supabase
         .from('strategic_goals')
         .select('id', { count: 'exact', head: true })
         .eq('snapshot_id', snapshotId);
 
-      // Count themes linked to snapshot
-      const themesCount = linkedThemeIds.length;
+      // Count themes linked to snapshot from strategic_themes table
+      const { count: themesCount } = await supabase
+        .from('strategic_themes')
+        .select('id', { count: 'exact', head: true })
+        .eq('snapshot_id', snapshotId);
+      
+      // Use either the count from strategic_themes or snapshot_strategy_links (whichever is higher)
+      const finalThemesCount = Math.max(themesCount || 0, linkedThemeIds.length);
 
       // Fetch theme-epic links for aligned epics
       const { data: themeEpicLinks = [] } = await supabase
@@ -305,7 +311,7 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
 
       return {
         strategicGoals: strategicGoalsCount || 0,
-        themes: themesCount,
+        themes: finalThemesCount,
         epics: totalEpicsCount || 0,
         features: totalFeaturesCount || 0,
         alignedEpics: alignedEpicsCount,

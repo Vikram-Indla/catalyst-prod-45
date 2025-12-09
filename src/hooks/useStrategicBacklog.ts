@@ -260,6 +260,7 @@ export function useCreateGoal() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['strategic-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['strategy-pyramid-counts'] });
       catalystToast.success('Goal Created', 'Strategic goal has been created.');
     },
     onError: (error: any) => {
@@ -283,6 +284,7 @@ export function useUpdateGoal() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['strategic-goals'] });
+      queryClient.invalidateQueries({ queryKey: ['strategy-pyramid-counts'] });
     },
   });
 }
@@ -342,6 +344,7 @@ export function useCreateTheme() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['strategic-themes'] });
+      queryClient.invalidateQueries({ queryKey: ['strategy-pyramid-counts'] });
       catalystToast.success('Theme Created', 'Strategic theme has been created.');
     },
     onError: (error: any) => {
