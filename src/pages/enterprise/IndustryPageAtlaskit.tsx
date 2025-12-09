@@ -511,361 +511,335 @@ export default function IndustryPageAtlaskit() {
         
         <Main>
           <div style={{ 
-            height: '100%', 
-            display: 'flex', 
-            flexDirection: 'column',
-            backgroundColor: colors.background,
+            minHeight: 'calc(100vh - 56px)',
+            backgroundColor: token('color.background.neutral', '#F4F5F7'),
+            padding: token('space.400', '32px'),
             fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
           }}>
-      {/* Page Header */}
-      <div style={{
-        backgroundColor: colors.surface,
-        borderBottom: `1px solid ${colors.border}`,
-        padding: `${spacing.s300} ${spacing.s400}`,
-      }}>
-        <h1 style={{ 
-          fontSize: '24px', 
-          fontWeight: 500, 
-          color: colors.textPrimary,
-          margin: 0,
-          lineHeight: '28px',
-        }}>
-          Demand Intake
-        </h1>
-        <p style={{ 
-          fontSize: '14px', 
-          color: colors.textSecondary,
-          margin: '4px 0 0 0',
-          lineHeight: '20px',
-        }}>
-          Industry-specific demand requests
-        </p>
-      </div>
+            {/* Page Header */}
+            <div style={{ marginBottom: token('space.300', '24px') }}>
+              <h1 style={{ 
+                fontSize: '24px', 
+                fontWeight: 500, 
+                color: token('color.text', '#172B4D'),
+                margin: 0,
+                lineHeight: '28px',
+              }}>
+                Demand Intake
+              </h1>
+              <p style={{ 
+                fontSize: '12px', 
+                color: token('color.text.subtlest', '#6B778C'),
+                margin: '4px 0 0 0',
+                lineHeight: '16px',
+              }}>
+                Industry-specific demand requests
+              </p>
+            </div>
 
-      {/* Toolbar */}
-      <div style={{
-        backgroundColor: colors.surface,
-        borderBottom: `1px solid ${colors.border}`,
-        padding: `${spacing.s150} ${spacing.s400}`,
-        display: 'flex',
-        alignItems: 'center',
-        gap: spacing.s200,
-        flexWrap: 'wrap',
-      }}>
-        {/* Search */}
-        <div style={{ position: 'relative', width: '320px' }}>
-          <Search 
-            size={16} 
-            style={{ 
-              position: 'absolute', 
-              left: '12px', 
-              top: '50%', 
-              transform: 'translateY(-50%)',
-              color: colors.textSecondary,
-              pointerEvents: 'none',
-              zIndex: 1,
-            }} 
-          />
-          <Textfield
-            placeholder="Search requests..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
-          />
-        </div>
-
-        {/* View Toggle */}
-        <ViewToggle currentView={viewMode} onViewChange={setViewMode} />
-
-        {/* Pagination Info */}
-        {viewMode === 'list' && (
-          <div style={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '4px',
-            border: `1px solid ${colors.border}`,
-            borderRadius: '3px',
-            padding: '0 8px',
-            height: '32px',
-            backgroundColor: colors.surface,
-          }}>
-            <button 
-              onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              style={{ 
-                background: 'none', 
-                border: 'none', 
-                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                padding: '4px',
-                display: 'flex',
-                opacity: currentPage === 1 ? 0.5 : 1,
-              }}
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <span style={{ 
-              fontSize: '14px', 
-              color: colors.textPrimary,
-              whiteSpace: 'nowrap',
+            {/* Search & Controls Bar */}
+            <div style={{
+              backgroundColor: token('elevation.surface', '#FFFFFF'),
+              padding: token('space.200', '16px'),
+              borderRadius: '3px',
+              boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
+              marginBottom: token('space.300', '24px'),
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: token('space.200', '16px'),
             }}>
-              {sortedRequests.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, sortedRequests.length)} of ${sortedRequests.length}` : '0 items'}
-            </span>
-            <button 
-              onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
-              disabled={currentPage >= totalPages}
-              style={{ 
-                background: 'none', 
-                border: 'none', 
-                cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
-                padding: '4px',
-                display: 'flex',
-                opacity: currentPage >= totalPages ? 0.5 : 1,
-              }}
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        )}
+              {/* Left side - Search */}
+              <div style={{ position: 'relative', width: '400px' }}>
+                <Search 
+                  size={16} 
+                  style={{ 
+                    position: 'absolute', 
+                    left: '12px', 
+                    top: '50%', 
+                    transform: 'translateY(-50%)',
+                    color: token('color.text.subtlest', '#6B778C'),
+                    pointerEvents: 'none',
+                    zIndex: 1,
+                  }} 
+                />
+                <Textfield
+                  placeholder="Search industry requests..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+                />
+              </div>
 
-        {/* Spacer */}
-        <div style={{ flex: 1 }} />
+              {/* Right side - Controls */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
+                {/* View Toggle */}
+                <div style={{ 
+                  display: 'flex', 
+                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                  borderRadius: '3px',
+                  overflow: 'hidden',
+                }}>
+                  <button
+                    onClick={() => setViewMode('list')}
+                    style={{
+                      padding: '6px 12px',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      backgroundColor: viewMode === 'list' ? token('color.background.selected', '#DEEBFF') : 'transparent',
+                      color: viewMode === 'list' ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
+                      border: 'none',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    <Layers size={16} />
+                    List
+                  </button>
+                  <button
+                    onClick={() => setViewMode('kanban')}
+                    style={{
+                      padding: '6px 12px',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      backgroundColor: viewMode === 'kanban' ? token('color.background.selected', '#DEEBFF') : 'transparent',
+                      color: viewMode === 'kanban' ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
+                      border: 'none',
+                      borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px',
+                    }}
+                  >
+                    <Box size={16} />
+                    Kanban
+                  </button>
+                </div>
 
-        {/* Action Buttons */}
-        <SavedFiltersDropdown
-          entityType="demand"
-          currentFilters={filters}
-          onApplyFilter={(savedFilters) => setFilters(savedFilters as SmartFilters)}
-          hasActiveFilters={activeFilterCount > 0}
-        />
+                <SavedFiltersDropdown
+                  entityType="demand"
+                  currentFilters={filters}
+                  onApplyFilter={(savedFilters) => setFilters(savedFilters as SmartFilters)}
+                  hasActiveFilters={activeFilterCount > 0}
+                />
 
-        <Button
-          onClick={() => setFiltersDialogOpen(true)}
-          iconBefore={<Filter size={16} />}
-          appearance={activeFilterCount > 0 ? 'primary' : 'default'}
-        >
-          Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
-        </Button>
-
-        <Button
-          onClick={handleExport}
-          iconBefore={<Download size={16} />}
-        >
-          Export
-        </Button>
-
-        <Button
-          appearance="primary"
-          onClick={() => setCreateModalOpen(true)}
-          iconBefore={<Plus size={16} />}
-        >
-          Create
-        </Button>
-      </div>
-
-      {/* Main Content */}
-      <div style={{ 
-        flex: 1, 
-        overflow: 'auto',
-        padding: spacing.s400,
-      }}>
-        {isLoading ? (
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
-            height: '200px',
-          }}>
-            <Spinner size="large" />
-          </div>
-        ) : viewMode === 'kanban' ? (
-          <BusinessRequestsKanbanView 
-            requests={sortedRequests} 
-            onRequestSelect={setSelectedRequestId}
-          />
-        ) : sortedRequests.length > 0 ? (
-          <div style={{
-            backgroundColor: colors.surface,
-            borderRadius: '3px',
-            boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
-          }}>
-            <DynamicTableStateless
-              head={head}
-              rows={rows}
-              sortKey={sortKey}
-              sortOrder={sortOrder}
-              onSort={(data) => handleSort(data.key, data.sortOrder)}
-              isFixedSize
-            />
-          </div>
-        ) : (
-          <EmptyState
-            header="No requests found"
-            description="There are no demand requests matching your criteria."
-            primaryAction={
-              <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
-                Create Request
-              </Button>
-            }
-          />
-        )}
-      </div>
-
-      {/* Bottom Pagination */}
-      {viewMode === 'list' && sortedRequests.length > ITEMS_PER_PAGE && (
-        <div style={{
-          backgroundColor: colors.surface,
-          borderTop: `1px solid ${colors.border}`,
-          padding: `${spacing.s150} ${spacing.s400}`,
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <span style={{ 
-            fontSize: '14px', 
-            color: colors.textSecondary,
-          }}>
-            Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
-          </span>
-          
-          <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-            {/* First page */}
-            <button 
-              onClick={() => setCurrentPage(1)}
-              disabled={currentPage === 1}
-              style={{
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: `1px solid ${colors.border}`,
-                borderRadius: '3px',
-                backgroundColor: currentPage === 1 ? colors.hoverBg : colors.surface,
-                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                opacity: currentPage === 1 ? 0.5 : 1,
-              }}
-            >
-              «
-            </button>
-            
-            {/* Previous */}
-            <button 
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              style={{
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: `1px solid ${colors.border}`,
-                borderRadius: '3px',
-                backgroundColor: currentPage === 1 ? colors.hoverBg : colors.surface,
-                cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                opacity: currentPage === 1 ? 0.5 : 1,
-              }}
-            >
-              ‹
-            </button>
-
-            {/* Page numbers */}
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              let pageNum: number;
-              if (totalPages <= 5) {
-                pageNum = i + 1;
-              } else if (currentPage <= 3) {
-                pageNum = i + 1;
-              } else if (currentPage >= totalPages - 2) {
-                pageNum = totalPages - 4 + i;
-              } else {
-                pageNum = currentPage - 2 + i;
-              }
-              
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => setCurrentPage(pageNum)}
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: `1px solid ${currentPage === pageNum ? colors.link : colors.border}`,
-                    borderRadius: '3px',
-                    backgroundColor: currentPage === pageNum ? colors.link : colors.surface,
-                    color: currentPage === pageNum ? '#FFFFFF' : colors.textPrimary,
-                    cursor: 'pointer',
-                    fontWeight: currentPage === pageNum ? 600 : 400,
-                    fontSize: '14px',
-                  }}
+                <Button
+                  onClick={() => setFiltersDialogOpen(true)}
+                  iconBefore={<Filter size={16} />}
+                  appearance={activeFilterCount > 0 ? 'primary' : 'default'}
                 >
-                  {pageNum}
-                </button>
-              );
-            })}
+                  Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
+                </Button>
 
-            {/* Next */}
-            <button 
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage >= totalPages}
-              style={{
-                width: '32px',
-                height: '32px',
+                <Button
+                  onClick={handleExport}
+                  iconBefore={<Download size={16} />}
+                >
+                  Export
+                </Button>
+              </div>
+            </div>
+
+            {/* Table Content */}
+            <div style={{ 
+              backgroundColor: token('elevation.surface', '#FFFFFF'),
+              borderRadius: '3px',
+              boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
+            }}>
+              {isLoading ? (
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'center', 
+                  alignItems: 'center', 
+                  height: '200px',
+                }}>
+                  <Spinner size="large" />
+                </div>
+              ) : viewMode === 'kanban' ? (
+                <BusinessRequestsKanbanView 
+                  requests={sortedRequests} 
+                  onRequestSelect={setSelectedRequestId}
+                />
+              ) : sortedRequests.length > 0 ? (
+                <DynamicTableStateless
+                  head={head}
+                  rows={rows}
+                  sortKey={sortKey}
+                  sortOrder={sortOrder}
+                  onSort={(data) => handleSort(data.key, data.sortOrder)}
+                  isFixedSize
+                />
+              ) : (
+                <EmptyState
+                  header="No requests found"
+                  description="There are no demand requests matching your criteria."
+                  primaryAction={
+                    <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
+                      Create Request
+                    </Button>
+                  }
+                />
+              )}
+            </div>
+
+            {/* Bottom Pagination */}
+            {viewMode === 'list' && sortedRequests.length > ITEMS_PER_PAGE && (
+              <div style={{
+                backgroundColor: token('elevation.surface', '#FFFFFF'),
+                borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+                padding: `${token('space.150', '12px')} ${token('space.400', '32px')}`,
                 display: 'flex',
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                justifyContent: 'center',
-                border: `1px solid ${colors.border}`,
+                marginTop: token('space.300', '24px'),
                 borderRadius: '3px',
-                backgroundColor: currentPage >= totalPages ? colors.hoverBg : colors.surface,
-                cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
-                opacity: currentPage >= totalPages ? 0.5 : 1,
-              }}
-            >
-              ›
-            </button>
+                boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
+              }}>
+                <span style={{ 
+                  fontSize: '14px', 
+                  color: token('color.text.subtlest', '#6B778C'),
+                }}>
+                  Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
+                </span>
+                
+                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                  <button 
+                    onClick={() => setCurrentPage(1)}
+                    disabled={currentPage === 1}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRadius: '3px',
+                      backgroundColor: currentPage === 1 ? token('color.background.neutral.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
+                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                      opacity: currentPage === 1 ? 0.5 : 1,
+                    }}
+                  >
+                    «
+                  </button>
+                  
+                  <button 
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRadius: '3px',
+                      backgroundColor: currentPage === 1 ? token('color.background.neutral.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
+                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+                      opacity: currentPage === 1 ? 0.5 : 1,
+                    }}
+                  >
+                    ‹
+                  </button>
 
-            {/* Last page */}
-            <button 
-              onClick={() => setCurrentPage(totalPages)}
-              disabled={currentPage >= totalPages}
-              style={{
-                width: '32px',
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                border: `1px solid ${colors.border}`,
-                borderRadius: '3px',
-                backgroundColor: currentPage >= totalPages ? colors.hoverBg : colors.surface,
-                cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
-                opacity: currentPage >= totalPages ? 0.5 : 1,
-              }}
-            >
-              »
-            </button>
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum: number;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setCurrentPage(pageNum)}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: `1px solid ${currentPage === pageNum ? token('color.border.brand', '#0052CC') : token('color.border', '#DFE1E6')}`,
+                          borderRadius: '3px',
+                          backgroundColor: currentPage === pageNum ? token('color.background.brand.bold', '#0052CC') : token('elevation.surface', '#FFFFFF'),
+                          color: currentPage === pageNum ? '#FFFFFF' : token('color.text', '#172B4D'),
+                          cursor: 'pointer',
+                          fontWeight: currentPage === pageNum ? 600 : 400,
+                          fontSize: '14px',
+                        }}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+
+                  <button 
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    disabled={currentPage >= totalPages}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRadius: '3px',
+                      backgroundColor: currentPage >= totalPages ? token('color.background.neutral.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
+                      cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
+                      opacity: currentPage >= totalPages ? 0.5 : 1,
+                    }}
+                  >
+                    ›
+                  </button>
+
+                  <button 
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={currentPage >= totalPages}
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                      borderRadius: '3px',
+                      backgroundColor: currentPage >= totalPages ? token('color.background.neutral.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
+                      cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
+                      opacity: currentPage >= totalPages ? 0.5 : 1,
+                    }}
+                  >
+                    »
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
 
-      {/* Dialogs and Modals */}
-      <FilterDemandsDialog 
-        open={filtersDialogOpen} 
-        onOpenChange={setFiltersDialogOpen}
-        filters={filters}
-        onFiltersChange={setFilters}
-      />
+          {/* Dialogs and Modals */}
+          <FilterDemandsDialog 
+            open={filtersDialogOpen} 
+            onOpenChange={setFiltersDialogOpen}
+            filters={filters}
+            onFiltersChange={setFilters}
+          />
 
-      <CreateBusinessRequestModal 
-        isOpen={createModalOpen} 
-        onClose={() => setCreateModalOpen(false)} 
-      />
+          <CreateBusinessRequestModal 
+            isOpen={createModalOpen} 
+            onClose={() => setCreateModalOpen(false)} 
+          />
 
-      <BusinessRequestDrawer 
-        isOpen={!!selectedRequestId}
-        requestId={selectedRequestId} 
-        onClose={() => setSelectedRequestId(null)} 
-      />
-          </div>
+          <BusinessRequestDrawer 
+            isOpen={!!selectedRequestId}
+            requestId={selectedRequestId} 
+            onClose={() => setSelectedRequestId(null)} 
+          />
         </Main>
       </Content>
     </PageLayout>
