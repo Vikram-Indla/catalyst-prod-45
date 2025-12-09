@@ -112,7 +112,20 @@ const formatDate = (dateStr: string | null) => {
 
 const ITEMS_PER_PAGE = 20;
 
+// Responsive hook for mobile detection
+const useResponsive = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  return isMobile;
+};
+
 export default function IndustryPageAtlaskit() {
+  const isMobile = useResponsive();
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -260,133 +273,142 @@ export default function IndustryPageAtlaskit() {
     }
   };
 
+  // All available columns
+  const allColumns = [
+    { key: 'checkbox', content: (
+      <Checkbox 
+        isChecked={selectedRows.length === paginatedRequests.length && paginatedRequests.length > 0}
+        isIndeterminate={selectedRows.length > 0 && selectedRows.length < paginatedRequests.length}
+        onChange={handleSelectAll}
+      />
+    ), width: 3, isSortable: false },
+    { key: 'request_key', content: 'REQUEST ID', isSortable: true, width: 8 },
+    { key: 'title', content: 'SUMMARY', isSortable: true, width: 20 },
+    { key: 'process_step', content: 'PROCESS STEP', isSortable: true, width: 10 },
+    { key: 'rank', content: 'RANK', isSortable: true, width: 5 },
+    { key: 'delivery_platform', content: 'DELIVERY PLATFORM', isSortable: true, width: 12 },
+    { key: 'business_owner', content: 'BUSINESS OWNER', isSortable: true, width: 10 },
+    { key: 'planned_quarter', content: 'QUARTER', isSortable: true, width: 8 },
+    { key: 'end_date', content: 'TARGET DATE', isSortable: true, width: 10 },
+    { key: 'department', content: 'DEPARTMENT', isSortable: true, width: 10 },
+    { key: 'actions', content: '', width: 4, isSortable: false },
+  ];
+
+  // Hide columns on mobile - show only essential columns
+  const mobileVisibleKeys = ['checkbox', 'request_key', 'title', 'process_step', 'actions'];
+  const visibleColumns = isMobile 
+    ? allColumns.filter(col => mobileVisibleKeys.includes(col.key))
+    : allColumns;
+
   // Dynamic Table Head
   const head: HeadType = {
-    cells: [
-      { 
-        key: 'checkbox', 
-        content: (
-          <Checkbox 
-            isChecked={selectedRows.length === paginatedRequests.length && paginatedRequests.length > 0}
-            isIndeterminate={selectedRows.length > 0 && selectedRows.length < paginatedRequests.length}
-            onChange={handleSelectAll}
-          />
-        ), 
-        width: 3,
-        isSortable: false,
-      },
-      { key: 'request_key', content: 'REQUEST ID', isSortable: true, width: 8 },
-      { key: 'title', content: 'SUMMARY', isSortable: true, width: 20 },
-      { key: 'process_step', content: 'PROCESS STEP', isSortable: true, width: 10 },
-      { key: 'rank', content: 'RANK', isSortable: true, width: 5 },
-      { key: 'delivery_platform', content: 'DELIVERY PLATFORM', isSortable: true, width: 12 },
-      { key: 'business_owner', content: 'BUSINESS OWNER', isSortable: true, width: 10 },
-      { key: 'planned_quarter', content: 'QUARTER', isSortable: true, width: 8 },
-      { key: 'end_date', content: 'TARGET DATE', isSortable: true, width: 10 },
-      { key: 'department', content: 'DEPARTMENT', isSortable: true, width: 10 },
-      { key: 'actions', content: '', width: 4, isSortable: false },
-    ],
+    cells: visibleColumns,
   };
 
-  // Dynamic Table Rows
+  // All row cells - will be filtered based on visibility
+  const allRowCells = (request: any) => [
+    {
+      key: 'checkbox',
+      content: (
+        <Checkbox
+          isChecked={selectedRows.includes(request.id)}
+          onChange={() => {
+            setSelectedRows(prev => 
+              prev.includes(request.id) 
+                ? prev.filter(id => id !== request.id)
+                : [...prev, request.id]
+            );
+          }}
+        />
+      ),
+    },
+    {
+      key: 'request_key',
+      content: (
+        <a 
+          href={`/request/${request.id}`}
+          style={{ 
+            color: token('color.link', '#0052CC'), 
+            textDecoration: 'none',
+            fontWeight: 500 
+          }}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedRequestId(request.id); }}
+        >
+          {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
+        </a>
+      ),
+    },
+    { 
+      key: 'title', 
+      content: request.title || '-' 
+    },
+    {
+      key: 'process_step',
+      content: (
+        <Lozenge appearance={getStatusAppearance(request.process_step)}>
+          {PROCESS_STEPS.find(s => s.value === request.process_step)?.label || request.process_step || '-'}
+        </Lozenge>
+      ),
+    },
+    { 
+      key: 'rank', 
+      content: request.rank || '-' 
+    },
+    { 
+      key: 'delivery_platform', 
+      content: request.delivery_platform || '-' 
+    },
+    { 
+      key: 'business_owner', 
+      content: request.business_owner || '-' 
+    },
+    { 
+      key: 'planned_quarter', 
+      content: request.planned_quarter || '-' 
+    },
+    {
+      key: 'end_date',
+      content: request.end_date ? (
+        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px') }}>
+          {formatDate(request.end_date)}
+          {new Date(request.end_date) < new Date() && (
+            <AlertTriangle size={14} color={token('color.text.warning', '#FF991F')} />
+          )}
+        </div>
+      ) : '-',
+    },
+    { 
+      key: 'department', 
+      content: request.department || '-' 
+    },
+    {
+      key: 'actions',
+      content: (
+        <DropdownMenu trigger={({ triggerRef, ...props }) => (
+          <Button 
+            {...props} 
+            ref={triggerRef} 
+            iconBefore={<MoreHorizontal size={16} />} 
+            appearance="subtle" 
+          />
+        )}>
+          <DropdownItemGroup>
+            <DropdownItem onClick={() => setSelectedRequestId(request.id)}>Edit</DropdownItem>
+            <DropdownItem>Clone</DropdownItem>
+            <DropdownItem>Delete</DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
+      ),
+    },
+  ];
+
+  // Dynamic Table Rows - filter cells based on visible columns
   const rows: RowType[] = paginatedRequests.map((request: any) => ({
     key: request.id,
     onClick: () => setSelectedRequestId(request.id),
-    cells: [
-      {
-        key: 'checkbox',
-        content: (
-          <Checkbox
-            isChecked={selectedRows.includes(request.id)}
-            onChange={() => {
-              setSelectedRows(prev => 
-                prev.includes(request.id) 
-                  ? prev.filter(id => id !== request.id)
-                  : [...prev, request.id]
-              );
-            }}
-          />
-        ),
-      },
-      {
-        key: 'request_key',
-        content: (
-          <a 
-            href={`/request/${request.id}`}
-            style={{ 
-              color: token('color.link', '#0052CC'), 
-              textDecoration: 'none',
-              fontWeight: 500 
-            }}
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedRequestId(request.id); }}
-          >
-            {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
-          </a>
-        ),
-      },
-      { 
-        key: 'title', 
-        content: request.title || '-' 
-      },
-      {
-        key: 'process_step',
-        content: (
-          <Lozenge appearance={getStatusAppearance(request.process_step)}>
-            {PROCESS_STEPS.find(s => s.value === request.process_step)?.label || request.process_step || '-'}
-          </Lozenge>
-        ),
-      },
-      { 
-        key: 'rank', 
-        content: request.rank || '-' 
-      },
-      { 
-        key: 'delivery_platform', 
-        content: request.delivery_platform || '-' 
-      },
-      { 
-        key: 'business_owner', 
-        content: request.business_owner || '-' 
-      },
-      { 
-        key: 'planned_quarter', 
-        content: request.planned_quarter || '-' 
-      },
-      {
-        key: 'end_date',
-        content: request.end_date ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px') }}>
-            {formatDate(request.end_date)}
-            {new Date(request.end_date) < new Date() && (
-              <AlertTriangle size={14} color={token('color.text.warning', '#FF991F')} />
-            )}
-          </div>
-        ) : '-',
-      },
-      { 
-        key: 'department', 
-        content: request.department || '-' 
-      },
-      {
-        key: 'actions',
-        content: (
-          <DropdownMenu trigger={({ triggerRef, ...props }) => (
-            <Button 
-              {...props} 
-              ref={triggerRef} 
-              iconBefore={<MoreHorizontal size={16} />} 
-              appearance="subtle" 
-            />
-          )}>
-            <DropdownItemGroup>
-              <DropdownItem onClick={() => setSelectedRequestId(request.id)}>Edit</DropdownItem>
-              <DropdownItem>Clone</DropdownItem>
-              <DropdownItem>Delete</DropdownItem>
-            </DropdownItemGroup>
-          </DropdownMenu>
-        ),
-      },
-    ],
+    cells: isMobile 
+      ? allRowCells(request).filter(cell => mobileVisibleKeys.includes(cell.key))
+      : allRowCells(request),
   }));
 
   return (
