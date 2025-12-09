@@ -10,6 +10,9 @@ import type { RowType, HeadType } from '@atlaskit/dynamic-table/types';
 import Textfield from '@atlaskit/textfield';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import Button from '@atlaskit/button';
+import ButtonGroup from '@atlaskit/button-group';
+import ListIcon from '@atlaskit/icon/glyph/list';
+import BoardIcon from '@atlaskit/icon/glyph/board';
 import Lozenge from '@atlaskit/lozenge';
 import { Checkbox } from '@atlaskit/checkbox';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
@@ -533,50 +536,22 @@ export default function IndustryPageAtlaskit() {
             {/* Right side - Controls */}
             <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexWrap: 'wrap' }}>
               {/* View Toggle */}
-              <div style={{ 
-                display: 'flex', 
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                borderRadius: '3px',
-                overflow: 'hidden',
-              }}>
-                <button
+              <ButtonGroup>
+                <Button 
+                  isSelected={viewMode === 'list'}
                   onClick={() => setViewMode('list')}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    backgroundColor: viewMode === 'list' ? token('color.background.selected', '#DEEBFF') : 'transparent',
-                    color: viewMode === 'list' ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                  }}
+                  iconBefore={<ListIcon label="List" size="small" />}
                 >
-                  <Layers size={16} />
                   {!isMobile && 'List'}
-                </button>
-                <button
+                </Button>
+                <Button 
+                  isSelected={viewMode === 'kanban'}
                   onClick={() => setViewMode('kanban')}
-                  style={{
-                    padding: '6px 12px',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    backgroundColor: viewMode === 'kanban' ? token('color.background.selected', '#DEEBFF') : 'transparent',
-                    color: viewMode === 'kanban' ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
-                    border: 'none',
-                    borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                  }}
+                  iconBefore={<BoardIcon label="Kanban" size="small" />}
                 >
-                  <Box size={16} />
                   {!isMobile && 'Kanban'}
-                </button>
-              </div>
+                </Button>
+              </ButtonGroup>
 
               <SavedFiltersDropdown
                 entityType="demand"
