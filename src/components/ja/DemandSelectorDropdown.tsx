@@ -9,7 +9,7 @@ export function DemandSelectorDropdown({ onClose }: DemandSelectorDropdownProps)
   const navigate = useNavigate();
 
   const handleSelect = () => {
-    navigate('/industry/industry');
+    navigate('/industry');
     onClose();
   };
 
