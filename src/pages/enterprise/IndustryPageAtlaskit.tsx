@@ -96,6 +96,12 @@ const tableStyles = `
   [data-testid="dynamic-table"] tbody tr:first-child td {
     border-top: none;
   }
+
+  /* Focus states */
+  :focus-visible {
+    outline: 2px solid ${token('color.border.focused', '#4C9AFF')};
+    outline-offset: 2px;
+  }
 `;
 
 // DemandRequest interface for type safety
