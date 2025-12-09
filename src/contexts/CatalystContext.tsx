@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
+import { useSearchParams, useLocation } from 'react-router-dom';
+import { deriveWorkspaceContext, WorkspaceType } from '@/lib/workspaceContext';
 
 export type TierType = 'enterprise' | 'portfolio' | 'program' | 'team';
 
@@ -14,6 +15,9 @@ interface CatalystContextState {
   tier: TierType;
   setTier: (tier: TierType) => void;
   
+  // Workspace context (derived from route + selections)
+  workspaceType: WorkspaceType;
+  
   // Entity IDs
   portfolioId: string | null;
   setPortfolioId: (id: string | null) => void;
@@ -21,12 +25,22 @@ interface CatalystContextState {
   programId: string | null;
   setProgramId: (id: string | null) => void;
   
+  projectId: string | null;
+  setProjectId: (id: string | null) => void;
+  
+  productId: string | null;
+  setProductId: (id: string | null) => void;
+  
   teamIds: string[];
   setTeamIds: (ids: string[]) => void;
   
-  // Time frame (Program Increments)
+  // Time frame (Quarters - formerly Program Increments)
   piIds: string[];
   setPiIds: (ids: string[]) => void;
+  
+  // Selected Quarter
+  selectedQuarter: string | null;
+  setSelectedQuarter: (quarter: string | null) => void;
   
   // Snapshot (for Strategy/OKR)
   snapshotId: string | null;
@@ -35,6 +49,13 @@ interface CatalystContextState {
   // Industry Filters
   industryFilters: IndustryFilters;
   setIndustryFilters: (filters: IndustryFilters) => void;
+  
+  // Entity names for display
+  programName: string | null;
+  setProgramName: (name: string | null) => void;
+  
+  projectName: string | null;
+  setProjectName: (name: string | null) => void;
 }
 
 const CatalystContext = createContext<CatalystContextState | undefined>(undefined);
@@ -45,10 +66,15 @@ interface StoredContext {
   tier: TierType;
   portfolioId: string | null;
   programId: string | null;
+  projectId: string | null;
+  productId: string | null;
   teamIds: string[];
   piIds: string[];
+  selectedQuarter: string | null;
   snapshotId: string | null;
   industryFilters?: IndustryFilters;
+  programName: string | null;
+  projectName: string | null;
 }
 
 const DEFAULT_INDUSTRY_FILTERS: IndustryFilters = {
@@ -59,6 +85,7 @@ const DEFAULT_INDUSTRY_FILTERS: IndustryFilters = {
 
 export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const location = useLocation();
   
   // Load from localStorage or defaults
   const loadInitialState = (): StoredContext => {
@@ -75,10 +102,15 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       tier: 'portfolio',
       portfolioId: null,
       programId: null,
+      projectId: null,
+      productId: null,
       teamIds: [],
       piIds: [],
+      selectedQuarter: null,
       snapshotId: null,
       industryFilters: DEFAULT_INDUSTRY_FILTERS,
+      programName: null,
+      projectName: null,
     };
   };
   
@@ -87,10 +119,21 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [tier, setTier] = useState<TierType>(initialState.tier);
   const [portfolioId, setPortfolioId] = useState<string | null>(initialState.portfolioId);
   const [programId, setProgramId] = useState<string | null>(initialState.programId);
+  const [projectId, setProjectId] = useState<string | null>(initialState.projectId);
+  const [productId, setProductId] = useState<string | null>(initialState.productId);
   const [teamIds, setTeamIds] = useState<string[]>(initialState.teamIds);
   const [piIds, setPiIds] = useState<string[]>(initialState.piIds);
+  const [selectedQuarter, setSelectedQuarter] = useState<string | null>(initialState.selectedQuarter);
   const [snapshotId, setSnapshotId] = useState<string | null>(initialState.snapshotId);
   const [industryFilters, setIndustryFilters] = useState<IndustryFilters>(initialState.industryFilters || DEFAULT_INDUSTRY_FILTERS);
+  const [programName, setProgramName] = useState<string | null>(initialState.programName);
+  const [projectName, setProjectName] = useState<string | null>(initialState.projectName);
+  
+  // Derive workspace type from route and selections
+  const workspaceType = useMemo(() => 
+    deriveWorkspaceContext(location.pathname, programId, projectId, productId),
+    [location.pathname, programId, projectId, productId]
+  );
   
   // Sync state to localStorage
   useEffect(() => {
@@ -98,10 +141,15 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
       tier,
       portfolioId,
       programId,
+      projectId,
+      productId,
       teamIds,
       piIds,
+      selectedQuarter,
       snapshotId,
       industryFilters,
+      programName,
+      projectName,
     };
     
     try {
@@ -109,7 +157,7 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Failed to save context to localStorage:', error);
     }
-  }, [tier, portfolioId, programId, teamIds, piIds, snapshotId, industryFilters]);
+  }, [tier, portfolioId, programId, projectId, productId, teamIds, piIds, selectedQuarter, snapshotId, industryFilters, programName, projectName]);
   
   // Sync to URL params for shareability
   useEffect(() => {
@@ -121,6 +169,9 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     if (programId) params.set('programId', programId);
     else params.delete('programId');
     
+    if (projectId) params.set('projectId', projectId);
+    else params.delete('projectId');
+    
     if (teamIds.length > 0) params.set('teamIds', teamIds.join(','));
     else params.delete('teamIds');
     
@@ -131,23 +182,34 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
     else params.delete('snapshotId');
     
     setSearchParams(params, { replace: true });
-  }, [portfolioId, programId, teamIds, piIds, snapshotId]);
+  }, [portfolioId, programId, projectId, teamIds, piIds, snapshotId]);
   
   const value: CatalystContextState = {
     tier,
     setTier,
+    workspaceType,
     portfolioId,
     setPortfolioId,
     programId,
     setProgramId,
+    projectId,
+    setProjectId,
+    productId,
+    setProductId,
     teamIds,
     setTeamIds,
     piIds,
     setPiIds,
+    selectedQuarter,
+    setSelectedQuarter,
     snapshotId,
     setSnapshotId,
     industryFilters,
     setIndustryFilters,
+    programName,
+    setProgramName,
+    projectName,
+    setProjectName,
   };
   
   return (
