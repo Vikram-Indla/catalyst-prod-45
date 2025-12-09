@@ -189,6 +189,32 @@ export function useUpdateSnapshot() {
   });
 }
 
+export function useRenameSnapshot() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const { data, error } = await supabase
+        .from('strategy_snapshots')
+        .update({ name })
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['strategic-snapshots'] });
+      queryClient.invalidateQueries({ queryKey: ['strategy-snapshots'] });
+      catalystToast.success('Snapshot Renamed', 'Snapshot name updated successfully.');
+    },
+    onError: (error: any) => {
+      catalystToast.error('Error', error.message || "Couldn't rename snapshot.");
+    },
+  });
+}
+
 export function useActivateSnapshot() {
   const queryClient = useQueryClient();
   
