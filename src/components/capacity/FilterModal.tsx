@@ -3,15 +3,15 @@
  * Following specification exactly with quick filters and collapsible sections
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { ChevronDown, X } from 'lucide-react';
-import { CapacityFilterState, CapacityQuickFilter } from '@/types/capacity';
+import { ChevronDown } from 'lucide-react';
+import { CapacityFilterState, CapacityQuickFilter, Resource, CapacityProject } from '@/types/capacity';
 import { cn } from '@/lib/utils';
 
 interface FilterModalProps {
@@ -22,6 +22,8 @@ interface FilterModalProps {
   onApplyFilters: (filters: CapacityFilterState) => void;
   onToggleQuickFilter: (filter: CapacityQuickFilter) => void;
   onClearAll: () => void;
+  resources?: Resource[];
+  projects?: CapacityProject[];
 }
 
 const QUICK_FILTERS: { id: CapacityQuickFilter; label: string }[] = [
@@ -41,11 +43,32 @@ export function FilterModal({
   onApplyFilters,
   onToggleQuickFilter,
   onClearAll,
+  resources = [],
+  projects = [],
 }: FilterModalProps) {
   const [localFilters, setLocalFilters] = useState<CapacityFilterState>(activeFilters);
   const [peopleOpen, setPeopleOpen] = useState(true);
   const [projectsOpen, setProjectsOpen] = useState(true);
   const [allocationOpen, setAllocationOpen] = useState(true);
+
+  // Derive unique values from resources and projects
+  const uniqueLocations = useMemo(() => {
+    const locations = new Set(resources.map(r => r.location));
+    return Array.from(locations).filter(Boolean).sort();
+  }, [resources]);
+
+  const uniqueSkills = useMemo(() => {
+    const skills = new Set(resources.map(r => r.primarySkill));
+    return Array.from(skills).filter(Boolean).sort();
+  }, [resources]);
+
+  const uniqueProjects = useMemo(() => {
+    return projects.map(p => ({ id: p.id, name: p.name })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [projects]);
+
+  const uniqueResources = useMemo(() => {
+    return resources.map(r => ({ id: r.id, name: r.name })).sort((a, b) => a.name.localeCompare(b.name));
+  }, [resources]);
 
   const totalActiveFilters = activeQuickFilters.length + 
     Object.values(activeFilters).filter(v => v !== undefined && v !== '').length;
@@ -102,19 +125,16 @@ export function FilterModal({
               <div>
                 <label className="text-xs text-muted-foreground">Project</label>
                 <Select 
-                  value={localFilters.department || ''} 
-                  onValueChange={(v) => setLocalFilters(prev => ({ ...prev, department: v || undefined }))}
+                  value={localFilters.project || ''} 
+                  onValueChange={(v) => setLocalFilters(prev => ({ ...prev, project: v || undefined }))}
                 >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="intl">International</SelectItem>
-                    <SelectItem value="mim">MIM</SelectItem>
-                    <SelectItem value="innov">Innovation</SelectItem>
-                    <SelectItem value="senaei">Senaei</SelectItem>
-                    <SelectItem value="mobile">Mobile</SelectItem>
-                    <SelectItem value="icp">ICP</SelectItem>
+                    {uniqueProjects.map(p => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -128,9 +148,9 @@ export function FilterModal({
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Onsite">Onsite</SelectItem>
-                    <SelectItem value="Offshore">Offshore</SelectItem>
-                    <SelectItem value="Hybrid">Hybrid</SelectItem>
+                    {uniqueLocations.map(loc => (
+                      <SelectItem key={loc} value={loc}>{loc}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -144,14 +164,9 @@ export function FilterModal({
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Frontend">Frontend</SelectItem>
-                    <SelectItem value="Backend">Backend</SelectItem>
-                    <SelectItem value="Full Stack">Full Stack</SelectItem>
-                    <SelectItem value="DevOps">DevOps</SelectItem>
-                    <SelectItem value="QA">QA</SelectItem>
-                    <SelectItem value="Product">Product</SelectItem>
-                    <SelectItem value="Design">Design</SelectItem>
-                    <SelectItem value="Data">Data</SelectItem>
+                    {uniqueSkills.map(skill => (
+                      <SelectItem key={skill} value={skill}>{skill}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -175,12 +190,9 @@ export function FilterModal({
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="intl">International</SelectItem>
-                    <SelectItem value="mim">MIM</SelectItem>
-                    <SelectItem value="innov">Innovation</SelectItem>
-                    <SelectItem value="senaei">Senaei</SelectItem>
-                    <SelectItem value="mobile">Mobile</SelectItem>
-                    <SelectItem value="icp">ICP</SelectItem>
+                    {uniqueProjects.map(p => (
+                      <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
