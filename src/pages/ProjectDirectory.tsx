@@ -10,6 +10,7 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import Textfield from '@atlaskit/textfield';
 import Select from '@atlaskit/select';
+import Lozenge from '@atlaskit/lozenge';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import StarIcon from '@atlaskit/icon/glyph/star';
 import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
@@ -83,7 +84,8 @@ export default function ProjectDirectory() {
 
   const filteredProjects = projects.filter(proj =>
     proj.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    proj.key.toLowerCase().includes(searchQuery.toLowerCase())
+    proj.key.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    proj.programName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const toggleStar = (projectId: string) => {
@@ -109,25 +111,31 @@ export default function ProjectDirectory() {
         key: 'star',
         content: '',
         isSortable: false,
-        width: 5,
+        width: 4,
       },
       {
         key: 'name',
         content: 'Name',
         isSortable: true,
-        width: 25,
+        width: 22,
       },
       {
         key: 'key',
         content: 'Key',
         isSortable: true,
-        width: 10,
+        width: 8,
       },
       {
         key: 'type',
         content: 'Type',
         isSortable: true,
-        width: 20,
+        width: 18,
+      },
+      {
+        key: 'program',
+        content: 'Program',
+        isSortable: true,
+        width: 15,
       },
       {
         key: 'lead',
@@ -139,13 +147,13 @@ export default function ProjectDirectory() {
         key: 'category',
         content: 'Category',
         isSortable: true,
-        width: 15,
+        width: 12,
       },
       {
         key: 'actions',
         content: '',
         isSortable: false,
-        width: 5,
+        width: 6,
       },
     ],
   };
@@ -243,6 +251,32 @@ export default function ProjectDirectory() {
           }}>
             {project.type}
           </span>
+        ),
+      },
+      {
+        key: 'program',
+        content: (
+          <a
+            href={`/programs/${project.programId}`}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              textDecoration: 'none',
+            }}
+          >
+            <span style={{
+              fontSize: '14px',
+              fontWeight: 400,
+              color: '#0052CC',
+            }}>
+              {project.programName}
+            </span>
+            {project.programKey === 'DEF' && (
+              <Lozenge appearance="default">Default</Lozenge>
+            )}
+          </a>
         ),
       },
       {
