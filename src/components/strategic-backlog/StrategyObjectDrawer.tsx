@@ -98,15 +98,15 @@ export function StrategyObjectDrawer({ open, onOpenChange, type, data, isArchive
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-[420px] sm:max-w-[420px]">
-          <SheetHeader className="pb-4 border-b border-border">
+        <SheetContent className="w-[420px] sm:max-w-[420px] flex flex-col h-full">
+          <SheetHeader className="pb-4 border-b border-border flex-shrink-0">
             <div className="flex items-center gap-3">
               {getIcon()}
               <SheetTitle className="text-lg">{getTitle()}</SheetTitle>
             </div>
           </SheetHeader>
 
-          <div className="py-6 space-y-5">
+          <div className="flex-1 overflow-y-auto py-6 space-y-5">
             <div className="space-y-2">
               <Label>Title</Label>
               <Input
@@ -150,7 +150,7 @@ export function StrategyObjectDrawer({ open, onOpenChange, type, data, isArchive
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-border">
+          <div className="flex items-center justify-between pt-4 border-t border-border flex-shrink-0">
             {!isArchived && (
               <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => setDeleteOpen(true)}>
                 <Trash2 className="h-4 w-4 mr-1" />
