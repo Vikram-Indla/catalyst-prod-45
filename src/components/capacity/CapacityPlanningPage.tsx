@@ -151,39 +151,40 @@ export function CapacityPlanningPage() {
             />
           </div>
 
-          {/* Week Navigation */}
+          {/* Week Navigation - 3 weeks: previous, current, next */}
           <div className="flex items-center gap-2 bg-muted/50 rounded-lg px-2 py-1">
             <Button 
               variant="ghost" 
               size="icon" 
               className="h-8 w-8"
-              onClick={() => navigateWeeks(-4)}
+              onClick={() => navigateWeeks(-1)}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
             
             <div className="flex items-center gap-1">
-              {[0, 1, 2, 3].map((offset) => {
-                let weekNum = startWeek + offset;
-                let yearNum = startYear;
-                if (weekNum > 52) {
+              {[-1, 0, 1].map((offset) => {
+                let weekNum = currentWeek + offset;
+                let yearNum = currentYear;
+                if (weekNum < 1) {
+                  weekNum = 52 + weekNum;
+                  yearNum--;
+                } else if (weekNum > 52) {
                   weekNum = weekNum - 52;
                   yearNum++;
                 }
-                const isCurrentWeek = weekNum === currentWeek && yearNum === currentYear;
+                const isCurrentWeek = offset === 0;
                 
                 return (
                   <div
                     key={`${yearNum}-${weekNum}`}
-                    className={`px-3 py-1 text-xs font-medium rounded-md cursor-pointer transition-colors ${
+                    className={`px-4 py-1.5 text-sm font-medium rounded-md cursor-pointer transition-colors ${
                       isCurrentWeek 
                         ? 'bg-brand-gold text-white' 
-                        : offset === 0 
-                          ? 'bg-card border border-border text-foreground' 
-                          : 'text-muted-foreground hover:bg-card'
+                        : 'text-muted-foreground hover:bg-card hover:text-foreground'
                     }`}
                     onClick={() => {
-                      if (!isCurrentWeek) goToCurrentWeek();
+                      if (offset !== 0) navigateWeeks(offset);
                     }}
                   >
                     W{weekNum}
@@ -196,18 +197,9 @@ export function CapacityPlanningPage() {
               variant="ghost" 
               size="icon" 
               className="h-8 w-8"
-              onClick={() => navigateWeeks(4)}
+              onClick={() => navigateWeeks(1)}
             >
               <ChevronRight className="h-4 w-4" />
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs h-7 px-2 text-brand-gold hover:text-brand-gold-hover"
-              onClick={goToCurrentWeek}
-            >
-              Today
             </Button>
           </div>
 
