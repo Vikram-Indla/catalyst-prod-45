@@ -121,39 +121,39 @@ export default function StrategicBacklog() {
       ) : (
         <div className="flex-1 overflow-auto p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="h-9 bg-transparent p-0 border-b border-border rounded-none w-full justify-start gap-0">
+            <TabsList className="h-auto bg-transparent p-0 rounded-none w-full justify-start gap-1">
               <TabsTrigger 
                 value="overview" 
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
+                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
               >
                 <LayoutGrid className="h-3.5 w-3.5" />
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="mvv"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
+                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
               >
                 <Target className="h-3.5 w-3.5" />
                 MVV
               </TabsTrigger>
               <TabsTrigger 
                 value="goals"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
+                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
               >
                 <Palette className="h-3.5 w-3.5" />
                 Goals
               </TabsTrigger>
               <TabsTrigger 
                 value="themes" 
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
+                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
               >
                 <ListTree className="h-3.5 w-3.5" />
                 Themes
-                {themes.length === 0 && <Badge variant="destructive" className="text-[10px] px-1 py-0 h-4 ml-0.5">!</Badge>}
+                {themes.length === 0 && <Badge variant="destructive" className="text-[10px] px-1.5 py-0 h-4 ml-1 rounded-full">!</Badge>}
               </TabsTrigger>
               <TabsTrigger 
                 value="epics"
-                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
+                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
               >
                 <Boxes className="h-3.5 w-3.5" />
                 Epics
