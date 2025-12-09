@@ -12,6 +12,8 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import { DynamicTableStateless } from '@atlaskit/dynamic-table';
 import type { RowType, HeadType } from '@atlaskit/dynamic-table/types';
+import { Content, LeftSidebar, Main, PageLayout } from '@atlaskit/page-layout';
+import { SideNavigation, NavigationHeader, Header, NestableNavigationContent, Section, ButtonItem } from '@atlaskit/side-navigation';
 
 // Icons
 import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Lock } from 'lucide-react';
@@ -336,13 +338,32 @@ export default function IndustryPageAtlaskit() {
   }));
 
   return (
-    <div style={{ 
-      height: '100%', 
-      display: 'flex', 
-      flexDirection: 'column',
-      backgroundColor: colors.background,
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
-    }}>
+    <PageLayout>
+      <Content>
+        <LeftSidebar isFixed width={240}>
+          <SideNavigation label="Product navigation">
+            <NavigationHeader>
+              <Header>Product</Header>
+            </NavigationHeader>
+            <NestableNavigationContent>
+              <Section>
+                <ButtonItem isSelected>Demand Intake</ButtonItem>
+                <ButtonItem>Roadmaps</ButtonItem>
+                <ButtonItem>Backlog</ButtonItem>
+                <ButtonItem>Reports</ButtonItem>
+              </Section>
+            </NestableNavigationContent>
+          </SideNavigation>
+        </LeftSidebar>
+        
+        <Main>
+          <div style={{ 
+            height: '100%', 
+            display: 'flex', 
+            flexDirection: 'column',
+            backgroundColor: colors.background,
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+          }}>
       {/* Page Header */}
       <div style={{
         backgroundColor: colors.surface,
@@ -691,6 +712,9 @@ export default function IndustryPageAtlaskit() {
         requestId={selectedRequestId} 
         onClose={() => setSelectedRequestId(null)} 
       />
-    </div>
+          </div>
+        </Main>
+      </Content>
+    </PageLayout>
   );
 }
