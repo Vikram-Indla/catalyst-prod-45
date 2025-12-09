@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
 import { Search, Building2, Plus, Settings } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { getProgramLandingRoute } from '@/lib/workspaceContext';
 
@@ -38,13 +35,10 @@ export function ProgramSelectorDropdown({ onClose, onCreateClick }: ProgramSelec
   );
 
   const handleSelect = (programId: string, programName: string) => {
-    // Set context: Program selected, clear Project
     setProgramId(programId);
     setProgramName(programName);
     setProjectId(null);
     setProjectName(null);
-    
-    // Navigate to Program landing route
     navigate(getProgramLandingRoute(programId));
     onClose();
   };
@@ -60,66 +54,166 @@ export function ProgramSelectorDropdown({ onClose, onCreateClick }: ProgramSelec
   };
 
   return (
-    <div className="w-80 bg-popover border rounded-md shadow-lg">
-      <div className="p-3 border-b">
-        <p className="text-xs font-semibold text-muted-foreground mb-2">PROGRAMS</p>
-        <div className="relative">
-          <Input
+    <div style={{
+      width: '280px',
+      background: token('elevation.surface', '#FFFFFF'),
+      borderRadius: '3px',
+      boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: '12px 16px',
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}>
+        <p style={{
+          fontSize: '11px',
+          fontWeight: 600,
+          color: token('color.text.subtlest', '#6B778C'),
+          margin: '0 0 8px 0',
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+        }}>
+          PROGRAMS
+        </p>
+        <div style={{ position: 'relative' }}>
+          <input
             type="text"
             placeholder="Search programs..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pr-8 h-9"
+            style={{
+              width: '100%',
+              height: '32px',
+              padding: '6px 32px 6px 8px',
+              fontSize: '14px',
+              border: `2px solid ${token('color.border.input', '#DFE1E6')}`,
+              borderRadius: '3px',
+              outline: 'none',
+              background: token('elevation.surface', '#FFFFFF'),
+              color: token('color.text', '#172B4D'),
+              boxSizing: 'border-box',
+            }}
           />
-          <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search style={{
+            position: 'absolute',
+            right: '8px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '16px',
+            height: '16px',
+            color: token('color.icon', '#6B778C'),
+          }} />
         </div>
       </div>
-      <ScrollArea className="max-h-64">
-        <div className="p-2">
-          {isLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-9 w-full" />
-              <Skeleton className="h-9 w-full" />
-              <Skeleton className="h-9 w-full" />
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-              {search ? 'No programs found' : 'No programs available'}
-            </div>
-          ) : (
-            filtered.map((program) => (
-              <button
-                key={program.id}
-                onClick={() => handleSelect(program.id, program.name)}
-                className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm flex items-center gap-2"
-              >
-                <Building2 className="h-4 w-4 text-muted-foreground" />
-                {program.name}
-              </button>
-            ))
-          )}
-        </div>
-      </ScrollArea>
-      
+
+      {/* List */}
+      <div style={{
+        maxHeight: '200px',
+        overflowY: 'auto',
+        padding: '8px',
+      }}>
+        {isLoading ? (
+          <div style={{ padding: '16px', textAlign: 'center', color: token('color.text.subtlest', '#6B778C'), fontSize: '14px' }}>
+            Loading...
+          </div>
+        ) : filtered.length === 0 ? (
+          <div style={{ padding: '16px', textAlign: 'center', color: token('color.text.subtlest', '#6B778C'), fontSize: '14px' }}>
+            {search ? 'No programs found' : 'No programs available'}
+          </div>
+        ) : (
+          filtered.map((program) => (
+            <button
+              key={program.id}
+              onClick={() => handleSelect(program.id, program.name)}
+              style={{
+                width: '100%',
+                textAlign: 'left',
+                padding: '8px 12px',
+                borderRadius: '3px',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '14px',
+                color: token('color.text', '#172B4D'),
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+              }}
+            >
+              <Building2 style={{
+                width: '16px',
+                height: '16px',
+                color: token('color.icon', '#6B778C'),
+                flexShrink: 0,
+              }} />
+              <span style={{ flex: 1 }}>{program.name}</span>
+            </button>
+          ))
+        )}
+      </div>
+
       {/* Bottom Actions */}
-      <div className="border-t">
-        <div className="p-2 space-y-1">
-          <button
-            onClick={handleCreateClick}
-            className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm flex items-center gap-2 text-brand-gold font-medium"
-          >
-            <Plus className="h-4 w-4" />
-            Create Program
-          </button>
-          <Separator className="my-1" />
-          <button
-            onClick={handleManageClick}
-            className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm flex items-center gap-2 text-muted-foreground"
-          >
-            <Settings className="h-4 w-4" />
-            Manage Programs
-          </button>
-        </div>
+      <div style={{ borderTop: `1px solid ${token('color.border', '#DFE1E6')}`, padding: '8px' }}>
+        <button
+          onClick={handleCreateClick}
+          style={{
+            width: '100%',
+            textAlign: 'left',
+            padding: '8px 12px',
+            borderRadius: '3px',
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            fontWeight: 500,
+            color: '#C69C6D',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+          }}
+        >
+          <Plus style={{ width: '16px', height: '16px' }} />
+          Create Program
+        </button>
+        
+        <button
+          onClick={handleManageClick}
+          style={{
+            width: '100%',
+            textAlign: 'left',
+            padding: '8px 12px',
+            borderRadius: '3px',
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            color: token('color.text.subtlest', '#6B778C'),
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+          }}
+        >
+          <Settings style={{ width: '16px', height: '16px' }} />
+          Manage Programs
+        </button>
       </div>
     </div>
   );
