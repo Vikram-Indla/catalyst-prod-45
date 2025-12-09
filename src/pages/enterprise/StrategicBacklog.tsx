@@ -1,89 +1,203 @@
-import { Card } from '@/components/ui/card';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Filter, Download } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Plus, ChevronDown, Archive, CheckCircle2 } from 'lucide-react';
+import { OverviewTab } from '@/components/strategic-backlog/OverviewTab';
+import { MVVTab } from '@/components/strategic-backlog/MVVTab';
+import { GoalsTab } from '@/components/strategic-backlog/GoalsTab';
+import { ThemesTab } from '@/components/strategic-backlog/ThemesTab';
+import { CreateStrategyObjectDialog } from '@/components/strategic-backlog/CreateStrategyObjectDialog';
+import { CreateGoalDialog } from '@/components/strategic-backlog/CreateGoalDialog';
+import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
+import {
+  useStrategyMissions,
+  useStrategyVisions,
+  useStrategyValues,
+  useStrategicGoals,
+  useStrategicThemes,
+  useSnapshotStrategyLinks,
+} from '@/hooks/useStrategicBacklog';
+
+type CreateType = 'mission' | 'vision' | 'value' | 'goal' | 'theme' | null;
 
 export default function StrategicBacklog() {
-  const epics = [
-    { id: 'E-001', title: 'Digital Transformation Initiative', theme: 'Innovation', points: 89, progress: 45 },
-    { id: 'E-002', title: 'Customer Experience Platform', theme: 'Customer', points: 144, progress: 23 },
-    { id: 'E-003', title: 'Cloud Migration Project', theme: 'Infrastructure', points: 55, progress: 78 },
-  ];
+  const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [createType, setCreateType] = useState<CreateType>(null);
+
+  // Fetch snapshots
+  const { data: snapshots = [] } = useQuery({
+    queryKey: ['strategy-snapshots-all'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('strategy_snapshots')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Auto-select first snapshot
+  const currentSnapshot = snapshots.find(s => s.id === selectedSnapshotId) || snapshots[0];
+  const snapshotId = currentSnapshot?.id || '';
+  const isArchived = currentSnapshot?.status === 'ARCHIVED';
+
+  // Fetch strategy data
+  const { data: missions = [] } = useStrategyMissions();
+  const { data: visions = [] } = useStrategyVisions();
+  const { data: values = [] } = useStrategyValues();
+  const { data: goals = [] } = useStrategicGoals(snapshotId);
+  const { data: themes = [] } = useStrategicThemes(snapshotId);
+  const { data: links } = useSnapshotStrategyLinks(snapshotId);
 
   return (
-    <div className="h-full flex flex-col" style={{ padding: 'var(--s6)' }}>
-      {/* Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s3)] mb-[var(--s6)]" style={{ height: 'var(--toolbar-h)' }}>
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search epics..."
-            className="pl-9"
-            style={{ height: 'var(--grid-row)' }}
-          />
+    <div className="h-full flex flex-col bg-background">
+      {/* Header */}
+      <div className="h-[72px] border-b border-border bg-card flex items-center justify-between px-6 flex-shrink-0">
+        <div className="flex items-center gap-4">
+          <h1 className="text-lg font-semibold text-foreground">Strategic Backlog</h1>
+          {currentSnapshot && (
+            <Badge variant={isArchived ? 'secondary' : 'outline'} className={!isArchived ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/30' : ''}>
+              {isArchived ? <Archive className="h-3 w-3 mr-1" /> : <CheckCircle2 className="h-3 w-3 mr-1" />}
+              {isArchived ? 'Archived (read-only)' : currentSnapshot.status}
+            </Badge>
+          )}
         </div>
-        
-        <Select defaultValue="all-themes">
-          <SelectTrigger className="w-[180px]" style={{ height: 'var(--grid-row)' }}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all-themes">All Themes</SelectItem>
-            <SelectItem value="innovation">Innovation</SelectItem>
-            <SelectItem value="customer">Customer</SelectItem>
-            <SelectItem value="infrastructure">Infrastructure</SelectItem>
-          </SelectContent>
-        </Select>
 
-        <Button variant="outline" size="sm">
-          <Filter className="h-4 w-4 mr-2" />
-          Filters
-        </Button>
+        <div className="flex items-center gap-3">
+          {/* Snapshot Selector */}
+          <Select value={snapshotId} onValueChange={setSelectedSnapshotId}>
+            <SelectTrigger className="w-[220px] h-9">
+              <SelectValue placeholder="Select snapshot" />
+            </SelectTrigger>
+            <SelectContent>
+              {snapshots.map((snap) => (
+                <SelectItem key={snap.id} value={snap.id}>
+                  <div className="flex items-center gap-2">
+                    {snap.status === 'ARCHIVED' && <Archive className="h-3 w-3 text-muted-foreground" />}
+                    {snap.name}
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-        <Button variant="outline" size="sm">
-          <Download className="h-4 w-4 mr-2" />
-          Export
-        </Button>
+          {/* Create Dropdown */}
+          {!isArchived && snapshotId && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button className="bg-brand-gold hover:bg-brand-gold/90">
+                  <Plus className="h-4 w-4 mr-1" />
+                  New
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setCreateType('mission')}>Mission</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCreateType('vision')}>Vision</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCreateType('value')}>Value</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCreateType('goal')}>Strategic Goal</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setCreateType('theme')}>Theme</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
       </div>
 
-      {/* Epic Table */}
-      <Card>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b bg-muted/50" style={{ height: 'var(--grid-hdr)' }}>
-                <th className="text-left px-4 text-sm font-medium">ID</th>
-                <th className="text-left px-4 text-sm font-medium">Title</th>
-                <th className="text-left px-4 text-sm font-medium">Theme</th>
-                <th className="text-left px-4 text-sm font-medium">Story Points</th>
-                <th className="text-left px-4 text-sm font-medium">Progress</th>
-              </tr>
-            </thead>
-            <tbody>
-              {epics.map((epic) => (
-                <tr key={epic.id} className="border-b hover:bg-accent cursor-pointer" style={{ height: 'var(--grid-row)' }}>
-                  <td className="px-4 text-sm font-mono">{epic.id}</td>
-                  <td className="px-4 text-sm font-medium">{epic.title}</td>
-                  <td className="px-4 text-sm">{epic.theme}</td>
-                  <td className="px-4 text-sm">{epic.points}</td>
-                  <td className="px-4">
-                    <div className="flex items-center gap-2">
-                      <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-primary transition-all"
-                          style={{ width: `${epic.progress}%` }}
-                        />
-                      </div>
-                      <span className="text-sm text-muted-foreground">{epic.progress}%</span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Content */}
+      {!snapshotId ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-muted-foreground">Select a snapshot to manage strategic objects.</p>
+          </div>
         </div>
-      </Card>
+      ) : (
+        <div className="flex-1 overflow-auto p-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="mb-6">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="mvv">Mission / Vision / Values</TabsTrigger>
+              <TabsTrigger value="goals">Strategic Goals</TabsTrigger>
+              <TabsTrigger value="themes" className="flex items-center gap-1.5">
+                Themes
+                {themes.length === 0 && <Badge variant="destructive" className="text-[10px] px-1 py-0 h-4">Required</Badge>}
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview">
+              <OverviewTab
+                missions={missions}
+                visions={visions}
+                values={values}
+                goals={goals}
+                themes={themes}
+                links={links || null}
+                isArchived={isArchived}
+              />
+            </TabsContent>
+
+            <TabsContent value="mvv">
+              <MVVTab
+                missions={missions}
+                visions={visions}
+                values={values}
+                links={links || null}
+                snapshotId={snapshotId}
+                isArchived={isArchived}
+              />
+            </TabsContent>
+
+            <TabsContent value="goals">
+              <GoalsTab
+                goals={goals}
+                links={links || null}
+                snapshotId={snapshotId}
+                isArchived={isArchived}
+              />
+            </TabsContent>
+
+            <TabsContent value="themes">
+              <ThemesTab
+                themes={themes}
+                snapshotId={snapshotId}
+                isArchived={isArchived}
+              />
+            </TabsContent>
+          </Tabs>
+        </div>
+      )}
+
+      {/* Create Dialogs */}
+      {(createType === 'mission' || createType === 'vision' || createType === 'value') && (
+        <CreateStrategyObjectDialog
+          open={true}
+          onOpenChange={(open) => !open && setCreateType(null)}
+          type={createType}
+          snapshotId={snapshotId}
+        />
+      )}
+
+      {createType === 'goal' && (
+        <CreateGoalDialog
+          open={true}
+          onOpenChange={(open) => !open && setCreateType(null)}
+          snapshotId={snapshotId}
+        />
+      )}
+
+      {createType === 'theme' && (
+        <CreateThemeDialog
+          open={true}
+          onOpenChange={(open) => !open && setCreateType(null)}
+          snapshotId={snapshotId}
+        />
+      )}
     </div>
   );
 }

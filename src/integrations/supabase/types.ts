@@ -7697,6 +7697,50 @@ export type Database = {
           },
         ]
       }
+      snapshot_strategy_links: {
+        Row: {
+          created_at: string | null
+          goal_ids: string[] | null
+          id: string
+          mission_ids: string[] | null
+          snapshot_id: string
+          theme_ids: string[] | null
+          updated_at: string | null
+          value_ids: string[] | null
+          vision_ids: string[] | null
+        }
+        Insert: {
+          created_at?: string | null
+          goal_ids?: string[] | null
+          id?: string
+          mission_ids?: string[] | null
+          snapshot_id: string
+          theme_ids?: string[] | null
+          updated_at?: string | null
+          value_ids?: string[] | null
+          vision_ids?: string[] | null
+        }
+        Update: {
+          created_at?: string | null
+          goal_ids?: string[] | null
+          id?: string
+          mission_ids?: string[] | null
+          snapshot_id?: string
+          theme_ids?: string[] | null
+          updated_at?: string | null
+          value_ids?: string[] | null
+          vision_ids?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "snapshot_strategy_links_snapshot_id_fkey"
+            columns: ["snapshot_id"]
+            isOneToOne: true
+            referencedRelation: "strategy_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       starred_items: {
         Row: {
           created_at: string
@@ -8100,6 +8144,39 @@ export type Database = {
           },
         ]
       }
+      strategy_missions: {
+        Row: {
+          created_at: string | null
+          enterprise_id: string | null
+          id: string
+          owner_id: string | null
+          statement: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enterprise_id?: string | null
+          id?: string
+          owner_id?: string | null
+          statement?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enterprise_id?: string | null
+          id?: string
+          owner_id?: string | null
+          statement?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       strategy_snapshots: {
         Row: {
           active_since: string | null
@@ -8157,6 +8234,72 @@ export type Database = {
           updated_at?: string | null
           values?: Json | null
           vision?: string | null
+        }
+        Relationships: []
+      }
+      strategy_values: {
+        Row: {
+          created_at: string | null
+          enterprise_id: string | null
+          id: string
+          owner_id: string | null
+          statement: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enterprise_id?: string | null
+          id?: string
+          owner_id?: string | null
+          statement?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enterprise_id?: string | null
+          id?: string
+          owner_id?: string | null
+          statement?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      strategy_visions: {
+        Row: {
+          created_at: string | null
+          enterprise_id: string | null
+          id: string
+          owner_id: string | null
+          statement: string | null
+          status: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          enterprise_id?: string | null
+          id?: string
+          owner_id?: string | null
+          statement?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          enterprise_id?: string | null
+          id?: string
+          owner_id?: string | null
+          statement?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string | null
         }
         Relationships: []
       }
