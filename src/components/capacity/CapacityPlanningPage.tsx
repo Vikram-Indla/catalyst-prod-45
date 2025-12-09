@@ -65,6 +65,7 @@ export function CapacityPlanningPage() {
     clearAllFilters,
     isLocked,
     lockedBy,
+    lockedAt,
     toggleLock,
   } = useCapacity();
 
@@ -292,6 +293,13 @@ export function CapacityPlanningPage() {
             </TabsTrigger>
           </TabsList>
 
+          {isLocked && lockedBy && lockedAt && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
+              <Lock className="h-3 w-3" />
+              <span>Locked by: {lockedBy} on {lockedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+          )}
+
           <div className="mt-4">
             <TabsContent value="roster" className="m-0">
               <PeopleRoster
@@ -305,14 +313,7 @@ export function CapacityPlanningPage() {
             </TabsContent>
 
             <TabsContent value="grid" className="m-0">
-      {isLocked && lockedBy && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-          <Lock className="h-3 w-3" />
-          <span>Locked by: {lockedBy} on {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-        </div>
-      )}
-
-      <ProjectGrid
+              <ProjectGrid
                 resources={resources}
                 projects={projects}
                 startWeek={startWeek}
