@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useCatalystContext } from '@/contexts/CatalystContext';
+import { useCatalystContextOptional } from '@/contexts/CatalystContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -46,7 +46,12 @@ const workTypesBySpace: Record<string, Array<{ label: string; value: string; ico
 };
 
 export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProps) {
-  const { workspaceType, programId, projectId, programName, projectName } = useCatalystContext();
+  const context = useCatalystContextOptional();
+  const workspaceType = context?.workspaceType;
+  const programId = context?.programId;
+  const projectId = context?.projectId;
+  const programName = context?.programName;
+  const projectName = context?.projectName;
   
   const [selectedSpace, setSelectedSpace] = useState<string>('');
   const [selectedWorkType, setSelectedWorkType] = useState<string>('story');
