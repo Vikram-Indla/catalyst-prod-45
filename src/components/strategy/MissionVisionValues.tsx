@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface MissionVisionValuesProps {
   snapshot: {
+    id: string;
     mission?: string | null;
     vision?: string | null;
     values?: unknown;
@@ -9,6 +10,7 @@ interface MissionVisionValuesProps {
 }
 
 export function MissionVisionValues({ snapshot }: MissionVisionValuesProps) {
+  // Parse values from snapshot (stored as JSON or array)
   const values = Array.isArray(snapshot?.values) 
     ? snapshot.values 
     : typeof snapshot?.values === 'string' 

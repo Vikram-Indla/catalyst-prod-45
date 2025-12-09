@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Target, Eye, Heart, Flag, Palette } from 'lucide-react';
+import { Plus, Target, Eye, Heart, Flag, Palette, Crosshair } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,13 +10,14 @@ import {
 import { CreateStrategyObjectDialog } from '@/components/strategic-backlog/CreateStrategyObjectDialog';
 import { CreateGoalDialog } from '@/components/strategic-backlog/CreateGoalDialog';
 import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
+import { CreateObjectiveDialog } from '@/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog';
 
 interface CreateStrategyItemDropdownProps {
   snapshotId: string;
   isArchived?: boolean;
 }
 
-type ItemType = 'mission' | 'vision' | 'value' | 'goal' | 'theme' | null;
+type ItemType = 'mission' | 'vision' | 'value' | 'goal' | 'theme' | 'objective' | null;
 
 export function CreateStrategyItemDropdown({ snapshotId, isArchived }: CreateStrategyItemDropdownProps) {
   const [selectedType, setSelectedType] = useState<ItemType>(null);
@@ -31,6 +32,7 @@ export function CreateStrategyItemDropdown({ snapshotId, isArchived }: CreateStr
     { type: 'value' as const, label: 'Value', icon: Heart },
     { type: 'goal' as const, label: 'Strategic Goal', icon: Flag },
     { type: 'theme' as const, label: 'Theme', icon: Palette },
+    { type: 'objective' as const, label: 'Objective', icon: Crosshair },
   ];
 
   const handleClose = () => {
@@ -84,6 +86,15 @@ export function CreateStrategyItemDropdown({ snapshotId, isArchived }: CreateStr
           open={true}
           onOpenChange={(open) => !open && handleClose()}
           snapshotId={snapshotId}
+        />
+      )}
+
+      {/* Objective dialog */}
+      {selectedType === 'objective' && (
+        <CreateObjectiveDialog
+          open={true}
+          onOpenChange={(open) => !open && handleClose()}
+          tier="portfolio"
         />
       )}
     </>
