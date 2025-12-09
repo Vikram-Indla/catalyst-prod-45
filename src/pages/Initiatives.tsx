@@ -103,7 +103,7 @@ export default function Initiatives() {
             <p className="text-sm text-muted-foreground truncate">Strategic initiatives driving portfolio goals</p>
           </div>
           <PermissionGuard requiredRole="team_lead" showMessage={false}>
-            <Button onClick={handleCreate} className="flex-shrink-0"><Plus className="h-4 w-4 mr-2" />New Initiative</Button>
+            <Button onClick={handleCreate} className="flex-shrink-0 px-3"><Plus className="h-4 w-4" /></Button>
           </PermissionGuard>
         </div>
       </div>

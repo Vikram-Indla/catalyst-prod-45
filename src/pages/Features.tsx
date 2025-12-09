@@ -121,10 +121,8 @@ export default function Features() {
               <p className="text-sm text-muted-foreground truncate">Program-level features driving epic delivery</p>
             </div>
             <PermissionGuard requiredRole="team_lead" showMessage={false}>
-              <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm">
-                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
-                <span className="hidden sm:inline">New Feature</span>
-                <span className="sm:hidden ml-1">New</span>
+              <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm px-3">
+                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Button>
             </PermissionGuard>
           </div>
