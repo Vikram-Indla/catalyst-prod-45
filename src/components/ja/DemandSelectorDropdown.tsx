@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { token } from '@atlaskit/tokens';
 import { Factory } from 'lucide-react';
 
 interface DemandSelectorDropdownProps {
@@ -14,19 +15,63 @@ export function DemandSelectorDropdown({ onClose }: DemandSelectorDropdownProps)
   };
 
   return (
-    <div className="w-64 bg-popover border rounded-md shadow-lg z-[60]">
-      <div className="p-3 border-b">
-        <p className="text-xs font-semibold text-muted-foreground">DEMAND</p>
+    <div style={{
+      width: '256px',
+      background: token('elevation.surface', '#FFFFFF'),
+      borderRadius: '3px',
+      boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+    }}>
+      <div style={{
+        padding: '12px 16px',
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}>
+        <p style={{
+          fontSize: '11px',
+          fontWeight: 600,
+          color: token('color.text.subtlest', '#6B778C'),
+          margin: 0,
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+        }}>
+          DEMAND
+        </p>
       </div>
-      <div className="p-2">
+      <div style={{ padding: '8px' }}>
         <button
           onClick={handleSelect}
-          className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm"
+          style={{
+            width: '100%',
+            textAlign: 'left',
+            padding: '8px 12px',
+            borderRadius: '3px',
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+          }}
         >
-          <div className="flex items-center gap-2">
-            <Factory className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-            <span className="flex-1 font-medium">Industry</span>
-          </div>
+          <Factory style={{ 
+            width: '16px', 
+            height: '16px', 
+            color: token('color.icon', '#6B778C'),
+            flexShrink: 0,
+          }} />
+          <span style={{
+            flex: 1,
+            fontSize: '14px',
+            fontWeight: 500,
+            color: token('color.text', '#172B4D'),
+          }}>
+            Industry
+          </span>
         </button>
       </div>
     </div>
