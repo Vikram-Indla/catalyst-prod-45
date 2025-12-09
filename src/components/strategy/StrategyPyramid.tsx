@@ -23,11 +23,11 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   const [drilldownLayer, setDrilldownLayer] = useState<string | null>(null);
   const { data: counts, isLoading } = useStrategyPyramidCounts(snapshotId);
 
-  // Pyramid geometry
+  // Pyramid geometry - enlarged for better visibility
   const centerX = 400;
-  const topY = 30;
-  const bottomY = 350;
-  const baseHalfWidth = 360;
+  const topY = 20;
+  const bottomY = 380;
+  const baseHalfWidth = 380;
   
   const getXAtY = (y: number) => {
     const progress = (y - topY) / (bottomY - topY);
@@ -38,12 +38,12 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
     };
   };
 
-  // Layer Y coordinates (4 layers)
-  const y1 = 30;   // Strategic Goals top
+  // Layer Y coordinates (4 layers) - taller layers
+  const y1 = 20;   // Strategic Goals top
   const y2 = 110;  // Strategic Goals base / Themes top
-  const y3 = 190;  // Themes base / Epics top
-  const y4 = 270;  // Epics base / Features top
-  const y5 = 350;  // Features base
+  const y3 = 200;  // Themes base / Epics top
+  const y4 = 290;  // Epics base / Features top
+  const y5 = 380;  // Features base
 
   const level1 = getXAtY(y1);
   const level2 = getXAtY(y2);
@@ -64,7 +64,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   };
 
   const handleOpenFullView = () => {
-    navigate(`/enterprise/strategy-room/pyramid?snapshot=${snapshotId}`);
+    navigate(`/enterprise/backlog?snapshotId=${snapshotId}`);
   };
 
   const layers = [
@@ -139,10 +139,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
         <CardContent className="pt-0">
           <div className="flex gap-6">
             {/* SVG Pyramid */}
-            <div className="flex-1" style={{ maxWidth: '500px' }}>
-              <div className="relative w-full" style={{ paddingBottom: '45%' }}>
+            <div className="flex-1" style={{ maxWidth: '600px' }}>
+              <div className="relative w-full" style={{ paddingBottom: '55%' }}>
                 <svg 
-                  viewBox="0 0 800 380" 
+                  viewBox="0 0 800 420" 
                   className="absolute inset-0 w-full h-full" 
                   preserveAspectRatio="xMidYMid meet"
                 >
