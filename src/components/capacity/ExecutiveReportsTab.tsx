@@ -371,6 +371,84 @@ export function ExecutiveReportsTab({
             </tbody>
           </table>
         </div>
+
+        {/* Resource Summary - Toggled by Show Details */}
+        {showResourceDetails && (
+          <div className="border-t border-border">
+            <div className="px-3 py-2 border-b border-border bg-muted/20">
+              <h5 className="font-medium text-xs text-muted-foreground uppercase tracking-wide">Resource Summary</h5>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-border bg-muted/10">
+                    <th className="text-left p-2 text-xs font-medium text-muted-foreground">Resource</th>
+                    <th className="text-center p-2 text-xs font-medium text-muted-foreground">Skill</th>
+                    <th className="text-center p-2 text-xs font-medium text-muted-foreground">Location</th>
+                    <th className="text-center p-2 text-xs font-medium text-muted-foreground">Utilization</th>
+                    <th className="text-center p-2 text-xs font-medium text-muted-foreground">Status</th>
+                    <th className="text-left p-2 text-xs font-medium text-muted-foreground">Assigned Projects</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {resources.map((resource) => {
+                    const util = calculateUtilization(resource, currentWeek, currentYear);
+                    const status = util > 100 ? 'over' : util >= 80 ? 'full' : 'under';
+                    const statusColors = {
+                      over: { bg: 'bg-[#8b5c5c]/10', text: 'text-[#8b5c5c]', label: 'Over' },
+                      full: { bg: 'bg-[#5c7c5c]/10', text: 'text-[#5c7c5c]', label: 'Full' },
+                      under: { bg: 'bg-[#8b7355]/10', text: 'text-[#8b7355]', label: 'Under' }
+                    };
+
+                    const assignedProjects = resource.allocations
+                      .filter(a => a.weekNumber === currentWeek && a.year === currentYear)
+                      .map(a => {
+                        const project = projects.find(p => p.id === a.projectId);
+                        return project ? { name: project.shortName, pct: a.percentage, color: project.color } : null;
+                      })
+                      .filter(Boolean);
+
+                    return (
+                      <tr key={resource.id} className="border-b border-border last:border-b-0 hover:bg-muted/10">
+                        <td className="p-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-[#c69c6d]/20 flex items-center justify-center text-[10px] font-medium text-[#c69c6d]">
+                              {resource.initials}
+                            </div>
+                            <span className="text-sm font-medium">{resource.name}</span>
+                          </div>
+                        </td>
+                        <td className="p-2 text-center text-xs">{resource.primarySkill}</td>
+                        <td className="p-2 text-center text-xs">{resource.location}</td>
+                        <td className="p-2 text-center">
+                          <span className={`font-bold text-sm ${statusColors[status].text}`}>{util}%</span>
+                        </td>
+                        <td className="p-2 text-center">
+                          <Badge className={`text-[10px] h-5 px-1.5 ${statusColors[status].bg} ${statusColors[status].text}`}>
+                            {statusColors[status].label}
+                          </Badge>
+                        </td>
+                        <td className="p-2">
+                          <div className="flex flex-wrap gap-1">
+                            {assignedProjects.length > 0 ? assignedProjects.map((proj, idx) => (
+                              <span 
+                                key={idx} 
+                                className="text-[10px] px-1.5 py-0.5 rounded"
+                                style={{ backgroundColor: `${proj!.color}20`, color: proj!.color }}
+                              >
+                                {proj!.name} ({proj!.pct}%)
+                              </span>
+                            )) : <span className="text-xs text-muted-foreground">-</span>}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
