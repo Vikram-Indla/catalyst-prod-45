@@ -17,7 +17,7 @@ import { SideNavigation, NavigationHeader, Header, NestableNavigationContent, Se
 import Avatar from '@atlaskit/avatar';
 
 // Icons
-import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Lock, Bell, Settings, Home, Briefcase, Package, Folder, Layers, Box } from 'lucide-react';
+import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Lock, Bell, Settings, Home, Briefcase, Package, Folder, Layers, Box, MoreHorizontal, AlertTriangle } from 'lucide-react';
 
 // Local components
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
@@ -297,21 +297,22 @@ export default function IndustryPageAtlaskit() {
       {
         key: 'request_key',
         content: (
-          <span 
-            style={{ color: colors.link, cursor: 'pointer', fontWeight: 500 }}
-            onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
+          <a 
+            href={`/request/${request.id}`}
+            style={{ 
+              color: token('color.link', '#0052CC'), 
+              textDecoration: 'none',
+              fontWeight: 500 
+            }}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setSelectedRequestId(request.id); }}
           >
             {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
-          </span>
+          </a>
         ),
       },
-      {
-        key: 'title',
-        content: (
-          <span style={{ color: colors.textPrimary }}>
-            {request.title || '-'}
-          </span>
-        ),
+      { 
+        key: 'title', 
+        content: request.title || '-' 
       },
       {
         key: 'process_step',
@@ -321,49 +322,51 @@ export default function IndustryPageAtlaskit() {
           </Lozenge>
         ),
       },
-      {
-        key: 'rank',
-        content: (
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: colors.textPrimary }}>
-            {request.is_force_ranked && <Lock size={12} style={{ color: colors.textSecondary }} />}
-            {request.rank ?? '-'}
-          </span>
-        ),
+      { 
+        key: 'rank', 
+        content: request.rank || '-' 
       },
-      {
-        key: 'delivery_platform',
-        content: <span style={{ color: colors.textSecondary }}>{request.delivery_platform || '-'}</span>,
+      { 
+        key: 'delivery_platform', 
+        content: request.delivery_platform || '-' 
       },
-      {
-        key: 'business_owner',
-        content: <span style={{ color: colors.textSecondary }}>{request.business_owner || '-'}</span>,
+      { 
+        key: 'business_owner', 
+        content: request.business_owner || '-' 
       },
-      {
-        key: 'planned_quarter',
-        content: <span style={{ color: colors.textSecondary }}>{request.planned_quarter || '-'}</span>,
+      { 
+        key: 'planned_quarter', 
+        content: request.planned_quarter || '-' 
       },
       {
         key: 'end_date',
-        content: <span style={{ color: colors.textSecondary }}>{formatDate(request.end_date)}</span>,
+        content: request.end_date ? (
+          <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px') }}>
+            {formatDate(request.end_date)}
+            {new Date(request.end_date) < new Date() && (
+              <AlertTriangle size={14} color={token('color.text.warning', '#FF991F')} />
+            )}
+          </div>
+        ) : '-',
       },
-      {
-        key: 'department',
-        content: <span style={{ color: colors.textSecondary }}>{request.department || '-'}</span>,
+      { 
+        key: 'department', 
+        content: request.department || '-' 
       },
       {
         key: 'actions',
         content: (
           <DropdownMenu trigger={({ triggerRef, ...props }) => (
-            <Button
-              {...props}
-              ref={triggerRef}
-              appearance="subtle"
-              iconBefore={<span style={{ fontSize: '16px' }}>⋮</span>}
+            <Button 
+              {...props} 
+              ref={triggerRef} 
+              iconBefore={<MoreHorizontal size={16} />} 
+              appearance="subtle" 
             />
           )}>
             <DropdownItemGroup>
-              <DropdownItem onClick={() => setSelectedRequestId(request.id)}>View Details</DropdownItem>
-              <DropdownItem>Edit</DropdownItem>
+              <DropdownItem onClick={() => setSelectedRequestId(request.id)}>Edit</DropdownItem>
+              <DropdownItem>Clone</DropdownItem>
               <DropdownItem>Delete</DropdownItem>
             </DropdownItemGroup>
           </DropdownMenu>
