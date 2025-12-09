@@ -374,7 +374,11 @@ export function CatalystHeaderAtlaskit() {
             <Button
               appearance="primary"
               iconBefore={<AddIcon label="Create" size="small" />}
-              onClick={() => setIsUnifiedCreateOpen(true)}
+              onClick={(e: React.MouseEvent) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsUnifiedCreateOpen(true);
+              }}
               style={{
                 background: token('color.background.brand.bold', '#0052CC'),
                 color: token('color.text.inverse', '#FFFFFF'),
