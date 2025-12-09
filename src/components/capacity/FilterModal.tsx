@@ -64,12 +64,7 @@ export function FilterModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px] max-h-[85vh] flex flex-col p-0">
         <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle>Filters</DialogTitle>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onOpenChange(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle>Filters</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
@@ -105,7 +100,7 @@ export function FilterModal({
             </CollapsibleTrigger>
             <CollapsibleContent className="grid grid-cols-2 gap-4 pt-3">
               <div>
-                <label className="text-xs text-muted-foreground">Department</label>
+                <label className="text-xs text-muted-foreground">Project</label>
                 <Select 
                   value={localFilters.department || ''} 
                   onValueChange={(v) => setLocalFilters(prev => ({ ...prev, department: v || undefined }))}
@@ -114,9 +109,12 @@ export function FilterModal({
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Engineering">Engineering</SelectItem>
-                    <SelectItem value="Product">Product</SelectItem>
-                    <SelectItem value="Design">Design</SelectItem>
+                    <SelectItem value="intl">International</SelectItem>
+                    <SelectItem value="mim">MIM</SelectItem>
+                    <SelectItem value="innov">Innovation</SelectItem>
+                    <SelectItem value="senaei">Senaei</SelectItem>
+                    <SelectItem value="mobile">Mobile</SelectItem>
+                    <SelectItem value="icp">ICP</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
