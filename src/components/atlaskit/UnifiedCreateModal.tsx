@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Folder, LayoutGrid, BookOpen, X } from 'lucide-react';
+import { Folder, LayoutGrid, BookOpen } from 'lucide-react';
 
 export type CreateType = 'program' | 'project' | 'work-item';
 
@@ -58,8 +58,12 @@ export function UnifiedCreateModal({
   
   const handleOptionClick = (type: CreateType) => {
     console.log('[UnifiedCreateModal] Option clicked:', type);
+    // Call onSelectType first, then close
     onSelectType(type);
-    onClose();
+    // Use setTimeout to ensure state update happens before close
+    setTimeout(() => {
+      onClose();
+    }, 0);
   };
 
   return (
@@ -79,7 +83,7 @@ export function UnifiedCreateModal({
           </p>
 
           <div className="space-y-0">
-            {options.map((option, index) => (
+            {options.map((option) => (
               <button
                 key={option.type}
                 type="button"

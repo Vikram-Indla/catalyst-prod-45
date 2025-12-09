@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,19 +17,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { X } from 'lucide-react';
+import { useCatalystContext } from '@/contexts/CatalystContext';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface CreateWorkItemModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const allSpaces = [
-  { label: 'Product Program (PROD)', value: 'prod', type: 'program', icon: '📁' },
-  { label: 'Engineering Program (ENG)', value: 'eng', type: 'program', icon: '📁' },
-  { label: 'ICP Project (ICP)', value: 'icp', type: 'project', programName: 'Product Program', icon: '📊' },
-  { label: 'Mobile App (MOB)', value: 'mob', type: 'project', programName: 'Product Program', icon: '📱' },
-];
+interface SpaceOption {
+  label: string;
+  value: string;
+  type: 'program' | 'project';
+  icon: string;
+  programName?: string;
+}
 
 const workTypesBySpace: Record<string, Array<{ label: string; value: string; icon: string }>> = {
   program: [{ label: 'Epic', value: 'epic', icon: '⚡' }],
@@ -43,6 +46,8 @@ const workTypesBySpace: Record<string, Array<{ label: string; value: string; ico
 };
 
 export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProps) {
+  const { workspaceType, programId, projectId, programName, projectName } = useCatalystContext();
+  
   const [selectedSpace, setSelectedSpace] = useState<string>('');
   const [selectedWorkType, setSelectedWorkType] = useState<string>('story');
   const [summary, setSummary] = useState('');
@@ -51,10 +56,83 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
   const [priority, setPriority] = useState('medium');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Fetch programs (stored in portfolios table)
+  const { data: programs = [] } = useQuery({
+    queryKey: ['programs-for-create'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('portfolios')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch projects (stored in programs table)
+  const { data: projects = [] } = useQuery({
+    queryKey: ['projects-for-create'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('programs')
+        .select('id, name, portfolio_id, portfolios(name)')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Build space options from real data
+  const allSpaces: SpaceOption[] = [
+    ...programs.map(p => ({
+      label: p.name,
+      value: `program-${p.id}`,
+      type: 'program' as const,
+      icon: '📁',
+    })),
+    ...projects.map(p => ({
+      label: p.name,
+      value: `project-${p.id}`,
+      type: 'project' as const,
+      icon: '📊',
+      programName: (p.portfolios as any)?.name || 'Unknown Program',
+    })),
+  ];
+
+  // Pre-select space based on current context when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      if (workspaceType === 'program' && programId) {
+        setSelectedSpace(`program-${programId}`);
+        setSelectedWorkType('epic');
+      } else if (workspaceType === 'project' && projectId) {
+        setSelectedSpace(`project-${projectId}`);
+        setSelectedWorkType('story');
+      } else {
+        // Default to first available space
+        if (allSpaces.length > 0) {
+          const firstSpace = allSpaces[0];
+          setSelectedSpace(firstSpace.value);
+          setSelectedWorkType(firstSpace.type === 'program' ? 'epic' : 'story');
+        }
+      }
+    }
+  }, [isOpen, workspaceType, programId, projectId, allSpaces.length]);
+
   const selectedSpaceData = allSpaces.find(s => s.value === selectedSpace);
   const spaceType = selectedSpaceData?.type || 'project';
   const workTypes = workTypesBySpace[spaceType] || workTypesBySpace.project;
   const selectedWorkTypeData = workTypes.find(w => w.value === selectedWorkType);
+
+  const handleSpaceChange = (value: string) => {
+    setSelectedSpace(value);
+    const space = allSpaces.find(s => s.value === value);
+    if (space?.type === 'program') {
+      setSelectedWorkType('epic');
+    } else {
+      setSelectedWorkType('story');
+    }
+  };
 
   const handleSubmit = async () => {
     if (!selectedSpace || !summary.trim()) return;
@@ -69,6 +147,7 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
         status,
         priority,
       });
+      // TODO: Implement actual creation logic
       handleClose();
     } catch (error) {
       console.error('Error creating work item:', error);
@@ -106,27 +185,37 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
             <Label className="text-xs font-semibold text-[#172B4D]">
               Space <span className="text-red-500">*</span>
             </Label>
-            <Select value={selectedSpace} onValueChange={(value) => {
-              setSelectedSpace(value);
-              const space = allSpaces.find(s => s.value === value);
-              if (space?.type === 'program') {
-                setSelectedWorkType('epic');
-              } else {
-                setSelectedWorkType('story');
-              }
-            }}>
+            <Select value={selectedSpace} onValueChange={handleSpaceChange}>
               <SelectTrigger className="h-10">
                 <SelectValue placeholder="Select space..." />
               </SelectTrigger>
               <SelectContent>
-                {allSpaces.map((space) => (
-                  <SelectItem key={space.value} value={space.value}>
-                    <span className="flex items-center gap-2">
-                      <span>{space.icon}</span>
-                      <span>{space.label}</span>
-                    </span>
-                  </SelectItem>
-                ))}
+                {programs.length > 0 && (
+                  <>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-[#5E6C84]">Programs</div>
+                    {allSpaces.filter(s => s.type === 'program').map((space) => (
+                      <SelectItem key={space.value} value={space.value}>
+                        <span className="flex items-center gap-2">
+                          <span>{space.icon}</span>
+                          <span>{space.label}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </>
+                )}
+                {projects.length > 0 && (
+                  <>
+                    <div className="px-2 py-1.5 text-xs font-semibold text-[#5E6C84] border-t mt-1 pt-2">Projects</div>
+                    {allSpaces.filter(s => s.type === 'project').map((space) => (
+                      <SelectItem key={space.value} value={space.value}>
+                        <span className="flex items-center gap-2">
+                          <span>{space.icon}</span>
+                          <span>{space.label}</span>
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </>
+                )}
               </SelectContent>
             </Select>
           </div>
@@ -208,21 +297,31 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
               <SelectContent>
                 <SelectItem value="highest">Highest</SelectItem>
                 <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">Medium</SelectItem>
+                <SelectItem value="medium">= Medium</SelectItem>
                 <SelectItem value="low">Low</SelectItem>
               </SelectContent>
             </Select>
+            <a href="#" className="text-xs text-[#0052CC] hover:underline">
+              Learn about priority levels ↗
+            </a>
           </div>
 
           {/* Description */}
           <div className="space-y-2">
             <Label className="text-xs font-semibold text-[#172B4D]">Description</Label>
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Add a description..."
-              className="min-h-[100px]"
-            />
+            <div className="border rounded-md">
+              <div className="flex gap-2 p-2 border-b bg-[#F4F5F7]">
+                <button className="text-sm font-bold px-1">B</button>
+                <button className="text-sm italic px-1">I</button>
+                <button className="text-sm px-1">...</button>
+              </div>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Type /ai for Atlassian Intelligence or @ to mention and notify someone."
+                className="min-h-[100px] border-0 focus-visible:ring-0"
+              />
+            </div>
           </div>
         </div>
 
@@ -238,6 +337,7 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
             <Button
               onClick={handleSubmit}
               disabled={!selectedSpace || !summary.trim() || isSubmitting}
+              className="bg-[#0052CC] hover:bg-[#0747A6] text-white"
             >
               {isSubmitting ? 'Creating...' : 'Create'}
             </Button>
