@@ -211,41 +211,49 @@ export function CatalystHeaderAtlaskit() {
               // Dropdowns for Product, Program, Project, Release
               if (item.hasDropdown) {
                 const isDropdownOpen = activeDropdown === item.label;
+                
+                // Render dropdown content only when open to prevent removeChild errors
+                const renderDropdownContent = () => {
+                  if (!isDropdownOpen) return null;
+                  
+                  return (
+                    <div style={{ 
+                      background: '#FFFFFF', 
+                      borderRadius: '3px', 
+                      boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+                    }}>
+                      {item.label === "Product" && (
+                        <ProductSelectorDropdown 
+                          onClose={() => setActiveDropdown(null)} 
+                          onCreateClick={() => setCreateDialogType('product')}
+                        />
+                      )}
+                      {item.label === "Program" && (
+                        <ProgramSelectorDropdown 
+                          onClose={() => setActiveDropdown(null)} 
+                          onCreateClick={() => setCreateDialogType('program')}
+                        />
+                      )}
+                      {item.label === "Project" && (
+                        <ProjectSelectorDropdown 
+                          onClose={() => setActiveDropdown(null)} 
+                          onCreateClick={() => setCreateDialogType('project')}
+                        />
+                      )}
+                      {item.label === "Release" && (
+                        <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
+                      )}
+                    </div>
+                  );
+                };
+                
                 return (
                   <Popup
                     key={item.label}
                     isOpen={isDropdownOpen}
                     onClose={() => setActiveDropdown(null)}
                     placement="bottom-start"
-                    content={() => (
-                      <div style={{ 
-                        background: '#FFFFFF', 
-                        borderRadius: '3px', 
-                        boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
-                      }}>
-                        {item.label === "Product" && (
-                          <ProductSelectorDropdown 
-                            onClose={() => setActiveDropdown(null)} 
-                            onCreateClick={() => setCreateDialogType('product')}
-                          />
-                        )}
-                        {item.label === "Program" && (
-                          <ProgramSelectorDropdown 
-                            onClose={() => setActiveDropdown(null)} 
-                            onCreateClick={() => setCreateDialogType('program')}
-                          />
-                        )}
-                        {item.label === "Project" && (
-                          <ProjectSelectorDropdown 
-                            onClose={() => setActiveDropdown(null)} 
-                            onCreateClick={() => setCreateDialogType('project')}
-                          />
-                        )}
-                        {item.label === "Release" && (
-                          <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
-                        )}
-                      </div>
-                    )}
+                    content={renderDropdownContent}
                     trigger={(triggerProps) => (
                       <button
                         ref={triggerProps.ref as React.Ref<HTMLButtonElement>}
