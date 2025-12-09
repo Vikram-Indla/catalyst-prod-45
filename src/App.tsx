@@ -178,7 +178,7 @@ import { CapacityPlanningPage } from "./components/capacity/CapacityPlanningPage
 import BusinessRequests from "./pages/enterprise/BusinessRequests";
 import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
 import IndustryPage from "./pages/enterprise/IndustryPage";
-import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
+import DemandSummaryPage from "./pages/industry/DemandSummaryPage";
 import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import RequestAccess from "./pages/RequestAccess";
