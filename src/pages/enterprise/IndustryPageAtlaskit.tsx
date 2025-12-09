@@ -80,56 +80,104 @@ const spacing = {
   s600: token('space.600', '48px'),
 };
 
-// Table styles for DynamicTable - CRITICAL FOR ATLASKIT COMPLIANCE
+// Table styles for DynamicTable - JIRA-ACCURATE STYLING
 const tableStyles = `
-  /* Row hover state */
-  [data-testid="dynamic-table"] tbody tr {
-    transition: background-color 150ms ease-in-out;
+  /* ============================================
+     JIRA-ACCURATE TABLE STYLES
+     ============================================ */
+  
+  /* TABLE CONTAINER */
+  [data-testid="dynamic-table"] {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
   }
   
-  [data-testid="dynamic-table"] tbody tr:hover {
-    background-color: ${token('color.background.neutral.hovered', '#EBECF0')};
-    cursor: pointer;
-  }
-  
-  /* Header styling - Correct Jira styling */
+  /* TABLE HEADERS - EXACT JIRA MATCH */
   [data-testid="dynamic-table"] th {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
     font-size: 12px !important;
     font-weight: 500 !important;
     color: #5E6C84 !important;
     text-transform: none !important;
     letter-spacing: normal !important;
-    background: #FAFBFC !important;
-    padding: 8px 16px !important;
-    border-bottom: 2px solid #DFE1E6 !important;
     line-height: 20px !important;
+    padding: 8px 16px !important;
+    background: #FAFBFC !important;
+    border-bottom: 2px solid #DFE1E6 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    vertical-align: middle !important;
   }
   
-  /* Cell styling */
-  [data-testid="dynamic-table"] td {
-    font-size: 14px !important;
-    color: ${token('color.text', '#172B4D')} !important;
-    padding: ${token('space.200', '16px')} !important;
-    border-top: 1px solid ${token('color.border', '#DFE1E6')} !important;
+  /* TABLE HEADER HOVER */
+  [data-testid="dynamic-table"] th:hover {
+    background: #F4F5F7 !important;
   }
   
-  /* First row no top border */
-  [data-testid="dynamic-table"] tbody tr:first-child td {
-    border-top: none !important;
-  }
-
-  /* Sort button styling */
+  /* TABLE HEADER BUTTON */
   [data-testid="dynamic-table"] th button {
-    color: ${token('color.text.subtle', '#6B778C')} !important;
+    font-family: inherit !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    color: #5E6C84 !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
   }
   
   [data-testid="dynamic-table"] th button:hover {
-    background: ${token('color.background.neutral.hovered', '#EBECF0')} !important;
+    color: #172B4D !important;
+  }
+  
+  /* TABLE CELLS - BODY */
+  [data-testid="dynamic-table"] td {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    color: #172B4D !important;
+    line-height: 20px !important;
+    padding: 8px 16px !important;
+    border-top: 1px solid #DFE1E6 !important;
+    vertical-align: middle !important;
+  }
+  
+  /* FIRST ROW NO TOP BORDER */
+  [data-testid="dynamic-table"] tbody tr:first-child td {
+    border-top: none !important;
+  }
+  
+  /* ROW HOVER STATE */
+  [data-testid="dynamic-table"] tbody tr {
+    transition: background-color 150ms ease-in-out;
+  }
+  
+  [data-testid="dynamic-table"] tbody tr:hover {
+    background-color: #F4F5F7 !important;
+    cursor: pointer;
+  }
+  
+  /* CHECKBOX COLUMN */
+  [data-testid="dynamic-table"] th:first-child,
+  [data-testid="dynamic-table"] td:first-child {
+    width: 40px !important;
+    padding: 8px 12px !important;
+  }
+  
+  /* SORT INDICATOR ICON */
+  [data-testid="dynamic-table"] th svg {
+    width: 16px !important;
+    height: 16px !important;
+    margin-left: 4px !important;
+    vertical-align: middle !important;
   }
 
   /* Focus states */
   :focus-visible {
-    outline: 2px solid ${token('color.border.focused', '#4C9AFF')};
+    outline: 2px solid #4C9AFF;
     outline-offset: 2px;
   }
 `;
@@ -455,15 +503,15 @@ export default function IndustryPageAtlaskit() {
         onChange={handleSelectAll}
       />
     ), width: 3, isSortable: false },
-    { key: 'request_key', content: 'REQUEST ID', isSortable: true, width: 8 },
-    { key: 'title', content: 'SUMMARY', isSortable: true, width: 20 },
-    { key: 'process_step', content: 'PROCESS STEP', isSortable: true, width: 10 },
-    { key: 'rank', content: 'RANK', isSortable: true, width: 5 },
-    { key: 'delivery_platform', content: 'DELIVERY PLATFORM', isSortable: true, width: 12 },
-    { key: 'business_owner', content: 'BUSINESS OWNER', isSortable: true, width: 10 },
-    { key: 'planned_quarter', content: 'QUARTER', isSortable: true, width: 8 },
-    { key: 'end_date', content: 'TARGET DATE', isSortable: true, width: 10 },
-    { key: 'department', content: 'DEPARTMENT', isSortable: true, width: 10 },
+    { key: 'request_key', content: 'Request ID', isSortable: true, width: 8 },
+    { key: 'title', content: 'Summary', isSortable: true, width: 20 },
+    { key: 'process_step', content: 'Process Step', isSortable: true, width: 10 },
+    { key: 'rank', content: 'Rank', isSortable: true, width: 5 },
+    { key: 'delivery_platform', content: 'Delivery Platform', isSortable: true, width: 12 },
+    { key: 'business_owner', content: 'Business Owner', isSortable: true, width: 10 },
+    { key: 'planned_quarter', content: 'Quarter', isSortable: true, width: 8 },
+    { key: 'end_date', content: 'Target Date', isSortable: true, width: 10 },
+    { key: 'department', content: 'Department', isSortable: true, width: 10 },
     { key: 'actions', content: '', width: 4, isSortable: false },
   ];
 
