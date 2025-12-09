@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText } from 'lucide-react';
+import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 type CapacityTab = 'roster' | 'grid' | 'timeline' | 'available' | 'vacancies' | 'reports';
@@ -46,6 +46,8 @@ export function CapacityPlanningPage() {
     currentYear,
     startWeek,
     startYear,
+    navigateWeeks,
+    goToCurrentWeek,
     adminMode,
     gridChanges,
     handleGridChange,
@@ -115,9 +117,10 @@ export function CapacityPlanningPage() {
           openVacancies={openVacancies}
         />
 
-        {/* Search and Actions */}
-        <div className="flex items-center justify-between">
-          <div className="relative w-64">
+        {/* Search, Week Navigation, and Actions */}
+        <div className="flex items-center justify-between gap-4">
+          {/* Search */}
+          <div className="relative w-64 flex-shrink-0">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search resources..."
@@ -126,6 +129,68 @@ export function CapacityPlanningPage() {
               className="pl-9"
             />
           </div>
+
+          {/* Week Navigation */}
+          <div className="flex items-center gap-2 bg-muted/50 rounded-lg px-2 py-1">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8"
+              onClick={() => navigateWeeks(-4)}
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            <div className="flex items-center gap-1">
+              {[0, 1, 2, 3].map((offset) => {
+                let weekNum = startWeek + offset;
+                let yearNum = startYear;
+                if (weekNum > 52) {
+                  weekNum = weekNum - 52;
+                  yearNum++;
+                }
+                const isCurrentWeek = weekNum === currentWeek && yearNum === currentYear;
+                
+                return (
+                  <div
+                    key={`${yearNum}-${weekNum}`}
+                    className={`px-3 py-1 text-xs font-medium rounded-md cursor-pointer transition-colors ${
+                      isCurrentWeek 
+                        ? 'bg-brand-gold text-white' 
+                        : offset === 0 
+                          ? 'bg-card border border-border text-foreground' 
+                          : 'text-muted-foreground hover:bg-card'
+                    }`}
+                    onClick={() => {
+                      if (!isCurrentWeek) goToCurrentWeek();
+                    }}
+                  >
+                    W{weekNum}
+                  </div>
+                );
+              })}
+            </div>
+            
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8"
+              onClick={() => navigateWeeks(4)}
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs h-7 px-2 text-brand-gold hover:text-brand-gold-hover"
+              onClick={goToCurrentWeek}
+            >
+              Today
+            </Button>
+          </div>
+
+          {/* Actions */}
           <div className="flex items-center gap-2">
             <Tooltip>
               <TooltipTrigger asChild>
