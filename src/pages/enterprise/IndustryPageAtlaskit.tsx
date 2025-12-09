@@ -122,7 +122,7 @@ const getStatusAppearance = (status: string): LozengeAppearance => {
     'READY_TO_IMPLEMENT': 'success',  // Green
     'NEW REQUEST': 'inprogress',      // Blue
     'NEW_REQUEST': 'inprogress',      // Blue
-    'ANALYSE': 'inprogress',          // Blue
+    'ANALYSE': 'moved',               // Yellow
     'APPROVED': 'new',                // Purple
     'CLOSED': 'default',              // Gray
     'ON_HOLD': 'moved',               // Yellow
