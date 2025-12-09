@@ -7647,6 +7647,56 @@ export type Database = {
         }
         Relationships: []
       }
+      snapshot_configurations: {
+        Row: {
+          created_at: string
+          id: string
+          members: string[] | null
+          notify_on_activation: boolean | null
+          notify_on_changes: boolean | null
+          org_structures: string[] | null
+          products: string[] | null
+          quarters: string[]
+          snapshot_id: string
+          themes: string[]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          members?: string[] | null
+          notify_on_activation?: boolean | null
+          notify_on_changes?: boolean | null
+          org_structures?: string[] | null
+          products?: string[] | null
+          quarters?: string[]
+          snapshot_id: string
+          themes?: string[]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          members?: string[] | null
+          notify_on_activation?: boolean | null
+          notify_on_changes?: boolean | null
+          org_structures?: string[] | null
+          products?: string[] | null
+          quarters?: string[]
+          snapshot_id?: string
+          themes?: string[]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "snapshot_configurations_snapshot_id_fkey"
+            columns: ["snapshot_id"]
+            isOneToOne: true
+            referencedRelation: "strategy_snapshots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       starred_items: {
         Row: {
           created_at: string
@@ -8052,40 +8102,58 @@ export type Database = {
       }
       strategy_snapshots: {
         Row: {
+          active_since: string | null
+          archived_at: string | null
           created_at: string | null
+          created_by: string | null
           description: string | null
           end_date: string | null
+          enterprise_id: string | null
           id: string
           is_active: boolean | null
           mission: string | null
           name: string
           start_date: string | null
+          status: string | null
+          total_funding: number | null
           updated_at: string | null
           values: Json | null
           vision: string | null
         }
         Insert: {
+          active_since?: string | null
+          archived_at?: string | null
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           end_date?: string | null
+          enterprise_id?: string | null
           id?: string
           is_active?: boolean | null
           mission?: string | null
           name: string
           start_date?: string | null
+          status?: string | null
+          total_funding?: number | null
           updated_at?: string | null
           values?: Json | null
           vision?: string | null
         }
         Update: {
+          active_since?: string | null
+          archived_at?: string | null
           created_at?: string | null
+          created_by?: string | null
           description?: string | null
           end_date?: string | null
+          enterprise_id?: string | null
           id?: string
           is_active?: boolean | null
           mission?: string | null
           name?: string
           start_date?: string | null
+          status?: string | null
+          total_funding?: number | null
           updated_at?: string | null
           values?: Json | null
           vision?: string | null
