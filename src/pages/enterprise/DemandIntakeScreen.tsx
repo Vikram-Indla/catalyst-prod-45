@@ -14,6 +14,7 @@ import Tooltip from '@atlaskit/tooltip';
 import Select from '@atlaskit/select';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
+import KanbanBoard from '@/components/atlaskit/KanbanBoard';
 
 // Icons
 import SearchIcon from '@atlaskit/icon/glyph/search';
@@ -315,36 +316,40 @@ export default function DemandIntakeScreen() {
           </div>
         </div>
 
-        {/* Table */}
-        <div style={{ background: token('elevation.surface'), borderRadius: token('border.radius'), boxShadow: token('elevation.shadow.raised'), overflow: 'hidden' }}>
-          {isLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: token('space.600') }}>
-              <Spinner size="large" />
-            </div>
-          ) : mockData.length === 0 ? (
-            <EmptyState
-              header="No demand requests found"
-              description="Create your first demand request or adjust your search filters"
-              primaryAction={<Button appearance="primary">Create Request</Button>}
-              secondaryAction={<Button appearance="subtle" onClick={() => setSearchQuery('')}>Clear search</Button>}
-            />
-          ) : (
-            <>
-              <style>{tableStyles}</style>
-              <DynamicTable
-                head={getTableHead(selectedRows.length === mockData.length, handleSelectAll)}
-                rows={getTableRows(mockData, selectedRows, handleRowSelect)}
-                rowsPerPage={20}
-                page={currentPage}
-                sortKey={sortKey}
-                sortOrder={sortOrder}
-                onSort={({ key, sortOrder }) => { setSortKey(key); setSortOrder(sortOrder); }}
-                onSetPage={(page) => setCurrentPage(page)}
+        {/* Content - List or Kanban */}
+        {viewMode === 'kanban' ? (
+          <KanbanBoard />
+        ) : (
+          <div style={{ background: token('elevation.surface'), borderRadius: token('border.radius'), boxShadow: token('elevation.shadow.raised'), overflow: 'hidden' }}>
+            {isLoading ? (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: token('space.600') }}>
+                <Spinner size="large" />
+              </div>
+            ) : mockData.length === 0 ? (
+              <EmptyState
+                header="No demand requests found"
+                description="Create your first demand request or adjust your search filters"
+                primaryAction={<Button appearance="primary">Create Request</Button>}
+                secondaryAction={<Button appearance="subtle" onClick={() => setSearchQuery('')}>Clear search</Button>}
               />
-              <Pagination currentPage={currentPage} totalPages={Math.ceil(mockData.length / 20)} totalItems={mockData.length} onPageChange={setCurrentPage} />
-            </>
-          )}
-        </div>
+            ) : (
+              <>
+                <style>{tableStyles}</style>
+                <DynamicTable
+                  head={getTableHead(selectedRows.length === mockData.length, handleSelectAll)}
+                  rows={getTableRows(mockData, selectedRows, handleRowSelect)}
+                  rowsPerPage={20}
+                  page={currentPage}
+                  sortKey={sortKey}
+                  sortOrder={sortOrder}
+                  onSort={({ key, sortOrder }) => { setSortKey(key); setSortOrder(sortOrder); }}
+                  onSetPage={(page) => setCurrentPage(page)}
+                />
+                <Pagination currentPage={currentPage} totalPages={Math.ceil(mockData.length / 20)} totalItems={mockData.length} onPageChange={setCurrentPage} />
+              </>
+            )}
+          </div>
+        )}
       </main>
 
       {/* BULK ACTIONS BAR */}
