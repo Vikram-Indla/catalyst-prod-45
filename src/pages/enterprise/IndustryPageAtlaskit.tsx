@@ -63,26 +63,20 @@ const spacing = {
 // Status mapping for Atlaskit Lozenge
 type LozengeAppearance = 'default' | 'inprogress' | 'moved' | 'new' | 'removed' | 'success';
 
-const getLozengeAppearance = (status: string): LozengeAppearance => {
-  switch (status) {
-    case 'implemented':
-    case 'closed':
-      return 'success';
-    case 'in_progress':
-    case 'active':
-      return 'inprogress';
-    case 'on_hold':
-    case 'paused':
-      return 'moved';
-    case 'request_received':
-    case 'received':
-    case 'new_request':
-      return 'new';
-    case 'rejected':
-      return 'removed';
-    default:
-      return 'default';
-  }
+const getStatusAppearance = (status: string): LozengeAppearance => {
+  const statusUpper = status?.toUpperCase() || '';
+  const mapping: Record<string, LozengeAppearance> = {
+    'IMPLEMENT': 'success',           // Green
+    'READY_TO_IMPLEMENT': 'success',  // Green
+    'NEW REQUEST': 'inprogress',      // Blue
+    'NEW_REQUEST': 'inprogress',      // Blue
+    'ANALYSE': 'inprogress',          // Blue
+    'APPROVED': 'new',                // Purple
+    'CLOSED': 'default',              // Gray
+    'ON_HOLD': 'moved',               // Yellow
+    'REJECTED': 'removed',            // Red
+  };
+  return mapping[statusUpper] || 'default';
 };
 
 const calculateAgeing = (createdAt: string | null): number => {
@@ -322,7 +316,7 @@ export default function IndustryPageAtlaskit() {
       {
         key: 'process_step',
         content: (
-          <Lozenge appearance={getLozengeAppearance(request.process_step)}>
+          <Lozenge appearance={getStatusAppearance(request.process_step)}>
             {PROCESS_STEPS.find(s => s.value === request.process_step)?.label || request.process_step || '-'}
           </Lozenge>
         ),
