@@ -191,13 +191,13 @@ const LeftSidebar = () => {
         alignItems: 'center',
         gap: token('space.150', '12px'),
       }}>
-        {/* PR Badge */}
+        {/* PR Badge - Warm tan color */}
         <div style={{
           width: '32px',
           height: '32px',
-          background: token('color.background.accent.orange.subtle', '#FFEBE6'),
-          color: token('color.text.accent.orange', '#DE350B'),
-          borderRadius: token('border.radius', '3px'),
+          background: '#FFF4E6',
+          color: '#D4A574',
+          borderRadius: '3px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
