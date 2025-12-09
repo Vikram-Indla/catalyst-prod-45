@@ -257,8 +257,7 @@ export default function StrategyRoomPage() {
           {/* Execution and Goals Widgets */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
             <ExecutionAgainstOutcomesWidget 
-              snapshotId={effectiveSelectedSnapshotId} 
-              piIds={selectedPIs}
+              snapshotId={effectiveSelectedSnapshotId}
             />
             <StrategicGoalsWidget 
               snapshotId={effectiveSelectedSnapshotId}

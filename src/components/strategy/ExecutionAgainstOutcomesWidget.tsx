@@ -1,175 +1,159 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { ChevronRight, Target, AlertCircle, Info } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useExecutionAgainstOutcomes, type ExecutionMetrics } from "@/hooks/useExecutionMetrics";
+import { ExecutionDrilldownDrawer } from "./ExecutionDrilldownDrawer";
 
 interface ExecutionAgainstOutcomesWidgetProps {
   snapshotId?: string;
-  piIds: string[];
+  piIds?: string[];
 }
 
-export function ExecutionAgainstOutcomesWidget({ snapshotId, piIds }: ExecutionAgainstOutcomesWidgetProps) {
-  const { data: executionData, isLoading } = useQuery({
-    queryKey: ['execution-against-outcomes', snapshotId, piIds],
-    queryFn: async () => {
-      if (!snapshotId) return null;
+export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstOutcomesWidgetProps) {
+  const [selectedLevel, setSelectedLevel] = useState<ExecutionMetrics | null>(null);
+  const { data, isLoading } = useExecutionAgainstOutcomes(snapshotId);
 
-      // Fetch objectives with their key results
-      const { data: objectives, error } = await supabase
-        .from('objectives')
-        .select(`
-          id, 
-          summary,
-          level,
-          program_increment_ids
-        `)
-        .eq('snapshot_id', snapshotId);
+  const getColorClass = (color: 'red' | 'yellow' | 'green' | 'na') => {
+    switch (color) {
+      case 'red': return 'bg-red-500';
+      case 'yellow': return 'bg-amber-500';
+      case 'green': return 'bg-green-500';
+      default: return 'bg-muted';
+    }
+  };
 
-      if (error) throw error;
-
-      // Fetch key results for these objectives
-      const objectiveIds = objectives?.map((obj: any) => obj.id) || [];
-      const { data: keyResults } = await supabase
-        .from('key_results')
-        .select('objective_id, current_value, target_value')
-        .in('objective_id', objectiveIds);
-
-      // Filter objectives relevant to selected PIs
-      const relevantObjectives = objectives?.filter((obj: any) => {
-        if (obj.level === 'strategic_goal') return true; // Strategic always included
-        const objPiIds = Array.isArray(obj.program_increment_ids) 
-          ? obj.program_increment_ids.map((id: any) => String(id)) 
-          : [];
-        return piIds.some((piId) => objPiIds.includes(piId));
-      }) || [];
-
-      // Calculate work progress and key result progress for each objective
-      const objectivesWithProgress = relevantObjectives.map((obj: any) => {
-        const objKeyResults = keyResults?.filter((kr: any) => kr.objective_id === obj.id) || [];
-        
-        // Calculate key result progress
-        const krProgress = objKeyResults.length > 0
-          ? objKeyResults.reduce((sum: number, kr: any) => {
-              const progress = kr.target_value > 0 
-                ? Math.min(1, kr.current_value / kr.target_value) 
-                : 0;
-              return sum + progress;
-            }, 0) / objKeyResults.length
-          : 0;
-
-        return {
-          ...obj,
-          key_result_progress: krProgress,
-          work_progress: krProgress, // For now, work progress = key result progress
-        };
-      });
-
-      // Calculate aggregate metrics
-      const totalObjectives = objectivesWithProgress.length;
-      const avgWorkProgress = totalObjectives > 0
-        ? objectivesWithProgress.reduce((sum: number, obj: any) => sum + (obj.work_progress || 0), 0) / totalObjectives
-        : 0;
-      const avgKRProgress = totalObjectives > 0
-        ? objectivesWithProgress.reduce((sum: number, obj: any) => sum + (obj.key_result_progress || 0), 0) / totalObjectives
-        : 0;
-
-      // Calculate gap (execution vs outcomes)
-      const gap = (avgWorkProgress - avgKRProgress) * 100;
-
-      return {
-        totalObjectives,
-        avgWorkProgress: Math.round(avgWorkProgress * 100),
-        avgKRProgress: Math.round(avgKRProgress * 100),
-        gap: Math.round(gap),
-        topObjectives: objectivesWithProgress
-          .sort((a: any, b: any) => (b.key_result_progress || 0) - (a.key_result_progress || 0))
-          .slice(0, 5),
-      };
-    },
-    enabled: !!snapshotId && piIds.length > 0,
-  });
+  const getColorText = (color: 'red' | 'yellow' | 'green' | 'na') => {
+    switch (color) {
+      case 'red': return 'text-red-700';
+      case 'yellow': return 'text-amber-700';
+      case 'green': return 'text-green-700';
+      default: return 'text-muted-foreground';
+    }
+  };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Execution Against Outcomes</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-24 w-full" />
+    <>
+      <Card className="h-full">
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Target className="h-4 w-4 text-brand-gold" />
+              Execution Against Outcomes
+            </CardTitle>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="left" className="max-w-xs">
+                  <p className="text-xs">
+                    Shows the percentage of aligned execution items (Epics) that are in accepted/completed status,
+                    grouped by objective level. Click a row for detailed drilldown.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
-        ) : !executionData ? (
-          <div className="text-center py-6 text-sm text-muted-foreground">
-            No data available
+          {/* Legend */}
+          <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-red-500" />
+              <span>≤39%</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              <span>40-69%</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-2 h-2 rounded-full bg-green-500" />
+              <span>≥70%</span>
+            </div>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {/* Summary Metrics */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Work Progress</div>
-                <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold">{executionData.avgWorkProgress}%</div>
-                  <Badge variant="outline" className="text-xs">
-                    {executionData.totalObjectives} OKRs
-                  </Badge>
-                </div>
-                <Progress value={executionData.avgWorkProgress} className="h-2" />
-              </div>
-
-              <div className="space-y-1">
-                <div className="text-xs text-muted-foreground">Key Results</div>
-                <div className="flex items-center gap-2">
-                  <div className="text-2xl font-bold">{executionData.avgKRProgress}%</div>
-                  {executionData.gap > 5 ? (
-                    <TrendingUp className="h-4 w-4 text-success" />
-                  ) : executionData.gap < -5 ? (
-                    <TrendingDown className="h-4 w-4 text-destructive" />
-                  ) : null}
-                </div>
-                <Progress value={executionData.avgKRProgress} className="h-2" />
-              </div>
-            </div>
-
-            {/* Gap Indicator */}
-            <div className="rounded-lg bg-muted/50 p-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium">Execution Gap</span>
-                <span className={`text-sm font-bold ${
-                  executionData.gap > 5 ? 'text-success' : 
-                  executionData.gap < -5 ? 'text-destructive' : 
-                  'text-muted-foreground'
-                }`}>
-                  {executionData.gap > 0 ? '+' : ''}{executionData.gap}%
-                </span>
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {Math.abs(executionData.gap) < 5 ? 'Aligned' : 
-                 executionData.gap > 0 ? 'Work ahead of outcomes' : 
-                 'Outcomes ahead of work'}
-              </div>
-            </div>
-
-            {/* Top Objectives */}
-            <div className="space-y-2">
-              <div className="text-xs font-medium">Top Performing OKRs</div>
-              {executionData.topObjectives.map((obj: any) => (
-                <div key={obj.id} className="flex items-center justify-between text-xs">
-                  <span className="truncate flex-1">{obj.summary}</span>
-                  <Badge variant="outline" className="text-[10px] ml-2">
-                    {Math.round((obj.key_result_progress || 0) * 100)}%
-                  </Badge>
-                </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          {isLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3, 4].map((i) => (
+                <Skeleton key={i} className="h-12 w-full" />
               ))}
             </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          ) : !data || !snapshotId ? (
+            <div className="text-center py-8 text-sm text-muted-foreground">
+              <AlertCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
+              Select a snapshot to view execution metrics
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {data.metrics.map((metric) => (
+                <button
+                  key={metric.level}
+                  onClick={() => setSelectedLevel(metric)}
+                  className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:border-brand-gold/50 hover:bg-muted/30 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    {/* Color indicator */}
+                    <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(metric.color)}`} />
+                    
+                    {/* Level name */}
+                    <span className="text-sm font-medium truncate">{metric.levelLabel}</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {/* Percentage */}
+                    {metric.color === 'na' ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="outline" className="text-xs">N/A</Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">No aligned execution items</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <span className={`text-sm font-bold ${getColorText(metric.color)}`}>
+                        {metric.percentage}%
+                      </span>
+                    )}
+
+                    {/* Mini progress bar */}
+                    <div className="w-16 h-2 bg-muted rounded-full overflow-hidden hidden sm:block">
+                      <div
+                        className={`h-full transition-all ${getColorClass(metric.color)}`}
+                        style={{ width: `${metric.percentage}%` }}
+                      />
+                    </div>
+
+                    {/* Counts */}
+                    <Badge variant="outline" className="text-[10px] font-normal">
+                      {metric.alignedAccepted}/{metric.alignedTotal}
+                    </Badge>
+
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Drilldown Drawer */}
+      <ExecutionDrilldownDrawer
+        open={!!selectedLevel}
+        onClose={() => setSelectedLevel(null)}
+        level={selectedLevel}
+        snapshotId={snapshotId}
+      />
+    </>
   );
 }
