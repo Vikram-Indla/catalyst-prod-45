@@ -73,15 +73,15 @@ export function GoalDrawer({ open, onOpenChange, goal, isArchived }: GoalDrawerP
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-[420px] sm:max-w-[420px]">
-          <SheetHeader className="pb-4 border-b border-border">
+        <SheetContent width="wide" className="overflow-hidden flex flex-col">
+          <SheetHeader className="pb-4 border-b border-border px-6">
             <div className="flex items-center gap-3">
               <Flag className="h-5 w-5 text-green-600" />
               <SheetTitle className="text-lg">Goal Details</SheetTitle>
             </div>
           </SheetHeader>
 
-          <div className="py-6 space-y-5">
+          <div className="flex-1 overflow-y-auto py-6 px-6 space-y-5">
             <div className="space-y-2">
               <Label>Goal Name *</Label>
               <Input
@@ -92,14 +92,16 @@ export function GoalDrawer({ open, onOpenChange, goal, isArchived }: GoalDrawerP
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 overflow-hidden">
               <Label>Description</Label>
-              <ConfluenceEditor
-                content={description}
-                onChange={setDescription}
-                editable={!isArchived}
-                placeholder="Enter goal description"
-              />
+              <div className="overflow-x-auto">
+                <ConfluenceEditor
+                  content={description}
+                  onChange={setDescription}
+                  editable={!isArchived}
+                  placeholder="Enter goal description"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -169,7 +171,7 @@ export function GoalDrawer({ open, onOpenChange, goal, isArchived }: GoalDrawerP
             )}
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t border-border">
+          <div className="flex items-center justify-between pt-4 border-t border-border px-6 pb-4 mt-auto shrink-0">
             {!isArchived && (
               <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => setDeleteOpen(true)}>
                 <Trash2 className="h-4 w-4 mr-1" />

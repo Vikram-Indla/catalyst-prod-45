@@ -92,7 +92,7 @@ export function CreateStrategyObjectDialog({ open, onOpenChange, type, snapshotI
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
             {getIcon()}
@@ -100,7 +100,7 @@ export function CreateStrategyObjectDialog({ open, onOpenChange, type, snapshotI
           </div>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
           <div className="space-y-2">
             <Label>Title *</Label>
             <Input
