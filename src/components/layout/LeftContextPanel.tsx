@@ -112,33 +112,10 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
     }
   }, [location.pathname]);
 
-  // More items sub-menu for Enterprise with module codes
+  // More items sub-menu for Enterprise - simplified to only Risks and Capacity & Planning
   const allMoreItemsSubMenu = [
-    { id: 'ideation', label: 'Ideation', path: '/enterprise/ideation', moduleCode: 'ENTERPRISE' },
-    { id: 'brainstorming', label: 'Brainstorming', path: '/enterprise/brainstorming', moduleCode: 'ENTERPRISE' },
-    { id: 'innovation', label: 'Innovation', path: '/enterprise/innovation', moduleCode: 'ENTERPRISE' },
-    { id: 'canvas', label: 'Canvas (labs)', path: '/enterprise/canvas', moduleCode: 'ENTERPRISE' },
-    { id: 'mind-maps', label: 'Mind maps', path: '/enterprise/mind-maps', moduleCode: 'ENTERPRISE' },
-    { id: 'competitors', label: 'Competitors', path: '/enterprise/competitors', moduleCode: 'ENTERPRISE' },
-    { id: 'goals', label: 'Goals', path: '/enterprise/goals', moduleCode: 'ENTERPRISE' },
-    { id: 'vision', label: 'Vision', path: '/enterprise/vision', moduleCode: 'ENTERPRISE' },
-    { id: 'personas', label: 'Personas', path: '/enterprise/personas', moduleCode: 'ENTERPRISE' },
-    
     { id: 'risks', label: 'Risks', path: '/risks', moduleCode: 'PORTFOLIO' },
-    { id: 'impediments', label: 'Impediments', path: '/enterprise/impediments', moduleCode: 'TEAM' },
-    { id: 'kanban-boards', label: 'Kanban Boards', path: '/enterprise/kanban-boards', moduleCode: 'ENTERPRISE' },
-    { id: 'skills-inventory', label: 'Skills Inventory', path: '/enterprise/skills-inventory', moduleCode: 'ENTERPRISE' },
-    { id: 'epics', label: 'Epics', path: '/enterprise/epics', moduleCode: 'PORTFOLIO' },
-    { id: 'features', label: 'Features', path: '/enterprise/features', moduleCode: 'PROGRAM' },
-    { id: 'stories', label: 'Stories', path: '/enterprise/stories', moduleCode: 'TEAM' },
-    { id: 'defects', label: 'Defects', path: '/enterprise/defects', moduleCode: 'TEAM' },
-    { id: 'tasks', label: 'Tasks', path: '/enterprise/tasks', moduleCode: 'TEAM' },
-    { id: 'objectives', label: 'Objectives', path: '/enterprise/objectives', moduleCode: 'ENTERPRISE' },
-    { id: 'dependencies', label: 'Dependencies', path: '/enterprise/dependencies', moduleCode: 'PROGRAM' },
-    { id: 'sprints', label: 'Sprints', path: '/enterprise/sprints', moduleCode: 'TEAM' },
-    { id: 'program-increments', label: 'Program Increments', path: '/enterprise/program-increments', moduleCode: 'PROGRAM' },
-    { id: 'release-vehicles', label: 'Release Vehicles', path: '/enterprise/release-vehicles', moduleCode: 'PROGRAM' },
-    { id: 'success-criteria', label: 'Success Criteria', path: '/enterprise/success-criteria', moduleCode: 'ENTERPRISE' },
+    { id: 'capacity-planning', label: 'Capacity & Planning', path: '/capacity-planning', moduleCode: 'ENTERPRISE' },
   ];
 
   // Filter items based on enabled modules
