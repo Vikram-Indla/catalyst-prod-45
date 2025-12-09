@@ -162,37 +162,29 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
                 if (item.hasDropdown) {
                   const isDropdownOpen = activeDropdown === item.label;
                   
-                  const renderDropdownContent = () => {
-                    if (!isDropdownOpen) return null;
-                    
-                    return (
-                      <div style={{ 
-                        background: '#FFFFFF', 
-                        borderRadius: '3px', 
-                        boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
-                      }}>
-                        {item.label === "Demand" && (
-                          <DemandSelectorDropdown 
-                            onClose={() => setActiveDropdown(null)} 
-                          />
-                        )}
-                        {item.label === "Program" && (
+                  const getDropdownContent = () => {
+                    switch (item.label) {
+                      case "Demand":
+                        return <DemandSelectorDropdown onClose={() => setActiveDropdown(null)} />;
+                      case "Program":
+                        return (
                           <ProgramSelectorDropdown 
                             onClose={() => setActiveDropdown(null)} 
                             onCreateClick={() => setCreateDialogType('program')}
                           />
-                        )}
-                        {item.label === "Project" && (
+                        );
+                      case "Project":
+                        return (
                           <ProjectSelectorDropdown 
                             onClose={() => setActiveDropdown(null)} 
                             onCreateClick={() => setCreateDialogType('project')}
                           />
-                        )}
-                        {item.label === "Release" && (
-                          <ReleaseDropdown onClose={() => setActiveDropdown(null)} />
-                        )}
-                      </div>
-                    );
+                        );
+                      case "Release":
+                        return <ReleaseDropdown onClose={() => setActiveDropdown(null)} />;
+                      default:
+                        return null;
+                    }
                   };
                   
                   return (
@@ -201,7 +193,7 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
                       isOpen={isDropdownOpen}
                       onClose={() => setActiveDropdown(null)}
                       placement="bottom-start"
-                      content={renderDropdownContent}
+                      content={getDropdownContent}
                       trigger={(triggerProps) => (
                         <button
                           ref={triggerProps.ref as React.Ref<HTMLButtonElement>}
