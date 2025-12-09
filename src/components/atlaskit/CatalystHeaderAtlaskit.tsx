@@ -30,6 +30,7 @@ import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
 import { catalystToast } from "@/lib/catalystToast";
 import { MobileNavigationMenu } from "@/components/ja/MobileNavigationMenu";
 import { UnifiedCreateModal, CreateType } from "./UnifiedCreateModal";
+import { CreateWorkItemModal } from "./CreateWorkItemModal";
 
 export function CatalystHeaderAtlaskit() {
   const navigate = useNavigate();
@@ -43,6 +44,7 @@ export function CatalystHeaderAtlaskit() {
   const activeNavItem = getActiveNavItem(workspaceType);
   const [createDialogType, setCreateDialogType] = useState<'program' | 'project' | 'product' | null>(null);
   const [isUnifiedCreateOpen, setIsUnifiedCreateOpen] = useState(false);
+  const [isWorkItemModalOpen, setIsWorkItemModalOpen] = useState(false);
 
   const handleUnifiedCreateSelect = (type: CreateType) => {
     console.log('[CatalystHeader] handleUnifiedCreateSelect called with type:', type);
@@ -54,16 +56,14 @@ export function CatalystHeaderAtlaskit() {
         setCreateDialogType('project');
         break;
       case 'issue':
+        // Open the Work Item creation modal
+        setIsWorkItemModalOpen(true);
+        break;
       case 'epic':
+        navigate('/items/epics/new');
+        break;
       case 'release':
-        // Navigate to respective create pages or show respective modals
-        if (type === 'issue') {
-          navigate('/items/stories/new');
-        } else if (type === 'epic') {
-          navigate('/items/epics/new');
-        } else if (type === 'release') {
-          navigate('/release/vehicles/new');
-        }
+        navigate('/release/vehicles/new');
         break;
     }
   };
@@ -489,6 +489,12 @@ export function CatalystHeaderAtlaskit() {
           onSuccess={handleCreateSuccess}
         />
       )}
+
+      {/* Create Work Item Modal */}
+      <CreateWorkItemModal
+        isOpen={isWorkItemModalOpen}
+        onClose={() => setIsWorkItemModalOpen(false)}
+      />
     </>
   );
 }
