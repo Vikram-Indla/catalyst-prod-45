@@ -53,9 +53,12 @@ export function UnifiedCreateModal({
   onClose,
   onSelectType,
 }: UnifiedCreateModalProps) {
-  const handleOptionClick = (type: CreateType) => {
+  const handleOptionClick = (e: React.MouseEvent, type: CreateType) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Option clicked:', type);
     onSelectType(type);
-    setTimeout(() => onClose(), 0);
+    setTimeout(() => onClose(), 100);
   };
 
   return (
@@ -74,6 +77,8 @@ export function UnifiedCreateModal({
           <ModalBody>
             <p style={{
               fontSize: '14px',
+              fontWeight: 400,
+              lineHeight: '20px',
               color: token('color.text.subtlest', '#6B778C'),
               margin: `0 0 ${token('space.200', '16px')} 0`,
             }}>
@@ -86,7 +91,8 @@ export function UnifiedCreateModal({
                 return (
                   <button
                     key={option.id}
-                    onClick={() => handleOptionClick(option.id)}
+                    type="button"
+                    onClick={(e) => handleOptionClick(e, option.id)}
                     style={{
                       display: 'flex',
                       alignItems: 'flex-start',
@@ -130,6 +136,7 @@ export function UnifiedCreateModal({
                       <div style={{
                         fontSize: '14px',
                         fontWeight: 600,
+                        lineHeight: '20px',
                         color: token('color.text', '#172B4D'),
                         marginBottom: token('space.050', '4px'),
                       }}>
@@ -137,8 +144,9 @@ export function UnifiedCreateModal({
                       </div>
                       <div style={{
                         fontSize: '12px',
-                        color: token('color.text.subtlest', '#6B778C'),
+                        fontWeight: 400,
                         lineHeight: '16px',
+                        color: token('color.text.subtlest', '#6B778C'),
                       }}>
                         {option.description}
                       </div>
