@@ -1,5 +1,5 @@
-import { HomeContent } from "@/components/ja/HomeContent";
+import HomeScreen from "@/components/atlaskit/HomeScreen";
 
 export default function Home() {
-  return <HomeContent />;
+  return <HomeScreen />;
 }
