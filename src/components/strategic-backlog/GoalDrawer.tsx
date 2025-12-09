@@ -31,7 +31,7 @@ interface GoalDrawerProps {
 export function GoalDrawer({ open, onOpenChange, goal, isArchived }: GoalDrawerProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [healthStatus, setHealthStatus] = useState<'GREEN' | 'AMBER' | 'RED'>('GREEN');
+  const [healthStatus, setHealthStatus] = useState<'green' | 'amber' | 'red'>('green');
   const [completePercent, setCompletePercent] = useState(0);
   const [status, setStatus] = useState('active');
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -43,7 +43,7 @@ export function GoalDrawer({ open, onOpenChange, goal, isArchived }: GoalDrawerP
     if (goal) {
       setTitle(goal.title);
       setDescription(goal.description || '');
-      setHealthStatus((goal.health_status as 'GREEN' | 'AMBER' | 'RED') || 'GREEN');
+      setHealthStatus((goal.health_status as 'green' | 'amber' | 'red') || 'green');
       setCompletePercent(goal.complete_percent || 0);
       setStatus(goal.status || 'active');
     }
@@ -111,19 +111,19 @@ export function GoalDrawer({ open, onOpenChange, goal, isArchived }: GoalDrawerP
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="GREEN">
+                  <SelectItem value="green">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
                       On Track
                     </div>
                   </SelectItem>
-                  <SelectItem value="AMBER">
+                  <SelectItem value="amber">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
                       At Risk
                     </div>
                   </SelectItem>
-                  <SelectItem value="RED">
+                  <SelectItem value="red">
                     <div className="flex items-center gap-2">
                       <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
                       Off Track

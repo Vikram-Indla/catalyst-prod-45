@@ -41,7 +41,7 @@ export interface StrategicGoal {
   title: string;
   description?: string;
   owner_id?: string;
-  health_status?: 'GREEN' | 'AMBER' | 'RED';
+  health_status?: 'green' | 'amber' | 'red';
   complete_percent?: number;
   score?: number;
   status?: string;
@@ -103,7 +103,7 @@ export interface CreateGoalInput {
   title: string;
   description?: string;
   owner_id?: string;
-  health_status?: 'GREEN' | 'AMBER' | 'RED';
+  health_status?: 'green' | 'amber' | 'red';
   complete_percent?: number;
   status?: string;
   snapshot_id?: string;

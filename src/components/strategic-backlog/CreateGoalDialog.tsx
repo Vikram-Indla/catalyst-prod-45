@@ -17,7 +17,7 @@ interface CreateGoalDialogProps {
 export function CreateGoalDialog({ open, onOpenChange, snapshotId }: CreateGoalDialogProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [healthStatus, setHealthStatus] = useState<'GREEN' | 'AMBER' | 'RED'>('GREEN');
+  const [healthStatus, setHealthStatus] = useState<'green' | 'amber' | 'red'>('green');
 
   const createGoal = useCreateGoal();
   const upsertLinks = useUpsertSnapshotLinks();
@@ -45,7 +45,7 @@ export function CreateGoalDialog({ open, onOpenChange, snapshotId }: CreateGoalD
 
     setTitle('');
     setDescription('');
-    setHealthStatus('GREEN');
+    setHealthStatus('green');
     onOpenChange(false);
   };
 
@@ -86,19 +86,19 @@ export function CreateGoalDialog({ open, onOpenChange, snapshotId }: CreateGoalD
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="GREEN">
+                <SelectItem value="green">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
                     On Track
                   </div>
                 </SelectItem>
-                <SelectItem value="AMBER">
+                <SelectItem value="amber">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
                     At Risk
                   </div>
                 </SelectItem>
-                <SelectItem value="RED">
+                <SelectItem value="red">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
                     Off Track

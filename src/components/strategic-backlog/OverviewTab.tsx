@@ -131,13 +131,13 @@ export function OverviewTab({ missions, visions, values, goals, themes, links, i
             <p className="text-xs text-muted-foreground uppercase tracking-wider">Goals by Health</p>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700">
-                {goals.filter(g => g.health_status === 'GREEN').length}
+                {goals.filter(g => g.health_status === 'green').length}
               </span>
               <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
-                {goals.filter(g => g.health_status === 'AMBER').length}
+                {goals.filter(g => g.health_status === 'amber').length}
               </span>
               <span className="text-xs px-1.5 py-0.5 rounded bg-red-100 text-red-700">
-                {goals.filter(g => g.health_status === 'RED').length}
+                {goals.filter(g => g.health_status === 'red').length}
               </span>
             </div>
           </div>
