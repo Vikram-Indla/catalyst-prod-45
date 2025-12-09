@@ -1,13 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { token } from '@atlaskit/tokens';
+import Modal, {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTransition,
+} from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
 
 export type EntityType = 'program' | 'project' | 'product';
 
@@ -45,28 +51,20 @@ const entityConfig = {
   },
 };
 
-// Generate a key from the name (uppercase, first letters or abbreviation)
 function generateKey(name: string): string {
   if (!name.trim()) return '';
-  
   const words = name.trim().split(/\s+/);
   if (words.length === 1) {
-    // Single word: take first 3-4 characters
     return words[0].substring(0, 4).toUpperCase();
   }
-  // Multiple words: take first letter of each (up to 4)
-  return words
-    .slice(0, 4)
-    .map(w => w[0])
-    .join('')
-    .toUpperCase();
+  return words.slice(0, 4).map(w => w[0]).join('').toUpperCase();
 }
 
-export function CreateEntityDialog({ 
-  open, 
-  onOpenChange, 
+export function CreateEntityDialog({
+  open,
+  onOpenChange,
   entityType,
-  onSuccess 
+  onSuccess,
 }: CreateEntityDialogProps) {
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
@@ -77,14 +75,12 @@ export function CreateEntityDialog({
 
   const config = entityConfig[entityType];
 
-  // Auto-generate key from name unless manually edited
   useEffect(() => {
     if (!keyManuallyEdited) {
       setKey(generateKey(name));
     }
   }, [name, keyManuallyEdited]);
 
-  // Reset form when dialog opens
   useEffect(() => {
     if (open) {
       setName('');
@@ -97,6 +93,10 @@ export function CreateEntityDialog({
   const handleKeyChange = (value: string) => {
     setKey(value.toUpperCase().replace(/[^A-Z0-9]/g, ''));
     setKeyManuallyEdited(true);
+  };
+
+  const handleClose = () => {
+    onOpenChange(false);
   };
 
   const handleCreate = async () => {
@@ -112,7 +112,7 @@ export function CreateEntityDialog({
     setIsCreating(true);
     try {
       let result: { id: string; name: string } | null = null;
-      
+
       if (entityType === 'product') {
         const { data, error } = await supabase
           .from('business_lines')
@@ -130,47 +130,34 @@ export function CreateEntityDialog({
       } else if (entityType === 'program') {
         const { data, error } = await supabase
           .from('portfolios')
-          .insert({
-            name: name.trim(),
-          })
+          .insert({ name: name.trim() })
           .select()
           .single();
         if (error) throw error;
         result = data;
       } else {
-        // project - needs portfolio_id (NOT NULL constraint)
-        // First check if a portfolio (Program) exists
         const { data: portfolios } = await supabase
           .from('portfolios')
           .select('id')
           .limit(1);
-        
+
         let portfolioId = portfolios?.[0]?.id;
-        
-        // If no portfolio (Program) exists, create a default one automatically
+
         if (!portfolioId) {
           const { data: newPortfolio, error: portfolioError } = await supabase
             .from('portfolios')
-            .insert({
-              name: 'Default Project',  // User-facing: Project's default parent
-            })
+            .insert({ name: 'Default Project' })
             .select()
             .single();
-          
           if (portfolioError) throw portfolioError;
           portfolioId = newPortfolio.id;
-          
-          // Invalidate program queries so the new program appears
           queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
           queryClient.invalidateQueries({ queryKey: ['programs-header'] });
         }
-        
+
         const { data, error } = await supabase
           .from('programs')
-          .insert({
-            name: name.trim(),
-            portfolio_id: portfolioId,
-          })
+          .insert({ name: name.trim(), portfolio_id: portfolioId })
           .select()
           .single();
         if (error) throw error;
@@ -179,7 +166,6 @@ export function CreateEntityDialog({
 
       if (!result) throw new Error('No data returned');
 
-      // Invalidate relevant queries
       config.queryKeys.forEach(qk => {
         queryClient.invalidateQueries({ queryKey: [qk] });
       });
@@ -197,90 +183,108 @@ export function CreateEntityDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] bg-white">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">{config.title}</DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            {config.description}
-          </DialogDescription>
-        </DialogHeader>
-        
-        <div className="space-y-5 py-4">
-          {/* Name Field */}
-          <div className="space-y-2">
-            <Label htmlFor="entity-name" className="text-sm font-medium">
-              Name <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="entity-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={config.namePlaceholder}
-              className="h-10"
-              autoFocus
+    <ModalTransition>
+      {open && (
+        <Modal onClose={handleClose} width="medium">
+          <ModalHeader>
+            <ModalTitle>{config.title}</ModalTitle>
+            <Button
+              appearance="subtle"
+              iconBefore={<CrossIcon label="Close" size="small" />}
+              onClick={handleClose}
             />
-          </div>
+          </ModalHeader>
 
-          {/* Key Field */}
-          <div className="space-y-2">
-            <Label htmlFor="entity-key" className="text-sm font-medium">
-              Key <span className="text-destructive">*</span>
-            </Label>
-            <Input
-              id="entity-key"
-              value={key}
-              onChange={(e) => handleKeyChange(e.target.value)}
-              placeholder={config.keyPlaceholder}
-              className="h-10 font-mono uppercase"
-              maxLength={10}
-            />
-            <p className="text-xs text-muted-foreground">
-              This key will be used as a prefix for work items (e.g., {key || 'KEY'}-123)
+          <ModalBody>
+            <p style={{
+              fontSize: '14px',
+              color: token('color.text.subtlest', '#6B778C'),
+              margin: `0 0 ${token('space.300', '24px')} 0`,
+            }}>
+              {config.description}
             </p>
-          </div>
 
-          {/* Description Field */}
-          <div className="space-y-2">
-            <Label htmlFor="entity-description" className="text-sm font-medium">
-              Description
-            </Label>
-            <Textarea
-              id="entity-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Brief description (optional)"
-              rows={3}
-              className="resize-none"
-            />
-          </div>
-        </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
+              {/* Name */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: token('space.050', '4px'),
+                }}>
+                  Name <span style={{ color: token('color.text.danger', '#DE350B') }}>*</span>
+                </label>
+                <Textfield
+                  value={name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                  placeholder={config.namePlaceholder}
+                  autoFocus
+                />
+              </div>
 
-        {/* Footer Actions */}
-        <div className="flex justify-end gap-3 pt-2">
-          <Button 
-            variant="outline" 
-            onClick={() => onOpenChange(false)}
-            disabled={isCreating}
-          >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleCreate} 
-            disabled={isCreating || !name.trim() || !key.trim()}
-            className="bg-brand-gold hover:bg-brand-gold-hover text-white min-w-[100px]"
-          >
-            {isCreating ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Creating...
-              </>
-            ) : (
-              'Create'
-            )}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+              {/* Key */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: token('space.050', '4px'),
+                }}>
+                  Key <span style={{ color: token('color.text.danger', '#DE350B') }}>*</span>
+                </label>
+                <Textfield
+                  value={key}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleKeyChange(e.target.value)}
+                  placeholder={config.keyPlaceholder}
+                  maxLength={10}
+                />
+                <p style={{
+                  marginTop: token('space.050', '4px'),
+                  fontSize: '12px',
+                  color: token('color.text.subtlest', '#6B778C'),
+                }}>
+                  This key will be used as a prefix for work items (e.g., {key || 'KEY'}-123)
+                </p>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: token('space.050', '4px'),
+                }}>
+                  Description
+                </label>
+                <TextArea
+                  value={description}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+                  placeholder="Brief description (optional)"
+                  minimumRows={3}
+                />
+              </div>
+            </div>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button appearance="subtle" onClick={handleClose} isDisabled={isCreating}>
+              Cancel
+            </Button>
+            <Button
+              appearance="primary"
+              onClick={handleCreate}
+              isDisabled={isCreating || !name.trim() || !key.trim()}
+            >
+              {isCreating ? 'Creating...' : 'Create'}
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+    </ModalTransition>
   );
 }

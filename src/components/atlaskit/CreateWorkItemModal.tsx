@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { token } from '@atlaskit/tokens';
+import Modal, {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTransition,
+} from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import Textfield from '@atlaskit/textfield';
+import TextArea from '@atlaskit/textarea';
+import Select from '@atlaskit/select';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import WarningIcon from '@atlaskit/icon/glyph/warning';
 import { useCatalystContextOptional } from '@/contexts/CatalystContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -45,23 +41,34 @@ const workTypesBySpace: Record<string, Array<{ label: string; value: string; ico
   ],
 };
 
+const statusOptions = [
+  { label: 'In Requirements', value: 'in-requirements' },
+  { label: 'To Do', value: 'to-do' },
+  { label: 'In Progress', value: 'in-progress' },
+];
+
+const priorityOptions = [
+  { label: 'Highest', value: 'highest' },
+  { label: 'High', value: 'high' },
+  { label: 'Medium', value: 'medium' },
+  { label: 'Low', value: 'low' },
+];
+
 export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProps) {
   const context = useCatalystContextOptional();
   const workspaceType = context?.workspaceType;
   const programId = context?.programId;
   const projectId = context?.projectId;
-  const programName = context?.programName;
-  const projectName = context?.projectName;
-  
-  const [selectedSpace, setSelectedSpace] = useState<string>('');
-  const [selectedWorkType, setSelectedWorkType] = useState<string>('story');
+
+  const [selectedSpace, setSelectedSpace] = useState<SpaceOption | null>(null);
+  const [selectedWorkType, setSelectedWorkType] = useState<{ label: string; value: string; icon: string } | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState(statusOptions[0]);
+  const [selectedPriority, setSelectedPriority] = useState(priorityOptions[2]);
   const [summary, setSummary] = useState('');
   const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('in-requirements');
-  const [priority, setPriority] = useState('medium');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch programs (stored in portfolios table)
+  // Fetch programs
   const { data: programs = [] } = useQuery({
     queryKey: ['programs-for-create'],
     queryFn: async () => {
@@ -74,7 +81,7 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
     },
   });
 
-  // Fetch projects (stored in programs table)
+  // Fetch projects
   const { data: projects = [] } = useQuery({
     queryKey: ['projects-for-create'],
     queryFn: async () => {
@@ -87,8 +94,8 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
     },
   });
 
-  // Build space options from real data
-  const allSpaces: SpaceOption[] = [
+  // Build space options
+  const spaceOptions: SpaceOption[] = [
     ...programs.map(p => ({
       label: p.name,
       value: `program-${p.id}`,
@@ -104,44 +111,33 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
     })),
   ];
 
-  // Pre-select space based on current context when modal opens
+  // Pre-select based on context
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && spaceOptions.length > 0) {
+      let defaultSpace: SpaceOption | undefined;
       if (workspaceType === 'program' && programId) {
-        setSelectedSpace(`program-${programId}`);
-        setSelectedWorkType('epic');
+        defaultSpace = spaceOptions.find(s => s.value === `program-${programId}`);
       } else if (workspaceType === 'project' && projectId) {
-        setSelectedSpace(`project-${projectId}`);
-        setSelectedWorkType('story');
-      } else {
-        // Default to first available space
-        if (allSpaces.length > 0) {
-          const firstSpace = allSpaces[0];
-          setSelectedSpace(firstSpace.value);
-          setSelectedWorkType(firstSpace.type === 'program' ? 'epic' : 'story');
-        }
+        defaultSpace = spaceOptions.find(s => s.value === `project-${projectId}`);
       }
+      if (!defaultSpace) defaultSpace = spaceOptions[0];
+
+      setSelectedSpace(defaultSpace);
+      const workTypes = workTypesBySpace[defaultSpace.type];
+      setSelectedWorkType(workTypes[0]);
     }
-  }, [isOpen, workspaceType, programId, projectId, allSpaces.length]);
+  }, [isOpen, spaceOptions.length]);
 
-  const selectedSpaceData = allSpaces.find(s => s.value === selectedSpace);
-  const spaceType = selectedSpaceData?.type || 'project';
-  const workTypes = workTypesBySpace[spaceType] || workTypesBySpace.project;
-  const selectedWorkTypeData = workTypes.find(w => w.value === selectedWorkType);
-
-  const handleSpaceChange = (value: string) => {
-    setSelectedSpace(value);
-    const space = allSpaces.find(s => s.value === value);
-    if (space?.type === 'program') {
-      setSelectedWorkType('epic');
-    } else {
-      setSelectedWorkType('story');
+  const handleSpaceChange = (option: SpaceOption | null) => {
+    setSelectedSpace(option);
+    if (option) {
+      const workTypes = workTypesBySpace[option.type];
+      setSelectedWorkType(workTypes[0]);
     }
   };
 
   const handleSubmit = async () => {
     if (!selectedSpace || !summary.trim()) return;
-    
     setIsSubmitting(true);
     try {
       console.log('Creating work item:', {
@@ -149,10 +145,9 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
         workType: selectedWorkType,
         summary,
         description,
-        status,
-        priority,
+        status: selectedStatus,
+        priority: selectedPriority,
       });
-      // TODO: Implement actual creation logic
       handleClose();
     } catch (error) {
       console.error('Error creating work item:', error);
@@ -162,193 +157,251 @@ export function CreateWorkItemModal({ isOpen, onClose }: CreateWorkItemModalProp
   };
 
   const handleClose = () => {
-    setSelectedSpace('');
-    setSelectedWorkType('story');
+    setSelectedSpace(null);
+    setSelectedWorkType(null);
     setSummary('');
     setDescription('');
-    setStatus('in-requirements');
-    setPriority('medium');
+    setSelectedStatus(statusOptions[0]);
+    setSelectedPriority(priorityOptions[2]);
     onClose();
   };
 
+  const workTypes = selectedSpace ? workTypesBySpace[selectedSpace.type] : [];
+
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-semibold text-[#172B4D]">
-            Create {selectedWorkTypeData?.label || 'Story'}
-          </DialogTitle>
-        </DialogHeader>
-
-        <div className="space-y-4 py-4">
-          <p className="text-xs text-[#5E6C84]">
-            Required fields are marked with an asterisk *
-          </p>
-
-          {/* Space */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-[#172B4D]">
-              Space <span className="text-red-500">*</span>
-            </Label>
-            <Select value={selectedSpace} onValueChange={handleSpaceChange}>
-              <SelectTrigger className="h-10">
-                <SelectValue placeholder="Select space..." />
-              </SelectTrigger>
-              <SelectContent>
-                {programs.length > 0 && (
-                  <>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-[#5E6C84]">Programs</div>
-                    {allSpaces.filter(s => s.type === 'program').map((space) => (
-                      <SelectItem key={space.value} value={space.value}>
-                        <span className="flex items-center gap-2">
-                          <span>{space.icon}</span>
-                          <span>{space.label}</span>
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </>
-                )}
-                {projects.length > 0 && (
-                  <>
-                    <div className="px-2 py-1.5 text-xs font-semibold text-[#5E6C84] border-t mt-1 pt-2">Projects</div>
-                    {allSpaces.filter(s => s.type === 'project').map((space) => (
-                      <SelectItem key={space.value} value={space.value}>
-                        <span className="flex items-center gap-2">
-                          <span>{space.icon}</span>
-                          <span>{space.label}</span>
-                        </span>
-                      </SelectItem>
-                    ))}
-                  </>
-                )}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Program info for projects */}
-          {selectedSpaceData?.type === 'project' && selectedSpaceData.programName && (
-            <div className="p-3 bg-[#F4F5F7] rounded">
-              <div className="text-xs font-semibold text-[#5E6C84] mb-1">Program</div>
-              <div className="text-sm text-[#172B4D]">{selectedSpaceData.programName}</div>
-            </div>
-          )}
-
-          {/* Work Type */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-[#172B4D]">
-              Work type <span className="text-red-500">*</span>
-            </Label>
-            <Select value={selectedWorkType} onValueChange={setSelectedWorkType}>
-              <SelectTrigger className="h-10">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {workTypes.map((type) => (
-                  <SelectItem key={type.value} value={type.value}>
-                    <span className="flex items-center gap-2">
-                      <span>{type.icon}</span>
-                      <span>{type.label}</span>
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <a href="#" className="text-xs text-[#0052CC] hover:underline">
-              Learn about work types ↗
-            </a>
-          </div>
-
-          {/* Status */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-[#172B4D]">Status</Label>
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="h-10">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="in-requirements">In Requirements</SelectItem>
-                <SelectItem value="to-do">To Do</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-[#5E6C84]">This is the initial status upon creation</p>
-          </div>
-
-          {/* Summary */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-[#172B4D]">
-              Summary <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              placeholder="What needs to be done?"
-              className="h-10"
-            />
-            {!summary.trim() && (
-              <p className="text-xs text-red-500 flex items-center gap-1">
-                <span>⚠</span> Summary is required
-              </p>
-            )}
-          </div>
-
-          {/* Priority */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-[#172B4D]">Priority</Label>
-            <Select value={priority} onValueChange={setPriority}>
-              <SelectTrigger className="h-10">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="highest">Highest</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="medium">= Medium</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
-              </SelectContent>
-            </Select>
-            <a href="#" className="text-xs text-[#0052CC] hover:underline">
-              Learn about priority levels ↗
-            </a>
-          </div>
-
-          {/* Description */}
-          <div className="space-y-2">
-            <Label className="text-xs font-semibold text-[#172B4D]">Description</Label>
-            <div className="border rounded-md">
-              <div className="flex gap-2 p-2 border-b bg-[#F4F5F7]">
-                <button className="text-sm font-bold px-1">B</button>
-                <button className="text-sm italic px-1">I</button>
-                <button className="text-sm px-1">...</button>
-              </div>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Type /ai for Atlassian Intelligence or @ to mention and notify someone."
-                className="min-h-[100px] border-0 focus-visible:ring-0"
-              />
-            </div>
-          </div>
-        </div>
-
-        <DialogFooter className="flex items-center justify-between sm:justify-between">
-          <label className="flex items-center gap-2 text-xs text-[#172B4D] cursor-pointer">
-            <input type="checkbox" className="rounded" />
-            Create another
-          </label>
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={handleClose}>
-              Cancel
-            </Button>
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={handleClose} width="large">
+          <ModalHeader>
+            <ModalTitle>Create {selectedWorkType?.label || 'Work Item'}</ModalTitle>
             <Button
-              onClick={handleSubmit}
-              disabled={!selectedSpace || !summary.trim() || isSubmitting}
-              className="bg-[#0052CC] hover:bg-[#0747A6] text-white"
-            >
-              {isSubmitting ? 'Creating...' : 'Create'}
-            </Button>
-          </div>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              appearance="subtle"
+              iconBefore={<CrossIcon label="Close" size="small" />}
+              onClick={handleClose}
+            />
+          </ModalHeader>
+
+          <ModalBody>
+            <p style={{
+              fontSize: '12px',
+              color: token('color.text.subtlest', '#6B778C'),
+              margin: `0 0 ${token('space.300', '24px')} 0`,
+            }}>
+              Required fields are marked with an asterisk *
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
+              {/* Space */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: token('space.050', '4px'),
+                }}>
+                  Space <span style={{ color: token('color.text.danger', '#DE350B') }}>*</span>
+                </label>
+                <Select
+                  inputId="space"
+                  value={selectedSpace}
+                  onChange={handleSpaceChange}
+                  options={spaceOptions}
+                  placeholder="Select space..."
+                  formatOptionLabel={(option: SpaceOption) => (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
+                      <span>{option.icon}</span>
+                      <span>{option.label}</span>
+                    </div>
+                  )}
+                />
+              </div>
+
+              {/* Work Type */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: token('space.050', '4px'),
+                }}>
+                  Work type <span style={{ color: token('color.text.danger', '#DE350B') }}>*</span>
+                </label>
+                <Select
+                  inputId="workType"
+                  value={selectedWorkType}
+                  onChange={(option) => setSelectedWorkType(option)}
+                  options={workTypes}
+                  formatOptionLabel={(option: any) => (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
+                      <span>{option.icon}</span>
+                      <span>{option.label}</span>
+                    </div>
+                  )}
+                />
+                <a href="#" style={{
+                  display: 'block',
+                  marginTop: token('space.050', '4px'),
+                  fontSize: '12px',
+                  color: token('color.link', '#0052CC'),
+                  textDecoration: 'none',
+                }}>
+                  Learn about work types →
+                </a>
+              </div>
+
+              {/* Status */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: token('space.050', '4px'),
+                }}>
+                  Status
+                </label>
+                <Select
+                  inputId="status"
+                  value={selectedStatus}
+                  onChange={(option) => option && setSelectedStatus(option)}
+                  options={statusOptions}
+                />
+                <p style={{
+                  marginTop: token('space.050', '4px'),
+                  fontSize: '12px',
+                  color: token('color.text.subtlest', '#6B778C'),
+                }}>
+                  This is the initial status upon creation
+                </p>
+              </div>
+
+              {/* Summary */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: token('space.050', '4px'),
+                }}>
+                  Summary <span style={{ color: token('color.text.danger', '#DE350B') }}>*</span>
+                </label>
+                <Textfield
+                  value={summary}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSummary(e.target.value)}
+                  placeholder="What needs to be done?"
+                />
+                {!summary.trim() && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: token('space.050', '4px'),
+                    marginTop: token('space.050', '4px'),
+                    fontSize: '12px',
+                    color: token('color.text.danger', '#DE350B'),
+                  }}>
+                    <WarningIcon label="Warning" size="small" primaryColor={token('color.icon.danger', '#DE350B')} />
+                    Summary is required
+                  </div>
+                )}
+              </div>
+
+              {/* Priority */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: token('space.050', '4px'),
+                }}>
+                  Priority
+                </label>
+                <Select
+                  inputId="priority"
+                  value={selectedPriority}
+                  onChange={(option) => option && setSelectedPriority(option)}
+                  options={priorityOptions}
+                />
+                <a href="#" style={{
+                  display: 'block',
+                  marginTop: token('space.050', '4px'),
+                  fontSize: '12px',
+                  color: token('color.link', '#0052CC'),
+                  textDecoration: 'none',
+                }}>
+                  Learn about priority levels →
+                </a>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: token('color.text', '#172B4D'),
+                  marginBottom: token('space.050', '4px'),
+                }}>
+                  Description
+                </label>
+                <div style={{
+                  border: `2px solid ${token('color.border.input', '#DFE1E6')}`,
+                  borderRadius: '3px',
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    gap: token('space.100', '8px'),
+                    padding: token('space.100', '8px'),
+                    borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    background: token('color.background.neutral', '#F4F5F7'),
+                  }}>
+                    <button type="button" style={{ background: 'transparent', border: 'none', fontWeight: 700, cursor: 'pointer' }}>B</button>
+                    <button type="button" style={{ background: 'transparent', border: 'none', fontStyle: 'italic', cursor: 'pointer' }}>I</button>
+                    <button type="button" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>⋯</button>
+                  </div>
+                  <TextArea
+                    value={description}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+                    placeholder="Type /ai for Atlassian Intelligence or @ to mention and notify someone."
+                    minimumRows={4}
+                  />
+                </div>
+              </div>
+            </div>
+          </ModalBody>
+
+          <ModalFooter>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+              <label style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: token('space.100', '8px'),
+                fontSize: '12px',
+                color: token('color.text', '#172B4D'),
+                cursor: 'pointer',
+              }}>
+                <input type="checkbox" />
+                Create another
+              </label>
+              <div style={{ display: 'flex', gap: token('space.100', '8px') }}>
+                <Button appearance="subtle" onClick={handleClose}>
+                  Cancel
+                </Button>
+                <Button
+                  appearance="primary"
+                  onClick={handleSubmit}
+                  isDisabled={!selectedSpace || !summary.trim() || isSubmitting}
+                >
+                  {isSubmitting ? 'Creating...' : 'Create'}
+                </Button>
+              </div>
+            </div>
+          </ModalFooter>
+        </Modal>
+      )}
+    </ModalTransition>
   );
 }

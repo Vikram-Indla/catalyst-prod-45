@@ -1,12 +1,17 @@
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Folder, LayoutGrid, BookOpen } from 'lucide-react';
+import { token } from '@atlaskit/tokens';
+import Modal, {
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle,
+  ModalTransition,
+} from '@atlaskit/modal-dialog';
+import Button from '@atlaskit/button';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import FolderIcon from '@atlaskit/icon/glyph/folder';
+import BoardIcon from '@atlaskit/icon/glyph/board';
+import BookIcon from '@atlaskit/icon/glyph/book';
 
 export type CreateType = 'program' | 'project' | 'work-item';
 
@@ -16,37 +21,30 @@ interface UnifiedCreateModalProps {
   onSelectType: (type: CreateType) => void;
 }
 
-const options: Array<{
-  type: CreateType;
-  label: string;
-  description: string;
-  Icon: typeof Folder;
-  iconColor: string;
-  iconBg: string;
-}> = [
+const createOptions = [
   {
-    type: 'program',
+    id: 'program' as CreateType,
     label: 'Program',
     description: 'Create a program to house epics',
-    Icon: Folder,
-    iconColor: '#FF991F',
-    iconBg: '#FFF0B3',
+    Icon: FolderIcon,
+    iconColor: token('color.icon.warning', '#FF991F'),
+    iconBg: token('color.background.warning', '#FFF0B3'),
   },
   {
-    type: 'project',
+    id: 'project' as CreateType,
     label: 'Project',
     description: 'Create a project linked to a program',
-    Icon: LayoutGrid,
-    iconColor: '#00B8D9',
-    iconBg: '#B3F5FF',
+    Icon: BoardIcon,
+    iconColor: token('color.icon.information', '#00B8D9'),
+    iconBg: token('color.background.information', '#B3F5FF'),
   },
   {
-    type: 'work-item',
+    id: 'work-item' as CreateType,
     label: 'Work Item',
     description: 'Create epic, feature, story, defect, etc.',
-    Icon: BookOpen,
-    iconColor: '#4C9AFF',
-    iconBg: '#DEEBFF',
+    Icon: BookIcon,
+    iconColor: token('color.icon.discovery', '#6554C0'),
+    iconBg: token('color.background.discovery', '#EAE6FF'),
   },
 ];
 
@@ -55,66 +53,109 @@ export function UnifiedCreateModal({
   onClose,
   onSelectType,
 }: UnifiedCreateModalProps) {
-  
   const handleOptionClick = (type: CreateType) => {
-    console.log('[UnifiedCreateModal] Option clicked:', type);
-    // Call onSelectType first, then close
     onSelectType(type);
-    // Use setTimeout to ensure state update happens before close
-    setTimeout(() => {
-      onClose();
-    }, 0);
+    setTimeout(() => onClose(), 0);
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-md p-0">
-        <DialogHeader className="p-4 pb-2 border-b">
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-base font-semibold text-[#172B4D]">
-              Create
-            </DialogTitle>
-          </div>
-        </DialogHeader>
+    <ModalTransition>
+      {isOpen && (
+        <Modal onClose={onClose} width="medium">
+          <ModalHeader>
+            <ModalTitle>Create</ModalTitle>
+            <Button
+              appearance="subtle"
+              iconBefore={<CrossIcon label="Close" size="small" />}
+              onClick={onClose}
+            />
+          </ModalHeader>
 
-        <div className="p-4">
-          <p className="text-sm text-[#5E6C84] mb-4">
-            What would you like to create?
-          </p>
+          <ModalBody>
+            <p style={{
+              fontSize: '14px',
+              color: token('color.text.subtlest', '#6B778C'),
+              margin: `0 0 ${token('space.200', '16px')} 0`,
+            }}>
+              What would you like to create?
+            </p>
 
-          <div className="space-y-0">
-            {options.map((option) => (
-              <button
-                key={option.type}
-                type="button"
-                onClick={() => handleOptionClick(option.type)}
-                className="w-full flex items-start gap-4 p-4 text-left hover:bg-[#F4F5F7] transition-colors border-b border-[#EBECF0] last:border-b-0"
-              >
-                <div
-                  className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: option.iconBg }}
-                >
-                  <option.Icon size={20} color={option.iconColor} />
-                </div>
-                <div className="flex-1 pt-0.5">
-                  <div className="text-sm font-semibold text-[#172B4D] mb-1">
-                    {option.label}
-                  </div>
-                  <div className="text-xs text-[#5E6C84] leading-4">
-                    {option.description}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+            <div>
+              {createOptions.map((option, index) => {
+                const Icon = option.Icon;
+                return (
+                  <button
+                    key={option.id}
+                    onClick={() => handleOptionClick(option.id)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: token('space.200', '16px'),
+                      padding: token('space.200', '16px'),
+                      background: 'transparent',
+                      border: 'none',
+                      borderBottom: index === createOptions.length - 1
+                        ? 'none'
+                        : `1px solid ${token('color.border', '#DFE1E6')}`,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      width: '100%',
+                      transition: 'background 150ms',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent';
+                    }}
+                  >
+                    <div style={{
+                      width: '40px',
+                      height: '40px',
+                      background: option.iconBg,
+                      borderRadius: '3px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}>
+                      <Icon
+                        label={option.label}
+                        size="medium"
+                        primaryColor={option.iconColor}
+                      />
+                    </div>
 
-        <div className="p-4 pt-2 border-t flex justify-end">
-          <Button variant="ghost" onClick={onClose} className="text-[#5E6C84]">
-            Cancel
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+                    <div style={{ flex: 1, paddingTop: '2px' }}>
+                      <div style={{
+                        fontSize: '14px',
+                        fontWeight: 600,
+                        color: token('color.text', '#172B4D'),
+                        marginBottom: token('space.050', '4px'),
+                      }}>
+                        {option.label}
+                      </div>
+                      <div style={{
+                        fontSize: '12px',
+                        color: token('color.text.subtlest', '#6B778C'),
+                        lineHeight: '16px',
+                      }}>
+                        {option.description}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button appearance="subtle" onClick={onClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+    </ModalTransition>
   );
 }
