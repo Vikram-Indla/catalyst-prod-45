@@ -14,12 +14,10 @@ import { Checkbox } from '@atlaskit/checkbox';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
-import { Content, LeftSidebar, Main, PageLayout, TopNavigation } from '@atlaskit/page-layout';
-import { SideNavigation, NavigationHeader, NestableNavigationContent, Section, ButtonItem } from '@atlaskit/side-navigation';
 import Avatar from '@atlaskit/avatar';
 
 // Icons
-import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Lock, Bell, Settings, Home, Briefcase, Package, Folder, Layers, Box, MoreHorizontal, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Bell, Settings, Home, Briefcase, Folder, Layers, Box, MoreHorizontal, AlertTriangle } from 'lucide-react';
 
 // Local components
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
@@ -410,43 +408,49 @@ export default function IndustryPageAtlaskit() {
   }));
 
   return (
-    <PageLayout>
-      {/* Top Navigation Bar */}
-      <TopNavigation isFixed height={56}>
-        <div style={{
-          height: '56px',
-          backgroundColor: token('elevation.surface', '#FFFFFF'),
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 16px',
-        }}>
-          {/* Left: Logo + Navigation */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-            {/* Logo */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: '32px',
-                height: '32px',
-                backgroundColor: token('color.background.brand.bold', '#0052CC'),
-                borderRadius: '4px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <Layers size={18} color="#FFFFFF" />
-              </div>
-              <span style={{ 
-                fontSize: '16px', 
-                fontWeight: 600, 
-                color: token('color.text', '#172B4D'),
-              }}>
-                Catalyst
-              </span>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100vh',
+      background: token('color.background.neutral', '#F4F5F7'),
+    }}>
+      {/* Top Navigation Bar - 56px height */}
+      <div style={{
+        height: '56px',
+        backgroundColor: token('elevation.surface', '#FFFFFF'),
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 16px',
+        flexShrink: 0,
+      }}>
+        {/* Left: Logo + Navigation */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              width: '32px',
+              height: '32px',
+              backgroundColor: token('color.background.brand.bold', '#0052CC'),
+              borderRadius: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Layers size={18} color="#FFFFFF" />
             </div>
-            
-            {/* Navigation Items */}
+            <span style={{ 
+              fontSize: '16px', 
+              fontWeight: 600, 
+              color: token('color.text', '#172B4D'),
+            }}>
+              Catalyst
+            </span>
+          </div>
+          
+          {/* Navigation Items */}
+          {!isMobile && (
             <nav style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               {[
                 { label: 'Home', isActive: false },
@@ -476,373 +480,425 @@ export default function IndustryPageAtlaskit() {
                 </button>
               ))}
             </nav>
-          </div>
-          
-          {/* Right: Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Button appearance="primary" iconBefore={<Plus size={16} />}>
-              Create
-            </Button>
-            <button style={{ 
-              padding: '8px', 
-              background: 'none', 
-              border: 'none', 
-              cursor: 'pointer',
-              borderRadius: '3px',
-              display: 'flex',
-            }}>
-              <Bell size={20} color={token('color.text.subtle', '#6B778C')} />
-            </button>
-            <button style={{ 
-              padding: '8px', 
-              background: 'none', 
-              border: 'none', 
-              cursor: 'pointer',
-              borderRadius: '3px',
-              display: 'flex',
-            }}>
-              <Settings size={20} color={token('color.text.subtle', '#6B778C')} />
-            </button>
-            <button style={{ 
-              padding: '8px', 
-              background: 'none', 
-              border: 'none', 
-              cursor: 'pointer',
-              borderRadius: '3px',
-              display: 'flex',
-            }}>
-              <Search size={20} color={token('color.text.subtle', '#6B778C')} />
-            </button>
-            <Avatar size="small" />
-          </div>
+          )}
         </div>
-      </TopNavigation>
-
-      <Content>
-        {/* Left Sidebar */}
-        <LeftSidebar isFixed width={240}>
-          <div style={{ 
-            backgroundColor: token('color.background.neutral.subtle', '#F4F5F7'),
-            height: '100%',
+        
+        {/* Right: Actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Button appearance="primary" iconBefore={<Plus size={16} />}>
+            Create
+          </Button>
+          <button style={{ 
+            padding: '8px', 
+            background: 'none', 
+            border: 'none', 
+            cursor: 'pointer',
+            borderRadius: '3px',
+            display: 'flex',
           }}>
-            <SideNavigation label="Product navigation">
-              <NavigationHeader>
+            <Bell size={20} color={token('color.text.subtle', '#6B778C')} />
+          </button>
+          <button style={{ 
+            padding: '8px', 
+            background: 'none', 
+            border: 'none', 
+            cursor: 'pointer',
+            borderRadius: '3px',
+            display: 'flex',
+          }}>
+            <Settings size={20} color={token('color.text.subtle', '#6B778C')} />
+          </button>
+          <button style={{ 
+            padding: '8px', 
+            background: 'none', 
+            border: 'none', 
+            cursor: 'pointer',
+            borderRadius: '3px',
+            display: 'flex',
+          }}>
+            <Search size={20} color={token('color.text.subtle', '#6B778C')} />
+          </button>
+          <Avatar size="small" />
+        </div>
+      </div>
+      
+      {/* Main Container with Sidebar */}
+      <div style={{
+        display: 'flex',
+        flex: 1,
+        overflow: 'hidden',
+      }}>
+        {/* Left Sidebar - 240px width */}
+        {!isMobile && (
+          <div style={{ 
+            width: '240px',
+            backgroundColor: token('color.background.neutral.subtle', '#F4F5F7'),
+            borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
+            flexShrink: 0,
+            overflow: 'auto',
+          }}>
+            {/* Sidebar Header */}
+            <div style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '12px',
+              padding: '16px',
+              borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+            }}>
+              <div style={{
+                width: '36px',
+                height: '36px',
+                backgroundColor: token('color.background.accent.blue.subtle', '#DEEBFF'),
+                borderRadius: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: token('color.text.brand', '#0052CC'),
+              }}>
+                PR
+              </div>
+              <div>
                 <div style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  gap: '12px',
-                  padding: '12px 16px',
+                  fontSize: '14px', 
+                  fontWeight: 600, 
+                  color: token('color.text', '#172B4D'),
                 }}>
-                  <div style={{
-                    width: '36px',
-                    height: '36px',
-                    backgroundColor: token('color.background.accent.blue.subtle', '#DEEBFF'),
-                    borderRadius: '4px',
+                  Product
+                </div>
+                <div style={{ 
+                  fontSize: '12px', 
+                  color: token('color.text.subtlest', '#6B778C'),
+                }}>
+                  Industry
+                </div>
+              </div>
+            </div>
+            
+            {/* Sidebar Menu */}
+            <div style={{ padding: '8px' }}>
+              {[
+                { icon: Home, label: 'Product Room', isActive: false },
+                { icon: Briefcase, label: 'Backlog', isActive: true },
+                { icon: Layers, label: 'Roadmap', isActive: false },
+                { icon: Box, label: 'Capacity', isActive: false },
+                { icon: Folder, label: 'Knowledge Hub', isActive: false },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  style={{
+                    width: '100%',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: token('color.text.brand', '#0052CC'),
-                  }}>
-                    PR
-                  </div>
-                  <div>
-                    <div style={{ 
-                      fontSize: '14px', 
-                      fontWeight: 600, 
-                      color: token('color.text', '#172B4D'),
-                    }}>
-                      Product
-                    </div>
-                    <div style={{ 
-                      fontSize: '12px', 
-                      color: token('color.text.subtlest', '#6B778C'),
-                    }}>
-                      Industry
-                    </div>
-                  </div>
-                </div>
-              </NavigationHeader>
-              <NestableNavigationContent>
-                <Section>
-                  <ButtonItem iconBefore={<Home size={16} />}>Product Room</ButtonItem>
-                  <ButtonItem iconBefore={<Briefcase size={16} />} isSelected>Backlog</ButtonItem>
-                  <ButtonItem iconBefore={<Layers size={16} />}>Roadmap</ButtonItem>
-                  <ButtonItem iconBefore={<Box size={16} />}>Capacity</ButtonItem>
-                  <ButtonItem iconBefore={<Folder size={16} />}>Knowledge Hub</ButtonItem>
-                </Section>
-                <Section hasSeparator>
-                  <ButtonItem iconBefore={<Settings size={16} />}>Product Settings</ButtonItem>
-                </Section>
-              </NestableNavigationContent>
-            </SideNavigation>
+                    gap: '12px',
+                    padding: '8px 12px',
+                    backgroundColor: item.isActive ? token('color.background.selected', '#DEEBFF') : 'transparent',
+                    color: item.isActive ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
+                    border: 'none',
+                    borderRadius: '3px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    fontWeight: item.isActive ? 500 : 400,
+                    textAlign: 'left',
+                  }}
+                >
+                  <item.icon size={16} />
+                  {item.label}
+                </button>
+              ))}
+              
+              <div style={{ 
+                borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+                marginTop: '8px',
+                paddingTop: '8px',
+              }}>
+                <button
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '8px 12px',
+                    backgroundColor: 'transparent',
+                    color: token('color.text', '#172B4D'),
+                    border: 'none',
+                    borderRadius: '3px',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    textAlign: 'left',
+                  }}
+                >
+                  <Settings size={16} />
+                  Product Settings
+                </button>
+              </div>
+            </div>
           </div>
-        </LeftSidebar>
+        )}
         
-        <Main>
-          <div style={{ 
-            minHeight: 'calc(100vh - 56px)',
-            backgroundColor: token('color.background.neutral', '#F4F5F7'),
-            padding: token('space.400', '32px'),
-            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+        {/* Main Content Area */}
+        <main style={{
+          flex: 1,
+          overflow: 'auto',
+          background: token('color.background.neutral', '#F4F5F7'),
+          padding: isMobile ? token('space.200', '16px') : token('space.400', '32px'),
+        }}>
+          {/* Page Header */}
+          <div style={{ marginBottom: token('space.300', '24px') }}>
+            <h1 style={{ 
+              fontSize: '24px', 
+              fontWeight: 500, 
+              color: token('color.text', '#172B4D'),
+              margin: 0,
+              lineHeight: '28px',
+            }}>
+              Demand Intake
+            </h1>
+            <p style={{ 
+              fontSize: '12px', 
+              color: token('color.text.subtlest', '#6B778C'),
+              margin: '4px 0 0 0',
+              lineHeight: '16px',
+            }}>
+              Industry-specific demand requests
+            </p>
+          </div>
+
+          {/* Search & Controls Bar */}
+          <div style={{
+            backgroundColor: token('elevation.surface', '#FFFFFF'),
+            padding: token('space.200', '16px'),
+            borderRadius: '3px',
+            boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
+            marginBottom: token('space.300', '24px'),
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: token('space.200', '16px'),
           }}>
-            {/* Page Header */}
-            <div style={{ marginBottom: token('space.300', '24px') }}>
-              <h1 style={{ 
-                fontSize: '24px', 
-                fontWeight: 500, 
-                color: token('color.text', '#172B4D'),
-                margin: 0,
-                lineHeight: '28px',
-              }}>
-                Demand Intake
-              </h1>
-              <p style={{ 
-                fontSize: '12px', 
-                color: token('color.text.subtlest', '#6B778C'),
-                margin: '4px 0 0 0',
-                lineHeight: '16px',
-              }}>
-                Industry-specific demand requests
-              </p>
+            {/* Left side - Search */}
+            <div style={{ position: 'relative', width: isMobile ? '100%' : '400px' }}>
+              <Search 
+                size={16} 
+                style={{ 
+                  position: 'absolute', 
+                  left: '12px', 
+                  top: '50%', 
+                  transform: 'translateY(-50%)',
+                  color: token('color.text.subtlest', '#6B778C'),
+                  pointerEvents: 'none',
+                  zIndex: 1,
+                }} 
+              />
+              <Textfield
+                placeholder="Search industry requests..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+              />
             </div>
 
-            {/* Search & Controls Bar */}
-            <div style={{
-              backgroundColor: token('elevation.surface', '#FFFFFF'),
-              padding: token('space.200', '16px'),
-              borderRadius: '3px',
-              boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
-              marginBottom: token('space.300', '24px'),
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: token('space.200', '16px'),
-            }}>
-              {/* Left side - Search */}
-              <div style={{ position: 'relative', width: '400px' }}>
-                <Search 
-                  size={16} 
-                  style={{ 
-                    position: 'absolute', 
-                    left: '12px', 
-                    top: '50%', 
-                    transform: 'translateY(-50%)',
-                    color: token('color.text.subtlest', '#6B778C'),
-                    pointerEvents: 'none',
-                    zIndex: 1,
-                  }} 
-                />
-                <Textfield
-                  placeholder="Search industry requests..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
-                />
+            {/* Right side - Controls */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px'), flexWrap: 'wrap' }}>
+              {/* View Toggle */}
+              <div style={{ 
+                display: 'flex', 
+                border: `1px solid ${token('color.border', '#DFE1E6')}`,
+                borderRadius: '3px',
+                overflow: 'hidden',
+              }}>
+                <button
+                  onClick={() => setViewMode('list')}
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    backgroundColor: viewMode === 'list' ? token('color.background.selected', '#DEEBFF') : 'transparent',
+                    color: viewMode === 'list' ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
+                    border: 'none',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <Layers size={16} />
+                  {!isMobile && 'List'}
+                </button>
+                <button
+                  onClick={() => setViewMode('kanban')}
+                  style={{
+                    padding: '6px 12px',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    backgroundColor: viewMode === 'kanban' ? token('color.background.selected', '#DEEBFF') : 'transparent',
+                    color: viewMode === 'kanban' ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
+                    border: 'none',
+                    borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  <Box size={16} />
+                  {!isMobile && 'Kanban'}
+                </button>
               </div>
 
-              {/* Right side - Controls */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
-                {/* View Toggle */}
-                <div style={{ 
-                  display: 'flex', 
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                  borderRadius: '3px',
-                  overflow: 'hidden',
-                }}>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    style={{
-                      padding: '6px 12px',
-                      fontSize: '14px',
-                      fontWeight: 500,
-                      backgroundColor: viewMode === 'list' ? token('color.background.selected', '#DEEBFF') : 'transparent',
-                      color: viewMode === 'list' ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
-                      border: 'none',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                    }}
-                  >
-                    <Layers size={16} />
-                    List
-                  </button>
-                  <button
-                    onClick={() => setViewMode('kanban')}
-                    style={{
-                      padding: '6px 12px',
-                      fontSize: '14px',
-                      fontWeight: 500,
-                      backgroundColor: viewMode === 'kanban' ? token('color.background.selected', '#DEEBFF') : 'transparent',
-                      color: viewMode === 'kanban' ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
-                      border: 'none',
-                      borderLeft: `1px solid ${token('color.border', '#DFE1E6')}`,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                    }}
-                  >
-                    <Box size={16} />
-                    Kanban
-                  </button>
-                </div>
+              <SavedFiltersDropdown
+                entityType="demand"
+                currentFilters={filters}
+                onApplyFilter={(savedFilters) => setFilters(savedFilters as SmartFilters)}
+                hasActiveFilters={activeFilterCount > 0}
+              />
 
-                <SavedFiltersDropdown
-                  entityType="demand"
-                  currentFilters={filters}
-                  onApplyFilter={(savedFilters) => setFilters(savedFilters as SmartFilters)}
-                  hasActiveFilters={activeFilterCount > 0}
-                />
+              <Button
+                onClick={() => setFiltersDialogOpen(true)}
+                iconBefore={<Filter size={16} />}
+                appearance={activeFilterCount > 0 ? 'primary' : 'default'}
+              >
+                {isMobile ? '' : 'Filters'} {activeFilterCount > 0 && `(${activeFilterCount})`}
+              </Button>
 
-                <Button
-                  onClick={() => setFiltersDialogOpen(true)}
-                  iconBefore={<Filter size={16} />}
-                  appearance={activeFilterCount > 0 ? 'primary' : 'default'}
-                >
-                  Filters {activeFilterCount > 0 && `(${activeFilterCount})`}
-                </Button>
+              <Button
+                onClick={handleExport}
+                iconBefore={<Download size={16} />}
+              >
+                {!isMobile && 'Export'}
+              </Button>
+            </div>
+          </div>
 
-                <Button
-                  onClick={handleExport}
-                  iconBefore={<Download size={16} />}
-                >
-                  Export
-                </Button>
+          {/* Table Content */}
+          <div style={{ 
+            backgroundColor: token('elevation.surface', '#FFFFFF'),
+            borderRadius: '3px',
+            boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
+          }}>
+            {isLoading ? (
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '200px',
+              }}>
+                <Spinner size="large" />
               </div>
-            </div>
-
-            {/* Table Content */}
-            <div style={{ 
-              backgroundColor: token('elevation.surface', '#FFFFFF'),
-              borderRadius: '3px',
-              boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
-            }}>
-              {isLoading ? (
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  alignItems: 'center', 
-                  height: '200px',
-                }}>
-                  <Spinner size="large" />
-                </div>
-              ) : viewMode === 'kanban' ? (
-                <BusinessRequestsKanbanView 
-                  requests={sortedRequests} 
-                  onRequestSelect={setSelectedRequestId}
-                />
-              ) : sortedRequests.length > 0 ? (
-                <DynamicTableStateless
-                  head={head}
-                  rows={rows}
-                  sortKey={sortKey}
-                  sortOrder={sortOrder}
-                  onSort={(data) => handleSort(data.key, data.sortOrder)}
-                  isFixedSize
-                />
-              ) : (
-                <EmptyState
-                  header="No demand requests found"
-                  description="Create your first demand request or adjust your filters"
-                  primaryAction={
-                    <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
-                      Create Request
-                    </Button>
-                  }
-                  secondaryAction={
-                    <Button appearance="subtle" onClick={() => setFilters({})}>
-                      Clear filters
-                    </Button>
-                  }
-                />
-              )}
-            </div>
-
-            {/* Atlaskit Pagination */}
-            {viewMode === 'list' && sortedRequests.length > ITEMS_PER_PAGE && (
-              <>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: token('space.100', '8px'),
-                  marginTop: token('space.300', '24px'),
-                }}>
-                  <Button 
-                    iconBefore={<ChevronLeft size={16} />} 
-                    appearance="subtle"
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    isDisabled={currentPage === 1}
-                  >
-                    Previous
+            ) : viewMode === 'kanban' ? (
+              <BusinessRequestsKanbanView 
+                requests={sortedRequests} 
+                onRequestSelect={setSelectedRequestId}
+              />
+            ) : sortedRequests.length > 0 ? (
+              <DynamicTableStateless
+                head={head}
+                rows={rows}
+                sortKey={sortKey}
+                sortOrder={sortOrder}
+                onSort={(data) => handleSort(data.key, data.sortOrder)}
+                isFixedSize
+              />
+            ) : (
+              <EmptyState
+                header="No demand requests found"
+                description="Create your first demand request or adjust your filters"
+                primaryAction={
+                  <Button appearance="primary" onClick={() => setCreateModalOpen(true)}>
+                    Create Request
                   </Button>
-                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let pageNum: number;
-                    if (totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= totalPages - 2) {
-                      pageNum = totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    return (
-                      <Button 
-                        key={pageNum}
-                        appearance="subtle" 
-                        isSelected={currentPage === pageNum}
-                        onClick={() => setCurrentPage(pageNum)}
-                      >
-                        {pageNum}
-                      </Button>
-                    );
-                  })}
-                  <Button 
-                    iconAfter={<ChevronRight size={16} />} 
-                    appearance="subtle"
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    isDisabled={currentPage >= totalPages}
-                  >
-                    Next
+                }
+                secondaryAction={
+                  <Button appearance="subtle" onClick={() => setFilters({})}>
+                    Clear filters
                   </Button>
-                </div>
-
-                <div style={{
-                  marginTop: token('space.200', '16px'),
-                  fontSize: '12px',
-                  color: token('color.text.subtlest', '#626F86'),
-                  textAlign: 'center',
-                }}>
-                  Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
-                </div>
-              </>
+                }
+              />
             )}
           </div>
 
-          {/* Dialogs and Modals */}
-          <FilterDemandsDialog 
-            open={filtersDialogOpen} 
-            onOpenChange={setFiltersDialogOpen}
-            filters={filters}
-            onFiltersChange={setFilters}
-          />
+          {/* Atlaskit Pagination */}
+          {viewMode === 'list' && sortedRequests.length > ITEMS_PER_PAGE && (
+            <>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: token('space.100', '8px'),
+                marginTop: token('space.300', '24px'),
+              }}>
+                <Button 
+                  iconBefore={<ChevronLeft size={16} />} 
+                  appearance="subtle"
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  isDisabled={currentPage === 1}
+                >
+                  {!isMobile && 'Previous'}
+                </Button>
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  return (
+                    <Button 
+                      key={pageNum}
+                      appearance="subtle" 
+                      isSelected={currentPage === pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+                <Button 
+                  iconAfter={<ChevronRight size={16} />} 
+                  appearance="subtle"
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  isDisabled={currentPage >= totalPages}
+                >
+                  {!isMobile && 'Next'}
+                </Button>
+              </div>
 
-          <CreateBusinessRequestModal 
-            isOpen={createModalOpen} 
-            onClose={() => setCreateModalOpen(false)} 
-          />
+              <div style={{
+                marginTop: token('space.200', '16px'),
+                fontSize: '12px',
+                color: token('color.text.subtlest', '#626F86'),
+                textAlign: 'center',
+              }}>
+                Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
+              </div>
+            </>
+          )}
+        </main>
+      </div>
 
-          <BusinessRequestDrawer 
-            isOpen={!!selectedRequestId}
-            requestId={selectedRequestId} 
-            onClose={() => setSelectedRequestId(null)} 
-          />
-        </Main>
-      </Content>
-    </PageLayout>
+      {/* Dialogs and Modals */}
+      <FilterDemandsDialog 
+        open={filtersDialogOpen} 
+        onOpenChange={setFiltersDialogOpen}
+        filters={filters}
+        onFiltersChange={setFilters}
+      />
+
+      <CreateBusinessRequestModal 
+        isOpen={createModalOpen} 
+        onClose={() => setCreateModalOpen(false)} 
+      />
+
+      <BusinessRequestDrawer 
+        isOpen={!!selectedRequestId}
+        requestId={selectedRequestId} 
+        onClose={() => setSelectedRequestId(null)} 
+      />
+    </div>
   );
 }
