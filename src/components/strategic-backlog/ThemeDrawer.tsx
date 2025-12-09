@@ -5,7 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Palette } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { Trash2, Palette, Unlink, Target, Layers } from 'lucide-react';
 import type { StrategicTheme } from '@/types/strategicBacklog';
 import { useUpdateTheme, useDeleteTheme } from '@/hooks/useStrategicBacklog';
 import {
@@ -18,6 +20,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { format } from 'date-fns';
 
 const COLOR_OPTIONS = [
   { value: '#c69c6d', label: 'Gold' },
@@ -43,6 +46,7 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
   const [colorTag, setColorTag] = useState('#c69c6d');
   const [status, setStatus] = useState<'active' | 'draft' | 'archived'>('active');
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
 
   const updateTheme = useUpdateTheme();
   const deleteTheme = useDeleteTheme();
@@ -53,6 +57,7 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
       setDescription(theme.description || '');
       setColorTag(theme.color_tag || '#c69c6d');
       setStatus((theme.status as 'active' | 'draft' | 'archived') || 'active');
+      setActiveTab('details');
     }
   }, [theme]);
 
@@ -76,82 +81,151 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
     onOpenChange(false);
   };
 
+  const isReadOnly = isArchived || status === 'archived';
+
   return (
     <>
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="w-[420px] sm:max-w-[420px]">
-          <SheetHeader className="pb-4 border-b border-border">
+        <SheetContent className="w-[480px] sm:max-w-[480px] p-0 flex flex-col">
+          <SheetHeader className="px-6 py-4 border-b border-border bg-card">
             <div className="flex items-center gap-3">
-              <Palette className="h-5 w-5 text-brand-gold" />
-              <SheetTitle className="text-lg">Theme Details</SheetTitle>
+              <div
+                className="w-5 h-5 rounded-full flex-shrink-0"
+                style={{ backgroundColor: colorTag }}
+              />
+              <SheetTitle className="text-lg flex-1 truncate">{theme?.name || 'Theme'}</SheetTitle>
+              {status === 'archived' && (
+                <Badge variant="outline" className="text-muted-foreground">Archived</Badge>
+              )}
             </div>
           </SheetHeader>
 
-          <div className="py-6 space-y-5">
-            <div className="space-y-2">
-              <Label>Theme Name *</Label>
-              <Input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={isArchived}
-                placeholder="Enter theme name"
-              />
-            </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+            <TabsList className="mx-6 mt-4 justify-start bg-transparent border-b border-border rounded-none p-0 h-auto">
+              <TabsTrigger 
+                value="details" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:bg-transparent px-4 pb-2"
+              >
+                Details
+              </TabsTrigger>
+              <TabsTrigger 
+                value="alignment"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-brand-gold data-[state=active]:bg-transparent px-4 pb-2"
+              >
+                Alignment
+              </TabsTrigger>
+            </TabsList>
 
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                disabled={isArchived}
-                placeholder="Enter theme description"
-                rows={3}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Color Tag</Label>
-              <div className="flex flex-wrap gap-2">
-                {COLOR_OPTIONS.map((color) => (
-                  <button
-                    key={color.value}
-                    type="button"
-                    disabled={isArchived}
-                    onClick={() => setColorTag(color.value)}
-                    className={`w-8 h-8 rounded-lg border-2 transition-all ${
-                      colorTag === color.value ? 'border-foreground scale-110' : 'border-transparent'
-                    }`}
-                    style={{ backgroundColor: color.value }}
-                    title={color.label}
+            <TabsContent value="details" className="flex-1 overflow-auto px-6 py-4 mt-0">
+              <div className="space-y-5">
+                <div className="space-y-2">
+                  <Label>Theme Name *</Label>
+                  <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={isReadOnly}
+                    placeholder="Enter theme name"
                   />
-                ))}
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    disabled={isReadOnly}
+                    placeholder="Enter theme description"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Color Tag</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {COLOR_OPTIONS.map((color) => (
+                      <button
+                        key={color.value}
+                        type="button"
+                        disabled={isReadOnly}
+                        onClick={() => setColorTag(color.value)}
+                        className={`w-8 h-8 rounded-lg border-2 transition-all ${
+                          colorTag === color.value ? 'border-foreground scale-110' : 'border-transparent'
+                        }`}
+                        style={{ backgroundColor: color.value }}
+                        title={color.label}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Status</Label>
+                  <Select value={status} onValueChange={(v) => setStatus(v as any)} disabled={isReadOnly}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="draft">Draft</SelectItem>
+                      <SelectItem value="archived">Archived</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {theme && (
+                  <div className="pt-4 border-t border-border text-xs text-muted-foreground space-y-1">
+                    <p>Created: {format(new Date(theme.created_at), 'MMM d, yyyy')}</p>
+                    <p>Updated: {format(new Date(theme.updated_at), 'MMM d, yyyy')}</p>
+                  </div>
+                )}
               </div>
-            </div>
+            </TabsContent>
 
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select value={status} onValueChange={(v) => setStatus(v as any)} disabled={isArchived}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="draft">Draft</SelectItem>
-                  <SelectItem value="archived">Archived</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <TabsContent value="alignment" className="flex-1 overflow-auto px-6 py-4 mt-0">
+              <div className="space-y-6">
+                {/* Objectives Alignment */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Target className="h-4 w-4 text-brand-gold" />
+                      <Label className="text-sm font-medium">Aligned Objectives</Label>
+                    </div>
+                    {!isReadOnly && (
+                      <Button variant="outline" size="sm" disabled>
+                        Link Objectives
+                      </Button>
+                    )}
+                  </div>
+                  <div className="border border-dashed border-border rounded-lg p-6 text-center">
+                    <Target className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No objectives linked yet</p>
+                  </div>
+                </div>
 
-            {theme && (
-              <div className="pt-4 border-t border-border text-xs text-muted-foreground space-y-1">
-                <p>Created: {new Date(theme.created_at).toLocaleDateString()}</p>
-                <p>Updated: {new Date(theme.updated_at).toLocaleDateString()}</p>
+                {/* Epics Alignment */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Layers className="h-4 w-4 text-brand-gold" />
+                      <Label className="text-sm font-medium">Aligned Epics</Label>
+                    </div>
+                    {!isReadOnly && (
+                      <Button variant="outline" size="sm" disabled>
+                        Link Epics
+                      </Button>
+                    )}
+                  </div>
+                  <div className="border border-dashed border-border rounded-lg p-6 text-center">
+                    <Layers className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No epics linked yet</p>
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
+            </TabsContent>
+          </Tabs>
 
-          <div className="flex items-center justify-between pt-4 border-t border-border">
-            {!isArchived && (
+          <div className="flex items-center justify-between p-4 border-t border-border bg-card">
+            {!isReadOnly && (
               <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => setDeleteOpen(true)}>
                 <Trash2 className="h-4 w-4 mr-1" />
                 Delete
@@ -161,7 +235,7 @@ export function ThemeDrawer({ open, onOpenChange, theme, isArchived }: ThemeDraw
               <Button variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              {!isArchived && (
+              {!isReadOnly && (
                 <Button onClick={handleSave} className="bg-brand-gold hover:bg-brand-gold/90">
                   Save
                 </Button>
