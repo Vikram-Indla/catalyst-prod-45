@@ -121,31 +121,31 @@ export default function StrategicBacklog() {
       ) : (
         <div className="flex-1 overflow-auto p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6 h-auto p-1 bg-muted/50 rounded-full gap-1">
+            <TabsList className="mb-6 h-auto p-1.5 bg-muted/30 rounded-full border border-border/50 gap-1">
               <TabsTrigger 
                 value="overview" 
-                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
               >
                 <LayoutGrid className="h-4 w-4" />
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="mvv"
-                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
               >
                 <Target className="h-4 w-4" />
                 Mission / Vision / Values
               </TabsTrigger>
               <TabsTrigger 
                 value="goals"
-                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
               >
                 <Palette className="h-4 w-4" />
                 Strategic Goals
               </TabsTrigger>
               <TabsTrigger 
                 value="themes" 
-                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
               >
                 <ListTree className="h-4 w-4" />
                 Themes
@@ -153,7 +153,7 @@ export default function StrategicBacklog() {
               </TabsTrigger>
               <TabsTrigger 
                 value="epics"
-                className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2"
+                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
               >
                 <Boxes className="h-4 w-4" />
                 Epics
