@@ -45,6 +45,7 @@ export function CatalystHeaderAtlaskit() {
   const [isUnifiedCreateOpen, setIsUnifiedCreateOpen] = useState(false);
 
   const handleUnifiedCreateSelect = (type: CreateType) => {
+    console.log('[CatalystHeader] handleUnifiedCreateSelect called with type:', type);
     switch (type) {
       case 'program':
         setCreateDialogType('program');
@@ -373,7 +374,10 @@ export function CatalystHeaderAtlaskit() {
             {/* Create Button */}
             <button
               type="button"
-              onClick={() => setIsUnifiedCreateOpen(true)}
+              onClick={() => {
+                console.log('[CatalystHeader] Create button clicked, opening modal');
+                setIsUnifiedCreateOpen(true);
+              }}
               style={{
                 display: 'flex',
                 alignItems: 'center',
