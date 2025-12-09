@@ -7,6 +7,8 @@ import { Search, Building2, Plus, Settings } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
+import { useCatalystContext } from '@/contexts/CatalystContext';
+import { getProgramLandingRoute } from '@/lib/workspaceContext';
 
 interface ProgramSelectorDropdownProps {
   onClose: () => void;
@@ -16,6 +18,7 @@ interface ProgramSelectorDropdownProps {
 export function ProgramSelectorDropdown({ onClose, onCreateClick }: ProgramSelectorDropdownProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const { setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
 
   const { data: programs, isLoading } = useQuery({
     queryKey: ['programs-header'],
@@ -35,7 +38,14 @@ export function ProgramSelectorDropdown({ onClose, onCreateClick }: ProgramSelec
   );
 
   const handleSelect = (programId: string, programName: string) => {
-    navigate(`/program/${programId}/room`);
+    // Set context: Program selected, clear Project
+    setProgramId(programId);
+    setProgramName(programName);
+    setProjectId(null);
+    setProjectName(null);
+    
+    // Navigate to Program landing route
+    navigate(getProgramLandingRoute(programId));
     onClose();
   };
 
