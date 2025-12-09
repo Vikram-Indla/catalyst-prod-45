@@ -180,6 +180,7 @@ import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
 import IndustryPage from "./pages/enterprise/IndustryPage";
 import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
 import ProductRoomPage from "./pages/ProductRoomPage";
+import CapacityPage from "./pages/product/CapacityPage";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
 import RequestAccess from "./pages/RequestAccess";
 import ResetPassword from "./pages/ResetPassword";
@@ -282,6 +283,7 @@ const App = () => (
 <Route path="/industry/reports" element={<IndustryComingSoon />} />
 <Route path="/product/room" element={<ProductRoomPage />} />
 <Route path="/product/:productId/room" element={<ProductRoomPage />} />
+<Route path="/product/capacity" element={<CapacityPage />} />
               
               {/* Enterprise More Items */}
               <Route path="/enterprise/ideation" element={<EnterpriseIdeation />} />
