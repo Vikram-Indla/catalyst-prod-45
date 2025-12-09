@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -126,30 +127,48 @@ export function CapacityPlanningPage() {
             />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => setCopyModalOpen(true)}>
-              <Copy className="h-4 w-4 mr-2" />
-              Copy Week
-            </Button>
-            <Button variant="outline" onClick={() => setAddMemberOpen(true)}>
-              <UserPlus className="h-4 w-4 mr-2" />
-              Add Member
-            </Button>
-            <Button onClick={() => setNewAllocationOpen(true)} className="bg-[#c69c6d] hover:bg-[#8b7355] text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              New Allocation
-            </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => setFilterOpen(true)}
-              className="relative"
-            >
-              <Filter className="h-4 w-4" />
-              {filterCount > 0 && (
-                <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-[#c69c6d] text-white text-xs">
-                  {filterCount}
-                </Badge>
-              )}
-            </Button>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" onClick={() => setCopyModalOpen(true)}>
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Copy Week</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="icon" onClick={() => setAddMemberOpen(true)}>
+                  <UserPlus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Add Member</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button size="icon" onClick={() => setNewAllocationOpen(true)} className="bg-brand-gold hover:bg-brand-gold-hover text-white">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>New Allocation</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => setFilterOpen(true)}
+                  className="relative"
+                >
+                  <Filter className="h-4 w-4" />
+                  {filterCount > 0 && (
+                    <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-brand-gold text-white text-xs">
+                      {filterCount}
+                    </Badge>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Filter</TooltipContent>
+            </Tooltip>
           </div>
         </div>
 
