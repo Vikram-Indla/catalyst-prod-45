@@ -59,7 +59,7 @@ export function AddMemberDrawer({ open, onOpenChange, onAdd }: AddMemberDrawerPr
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] sm:max-w-[400px] bg-card">
+      <SheetContent className="w-[400px] sm:max-w-[400px] p-6">
         <SheetHeader className="border-b border-border pb-4">
           <SheetTitle>Add Team Member</SheetTitle>
         </SheetHeader>
