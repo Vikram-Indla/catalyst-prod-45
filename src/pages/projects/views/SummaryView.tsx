@@ -1,88 +1,111 @@
 import React from 'react';
 import { token } from '@atlaskit/tokens';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { ProjectData } from '../../../types/project.types';
-import { useProjectData } from '../../../hooks/useProjectData';
 
 interface SummaryViewProps {
   project: ProjectData;
 }
 
 export default function SummaryView({ project }: SummaryViewProps) {
-  const { metrics, statusCounts, priorityCounts, typeCounts, totalItems } = useProjectData(project);
+  // Calculate metrics from project data
+  const allItems = project.features.flatMap(f => [
+    f,
+    ...f.stories.flatMap(s => [s, ...s.subtasks])
+  ]);
+  
+  const totalItems = allItems.length;
+  const doneCount = allItems.filter(i => i.status === 'DONE').length;
+  const inProgressCount = allItems.filter(i => i.status === 'IN PROGRESS').length;
+  const todoCount = allItems.filter(i => i.status === 'TO DO').length;
+  
+  const featureCount = project.features.length;
+  const storyCount = project.features.reduce((sum, f) => sum + f.stories.length, 0);
+  const subtaskCount = project.features.reduce((sum, f) => 
+    sum + f.stories.reduce((s, story) => s + story.subtasks.length, 0), 0
+  );
+  
+  const highPriority = allItems.filter(i => i.priority === 'High').length;
+  const mediumPriority = allItems.filter(i => i.priority === 'Medium').length;
+  const lowPriority = allItems.filter(i => i.priority === 'Low').length;
+
+  const statusData = [
+    { name: 'To Do', value: todoCount, color: '#42526E' },
+    { name: 'In Progress', value: inProgressCount, color: '#0052CC' },
+    { name: 'Done', value: doneCount, color: '#00875A' },
+  ];
+
+  const priorityData = [
+    { priority: 'High', count: highPriority },
+    { priority: 'Medium', count: mediumPriority },
+    { priority: 'Low', count: lowPriority },
+  ];
+
+  const typeData = [
+    { type: 'Feature', count: featureCount, percentage: Math.round((featureCount / totalItems) * 100), color: '#6554C0' },
+    { type: 'Story', count: storyCount, percentage: Math.round((storyCount / totalItems) * 100), color: '#00875A' },
+    { type: 'Subtask', count: subtaskCount, percentage: Math.round((subtaskCount / totalItems) * 100), color: '#0052CC' },
+  ];
 
   return (
     <div style={{
-      padding: token('space.300'),
-      overflowY: 'auto',
-      height: 'calc(100vh - 200px)',
+      padding: '24px',
+      background: token('elevation.surface.sunken'),
+      minHeight: 'calc(100vh - 180px)',
     }}>
       {/* METRICS ROW */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: token('space.200'),
-        marginBottom: token('space.300'),
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: '16px',
+        marginBottom: '24px',
       }}>
-        <MetricCard
-          icon="✓"
-          value={metrics.completed}
-          label="completed"
-          sublabel="in the last 7 days"
-        />
-        <MetricCard
-          icon="✏️"
-          value={metrics.updated}
-          label="updated"
-          sublabel="in the last 7 days"
-        />
-        <MetricCard
-          icon="📄"
-          value={metrics.created}
-          label="created"
-          sublabel="in the last 7 days"
-        />
-        <MetricCard
-          icon="📅"
-          value={metrics.dueSoon}
-          label="due soon"
-          sublabel="in the next 7 days"
-        />
+        <MetricCard value={doneCount} label="completed" sublabel="in the last 7 days" />
+        <MetricCard value={8} label="updated" sublabel="in the last 7 days" />
+        <MetricCard value={totalItems} label="created" sublabel="in the last 7 days" />
+        <MetricCard value={3} label="due soon" sublabel="in the next 7 days" />
       </div>
 
-      {/* WIDGETS - 2 COLUMNS */}
+      {/* WIDGETS - 2x2 GRID */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-        gap: token('space.200'),
+        gridTemplateColumns: 'repeat(2, 1fr)',
+        gap: '16px',
       }}>
         {/* STATUS OVERVIEW */}
-        <Widget
-          title="Status overview"
-          description="Get a snapshot of the status of your work items."
-          link="View all work items"
-        >
+        <div style={{
+          background: token('elevation.surface'),
+          border: `1px solid ${token('color.border')}`,
+          borderRadius: '4px',
+          padding: '16px',
+        }}>
+          <h3 style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: token('color.text'),
+            margin: '0 0 16px 0',
+          }}>
+            Status overview
+          </h3>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: '40px',
-            padding: '20px 0',
-            minHeight: '200px',
+            gap: '32px',
           }}>
-            <div style={{ position: 'relative', width: '160px', height: '160px' }}>
+            <div style={{ position: 'relative', width: '140px', height: '140px' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={statusCounts.map(s => ({ name: s.status, value: s.count, color: s.color }))}
+                    data={statusData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={45}
-                    outerRadius={70}
+                    innerRadius={40}
+                    outerRadius={60}
                     dataKey="value"
                     paddingAngle={2}
                   >
-                    {statusCounts.map((entry, index) => (
+                    {statusData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
@@ -95,13 +118,13 @@ export default function SummaryView({ project }: SummaryViewProps) {
                 transform: 'translate(-50%, -50%)',
                 textAlign: 'center',
               }}>
-                <div style={{ fontSize: '24px', fontWeight: 600, color: token('color.text') }}>{totalItems}</div>
-                <div style={{ fontSize: '12px', color: token('color.text.subtlest') }}>Total</div>
+                <div style={{ fontSize: '20px', fontWeight: 600, color: token('color.text') }}>{totalItems}</div>
+                <div style={{ fontSize: '11px', color: token('color.text.subtlest') }}>Total</div>
               </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.150') }}>
-              {statusCounts.map((status) => (
-                <div key={status.status} style={{ display: 'flex', alignItems: 'center', gap: token('space.100') }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {statusData.map((status) => (
+                <div key={status.name} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{
                     width: '12px',
                     height: '12px',
@@ -109,186 +132,159 @@ export default function SummaryView({ project }: SummaryViewProps) {
                     background: status.color,
                   }} />
                   <span style={{ fontSize: '14px', color: token('color.text'), minWidth: '80px' }}>
-                    {status.status}
+                    {status.name}
                   </span>
                   <span style={{ fontSize: '14px', fontWeight: 600, color: token('color.text') }}>
-                    {status.count}
+                    {status.value}
                   </span>
                 </div>
               ))}
             </div>
           </div>
-        </Widget>
+        </div>
 
         {/* TYPES OF WORK */}
-        <Widget
-          title="Types of work"
-          description="Break down of work items by type."
-        >
-          <div style={{ padding: '20px 0', minHeight: '200px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.150') }}>
-              {typeCounts.map((type) => (
-                <TypeBar key={type.type} label={type.type} percentage={type.percentage} count={type.count} />
-              ))}
-            </div>
+        <div style={{
+          background: token('elevation.surface'),
+          border: `1px solid ${token('color.border')}`,
+          borderRadius: '4px',
+          padding: '16px',
+        }}>
+          <h3 style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: token('color.text'),
+            margin: '0 0 16px 0',
+          }}>
+            Types of work
+          </h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {typeData.map((type) => (
+              <div key={type.type} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span style={{ fontSize: '14px', width: '70px', color: token('color.text') }}>{type.type}</span>
+                <div style={{
+                  flex: 1,
+                  height: '20px',
+                  background: token('color.background.neutral'),
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                }}>
+                  <div style={{
+                    width: `${type.percentage}%`,
+                    height: '100%',
+                    background: type.color,
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingLeft: '8px',
+                  }}>
+                    {type.percentage > 20 && (
+                      <span style={{ fontSize: '12px', fontWeight: 600, color: '#fff' }}>
+                        {type.percentage}%
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <span style={{ fontSize: '12px', color: token('color.text.subtlest'), width: '24px', textAlign: 'right' }}>
+                  {type.count}
+                </span>
+              </div>
+            ))}
           </div>
-        </Widget>
+        </div>
 
         {/* PRIORITY BREAKDOWN */}
-        <Widget
-          title="Priority breakdown"
-          description="Distribution of work items by priority level."
-        >
-          <div style={{ padding: '20px 0', minHeight: '200px' }}>
-            <ResponsiveContainer width="100%" height={150}>
-              <BarChart data={priorityCounts} layout="vertical">
-                <XAxis type="number" hide />
-                <YAxis type="category" dataKey="priority" width={60} tick={{ fontSize: 12 }} />
-                <Bar dataKey="count" fill={token('color.chart.blue.bold')} radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Widget>
+        <div style={{
+          background: token('elevation.surface'),
+          border: `1px solid ${token('color.border')}`,
+          borderRadius: '4px',
+          padding: '16px',
+        }}>
+          <h3 style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: token('color.text'),
+            margin: '0 0 16px 0',
+          }}>
+            Priority breakdown
+          </h3>
+          <ResponsiveContainer width="100%" height={120}>
+            <BarChart data={priorityData} layout="vertical" margin={{ left: 10, right: 20 }}>
+              <XAxis type="number" hide />
+              <YAxis 
+                type="category" 
+                dataKey="priority" 
+                width={60} 
+                tick={{ fontSize: 12, fill: token('color.text') }} 
+                axisLine={false}
+                tickLine={false}
+              />
+              <Tooltip />
+              <Bar dataKey="count" fill="#0052CC" radius={[0, 4, 4, 0]} barSize={16} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-        {/* TEAM ACTIVITY */}
-        <Widget
-          title="Team activity"
-          description="Recent activity across team members."
-        >
+        {/* RECENT ACTIVITY */}
+        <div style={{
+          background: token('elevation.surface'),
+          border: `1px solid ${token('color.border')}`,
+          borderRadius: '4px',
+          padding: '16px',
+        }}>
+          <h3 style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: token('color.text'),
+            margin: '0 0 16px 0',
+          }}>
+            Recent activity
+          </h3>
           <div style={{
-            padding: '20px 0',
-            minHeight: '200px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            height: '100px',
           }}>
             <span style={{ fontSize: '14px', color: token('color.text.subtlest') }}>
-              Activity data will appear here
+              No recent activity
             </span>
           </div>
-        </Widget>
-      </div>
-    </div>
-  );
-}
-
-function MetricCard({ icon, value, label, sublabel }: { icon: string; value: number; label: string; sublabel: string }) {
-  return (
-    <div style={{
-      background: token('elevation.surface'),
-      border: `1px solid ${token('color.border')}`,
-      borderRadius: token('border.radius'),
-      padding: token('space.200'),
-    }}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: token('space.150') }}>
-        <span style={{ fontSize: '20px' }}>{icon}</span>
-        <div>
-          <div style={{
-            fontSize: '24px',
-            fontWeight: 500,
-            color: token('color.text'),
-            marginBottom: token('space.050'),
-          }}>
-            {value}
-          </div>
-          <div style={{
-            fontSize: '14px',
-            color: token('color.text'),
-            marginBottom: token('space.050'),
-          }}>
-            {label}
-          </div>
-          <div style={{
-            fontSize: '12px',
-            color: token('color.text.subtlest'),
-          }}>
-            {sublabel}
-          </div>
         </div>
       </div>
     </div>
   );
 }
 
-function Widget({ title, description, link, children }: { title: string; description?: string; link?: string; children: React.ReactNode }) {
+function MetricCard({ value, label, sublabel }: { value: number; label: string; sublabel: string }) {
   return (
     <div style={{
       background: token('elevation.surface'),
       border: `1px solid ${token('color.border')}`,
-      borderRadius: token('border.radius'),
-      padding: token('space.200'),
+      borderRadius: '4px',
+      padding: '16px',
     }}>
-      <div style={{ marginBottom: token('space.100') }}>
-        <h3 style={{
-          fontSize: '16px',
-          fontWeight: 600,
-          color: token('color.text'),
-          margin: 0,
-        }}>
-          {title}
-        </h3>
-        {description && (
-          <p style={{
-            fontSize: '12px',
-            color: token('color.text.subtlest'),
-            margin: `${token('space.050')} 0 0 0`,
-          }}>
-            {description}
-          </p>
-        )}
-      </div>
-      {children}
-      {link && (
-        <div style={{ marginTop: token('space.150') }}>
-          <a href="#" style={{
-            fontSize: '14px',
-            color: token('color.link'),
-            textDecoration: 'none',
-          }}>
-            {link} →
-          </a>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function TypeBar({ label, percentage, count }: { label: string; percentage: number; count: number }) {
-  const colors: Record<string, string> = {
-    Feature: '#6554C0',
-    Story: '#00875A',
-    Subtask: '#0052CC',
-  };
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100') }}>
-      <span style={{ fontSize: '14px', width: '70px', color: token('color.text') }}>{label}</span>
       <div style={{
-        flex: 1,
-        height: '24px',
-        background: token('color.background.neutral'),
-        borderRadius: token('border.radius'),
-        overflow: 'hidden',
+        fontSize: '48px',
+        fontWeight: 500,
+        color: token('color.text'),
+        lineHeight: 1,
+        marginBottom: '4px',
       }}>
-        <div style={{
-          width: `${percentage}%`,
-          height: '100%',
-          background: colors[label] || token('color.background.discovery'),
-          display: 'flex',
-          alignItems: 'center',
-          paddingLeft: token('space.100'),
-          transition: 'width 0.3s ease',
-        }}>
-          {percentage > 15 && (
-            <span style={{ fontSize: '12px', fontWeight: 600, color: '#fff' }}>
-              {percentage}%
-            </span>
-          )}
-        </div>
+        {value}
       </div>
-      <span style={{ fontSize: '12px', color: token('color.text.subtlest'), width: '30px', textAlign: 'right' }}>
-        {count}
-      </span>
+      <div style={{
+        fontSize: '14px',
+        color: token('color.text'),
+        marginBottom: '2px',
+      }}>
+        {label}
+      </div>
+      <div style={{
+        fontSize: '12px',
+        color: token('color.text.subtlest'),
+      }}>
+        {sublabel}
+      </div>
     </div>
   );
 }
