@@ -281,28 +281,46 @@ export function CapacityPlanningPage() {
 
         {/* Tabs - 6 tabs */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CapacityTab)}>
-          <TabsList className="bg-muted/50">
-            <TabsTrigger value="roster" className="data-[state=active]:text-[#c69c6d]">
+          <TabsList className="bg-transparent border border-brand-gold/30 rounded-full p-1 gap-1">
+            <TabsTrigger 
+              value="roster" 
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+            >
               <Users className="h-4 w-4 mr-2" />
               People Roster
             </TabsTrigger>
-            <TabsTrigger value="grid" className="data-[state=active]:text-[#c69c6d]">
+            <TabsTrigger 
+              value="grid" 
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+            >
               <LayoutGrid className="h-4 w-4 mr-2" />
               Project Grid
             </TabsTrigger>
-            <TabsTrigger value="timeline" className="data-[state=active]:text-[#c69c6d]">
+            <TabsTrigger 
+              value="timeline" 
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+            >
               <Calendar className="h-4 w-4 mr-2" />
               Timeline
             </TabsTrigger>
-            <TabsTrigger value="available" className="data-[state=active]:text-[#c69c6d]">
+            <TabsTrigger 
+              value="available" 
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+            >
               <Clock className="h-4 w-4 mr-2" />
               Available Capacity
             </TabsTrigger>
-            <TabsTrigger value="vacancies" className="data-[state=active]:text-[#c69c6d]">
+            <TabsTrigger 
+              value="vacancies" 
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+            >
               Vacancies
               <Badge variant="secondary" className="ml-2 text-xs">{openVacancies}</Badge>
             </TabsTrigger>
-            <TabsTrigger value="reports" className="data-[state=active]:text-[#c69c6d]">
+            <TabsTrigger 
+              value="reports" 
+              className="rounded-full px-4 py-2 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=inactive]:text-foreground"
+            >
               <FileText className="h-4 w-4 mr-2" />
               Executive Reports
             </TabsTrigger>
