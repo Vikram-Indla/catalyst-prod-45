@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Eye, Play, Archive, Trash2, Calendar, Clock, Layers, Users } from 'lucide-react';
+import { MoreVertical, Eye, Play, Archive, Trash2, Calendar, Clock, Layers, Users, Pencil } from 'lucide-react';
 import { StrategicSnapshot, useSnapshotConfiguration, useActivateSnapshot, useArchiveSnapshot } from '@/hooks/useStrategicSnapshots';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { RenameSnapshotModal } from './RenameSnapshotModal';
 
 interface SnapshotCardProps {
   snapshot: StrategicSnapshot;
@@ -14,6 +16,7 @@ interface SnapshotCardProps {
 }
 
 export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCardProps) {
+  const [renameModalOpen, setRenameModalOpen] = useState(false);
   const { data: configuration } = useSnapshotConfiguration(snapshot.id);
   const activateSnapshot = useActivateSnapshot();
   const archiveSnapshot = useArchiveSnapshot();
@@ -43,11 +46,12 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
   };
 
   return (
-    <Card className={cn(
-      'cursor-pointer hover:shadow-lg transition-all duration-200 border',
-      isArchived && 'opacity-70 bg-muted/30',
-      isActive && 'ring-2 ring-brand-gold/30'
-    )}>
+    <>
+      <Card className={cn(
+        'cursor-pointer hover:shadow-lg transition-all duration-200 border',
+        isArchived && 'opacity-70 bg-muted/30',
+        isActive && 'ring-2 ring-brand-gold/30'
+      )}>
       <CardHeader className="flex flex-row items-start justify-between pb-2">
         <div className="flex-1 min-w-0">
           <CardTitle className="text-base font-semibold truncate">{snapshot.name}</CardTitle>
@@ -73,6 +77,12 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {!isArchived && (
+              <DropdownMenuItem onClick={() => setRenameModalOpen(true)}>
+                <Pencil className="h-4 w-4 mr-2" />
+                Rename
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={() => onViewDetails(snapshot)}>
               <Eye className="h-4 w-4 mr-2" />
               View Details
@@ -138,5 +148,12 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
         </div>
       </CardContent>
     </Card>
+
+      <RenameSnapshotModal
+        open={renameModalOpen}
+        onClose={() => setRenameModalOpen(false)}
+        snapshot={snapshot}
+      />
+    </>
   );
 }
