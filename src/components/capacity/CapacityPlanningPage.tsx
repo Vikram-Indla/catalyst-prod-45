@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen, PanelTopClose, PanelTop } from 'lucide-react';
+import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 type CapacityTab = 'roster' | 'grid' | 'timeline' | 'available' | 'vacancies' | 'reports';
@@ -34,7 +34,7 @@ export function CapacityPlanningPage() {
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [newAllocationOpen, setNewAllocationOpen] = useState(false);
   const [selectedResourceId, setSelectedResourceId] = useState<string | null>(null);
-  const [showSummary, setShowSummary] = useState(true);
+  const [showSummary, setShowSummary] = useState(false);
 
   const {
     resources,
@@ -104,16 +104,30 @@ export function CapacityPlanningPage() {
   return (
     <div className="flex-1 flex flex-col bg-background min-h-0">
       {/* Page Header - align header pattern */}
-      <div className="h-[72px] border-b border-border bg-card flex-shrink-0 flex items-center px-6">
+      <div className="h-[72px] border-b border-border bg-card flex-shrink-0 flex items-center justify-between px-6">
         <div>
           <h1 className="text-xl font-semibold text-foreground">Capacity & Allocation Planning</h1>
           <p className="text-sm text-muted-foreground">Manage team capacity and allocations by week</p>
         </div>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button 
+              variant={showSummary ? "default" : "outline"} 
+              size="sm"
+              onClick={() => setShowSummary(!showSummary)}
+              className={showSummary ? "bg-brand-gold hover:bg-brand-gold-hover text-white" : ""}
+            >
+              <Info className="h-4 w-4 mr-2" />
+              Summary
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>{showSummary ? 'Hide capacity summary' : 'Show capacity summary'}</TooltipContent>
+        </Tooltip>
       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-6 space-y-4">
-        {/* Summary Cards - Collapsible */}
+        {/* Summary Cards - Collapsible, hidden by default */}
         {showSummary && (
           <CapacitySummaryCards
             totalMembers={stats.total}
@@ -263,18 +277,6 @@ export function CapacityPlanningPage() {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Filter</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={() => setShowSummary(!showSummary)}
-                >
-                  {showSummary ? <PanelTopClose className="h-4 w-4" /> : <PanelTop className="h-4 w-4" />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>{showSummary ? 'Hide Summary' : 'Show Summary'}</TooltipContent>
             </Tooltip>
           </div>
         </div>
