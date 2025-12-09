@@ -100,14 +100,34 @@ export function GoalsTab({ goals, links, snapshotId, isArchived }: GoalsTabProps
 
   const getHealthBadge = (health?: string) => {
     switch (health) {
-      case 'GREEN':
+      case 'green':
         return <Badge className="bg-green-100 text-green-700 hover:bg-green-100">On Track</Badge>;
-      case 'AMBER':
+      case 'amber':
         return <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">At Risk</Badge>;
-      case 'RED':
+      case 'red':
         return <Badge className="bg-red-100 text-red-700 hover:bg-red-100">Off Track</Badge>;
       default:
         return <Badge variant="secondary">—</Badge>;
+    }
+  };
+
+  const getStatusLabel = (status?: string) => {
+    switch (status) {
+      case 'active':
+      case 'on_track':
+        return 'Active';
+      case 'draft':
+        return 'Draft';
+      case 'completed':
+        return 'Completed';
+      case 'archived':
+        return 'Archived';
+      case 'at_risk':
+        return 'At Risk';
+      case 'off_track':
+        return 'Off Track';
+      default:
+        return status ? status.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Active';
     }
   };
 
@@ -212,8 +232,8 @@ export function GoalsTab({ goals, links, snapshotId, isArchived }: GoalsTabProps
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className="text-xs">
-                        {goal.status || 'Active'}
+                      <Badge variant="secondary" className="text-xs capitalize">
+                        {getStatusLabel(goal.status)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
