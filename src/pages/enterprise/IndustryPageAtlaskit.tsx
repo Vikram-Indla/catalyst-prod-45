@@ -64,7 +64,7 @@ const spacing = {
 interface DemandRequest {
   id: string;
   summary: string;
-  processStep: 'IMPLEMENT' | 'NEW REQUEST' | 'CLOSED' | 'APPROVED' | 'ANALYSE' | 'ON_HOLD' | 'REJECTED' | 'READY_TO_IMPLEMENT';
+  processStep: 'IMPLEMENT' | 'NEW REQUEST' | 'CLOSED';
   rank: number | null;
   deliveryPlatform: string | null;
   businessOwner: string | null;
@@ -72,15 +72,6 @@ interface DemandRequest {
   targetDate: string | null;
   department: string | null;
   hasWarning?: boolean;
-  // Extended fields from database
-  request_key?: string;
-  title?: string;
-  process_step?: string;
-  business_owner?: string;
-  delivery_platform?: string;
-  planned_quarter?: string;
-  end_date?: string;
-  is_force_ranked?: boolean;
 }
 
 // Status mapping for Atlaskit Lozenge
