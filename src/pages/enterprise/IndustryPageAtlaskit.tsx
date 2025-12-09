@@ -60,6 +60,29 @@ const spacing = {
   s600: token('space.600', '48px'),
 };
 
+// DemandRequest interface for type safety
+interface DemandRequest {
+  id: string;
+  summary: string;
+  processStep: 'IMPLEMENT' | 'NEW REQUEST' | 'CLOSED' | 'APPROVED' | 'ANALYSE' | 'ON_HOLD' | 'REJECTED' | 'READY_TO_IMPLEMENT';
+  rank: number | null;
+  deliveryPlatform: string | null;
+  businessOwner: string | null;
+  quarter: string | null;
+  targetDate: string | null;
+  department: string | null;
+  hasWarning?: boolean;
+  // Extended fields from database
+  request_key?: string;
+  title?: string;
+  process_step?: string;
+  business_owner?: string;
+  delivery_platform?: string;
+  planned_quarter?: string;
+  end_date?: string;
+  is_force_ranked?: boolean;
+}
+
 // Status mapping for Atlaskit Lozenge
 type LozengeAppearance = 'default' | 'inprogress' | 'moved' | 'new' | 'removed' | 'success';
 
