@@ -2,18 +2,20 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 
-// Atlaskit imports
+// ✅ Atlaskit imports
+import '@atlaskit/css-reset';
+import { token } from '@atlaskit/tokens';
+import { DynamicTableStateless } from '@atlaskit/dynamic-table';
+import type { RowType, HeadType } from '@atlaskit/dynamic-table/types';
 import Textfield from '@atlaskit/textfield';
-import Button from '@atlaskit/button/standard-button';
+import Button from '@atlaskit/button';
 import Lozenge from '@atlaskit/lozenge';
 import { Checkbox } from '@atlaskit/checkbox';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
-import { DynamicTableStateless } from '@atlaskit/dynamic-table';
-import type { RowType, HeadType } from '@atlaskit/dynamic-table/types';
 import { Content, LeftSidebar, Main, PageLayout, TopNavigation } from '@atlaskit/page-layout';
-import { SideNavigation, NavigationHeader, Header, NestableNavigationContent, Section, ButtonItem, HeadingItem } from '@atlaskit/side-navigation';
+import { SideNavigation, NavigationHeader, NestableNavigationContent, Section, ButtonItem } from '@atlaskit/side-navigation';
 import Avatar from '@atlaskit/avatar';
 
 // Icons
@@ -30,10 +32,6 @@ import { PROCESS_STEPS } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { SavedFiltersDropdown } from '@/components/shared/SavedFiltersDropdown';
-
-// Atlaskit CSS reset and tokens
-import '@atlaskit/css-reset';
-import { token } from '@atlaskit/tokens';
 
 // Token-based styling helpers
 const colors = {
