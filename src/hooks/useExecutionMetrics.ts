@@ -175,12 +175,9 @@ export function useExecutionAgainstOutcomes(snapshotId?: string) {
         }
       });
 
-      // Calculate metrics by tier
+      // Calculate metrics by tier - only Strategic Goals
       const tiers = [
         { tier: 'strategic', label: 'Strategic Goals' },
-        { tier: 'portfolio', label: 'Portfolio Objectives' },
-        { tier: 'program', label: 'Program Objectives' },
-        { tier: 'team', label: 'Team Objectives' },
       ];
 
       const metrics: ExecutionMetrics[] = tiers.map(({ tier, label }) => {

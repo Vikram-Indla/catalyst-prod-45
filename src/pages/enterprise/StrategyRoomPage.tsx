@@ -15,7 +15,7 @@ import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
 import { OkrHeatmap } from '@/components/strategy/OkrHeatmap';
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawer } from '@/components/strategy/ObjectiveDrawer';
-import { CreateStrategyItemDropdown } from '@/components/strategy/CreateStrategyItemDropdown';
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStrategyRoomFiltersStore } from '@/stores/strategyRoomFiltersStore';
@@ -222,10 +222,6 @@ export default function StrategyRoomPage() {
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
-          <CreateStrategyItemDropdown 
-            snapshotId={effectiveSelectedSnapshotId}
-            isArchived={selectedSnapshot?.status === 'ARCHIVED'}
-          />
           <Button 
             variant="outline" 
             size="sm"
