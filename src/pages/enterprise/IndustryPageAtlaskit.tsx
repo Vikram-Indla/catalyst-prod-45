@@ -139,7 +139,9 @@ const LeftSidebar = () => {
   return (
     <aside style={{
       width: '240px',
-      background: token('color.background.neutral.subtle', '#F4F5F7'),
+      minWidth: '240px',
+      maxWidth: '240px',
+      background: token('color.background.neutral.subtle', '#FAFBFC'),
       borderRight: `1px solid ${token('color.border', '#DFE1E6')}`,
       display: 'flex',
       flexDirection: 'column',
