@@ -15,6 +15,9 @@ import ListIcon from '@atlaskit/icon/glyph/list';
 import BoardIcon from '@atlaskit/icon/glyph/board';
 import FilterIcon from '@atlaskit/icon/glyph/filter';
 import DownloadIcon from '@atlaskit/icon/glyph/download';
+import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
+import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
+import AddIcon from '@atlaskit/icon/glyph/add';
 import Lozenge from '@atlaskit/lozenge';
 import Checkbox from '@atlaskit/checkbox';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
@@ -22,7 +25,8 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 
 // Icons
-import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Bell, Settings, Home, Briefcase, Folder, Layers, Box, MoreHorizontal, AlertTriangle } from 'lucide-react';
+// Icons - only keep what's needed that Atlaskit doesn't provide
+import { MoreHorizontal, AlertTriangle } from 'lucide-react';
 
 // Atlaskit layout components
 import { TopNav } from '@/components/atlaskit/TopNav';
@@ -520,19 +524,7 @@ export default function IndustryPageAtlaskit() {
             gap: token('space.200', '16px'),
           }}>
             {/* Left side - Search */}
-            <div style={{ position: 'relative', width: isMobile ? '100%' : '400px' }}>
-              <Search 
-                size={16} 
-                style={{ 
-                  position: 'absolute', 
-                  left: '12px', 
-                  top: '50%', 
-                  transform: 'translateY(-50%)',
-                  color: token('color.text.subtlest', '#6B778C'),
-                  pointerEvents: 'none',
-                  zIndex: 1,
-                }} 
-              />
+            <div style={{ width: isMobile ? '100%' : '400px' }}>
               <Textfield
                 placeholder="Search industry requests..."
                 value={searchQuery}
@@ -646,7 +638,7 @@ export default function IndustryPageAtlaskit() {
                 marginTop: token('space.300', '24px'),
               }}>
                 <Button 
-                  iconBefore={<ChevronLeft size={16} />} 
+                  iconBefore={<ChevronLeftIcon label="Previous" size="small" />}
                   appearance="subtle"
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   isDisabled={currentPage === 1}
@@ -676,7 +668,7 @@ export default function IndustryPageAtlaskit() {
                   );
                 })}
                 <Button 
-                  iconAfter={<ChevronRight size={16} />} 
+                  iconAfter={<ChevronRightIcon label="Next" size="small" />}
                   appearance="subtle"
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   isDisabled={currentPage >= totalPages}
