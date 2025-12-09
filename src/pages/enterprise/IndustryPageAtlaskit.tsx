@@ -722,65 +722,24 @@ export default function IndustryPageAtlaskit() {
               )}
             </div>
 
-            {/* Bottom Pagination */}
+            {/* Atlaskit Pagination */}
             {viewMode === 'list' && sortedRequests.length > ITEMS_PER_PAGE && (
-              <div style={{
-                backgroundColor: token('elevation.surface', '#FFFFFF'),
-                borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-                padding: `${token('space.150', '12px')} ${token('space.400', '32px')}`,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginTop: token('space.300', '24px'),
-                borderRadius: '3px',
-                boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
-              }}>
-                <span style={{ 
-                  fontSize: '14px', 
-                  color: token('color.text.subtlest', '#6B778C'),
+              <>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: token('space.100', '8px'),
+                  marginTop: token('space.300', '24px'),
                 }}>
-                  Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
-                </span>
-                
-                <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                  <button 
-                    onClick={() => setCurrentPage(1)}
-                    disabled={currentPage === 1}
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                      borderRadius: '3px',
-                      backgroundColor: currentPage === 1 ? token('color.background.neutral.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
-                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                      opacity: currentPage === 1 ? 0.5 : 1,
-                    }}
+                  <Button 
+                    iconBefore={<ChevronLeft size={16} />} 
+                    appearance="subtle"
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    isDisabled={currentPage === 1}
                   >
-                    «
-                  </button>
-                  
-                  <button 
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                      borderRadius: '3px',
-                      backgroundColor: currentPage === 1 ? token('color.background.neutral.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
-                      cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-                      opacity: currentPage === 1 ? 0.5 : 1,
-                    }}
-                  >
-                    ‹
-                  </button>
-
+                    Previous
+                  </Button>
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum: number;
                     if (totalPages <= 5) {
@@ -792,70 +751,36 @@ export default function IndustryPageAtlaskit() {
                     } else {
                       pageNum = currentPage - 2 + i;
                     }
-                    
                     return (
-                      <button
+                      <Button 
                         key={pageNum}
+                        appearance="subtle" 
+                        isSelected={currentPage === pageNum}
                         onClick={() => setCurrentPage(pageNum)}
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: `1px solid ${currentPage === pageNum ? token('color.border.brand', '#0052CC') : token('color.border', '#DFE1E6')}`,
-                          borderRadius: '3px',
-                          backgroundColor: currentPage === pageNum ? token('color.background.brand.bold', '#0052CC') : token('elevation.surface', '#FFFFFF'),
-                          color: currentPage === pageNum ? '#FFFFFF' : token('color.text', '#172B4D'),
-                          cursor: 'pointer',
-                          fontWeight: currentPage === pageNum ? 600 : 400,
-                          fontSize: '14px',
-                        }}
                       >
                         {pageNum}
-                      </button>
+                      </Button>
                     );
                   })}
-
-                  <button 
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    disabled={currentPage >= totalPages}
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                      borderRadius: '3px',
-                      backgroundColor: currentPage >= totalPages ? token('color.background.neutral.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
-                      cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
-                      opacity: currentPage >= totalPages ? 0.5 : 1,
-                    }}
+                  <Button 
+                    iconAfter={<ChevronRight size={16} />} 
+                    appearance="subtle"
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    isDisabled={currentPage >= totalPages}
                   >
-                    ›
-                  </button>
-
-                  <button 
-                    onClick={() => setCurrentPage(totalPages)}
-                    disabled={currentPage >= totalPages}
-                    style={{
-                      width: '32px',
-                      height: '32px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                      borderRadius: '3px',
-                      backgroundColor: currentPage >= totalPages ? token('color.background.neutral.hovered', '#F4F5F7') : token('elevation.surface', '#FFFFFF'),
-                      cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
-                      opacity: currentPage >= totalPages ? 0.5 : 1,
-                    }}
-                  >
-                    »
-                  </button>
+                    Next
+                  </Button>
                 </div>
-              </div>
+
+                <div style={{
+                  marginTop: token('space.200', '16px'),
+                  fontSize: '12px',
+                  color: token('color.text.subtlest', '#626F86'),
+                  textAlign: 'center',
+                }}>
+                  Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
+                </div>
+              </>
             )}
           </div>
 
