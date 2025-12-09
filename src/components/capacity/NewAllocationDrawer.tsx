@@ -102,14 +102,7 @@ export function NewAllocationDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-[400px] sm:max-w-[400px] bg-card">
         <SheetHeader className="border-b border-border pb-4">
-          <div className="flex items-center justify-between">
-            <SheetTitle>New Allocation</SheetTitle>
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <X className="h-4 w-4" />
-              </Button>
-            </SheetClose>
-          </div>
+          <SheetTitle>New Allocation</SheetTitle>
         </SheetHeader>
 
         <div className="py-6 space-y-4">
