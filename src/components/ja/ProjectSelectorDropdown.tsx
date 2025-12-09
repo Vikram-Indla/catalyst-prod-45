@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { token } from '@atlaskit/tokens';
 import { supabase } from '@/integrations/supabase/client';
-import { Input } from '@/components/ui/input';
 import { Search, Layers, Star, Plus, Settings, X } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import { useStarredItems } from '@/hooks/useStarredItems';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { getProjectLandingRoute } from '@/lib/workspaceContext';
@@ -38,13 +35,11 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
         `)
         .order('name');
       
-      // Filter by selected program if one is selected
       if (programId) {
         query = query.eq('portfolio_id', programId);
       }
       
       const { data, error } = await query;
-      
       if (error) throw error;
       return data || [];
     },
@@ -55,17 +50,14 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
   );
 
   const handleSelect = (project: typeof filtered[0]) => {
-    // Set context: Project selected, also set its parent Program
     setProjectId(project.id);
     setProjectName(project.name);
     
-    // Link to parent program
     if (project.portfolio_id && project.portfolios) {
       setProgramId(project.portfolio_id);
       setProgramName(project.portfolios.name);
     }
     
-    // Navigate to Project landing route
     navigate(getProjectLandingRoute(project.id));
     onClose();
   };
@@ -98,107 +90,229 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
   };
 
   return (
-    <div className="w-80 bg-popover border rounded-md shadow-lg">
-      <div className="p-3 border-b">
-        <p className="text-xs font-semibold text-muted-foreground mb-2">PROJECTS</p>
+    <div style={{
+      width: '280px',
+      background: token('elevation.surface', '#FFFFFF'),
+      borderRadius: '3px',
+      boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: '12px 16px',
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}>
+        <p style={{
+          fontSize: '11px',
+          fontWeight: 600,
+          color: token('color.text.subtlest', '#6B778C'),
+          margin: '0 0 8px 0',
+          textTransform: 'uppercase',
+          letterSpacing: '0.5px',
+        }}>
+          PROJECTS
+        </p>
         
-        {/* Show filter indicator when program is selected */}
+        {/* Filter indicator */}
         {programId && programName && (
-          <div className="mb-2 flex items-center gap-2 px-2 py-1.5 bg-muted rounded text-xs">
-            <span className="text-muted-foreground">Filtered by:</span>
-            <span className="font-medium">{programName}</span>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '6px 8px',
+            background: token('color.background.neutral', '#F4F5F7'),
+            borderRadius: '3px',
+            marginBottom: '8px',
+            fontSize: '12px',
+          }}>
+            <span style={{ color: token('color.text.subtlest', '#6B778C') }}>Filtered by:</span>
+            <span style={{ fontWeight: 500, color: token('color.text', '#172B4D') }}>{programName}</span>
             <button
               onClick={handleClearFilter}
-              className="ml-auto p-0.5 hover:bg-background rounded"
-              aria-label="Clear filter"
+              style={{
+                marginLeft: 'auto',
+                padding: '2px',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                borderRadius: '3px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              <X className="h-3 w-3" />
+              <X style={{ width: '12px', height: '12px', color: token('color.icon', '#6B778C') }} />
             </button>
           </div>
         )}
         
-        <div className="relative">
-          <Input
+        <div style={{ position: 'relative' }}>
+          <input
             type="text"
             placeholder="Search projects..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pr-8 h-9"
+            style={{
+              width: '100%',
+              height: '32px',
+              padding: '6px 32px 6px 8px',
+              fontSize: '14px',
+              border: `2px solid ${token('color.border.input', '#DFE1E6')}`,
+              borderRadius: '3px',
+              outline: 'none',
+              background: token('elevation.surface', '#FFFFFF'),
+              color: token('color.text', '#172B4D'),
+              boxSizing: 'border-box',
+            }}
           />
-          <Search className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search style={{
+            position: 'absolute',
+            right: '8px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: '16px',
+            height: '16px',
+            color: token('color.icon', '#6B778C'),
+          }} />
         </div>
       </div>
-      <ScrollArea className="max-h-64">
-        <div className="p-2">
-          {isLoading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-9 w-full" />
-              <Skeleton className="h-9 w-full" />
-              <Skeleton className="h-9 w-full" />
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-              {search ? 'No projects found' : programId ? 'No projects in this program' : 'No projects available'}
-            </div>
-          ) : (
-            filtered.map((project) => {
-              const starred = isStarred('program', project.id);
-              return (
-                <button
-                  key={project.id}
-                  onClick={() => handleSelect(project)}
-                  className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm group"
-                >
-                  <div className="flex items-center gap-2">
-                    <Layers className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{project.name}</div>
-                      {project.portfolios && (
-                        <div className="text-xs text-muted-foreground truncate">
-                          {project.portfolios.name}
-                        </div>
-                      )}
-                    </div>
-                    <button
-                      onClick={(e) => handleToggleStar(e, project)}
-                      className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand-gold"
-                      aria-label={starred ? "Unstar project" : "Star project"}
-                    >
-                      <Star
-                        className={`h-4 w-4 ${
-                          starred
-                            ? "text-brand-gold fill-brand-gold"
-                            : "text-muted-foreground hover:text-brand-gold"
-                        }`}
-                      />
-                    </button>
+
+      {/* List */}
+      <div style={{
+        maxHeight: '200px',
+        overflowY: 'auto',
+        padding: '8px',
+      }}>
+        {isLoading ? (
+          <div style={{ padding: '16px', textAlign: 'center', color: token('color.text.subtlest', '#6B778C'), fontSize: '14px' }}>
+            Loading...
+          </div>
+        ) : filtered.length === 0 ? (
+          <div style={{ padding: '16px', textAlign: 'center', color: token('color.text.subtlest', '#6B778C'), fontSize: '14px' }}>
+            {search ? 'No projects found' : programId ? 'No projects in this program' : 'No projects available'}
+          </div>
+        ) : (
+          filtered.map((project) => {
+            const starred = isStarred('program', project.id);
+            return (
+              <button
+                key={project.id}
+                onClick={() => handleSelect(project)}
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  padding: '8px 12px',
+                  borderRadius: '3px',
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: '14px',
+                  color: token('color.text', '#172B4D'),
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                }}
+              >
+                <Layers style={{
+                  width: '16px',
+                  height: '16px',
+                  color: token('color.icon', '#6B778C'),
+                  flexShrink: 0,
+                }} />
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {project.name}
                   </div>
-                </button>
-              );
-            })
-          )}
-        </div>
-      </ScrollArea>
-      
+                  {project.portfolios && (
+                    <div style={{
+                      fontSize: '12px',
+                      color: token('color.text.subtlest', '#6B778C'),
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      {project.portfolios.name}
+                    </div>
+                  )}
+                </div>
+                <Star
+                  onClick={(e) => handleToggleStar(e, project)}
+                  style={{
+                    width: '16px',
+                    height: '16px',
+                    color: starred ? '#C69C6D' : token('color.icon', '#6B778C'),
+                    fill: starred ? '#C69C6D' : 'none',
+                    cursor: 'pointer',
+                    flexShrink: 0,
+                  }}
+                />
+              </button>
+            );
+          })
+        )}
+      </div>
+
       {/* Bottom Actions */}
-      <div className="border-t">
-        <div className="p-2 space-y-1">
-          <button
-            onClick={handleCreateClick}
-            className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm flex items-center gap-2 text-brand-gold font-medium"
-          >
-            <Plus className="h-4 w-4" />
-            Create Project
-          </button>
-          <Separator className="my-1" />
-          <button
-            onClick={handleManageClick}
-            className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm flex items-center gap-2 text-muted-foreground"
-          >
-            <Settings className="h-4 w-4" />
-            Manage Projects
-          </button>
-        </div>
+      <div style={{ borderTop: `1px solid ${token('color.border', '#DFE1E6')}`, padding: '8px' }}>
+        <button
+          onClick={handleCreateClick}
+          style={{
+            width: '100%',
+            textAlign: 'left',
+            padding: '8px 12px',
+            borderRadius: '3px',
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            fontWeight: 500,
+            color: '#C69C6D',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+          }}
+        >
+          <Plus style={{ width: '16px', height: '16px' }} />
+          Create Project
+        </button>
+        
+        <button
+          onClick={handleManageClick}
+          style={{
+            width: '100%',
+            textAlign: 'left',
+            padding: '8px 12px',
+            borderRadius: '3px',
+            border: 'none',
+            background: 'transparent',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            color: token('color.text.subtlest', '#6B778C'),
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'transparent';
+          }}
+        >
+          <Settings style={{ width: '16px', height: '16px' }} />
+          Manage Projects
+        </button>
       </div>
     </div>
   );
