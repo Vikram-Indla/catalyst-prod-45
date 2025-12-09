@@ -55,6 +55,39 @@ const spacing = {
   s600: token('space.600', '48px'),
 };
 
+// Table styles for DynamicTable
+const tableStyles = `
+  [data-testid="dynamic-table"] tbody tr {
+    transition: background-color 150ms ease-in-out;
+  }
+  
+  [data-testid="dynamic-table"] tbody tr:hover {
+    background-color: ${token('color.background.neutral.hovered', '#EBECF0')};
+    cursor: pointer;
+  }
+  
+  [data-testid="dynamic-table"] th {
+    font-size: 11px;
+    font-weight: 600;
+    color: ${token('color.text.subtle', '#6B778C')};
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: ${token('space.200', '16px')};
+    background: ${token('color.background.neutral.subtle', '#FAFBFC')};
+  }
+  
+  [data-testid="dynamic-table"] td {
+    font-size: 14px;
+    color: ${token('color.text', '#172B4D')};
+    padding: ${token('space.200', '16px')};
+    border-top: 1px solid ${token('color.border', '#DFE1E6')};
+  }
+  
+  [data-testid="dynamic-table"] tbody tr:first-child td {
+    border-top: none;
+  }
+`;
+
 // DemandRequest interface for type safety
 interface DemandRequest {
   id: string;
@@ -839,14 +872,17 @@ export default function IndustryPageAtlaskit() {
                 onRequestSelect={setSelectedRequestId}
               />
             ) : sortedRequests.length > 0 ? (
-              <DynamicTableStateless
-                head={head}
-                rows={rows}
-                sortKey={sortKey}
-                sortOrder={sortOrder}
-                onSort={(data) => handleSort(data.key, data.sortOrder)}
-                isFixedSize
-              />
+              <>
+                <style>{tableStyles}</style>
+                <DynamicTableStateless
+                  head={head}
+                  rows={rows}
+                  sortKey={sortKey}
+                  sortOrder={sortOrder}
+                  onSort={(data) => handleSort(data.key, data.sortOrder)}
+                  isFixedSize
+                />
+              </>
             ) : (
               <EmptyState
                 header="No demand requests found"
