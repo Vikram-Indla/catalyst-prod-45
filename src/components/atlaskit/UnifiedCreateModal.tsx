@@ -24,8 +24,11 @@ export function UnifiedCreateModal({
 }: UnifiedCreateModalProps) {
   const handleSelect = (type: CreateType) => {
     console.log('[UnifiedCreateModal] handleSelect called with type:', type);
-    onSelectType(type);
     onClose();
+    // Call onSelectType AFTER closing the modal to ensure parent state is set correctly
+    setTimeout(() => {
+      onSelectType(type);
+    }, 0);
   };
 
   return (
