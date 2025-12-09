@@ -4,12 +4,11 @@
  */
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Resource, CapacityProject } from '@/types/capacity';
 import { calculateUtilization, getStatus } from '@/lib/capacityUtils';
-import { X, Mail, MapPin, Briefcase } from 'lucide-react';
+import { Mail, MapPin, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ResourceDetailModalProps {
@@ -75,12 +74,7 @@ export function ResourceDetailModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px] max-h-[85vh] flex flex-col p-0">
         <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
-          <div className="flex items-center justify-between">
-            <DialogTitle>Resource Details</DialogTitle>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onOpenChange(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle>Resource Details</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
