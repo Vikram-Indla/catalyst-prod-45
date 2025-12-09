@@ -22,8 +22,8 @@ interface PeopleRosterProps {
 
 export function PeopleRoster({ resources, projects, startWeek, startYear, onAllocate }: PeopleRosterProps) {
   const getUtilizationColor = (utilization: number) => {
-    if (utilization >= 100) return 'bg-brand-gold';
-    if (utilization >= 80) return 'bg-success';
+    if (utilization >= 100) return 'bg-destructive';
+    if (utilization >= 80) return 'bg-brand-gold';
     if (utilization >= 50) return 'bg-warning';
     return 'bg-muted-foreground/30';
   };
@@ -33,7 +33,7 @@ export function PeopleRoster({ resources, projects, startWeek, startYear, onAllo
       case 'over':
         return <Badge variant="destructive" className="text-[10px] px-1.5 py-0">Over</Badge>;
       case 'full':
-        return <Badge className="bg-success text-white text-[10px] px-1.5 py-0">Full</Badge>;
+        return <Badge className="bg-brand-gold text-white text-[10px] px-1.5 py-0">Full</Badge>;
       case 'under':
         return <Badge variant="secondary" className="text-[10px] px-1.5 py-0">Under</Badge>;
     }
@@ -103,8 +103,8 @@ export function PeopleRoster({ resources, projects, startWeek, startYear, onAllo
                     variant="secondary" 
                     className={cn(
                       "text-xs",
-                      resource.location === 'Onsite' && "bg-success/10 text-success",
-                      resource.location === 'Offshore' && "bg-info/10 text-info",
+                      resource.location === 'Onsite' && "bg-brand-gold/10 text-brand-gold",
+                      resource.location === 'Offshore' && "bg-muted-foreground/10 text-muted-foreground",
                       resource.location === 'Hybrid' && "bg-warning/10 text-warning"
                     )}
                   >
