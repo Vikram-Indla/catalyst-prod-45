@@ -231,7 +231,7 @@ export function StrategicEpicDrawer({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] sm:w-[500px] overflow-y-auto">
+      <SheetContent className="w-[400px] sm:w-[500px] overflow-y-auto bg-background">
         <SheetHeader className="pb-4 border-b border-border">
           <SheetTitle className="flex items-center gap-2">
             <Zap className="h-5 w-5 text-brand-gold" />

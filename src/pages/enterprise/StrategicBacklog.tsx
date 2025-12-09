@@ -59,8 +59,8 @@ export default function StrategicBacklog() {
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header */}
-      <div className="h-[72px] border-b border-border bg-card flex items-center justify-between px-6 flex-shrink-0">
+      {/* Header - align header pattern */}
+      <div className="h-[72px] border-b border-border bg-background flex items-center justify-between px-6 flex-shrink-0">
         <div className="flex items-center gap-4">
           <h1 className="text-lg font-semibold text-foreground">Strategic Backlog</h1>
           {currentSnapshot && (
