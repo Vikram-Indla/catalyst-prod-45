@@ -1,78 +1,153 @@
-/* Atlassian Sans - using IBM Plex Sans as closest system equivalent */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
-
+/* Atlassian Design System - System Font Stack */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================
-   1) THEME CUSTOMIZATION & DARK MODE
+   ATLASSIAN DESIGN SYSTEM TOKENS
    ============================================ */
 :root {
-  /* === CATALYST L9 ENTERPRISE GOLD THEME === */
+  /* === ATLASSIAN NEUTRALS (N-scale) === */
+  --n0: 0 0% 100%;                             /* #FFFFFF - white */
+  --n10: 210 20% 99%;                          /* #FAFBFC - background */
+  --n20: 210 17% 97%;                          /* #F4F5F7 - hover */
+  --n30: 216 14% 93%;                          /* #EBECF0 - borders */
+  --n40: 218 14% 89%;                          /* #DFE1E6 - borders */
+  --n50: 214 12% 78%;                          /* #C1C7D0 - disabled */
+  --n60: 215 11% 74%;                          /* #B3BAC5 - placeholder */
+  --n70: 214 11% 69%;                          /* #A5ADBA - secondary text */
+  --n80: 215 10% 64%;                          /* #97A0AF - secondary text */
+  --n90: 215 10% 59%;                          /* #8993A4 - secondary text */
+  --n100: 216 10% 54%;                         /* #7A869A - secondary text */
+  --n200: 216 12% 46%;                         /* #6B778C - secondary text */
+  --n300: 217 13% 44%;                         /* #5E6C84 - secondary text */
+  --n400: 217 16% 40%;                         /* #505F79 - body text */
+  --n500: 217 19% 35%;                         /* #42526E - body text */
+  --n600: 217 23% 33%;                         /* #344563 - heading */
+  --n700: 217 27% 25%;                         /* #253858 - heading */
+  --n800: 217 33% 20%;                         /* #172B4D - heading */
+  --n900: 217 48% 15%;                         /* #091E42 - heading */
   
-  /* Brand Colors - TurnQy */
-  --brand-dark: 0 0% 10%;                     /* #1A1A1A */
-  --brand-gold: 35 46% 60%;                   /* #C69C6D */
-  --brand-gold-hover: 35 41% 55%;             /* #B8905F */
-  --brand-gold-pale: 35 46% 60% / 0.08;       /* rgba(198,156,109,0.08) */
-  --brand-gold-border: 35 46% 60% / 0.25;     /* rgba(198,156,109,0.25) */
+  /* === ATLASSIAN BLUES (B-scale) === */
+  --b50: 216 100% 94%;                         /* #DEEBFF */
+  --b75: 214 100% 85%;                         /* #B3D4FF */
+  --b100: 213 100% 65%;                        /* #4C9AFF */
+  --b200: 214 100% 57%;                        /* #2684FF */
+  --b300: 218 100% 50%;                        /* #0065FF */
+  --b400: 217 100% 40%;                        /* #0052CC - primary */
+  --b500: 217 100% 33%;                        /* #0747A6 */
   
-  /* Text Colors - High Contrast */
-  --text-primary: 217 19% 16%;                /* #111827 */
-  --text-secondary: 217 13% 35%;              /* #4B5563 */
-  --text-tertiary: 217 11% 46%;               /* #6B7280 */
-  --text-muted: 217 10% 65%;                  /* #9CA3AF */
-  --text-inverse: 0 0% 100%;                  /* #FFFFFF */
+  /* === ATLASSIAN GREENS (G-scale) === */
+  --g50: 150 67% 94%;                          /* #E3FCEF */
+  --g75: 158 78% 82%;                          /* #ABF5D1 */
+  --g100: 156 84% 72%;                         /* #79F2C0 */
+  --g200: 158 62% 60%;                         /* #57D9A3 */
+  --g300: 158 68% 47%;                         /* #36B37E - success */
+  --g400: 158 76% 38%;                         /* #00875A */
+  --g500: 158 100% 20%;                        /* #006644 */
   
-  /* Surface Colors */
-  --surface-white: 0 0% 100%;                 /* #FFFFFF */
-  --surface-gray-50: 210 20% 98%;             /* #F9FAFB */
-  --surface-gray-100: 214 15% 96%;            /* #F3F4F6 */
-  --surface-gray-200: 218 14% 91%;            /* #E5E7EB */
+  /* === ATLASSIAN REDS (R-scale) === */
+  --r50: 14 100% 95%;                          /* #FFEBE6 */
+  --r75: 12 100% 84%;                          /* #FFBDAD */
+  --r100: 11 100% 73%;                         /* #FF8F73 */
+  --r200: 11 100% 66%;                         /* #FF7452 */
+  --r300: 11 100% 60%;                         /* #FF5630 - error */
+  --r400: 4 100% 50%;                          /* #DE350B */
+  --r500: 11 100% 37%;                         /* #BF2600 */
   
-  /* Background and foreground - mapped to surfaces */
-  --background: 0 0% 100%;                    /* #FFFFFF - page background */
-  --foreground: 217 19% 16%;                  /* #111827 - text */
-  --card: 0 0% 100%;                          /* #FFFFFF - raised surface */
-  --card-foreground: 217 19% 16%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 217 19% 16%;
+  /* === ATLASSIAN YELLOWS (Y-scale) === */
+  --y50: 47 100% 95%;                          /* #FFFAE6 */
+  --y75: 44 100% 85%;                          /* #FFF0B3 */
+  --y100: 43 100% 75%;                         /* #FFE380 */
+  --y200: 45 100% 50%;                         /* #FFC400 - warning */
+  --y300: 40 100% 50%;                         /* #FFAB00 */
+  --y400: 36 100% 50%;                         /* #FF991F */
+  --y500: 33 100% 50%;                         /* #FF8B00 */
   
-  /* FIX A: Surface Hierarchy - TRUE sunken/backdrop separation */
-  --surface-sunken: 210 20% 98%;              /* #F9FAFB - sunken containers */
-  --surface-raised: 0 0% 100%;                /* #FFFFFF - raised cards */
-  --surface-backdrop: 214 15% 96%;            /* #F3F4F6 - dense container backdrop */
+  /* === ATLASSIAN PURPLES (P-scale) === */
+  --p50: 246 100% 96%;                         /* #EAE6FF */
+  --p75: 247 70% 82%;                          /* #C0B6F2 */
+  --p100: 248 48% 71%;                         /* #998DD9 */
+  --p200: 250 47% 66%;                         /* #8777D9 */
+  --p300: 253 48% 54%;                         /* #6554C0 */
+  --p400: 254 53% 47%;                         /* #5243AA */
+  --p500: 255 65% 39%;                         /* #403294 */
   
-  /* Primary - NOW USES BRAND GOLD */
-  --primary: 35 46% 60%;                      /* #C69C6D - Catalyst accent */
-  --primary-foreground: 0 0% 100%;            /* White text on gold */
+  /* === ATLASSIAN TEALS (T-scale) === */
+  --t50: 186 100% 95%;                         /* #E6FCFF */
+  --t75: 187 100% 85%;                         /* #B3F5FF */
+  --t100: 186 91% 72%;                         /* #79E2F2 */
+  --t200: 188 100% 45%;                        /* #00C7E6 */
+  --t300: 188 100% 43%;                        /* #00B8D9 */
+  --t400: 188 100% 37%;                        /* #00A3BF */
+  --t500: 188 100% 32%;                        /* #008DA6 */
   
-  /* Secondary - light gray for subtle backgrounds */
-  --secondary: 214 15% 96%;                   /* #F3F4F6 */
-  --secondary-foreground: 217 19% 16%;        /* #111827 */
+  /* === ATLASSIAN SPACING (8px base) === */
+  --space-025: 2px;
+  --space-050: 4px;
+  --space-075: 6px;
+  --space-100: 8px;
+  --space-150: 12px;
+  --space-200: 16px;
+  --space-250: 20px;
+  --space-300: 24px;
+  --space-400: 32px;
+  --space-500: 40px;
+  --space-600: 48px;
+  --space-800: 64px;
+  --space-1000: 80px;
   
-  /* Muted - now uses sunken surface for visual hierarchy (FIX A) */
-  --muted: 210 20% 98%;                       /* #F9FAFB - not pure white */
-  --muted-foreground: 217 11% 46%;            /* #6B7280 */
+  /* === SEMANTIC MAPPINGS === */
+  --background: var(--n0);                     /* #FFFFFF */
+  --foreground: var(--n800);                   /* #172B4D */
+  --card: var(--n0);
+  --card-foreground: var(--n800);
+  --popover: var(--n0);
+  --popover-foreground: var(--n800);
   
-  /* Accent - for hover states */
-  --accent: 214 15% 96%;                      /* #F3F4F6 */
-  --accent-foreground: 217 19% 16%;           /* #111827 */
+  /* Primary - Atlassian Blue */
+  --primary: var(--b400);                      /* #0052CC */
+  --primary-foreground: var(--n0);
   
-  /* Destructive - error states */
-  --destructive: 0 72% 51%;                   /* #DE350B / #FF5630 */
-  --destructive-foreground: 0 0% 100%;
+  /* Secondary */
+  --secondary: var(--n20);                     /* #F4F5F7 */
+  --secondary-foreground: var(--n800);
+  
+  /* Muted */
+  --muted: var(--n10);                         /* #FAFBFC */
+  --muted-foreground: var(--n200);             /* #6B778C */
+  
+  /* Accent */
+  --accent: var(--n20);                        /* #F4F5F7 */
+  --accent-foreground: var(--n800);
+  
+  /* Destructive */
+  --destructive: var(--r300);                  /* #FF5630 */
+  --destructive-foreground: var(--n0);
   
   /* Border */
-  --border: 218 14% 91%;                      /* #E5E7EB */
-  --input: 218 14% 91%;
-  --ring: 35 46% 60%;                         /* Brand gold for focus rings */
+  --border: var(--n40);                        /* #DFE1E6 */
+  --input: var(--n40);
+  --ring: var(--b400);                         /* #0052CC */
   
-  /* Border */
-  --border: 218 14% 91%;                      /* #E5E7EB */
-  --input: 218 14% 91%;
-  --ring: 35 46% 60%;                         /* Brand gold for focus rings */
+  /* State colors */
+  --success: var(--g300);                      /* #36B37E */
+  --success-foreground: var(--n0);
+  --warning: var(--y200);                      /* #FFC400 */
+  --warning-foreground: var(--n800);
+  --info: var(--b300);                         /* #0065FF */
+  --info-foreground: var(--n0);
+  
+  /* Health colors */
+  --health-green: var(--g300);
+  --health-yellow: var(--y300);
+  --health-red: var(--r300);
+  --health-gray: var(--n200);
+  
+  /* === CATALYST BRAND OVERLAY === */
+  --brand-dark: 0 0% 10%;                      /* #1A1A1A */
+  --brand-gold: 35 46% 60%;                    /* #C69C6D */
+  --brand-gold-hover: 35 41% 55%;              /* #B8905F */
   
   /* Chart colors */
   --chart-1: 12 76% 61%;
@@ -82,163 +157,27 @@
   --chart-5: 27 87% 67%;
   
   /* Radius */
-  --radius: 0.5rem;
+  --radius: 3px;                               /* Atlassian standard */
   
-  /* State colors - from L9 Enterprise Gold spec */
-  --success: 142 71% 50%;                     /* #36B37E */
-  --success-foreground: 0 0% 100%;
-  --success-600: 142 71% 45%;
-  --warning: 38 92% 50%;                      /* #FFAB00 */
-  --warning-foreground: 0 0% 100%;
-  --warning-600: 38 92% 45%;
-  --info: 210 100% 50%;                       /* #0065FF */
-  --info-foreground: 0 0% 100%;
-  --info-600: 210 100% 45%;
-  
-  /* Health status colors */
-  --health-on-track: 142 71% 50%;             /* Green */
-  --health-at-risk: 38 92% 50%;               /* Warning yellow */
-  --health-off-track: 0 72% 51%;              /* Destructive red */
-  --health-unknown: 217 11% 46%;              /* Gray */
-  
-  /* Health color shortcuts */
-  --health-green: 142 71% 50%;
-  --health-yellow: 38 92% 50%;
-  --health-red: 0 72% 51%;
-  --health-gray: 217 11% 46%;
-  
-  /* OKR Heatmap colors */
-  --okr-heatmap-green: 142 71% 45%;            /* Green for ≥0.7 */
-  --okr-heatmap-yellow: 38 92% 50%;            /* Yellow for 0.4-0.6 */
-  --okr-heatmap-red: 0 72% 51%;                /* Red for <0.4 */
-  --okr-heatmap-gray: 217 11% 46%;             /* Gray for N/A */
-  
-  /* Work item type colors - using brand gold as primary accent */
-  --workitem-theme: 263 70% 50%;              /* Purple */
-  --workitem-epic: 35 46% 60%;                /* Brand gold */
-  --workitem-feature: 38 92% 50%;             /* Orange/warning */
-  --workitem-story: 142 71% 50%;              /* Success green */
-  --workitem-subtask: 210 100% 50%;           /* Info blue */
-  --workitem-defect: 0 72% 51%;               /* Destructive red */
-  
-  /* Roadmap bar colors */
-  --roadmap-bar-not-started: 27 96% 61%;
-  --roadmap-bar-in-progress: 142 71% 45%;
-  --roadmap-bar-blocked: 0 84.2% 60.2%;
-  --roadmap-bar-done: 215.4 16.3% 46.9%;
-  --roadmap-bar-future: 215 20.2% 65.1%;
-  
-  /* Program Board team colors */
-  --team-cyan: 188 94% 43%;
-  --team-emerald: 142 71% 45%;
-  --team-violet: 263 70% 50%;
-  --team-orange: 27 96% 61%;
-  --team-gold: 35 46% 60%;                    /* Brand gold */
-  --team-green: 142 71% 45%;
-  
-  /* Neutral colors (for comprehensive gray scale) */
-  --neutral-0: 0 0% 100%;                     /* #FFFFFF */
-  --neutral-50: 210 20% 98%;                  /* #F9FAFB */
-  --neutral-100: 214 15% 96%;                 /* #F3F4F6 */
-  --neutral-200: 218 14% 91%;                 /* #E5E7EB */
-  --neutral-300: 216 12% 84%;                 /* #D1D5DB */
-  --neutral-400: 217 10% 65%;                 /* #9CA3AF */
-  --neutral-500: 217 11% 46%;                 /* #6B7280 */
-  --neutral-600: 217 13% 35%;                 /* #4B5563 */
-  --neutral-700: 216 16% 27%;                 /* #374151 */
-  --neutral-800: 217 19% 20%;                 /* #1F2937 */
-  --neutral-900: 217 19% 16%;                 /* #111827 */
-  
-  /* === JIRA ALIGN DESIGN SYSTEM TOKENS === */
-  
-  /* Spacing Scale (8px base) */
-  --s1: 4px;      /* 0.5 unit */
-  --s2: 8px;      /* 1 unit */
-  --s3: 12px;     /* 1.5 units */
-  --s4: 16px;     /* 2 units */
-  --s5: 20px;     /* 2.5 units */
-  --s6: 24px;     /* 3 units */
-  --s7: 32px;     /* 4 units */
-  --s8: 40px;     /* 5 units */
-  --s9: 48px;     /* 6 units */
-  
-  /* Layout Measurements (FIX B: Unified header height) */
+  /* Layout Measurements */
   --topnav-h: 56px;
-  --pagehdr-h: 56px;                          /* Single source of truth - NOT 72px */
+  --pagehdr-h: 56px;
   --sidebar-w: 280px;
   --toolbar-h: 48px;
-  --grid-row: 40px;                           /* FIX C: Table row height = 40px */
-  --grid-row-compact: 32px;                   /* Compact variant */
-  --grid-hdr: 40px;
-  --timeline-hdr: 32px;
-  --bar-h: 20px;
-  
-  /* FIX D: Button sizes (36px default, 32px small) */
-  --btn-height-default: 36px;
-  --btn-height-sm: 32px;
-  --btn-height-lg: 40px;
-  --btn-height-icon: 32px;
-  
-  /* Typography */
-  --font-size-xs: 11px;
-  --font-size-sm: 12px;
-  --font-size-md: 14px;
-  --font-size-lg: 16px;
-  --font-size-xl: 18px;
-  --font-size-2xl: 20px;
-  
-  /* Transitions */
-  --transition-fast: 150ms;
-  --transition-normal: 200ms;
-  --transition-slow: 300ms;
+  --grid-row: 40px;
+  --grid-row-compact: 32px;
   
   /* Shadow Tokens */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  --shadow-panel: 0 8px 24px rgba(0, 0, 0, 0.12);
-  --shadow-elegant: 0 10px 30px -10px rgba(198, 156, 109, 0.3);
-  --shadow-glow: 0 0 40px rgba(198, 156, 109, 0.4);
+  --shadow-overlay: 0 4px 8px -2px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31);
+  --shadow-raised: 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31);
+  --shadow-overflow: 0 0 8px rgba(9, 30, 66, 0.08), 0 0 1px rgba(9, 30, 66, 0.15);
   
-  /* === EXECUTIVE ROADMAP DESIGN SYSTEM === */
-  --roadmap-ivory: 40 33% 97%;                /* #FAF8F5 - background */
-  --roadmap-charcoal: 20 6% 16%;              /* #2C2825 - dark text */
-  --roadmap-parchment: 36 18% 95%;            /* #F5F2ED - secondary bg */
-  --roadmap-sandstone: 36 12% 89%;            /* #E8E4DD - borders */
-  --roadmap-driftwood: 36 9% 76%;             /* #C4BEB4 - muted elements */
-  --roadmap-fossil: 25 3% 46%;                /* #7A7570 - muted text */
-  --roadmap-graphite: 24 5% 33%;              /* #5C5650 - secondary text */
-  
-  /* Executive Roadmap Status Colors */
-  --roadmap-status-new: 35 46% 60%;           /* #C69C6D - gold */
-  --roadmap-status-analyse: 210 26% 48%;      /* #5B7B9B - steel blue */
-  --roadmap-status-approved: 28 26% 44%;      /* #8B7355 - dark gold */
-  --roadmap-status-implement: 146 31% 42%;    /* #4A8C6A - green */
-  --roadmap-status-closed: 24 5% 33%;         /* #5C5650 - charcoal */
-  
-  /* Executive Roadmap Today Line */
-  --roadmap-today: 7 76% 60%;                 /* #E85D4C - coral red */
-  
-  /* Executive Roadmap Milestone Colors */
-  --roadmap-milestone-complete: 146 31% 42%;  /* #4A8C6A - green */
-  --roadmap-milestone-current: 35 46% 60%;    /* #C69C6D - gold */
-  --roadmap-milestone-pending: 36 9% 76%;     /* #C4BEB4 - driftwood */
-  
-  /* === GOLDEN HOUR SECONDARY PALETTE === */
-  /* For charts, graphs, reports, and data visualizations */
-  --palette-expert: 120 15% 43%;              /* #5c7c5c - Olive green (Level 5) */
-  --palette-advanced: 28 26% 44%;             /* #8b7355 - Bronze/brown (Level 4) */
-  --palette-intermediate: 35 46% 60%;         /* #c69c6d - Catalyst gold (Level 3) */
-  --palette-beginner: 35 42% 71%;             /* #d4b896 - Light champagne (Level 2) */
-  --palette-none: 210 8% 80%;                 /* #c8ccd0 - Cool grey (Level 1) */
-  
-  /* Chart-specific aliases for Golden Hour palette */
-  --chart-golden-1: 120 15% 43%;              /* Expert - Olive */
-  --chart-golden-2: 28 26% 44%;               /* Advanced - Bronze */
-  --chart-golden-3: 35 46% 60%;               /* Intermediate - Gold */
-  --chart-golden-4: 35 42% 71%;               /* Beginner - Champagne */
-  --chart-golden-5: 210 8% 80%;               /* None - Grey */
+  /* Golden Hour Palette */
+  --palette-expert: 120 15% 43%;
+  --palette-advanced: 28 26% 44%;
+  --palette-intermediate: 35 46% 60%;
+  --palette-beginner: 35 42% 71%;
+  --palette-none: 210 8% 80%;
 }
 
 .dark {
@@ -272,7 +211,7 @@
 }
 
 /* ============================================
-   2) BASE ELEMENT STYLING
+   2) BASE ELEMENT STYLING - ATLASSIAN TYPOGRAPHY
    ============================================ */
 * {
   @apply border-border;
@@ -280,47 +219,69 @@
 
 body {
   @apply bg-background text-foreground;
-  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: hsl(var(--n800));
 }
 
+/* Atlassian Heading Styles */
 h1 {
-  @apply text-2xl font-bold;
+  font-size: 29px;
+  font-weight: 500;
+  line-height: 32px;
+  color: hsl(var(--n800));
 }
 
 h2 {
-  @apply text-xl font-semibold;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 28px;
+  color: hsl(var(--n800));
 }
 
 h3 {
-  @apply text-lg font-medium;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px;
+  color: hsl(var(--n800));
 }
 
-/* ============================================
-   3) UTILITY CLASSES
-   ============================================ */
-.text-xs {
-  font-size: var(--font-size-xs);
+h4 {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  color: hsl(var(--n800));
 }
 
-.text-sm {
-  font-size: var(--font-size-sm);
+h5 {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 16px;
+  color: hsl(var(--n800));
 }
 
-.text-base {
-  font-size: var(--font-size-md);
+h6 {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  color: hsl(var(--n800));
 }
 
-.text-lg {
-  font-size: var(--font-size-lg);
+/* Small text */
+small, .text-small {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
 }
 
-.text-xl {
-  font-size: var(--font-size-xl);
-}
-
-.text-2xl {
-  font-size: var(--font-size-2xl);
+/* Code text */
+code, .text-code {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
 
 /* Gradient Utilities */
