@@ -43,6 +43,7 @@ import { PROCESS_STEPS } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { SavedFiltersDropdown } from '@/components/shared/SavedFiltersDropdown';
+import { BulkActionsBar } from '@/components/atlaskit/BulkActionsBar';
 
 // Token-based styling helpers
 const colors = {
@@ -721,6 +722,15 @@ export default function IndustryPageAtlaskit() {
         isOpen={!!selectedRequestId}
         requestId={selectedRequestId} 
         onClose={() => setSelectedRequestId(null)} 
+      />
+
+      {/* Bulk Actions Bar */}
+      <BulkActionsBar
+        selectedCount={selectedRows.length}
+        onClear={() => setSelectedRows([])}
+        onUpdateStatus={() => toast({ title: 'Update Status', description: 'Bulk status update coming soon' })}
+        onAssign={() => toast({ title: 'Assign', description: 'Bulk assignment coming soon' })}
+        onDelete={() => toast({ title: 'Delete', description: 'Bulk delete coming soon' })}
       />
     </div>
   );
