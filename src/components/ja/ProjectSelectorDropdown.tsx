@@ -2,8 +2,15 @@ import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
+import Textfield from '@atlaskit/textfield';
+import SearchIcon from '@atlaskit/icon/glyph/search';
+import AddIcon from '@atlaskit/icon/glyph/add';
+import SettingsIcon from '@atlaskit/icon/glyph/settings';
+import BoardIcon from '@atlaskit/icon/glyph/board';
+import StarIcon from '@atlaskit/icon/glyph/star';
+import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { supabase } from '@/integrations/supabase/client';
-import { Search, Layers, Star, Plus, Settings, X } from 'lucide-react';
 import { useStarredItems } from '@/hooks/useStarredItems';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { getProjectLandingRoute } from '@/lib/workspaceContext';
@@ -92,109 +99,106 @@ export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdo
     setProgramName(null);
   }, [setProgramId, setProgramName]);
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  }, []);
-
   return (
     <div style={{
-      width: '280px',
-      background: token('elevation.surface', '#FFFFFF'),
-      borderRadius: '3px',
-      boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+      width: '320px',
+      background: token('elevation.surface.overlay', '#FFFFFF'),
+      borderRadius: token('border.radius', '3px'),
+      boxShadow: token('elevation.shadow.overlay', '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)'),
+      overflow: 'hidden',
     }}>
-      {/* Header */}
+      {/* HEADER - ATLASKIT SPEC */}
       <div style={{
-        padding: '12px 16px',
+        padding: `${token('space.150', '12px')} ${token('space.200', '16px')}`,
         borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
       }}>
-        <p style={{
+        <h3 style={{
           fontSize: '11px',
           fontWeight: 600,
-          color: token('color.text.subtlest', '#6B778C'),
-          margin: '0 0 8px 0',
           textTransform: 'uppercase',
-          letterSpacing: '0.5px',
+          letterSpacing: '0.06em',
+          color: token('color.text.subtlest', '#6B778C'),
+          margin: 0,
         }}>
           PROJECTS
-        </p>
-        
-        {/* Filter indicator */}
-        {programId && programName && (
+        </h3>
+      </div>
+
+      {/* FILTER CHIP (if program selected) */}
+      {programId && programName && (
+        <div style={{
+          padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          background: token('color.background.neutral', '#F4F5F7'),
+        }}>
           <div style={{
-            display: 'flex',
+            display: 'inline-flex',
             alignItems: 'center',
-            gap: '8px',
-            padding: '6px 8px',
-            background: token('color.background.neutral', '#F4F5F7'),
-            borderRadius: '3px',
-            marginBottom: '8px',
+            gap: token('space.050', '4px'),
+            padding: `${token('space.050', '4px')} ${token('space.100', '8px')}`,
+            background: token('color.background.neutral.hovered', '#EBECF0'),
+            borderRadius: token('border.radius', '3px'),
             fontSize: '12px',
+            color: token('color.text', '#172B4D'),
           }}>
-            <span style={{ color: token('color.text.subtlest', '#6B778C') }}>Filtered by:</span>
-            <span style={{ fontWeight: 500, color: token('color.text', '#172B4D') }}>{programName}</span>
+            <span style={{ fontWeight: 500, color: token('color.text.subtlest', '#6B778C') }}>Filtered by:</span>
+            <span style={{ fontWeight: 500 }}>{programName}</span>
             <button
               onClick={handleClearFilter}
               style={{
-                marginLeft: 'auto',
-                padding: '2px',
                 background: 'transparent',
                 border: 'none',
                 cursor: 'pointer',
-                borderRadius: '3px',
+                padding: '2px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center',
+                marginLeft: token('space.050', '4px'),
               }}
             >
-              <X style={{ width: '12px', height: '12px', color: token('color.icon', '#6B778C') }} />
+              <CrossIcon label="Clear" size="small" primaryColor={token('color.icon.subtle', '#6B778C')} />
             </button>
           </div>
-        )}
-        
-        <div style={{ position: 'relative' }}>
-          <input
-            type="text"
-            placeholder="Search projects..."
-            value={search}
-            onChange={handleSearchChange}
-            style={{
-              width: '100%',
-              height: '32px',
-              padding: '6px 32px 6px 8px',
-              fontSize: '14px',
-              border: `2px solid ${token('color.border.input', '#DFE1E6')}`,
-              borderRadius: '3px',
-              outline: 'none',
-              background: token('elevation.surface', '#FFFFFF'),
-              color: token('color.text', '#172B4D'),
-              boxSizing: 'border-box',
-            }}
-          />
-          <Search style={{
-            position: 'absolute',
-            right: '8px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            width: '16px',
-            height: '16px',
-            color: token('color.icon', '#6B778C'),
-          }} />
         </div>
+      )}
+
+      {/* SEARCH - ATLASKIT TEXTFIELD */}
+      <div style={{
+        padding: token('space.150', '12px'),
+        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}>
+        <Textfield
+          placeholder="Search projects..."
+          value={search}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+          elemBeforeInput={
+            <div style={{ paddingLeft: token('space.100', '8px'), display: 'flex', alignItems: 'center' }}>
+              <SearchIcon label="" size="small" primaryColor={token('color.icon.subtle', '#6B778C')} />
+            </div>
+          }
+        />
       </div>
 
-      {/* List */}
+      {/* PROJECTS LIST */}
       <div style={{
-        maxHeight: '200px',
+        maxHeight: '300px',
         overflowY: 'auto',
-        padding: '8px',
       }}>
         {isLoading ? (
-          <div style={{ padding: '16px', textAlign: 'center', color: token('color.text.subtlest', '#6B778C'), fontSize: '14px' }}>
+          <div style={{
+            padding: token('space.300', '24px'),
+            textAlign: 'center',
+            fontSize: '14px',
+            color: token('color.text.subtlest', '#6B778C'),
+          }}>
             Loading...
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: '16px', textAlign: 'center', color: token('color.text.subtlest', '#6B778C'), fontSize: '14px' }}>
+          <div style={{
+            padding: token('space.300', '24px'),
+            textAlign: 'center',
+            fontSize: '14px',
+            color: token('color.text.subtlest', '#6B778C'),
+          }}>
             {search ? 'No projects found' : programId ? 'No projects in this program' : 'No projects available'}
           </div>
         ) : (
@@ -210,15 +214,19 @@ export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdo
         )}
       </div>
 
-      {/* Bottom Actions */}
-      <div style={{ borderTop: `1px solid ${token('color.border', '#DFE1E6')}`, padding: '8px' }}>
-        <ActionButton onClick={handleCreateClick} icon={<Plus style={{ width: '16px', height: '16px' }} />} isPrimary>
+      {/* FOOTER - ATLASKIT SPEC */}
+      <div style={{
+        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
+      }}>
+        <DropdownActionButton onClick={handleCreateClick}>
+          <AddIcon label="" size="small" primaryColor={token('color.icon.subtle', '#6B778C')} />
           Create Project
-        </ActionButton>
+        </DropdownActionButton>
         
-        <ActionButton onClick={handleManageClick} icon={<Settings style={{ width: '16px', height: '16px' }} />}>
+        <DropdownActionButton onClick={handleManageClick}>
+          <SettingsIcon label="" size="small" primaryColor={token('color.icon.subtle', '#6B778C')} />
           Manage Projects
-        </ActionButton>
+        </DropdownActionButton>
       </div>
     </div>
   );
@@ -251,42 +259,38 @@ const ProjectListItem = React.memo(function ProjectListItem({
     onToggleStar(e, project);
   }, [project, onToggleStar]);
 
-  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-  }, []);
-
-  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.background = 'transparent';
-  }, []);
-
   return (
-    <button
-      onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+    <div
       style={{
-        width: '100%',
-        textAlign: 'left',
-        padding: '8px 12px',
-        borderRadius: '3px',
-        border: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        gap: '8px',
-        fontSize: '14px',
-        color: token('color.text', '#172B4D'),
+        gap: token('space.100', '8px'),
+        padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
+        transition: 'background 150ms',
+        cursor: 'pointer',
       }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
+      }}
+      onClick={handleClick}
     >
-      <Layers style={{
-        width: '16px',
-        height: '16px',
-        color: token('color.icon', '#6B778C'),
-        flexShrink: 0,
-      }} />
+      <BoardIcon
+        label=""
+        size="medium"
+        primaryColor={token('color.icon.subtle', '#6B778C')}
+      />
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div style={{
+          fontSize: '14px',
+          fontWeight: 400,
+          color: token('color.text', '#172B4D'),
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
           {project.name}
         </div>
         {project.portfolios && (
@@ -301,60 +305,62 @@ const ProjectListItem = React.memo(function ProjectListItem({
           </div>
         )}
       </div>
-      <Star
+      <button
         onClick={handleStarClick}
         style={{
-          width: '16px',
-          height: '16px',
-          color: isStarred ? '#C69C6D' : token('color.icon', '#6B778C'),
-          fill: isStarred ? '#C69C6D' : 'none',
+          background: 'transparent',
+          border: 'none',
           cursor: 'pointer',
-          flexShrink: 0,
+          padding: token('space.050', '4px'),
+          display: 'flex',
+          alignItems: 'center',
         }}
-      />
-    </button>
+      >
+        {isStarred ? (
+          <StarFilledIcon label="Unstar" size="small" primaryColor={token('color.icon.warning', '#FF991F')} />
+        ) : (
+          <StarIcon label="Star" size="small" primaryColor={token('color.icon.subtle', '#6B778C')} />
+        )}
+      </button>
+    </div>
   );
 });
 
-// Action button component
-interface ActionButtonProps {
+// Action button component - ATLASKIT SPEC
+interface DropdownActionButtonProps {
   onClick: () => void;
-  icon: React.ReactNode;
   children: React.ReactNode;
-  isPrimary?: boolean;
 }
 
-const ActionButton = React.memo(function ActionButton({ onClick, icon, children, isPrimary }: ActionButtonProps) {
-  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-  }, []);
-
-  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    e.currentTarget.style.background = 'transparent';
-  }, []);
-
+const DropdownActionButton = React.memo(function DropdownActionButton({ 
+  onClick, 
+  children 
+}: DropdownActionButtonProps) {
   return (
     <button
       onClick={onClick}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       style={{
-        width: '100%',
-        textAlign: 'left',
-        padding: '8px 12px',
-        borderRadius: '3px',
-        border: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        gap: '8px',
+        gap: token('space.100', '8px'),
+        width: '100%',
+        padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
         fontSize: '14px',
-        fontWeight: isPrimary ? 500 : 400,
-        color: isPrimary ? '#C69C6D' : token('color.text.subtlest', '#6B778C'),
+        fontWeight: 400,
+        color: token('color.text', '#172B4D'),
+        background: 'transparent',
+        border: 'none',
+        cursor: 'pointer',
+        textAlign: 'left',
+        transition: 'background 150ms',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = 'transparent';
       }}
     >
-      {icon}
       {children}
     </button>
   );
