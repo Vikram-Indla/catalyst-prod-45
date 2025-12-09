@@ -4,12 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreVertical, Eye, Play, Archive, Trash2, Calendar, Clock, Layers, Users, Pencil, Settings, CalendarRange } from 'lucide-react';
-import { StrategicSnapshot, useSnapshotConfiguration, useActivateSnapshot, useArchiveSnapshot } from '@/hooks/useStrategicSnapshots';
+import { StrategicSnapshot, useSnapshotConfiguration } from '@/hooks/useStrategicSnapshots';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RenameSnapshotModal } from './RenameSnapshotModal';
 import { EditSnapshotDetailsModal } from './EditSnapshotDetailsModal';
 import { ManageQuartersDrawer } from './ManageQuartersDrawer';
+import { ActivateSnapshotModal } from './ActivateSnapshotModal';
+import { ArchiveSnapshotModal } from './ArchiveSnapshotModal';
 
 interface SnapshotCardProps {
   snapshot: StrategicSnapshot;
@@ -21,24 +23,13 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
   const [renameModalOpen, setRenameModalOpen] = useState(false);
   const [editDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
   const [manageQuartersOpen, setManageQuartersOpen] = useState(false);
+  const [activateModalOpen, setActivateModalOpen] = useState(false);
+  const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const { data: configuration } = useSnapshotConfiguration(snapshot.id);
-  const activateSnapshot = useActivateSnapshot();
-  const archiveSnapshot = useArchiveSnapshot();
 
   const isArchived = snapshot.status === 'ARCHIVED';
   const isActive = snapshot.status === 'ACTIVE';
   const isDraft = snapshot.status === 'DRAFT';
-
-  const canActivate = !isArchived && configuration?.quarters?.length > 0 && configuration?.themes?.length > 0;
-  const canArchive = !isArchived;
-
-  const handleActivate = async () => {
-    await activateSnapshot.mutateAsync(snapshot.id);
-  };
-
-  const handleArchive = async () => {
-    await archiveSnapshot.mutateAsync(snapshot.id);
-  };
 
   const formatDate = (dateStr: string | null | undefined) => {
     if (!dateStr) return 'N/A';
@@ -47,6 +38,12 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
     } catch {
       return dateStr;
     }
+  };
+
+  const getStatusBadgeStyles = () => {
+    if (isActive) return 'bg-brand-gold/10 text-brand-gold border-brand-gold/30';
+    if (isArchived) return 'bg-muted text-muted-foreground border-muted';
+    return 'bg-amber-50 text-amber-700 border-amber-200'; // DRAFT
   };
 
   return (
@@ -62,12 +59,7 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
           <div className="flex items-center gap-2 mt-1">
             <Badge
               variant="outline"
-              className={cn(
-                'text-xs',
-                isActive && 'bg-green-50 text-green-700 border-green-200',
-                isArchived && 'bg-gray-100 text-gray-600 border-gray-200',
-                isDraft && 'bg-amber-50 text-amber-700 border-amber-200'
-              )}
+              className={cn('text-xs font-medium', getStatusBadgeStyles())}
             >
               {snapshot.status}
             </Badge>
@@ -80,42 +72,49 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
               <MoreVertical className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-popover">
+            {/* DRAFT or ACTIVE: show edit actions */}
             {!isArchived && (
-              <DropdownMenuItem onClick={() => setRenameModalOpen(true)}>
-                <Pencil className="h-4 w-4 mr-2" />
-                Rename
-              </DropdownMenuItem>
+              <>
+                <DropdownMenuItem onClick={() => setRenameModalOpen(true)}>
+                  <Pencil className="h-4 w-4 mr-2" />
+                  Rename
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setEditDetailsModalOpen(true)}>
+                  <Settings className="h-4 w-4 mr-2" />
+                  Edit details
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setManageQuartersOpen(true)}>
+                  <CalendarRange className="h-4 w-4 mr-2" />
+                  Manage quarters
+                </DropdownMenuItem>
+              </>
             )}
-            {!isArchived && (
-              <DropdownMenuItem onClick={() => setEditDetailsModalOpen(true)}>
-                <Settings className="h-4 w-4 mr-2" />
-                Edit details
-              </DropdownMenuItem>
-            )}
-            {!isArchived && (
-              <DropdownMenuItem onClick={() => setManageQuartersOpen(true)}>
-                <CalendarRange className="h-4 w-4 mr-2" />
-                Manage quarters
-              </DropdownMenuItem>
-            )}
+            
+            {/* Always show View Details */}
             <DropdownMenuItem onClick={() => onViewDetails(snapshot)}>
               <Eye className="h-4 w-4 mr-2" />
-              View Details
+              View details
             </DropdownMenuItem>
-            {canActivate && !isActive && (
-              <DropdownMenuItem onClick={handleActivate}>
+            
+            {/* DRAFT only: Activate */}
+            {isDraft && (
+              <DropdownMenuItem onClick={() => setActivateModalOpen(true)}>
                 <Play className="h-4 w-4 mr-2" />
-                Set Active
+                Activate snapshot
               </DropdownMenuItem>
             )}
-            {canArchive && (
-              <DropdownMenuItem onClick={handleArchive}>
-                <Archive className="h-4 w-4 mr-2" />
-                Archive
-              </DropdownMenuItem>
-            )}
+            
+            {/* DRAFT or ACTIVE: Archive */}
             {!isArchived && (
+              <DropdownMenuItem onClick={() => setArchiveModalOpen(true)}>
+                <Archive className="h-4 w-4 mr-2" />
+                Archive snapshot
+              </DropdownMenuItem>
+            )}
+            
+            {/* DRAFT only: Delete */}
+            {isDraft && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem 
@@ -180,6 +179,19 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
       <ManageQuartersDrawer
         open={manageQuartersOpen}
         onClose={() => setManageQuartersOpen(false)}
+        snapshot={snapshot}
+      />
+
+      <ActivateSnapshotModal
+        open={activateModalOpen}
+        onClose={() => setActivateModalOpen(false)}
+        snapshot={snapshot}
+        onOpenQuarters={() => setManageQuartersOpen(true)}
+      />
+
+      <ArchiveSnapshotModal
+        open={archiveModalOpen}
+        onClose={() => setArchiveModalOpen(false)}
         snapshot={snapshot}
       />
     </>
