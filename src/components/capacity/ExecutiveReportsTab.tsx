@@ -209,32 +209,61 @@ export function ExecutiveReportsTab({
           </div>
         </div>
 
-        {/* Project Allocation Chart */}
+        {/* Skill Distribution */}
         <div className="bg-muted/30 border border-border rounded-lg p-3">
           <h4 className="font-medium text-xs text-muted-foreground uppercase tracking-wide mb-3">
-            Allocation by Project
+            Skill Distribution
           </h4>
-          {projectData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={100}>
-              <BarChart data={projectData} layout="vertical">
-                <XAxis type="number" tick={{ fontSize: 9 }} />
-                <YAxis dataKey="name" type="category" tick={{ fontSize: 9 }} width={40} />
-                <Tooltip 
-                  formatter={(value: number) => [`${value}%`, 'Allocation']}
-                  contentStyle={{ fontSize: 11 }}
-                />
-                <Bar dataKey="value" radius={[0, 3, 3, 0]}>
-                  {projectData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="h-[100px] flex items-center justify-center text-xs text-muted-foreground">
-              No allocation data
-            </div>
-          )}
+          <div className="space-y-1">
+            {(() => {
+              const skillCounts: Record<string, { count: number; allocated: number }> = {};
+              resources.forEach(r => {
+                const skill = r.primarySkill;
+                if (!skillCounts[skill]) {
+                  skillCounts[skill] = { count: 0, allocated: 0 };
+                }
+                skillCounts[skill].count++;
+                skillCounts[skill].allocated += calculateUtilization(r, currentWeek, currentYear);
+              });
+              
+              const skillColors: Record<string, string> = {
+                'Frontend': '#5c7c5c',
+                'Backend': '#8b7355',
+                'Full Stack': '#c69c6d',
+                'DevOps': '#6b8e8e',
+                'QA': '#7c6b8e',
+                'Product': '#8e7c6b',
+                'Design': '#6b7c8e',
+                'Data': '#8e6b7c'
+              };
+
+              const sortedSkills = Object.entries(skillCounts)
+                .sort((a, b) => b[1].count - a[1].count);
+
+              return sortedSkills.map(([skill, data]) => {
+                const avgAlloc = data.count > 0 ? Math.round(data.allocated / data.count) : 0;
+                const pct = totalFTE > 0 ? Math.round(data.count / totalFTE * 100) : 0;
+                
+                return (
+                  <div key={skill} className="flex justify-between items-center py-1.5">
+                    <div className="flex items-center gap-2">
+                      <div 
+                        className="w-2 h-2 rounded-full" 
+                        style={{ backgroundColor: skillColors[skill] || '#9ca3af' }}
+                      />
+                      <span className="text-xs">{skill}</span>
+                    </div>
+                    <span 
+                      className="font-semibold text-xs"
+                      style={{ color: skillColors[skill] || '#9ca3af' }}
+                    >
+                      {data.count} ({pct}%)
+                    </span>
+                  </div>
+                );
+              });
+            })()}
+          </div>
         </div>
 
         {/* Alerts */}
