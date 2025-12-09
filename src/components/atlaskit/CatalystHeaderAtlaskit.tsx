@@ -29,6 +29,7 @@ import { ReleaseDropdown } from "@/components/ja/ReleaseDropdown";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
 import { catalystToast } from "@/lib/catalystToast";
 import { MobileNavigationMenu } from "@/components/ja/MobileNavigationMenu";
+import { UnifiedCreateModal, CreateType } from "./UnifiedCreateModal";
 
 export function CatalystHeaderAtlaskit() {
   const navigate = useNavigate();
@@ -41,6 +42,30 @@ export function CatalystHeaderAtlaskit() {
   
   const activeNavItem = getActiveNavItem(workspaceType);
   const [createDialogType, setCreateDialogType] = useState<'program' | 'project' | 'product' | null>(null);
+  const [isUnifiedCreateOpen, setIsUnifiedCreateOpen] = useState(false);
+
+  const handleUnifiedCreateSelect = (type: CreateType) => {
+    switch (type) {
+      case 'program':
+        setCreateDialogType('program');
+        break;
+      case 'project':
+        setCreateDialogType('project');
+        break;
+      case 'issue':
+      case 'epic':
+      case 'release':
+        // Navigate to respective create pages or show respective modals
+        if (type === 'issue') {
+          navigate('/items/stories/new');
+        } else if (type === 'epic') {
+          navigate('/items/epics/new');
+        } else if (type === 'release') {
+          navigate('/release/vehicles/new');
+        }
+        break;
+    }
+  };
 
   const { data: user } = useQuery({
     queryKey: ['current-user'],
@@ -349,7 +374,7 @@ export function CatalystHeaderAtlaskit() {
             <Button
               appearance="primary"
               iconBefore={<AddIcon label="Create" size="small" />}
-              onClick={() => setCreateDialogType('product')}
+              onClick={() => setIsUnifiedCreateOpen(true)}
               style={{
                 background: token('color.background.brand.bold', '#0052CC'),
                 color: token('color.text.inverse', '#FFFFFF'),
@@ -436,6 +461,13 @@ export function CatalystHeaderAtlaskit() {
 
       {/* Search Overlay */}
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+
+      {/* Unified Create Modal */}
+      <UnifiedCreateModal
+        isOpen={isUnifiedCreateOpen}
+        onClose={() => setIsUnifiedCreateOpen(false)}
+        onSelectType={handleUnifiedCreateSelect}
+      />
 
       {/* Create Entity Dialog */}
       {createDialogType && (
