@@ -11,15 +11,8 @@ import {
   SheetTitle,
   SheetFooter,
 } from '@/components/ui/sheet';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Search, Target, Filter, X } from 'lucide-react';
-import { useObjectives, type ObjectiveTier } from '@/hooks/useObjectives';
+import { Search, Target } from 'lucide-react';
+import { useObjectives } from '@/hooks/useObjectives';
 import { useLinkObjectivesToTheme } from '@/hooks/useThemeObjectiveLinks';
 
 interface LinkObjectivesDrawerProps {
@@ -41,20 +34,15 @@ export function LinkObjectivesDrawer({
 }: LinkObjectivesDrawerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [tierFilter, setTierFilter] = useState<ObjectiveTier | 'all'>('all');
-  const [showFilters, setShowFilters] = useState(false);
 
   const { data: allObjectives = [], isLoading } = useObjectives({});
   const linkMutation = useLinkObjectivesToTheme();
 
-  // Filter out already linked objectives and apply search/filters
+  // Filter out already linked objectives and apply search
   const availableObjectives = useMemo(() => {
     return allObjectives.filter((obj) => {
       // Exclude already linked
       if (existingObjectiveIds.includes(obj.id)) return false;
-      
-      // Apply tier filter
-      if (tierFilter !== 'all' && obj.tier !== tierFilter) return false;
       
       // Apply search
       if (searchQuery) {
@@ -64,7 +52,7 @@ export function LinkObjectivesDrawer({
       
       return true;
     });
-  }, [allObjectives, existingObjectiveIds, tierFilter, searchQuery]);
+  }, [allObjectives, existingObjectiveIds, searchQuery]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev =>
@@ -96,7 +84,6 @@ export function LinkObjectivesDrawer({
   const handleClose = () => {
     setSelectedIds([]);
     setSearchQuery('');
-    setTierFilter('all');
     onOpenChange(false);
   };
 
@@ -129,47 +116,17 @@ export function LinkObjectivesDrawer({
           </SheetTitle>
         </SheetHeader>
 
-        {/* Search & Filters */}
+        {/* Search */}
         <div className="p-4 pb-2 space-y-2 border-b border-border">
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
-              <Input
-                placeholder="Search objectives..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-9"
-              />
-            </div>
-            <Button
-              variant={showFilters ? 'secondary' : 'outline'}
-              size="sm"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <Filter className="h-3.5 w-3.5" />
-            </Button>
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search objectives..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-8 h-9"
+            />
           </div>
-
-          {showFilters && (
-            <div className="flex items-center gap-2">
-              <Select value={tierFilter} onValueChange={(v) => setTierFilter(v as ObjectiveTier | 'all')}>
-                <SelectTrigger className="h-8 w-32">
-                  <SelectValue placeholder="Level" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Levels</SelectItem>
-                  <SelectItem value="portfolio">Portfolio</SelectItem>
-                  <SelectItem value="program">Program</SelectItem>
-                  <SelectItem value="team">Team</SelectItem>
-                </SelectContent>
-              </Select>
-              {tierFilter !== 'all' && (
-                <Button variant="ghost" size="sm" onClick={() => setTierFilter('all')}>
-                  <X className="h-3.5 w-3.5" />
-                </Button>
-              )}
-            </div>
-          )}
 
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>{availableObjectives.length} available objectives</span>
