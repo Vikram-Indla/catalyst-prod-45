@@ -173,6 +173,7 @@ import EnterpriseIdeation from "./pages/enterprise/EnterpriseIdeation";
 import EnterpriseImpediments from "./pages/enterprise/EnterpriseImpediments";
 import EnterpriseComingSoon from "./pages/enterprise/ComingSoon";
 import SkillsInventory from "./pages/SkillsInventory";
+import { CapacityPlanningPage } from "./components/capacity/CapacityPlanningPage";
 
 import BusinessRequests from "./pages/enterprise/BusinessRequests";
 import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
@@ -319,7 +320,7 @@ const App = () => (
               <Route path="/enterprise/reports/external" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/reports/organizational-hierarchy" element={<EnterpriseComingSoon />} />
               <Route path="/enterprise/reports/work-tree" element={<WorkTreePage />} />
-              <Route path="/enterprise/reports/demand-capacity" element={<EnterpriseComingSoon />} />
+              <Route path="/enterprise/reports/demand-capacity" element={<CapacityPlanningPage />} />
               
               {/* Enterprise More Pages - Placeholder Routes */}
               <Route path="/enterprise/pages/assessments" element={<EnterpriseComingSoon />} />
