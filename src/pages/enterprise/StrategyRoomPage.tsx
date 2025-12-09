@@ -124,59 +124,52 @@ export default function StrategyRoomPage() {
 
   return (
     <div className="h-full flex flex-col bg-background min-w-0">
-      {/* Header */}
-      <div className="border-b bg-card px-3 sm:px-4 md:px-6 py-3 sm:py-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 min-w-0">
-            <div className="flex items-center gap-2 min-w-0">
-              <Star className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground flex-shrink-0" />
-              <h1 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold truncate">Strategy Room</h1>
-            </div>
-            <span className="text-xs text-muted-foreground hidden md:inline">for Snapshot</span>
-            <div className="w-full sm:w-56 md:w-64">
-              <Select value={effectiveSelectedSnapshotId} onValueChange={setSelectedSnapshotId}>
-                <SelectTrigger className="text-xs sm:text-sm h-8 sm:h-9">
-                  <SelectValue placeholder="Select one" />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="p-2">
-                    <Input
-                      placeholder="Search snapshots..."
-                      value={snapshotSearchQuery}
-                      onChange={(e) => setSnapshotSearchQuery(e.target.value)}
-                      className="mb-2 h-7 sm:h-8 text-xs"
-                    />
-                  </div>
-                  {filteredSnapshots.map((snapshot) => (
-                    <SelectItem key={snapshot.id} value={snapshot.id} className="text-xs sm:text-sm">
-                      {snapshot.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      {/* Header - single border line */}
+      <div className="h-[72px] border-b bg-card px-4 md:px-6 flex items-center justify-between flex-shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <Star className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+          <h1 className="text-lg font-semibold truncate">Strategy Room</h1>
+          <span className="text-sm text-muted-foreground hidden md:inline">for Snapshot</span>
+          <div className="w-56 md:w-64">
+            <Select value={effectiveSelectedSnapshotId} onValueChange={setSelectedSnapshotId}>
+              <SelectTrigger className="h-9">
+                <SelectValue placeholder="Select one" />
+              </SelectTrigger>
+              <SelectContent>
+                <div className="p-2">
+                  <Input
+                    placeholder="Search snapshots..."
+                    value={snapshotSearchQuery}
+                    onChange={(e) => setSnapshotSearchQuery(e.target.value)}
+                    className="mb-2 h-8 text-sm"
+                  />
+                </div>
+                {filteredSnapshots.map((snapshot) => (
+                  <SelectItem key={snapshot.id} value={snapshot.id}>
+                    {snapshot.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+        </div>
 
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => navigate('/enterprise/backlog')}
-              className="text-xs h-8"
-            >
-              <span className="hidden sm:inline">Strategic Backlog</span>
-              <span className="sm:hidden">Backlog</span>
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setExtraConfigsOpen(true)}
-              className="text-xs h-8"
-            >
-              <Filter className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-1.5" />
-              <span className="hidden sm:inline">Extra Configs</span>
-            </Button>
-          </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => navigate('/enterprise/backlog')}
+          >
+            Strategic Backlog
+          </Button>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setExtraConfigsOpen(true)}
+          >
+            <Filter className="h-4 w-4 mr-1.5" />
+            Extra Configs
+          </Button>
         </div>
       </div>
 
