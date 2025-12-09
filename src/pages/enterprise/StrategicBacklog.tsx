@@ -11,6 +11,7 @@ import { OverviewTab } from '@/components/strategic-backlog/OverviewTab';
 import { MVVTab } from '@/components/strategic-backlog/MVVTab';
 import { GoalsTab } from '@/components/strategic-backlog/GoalsTab';
 import { ThemesTab } from '@/components/strategic-backlog/ThemesTab';
+import { EpicsTab } from '@/components/strategic-backlog/EpicsTab';
 import { CreateStrategyObjectDialog } from '@/components/strategic-backlog/CreateStrategyObjectDialog';
 import { CreateGoalDialog } from '@/components/strategic-backlog/CreateGoalDialog';
 import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
@@ -128,6 +129,7 @@ export default function StrategicBacklog() {
                 Themes
                 {themes.length === 0 && <Badge variant="destructive" className="text-[10px] px-1 py-0 h-4">Required</Badge>}
               </TabsTrigger>
+              <TabsTrigger value="epics">Epics</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">
@@ -166,6 +168,15 @@ export default function StrategicBacklog() {
               <ThemesTab
                 themes={themes}
                 snapshotId={snapshotId}
+                isArchived={isArchived}
+              />
+            </TabsContent>
+
+            <TabsContent value="epics">
+              <EpicsTab
+                snapshotId={snapshotId}
+                links={links || null}
+                themes={themes}
                 isArchived={isArchived}
               />
             </TabsContent>
