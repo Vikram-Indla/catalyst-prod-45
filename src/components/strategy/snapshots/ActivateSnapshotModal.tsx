@@ -3,7 +3,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, CalendarRange, Layers, ExternalLink } from 'lucide-react';
 import { StrategicSnapshot, useSnapshotConfiguration, useActivateSnapshot, useStrategicSnapshots } from '@/hooks/useStrategicSnapshots';
+import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 interface ActivateSnapshotModalProps {
   open: boolean;
@@ -13,13 +15,16 @@ interface ActivateSnapshotModalProps {
 }
 
 export function ActivateSnapshotModal({ open, onClose, snapshot, onOpenQuarters }: ActivateSnapshotModalProps) {
+  const navigate = useNavigate();
   const { data: configuration } = useSnapshotConfiguration(snapshot.id);
+  const { data: links } = useSnapshotStrategyLinks(snapshot.id);
   const { data: allSnapshots } = useStrategicSnapshots(true);
   const activateSnapshot = useActivateSnapshot();
   const [activating, setActivating] = useState(false);
 
   const hasQuarters = (configuration?.quarters?.length || 0) > 0;
-  const hasThemes = (configuration?.themes?.length || 0) > 0;
+  // Theme count from SnapshotStrategyLinks (primary) or configuration (fallback)
+  const hasThemes = (links?.theme_ids?.length || configuration?.themes?.length || 0) > 0;
   const canActivate = hasQuarters && hasThemes;
   
   const currentActiveSnapshot = allSnapshots?.find(s => s.status === 'ACTIVE' && s.id !== snapshot.id);
@@ -100,9 +105,17 @@ export function ActivateSnapshotModal({ open, onClose, snapshot, onOpenQuarters 
                   </span>
                 </div>
                 {!hasThemes && (
-                  <span className="text-xs text-muted-foreground">
-                    Link via Strategic Backlog → Themes
-                  </span>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-7 text-xs text-red-700 hover:text-red-800"
+                    onClick={() => {
+                      onClose();
+                      navigate(`/enterprise/strategic-backlog?snapshot=${snapshot.id}&tab=themes`);
+                    }}
+                  >
+                    Add <ExternalLink className="h-3 w-3 ml-1" />
+                  </Button>
                 )}
               </div>
             </div>
