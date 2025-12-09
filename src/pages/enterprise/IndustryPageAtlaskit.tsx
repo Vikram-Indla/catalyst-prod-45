@@ -13,6 +13,8 @@ import Button from '@atlaskit/button';
 import ButtonGroup from '@atlaskit/button-group';
 import ListIcon from '@atlaskit/icon/glyph/list';
 import BoardIcon from '@atlaskit/icon/glyph/board';
+import FilterIcon from '@atlaskit/icon/glyph/filter';
+import DownloadIcon from '@atlaskit/icon/glyph/download';
 import Lozenge from '@atlaskit/lozenge';
 import { Checkbox } from '@atlaskit/checkbox';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
@@ -562,7 +564,7 @@ export default function IndustryPageAtlaskit() {
 
               <Button
                 onClick={() => setFiltersDialogOpen(true)}
-                iconBefore={<Filter size={16} />}
+                iconBefore={<FilterIcon label="Filter" size="small" />}
                 appearance={activeFilterCount > 0 ? 'primary' : 'default'}
               >
                 {isMobile ? '' : 'Filters'} {activeFilterCount > 0 && `(${activeFilterCount})`}
@@ -570,7 +572,7 @@ export default function IndustryPageAtlaskit() {
 
               <Button
                 onClick={handleExport}
-                iconBefore={<Download size={16} />}
+                iconBefore={<DownloadIcon label="Export" size="small" />}
               >
                 {!isMobile && 'Export'}
               </Button>
