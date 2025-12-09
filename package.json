@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@atlaskit/atlassian-navigation": "^3.6.2",
     "@atlaskit/avatar": "^21.18.4",
     "@atlaskit/badge": "^16.4.4",
     "@atlaskit/breadcrumbs": "^14.2.0",
