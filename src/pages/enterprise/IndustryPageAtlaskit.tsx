@@ -28,33 +28,33 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { SavedFiltersDropdown } from '@/components/shared/SavedFiltersDropdown';
 
-// Atlaskit CSS reset
+// Atlaskit CSS reset and tokens
 import '@atlaskit/css-reset';
+import { token } from '@atlaskit/tokens';
 
-// Atlaskit Design Tokens
-const ATLASKIT_TOKENS = {
-  colors: {
-    background: '#F4F5F7',
-    surface: '#FFFFFF',
-    textPrimary: '#172B4D',
-    textSecondary: '#6B778C',
-    link: '#0052CC',
-    border: '#DFE1E6',
-    hoverBg: '#F4F5F7',
-    selectedBg: '#DEEBFF',
-    focusBorder: '#4C9AFF',
-  },
-  spacing: {
-    s050: '4px',
-    s100: '8px',
-    s150: '12px',
-    s200: '16px',
-    s250: '20px',
-    s300: '24px',
-    s400: '32px',
-    s500: '40px',
-    s600: '48px',
-  },
+// Token-based styling helpers
+const colors = {
+  background: token('elevation.surface', '#F4F5F7'),
+  surface: token('elevation.surface.raised', '#FFFFFF'),
+  textPrimary: token('color.text', '#172B4D'),
+  textSecondary: token('color.text.subtlest', '#6B778C'),
+  link: token('color.link', '#0052CC'),
+  border: token('color.border', '#DFE1E6'),
+  hoverBg: token('color.background.neutral.hovered', '#F4F5F7'),
+  selectedBg: token('color.background.selected', '#DEEBFF'),
+  focusBorder: token('color.border.focused', '#4C9AFF'),
+};
+
+const spacing = {
+  s050: token('space.050', '4px'),
+  s100: token('space.100', '8px'),
+  s150: token('space.150', '12px'),
+  s200: token('space.200', '16px'),
+  s250: token('space.250', '20px'),
+  s300: token('space.300', '24px'),
+  s400: token('space.400', '32px'),
+  s500: token('space.500', '40px'),
+  s600: token('space.600', '48px'),
 };
 
 // Status mapping for Atlaskit Lozenge
@@ -280,7 +280,7 @@ export default function IndustryPageAtlaskit() {
         key: 'request_key',
         content: (
           <span 
-            style={{ color: ATLASKIT_TOKENS.colors.link, cursor: 'pointer', fontWeight: 500 }}
+            style={{ color: colors.link, cursor: 'pointer', fontWeight: 500 }}
             onClick={(e) => { e.stopPropagation(); setSelectedRequestId(request.id); }}
           >
             {request.request_key?.startsWith('MIM-') ? request.request_key : `MIM-${String(request.request_key || '').padStart(3, '0')}`}
@@ -290,7 +290,7 @@ export default function IndustryPageAtlaskit() {
       {
         key: 'title',
         content: (
-          <span style={{ color: ATLASKIT_TOKENS.colors.textPrimary }}>
+          <span style={{ color: colors.textPrimary }}>
             {request.title || '-'}
           </span>
         ),
@@ -306,31 +306,31 @@ export default function IndustryPageAtlaskit() {
       {
         key: 'rank',
         content: (
-          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: ATLASKIT_TOKENS.colors.textPrimary }}>
-            {request.is_force_ranked && <Lock size={12} style={{ color: ATLASKIT_TOKENS.colors.textSecondary }} />}
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: colors.textPrimary }}>
+            {request.is_force_ranked && <Lock size={12} style={{ color: colors.textSecondary }} />}
             {request.rank ?? '-'}
           </span>
         ),
       },
       {
         key: 'delivery_platform',
-        content: <span style={{ color: ATLASKIT_TOKENS.colors.textSecondary }}>{request.delivery_platform || '-'}</span>,
+        content: <span style={{ color: colors.textSecondary }}>{request.delivery_platform || '-'}</span>,
       },
       {
         key: 'business_owner',
-        content: <span style={{ color: ATLASKIT_TOKENS.colors.textSecondary }}>{request.business_owner || '-'}</span>,
+        content: <span style={{ color: colors.textSecondary }}>{request.business_owner || '-'}</span>,
       },
       {
         key: 'planned_quarter',
-        content: <span style={{ color: ATLASKIT_TOKENS.colors.textSecondary }}>{request.planned_quarter || '-'}</span>,
+        content: <span style={{ color: colors.textSecondary }}>{request.planned_quarter || '-'}</span>,
       },
       {
         key: 'end_date',
-        content: <span style={{ color: ATLASKIT_TOKENS.colors.textSecondary }}>{formatDate(request.end_date)}</span>,
+        content: <span style={{ color: colors.textSecondary }}>{formatDate(request.end_date)}</span>,
       },
       {
         key: 'department',
-        content: <span style={{ color: ATLASKIT_TOKENS.colors.textSecondary }}>{request.department || '-'}</span>,
+        content: <span style={{ color: colors.textSecondary }}>{request.department || '-'}</span>,
       },
     ],
   }));
@@ -340,19 +340,19 @@ export default function IndustryPageAtlaskit() {
       height: '100%', 
       display: 'flex', 
       flexDirection: 'column',
-      backgroundColor: ATLASKIT_TOKENS.colors.background,
+      backgroundColor: colors.background,
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
     }}>
       {/* Page Header */}
       <div style={{
-        backgroundColor: ATLASKIT_TOKENS.colors.surface,
-        borderBottom: `1px solid ${ATLASKIT_TOKENS.colors.border}`,
-        padding: `${ATLASKIT_TOKENS.spacing.s300} ${ATLASKIT_TOKENS.spacing.s400}`,
+        backgroundColor: colors.surface,
+        borderBottom: `1px solid ${colors.border}`,
+        padding: `${spacing.s300} ${spacing.s400}`,
       }}>
         <h1 style={{ 
           fontSize: '24px', 
           fontWeight: 500, 
-          color: ATLASKIT_TOKENS.colors.textPrimary,
+          color: colors.textPrimary,
           margin: 0,
           lineHeight: '28px',
         }}>
@@ -360,7 +360,7 @@ export default function IndustryPageAtlaskit() {
         </h1>
         <p style={{ 
           fontSize: '14px', 
-          color: ATLASKIT_TOKENS.colors.textSecondary,
+          color: colors.textSecondary,
           margin: '4px 0 0 0',
           lineHeight: '20px',
         }}>
@@ -370,12 +370,12 @@ export default function IndustryPageAtlaskit() {
 
       {/* Toolbar */}
       <div style={{
-        backgroundColor: ATLASKIT_TOKENS.colors.surface,
-        borderBottom: `1px solid ${ATLASKIT_TOKENS.colors.border}`,
-        padding: `${ATLASKIT_TOKENS.spacing.s150} ${ATLASKIT_TOKENS.spacing.s400}`,
+        backgroundColor: colors.surface,
+        borderBottom: `1px solid ${colors.border}`,
+        padding: `${spacing.s150} ${spacing.s400}`,
         display: 'flex',
         alignItems: 'center',
-        gap: ATLASKIT_TOKENS.spacing.s200,
+        gap: spacing.s200,
         flexWrap: 'wrap',
       }}>
         {/* Search */}
@@ -387,7 +387,7 @@ export default function IndustryPageAtlaskit() {
               left: '12px', 
               top: '50%', 
               transform: 'translateY(-50%)',
-              color: ATLASKIT_TOKENS.colors.textSecondary,
+              color: colors.textSecondary,
               pointerEvents: 'none',
               zIndex: 1,
             }} 
@@ -408,11 +408,11 @@ export default function IndustryPageAtlaskit() {
             display: 'flex', 
             alignItems: 'center', 
             gap: '4px',
-            border: `1px solid ${ATLASKIT_TOKENS.colors.border}`,
+            border: `1px solid ${colors.border}`,
             borderRadius: '3px',
             padding: '0 8px',
             height: '32px',
-            backgroundColor: ATLASKIT_TOKENS.colors.surface,
+            backgroundColor: colors.surface,
           }}>
             <button 
               onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
@@ -430,7 +430,7 @@ export default function IndustryPageAtlaskit() {
             </button>
             <span style={{ 
               fontSize: '14px', 
-              color: ATLASKIT_TOKENS.colors.textPrimary,
+              color: colors.textPrimary,
               whiteSpace: 'nowrap',
             }}>
               {sortedRequests.length > 0 ? `${startIndex + 1}-${Math.min(endIndex, sortedRequests.length)} of ${sortedRequests.length}` : '0 items'}
@@ -491,7 +491,7 @@ export default function IndustryPageAtlaskit() {
       <div style={{ 
         flex: 1, 
         overflow: 'auto',
-        padding: ATLASKIT_TOKENS.spacing.s400,
+        padding: spacing.s400,
       }}>
         {isLoading ? (
           <div style={{ 
@@ -509,7 +509,7 @@ export default function IndustryPageAtlaskit() {
           />
         ) : sortedRequests.length > 0 ? (
           <div style={{
-            backgroundColor: ATLASKIT_TOKENS.colors.surface,
+            backgroundColor: colors.surface,
             borderRadius: '3px',
             boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px 1px rgba(9, 30, 66, 0.13)',
           }}>
@@ -538,16 +538,16 @@ export default function IndustryPageAtlaskit() {
       {/* Bottom Pagination */}
       {viewMode === 'list' && sortedRequests.length > ITEMS_PER_PAGE && (
         <div style={{
-          backgroundColor: ATLASKIT_TOKENS.colors.surface,
-          borderTop: `1px solid ${ATLASKIT_TOKENS.colors.border}`,
-          padding: `${ATLASKIT_TOKENS.spacing.s150} ${ATLASKIT_TOKENS.spacing.s400}`,
+          backgroundColor: colors.surface,
+          borderTop: `1px solid ${colors.border}`,
+          padding: `${spacing.s150} ${spacing.s400}`,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}>
           <span style={{ 
             fontSize: '14px', 
-            color: ATLASKIT_TOKENS.colors.textSecondary,
+            color: colors.textSecondary,
           }}>
             Showing {startIndex + 1}-{Math.min(endIndex, sortedRequests.length)} of {sortedRequests.length} requests
           </span>
@@ -563,9 +563,9 @@ export default function IndustryPageAtlaskit() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: `1px solid ${ATLASKIT_TOKENS.colors.border}`,
+                border: `1px solid ${colors.border}`,
                 borderRadius: '3px',
-                backgroundColor: currentPage === 1 ? ATLASKIT_TOKENS.colors.hoverBg : ATLASKIT_TOKENS.colors.surface,
+                backgroundColor: currentPage === 1 ? colors.hoverBg : colors.surface,
                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
                 opacity: currentPage === 1 ? 0.5 : 1,
               }}
@@ -583,9 +583,9 @@ export default function IndustryPageAtlaskit() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: `1px solid ${ATLASKIT_TOKENS.colors.border}`,
+                border: `1px solid ${colors.border}`,
                 borderRadius: '3px',
-                backgroundColor: currentPage === 1 ? ATLASKIT_TOKENS.colors.hoverBg : ATLASKIT_TOKENS.colors.surface,
+                backgroundColor: currentPage === 1 ? colors.hoverBg : colors.surface,
                 cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
                 opacity: currentPage === 1 ? 0.5 : 1,
               }}
@@ -616,10 +616,10 @@ export default function IndustryPageAtlaskit() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    border: `1px solid ${currentPage === pageNum ? '#0052CC' : ATLASKIT_TOKENS.colors.border}`,
+                    border: `1px solid ${currentPage === pageNum ? colors.link : colors.border}`,
                     borderRadius: '3px',
-                    backgroundColor: currentPage === pageNum ? '#0052CC' : ATLASKIT_TOKENS.colors.surface,
-                    color: currentPage === pageNum ? '#FFFFFF' : ATLASKIT_TOKENS.colors.textPrimary,
+                    backgroundColor: currentPage === pageNum ? colors.link : colors.surface,
+                    color: currentPage === pageNum ? '#FFFFFF' : colors.textPrimary,
                     cursor: 'pointer',
                     fontWeight: currentPage === pageNum ? 600 : 400,
                     fontSize: '14px',
@@ -640,9 +640,9 @@ export default function IndustryPageAtlaskit() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: `1px solid ${ATLASKIT_TOKENS.colors.border}`,
+                border: `1px solid ${colors.border}`,
                 borderRadius: '3px',
-                backgroundColor: currentPage >= totalPages ? ATLASKIT_TOKENS.colors.hoverBg : ATLASKIT_TOKENS.colors.surface,
+                backgroundColor: currentPage >= totalPages ? colors.hoverBg : colors.surface,
                 cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
                 opacity: currentPage >= totalPages ? 0.5 : 1,
               }}
@@ -660,9 +660,9 @@ export default function IndustryPageAtlaskit() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                border: `1px solid ${ATLASKIT_TOKENS.colors.border}`,
+                border: `1px solid ${colors.border}`,
                 borderRadius: '3px',
-                backgroundColor: currentPage >= totalPages ? ATLASKIT_TOKENS.colors.hoverBg : ATLASKIT_TOKENS.colors.surface,
+                backgroundColor: currentPage >= totalPages ? colors.hoverBg : colors.surface,
                 cursor: currentPage >= totalPages ? 'not-allowed' : 'pointer',
                 opacity: currentPage >= totalPages ? 0.5 : 1,
               }}
