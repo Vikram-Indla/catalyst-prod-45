@@ -35,7 +35,6 @@ export const responsiveRoutes = [
   
   // Industry/Demand
   { path: '/industry', name: 'Industry (Demand Intake)', category: 'table', priority: 'critical' },
-  { path: '/industry/demand-summary', name: 'Demand Summary', category: 'dashboard', priority: 'high' },
   { path: '/industry/roadmaps', name: 'Executive Roadmaps', category: 'visualization', priority: 'high' },
   
   // Enterprise
