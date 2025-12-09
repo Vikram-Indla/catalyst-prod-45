@@ -24,7 +24,7 @@ export function BulkActionsBar({
       bottom: token('space.300', '24px'),
       left: '50%',
       transform: 'translateX(-50%)',
-      background: token('color.background.brand.boldest', '#0747A6'),
+      background: token('color.background.brand.bold', '#0747A6'),
       color: token('color.text.inverse', '#FFFFFF'),
       padding: token('space.200', '16px'),
       borderRadius: token('border.radius', '3px'),
