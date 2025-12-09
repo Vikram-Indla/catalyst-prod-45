@@ -95,30 +95,11 @@ export function CapacityPlanningPage() {
 
   return (
     <div className="flex-1 flex flex-col bg-background min-h-0">
-      {/* Page Header */}
-      <div className="border-b border-border bg-card px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="text-xs text-muted-foreground mb-1">
-              Catalyst / Resource Management / Capacity & Allocation
-            </div>
-            <h1 className="text-xl font-semibold text-foreground">Capacity & Allocation Planning</h1>
-            <p className="text-sm text-muted-foreground">Manage team capacity and allocations by week</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => setCopyModalOpen(true)}>
-              <Copy className="h-4 w-4 mr-2" />
-              Copy Week
-            </Button>
-            <Button variant="outline" onClick={() => setAddMemberOpen(true)}>
-              <UserPlus className="h-4 w-4 mr-2" />
-              Add Member
-            </Button>
-            <Button onClick={() => setNewAllocationOpen(true)} className="bg-[#c69c6d] hover:bg-[#8b7355] text-white">
-              <Plus className="h-4 w-4 mr-2" />
-              New Allocation
-            </Button>
-          </div>
+      {/* Page Header - align header pattern */}
+      <div className="h-[72px] border-b border-border bg-card flex-shrink-0 flex items-center px-6">
+        <div>
+          <h1 className="text-xl font-semibold text-foreground">Capacity & Allocation Planning</h1>
+          <p className="text-sm text-muted-foreground">Manage team capacity and allocations by week</p>
         </div>
       </div>
 
@@ -133,7 +114,7 @@ export function CapacityPlanningPage() {
           openVacancies={openVacancies}
         />
 
-        {/* Search and Filter */}
+        {/* Search and Actions */}
         <div className="flex items-center justify-between">
           <div className="relative w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -144,18 +125,32 @@ export function CapacityPlanningPage() {
               className="pl-9"
             />
           </div>
-          <Button 
-            variant="outline" 
-            onClick={() => setFilterOpen(true)}
-            className="relative"
-          >
-            <Filter className="h-4 w-4" />
-            {filterCount > 0 && (
-              <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-[#c69c6d] text-white text-xs">
-                {filterCount}
-              </Badge>
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setCopyModalOpen(true)}>
+              <Copy className="h-4 w-4 mr-2" />
+              Copy Week
+            </Button>
+            <Button variant="outline" onClick={() => setAddMemberOpen(true)}>
+              <UserPlus className="h-4 w-4 mr-2" />
+              Add Member
+            </Button>
+            <Button onClick={() => setNewAllocationOpen(true)} className="bg-[#c69c6d] hover:bg-[#8b7355] text-white">
+              <Plus className="h-4 w-4 mr-2" />
+              New Allocation
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => setFilterOpen(true)}
+              className="relative"
+            >
+              <Filter className="h-4 w-4" />
+              {filterCount > 0 && (
+                <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-[#c69c6d] text-white text-xs">
+                  {filterCount}
+                </Badge>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* Tabs - 6 tabs */}
