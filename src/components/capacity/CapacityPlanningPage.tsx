@@ -85,6 +85,15 @@ export function CapacityPlanningPage() {
     toast.success('Allocation created successfully');
   };
 
+  const handleSave = () => {
+    saveGridChanges();
+    toast.success('Allocations saved successfully');
+  };
+
+  const handleReset = () => {
+    resetGridChanges();
+  };
+
   const filterCount = activeQuickFilters.length + Object.values(activeFilters).filter(v => v).length;
 
   return (
@@ -211,6 +220,8 @@ export function CapacityPlanningPage() {
                 adminMode={adminMode}
                 gridChanges={gridChanges}
                 onGridChange={handleGridChange}
+                onSave={handleSave}
+                onReset={handleReset}
               />
             </TabsContent>
 
@@ -220,6 +231,7 @@ export function CapacityPlanningPage() {
                 projects={projects}
                 startWeek={startWeek}
                 startYear={startYear}
+                currentWeek={currentWeek}
               />
             </TabsContent>
 
@@ -230,7 +242,11 @@ export function CapacityPlanningPage() {
             </TabsContent>
 
             <TabsContent value="vacancies" className="m-0">
-              <VacancyCards vacancies={vacancies} projects={projects} />
+              <VacancyCards 
+                vacancies={vacancies} 
+                projects={projects} 
+                onFillGap={(vacancyId) => console.log('Fill gap:', vacancyId)}
+              />
             </TabsContent>
 
             <TabsContent value="reports" className="m-0">
