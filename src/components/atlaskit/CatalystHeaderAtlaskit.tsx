@@ -184,10 +184,10 @@ export function CatalystHeaderAtlaskit() {
                   fontSize: '20px',
                   fontWeight: 700,
                   letterSpacing: '-0.02em',
-                  color: token('color.text', '#172B4D'),
                 }}
               >
-                Catalyst
+                <span style={{ color: token('color.text', '#172B4D') }}>Cata</span>
+                <span style={{ color: '#C69C6D' }}>lyst</span>
               </span>
             </div>
           </div>
@@ -371,23 +371,26 @@ export function CatalystHeaderAtlaskit() {
             }}
           >
             {/* Create Button */}
-            <Button
-              appearance="primary"
-              iconBefore={<AddIcon label="Create" size="small" />}
-              onClick={(e: React.MouseEvent) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsUnifiedCreateOpen(true);
-              }}
+            <button
+              type="button"
+              onClick={() => setIsUnifiedCreateOpen(true)}
               style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '6px 12px',
                 background: token('color.background.brand.bold', '#0052CC'),
                 color: token('color.text.inverse', '#FFFFFF'),
                 borderRadius: '3px',
                 fontWeight: 500,
+                fontSize: '14px',
+                border: 'none',
+                cursor: 'pointer',
               }}
             >
+              <AddIcon label="Create" size="small" />
               Create
-            </Button>
+            </button>
 
             {/* Notifications */}
             <Tooltip content="Notifications">
