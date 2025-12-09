@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
-import { deriveWorkspaceContext, WorkspaceType } from '@/lib/workspaceContext';
+import { deriveWorkspaceType, WorkspaceType } from '@/lib/workspaceContext';
 
 export type TierType = 'enterprise' | 'portfolio' | 'program' | 'team';
 
@@ -129,10 +129,10 @@ export function CatalystContextProvider({ children }: { children: ReactNode }) {
   const [programName, setProgramName] = useState<string | null>(initialState.programName);
   const [projectName, setProjectName] = useState<string | null>(initialState.projectName);
   
-  // Derive workspace type from route and selections
+  // Derive workspace type PURELY from route (single source of truth)
   const workspaceType = useMemo(() => 
-    deriveWorkspaceContext(location.pathname, programId, projectId, productId),
-    [location.pathname, programId, projectId, productId]
+    deriveWorkspaceType(location.pathname),
+    [location.pathname]
   );
   
   // Sync state to localStorage

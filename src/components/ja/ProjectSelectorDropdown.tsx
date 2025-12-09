@@ -8,6 +8,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 import { useStarredItems } from '@/hooks/useStarredItems';
+import { useCatalystContext } from '@/contexts/CatalystContext';
+import { getProjectLandingRoute } from '@/lib/workspaceContext';
 
 interface ProjectSelectorDropdownProps {
   onClose: () => void;
@@ -18,9 +20,10 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const { isStarred, toggleStar } = useStarredItems();
+  const { setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
 
-  const { data: programs, isLoading } = useQuery({
-    queryKey: ['programs-header'],
+  const { data: projects, isLoading } = useQuery({
+    queryKey: ['projects-header'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('programs')
@@ -29,6 +32,7 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
           name,
           portfolio_id,
           portfolios (
+            id,
             name
           )
         `)
@@ -39,23 +43,34 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
     },
   });
 
-  const filtered = (programs || []).filter(p =>
+  const filtered = (projects || []).filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleSelect = (programId: string) => {
-    navigate(`/programs/${programId}/room`);
+  const handleSelect = (project: typeof filtered[0]) => {
+    // Set context: Project selected, also set its parent Program
+    setProjectId(project.id);
+    setProjectName(project.name);
+    
+    // Link to parent program
+    if (project.portfolio_id && project.portfolios) {
+      setProgramId(project.portfolio_id);
+      setProgramName(project.portfolios.name);
+    }
+    
+    // Navigate to Project landing route
+    navigate(getProjectLandingRoute(project.id));
     onClose();
   };
 
-  const handleToggleStar = async (e: React.MouseEvent, program: typeof filtered[0]) => {
+  const handleToggleStar = async (e: React.MouseEvent, project: typeof filtered[0]) => {
     e.stopPropagation();
     await toggleStar({
       room_type: 'program',
-      room_id: program.id,
-      room_name: program.name,
-      room_subtitle: program.portfolios?.name || 'Project',
-      room_path: `/programs/${program.id}/room`,
+      room_id: project.id,
+      room_name: project.name,
+      room_subtitle: project.portfolios?.name || 'Project',
+      room_path: getProjectLandingRoute(project.id),
       pi_label: null,
     });
   };
@@ -98,26 +113,26 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
               {search ? 'No projects found' : 'No projects available'}
             </div>
           ) : (
-            filtered.map((program) => {
-              const starred = isStarred('program', program.id);
+            filtered.map((project) => {
+              const starred = isStarred('program', project.id);
               return (
                 <button
-                  key={program.id}
-                  onClick={() => handleSelect(program.id)}
+                  key={project.id}
+                  onClick={() => handleSelect(project)}
                   className="w-full text-left px-3 py-2 rounded hover:bg-accent text-sm group"
                 >
                   <div className="flex items-center gap-2">
                     <Layers className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium truncate">{program.name}</div>
-                      {program.portfolios && (
+                      <div className="font-medium truncate">{project.name}</div>
+                      {project.portfolios && (
                         <div className="text-xs text-muted-foreground truncate">
-                          {program.portfolios.name}
+                          {project.portfolios.name}
                         </div>
                       )}
                     </div>
                     <button
-                      onClick={(e) => handleToggleStar(e, program)}
+                      onClick={(e) => handleToggleStar(e, project)}
                       className="p-1 rounded hover:bg-muted transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-brand-gold"
                       aria-label={starred ? "Unstar project" : "Star project"}
                     >

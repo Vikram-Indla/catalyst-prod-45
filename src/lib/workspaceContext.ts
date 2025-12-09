@@ -16,7 +16,41 @@ export interface WorkspaceContext {
 }
 
 /**
- * Derive workspace context from route and selections
+ * Derive workspace context PURELY from route
+ * This is the SINGLE SOURCE OF TRUTH for workspace type
+ */
+export function deriveWorkspaceType(pathname: string): WorkspaceType {
+  // Home
+  if (pathname === '/' || pathname === '/home') {
+    return 'home';
+  }
+  
+  // Enterprise tier routes
+  if (pathname.startsWith('/enterprise') || pathname.startsWith('/strategy')) {
+    return 'enterprise';
+  }
+  
+  // Product tier routes
+  if (pathname.startsWith('/product') || pathname.startsWith('/industry') || pathname.startsWith('/mining')) {
+    return 'product';
+  }
+  
+  // Program tier routes - use /program/ singular
+  if (pathname.startsWith('/program/')) {
+    return 'program';
+  }
+  
+  // Project tier routes - use /programs/ plural (legacy) or /project/ singular
+  if (pathname.startsWith('/programs/') || pathname.startsWith('/project/') || pathname.startsWith('/projects/')) {
+    return 'project';
+  }
+  
+  // Default to enterprise for other routes
+  return 'enterprise';
+}
+
+/**
+ * Legacy function for backward compatibility
  */
 export function deriveWorkspaceContext(
   pathname: string,
@@ -24,42 +58,7 @@ export function deriveWorkspaceContext(
   selectedProjectId: string | null,
   selectedProductId: string | null
 ): WorkspaceType {
-  // Check route patterns first (explicit context)
-  if (pathname === '/' || pathname === '/home') {
-    return 'home';
-  }
-  
-  if (pathname.startsWith('/enterprise') || pathname.startsWith('/strategy')) {
-    return 'enterprise';
-  }
-  
-  if (pathname.startsWith('/product') || pathname.startsWith('/industry') || pathname.startsWith('/mining')) {
-    return 'product';
-  }
-  
-  if (pathname.startsWith('/programs/') || pathname.startsWith('/program/')) {
-    return 'program';
-  }
-  
-  if (pathname.startsWith('/projects/') || pathname.startsWith('/project/')) {
-    return 'project';
-  }
-  
-  // Check selected context from navigation (implicit context)
-  if (selectedProjectId) {
-    return 'project';
-  }
-  
-  if (selectedProgramId) {
-    return 'program';
-  }
-  
-  if (selectedProductId) {
-    return 'product';
-  }
-  
-  // Default to enterprise for generic routes
-  return 'enterprise';
+  return deriveWorkspaceType(pathname);
 }
 
 /**
@@ -83,34 +82,46 @@ export function getActiveNavItem(workspaceType: WorkspaceType): string {
 }
 
 /**
+ * Get landing route for each workspace type
+ */
+export function getProgramLandingRoute(programId: string): string {
+  return `/program/${programId}/room`;
+}
+
+export function getProjectLandingRoute(projectId: string): string {
+  return `/programs/${projectId}/room`;
+}
+
+/**
  * Navigation configuration by workspace type
  */
 export interface SidebarMenuItem {
   id: string;
   label: string;
   path: string;
-  icon: string; // Icon name from lucide
+  icon: string;
+  badge?: string;
 }
 
-// Project context sidebar menu
+// Project context sidebar menu (simplified per spec)
 export const projectSidebarItems: SidebarMenuItem[] = [
-  { id: 'work-tree', label: 'Work tree', path: '/work-tree', icon: 'Share2' },
+  { id: 'work-tree', label: 'Work tree', path: '/work-tree', icon: 'Network' },
   { id: 'dependencies', label: 'Dependencies', path: '/dependencies', icon: 'GitBranch' },
-  { id: 'forecast', label: 'Forecast', path: '/forecast', icon: 'TrendingUp' },
-  { id: 'capacity', label: 'Capacity', path: '/capacity', icon: 'Users' },
+  { id: 'forecast', label: 'Forecast', path: '/forecast', icon: 'Grid3x3' },
+  { id: 'capacity', label: 'Capacity', path: '/capacity', icon: 'Users', badge: 'NEW' },
   { id: 'quarters', label: 'Quarters', path: '/quarters', icon: 'Calendar' },
   { id: 'reports', label: 'Reports', path: '/reports-discovery', icon: 'FileText' },
 ];
 
-// Program context sidebar menu
+// Program context sidebar menu (per spec)
 export const programSidebarItems: SidebarMenuItem[] = [
   { id: 'program-room', label: 'Program Room', path: '/program-room', icon: 'LayoutDashboard' },
-  { id: 'work-tree', label: 'Work tree', path: '/work-tree', icon: 'Share2' },
+  { id: 'work-tree', label: 'Work tree', path: '/work-tree', icon: 'Network' },
   { id: 'dependencies', label: 'Dependencies', path: '/dependencies', icon: 'GitBranch' },
   { id: 'roadmaps', label: 'Roadmaps', path: '/roadmaps', icon: 'Map' },
-  { id: 'objectives-tree', label: 'Objectives Tree', path: '/program/okr-hub', icon: 'Target' },
-  { id: 'forecast', label: 'Forecast', path: '/forecast', icon: 'TrendingUp' },
-  { id: 'capacity', label: 'Capacity', path: '/capacity', icon: 'Users' },
+  { id: 'objectives-tree', label: 'Objectives Tree', path: '/objectives-tree', icon: 'Target' },
+  { id: 'forecast', label: 'Forecast', path: '/forecast', icon: 'Grid3x3' },
+  { id: 'capacity', label: 'Capacity', path: '/capacity', icon: 'Users', badge: 'NEW' },
   { id: 'quarters', label: 'Quarters', path: '/quarters', icon: 'Calendar' },
   { id: 'reports', label: 'Reports', path: '/reports-discovery', icon: 'FileText' },
 ];

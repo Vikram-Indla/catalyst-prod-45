@@ -4,7 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CatalystHeader } from '@/components/ja/CatalystHeader';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
-import { ProgramRoomSidebar } from './ProgramRoomSidebar';
+import { ProgramSidebar } from './ProgramSidebar';
+import { ProjectSidebar } from './ProjectSidebar';
 import { TeamRoomSidebar } from '@/components/teams/TeamRoomSidebar';
 import { LeftContextPanel } from './LeftContextPanel';
 import { ProductRoomSidebar } from './ProductRoomSidebar';
@@ -23,115 +24,127 @@ function CatalystShellContent() {
   useRecentPlaceTracker();
   const location = useLocation();
   const params = useParams<{ programId?: string; portfolioId?: string; teamId?: string }>();
-  const { tier, setTier } = useCatalystContext();
+  const { workspaceType, programId: contextProgramId, projectId: contextProjectId, selectedQuarter, setSelectedQuarter } = useCatalystContext();
   const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const { isModuleEnabled } = useEnabledModules();
   
-  // Extract IDs from URL params
-  const currentProgramId = params.programId || null;
-  const currentPortfolioId = params.portfolioId || null;
+  // Extract IDs from URL params - these take precedence
+  const urlProgramId = params.programId || null;
+  const urlPortfolioId = params.portfolioId || null;
   const currentTeamId = params.teamId || null;
   
-  const { data: programIncrements } = useQuery({
-    queryKey: ['pis-for-shell'],
-    queryFn: async () => {
-      // Get PI-5 which has features properly distributed across teams and sprints
-      const { data } = await supabase
-        .from('program_increments')
-        .select('id, name')
-        .eq('id', '3e5ae5ed-8aa9-4211-9add-2031b0f6541b')
-        .limit(1);
-      return data;
-    },
-  });
-  
-  const defaultPIId = programIncrements?.[0]?.id || null;
-  const [selectedPI, setSelectedPI] = useState<string | null>(defaultPIId);
-  
-  // Update selectedPI when data loads
-  useEffect(() => {
-    if (defaultPIId && !selectedPI) {
-      setSelectedPI(defaultPIId);
-    }
-  }, [defaultPIId, selectedPI]);
+  // Determine which ID to use based on route pattern
+  // /program/:programId = Program context (use portfolios table)
+  // /programs/:programId = Project context (use programs table)
+  const isProgramRoute = location.pathname.startsWith('/program/');
+  const isProjectRoute = location.pathname.startsWith('/programs/') || location.pathname.startsWith('/project/');
+
+  // Current active IDs
+  const activeProgramId = isProgramRoute ? urlProgramId : contextProgramId;
+  const activeProjectId = isProjectRoute ? urlProgramId : contextProjectId;
 
   // Check if on product/industry route
-  const isProductRoute = location.pathname.startsWith('/industry');
+  const isProductRoute = location.pathname.startsWith('/industry') || location.pathname.startsWith('/product');
   
   // Check if on release route
   const isReleaseRoute = location.pathname.startsWith('/release');
-  // Automatically set tier based on current route
-  useEffect(() => {
-    const path = location.pathname;
-    if (path.startsWith('/enterprise')) {
-      if (tier !== 'enterprise') setTier('enterprise');
-    } else if (path.startsWith('/portfolio') || path.startsWith('/items/')) {
-      if (tier !== 'portfolio') setTier('portfolio');
-    } else if (
-      path.startsWith('/program') || 
-      path === '/dependencies' || 
-      path.startsWith('/programs/program-board') ||
-      path === '/risks' ||
-      path === '/risk-roam-report' ||
-      path.startsWith('/insights/') ||
-      path === '/stories' ||
-      path === '/work-items/stories' ||
-      path.startsWith('/tests/')
-    ) {
-      // Program-level features: Dependencies, Program Board, Risks, Stories, Insights, Tests
-      if (tier !== 'program') setTier('program');
-    } else if (path.startsWith('/team')) {
-      if (tier !== 'team') setTier('team');
+
+  // Determine sidebar based on workspaceType (single source of truth)
+  const renderSidebar = () => {
+    // No sidebar for Home or Admin routes
+    if (location.pathname === '/home' || location.pathname.startsWith('/admin')) {
+      return null;
     }
-  }, [location.pathname, tier, setTier]);
+
+    // Release route sidebar
+    if (isReleaseRoute) {
+      return (
+        <ReleaseRoomSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+
+    // Product route sidebar
+    if (isProductRoute && isModuleEnabled('PRODUCT')) {
+      return (
+        <ProductRoomSidebar
+          expanded={sidebarExpanded}
+          onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+        />
+      );
+    }
+
+    // Use workspaceType to determine sidebar
+    switch (workspaceType) {
+      case 'program':
+        if (activeProgramId) {
+          return (
+            <ProgramSidebar
+              programId={activeProgramId}
+              expanded={sidebarExpanded}
+              onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+              selectedQuarter={selectedQuarter}
+              onQuarterChange={setSelectedQuarter}
+            />
+          );
+        }
+        // Show empty state if no program selected
+        return (
+          <div className="w-[280px] h-full border-r bg-card flex items-center justify-center p-6 text-center">
+            <div className="text-muted-foreground">
+              <p className="font-medium">Select a Program</p>
+              <p className="text-sm mt-1">Choose a program from the top navigation</p>
+            </div>
+          </div>
+        );
+
+      case 'project':
+        if (activeProjectId) {
+          return (
+            <ProjectSidebar
+              projectId={activeProjectId}
+              expanded={sidebarExpanded}
+              onToggle={() => setSidebarExpanded(!sidebarExpanded)}
+              selectedQuarter={selectedQuarter}
+              onQuarterChange={setSelectedQuarter}
+            />
+          );
+        }
+        // Show empty state if no project selected
+        return (
+          <div className="w-[280px] h-full border-r bg-card flex items-center justify-center p-6 text-center">
+            <div className="text-muted-foreground">
+              <p className="font-medium">Select a Project</p>
+              <p className="text-sm mt-1">Choose a project from the top navigation</p>
+            </div>
+          </div>
+        );
+
+      case 'enterprise':
+        if (isModuleEnabled('ENTERPRISE')) {
+          return <LeftContextPanel />;
+        }
+        return null;
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Global Header - Catalyst Style */}
       <CatalystHeader />
 
-      {/* Main Content with Context Panel - Conditional Sidebar Based on Tier and Route */}
+      {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">
-          {/* No sidebar for Home route or Admin routes - sidebars only show for enabled modules */}
-          {location.pathname !== '/home' && !location.pathname.startsWith('/admin') && (
-            <div className="relative flex-shrink-0 mr-3">
-              {isReleaseRoute ? (
-                <ReleaseRoomSidebar
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                />
-              ) : isProductRoute && isModuleEnabled('PRODUCT') ? (
-                <ProductRoomSidebar
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                />
-              ) : tier === 'enterprise' && isModuleEnabled('ENTERPRISE') ? (
-                <LeftContextPanel />
-              ) : tier === 'program' && currentProgramId && isModuleEnabled('PROGRAM') ? (
-                <ProgramRoomSidebar
-                  programId={currentProgramId}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                  selectedPI={selectedPI || undefined}
-                  onPIChange={(pi) => setSelectedPI(pi)}
-                />
-              ) : tier === 'portfolio' && currentPortfolioId && isModuleEnabled('PORTFOLIO') ? (
-                <PortfolioRoomSidebar
-                  portfolioId={currentPortfolioId}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                  selectedPI={selectedPI || undefined}
-                  onPIChange={(pi) => setSelectedPI(pi)}
-                />
-              ) : tier === 'team' && currentTeamId && isModuleEnabled('TEAMS') ? (
-                <TeamRoomSidebar
-                  teamId={currentTeamId}
-                  expanded={sidebarExpanded}
-                  onToggle={() => setSidebarExpanded(!sidebarExpanded)}
-                />
-              ) : null}
-            </div>
-          )}
+        {/* Sidebar */}
+        <div className="relative flex-shrink-0 mr-3">
+          {renderSidebar()}
+        </div>
+        
         <main className="flex-1 overflow-auto">
           <AnnouncementBanner />
           <Outlet />
