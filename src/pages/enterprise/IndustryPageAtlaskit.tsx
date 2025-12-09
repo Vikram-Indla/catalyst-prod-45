@@ -243,19 +243,40 @@ export default function IndustryPageAtlaskit() {
     }
   };
 
+  // Select all checkbox handler
+  const handleSelectAll = () => {
+    if (selectedRows.length === paginatedRequests.length) {
+      setSelectedRows([]);
+    } else {
+      setSelectedRows(paginatedRequests.map((r: any) => r.id));
+    }
+  };
+
   // Dynamic Table Head
   const head: HeadType = {
     cells: [
-      { key: 'checkbox', content: '', width: 3 },
-      { key: 'request_key', content: 'Request ID', isSortable: true, width: 10 },
-      { key: 'title', content: 'Summary', isSortable: true, width: 25 },
-      { key: 'process_step', content: 'Status', isSortable: true, width: 12 },
-      { key: 'rank', content: 'Rank', isSortable: true, width: 6 },
-      { key: 'delivery_platform', content: 'Platform', isSortable: true, width: 12 },
-      { key: 'business_owner', content: 'Business Owner', isSortable: true, width: 12 },
-      { key: 'planned_quarter', content: 'Quarter', isSortable: true, width: 8 },
-      { key: 'end_date', content: 'Target Date', isSortable: true, width: 10 },
-      { key: 'department', content: 'Department', isSortable: true, width: 10 },
+      { 
+        key: 'checkbox', 
+        content: (
+          <Checkbox 
+            isChecked={selectedRows.length === paginatedRequests.length && paginatedRequests.length > 0}
+            isIndeterminate={selectedRows.length > 0 && selectedRows.length < paginatedRequests.length}
+            onChange={handleSelectAll}
+          />
+        ), 
+        width: 3,
+        isSortable: false,
+      },
+      { key: 'request_key', content: 'REQUEST ID', isSortable: true, width: 8 },
+      { key: 'title', content: 'SUMMARY', isSortable: true, width: 20 },
+      { key: 'process_step', content: 'PROCESS STEP', isSortable: true, width: 10 },
+      { key: 'rank', content: 'RANK', isSortable: true, width: 5 },
+      { key: 'delivery_platform', content: 'DELIVERY PLATFORM', isSortable: true, width: 12 },
+      { key: 'business_owner', content: 'BUSINESS OWNER', isSortable: true, width: 10 },
+      { key: 'planned_quarter', content: 'QUARTER', isSortable: true, width: 8 },
+      { key: 'end_date', content: 'TARGET DATE', isSortable: true, width: 10 },
+      { key: 'department', content: 'DEPARTMENT', isSortable: true, width: 10 },
+      { key: 'actions', content: '', width: 4, isSortable: false },
     ],
   };
 
@@ -334,6 +355,25 @@ export default function IndustryPageAtlaskit() {
       {
         key: 'department',
         content: <span style={{ color: colors.textSecondary }}>{request.department || '-'}</span>,
+      },
+      {
+        key: 'actions',
+        content: (
+          <DropdownMenu trigger={({ triggerRef, ...props }) => (
+            <Button
+              {...props}
+              ref={triggerRef}
+              appearance="subtle"
+              iconBefore={<span style={{ fontSize: '16px' }}>⋮</span>}
+            />
+          )}>
+            <DropdownItemGroup>
+              <DropdownItem onClick={() => setSelectedRequestId(request.id)}>View Details</DropdownItem>
+              <DropdownItem>Edit</DropdownItem>
+              <DropdownItem>Delete</DropdownItem>
+            </DropdownItemGroup>
+          </DropdownMenu>
+        ),
       },
     ],
   }));
