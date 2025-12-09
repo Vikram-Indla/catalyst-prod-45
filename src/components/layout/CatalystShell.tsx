@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useParams, Outlet } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { CatalystHeader } from '@/components/ja/CatalystHeader';
+import { CatalystHeaderAtlaskit } from '@/components/atlaskit/CatalystHeaderAtlaskit';
 import { PortfolioRoomSidebar } from './PortfolioRoomSidebar';
 import { ProgramSidebar } from './ProgramSidebar';
 import { ProjectSidebar } from './ProjectSidebar';
@@ -135,8 +135,8 @@ function CatalystShellContent() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Global Header - Catalyst Style */}
-      <CatalystHeader />
+      {/* Global Header - Atlaskit Style */}
+      <CatalystHeaderAtlaskit />
 
       {/* Main Content with Context Panel - Conditional Sidebar Based on workspaceType */}
       <div className="flex flex-1 overflow-hidden">
