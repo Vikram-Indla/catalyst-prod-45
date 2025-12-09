@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen } from 'lucide-react';
+import { Search, Filter, Copy, UserPlus, Plus, Users, LayoutGrid, Calendar, Clock, FileText, ChevronLeft, ChevronRight, Lock, LockOpen, PanelTopClose, PanelTop } from 'lucide-react';
 import { toast } from 'sonner';
 
 type CapacityTab = 'roster' | 'grid' | 'timeline' | 'available' | 'vacancies' | 'reports';
@@ -34,6 +34,7 @@ export function CapacityPlanningPage() {
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [newAllocationOpen, setNewAllocationOpen] = useState(false);
   const [selectedResourceId, setSelectedResourceId] = useState<string | null>(null);
+  const [showSummary, setShowSummary] = useState(true);
 
   const {
     resources,
@@ -111,15 +112,17 @@ export function CapacityPlanningPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-6 space-y-6">
-        {/* Summary Cards - 5 cards */}
-        <CapacitySummaryCards
-          totalMembers={stats.total}
-          underallocated={stats.under}
-          fullyAllocated={stats.full}
-          overallocated={stats.over}
-          openVacancies={openVacancies}
-        />
+      <div className="flex-1 overflow-auto p-6 space-y-4">
+        {/* Summary Cards - Collapsible */}
+        {showSummary && (
+          <CapacitySummaryCards
+            totalMembers={stats.total}
+            underallocated={stats.under}
+            fullyAllocated={stats.full}
+            overallocated={stats.over}
+            openVacancies={openVacancies}
+          />
+        )}
 
         {/* Search, Week Navigation, and Actions */}
         <div className="flex items-center justify-between gap-4">
@@ -260,6 +263,18 @@ export function CapacityPlanningPage() {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Filter</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => setShowSummary(!showSummary)}
+                >
+                  {showSummary ? <PanelTopClose className="h-4 w-4" /> : <PanelTop className="h-4 w-4" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{showSummary ? 'Hide Summary' : 'Show Summary'}</TooltipContent>
             </Tooltip>
           </div>
         </div>
