@@ -82,10 +82,10 @@ export function CatalystHeader() {
     } else if (createDialogType === 'product') {
       const key = entity.key || entity.name.toUpperCase().slice(0, 3);
       const path = key.toUpperCase() === 'IND' || key.toUpperCase() === 'INDUSTRY' 
-        ? '/industry/demand-summary' 
+        ? '/industry' 
         : key.toUpperCase() === 'MIN' || key.toUpperCase() === 'MINING'
-          ? '/mining/demand-summary'
-          : `/product/${key.toLowerCase()}/demand-summary`;
+          ? '/mining'
+          : `/product/${key.toLowerCase()}/room`;
       navigate(path);
     }
     setCreateDialogType(null);

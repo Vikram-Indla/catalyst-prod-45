@@ -42,12 +42,12 @@ const getPathForBusinessLine = (key: string) => {
   switch (key.toUpperCase()) {
     case 'IND':
     case 'INDUSTRY':
-      return '/industry/demand-summary'; // Product Room - first sidebar item
+      return '/industry'; // Product Room - first sidebar item
     case 'MIN':
     case 'MINING':
-      return '/mining/demand-summary';
+      return '/mining';
     default:
-      return `/product/${key.toLowerCase()}/demand-summary`;
+      return `/product/${key.toLowerCase()}/room`;
   }
 };
 
