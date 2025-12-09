@@ -121,46 +121,46 @@ export default function StrategicBacklog() {
       ) : (
         <div className="flex-1 overflow-auto p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="mb-6 h-auto p-1.5 bg-muted/30 rounded-full border border-border/50 gap-1">
+            <TabsList className="h-9 bg-transparent p-0 border-b border-border rounded-none w-full justify-start gap-0">
               <TabsTrigger 
                 value="overview" 
-                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
               >
-                <LayoutGrid className="h-4 w-4" />
+                <LayoutGrid className="h-3.5 w-3.5" />
                 Overview
               </TabsTrigger>
               <TabsTrigger 
                 value="mvv"
-                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
               >
-                <Target className="h-4 w-4" />
-                Mission / Vision / Values
+                <Target className="h-3.5 w-3.5" />
+                MVV
               </TabsTrigger>
               <TabsTrigger 
                 value="goals"
-                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
               >
-                <Palette className="h-4 w-4" />
-                Strategic Goals
+                <Palette className="h-3.5 w-3.5" />
+                Goals
               </TabsTrigger>
               <TabsTrigger 
                 value="themes" 
-                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
               >
-                <ListTree className="h-4 w-4" />
+                <ListTree className="h-3.5 w-3.5" />
                 Themes
-                {themes.length === 0 && <Badge variant="destructive" className="text-[10px] px-1 py-0 h-4 ml-1">Required</Badge>}
+                {themes.length === 0 && <Badge variant="destructive" className="text-[10px] px-1 py-0 h-4 ml-0.5">!</Badge>}
               </TabsTrigger>
               <TabsTrigger 
                 value="epics"
-                className="rounded-full px-5 py-2.5 data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-2 text-muted-foreground data-[state=active]:font-medium"
+                className="rounded-none border-b-2 border-transparent px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:border-brand-gold data-[state=active]:text-foreground data-[state=active]:shadow-none flex items-center gap-1.5 hover:text-foreground transition-colors"
               >
-                <Boxes className="h-4 w-4" />
+                <Boxes className="h-3.5 w-3.5" />
                 Epics
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="overview">
+            <TabsContent value="overview" className="mt-6">
               <OverviewTab
                 missions={missions}
                 visions={visions}
@@ -172,7 +172,7 @@ export default function StrategicBacklog() {
               />
             </TabsContent>
 
-            <TabsContent value="mvv">
+            <TabsContent value="mvv" className="mt-6">
               <MVVTab
                 missions={missions}
                 visions={visions}
@@ -183,7 +183,7 @@ export default function StrategicBacklog() {
               />
             </TabsContent>
 
-            <TabsContent value="goals">
+            <TabsContent value="goals" className="mt-6">
               <GoalsTab
                 goals={goals}
                 links={links || null}
@@ -192,7 +192,7 @@ export default function StrategicBacklog() {
               />
             </TabsContent>
 
-            <TabsContent value="themes">
+            <TabsContent value="themes" className="mt-6">
               <ThemesTab
                 themes={themes}
                 snapshotId={snapshotId}
@@ -200,7 +200,7 @@ export default function StrategicBacklog() {
               />
             </TabsContent>
 
-            <TabsContent value="epics">
+            <TabsContent value="epics" className="mt-6">
               <EpicsTab
                 snapshotId={snapshotId}
                 links={links || null}
