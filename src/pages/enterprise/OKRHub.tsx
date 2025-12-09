@@ -44,7 +44,7 @@ const defaultColumns: Column[] = [
   { key: 'work_progress', label: 'Work progress', enabled: true },
   { key: 'kr_progress', label: 'Key results progress', enabled: true },
   { key: 'kr_count', label: 'Key results', enabled: true },
-  { key: 'pi', label: 'Program Increment', enabled: true },
+  { key: 'pi', label: 'Quarter', enabled: true },
   { key: 'owner', label: 'Owner', enabled: true },
   { key: 'team', label: 'Team', enabled: true },
   { key: 'due_date', label: 'Due date', enabled: true },
@@ -260,33 +260,26 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Header with Title and Action Buttons */}
-      <div className="border-b bg-card px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Star className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            <h1 className="text-xl sm:text-2xl font-semibold text-foreground">OKR Hub</h1>
-            <Badge variant="secondary" className="text-xs font-medium">NEW</Badge>
-          </div>
-          <div className="flex flex-wrap items-center gap-[var(--s2)]">
-            <Button variant="ghost" size="sm" className="text-xs sm:text-sm hidden lg:flex" onClick={() => navigate('/enterprise/objectives')}>
-              <ArrowRight className="h-4 w-4 mr-2" />
-              All objectives
-            </Button>
-            <Button variant="ghost" size="sm" className="text-xs sm:text-sm hidden lg:flex" onClick={() => navigate('/enterprise/okr-tree')}>
-              <GitBranch className="h-4 w-4 mr-2" />
-              Tree
-            </Button>
-            <Button variant="ghost" size="sm" className="text-xs sm:text-sm hidden md:flex">
-              <MessageSquare className="h-4 w-4 mr-2" />
-              Feedback
-            </Button>
-            <Button onClick={() => setCreateDialogOpen(true)} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add
-            </Button>
-          </div>
+      {/* Header - align header pattern */}
+      <div className="h-[72px] border-b border-border bg-background flex items-center justify-between px-6 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <Star className="h-5 w-5 text-brand-gold" />
+          <h1 className="text-lg font-semibold text-foreground">OKR Hub</h1>
         </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => navigate('/enterprise/okr-tree')}>
+            <GitBranch className="h-4 w-4 mr-2" />
+            Tree View
+          </Button>
+          <Button onClick={() => setCreateDialogOpen(true)} size="sm" className="bg-brand-gold hover:bg-brand-gold/90 text-white">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Objective
+          </Button>
+        </div>
+      </div>
+
+      {/* Filter toolbar */}
+      <div className="border-b bg-card px-6 py-4">
 
         {/* Filter Row with responsive grid and design tokens */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-[var(--s3)] mb-[var(--s4)]">
@@ -333,13 +326,13 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
           </div>
 
           <div className="flex flex-col gap-1">
-            <div className="text-xs font-semibold text-muted-foreground uppercase">PI</div>
+            <div className="text-xs font-semibold text-muted-foreground uppercase">Quarter</div>
             <Select value={piFilter || "all"} onValueChange={(val) => setPiFilter(val === "all" ? "" : val)}>
               <SelectTrigger className="w-full h-9 text-sm bg-background">
-                <SelectValue placeholder="All PIs" />
+                <SelectValue placeholder="All Quarters" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All PIs</SelectItem>
+                <SelectItem value="all">All Quarters</SelectItem>
                 {programIncrements.map((pi) => (
                   <SelectItem key={pi.id} value={pi.id}>
                     {pi.name}

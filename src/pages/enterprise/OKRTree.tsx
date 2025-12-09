@@ -2,13 +2,15 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Search, Settings, Maximize2, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, Settings, Maximize2, ChevronRight, ChevronDown, List, GitBranch } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useOKRTree } from '@/hooks/useOKRTree';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { OKRTreeItem } from '@/hooks/useOKRTree';
 
 export default function OKRTree() {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
   const { data: okrTree, isLoading } = useOKRTree();
@@ -136,13 +138,25 @@ export default function OKRTree() {
   };
 
   return (
-      <div className="px-[var(--s4)] sm:px-[var(--s6)] py-[var(--s6)]">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-[var(--s4)] mb-[var(--s6)]">
-        <h1 className="text-xl sm:text-2xl font-semibold mb-1">OKR Tree</h1>
-        <p className="text-xs sm:text-sm text-muted-foreground italic">
-          Only work items tied to this Snapshot or its Program Increments are shown here
-        </p>
+    <div className="h-full flex flex-col bg-background">
+      {/* Header - align header pattern */}
+      <div className="h-[72px] border-b border-border bg-background flex items-center justify-between px-6 flex-shrink-0">
+        <div className="flex items-center gap-3">
+          <GitBranch className="h-5 w-5 text-brand-gold" />
+          <h1 className="text-lg font-semibold text-foreground">OKR Tree</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => navigate('/enterprise/okr-hub')}>
+            <List className="h-4 w-4 mr-2" />
+            List View
+          </Button>
+        </div>
       </div>
+
+      <div className="flex-1 overflow-auto p-6">
+        <p className="text-xs text-muted-foreground italic mb-4">
+          Only work items tied to this Snapshot or its Quarters are shown here
+        </p>
 
       {/* Toolbar */}
       <Card className="mb-[var(--s3)] sm:mb-[var(--s4)]">
@@ -202,6 +216,7 @@ export default function OKRTree() {
           </div>
         )}
       </Card>
+      </div>
     </div>
   );
 }
