@@ -55,15 +55,8 @@ export function CatalystHeaderAtlaskit() {
       case 'project':
         setCreateDialogType('project');
         break;
-      case 'issue':
-        // Open the Work Item creation modal
+      case 'work-item':
         setIsWorkItemModalOpen(true);
-        break;
-      case 'epic':
-        navigate('/items/epics/new');
-        break;
-      case 'release':
-        navigate('/release/vehicles/new');
         break;
     }
   };
