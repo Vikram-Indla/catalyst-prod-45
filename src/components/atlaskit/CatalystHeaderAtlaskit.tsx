@@ -210,14 +210,19 @@ export function CatalystHeaderAtlaskit() {
 
               // Dropdowns for Product, Program, Project, Release
               if (item.hasDropdown) {
+                const isDropdownOpen = activeDropdown === item.label;
                 return (
                   <Popup
                     key={item.label}
-                    isOpen={activeDropdown === item.label}
+                    isOpen={isDropdownOpen}
                     onClose={() => setActiveDropdown(null)}
                     placement="bottom-start"
                     content={() => (
-                      <div style={{ background: token('elevation.surface.overlay', '#FFFFFF'), borderRadius: '3px', boxShadow: token('elevation.shadow.overlay', '0px 8px 12px rgba(9, 30, 66, 0.15)') }}>
+                      <div style={{ 
+                        background: '#FFFFFF', 
+                        borderRadius: '3px', 
+                        boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+                      }}>
                         {item.label === "Product" && (
                           <ProductSelectorDropdown 
                             onClose={() => setActiveDropdown(null)} 
@@ -243,22 +248,57 @@ export function CatalystHeaderAtlaskit() {
                     )}
                     trigger={(triggerProps) => (
                       <button
-                        {...triggerProps}
-                        onClick={() => setActiveDropdown(activeDropdown === item.label ? null : item.label)}
+                        ref={triggerProps.ref as React.Ref<HTMLButtonElement>}
+                        aria-expanded={triggerProps['aria-expanded']}
+                        aria-haspopup={triggerProps['aria-haspopup']}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setActiveDropdown(isDropdownOpen ? null : item.label);
+                        }}
                         style={{
                           padding: '8px 12px',
                           fontSize: '14px',
-                          fontWeight: isActive ? 600 : 500,
-                          color: isActive ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
-                          background: 'transparent',
+                          fontWeight: isActive || isDropdownOpen ? 600 : 500,
+                          color: isActive || isDropdownOpen ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
+                          background: isDropdownOpen ? '#F4F5F7' : 'transparent',
                           border: 'none',
+                          borderRadius: '3px',
                           borderBottom: isActive ? `2px solid ${token('color.border.brand', '#0052CC')}` : '2px solid transparent',
                           cursor: 'pointer',
                           marginBottom: '-1px',
-                          transition: 'color 150ms, border-color 150ms',
+                          transition: 'all 150ms',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isDropdownOpen) {
+                            e.currentTarget.style.background = '#F4F5F7';
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isDropdownOpen) {
+                            e.currentTarget.style.background = 'transparent';
+                          }
                         }}
                       >
                         {item.label}
+                        <svg 
+                          width="16" 
+                          height="16" 
+                          viewBox="0 0 24 24" 
+                          fill="none" 
+                          style={{
+                            transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transition: 'transform 150ms',
+                          }}
+                        >
+                          <path 
+                            d="M8.292 10.293a1.009 1.009 0 0 0 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955a1.01 1.01 0 0 0 0-1.419.987.987 0 0 0-1.406 0l-2.298 2.317-2.307-2.327a.99.99 0 0 0-1.406 0z" 
+                            fill="currentColor"
+                          />
+                        </svg>
                       </button>
                     )}
                   />
