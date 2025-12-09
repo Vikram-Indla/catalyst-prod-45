@@ -12,11 +12,11 @@ import { TimelineView } from './TimelineView';
 import { VacancyCards } from './VacancyCards';
 import { AvailableCapacityTab } from './AvailableCapacityTab';
 import { ExecutiveReportsTab } from './ExecutiveReportsTab';
-import { FilterDrawer } from './FilterDrawer';
+import { FilterModal } from './FilterModal';
 import { CopyWeekModal } from './CopyWeekModal';
-import { AddMemberDrawer } from './AddMemberDrawer';
-import { NewAllocationDrawer } from './NewAllocationDrawer';
-import { ResourceDetailDrawer } from './ResourceDetailDrawer';
+import { AddMemberModal } from './AddMemberModal';
+import { NewAllocationModal } from './NewAllocationModal';
+import { ResourceDetailModal } from './ResourceDetailModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -254,8 +254,8 @@ export function CapacityPlanningPage() {
         </Tabs>
       </div>
 
-      {/* Drawers & Modals */}
-      <FilterDrawer
+      {/* Modals */}
+      <FilterModal
         open={filterOpen}
         onOpenChange={setFilterOpen}
         activeFilters={activeFilters}
@@ -274,13 +274,13 @@ export function CapacityPlanningPage() {
         onCopy={handleCopyWeek}
       />
 
-      <AddMemberDrawer
+      <AddMemberModal
         open={addMemberOpen}
         onOpenChange={setAddMemberOpen}
         onAdd={handleAddMember}
       />
 
-      <NewAllocationDrawer
+      <NewAllocationModal
         open={newAllocationOpen}
         onOpenChange={setNewAllocationOpen}
         resources={allResources}
@@ -290,7 +290,7 @@ export function CapacityPlanningPage() {
         onAdd={handleAddAllocation}
       />
 
-      <ResourceDetailDrawer
+      <ResourceDetailModal
         open={!!selectedResourceId}
         onOpenChange={(open) => !open && setSelectedResourceId(null)}
         resource={selectedResource || null}

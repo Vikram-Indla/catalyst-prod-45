@@ -1,25 +1,24 @@
 /**
- * Add Team Member Drawer
+ * Add Team Member Modal
  * Following specification exactly
  */
 
 import { useState } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Resource } from '@/types/capacity';
 import { getInitials } from '@/lib/capacityUtils';
-import { X } from 'lucide-react';
 
-interface AddMemberDrawerProps {
+interface AddMemberModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onAdd: (data: Omit<Resource, 'id' | 'createdAt' | 'updatedAt' | 'allocations'>) => void;
 }
 
-export function AddMemberDrawer({ open, onOpenChange, onAdd }: AddMemberDrawerProps) {
+export function AddMemberModal({ open, onOpenChange, onAdd }: AddMemberModalProps) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [role, setRole] = useState('');
@@ -58,13 +57,13 @@ export function AddMemberDrawer({ open, onOpenChange, onAdd }: AddMemberDrawerPr
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] sm:max-w-[400px] p-6">
-        <SheetHeader className="border-b border-border pb-4">
-          <SheetTitle>Add Team Member</SheetTitle>
-        </SheetHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>Add Team Member</DialogTitle>
+        </DialogHeader>
 
-        <div className="py-6 space-y-4">
+        <div className="py-4 space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name *</Label>
@@ -107,37 +106,39 @@ export function AddMemberDrawer({ open, onOpenChange, onAdd }: AddMemberDrawerPr
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>Primary Skill</Label>
-            <Select value={primarySkill} onValueChange={(v) => setPrimarySkill(v as Resource['primarySkill'])}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Frontend">Frontend</SelectItem>
-                <SelectItem value="Backend">Backend</SelectItem>
-                <SelectItem value="Full Stack">Full Stack</SelectItem>
-                <SelectItem value="DevOps">DevOps</SelectItem>
-                <SelectItem value="QA">QA</SelectItem>
-                <SelectItem value="Product">Product</SelectItem>
-                <SelectItem value="Design">Design</SelectItem>
-                <SelectItem value="Data">Data</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Primary Skill</Label>
+              <Select value={primarySkill} onValueChange={(v) => setPrimarySkill(v as Resource['primarySkill'])}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Frontend">Frontend</SelectItem>
+                  <SelectItem value="Backend">Backend</SelectItem>
+                  <SelectItem value="Full Stack">Full Stack</SelectItem>
+                  <SelectItem value="DevOps">DevOps</SelectItem>
+                  <SelectItem value="QA">QA</SelectItem>
+                  <SelectItem value="Product">Product</SelectItem>
+                  <SelectItem value="Design">Design</SelectItem>
+                  <SelectItem value="Data">Data</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-2">
-            <Label>Location</Label>
-            <Select value={location} onValueChange={(v) => setLocation(v as Resource['location'])}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Onsite">Onsite</SelectItem>
-                <SelectItem value="Offshore">Offshore</SelectItem>
-                <SelectItem value="Hybrid">Hybrid</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="space-y-2">
+              <Label>Location</Label>
+              <Select value={location} onValueChange={(v) => setLocation(v as Resource['location'])}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Onsite">Onsite</SelectItem>
+                  <SelectItem value="Offshore">Offshore</SelectItem>
+                  <SelectItem value="Hybrid">Hybrid</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -155,7 +156,7 @@ export function AddMemberDrawer({ open, onOpenChange, onAdd }: AddMemberDrawerPr
           </div>
         </div>
 
-        <SheetFooter className="border-t border-border pt-4">
+        <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button 
             onClick={handleSubmit}
@@ -164,8 +165,8 @@ export function AddMemberDrawer({ open, onOpenChange, onAdd }: AddMemberDrawerPr
           >
             Add Member
           </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

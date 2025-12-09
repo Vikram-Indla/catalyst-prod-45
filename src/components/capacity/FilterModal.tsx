@@ -1,10 +1,10 @@
 /**
- * Smart Filter Drawer
+ * Smart Filter Modal
  * Following specification exactly with quick filters and collapsible sections
  */
 
 import { useState } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -14,7 +14,7 @@ import { ChevronDown, X } from 'lucide-react';
 import { CapacityFilterState, CapacityQuickFilter } from '@/types/capacity';
 import { cn } from '@/lib/utils';
 
-interface FilterDrawerProps {
+interface FilterModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   activeFilters: CapacityFilterState;
@@ -33,7 +33,7 @@ const QUICK_FILTERS: { id: CapacityQuickFilter; label: string }[] = [
   { id: 'offshore', label: 'Offshore Only' },
 ];
 
-export function FilterDrawer({
+export function FilterModal({
   open,
   onOpenChange,
   activeFilters,
@@ -41,7 +41,7 @@ export function FilterDrawer({
   onApplyFilters,
   onToggleQuickFilter,
   onClearAll,
-}: FilterDrawerProps) {
+}: FilterModalProps) {
   const [localFilters, setLocalFilters] = useState<CapacityFilterState>(activeFilters);
   const [peopleOpen, setPeopleOpen] = useState(true);
   const [projectsOpen, setProjectsOpen] = useState(true);
@@ -61,20 +61,18 @@ export function FilterDrawer({
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] sm:max-w-[400px] bg-card">
-        <SheetHeader className="border-b border-border pb-4">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[480px] max-h-[85vh] flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
           <div className="flex items-center justify-between">
-            <SheetTitle>Filters</SheetTitle>
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <X className="h-4 w-4" />
-              </Button>
-            </SheetClose>
+            <DialogTitle>Filters</DialogTitle>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onOpenChange(false)}>
+              <X className="h-4 w-4" />
+            </Button>
           </div>
-        </SheetHeader>
+        </DialogHeader>
 
-        <div className="py-4 space-y-6 overflow-y-auto max-h-[calc(100vh-200px)]">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
           {/* Quick Filters */}
           <div>
             <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
@@ -101,11 +99,11 @@ export function FilterDrawer({
 
           {/* People Section */}
           <Collapsible open={peopleOpen} onOpenChange={setPeopleOpen}>
-            <CollapsibleTrigger className="flex items-center justify-between w-full py-2">
+            <CollapsibleTrigger className="flex items-center justify-between w-full py-2 border-t pt-4">
               <h4 className="text-sm font-medium">People</h4>
               <ChevronDown className={cn("h-4 w-4 transition-transform", peopleOpen && "rotate-180")} />
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-3 pt-2">
+            <CollapsibleContent className="grid grid-cols-2 gap-4 pt-3">
               <div>
                 <label className="text-xs text-muted-foreground">Department</label>
                 <Select 
@@ -138,7 +136,7 @@ export function FilterDrawer({
                   </SelectContent>
                 </Select>
               </div>
-              <div>
+              <div className="col-span-2">
                 <label className="text-xs text-muted-foreground">Skill</label>
                 <Select 
                   value={localFilters.skill || ''} 
@@ -168,7 +166,7 @@ export function FilterDrawer({
               <h4 className="text-sm font-medium">Projects</h4>
               <ChevronDown className={cn("h-4 w-4 transition-transform", projectsOpen && "rotate-180")} />
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-3 pt-2">
+            <CollapsibleContent className="pt-3">
               <div>
                 <label className="text-xs text-muted-foreground">Project</label>
                 <Select 
@@ -197,7 +195,7 @@ export function FilterDrawer({
               <h4 className="text-sm font-medium">Allocation</h4>
               <ChevronDown className={cn("h-4 w-4 transition-transform", allocationOpen && "rotate-180")} />
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-3 pt-2">
+            <CollapsibleContent className="space-y-3 pt-3">
               <div className="flex gap-3">
                 <div className="flex-1">
                   <label className="text-xs text-muted-foreground">Min %</label>
@@ -252,18 +250,19 @@ export function FilterDrawer({
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border pt-4 flex items-center justify-between">
-          <span className="text-sm text-muted-foreground">
-            {totalActiveFilters} filters applied
+        <div className="border-t border-border px-6 py-4 flex items-center justify-between flex-shrink-0">
+          <span className="text-sm">
+            <span className="text-[#c69c6d] font-medium">{totalActiveFilters}</span>
+            <span className="text-muted-foreground"> filters applied</span>
           </span>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleClear}>Clear</Button>
+            <Button variant="outline" onClick={handleClear}>Clear All</Button>
             <Button onClick={handleApply} className="bg-[#c69c6d] hover:bg-[#8b7355] text-white">
               Apply
             </Button>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
