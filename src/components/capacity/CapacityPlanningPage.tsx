@@ -138,164 +138,7 @@ export function CapacityPlanningPage() {
           />
         )}
 
-        {/* Search, Week Navigation, and Actions */}
-        <div className="flex items-center justify-between gap-4">
-          {/* Search */}
-          <div className="relative w-64 flex-shrink-0">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search resources..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-
-          {/* Week Navigation - Show week ending dates (Thursday) */}
-          <div className="flex items-center gap-2 bg-muted/50 rounded-lg px-2 py-1">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8"
-              onClick={() => navigateWeeks(-1)}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            
-            <div className="flex items-center gap-1">
-              {[-1, 0, 1].map((offset) => {
-                let weekNum = currentWeek + offset;
-                let yearNum = currentYear;
-                if (weekNum < 1) {
-                  weekNum = 52 + weekNum;
-                  yearNum--;
-                } else if (weekNum > 52) {
-                  weekNum = weekNum - 52;
-                  yearNum++;
-                }
-                const isCurrentWeek = offset === 0;
-                
-                // Calculate week ending date (Thursday)
-                const getWeekEndingDate = (week: number, year: number): string => {
-                  // Get first day of year
-                  const jan1 = new Date(year, 0, 1);
-                  // Get the day of week (0=Sun, 1=Mon, ..., 4=Thu)
-                  const jan1DayOfWeek = jan1.getDay();
-                  // Calculate days to first Thursday
-                  const daysToFirstThursday = (4 - jan1DayOfWeek + 7) % 7;
-                  // Get first Thursday of year
-                  const firstThursday = new Date(year, 0, 1 + daysToFirstThursday);
-                  // Calculate target Thursday (week ending)
-                  const targetThursday = new Date(firstThursday);
-                  targetThursday.setDate(firstThursday.getDate() + (week - 1) * 7);
-                  
-                  // Format as DD-MMM
-                  const day = targetThursday.getDate().toString().padStart(2, '0');
-                  const month = targetThursday.toLocaleDateString('en-US', { month: 'short' });
-                  return `${day}-${month}`;
-                };
-                
-                const weekEndingDate = getWeekEndingDate(weekNum, yearNum);
-                
-                return (
-                  <div
-                    key={`${yearNum}-${weekNum}`}
-                    className={`px-3 py-1.5 text-xs font-medium rounded-md cursor-pointer transition-colors ${
-                      isCurrentWeek 
-                        ? 'bg-brand-gold text-white' 
-                        : 'text-muted-foreground hover:bg-card hover:text-foreground'
-                    }`}
-                    onClick={() => {
-                      if (offset !== 0) navigateWeeks(offset);
-                    }}
-                  >
-                    {weekEndingDate}
-                  </div>
-                );
-              })}
-            </div>
-            
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-8 w-8"
-              onClick={() => navigateWeeks(1)}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center gap-2">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" onClick={() => setCopyModalOpen(true)} disabled={isLocked}>
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Copy Week</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant={isLocked ? "default" : "outline"} 
-                  size="icon" 
-                  onClick={() => {
-                    toggleLock('Current User');
-                    toast.success(isLocked ? 'Allocations unlocked' : 'Allocations locked');
-                  }}
-                  className={isLocked ? "bg-muted-foreground hover:bg-muted-foreground/80 text-white" : ""}
-                >
-                  {isLocked ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {isLocked ? `Locked by ${lockedBy}` : 'Lock Allocations'}
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon" onClick={() => setAddMemberOpen(true)} disabled={isLocked}>
-                  <UserPlus className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Add Member</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  size="icon" 
-                  onClick={() => setNewAllocationOpen(true)} 
-                  className="bg-brand-gold hover:bg-brand-gold-hover text-white"
-                  disabled={isLocked}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>New Allocation</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="icon"
-                  onClick={() => setFilterOpen(true)}
-                  className="relative"
-                >
-                  <Filter className="h-4 w-4" />
-                  {filterCount > 0 && (
-                    <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-brand-gold text-white text-xs">
-                      {filterCount}
-                    </Badge>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Filter</TooltipContent>
-            </Tooltip>
-          </div>
-        </div>
-
-        {/* Tabs - 6 tabs */}
+        {/* Tabs - 6 tabs - Moved ABOVE search */}
         <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as CapacityTab)}>
           <TabsList className="bg-transparent border border-brand-gold/30 rounded-full p-1 gap-1">
             <TabsTrigger 
@@ -342,6 +185,156 @@ export function CapacityPlanningPage() {
             </TabsTrigger>
           </TabsList>
 
+          {/* Search, Week Navigation, and Actions */}
+          <div className="flex items-center justify-between gap-4 mt-4">
+            {/* Search */}
+            <div className="relative w-64 flex-shrink-0">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search resources..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+
+            {/* Week Navigation - Show week ending dates (Thursday) */}
+            <div className="flex items-center gap-2 bg-muted/50 rounded-lg px-2 py-1">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8"
+                onClick={() => navigateWeeks(-1)}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              
+              <div className="flex items-center gap-1">
+                {[-1, 0, 1].map((offset) => {
+                  let weekNum = currentWeek + offset;
+                  let yearNum = currentYear;
+                  if (weekNum < 1) {
+                    weekNum = 52 + weekNum;
+                    yearNum--;
+                  } else if (weekNum > 52) {
+                    weekNum = weekNum - 52;
+                    yearNum++;
+                  }
+                  const isCurrentWeek = offset === 0;
+                  
+                  // Calculate week ending date (Thursday)
+                  const getWeekEndingDate = (week: number, year: number): string => {
+                    const jan1 = new Date(year, 0, 1);
+                    const jan1DayOfWeek = jan1.getDay();
+                    const daysToFirstThursday = (4 - jan1DayOfWeek + 7) % 7;
+                    const firstThursday = new Date(year, 0, 1 + daysToFirstThursday);
+                    const targetThursday = new Date(firstThursday);
+                    targetThursday.setDate(firstThursday.getDate() + (week - 1) * 7);
+                    const day = targetThursday.getDate().toString().padStart(2, '0');
+                    const month = targetThursday.toLocaleDateString('en-US', { month: 'short' });
+                    return `${day}-${month}`;
+                  };
+                  
+                  const weekEndingDate = getWeekEndingDate(weekNum, yearNum);
+                  
+                  return (
+                    <div
+                      key={`${yearNum}-${weekNum}`}
+                      className={`px-3 py-1.5 text-xs font-medium rounded-md cursor-pointer transition-colors ${
+                        isCurrentWeek 
+                          ? 'bg-brand-gold text-white' 
+                          : 'text-muted-foreground hover:bg-card hover:text-foreground'
+                      }`}
+                      onClick={() => {
+                        if (offset !== 0) navigateWeeks(offset);
+                      }}
+                    >
+                      {weekEndingDate}
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8"
+                onClick={() => navigateWeeks(1)}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" onClick={() => setCopyModalOpen(true)} disabled={isLocked}>
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Copy Week</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant={isLocked ? "default" : "outline"} 
+                    size="icon" 
+                    onClick={() => {
+                      toggleLock('Current User');
+                      toast.success(isLocked ? 'Allocations unlocked' : 'Allocations locked');
+                    }}
+                    className={isLocked ? "bg-muted-foreground hover:bg-muted-foreground/80 text-white" : ""}
+                  >
+                    {isLocked ? <Lock className="h-4 w-4" /> : <LockOpen className="h-4 w-4" />}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {isLocked ? `Locked by ${lockedBy}` : 'Lock Allocations'}
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon" onClick={() => setAddMemberOpen(true)} disabled={isLocked}>
+                    <UserPlus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Add Member</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    size="icon" 
+                    onClick={() => setNewAllocationOpen(true)} 
+                    className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                    disabled={isLocked}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>New Allocation</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="icon"
+                    onClick={() => setFilterOpen(true)}
+                    className="relative"
+                  >
+                    <Filter className="h-4 w-4" />
+                    {filterCount > 0 && (
+                      <Badge className="absolute -top-2 -right-2 h-5 w-5 p-0 flex items-center justify-center bg-brand-gold text-white text-xs">
+                        {filterCount}
+                      </Badge>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Filter</TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
+
           {isLocked && lockedBy && lockedAt && (
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-2">
               <Lock className="h-3 w-3" />
@@ -349,6 +342,7 @@ export function CapacityPlanningPage() {
             </div>
           )}
 
+          {/* Tab Contents */}
           <div className="mt-4">
             <TabsContent value="roster" className="m-0">
               <PeopleRoster
@@ -449,6 +443,8 @@ export function CapacityPlanningPage() {
         onApplyFilters={setActiveFilters}
         onToggleQuickFilter={toggleQuickFilter}
         onClearAll={clearAllFilters}
+        resources={allResources}
+        projects={projects}
       />
 
       <CopyWeekModal
