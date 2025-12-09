@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useMutation } from '@tanstack/react-query';
 
 // ✅ Atlaskit imports
 import '@atlaskit/css-reset';
@@ -19,11 +19,13 @@ import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import AddIcon from '@atlaskit/icon/glyph/add';
 import MoreIcon from '@atlaskit/icon/glyph/more';
+import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import Lozenge from '@atlaskit/lozenge';
 import Checkbox from '@atlaskit/checkbox';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
+import Tooltip from '@atlaskit/tooltip';
 
 // Icons - only keep what's needed that Atlaskit doesn't provide
 import { AlertTriangle } from 'lucide-react';
@@ -31,6 +33,14 @@ import { AlertTriangle } from 'lucide-react';
 // Atlaskit layout components
 import { TopNav } from '@/components/atlaskit/TopNav';
 import { Sidebar } from '@/components/atlaskit/Sidebar';
+
+// Atlaskit modals and dialogs
+import { BulkStatusModal } from '@/components/atlaskit/BulkStatusModal';
+import { BulkAssignModal } from '@/components/atlaskit/BulkAssignModal';
+import { BulkDeleteModal } from '@/components/atlaskit/BulkDeleteModal';
+import { ColumnsConfigModal } from '@/components/atlaskit/ColumnsConfigModal';
+import { QuickFiltersBar } from '@/components/atlaskit/QuickFiltersBar';
+import { ExportModal } from '@/components/atlaskit/ExportModal';
 
 // Local components
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
@@ -202,6 +212,30 @@ export default function IndustryPageAtlaskit() {
   const [filters, setFilters] = useState<SmartFilters>({});
   const [sortKey, setSortKey] = useState<string>('rank');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>('ASC');
+  const [quickFilter, setQuickFilter] = useState<string | null>(null);
+  
+  // Modal states
+  const [bulkStatusModalOpen, setBulkStatusModalOpen] = useState(false);
+  const [bulkAssignModalOpen, setBulkAssignModalOpen] = useState(false);
+  const [bulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
+  const [columnsModalOpen, setColumnsModalOpen] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+  
+  // Column configuration
+  const [columnConfig, setColumnConfig] = useState([
+    { key: 'checkbox', label: 'Select', visible: true, required: true },
+    { key: 'request_key', label: 'Request ID', visible: true, required: true },
+    { key: 'title', label: 'Summary', visible: true, required: true },
+    { key: 'process_step', label: 'Process Step', visible: true },
+    { key: 'rank', label: 'Rank', visible: true },
+    { key: 'delivery_platform', label: 'Delivery Platform', visible: true },
+    { key: 'business_owner', label: 'Business Owner', visible: true },
+    { key: 'planned_quarter', label: 'Quarter', visible: true },
+    { key: 'end_date', label: 'Target Date', visible: true },
+    { key: 'department', label: 'Department', visible: true },
+    { key: 'actions', label: 'Actions', visible: true, required: true },
+  ]);
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -242,11 +276,38 @@ export default function IndustryPageAtlaskit() {
     return value !== undefined && value !== '' && value !== null;
   }).length;
 
+  // Quick filters data
+  const quickFilters = useMemo(() => {
+    if (!requests) return [];
+    const newCount = requests.filter((r: any) => r.process_step === 'new_request').length;
+    const inProgressCount = requests.filter((r: any) => ['analyse', 'approved', 'ready_to_implement', 'implement'].includes(r.process_step)).length;
+    const closedCount = requests.filter((r: any) => r.process_step === 'closed').length;
+    const myRequests = requests.filter((r: any) => r.assignee).length;
+    
+    return [
+      { key: 'new', label: 'New', count: newCount },
+      { key: 'in-progress', label: 'In Progress', count: inProgressCount },
+      { key: 'closed', label: 'Closed', count: closedCount },
+      { key: 'my-requests', label: 'My Requests', count: myRequests },
+    ];
+  }, [requests]);
+
   // Process and sort data
   const sortedRequests = useMemo(() => {
     if (!requests || requests.length === 0) return [];
     
     let filtered = [...requests];
+
+    // Apply quick filter
+    if (quickFilter === 'new') {
+      filtered = filtered.filter((r: any) => r.process_step === 'new_request');
+    } else if (quickFilter === 'in-progress') {
+      filtered = filtered.filter((r: any) => ['analyse', 'approved', 'ready_to_implement', 'implement'].includes(r.process_step));
+    } else if (quickFilter === 'closed') {
+      filtered = filtered.filter((r: any) => r.process_step === 'closed');
+    } else if (quickFilter === 'my-requests') {
+      filtered = filtered.filter((r: any) => r.assignee);
+    }
 
     // Apply filters (simplified for brevity - actual implementation would include all filters)
     if (filters.processStep && filters.processStep.length > 0) {
@@ -277,7 +338,7 @@ export default function IndustryPageAtlaskit() {
       ...req,
       displayRank: idx + 1
     }));
-  }, [requests, filters, sortKey, sortOrder]);
+  }, [requests, filters, sortKey, sortOrder, quickFilter]);
 
   const totalPages = Math.ceil(sortedRequests.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -328,6 +389,52 @@ export default function IndustryPageAtlaskit() {
       toast({ title: 'Requests exported successfully' });
     }
   };
+
+  // Bulk action mutations
+  const bulkUpdateStatusMutation = useMutation({
+    mutationFn: async (status: string) => {
+      const { error } = await supabase
+        .from('business_requests')
+        .update({ process_step: status })
+        .in('id', selectedRows);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      setSelectedRows([]);
+      toast({ title: `Updated ${selectedRows.length} request(s)` });
+    },
+  });
+
+  const bulkAssignMutation = useMutation({
+    mutationFn: async (assignee: string) => {
+      const { error } = await supabase
+        .from('business_requests')
+        .update({ assignee })
+        .in('id', selectedRows);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      setSelectedRows([]);
+      toast({ title: `Assigned ${selectedRows.length} request(s)` });
+    },
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from('business_requests')
+        .delete()
+        .in('id', selectedRows);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['business-requests'] });
+      setSelectedRows([]);
+      toast({ title: `Deleted ${selectedRows.length} request(s)` });
+    },
+  });
 
   // Select all checkbox handler
   const handleSelectAll = () => {
@@ -728,9 +835,47 @@ export default function IndustryPageAtlaskit() {
       <BulkActionsBar
         selectedCount={selectedRows.length}
         onClear={() => setSelectedRows([])}
-        onUpdateStatus={() => toast({ title: 'Update Status', description: 'Bulk status update coming soon' })}
-        onAssign={() => toast({ title: 'Assign', description: 'Bulk assignment coming soon' })}
-        onDelete={() => toast({ title: 'Delete', description: 'Bulk delete coming soon' })}
+        onUpdateStatus={() => setBulkStatusModalOpen(true)}
+        onAssign={() => setBulkAssignModalOpen(true)}
+        onDelete={() => setBulkDeleteModalOpen(true)}
+      />
+
+      {/* Bulk Action Modals */}
+      <BulkStatusModal
+        isOpen={bulkStatusModalOpen}
+        onClose={() => setBulkStatusModalOpen(false)}
+        onConfirm={(status) => bulkUpdateStatusMutation.mutate(status)}
+        selectedCount={selectedRows.length}
+      />
+
+      <BulkAssignModal
+        isOpen={bulkAssignModalOpen}
+        onClose={() => setBulkAssignModalOpen(false)}
+        onConfirm={(assignee) => bulkAssignMutation.mutate(assignee)}
+        selectedCount={selectedRows.length}
+      />
+
+      <BulkDeleteModal
+        isOpen={bulkDeleteModalOpen}
+        onClose={() => setBulkDeleteModalOpen(false)}
+        onConfirm={() => bulkDeleteMutation.mutate()}
+        selectedCount={selectedRows.length}
+      />
+
+      <ColumnsConfigModal
+        isOpen={columnsModalOpen}
+        onClose={() => setColumnsModalOpen(false)}
+        columns={columnConfig}
+        onColumnsChange={setColumnConfig}
+      />
+
+      <ExportModal
+        isOpen={exportModalOpen}
+        onClose={() => setExportModalOpen(false)}
+        onExport={(format) => {
+          handleExport();
+          toast({ title: `Exported as ${format.toUpperCase()}` });
+        }}
       />
     </div>
   );
