@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { ConfluenceEditor } from '@/components/knowledge-hub/editor/ConfluenceEditor';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Flag } from 'lucide-react';
 import { useCreateGoal, useUpsertSnapshotLinks, useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
@@ -72,11 +72,10 @@ export function CreateGoalDialog({ open, onOpenChange, snapshotId }: CreateGoalD
 
           <div className="space-y-2">
             <Label>Description</Label>
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+            <ConfluenceEditor
+              content={description}
+              onChange={setDescription}
               placeholder="Enter goal description (optional)"
-              rows={3}
             />
           </div>
 

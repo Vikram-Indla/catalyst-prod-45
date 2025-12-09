@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { ConfluenceEditor } from '@/components/knowledge-hub/editor/ConfluenceEditor';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Trash2, Flag } from 'lucide-react';
@@ -94,12 +94,11 @@ export function GoalDrawer({ open, onOpenChange, goal, isArchived }: GoalDrawerP
 
             <div className="space-y-2">
               <Label>Description</Label>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                disabled={isArchived}
+              <ConfluenceEditor
+                content={description}
+                onChange={setDescription}
+                editable={!isArchived}
                 placeholder="Enter goal description"
-                rows={3}
               />
             </div>
 
