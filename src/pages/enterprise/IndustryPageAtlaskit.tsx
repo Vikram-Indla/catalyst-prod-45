@@ -52,7 +52,7 @@ import { BusinessRequestsKanbanView } from '@/components/business-requests/Busin
 import { PROCESS_STEPS } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { SavedFiltersDropdown } from '@/components/shared/SavedFiltersDropdown';
+
 import { BulkActionsBar } from '@/components/atlaskit/BulkActionsBar';
 
 // Token-based styling helpers
@@ -724,12 +724,6 @@ export default function IndustryPageAtlaskit() {
                 </Button>
               </ButtonGroup>
 
-              <SavedFiltersDropdown
-                entityType="demand"
-                currentFilters={filters}
-                onApplyFilter={(savedFilters) => setFilters(savedFilters as SmartFilters)}
-                hasActiveFilters={activeFilterCount > 0}
-              />
 
               <Button
                 onClick={() => setFiltersDialogOpen(true)}
