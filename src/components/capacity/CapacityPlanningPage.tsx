@@ -383,9 +383,25 @@ export function CapacityPlanningPage() {
             <TabsContent value="vacancies" className="m-0">
               <VacancyCards 
                 vacancies={vacancies} 
-                projects={projects} 
-                onFillGap={(vacancyId) => console.log('Fill gap:', vacancyId)}
+                projects={projects}
+                resources={allResources}
+                currentWeek={currentWeek}
+                currentYear={currentYear}
+                onFillGap={(vacancyId, resourceId, percentage) => {
+                  addAllocation({
+                    resourceId,
+                    projectId: vacancies.find(v => v.id === vacancyId)?.projectId || '',
+                    weekNumber: currentWeek,
+                    year: currentYear,
+                    percentage,
+                    type: 'HARD'
+                  });
+                }}
                 onAddVacancy={(vacancy) => console.log('New vacancy:', vacancy)}
+                onAddNewPerson={(data, vacancyId) => {
+                  addResource(data);
+                  toast.success('New team member added to roster');
+                }}
               />
             </TabsContent>
 

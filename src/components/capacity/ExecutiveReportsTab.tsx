@@ -8,9 +8,9 @@ import { Resource, CapacityProject, Vacancy } from '@/types/capacity';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { FileDown, AlertTriangle } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { FileDown, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 import { toast } from 'sonner';
+import { generateCapacityPDF, downloadCapacityPDF } from '@/utils/capacityPdfGenerator';
 
 interface ExecutiveReportsTabProps {
   resources: Resource[];
@@ -37,6 +37,7 @@ export function ExecutiveReportsTab({
   currentYear
 }: ExecutiveReportsTabProps) {
   const [period, setPeriod] = useState<ReportPeriod>('weekly');
+  const [showResourceDetails, setShowResourceDetails] = useState(false);
 
   // Calculate stats
   const stats = { full: 0, under: 0, over: 0 };
@@ -54,20 +55,6 @@ export function ExecutiveReportsTab({
   }, 0);
   const utilizationRate = totalFTE > 0 ? Math.round((allocatedFTE / totalFTE) * 100) : 0;
 
-  // Project chart data
-  const projectData = projects.map(project => {
-    const totalAlloc = resources.reduce((sum, r) => {
-      return sum + r.allocations
-        .filter(a => a.projectId === project.id && a.weekNumber === currentWeek && a.year === currentYear)
-        .reduce((s, a) => s + a.percentage, 0);
-    }, 0);
-    return {
-      name: project.shortName,
-      value: totalAlloc,
-      color: project.color
-    };
-  }).filter(p => p.value > 0);
-
   const openVacancyCount = vacancies.filter(v => v.status === 'OPEN').length;
 
   const getPeriodLabel = () => {
@@ -78,11 +65,23 @@ export function ExecutiveReportsTab({
     }
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     toast.success('Generating PDF report...');
-    setTimeout(() => {
-      window.print();
-    }, 300);
+    try {
+      const doc = await generateCapacityPDF({
+        resources,
+        projects,
+        vacancies,
+        currentWeek,
+        currentYear,
+        period
+      });
+      downloadCapacityPDF(doc, `Capacity-Report-W${currentWeek}-${currentYear}`);
+      toast.success('PDF downloaded successfully');
+    } catch (error) {
+      console.error('PDF generation error:', error);
+      toast.error('Failed to generate PDF');
+    }
   };
 
   return (
@@ -294,77 +293,19 @@ export function ExecutiveReportsTab({
         </div>
       </div>
 
-      {/* Resource Summary Table */}
+      {/* Project Breakdown Section with Resource Details Toggle */}
       <div className="bg-card border border-border rounded-lg overflow-hidden">
-        <div className="px-3 py-2 border-b border-border bg-muted/30">
-          <h4 className="font-medium text-xs text-muted-foreground uppercase tracking-wide">Resource Summary</h4>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-border bg-muted/20">
-                <th className="text-left p-2 text-xs font-medium text-muted-foreground">Resource</th>
-                <th className="text-left p-2 text-xs font-medium text-muted-foreground">Role</th>
-                <th className="text-center p-2 text-xs font-medium text-muted-foreground">Utilization</th>
-                <th className="text-left p-2 text-xs font-medium text-muted-foreground">Primary Project</th>
-                <th className="text-center p-2 text-xs font-medium text-muted-foreground">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {resources.map((resource) => {
-                const util = calculateUtilization(resource, currentWeek, currentYear);
-                const status = util > 100 ? 'over' : util >= 80 ? 'full' : 'under';
-                
-                // Find primary project (highest allocation)
-                const projectAllocations = projects.map(p => ({
-                  project: p,
-                  total: resource.allocations
-                    .filter(a => a.projectId === p.id && a.weekNumber === currentWeek && a.year === currentYear)
-                    .reduce((s, a) => s + a.percentage, 0)
-                })).filter(pa => pa.total > 0).sort((a, b) => b.total - a.total);
-                
-                const primaryProject = projectAllocations[0];
-
-                return (
-                  <tr key={resource.id} className="border-b border-border last:border-b-0 hover:bg-muted/10">
-                    <td className="p-2 text-sm font-medium">{resource.name}</td>
-                    <td className="p-2 text-sm text-muted-foreground">{resource.role}</td>
-                    <td className="p-2 text-center">
-                      <span className={cn(
-                        "font-semibold text-sm",
-                        status === 'over' ? 'text-[#8b5c5c]' :
-                        status === 'full' ? 'text-[#5c7c5c]' : 'text-[#8b7355]'
-                      )}>
-                        {util}%
-                      </span>
-                    </td>
-                    <td className="p-2 text-sm">
-                      {primaryProject ? primaryProject.project.name : '-'}
-                    </td>
-                    <td className="p-2 text-center">
-                      <Badge 
-                        variant="secondary" 
-                        className={cn(
-                          "text-[10px]",
-                          status === 'over' ? 'bg-[#8b5c5c]/10 text-[#8b5c5c]' :
-                          status === 'full' ? 'bg-[#5c7c5c]/10 text-[#5c7c5c]' : 'bg-[#8b7355]/10 text-[#8b7355]'
-                        )}
-                      >
-                        {status === 'over' ? 'Over' : status === 'full' ? 'Full' : 'Under'}
-                      </Badge>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Project Breakdown Table */}
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
-        <div className="px-3 py-2 border-b border-border bg-muted/30">
+        <div className="px-3 py-2 border-b border-border bg-muted/30 flex items-center justify-between">
           <h4 className="font-medium text-xs text-muted-foreground uppercase tracking-wide">Project Breakdown</h4>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-xs gap-1"
+            onClick={() => setShowResourceDetails(!showResourceDetails)}
+          >
+            {showResourceDetails ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+            {showResourceDetails ? 'Hide' : 'Show'} Details
+          </Button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">

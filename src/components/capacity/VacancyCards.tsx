@@ -4,22 +4,26 @@
  */
 
 import { useState } from 'react';
-import { Vacancy, CapacityProject } from '@/types/capacity';
+import { Vacancy, CapacityProject, Resource } from '@/types/capacity';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { Plus, X, Briefcase, Calendar, Target } from 'lucide-react';
 import { toast } from 'sonner';
+import { FillGapModal } from './FillGapModal';
 
 interface VacancyCardsProps {
   vacancies: Vacancy[];
   projects: CapacityProject[];
-  onFillGap: (vacancyId: string) => void;
+  resources: Resource[];
+  currentWeek: number;
+  currentYear: number;
+  onFillGap: (vacancyId: string, resourceId: string, percentage: number) => void;
   onAddVacancy?: (vacancy: Omit<Vacancy, 'id'>) => void;
+  onAddNewPerson?: (data: Omit<Resource, 'id' | 'createdAt' | 'updatedAt' | 'allocations'>, vacancyId: string) => void;
 }
 
 // Seed vacancies data
@@ -67,10 +71,20 @@ const SKILL_OPTIONS = [
 
 const PROFICIENCY_LEVELS: Vacancy['proficiencyLevel'][] = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
 
-export function VacancyCards({ vacancies: externalVacancies, projects, onFillGap, onAddVacancy }: VacancyCardsProps) {
+export function VacancyCards({ 
+  vacancies: externalVacancies, 
+  projects, 
+  resources, 
+  currentWeek, 
+  currentYear,
+  onFillGap, 
+  onAddVacancy,
+  onAddNewPerson 
+}: VacancyCardsProps) {
   // Combine external vacancies with seed data
   const [localVacancies, setLocalVacancies] = useState<Vacancy[]>(SEED_VACANCIES);
-  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [fillGapModalOpen, setFillGapModalOpen] = useState(false);
+  const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
   const [newVacancy, setNewVacancy] = useState({
     skill: '',
     proficiencyLevel: 'Intermediate' as Vacancy['proficiencyLevel'],
@@ -85,6 +99,31 @@ export function VacancyCards({ vacancies: externalVacancies, projects, onFillGap
 
   const allVacancies = [...externalVacancies, ...localVacancies];
   const openVacancies = allVacancies.filter(v => v.status !== 'FILLED');
+
+  const handleFillGapClick = (vacancy: Vacancy) => {
+    setSelectedVacancy(vacancy);
+    setFillGapModalOpen(true);
+  };
+
+  const handleAssignResource = (vacancyId: string, resourceId: string, percentage: number) => {
+    onFillGap(vacancyId, resourceId, percentage);
+    // Mark vacancy as filled locally
+    setLocalVacancies(prev => prev.map(v => 
+      v.id === vacancyId ? { ...v, status: 'FILLED' as const } : v
+    ));
+    toast.success('Resource assigned successfully');
+    setFillGapModalOpen(false);
+  };
+
+  const handleAddNewPerson = (data: Omit<Resource, 'id' | 'createdAt' | 'updatedAt' | 'allocations'>, vacancyId: string) => {
+    onAddNewPerson?.(data, vacancyId);
+    // Mark vacancy as filled locally
+    setLocalVacancies(prev => prev.map(v => 
+      v.id === vacancyId ? { ...v, status: 'FILLED' as const } : v
+    ));
+    toast.success('New team member added and assigned');
+    setFillGapModalOpen(false);
+  };
 
   const getProjectName = (projectId: string): string => {
     return projects.find(p => p.id === projectId)?.name || 'Unassigned';
@@ -116,6 +155,8 @@ export function VacancyCards({ vacancies: externalVacancies, projects, onFillGap
     }
   };
 
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  
   const handleAddVacancy = () => {
     if (!newVacancy.skill) {
       toast.error('Please select a skill');
@@ -130,7 +171,7 @@ export function VacancyCards({ vacancies: externalVacancies, projects, onFillGap
 
     setLocalVacancies(prev => [...prev, vacancy]);
     onAddVacancy?.(vacancy);
-    setAddModalOpen(false);
+    setPopoverOpen(false);
     setNewVacancy({
       skill: '',
       proficiencyLevel: 'Intermediate',
@@ -355,7 +396,7 @@ export function VacancyCards({ vacancies: externalVacancies, projects, onFillGap
                 <Button 
                   size="sm"
                   className="h-7 px-3 text-xs bg-brand-gold hover:bg-brand-gold/90 text-white"
-                  onClick={() => onFillGap(vacancy.id)}
+                  onClick={() => handleFillGapClick(vacancy)}
                 >
                   Fill Gap
                 </Button>
@@ -364,6 +405,19 @@ export function VacancyCards({ vacancies: externalVacancies, projects, onFillGap
           ))}
         </div>
       )}
+
+      {/* Fill Gap Modal */}
+      <FillGapModal
+        open={fillGapModalOpen}
+        onOpenChange={setFillGapModalOpen}
+        vacancy={selectedVacancy}
+        resources={resources}
+        projects={projects}
+        currentWeek={currentWeek}
+        currentYear={currentYear}
+        onAssignResource={handleAssignResource}
+        onAddNewPerson={handleAddNewPerson}
+      />
     </div>
   );
 }
