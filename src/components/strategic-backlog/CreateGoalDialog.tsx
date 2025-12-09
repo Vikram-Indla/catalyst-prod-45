@@ -51,7 +51,7 @@ export function CreateGoalDialog({ open, onOpenChange, snapshotId }: CreateGoalD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[640px]">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <Flag className="h-5 w-5 text-green-600" />
@@ -59,7 +59,7 @@ export function CreateGoalDialog({ open, onOpenChange, snapshotId }: CreateGoalD
           </div>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
           <div className="space-y-2">
             <Label>Goal Name *</Label>
             <Input
