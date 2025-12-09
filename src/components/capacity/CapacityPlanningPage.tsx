@@ -305,7 +305,14 @@ export function CapacityPlanningPage() {
             </TabsContent>
 
             <TabsContent value="grid" className="m-0">
-              <ProjectGrid
+      {isLocked && lockedBy && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+          <Lock className="h-3 w-3" />
+          <span>Locked by: {lockedBy} on {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+        </div>
+      )}
+
+      <ProjectGrid
                 resources={resources}
                 projects={projects}
                 startWeek={startWeek}
