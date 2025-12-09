@@ -302,19 +302,28 @@ const ConversionsWidget: React.FC<{ quarter: string }> = ({ quarter }) => {
 const ResourceHeatMap: React.FC<{ 
   quarter: string; 
   resources: ReturnType<typeof generateHeatMapData>;
-  leaveRecords: Record<string, boolean>;
-  onToggleLeave: (key: string) => void;
-}> = ({ quarter, resources, leaveRecords, onToggleLeave }) => {
+  cellMarks: Record<string, 'L' | 'U' | null>;
+  onToggleCellMark: (key: string) => void;
+}> = ({ quarter, resources, cellMarks, onToggleCellMark }) => {
   const months = MONTHS_BY_QUARTER[quarter] || ['Jan', 'Feb', 'Mar'];
   const weeks = ['W1', 'W2', 'W3', 'W4'];
   
-  const leaveCount = Object.values(leaveRecords).filter(Boolean).length;
+  const leaveCount = Object.values(cellMarks).filter(v => v === 'L').length;
+  const unallocatedCount = Object.values(cellMarks).filter(v => v === 'U').length;
 
   return (
     <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-sm">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-base font-bold text-gray-900">Resource Allocation Heat Map</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-base font-bold text-gray-900">Resource Allocation Heat Map</h3>
+            <span 
+              className="px-2 py-0.5 rounded-full text-xs font-semibold"
+              style={{ backgroundColor: COLORS.goldLight, color: COLORS.bronze }}
+            >
+              {quarter}
+            </span>
+          </div>
           <span className="text-xs text-gray-400">Who is working on what, when</span>
         </div>
         
@@ -333,6 +342,10 @@ const ResourceHeatMap: React.FC<{
           <div className="flex items-center gap-1">
             <div className="w-3 h-3 rounded" style={{ backgroundColor: COLORS.grey }} />
             <span className="text-gray-500">L (Leave)</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 rounded bg-amber-200" />
+            <span className="text-gray-500">U (Unallocated)</span>
           </div>
         </div>
       </div>
@@ -382,18 +395,33 @@ const ResourceHeatMap: React.FC<{
                 </div>
               </div>
               {resource.weeks.map((week, wi) => {
-                const leaveKey = `${resource.name}-${wi}`;
-                const isLeave = leaveRecords[leaveKey] || week.status === 'leave';
+                const cellKey = `${resource.name}-${wi}`;
+                const cellMark = cellMarks[cellKey];
+                const isLeave = cellMark === 'L' || week.status === 'leave';
+                const isUnallocated = cellMark === 'U';
                 
                 if (isLeave) {
                   return (
-                    <div
+                    <button
                       key={wi}
-                      className="h-8 rounded flex items-center justify-center text-[10px] font-bold text-gray-600"
+                      onClick={() => onToggleCellMark(cellKey)}
+                      className="h-8 rounded flex items-center justify-center text-[10px] font-bold text-gray-600 hover:opacity-80 transition-opacity"
                       style={{ backgroundColor: COLORS.grey }}
                     >
                       L
-                    </div>
+                    </button>
+                  );
+                }
+                
+                if (isUnallocated) {
+                  return (
+                    <button
+                      key={wi}
+                      onClick={() => onToggleCellMark(cellKey)}
+                      className="h-8 rounded flex items-center justify-center text-[10px] font-bold text-amber-700 bg-amber-200 hover:opacity-80 transition-opacity"
+                    >
+                      U
+                    </button>
                   );
                 }
                 
@@ -401,7 +429,7 @@ const ResourceHeatMap: React.FC<{
                   return (
                     <button
                       key={wi}
-                      onClick={() => onToggleLeave(leaveKey)}
+                      onClick={() => onToggleCellMark(cellKey)}
                       className="h-8 rounded bg-gray-100 hover:bg-gray-200 transition-colors"
                     />
                   );
@@ -423,8 +451,8 @@ const ResourceHeatMap: React.FC<{
       </div>
 
       <div className="mt-4 flex items-center justify-between text-xs text-gray-400">
-        <span>Click gray cells to mark leave</span>
-        <span>{leaveCount} leave day(s) marked</span>
+        <span>Click gray cells to cycle: L (Leave) → U (Unallocated) → Clear</span>
+        <span>{leaveCount} leave, {unallocatedCount} unallocated marked</span>
       </div>
     </div>
   );
@@ -760,7 +788,7 @@ export default function ProductRoomPage() {
   const [selectedQuarterIndex, setSelectedQuarterIndex] = useState(initialSelectedIndex);
   const [showDecisions, setShowDecisions] = useState(false);
   const [showAging, setShowAging] = useState(false);
-  const [leaveRecords, setLeaveRecords] = useState<Record<string, boolean>>({});
+  const [cellMarks, setCellMarks] = useState<Record<string, 'L' | 'U' | null>>({});
   const [selectedPOBA, setSelectedPOBA] = useState<string[]>(
     SAMPLE_RESOURCES.slice(0, 4).map(r => r.name)
   );
@@ -777,8 +805,15 @@ export default function ProductRoomPage() {
     setQuarterOffset(prev => Math.max(0, Math.min(allQuarters.length - 3, prev + dir)));
   };
 
-  const handleToggleLeave = (key: string) => {
-    setLeaveRecords(prev => ({ ...prev, [key]: !prev[key] }));
+  // Cycle through: null → L → U → null
+  const handleToggleCellMark = (key: string) => {
+    setCellMarks(prev => {
+      const current = prev[key];
+      if (!current) return { ...prev, [key]: 'L' };
+      if (current === 'L') return { ...prev, [key]: 'U' };
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
   };
 
   // Get current date for greeting
@@ -873,8 +908,8 @@ export default function ProductRoomPage() {
           <ResourceHeatMap
             quarter={selectedQuarter?.q || 'Q4'}
             resources={heatMapData}
-            leaveRecords={leaveRecords}
-            onToggleLeave={handleToggleLeave}
+            cellMarks={cellMarks}
+            onToggleCellMark={handleToggleCellMark}
           />
 
           {/* Bottom Row */}
