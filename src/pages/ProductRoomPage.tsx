@@ -246,10 +246,12 @@ const FunnelWidget: React.FC<{ quarter: string; data: typeof FUNNEL_DATA }> = ({
 };
 
 const ConversionsWidget: React.FC<{ quarter: string }> = ({ quarter }) => {
-  const conversions = [
-    { from: 'New Request', to: 'Implement', total: 18, months: [5, 7, 6], stages: 4 },
-    { from: 'Analyse', to: 'Closed', total: 12, months: [3, 5, 4], stages: 3 },
-  ];
+  // Conversions: Items that moved from New Request to Ready to Implement
+  const conversionData = {
+    total: 14,
+    months: [4, 6, 4], // Monthly breakdown
+    avgCycleTime: 8, // Average days to convert
+  };
 
   return (
     <div className="bg-white rounded-2xl border-2 border-gray-100 p-6 shadow-sm">
@@ -258,38 +260,40 @@ const ConversionsWidget: React.FC<{ quarter: string }> = ({ quarter }) => {
         <span className="text-xs text-gray-400">{quarter}</span>
       </div>
 
-      <div className="space-y-4">
-        {conversions.map((conv, i) => (
-          <div key={i} className="p-3 bg-gray-50 rounded-xl">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">
-                {conv.from} → {conv.to}
-              </span>
-              <span className="text-lg font-bold" style={{ color: COLORS.gold }}>{conv.total}</span>
+      <div className="p-4 bg-gray-50 rounded-xl">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-medium text-gray-700">
+            New Request → Ready to Implement
+          </span>
+          <span className="text-2xl font-bold" style={{ color: COLORS.gold }}>{conversionData.total}</span>
+        </div>
+        
+        <div className="flex items-end gap-3 h-16 mb-3">
+          {['M1', 'M2', 'M3'].map((label, mi) => (
+            <div key={mi} className="flex-1 flex flex-col items-center">
+              <div 
+                className="w-full rounded-t"
+                style={{ 
+                  backgroundColor: COLORS.champagne,
+                  height: `${(conversionData.months[mi] / Math.max(...conversionData.months)) * 100}%`,
+                  minHeight: '8px'
+                }}
+              />
+              <span className="text-[10px] text-gray-400 mt-1">{conversionData.months[mi]}</span>
+              <span className="text-[9px] text-gray-300">{label}</span>
             </div>
-            <div className="flex items-end gap-2 h-12">
-              {conv.months.map((val, mi) => (
-                <div key={mi} className="flex-1 flex flex-col items-center">
-                  <div 
-                    className="w-full rounded-t"
-                    style={{ 
-                      backgroundColor: COLORS.champagne,
-                      height: `${(val / Math.max(...conv.months)) * 100}%`,
-                      minHeight: '8px'
-                    }}
-                  />
-                  <span className="text-[10px] text-gray-400 mt-1">{val}</span>
-                </div>
-              ))}
-            </div>
-            <div 
-              className="inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-medium"
-              style={{ backgroundColor: COLORS.goldLight, color: COLORS.bronze }}
-            >
-              +{conv.stages} stages
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+        
+        <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+          <span className="text-xs text-gray-500">Avg. cycle time</span>
+          <span 
+            className="px-2 py-0.5 rounded-full text-xs font-medium"
+            style={{ backgroundColor: COLORS.goldLight, color: COLORS.bronze }}
+          >
+            {conversionData.avgCycleTime} days
+          </span>
+        </div>
       </div>
     </div>
   );
