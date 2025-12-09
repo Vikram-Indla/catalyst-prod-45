@@ -93,9 +93,8 @@ export default function StrategicBacklog() {
           {!isArchived && snapshotId && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button className="bg-brand-gold hover:bg-brand-gold/90">
-                  <Plus className="h-4 w-4 mr-1" />
-                  New
+                <Button className="bg-brand-gold hover:bg-brand-gold/90 px-3">
+                  <Plus className="h-4 w-4" />
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>

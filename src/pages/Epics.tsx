@@ -106,10 +106,8 @@ export default function Epics() {
               <p className="text-sm text-muted-foreground truncate">Large initiatives broken into deliverable features</p>
             </div>
             <PermissionGuard requiredRole="program_manager" showMessage={false}>
-              <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm flex-shrink-0">
-                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
-                <span className="hidden sm:inline">New Epic</span>
-                <span className="sm:hidden ml-1">New</span>
+              <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm flex-shrink-0 px-3">
+                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Button>
             </PermissionGuard>
           </div>

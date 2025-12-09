@@ -117,8 +117,8 @@ export function ManageFormsDialog({ open, onOpenChange, onSelectForm }: ManageFo
             <div className="w-64 border-r border-border pr-4">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium">Forms</span>
-                <Button size="sm" variant="outline" onClick={() => setShowCreateForm(true)}>
-                  <Plus className="h-3 w-3 mr-1" /> New
+                <Button size="sm" variant="outline" onClick={() => setShowCreateForm(true)} className="px-2">
+                  <Plus className="h-3 w-3" />
                 </Button>
               </div>
 

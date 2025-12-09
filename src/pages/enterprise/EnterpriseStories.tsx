@@ -11,7 +11,7 @@ export default function EnterpriseStories() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input placeholder="Search stories..." className="pl-9" style={{ height: 'var(--grid-row)' }} />
         </div>
-        <Button size="sm"><Plus className="h-4 w-4 mr-2" />New Story</Button>
+        <Button size="sm" className="px-3"><Plus className="h-4 w-4" /></Button>
       </div>
 
       <Card className="p-[var(--s6)] sm:p-[var(--s8)] text-center">

@@ -228,10 +228,8 @@ export default function Stories() {
               </TabsList>
             </Tabs>
             <PermissionGuard requiredRole="user" showMessage={false}>
-              <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm">
-                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Create Story</span>
-                <span className="sm:hidden">New</span>
+              <Button onClick={handleCreate} size="sm" className="h-8 sm:h-9 text-xs sm:text-sm px-3">
+                <Plus className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </Button>
             </PermissionGuard>
           </div>
