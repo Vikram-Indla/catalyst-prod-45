@@ -10,10 +10,10 @@ import SearchIcon from '@atlaskit/icon/glyph/search';
 import NotificationIcon from '@atlaskit/icon/glyph/notification';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import AddIcon from '@atlaskit/icon/glyph/add';
-import SignOutIcon from '@atlaskit/icon/glyph/sign-out';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { useUserRole } from "@/hooks/useUserRole";
 import { DemandSelectorDropdown } from "@/components/ja/DemandSelectorDropdown";
 import { ProgramSelectorDropdown } from "@/components/ja/ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "@/components/ja/ProjectSelectorDropdown";
@@ -22,6 +22,7 @@ import { ItemsDropdown } from "@/components/ja/ItemsDropdown";
 import { UnifiedCreateModal, CreateType } from "./UnifiedCreateModal";
 import { CreateWorkItemModal } from "./CreateWorkItemModal";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
+import { SearchOverlay } from "@/components/ja/SearchOverlay";
 
 interface TopNavProps {
   isMobile?: boolean;
@@ -33,7 +34,9 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isUnifiedCreateOpen, setIsUnifiedCreateOpen] = useState(false);
   const [isWorkItemModalOpen, setIsWorkItemModalOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [createDialogType, setCreateDialogType] = useState<'program' | 'project' | 'product' | null>(null);
+  const { isAdmin } = useUserRole();
 
   const { data: user } = useQuery({
     queryKey: ['current-user'],
@@ -314,6 +317,7 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
             <Button
               appearance="subtle"
               iconBefore={<SearchIcon label="Search" size="medium" />}
+              onClick={() => setIsSearchOpen(true)}
               style={{ borderRadius: '50%' }}
             />
           </Tooltip>
@@ -341,12 +345,28 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
             )}
           >
             <DropdownItemGroup>
+              <div style={{ padding: '12px 16px', borderBottom: `1px solid ${token('color.border', '#DFE1E6')}` }}>
+                <p style={{ fontSize: '14px', fontWeight: 500, color: token('color.text', '#172B4D'), margin: 0 }}>
+                  {user?.email}
+                </p>
+                <p style={{ fontSize: '12px', color: token('color.text.subtlest', '#6B778C'), margin: '4px 0 0 0' }}>
+                  User Account
+                </p>
+              </div>
+              {isAdmin && (
+                <DropdownItem onClick={() => navigate('/admin/activity')}>
+                  Administration
+                </DropdownItem>
+              )}
               <DropdownItem onClick={() => navigate('/profile')}>Profile</DropdownItem>
               <DropdownItem onClick={handleSignOut}>Sign out</DropdownItem>
             </DropdownItemGroup>
           </DropdownMenu>
         </div>
       </header>
+
+      {/* Search Overlay */}
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
 
       {/* Modals */}
       <UnifiedCreateModal
