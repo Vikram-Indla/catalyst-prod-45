@@ -14,7 +14,7 @@ import SignOutIcon from '@atlaskit/icon/glyph/sign-out';
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { ProductSelectorDropdown } from "@/components/ja/ProductSelectorDropdown";
+import { DemandSelectorDropdown } from "@/components/ja/DemandSelectorDropdown";
 import { ProgramSelectorDropdown } from "@/components/ja/ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "@/components/ja/ProjectSelectorDropdown";
 import { ReleaseDropdown } from "@/components/ja/ReleaseDropdown";
@@ -86,7 +86,7 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
   const navItems = [
     { label: "Home", path: "/home" },
     { label: "Enterprise", path: "/enterprise/strategy-room" },
-    { label: "Product", hasDropdown: true },
+    { label: "Demand", hasDropdown: true },
     { label: "Program", hasDropdown: true },
     { label: "Project", hasDropdown: true },
     { label: "Release", hasDropdown: true },
@@ -96,7 +96,7 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
   const isItemActive = (item: typeof navItems[0]) => {
     if (item.label === "Home") return location.pathname === '/home';
     if (item.label === "Enterprise") return location.pathname.startsWith('/enterprise');
-    if (item.label === "Product") return location.pathname.startsWith('/product') || location.pathname.startsWith('/industry');
+    if (item.label === "Demand") return location.pathname.startsWith('/industry');
     if (item.label === "Program") return location.pathname.startsWith('/program/');
     if (item.label === "Project") return location.pathname.startsWith('/programs/') || location.pathname.startsWith('/project/');
     if (item.label === "Release") return location.pathname.startsWith('/release');
@@ -168,10 +168,9 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
                         borderRadius: '3px', 
                         boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
                       }}>
-                        {item.label === "Product" && (
-                          <ProductSelectorDropdown 
+                        {item.label === "Demand" && (
+                          <DemandSelectorDropdown 
                             onClose={() => setActiveDropdown(null)} 
-                            onCreateClick={() => setCreateDialogType('product')}
                           />
                         )}
                         {item.label === "Program" && (

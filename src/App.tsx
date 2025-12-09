@@ -240,6 +240,7 @@ const App = () => (
               
               {/* Industry routes - standalone Atlaskit layout (no CatalystShell) */}
               <Route path="/industry" element={<ProtectedRoute><IndustryPage /></ProtectedRoute>} />
+              <Route path="/industry/industry" element={<ProtectedRoute><IndustryPage /></ProtectedRoute>} />
               <Route path="/industry/roadmaps" element={<ProtectedRoute><ExecutiveRoadmapPage /></ProtectedRoute>} />
               <Route path="/industry/reports" element={<ProtectedRoute><IndustryComingSoon /></ProtectedRoute>} />
               
