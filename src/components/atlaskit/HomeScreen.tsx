@@ -116,7 +116,7 @@ export default function HomeScreen() {
   return (
     <div
       style={{
-        padding: '32px 40px',
+        padding: '24px 40px',
         background: '#FAFBFC',
         minHeight: '100vh',
       }}
@@ -133,7 +133,7 @@ export default function HomeScreen() {
       </h1>
 
       {/* RECENT ROOMS SECTION */}
-      <section style={{ marginBottom: '40px' }}>
+      <section style={{ marginBottom: '32px' }}>
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -196,7 +196,7 @@ export default function HomeScreen() {
       {/* TABS */}
       <div style={{
         borderBottom: '2px solid #DFE1E6',
-        marginBottom: '24px',
+        marginBottom: '16px',
       }}>
         <div style={{
           display: 'flex',
@@ -454,14 +454,14 @@ function ActivityList({ activities, loading }: ActivityListProps) {
   return (
     <div>
       {groupedItems.map((group) => (
-        <section key={group.label} style={{ marginBottom: '24px' }}>
+        <section key={group.label} style={{ marginBottom: '20px' }}>
           <h3 style={{
             fontSize: '11px',
             fontWeight: 600,
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
             color: '#6B778C',
-            margin: '0 0 12px 0',
+            margin: '0 0 8px 0',
           }}>
             {group.label}
           </h3>
