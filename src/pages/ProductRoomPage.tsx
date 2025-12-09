@@ -79,7 +79,20 @@ const MONTHS_BY_QUARTER: Record<string, string[]> = {
 };
 
 const QUARTERS = ['Q1', 'Q2', 'Q3', 'Q4'];
-const YEARS = [2023, 2024, 2025];
+
+// Helper to get current quarter and dynamic years
+const getCurrentQuarterInfo = () => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth(); // 0-11
+  const currentQuarterIndex = Math.floor(currentMonth / 3); // 0-3
+  const currentQuarter = QUARTERS[currentQuarterIndex];
+  
+  // Generate years: previous year, current year, next year
+  const years = [currentYear - 1, currentYear, currentYear + 1];
+  
+  return { currentYear, currentQuarter, currentQuarterIndex, years };
+};
 
 // Generate heat map data
 const generateHeatMapData = () => {
@@ -719,8 +732,28 @@ const SlidePanel: React.FC<{
 
 // Main Component
 export default function ProductRoomPage() {
-  const [quarterOffset, setQuarterOffset] = useState(0);
-  const [selectedQuarterIndex, setSelectedQuarterIndex] = useState(1);
+  // Get current quarter info for default selection
+  const { currentYear, currentQuarterIndex, years } = getCurrentQuarterInfo();
+  
+  // Generate quarters array
+  const allQuarters: { q: string; year: number }[] = [];
+  years.forEach(year => {
+    QUARTERS.forEach(q => {
+      allQuarters.push({ q, year });
+    });
+  });
+  
+  // Find the index of current quarter in allQuarters
+  const currentQuarterGlobalIndex = allQuarters.findIndex(
+    q => q.year === currentYear && q.q === QUARTERS[currentQuarterIndex]
+  );
+  
+  // Calculate initial offset to show current quarter in the middle (index 1 of visible 3)
+  const initialOffset = Math.max(0, Math.min(allQuarters.length - 3, currentQuarterGlobalIndex - 1));
+  const initialSelectedIndex = currentQuarterGlobalIndex - initialOffset;
+  
+  const [quarterOffset, setQuarterOffset] = useState(initialOffset);
+  const [selectedQuarterIndex, setSelectedQuarterIndex] = useState(initialSelectedIndex);
   const [showDecisions, setShowDecisions] = useState(false);
   const [showAging, setShowAging] = useState(false);
   const [leaveRecords, setLeaveRecords] = useState<Record<string, boolean>>({});
@@ -728,14 +761,6 @@ export default function ProductRoomPage() {
     SAMPLE_RESOURCES.slice(0, 4).map(r => r.name)
   );
   const [heatMapData] = useState(generateHeatMapData);
-
-  // Generate quarters array
-  const allQuarters: { q: string; year: number }[] = [];
-  YEARS.forEach(year => {
-    QUARTERS.forEach(q => {
-      allQuarters.push({ q, year });
-    });
-  });
 
   const visibleQuarters = allQuarters.slice(quarterOffset, quarterOffset + 3);
   const selectedQuarter = visibleQuarters[selectedQuarterIndex];
