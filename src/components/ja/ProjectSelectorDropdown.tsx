@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
-import { Search, Layers, Star, Plus, Settings } from 'lucide-react';
+import { Search, Layers, Star, Plus, Settings, X } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
@@ -20,12 +20,12 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const { isStarred, toggleStar } = useStarredItems();
-  const { setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
+  const { programId, programName, setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
 
   const { data: projects, isLoading } = useQuery({
-    queryKey: ['projects-header'],
+    queryKey: ['projects-header', programId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('programs')
         .select(`
           id,
@@ -37,6 +37,13 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
           )
         `)
         .order('name');
+      
+      // Filter by selected program if one is selected
+      if (programId) {
+        query = query.eq('portfolio_id', programId);
+      }
+      
+      const { data, error } = await query;
       
       if (error) throw error;
       return data || [];
@@ -85,10 +92,31 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
     onClose();
   };
 
+  const handleClearFilter = () => {
+    setProgramId(null);
+    setProgramName(null);
+  };
+
   return (
     <div className="w-80 bg-popover border rounded-md shadow-lg">
       <div className="p-3 border-b">
         <p className="text-xs font-semibold text-muted-foreground mb-2">PROJECTS</p>
+        
+        {/* Show filter indicator when program is selected */}
+        {programId && programName && (
+          <div className="mb-2 flex items-center gap-2 px-2 py-1.5 bg-muted rounded text-xs">
+            <span className="text-muted-foreground">Filtered by:</span>
+            <span className="font-medium">{programName}</span>
+            <button
+              onClick={handleClearFilter}
+              className="ml-auto p-0.5 hover:bg-background rounded"
+              aria-label="Clear filter"
+            >
+              <X className="h-3 w-3" />
+            </button>
+          </div>
+        )}
+        
         <div className="relative">
           <Input
             type="text"
@@ -109,8 +137,8 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
               <Skeleton className="h-9 w-full" />
             </div>
           ) : filtered.length === 0 ? (
-          <div className="px-3 py-8 text-center text-sm text-muted-foreground">
-              {search ? 'No projects found' : 'No projects available'}
+            <div className="px-3 py-8 text-center text-sm text-muted-foreground">
+              {search ? 'No projects found' : programId ? 'No projects in this program' : 'No projects available'}
             </div>
           ) : (
             filtered.map((project) => {
