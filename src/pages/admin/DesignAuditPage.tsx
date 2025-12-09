@@ -3,7 +3,7 @@ import {
   Palette, Type, Ruler, Square, Layers, Eye, CheckCircle2, AlertTriangle, XCircle,
   ChevronDown, ChevronRight, Monitor, Tablet, Smartphone, Bell, BarChart3, 
   MousePointer2, Tag, RectangleHorizontal, Route, FileText, Download, RefreshCw,
-  Scan, Layout, Maximize2, Zap, Lock, Wrench, Target, Settings2, FolderDown
+  Scan, Layout, Maximize2, Zap, Lock, Wrench, Target, Settings2, FolderDown, Plus
 } from 'lucide-react';
 import {
   generateDesignSystemMarkdown,
@@ -846,43 +846,203 @@ function TokensContent({ tokenCategories, expandedCategory, setExpandedCategory 
 }
 
 function RoutesContent() {
+  const [customRoutes, setCustomRoutes] = useState<{ path: string; name: string; category: string }[]>([]);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [newRoute, setNewRoute] = useState({ path: '', name: '', category: 'custom' });
+  const [runningAudit, setRunningAudit] = useState<string | null>(null);
+  const [auditResults, setAuditResults] = useState<Record<string, 'pass' | 'warn' | 'fail' | 'pending'>>({});
+
+  const allRoutes = [...auditRoutes, ...customRoutes];
+
+  const handleAddRoute = () => {
+    if (newRoute.path && newRoute.name) {
+      setCustomRoutes([...customRoutes, { ...newRoute }]);
+      setNewRoute({ path: '', name: '', category: 'custom' });
+      setShowAddDialog(false);
+    }
+  };
+
+  const handleRemoveRoute = (path: string) => {
+    setCustomRoutes(customRoutes.filter(r => r.path !== path));
+    const newResults = { ...auditResults };
+    delete newResults[path];
+    setAuditResults(newResults);
+  };
+
+  const handleRunAudit = async (path: string) => {
+    setRunningAudit(path);
+    setAuditResults(prev => ({ ...prev, [path]: 'pending' }));
+    
+    // Simulate audit run
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Random result for demo
+    const results: Array<'pass' | 'warn' | 'fail'> = ['pass', 'pass', 'pass', 'warn', 'fail'];
+    setAuditResults(prev => ({ ...prev, [path]: results[Math.floor(Math.random() * results.length)] }));
+    setRunningAudit(null);
+  };
+
+  const handleRunAllAudits = async () => {
+    for (const route of allRoutes) {
+      await handleRunAudit(route.path);
+    }
+  };
+
+  const categories = ['dashboard', 'admin', 'table', 'visualization', 'board', 'form', 'custom'];
+
   return (
-    <Card>
-      <CardHeader className="py-3">
-        <CardTitle className="text-base">Configured Routes ({auditRoutes.length})</CardTitle>
-        <CardDescription>Routes discovered for audit scanning</CardDescription>
-      </CardHeader>
-      <CardContent className="p-0">
-        <ScrollArea className="h-[400px]">
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-card border-b">
-              <tr>
-                <th className="text-left font-medium px-4 py-2">Route</th>
-                <th className="text-left font-medium px-4 py-2">Name</th>
-                <th className="text-left font-medium px-4 py-2">Category</th>
-                <th className="text-left font-medium px-4 py-2">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {auditRoutes.map((route) => (
-                <tr key={route.path} className="border-b hover:bg-secondary/30">
-                  <td className="px-4 py-2">
-                    <code className="text-xs px-1.5 py-0.5 bg-secondary rounded">{route.path}</code>
-                  </td>
-                  <td className="px-4 py-2 font-medium">{route.name}</td>
-                  <td className="px-4 py-2">
-                    <Badge variant="outline" className="text-xs capitalize">{route.category}</Badge>
-                  </td>
-                  <td className="px-4 py-2">
-                    <Badge className="bg-success/10 text-success text-xs">Configured</Badge>
-                  </td>
+    <div className="space-y-4">
+      {/* Header Actions */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="gap-1.5">
+            <Route className="h-3.5 w-3.5" />
+            {allRoutes.length} Routes
+          </Badge>
+          {Object.keys(auditResults).length > 0 && (
+            <Badge className="bg-success/10 text-success gap-1.5">
+              {Object.values(auditResults).filter(r => r === 'pass').length} Passed
+            </Badge>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowAddDialog(true)} className="gap-1.5">
+            <Plus className="h-4 w-4" />
+            Add Route
+          </Button>
+          <Button size="sm" onClick={handleRunAllAudits} disabled={runningAudit !== null} className="gap-1.5">
+            <Scan className="h-4 w-4" />
+            Run All Audits
+          </Button>
+        </div>
+      </div>
+
+      {/* Add Route Dialog */}
+      {showAddDialog && (
+        <Card className="border-brand-gold/30">
+          <CardHeader className="py-3">
+            <CardTitle className="text-base">Add New Route</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Path</label>
+                <input
+                  type="text"
+                  placeholder="/your-route"
+                  value={newRoute.path}
+                  onChange={(e) => setNewRoute({ ...newRoute, path: e.target.value })}
+                  className="w-full h-9 px-3 text-sm border rounded-md bg-background"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Name</label>
+                <input
+                  type="text"
+                  placeholder="Route Name"
+                  value={newRoute.name}
+                  onChange={(e) => setNewRoute({ ...newRoute, name: e.target.value })}
+                  className="w-full h-9 px-3 text-sm border rounded-md bg-background"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">Category</label>
+                <select
+                  value={newRoute.category}
+                  onChange={(e) => setNewRoute({ ...newRoute, category: e.target.value })}
+                  className="w-full h-9 px-3 text-sm border rounded-md bg-background"
+                >
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" size="sm" onClick={() => setShowAddDialog(false)}>Cancel</Button>
+              <Button size="sm" onClick={handleAddRoute}>Add Route</Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Routes Table */}
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base">Configured Routes ({allRoutes.length})</CardTitle>
+          <CardDescription>Routes discovered for audit scanning</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <ScrollArea className="h-[400px]">
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 bg-card border-b z-10">
+                <tr>
+                  <th className="text-left font-medium px-4 py-2">Route</th>
+                  <th className="text-left font-medium px-4 py-2">Name</th>
+                  <th className="text-left font-medium px-4 py-2">Category</th>
+                  <th className="text-left font-medium px-4 py-2">Status</th>
+                  <th className="text-right font-medium px-4 py-2">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </ScrollArea>
-      </CardContent>
-    </Card>
+              </thead>
+              <tbody>
+                {allRoutes.map((route) => {
+                  const isCustom = customRoutes.some(r => r.path === route.path);
+                  const result = auditResults[route.path];
+                  const isRunning = runningAudit === route.path;
+                  
+                  return (
+                    <tr key={route.path} className="border-b hover:bg-secondary/30">
+                      <td className="px-4 py-2">
+                        <code className="text-xs px-1.5 py-0.5 bg-secondary rounded">{route.path}</code>
+                      </td>
+                      <td className="px-4 py-2 font-medium">{route.name}</td>
+                      <td className="px-4 py-2">
+                        <Badge variant="outline" className="text-xs capitalize">{route.category}</Badge>
+                      </td>
+                      <td className="px-4 py-2">
+                        {result === 'pass' && <Badge className="bg-success/10 text-success text-xs">Passed</Badge>}
+                        {result === 'warn' && <Badge className="bg-warning/10 text-warning text-xs">Warnings</Badge>}
+                        {result === 'fail' && <Badge className="bg-destructive/10 text-destructive text-xs">Failed</Badge>}
+                        {result === 'pending' && <Badge className="bg-info/10 text-info text-xs">Running...</Badge>}
+                        {!result && <Badge variant="outline" className="text-xs">Not Audited</Badge>}
+                      </td>
+                      <td className="px-4 py-2 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleRunAudit(route.path)}
+                            disabled={isRunning}
+                            className="h-7 px-2 gap-1"
+                          >
+                            {isRunning ? (
+                              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Scan className="h-3.5 w-3.5" />
+                            )}
+                            Audit
+                          </Button>
+                          {isCustom && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleRemoveRoute(route.path)}
+                              className="h-7 px-2 text-destructive hover:text-destructive"
+                            >
+                              <XCircle className="h-3.5 w-3.5" />
+                            </Button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
 

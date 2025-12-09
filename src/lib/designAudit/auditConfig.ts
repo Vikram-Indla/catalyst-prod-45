@@ -10,6 +10,7 @@ export const auditRoutes = [
   { path: '/admin/overview', name: 'Admin Overview', category: 'admin' },
   { path: '/admin/activity', name: 'Audit Activity', category: 'admin' },
   { path: '/admin/users', name: 'Users Management', category: 'admin' },
+  { path: '/admin/design-audit', name: 'Design Audit', category: 'admin' },
   { path: '/industry', name: 'Industry/Demand Intake', category: 'table' },
   { path: '/epics', name: 'Epics Backlog', category: 'table' },
   { path: '/features', name: 'Features List', category: 'table' },
@@ -19,6 +20,9 @@ export const auditRoutes = [
   { path: '/enterprise/okr-heatmap', name: 'OKR Heatmap', category: 'visualization' },
   { path: '/program-board', name: 'Program Board', category: 'board' },
   { path: '/dependencies', name: 'Dependencies', category: 'table' },
+  // Capacity & Allocation
+  { path: '/capacity-planning', name: 'Capacity Planning', category: 'dashboard' },
+  { path: '/enterprise/skills-inventory', name: 'Skills Inventory', category: 'table' },
 ];
 
 // Viewports for responsive audit
