@@ -16,7 +16,7 @@ import BoardIcon from '@atlaskit/icon/glyph/board';
 import FilterIcon from '@atlaskit/icon/glyph/filter';
 import DownloadIcon from '@atlaskit/icon/glyph/download';
 import Lozenge from '@atlaskit/lozenge';
-import { Checkbox } from '@atlaskit/checkbox';
+import Checkbox from '@atlaskit/checkbox';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
