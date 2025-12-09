@@ -73,6 +73,7 @@ export interface SnapshotStrategyLinks {
   value_ids: string[];
   goal_ids: string[];
   theme_ids: string[];
+  epic_ids: string[];
   created_at: string;
   updated_at: string;
 }

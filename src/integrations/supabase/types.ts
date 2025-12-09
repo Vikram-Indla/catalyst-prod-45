@@ -7700,6 +7700,7 @@ export type Database = {
       snapshot_strategy_links: {
         Row: {
           created_at: string | null
+          epic_ids: string[] | null
           goal_ids: string[] | null
           id: string
           mission_ids: string[] | null
@@ -7711,6 +7712,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          epic_ids?: string[] | null
           goal_ids?: string[] | null
           id?: string
           mission_ids?: string[] | null
@@ -7722,6 +7724,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          epic_ids?: string[] | null
           goal_ids?: string[] | null
           id?: string
           mission_ids?: string[] | null
@@ -10748,6 +10751,42 @@ export type Database = {
             columns: ["test_case_id"]
             isOneToOne: false
             referencedRelation: "test_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      theme_epic_links: {
+        Row: {
+          created_at: string
+          epic_id: string
+          id: string
+          theme_id: string
+        }
+        Insert: {
+          created_at?: string
+          epic_id: string
+          id?: string
+          theme_id: string
+        }
+        Update: {
+          created_at?: string
+          epic_id?: string
+          id?: string
+          theme_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "theme_epic_links_epic_id_fkey"
+            columns: ["epic_id"]
+            isOneToOne: false
+            referencedRelation: "epics"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "theme_epic_links_theme_id_fkey"
+            columns: ["theme_id"]
+            isOneToOne: false
+            referencedRelation: "strategic_themes"
             referencedColumns: ["id"]
           },
         ]
