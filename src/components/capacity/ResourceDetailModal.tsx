@@ -1,18 +1,18 @@
 /**
- * Resource Detail Drawer
+ * Resource Detail Modal
  * Shows all tasks/allocations for a resource grouped by project
  */
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Resource, CapacityProject } from '@/types/capacity';
-import { calculateUtilization, getStatus, GOLDEN_HOUR } from '@/lib/capacityUtils';
+import { calculateUtilization, getStatus } from '@/lib/capacityUtils';
 import { X, Mail, MapPin, Briefcase } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface ResourceDetailDrawerProps {
+interface ResourceDetailModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resource: Resource | null;
@@ -21,14 +21,14 @@ interface ResourceDetailDrawerProps {
   startYear: number;
 }
 
-export function ResourceDetailDrawer({
+export function ResourceDetailModal({
   open,
   onOpenChange,
   resource,
   projects,
   startWeek,
   startYear,
-}: ResourceDetailDrawerProps) {
+}: ResourceDetailModalProps) {
   if (!resource) return null;
 
   const getProjectById = (id: string) => projects.find(p => p.id === id);
@@ -72,23 +72,21 @@ export function ResourceDetailDrawer({
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[500px] sm:max-w-[500px] bg-card overflow-y-auto">
-        <SheetHeader className="border-b border-border pb-4">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[560px] max-h-[85vh] flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b border-border flex-shrink-0">
           <div className="flex items-center justify-between">
-            <SheetTitle>Resource Details</SheetTitle>
-            <SheetClose asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <X className="h-4 w-4" />
-              </Button>
-            </SheetClose>
+            <DialogTitle>Resource Details</DialogTitle>
+            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onOpenChange(false)}>
+              <X className="h-4 w-4" />
+            </Button>
           </div>
-        </SheetHeader>
+        </DialogHeader>
 
-        <div className="py-6 space-y-6">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
           {/* Resource Header */}
           <div className="flex items-start gap-4">
-            <Avatar className="h-16 w-16 bg-[#c69c6d]/10 border-2 border-[#c69c6d]/20">
+            <Avatar className="h-14 w-14 bg-[#c69c6d]/10 border-2 border-[#c69c6d]/20">
               <AvatarFallback className="bg-[#c69c6d]/10 text-[#c69c6d] text-lg font-semibold">
                 {resource.initials}
               </AvatarFallback>
@@ -113,7 +111,7 @@ export function ResourceDetailDrawer({
           </div>
 
           {/* Resource Info */}
-          <div className="grid grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
+          <div className="grid grid-cols-3 gap-4 p-4 bg-muted/30 rounded-lg">
             <div className="flex items-center gap-2 text-sm">
               <Briefcase className="h-4 w-4 text-muted-foreground" />
               <span>{resource.primarySkill}</span>
@@ -123,16 +121,54 @@ export function ResourceDetailDrawer({
               <span>{resource.location}</span>
             </div>
             {resource.email && (
-              <div className="flex items-center gap-2 text-sm col-span-2">
+              <div className="flex items-center gap-2 text-sm">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span>{resource.email}</span>
+                <span className="truncate">{resource.email}</span>
               </div>
             )}
           </div>
 
+          {/* 4-Week Overview */}
+          <div>
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+              4-Week Overview
+            </h4>
+            <div className="grid grid-cols-4 gap-2">
+              {[0, 1, 2, 3].map((offset) => {
+                let week = startWeek + offset;
+                let year = startYear;
+                if (week > 52) {
+                  week = week - 52;
+                  year++;
+                }
+                const weekUtil = calculateUtilization(resource.allocations, week, year);
+                
+                return (
+                  <div 
+                    key={`${year}-${week}`}
+                    className={cn(
+                      "p-3 rounded-lg text-center border",
+                      offset === 0 ? "border-[#c69c6d] bg-[#c69c6d]/5" : "border-border"
+                    )}
+                  >
+                    <div className="text-xs text-muted-foreground mb-1">W{week}</div>
+                    <div className={cn(
+                      "text-lg font-semibold",
+                      weekUtil > 100 ? "text-[#c69c6d]" : 
+                      weekUtil >= 80 ? "text-[#5c7c5c]" : 
+                      "text-[#8b7355]"
+                    )}>
+                      {weekUtil}%
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Allocations by Project */}
           <div>
-            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3">
               Allocations for Week {startWeek}
             </h4>
             
@@ -141,12 +177,12 @@ export function ResourceDetailDrawer({
                 No allocations for this week
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {Object.values(allocationsByProject).map(({ project, allocations, totalPercentage }) => (
                   <div key={project.id} className="border border-border rounded-lg overflow-hidden">
                     {/* Project Header */}
                     <div 
-                      className="p-4 flex items-center justify-between"
+                      className="p-3 flex items-center justify-between"
                       style={{ backgroundColor: `${project.color}10` }}
                     >
                       <div className="flex items-center gap-3">
@@ -154,7 +190,7 @@ export function ResourceDetailDrawer({
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: project.color }}
                         />
-                        <span className="font-medium">{project.name}</span>
+                        <span className="font-medium text-sm">{project.name}</span>
                       </div>
                       <Badge variant="outline" className="bg-card">
                         {totalPercentage}%
@@ -190,47 +226,8 @@ export function ResourceDetailDrawer({
               </div>
             )}
           </div>
-
-          {/* All Weeks Summary */}
-          <div>
-            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-              4-Week Overview
-            </h4>
-            <div className="grid grid-cols-4 gap-2">
-              {[0, 1, 2, 3].map((offset) => {
-                let week = startWeek + offset;
-                let year = startYear;
-                if (week > 52) {
-                  week = week - 52;
-                  year++;
-                }
-                const weekUtil = calculateUtilization(resource.allocations, week, year);
-                const weekStatus = getStatus(weekUtil);
-                
-                return (
-                  <div 
-                    key={`${year}-${week}`}
-                    className={cn(
-                      "p-3 rounded-lg text-center border",
-                      offset === 0 ? "border-[#c69c6d] bg-[#c69c6d]/5" : "border-border"
-                    )}
-                  >
-                    <div className="text-xs text-muted-foreground mb-1">W{week}</div>
-                    <div className={cn(
-                      "text-lg font-semibold",
-                      weekUtil > 100 ? "text-[#c69c6d]" : 
-                      weekUtil >= 80 ? "text-[#5c7c5c]" : 
-                      "text-[#8b7355]"
-                    )}>
-                      {weekUtil}%
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }

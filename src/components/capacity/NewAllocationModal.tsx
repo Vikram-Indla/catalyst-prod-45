@@ -1,20 +1,20 @@
 /**
- * New Allocation Drawer
+ * New Allocation Modal
  * Following specification exactly
  */
 
 import { useState } from 'react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose } from '@/components/ui/sheet';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Resource, CapacityProject, Allocation } from '@/types/capacity';
-import { X, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { calculateUtilization } from '@/lib/capacityUtils';
 
-interface NewAllocationDrawerProps {
+interface NewAllocationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resources: Resource[];
@@ -24,7 +24,7 @@ interface NewAllocationDrawerProps {
   onAdd: (allocation: Omit<Allocation, 'id' | 'createdAt'>) => void;
 }
 
-export function NewAllocationDrawer({ 
+export function NewAllocationModal({ 
   open, 
   onOpenChange, 
   resources, 
@@ -32,7 +32,7 @@ export function NewAllocationDrawer({
   startWeek,
   startYear,
   onAdd 
-}: NewAllocationDrawerProps) {
+}: NewAllocationModalProps) {
   const [resourceId, setResourceId] = useState('');
   const [projectId, setProjectId] = useState('');
   const [percentage, setPercentage] = useState(25);
@@ -99,51 +99,68 @@ export function NewAllocationDrawer({
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-[400px] sm:max-w-[400px] p-6">
-        <SheetHeader className="border-b border-border pb-4">
-          <SheetTitle>New Allocation</SheetTitle>
-        </SheetHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[480px]">
+        <DialogHeader>
+          <DialogTitle>New Allocation</DialogTitle>
+        </DialogHeader>
 
-        <div className="py-6 space-y-4">
-          <div className="space-y-2">
-            <Label>Resource *</Label>
-            <Select value={resourceId} onValueChange={setResourceId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select resource..." />
-              </SelectTrigger>
-              <SelectContent>
-                {resources.map(r => (
-                  <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="py-4 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Resource *</Label>
+              <Select value={resourceId} onValueChange={setResourceId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select resource..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {resources.map(r => (
+                    <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Project *</Label>
+              <Select value={projectId} onValueChange={setProjectId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select project..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {projects.filter(p => p.status === 'Active').map(p => (
+                    <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Project *</Label>
-            <Select value={projectId} onValueChange={setProjectId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select project..." />
-              </SelectTrigger>
-              <SelectContent>
-                {projects.filter(p => p.status === 'Active').map(p => (
-                  <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="percentage">Allocation %</Label>
+              <Input
+                id="percentage"
+                type="number"
+                min={1}
+                max={100}
+                value={percentage}
+                onChange={(e) => setPercentage(Number(e.target.value))}
+              />
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="percentage">Allocation %</Label>
-            <Input
-              id="percentage"
-              type="number"
-              min={1}
-              max={100}
-              value={percentage}
-              onChange={(e) => setPercentage(Number(e.target.value))}
-            />
+            <div className="space-y-2">
+              <Label>Type</Label>
+              <Select value={type} onValueChange={(v) => setType(v as 'HARD' | 'SOFT')}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="HARD">Hard</SelectItem>
+                  <SelectItem value="SOFT">Soft</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           {willExceed && resourceId && (
@@ -154,19 +171,6 @@ export function NewAllocationDrawer({
               </span>
             </div>
           )}
-
-          <div className="space-y-2">
-            <Label>Type</Label>
-            <Select value={type} onValueChange={(v) => setType(v as 'HARD' | 'SOFT')}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="HARD">Hard</SelectItem>
-                <SelectItem value="SOFT">Soft</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
 
           <div className="space-y-2">
             <Label>Apply to Weeks</Label>
@@ -187,7 +191,7 @@ export function NewAllocationDrawer({
           </div>
         </div>
 
-        <SheetFooter className="border-t border-border pt-4">
+        <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button 
             onClick={handleSubmit}
@@ -196,8 +200,8 @@ export function NewAllocationDrawer({
           >
             Create Allocation
           </Button>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
