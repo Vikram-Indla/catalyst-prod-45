@@ -23,6 +23,7 @@ export function UnifiedCreateModal({
   onSelectType,
 }: UnifiedCreateModalProps) {
   const handleSelect = (type: CreateType) => {
+    console.log('[UnifiedCreateModal] handleSelect called with type:', type);
     onSelectType(type);
     onClose();
   };
@@ -125,6 +126,7 @@ function CreateOption({ icon: Icon, iconColor, title, description, onClick }: Cr
     <button
       type="button"
       onClick={(e) => {
+        console.log('[CreateOption] Button clicked for:', title);
         e.preventDefault();
         e.stopPropagation();
         onClick();
