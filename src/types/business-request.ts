@@ -6,6 +6,7 @@ export const PROCESS_STEPS = [
   { value: 'new_request', label: 'New Request', color: 'bg-[#4a4a4a]' },
   { value: 'analyse', label: 'Analyse', color: 'bg-[#c4c4c4]' },
   { value: 'approved', label: 'Approved', color: 'bg-[#5c4b8a]' },
+  { value: 'ready_to_implement', label: 'Ready to Implement', color: 'bg-[#2563eb]' },
   { value: 'implement', label: 'Implement', color: 'bg-[#1a1a1a]' },
   { value: 'closed', label: 'Closed', color: 'bg-[#6abf4b]' },
   // Orphan statuses (not in main flow)
