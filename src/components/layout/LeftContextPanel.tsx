@@ -55,7 +55,8 @@ const getEnterpriseMenuItems = (): MenuItem[] => [
   { id: 'work-tree', label: 'Work tree', icon: Share2, path: '/work-tree', tiers: ['enterprise'] },
   { id: 'backlog', label: 'Backlog', icon: ListTree, path: '/enterprise/backlog', tiers: ['enterprise'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/enterprise/roadmaps', tiers: ['enterprise'] },
-  { id: 'more-items', label: 'More items', icon: Blocks, path: '#', tiers: ['enterprise'], expandable: true },
+  { id: 'risks', label: 'Risks', icon: Blocks, path: '/risks', tiers: ['enterprise'] },
+  { id: 'capacity-planning', label: 'Capacity & Planning', icon: UsersIcon, path: '/enterprise/reports/demand-capacity', tiers: ['enterprise'] },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['enterprise'] },
   { id: 'more-pages', label: 'More pages', icon: Component, path: '#', tiers: ['enterprise'], expandable: true },
 ];
