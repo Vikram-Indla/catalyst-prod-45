@@ -222,7 +222,7 @@ export default function IndustryPageAtlaskit() {
   const [exportModalOpen, setExportModalOpen] = useState(false);
   
   // Column configuration
-  const [columnConfig, setColumnConfig] = useState([
+  const [columnConfig, setColumnConfig] = useState<{ key: string; label: string; visible: boolean; required?: boolean }[]>([
     { key: 'checkbox', label: 'Select', visible: true, required: true },
     { key: 'request_key', label: 'Request ID', visible: true, required: true },
     { key: 'title', label: 'Summary', visible: true, required: true },
