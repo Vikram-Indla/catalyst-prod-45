@@ -30,9 +30,7 @@ import Tooltip from '@atlaskit/tooltip';
 // Icons - only keep what's needed that Atlaskit doesn't provide
 import { AlertTriangle } from 'lucide-react';
 
-// Atlaskit layout components
-import { TopNav } from '@/components/atlaskit/TopNav';
-import { Sidebar } from '@/components/atlaskit/Sidebar';
+// Layout provided by CatalystShell - no separate TopNav/Sidebar imports needed
 
 // Atlaskit modals and dialogs
 import { BulkStatusModal } from '@/components/atlaskit/BulkStatusModal';
@@ -636,30 +634,18 @@ export default function IndustryPageAtlaskit() {
     <div style={{
       display: 'flex',
       flexDirection: 'column',
-      height: '100vh',
+      height: '100%',
       background: token('color.background.neutral', '#F4F5F7'),
     }}>
-      {/* Top Navigation Bar - 56px height */}
-      <TopNav isMobile={isMobile} />
-      
-      {/* Main Container with Sidebar */}
-      <div style={{
-        display: 'flex',
+      {/* Main Content Area */}
+      <main style={{
         flex: 1,
-        overflow: 'hidden',
+        overflow: 'auto',
+        background: token('color.background.neutral', '#F4F5F7'),
+        padding: isMobile ? token('space.200', '16px') : token('space.400', '32px'),
+        position: 'relative',
+        zIndex: 1,
       }}>
-        {/* Left Sidebar - 240px width */}
-        {!isMobile && <Sidebar />}
-        
-        {/* Main Content Area */}
-        <main style={{
-          flex: 1,
-          overflow: 'auto',
-          background: token('color.background.neutral', '#F4F5F7'),
-          padding: isMobile ? token('space.200', '16px') : token('space.400', '32px'),
-          position: 'relative',
-          zIndex: 1,
-        }}>
           {/* Page Header */}
           <div style={{ marginBottom: token('space.300', '24px') }}>
             <h1 style={{ 
@@ -850,7 +836,6 @@ export default function IndustryPageAtlaskit() {
             </>
           )}
         </main>
-      </div>
 
       {/* Dialogs and Modals */}
       <FilterDemandsDialog 

@@ -22,7 +22,7 @@ import { SearchOverlay } from "@/components/ja/SearchOverlay";
 import { NotificationsPanel } from "@/components/ja/NotificationsPanel";
 import { CreateDropdown } from "@/components/ja/CreateDropdown";
 import { ItemsDropdown } from "@/components/ja/ItemsDropdown";
-import { ProductSelectorDropdown } from "@/components/ja/ProductSelectorDropdown";
+import { DemandSelectorDropdown } from "@/components/ja/DemandSelectorDropdown";
 import { ProgramSelectorDropdown } from "@/components/ja/ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "@/components/ja/ProjectSelectorDropdown";
 import { ReleaseDropdown } from "@/components/ja/ReleaseDropdown";
@@ -111,7 +111,7 @@ export function CatalystHeaderAtlaskit() {
   const allNavItems = [
     { label: "Home", path: "/home", moduleCode: null },
     { label: "Enterprise", path: "/enterprise/strategy-room", moduleCode: "ENTERPRISE", requiresEnterpriseAccess: true },
-    { label: "Product", hasDropdown: true, moduleCode: "PRODUCT" },
+    { label: "Demand", hasDropdown: true, moduleCode: "PRODUCT" },
     { label: "Program", hasDropdown: true, moduleCode: "PORTFOLIO" },
     { label: "Project", hasDropdown: true, moduleCode: "PROGRAM" },
     { label: "Release", hasDropdown: true, path: "/release", moduleCode: null },
@@ -130,7 +130,7 @@ export function CatalystHeaderAtlaskit() {
   const isItemActive = (item: typeof navItems[0]) => {
     if (item.label === "Home") return location.pathname === '/home';
     if (item.label === "Enterprise") return location.pathname.startsWith('/enterprise');
-    if (item.label === "Product") return location.pathname.startsWith('/product') || location.pathname.startsWith('/industry');
+    if (item.label === "Demand") return location.pathname.startsWith('/industry');
     if (item.label === "Program") return workspaceType === 'program';
     if (item.label === "Project") return workspaceType === 'project';
     if (item.label === "Release") return location.pathname.startsWith('/release');
@@ -241,10 +241,9 @@ export function CatalystHeaderAtlaskit() {
                       borderRadius: '3px', 
                       boxShadow: '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
                     }}>
-                      {item.label === "Product" && (
-                        <ProductSelectorDropdown 
+                      {item.label === "Demand" && (
+                        <DemandSelectorDropdown 
                           onClose={() => setActiveDropdown(null)} 
-                          onCreateClick={() => setCreateDialogType('product')}
                         />
                       )}
                       {item.label === "Program" && (

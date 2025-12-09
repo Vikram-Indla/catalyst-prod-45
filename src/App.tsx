@@ -238,11 +238,6 @@ const App = () => (
               <Route path="/request-access" element={<RequestAccess />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               
-              {/* Industry routes - standalone Atlaskit layout (no CatalystShell) */}
-              <Route path="/industry" element={<ProtectedRoute><IndustryPage /></ProtectedRoute>} />
-              <Route path="/industry/industry" element={<ProtectedRoute><IndustryPage /></ProtectedRoute>} />
-              <Route path="/industry/roadmaps" element={<ProtectedRoute><ExecutiveRoadmapPage /></ProtectedRoute>} />
-              <Route path="/industry/reports" element={<ProtectedRoute><IndustryComingSoon /></ProtectedRoute>} />
               
               {/* Deep-link resolver for work items */}
               <Route path="/browse/:key" element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
@@ -252,6 +247,13 @@ const App = () => (
               {/* All Routes - Catalyst Style */}
               <Route element={<ProtectedRoute><CatalystShell /></ProtectedRoute>}>
               <Route path="/home" element={<Home />} />
+              
+              {/* Industry/Demand routes */}
+              <Route path="/industry" element={<IndustryPage />} />
+              <Route path="/industry/industry" element={<IndustryPage />} />
+              <Route path="/industry/roadmaps" element={<ExecutiveRoadmapPage />} />
+              <Route path="/industry/reports" element={<IndustryComingSoon />} />
+              
               <Route path="/search" element={<SearchPage />} />
               <Route path="/portfolio-room" element={<PortfolioRoomPageOld />} />
               <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
