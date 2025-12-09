@@ -18,15 +18,15 @@ import DownloadIcon from '@atlaskit/icon/glyph/download';
 import ChevronLeftIcon from '@atlaskit/icon/glyph/chevron-left';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import AddIcon from '@atlaskit/icon/glyph/add';
+import MoreIcon from '@atlaskit/icon/glyph/more';
 import Lozenge from '@atlaskit/lozenge';
 import Checkbox from '@atlaskit/checkbox';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 
-// Icons
 // Icons - only keep what's needed that Atlaskit doesn't provide
-import { MoreHorizontal, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 // Atlaskit layout components
 import { TopNav } from '@/components/atlaskit/TopNav';
@@ -69,8 +69,9 @@ const spacing = {
   s600: token('space.600', '48px'),
 };
 
-// Table styles for DynamicTable
+// Table styles for DynamicTable - CRITICAL FOR ATLASKIT COMPLIANCE
 const tableStyles = `
+  /* Row hover state */
   [data-testid="dynamic-table"] tbody tr {
     transition: background-color 150ms ease-in-out;
   }
@@ -80,25 +81,38 @@ const tableStyles = `
     cursor: pointer;
   }
   
+  /* Header styling */
   [data-testid="dynamic-table"] th {
-    font-size: 11px;
-    font-weight: 600;
-    color: ${token('color.text.subtle', '#6B778C')};
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: ${token('space.200', '16px')};
-    background: ${token('color.background.neutral.subtle', '#FAFBFC')};
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: ${token('color.text.subtle', '#6B778C')} !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    background: ${token('color.background.neutral.subtle', '#FAFBFC')} !important;
+    padding: ${token('space.200', '16px')} !important;
+    border-bottom: 2px solid ${token('color.border', '#DFE1E6')} !important;
   }
   
+  /* Cell styling */
   [data-testid="dynamic-table"] td {
-    font-size: 14px;
-    color: ${token('color.text', '#172B4D')};
-    padding: ${token('space.200', '16px')};
-    border-top: 1px solid ${token('color.border', '#DFE1E6')};
+    font-size: 14px !important;
+    color: ${token('color.text', '#172B4D')} !important;
+    padding: ${token('space.200', '16px')} !important;
+    border-top: 1px solid ${token('color.border', '#DFE1E6')} !important;
   }
   
+  /* First row no top border */
   [data-testid="dynamic-table"] tbody tr:first-child td {
-    border-top: none;
+    border-top: none !important;
+  }
+
+  /* Sort button styling */
+  [data-testid="dynamic-table"] th button {
+    color: ${token('color.text.subtle', '#6B778C')} !important;
+  }
+  
+  [data-testid="dynamic-table"] th button:hover {
+    background: ${token('color.background.neutral.hovered', '#EBECF0')} !important;
   }
 
   /* Focus states */
@@ -438,7 +452,7 @@ export default function IndustryPageAtlaskit() {
           <Button 
             {...props} 
             ref={triggerRef} 
-            iconBefore={<MoreHorizontal size={16} />} 
+            iconBefore={<MoreIcon label="More actions" size="small" />} 
             appearance="subtle" 
           />
         )}>
