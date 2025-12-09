@@ -48,7 +48,7 @@ import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
-import { BusinessRequestsKanbanView } from '@/components/business-requests/BusinessRequestsKanbanView';
+import KanbanBoard from '@/components/atlaskit/KanbanBoard';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -758,10 +758,7 @@ export default function IndustryPageAtlaskit() {
                 <Spinner size="large" />
               </div>
             ) : viewMode === 'kanban' ? (
-              <BusinessRequestsKanbanView 
-                requests={sortedRequests} 
-                onRequestSelect={setSelectedRequestId}
-              />
+              <KanbanBoard />
             ) : sortedRequests.length > 0 ? (
               <>
                 <style>{tableStyles}</style>
