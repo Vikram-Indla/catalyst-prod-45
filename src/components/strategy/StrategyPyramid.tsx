@@ -276,7 +276,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
         </div>
       </CardHeader>
       <CardContent className="p-4 md:p-6">
-        <div className="relative w-full" style={{ paddingBottom: '60%' }}>
+        <div className="relative w-full max-w-2xl mx-auto" style={{ paddingBottom: '40%' }}>
           <svg 
             viewBox="0 0 1000 600" 
             className="absolute inset-0 w-full h-full" 
