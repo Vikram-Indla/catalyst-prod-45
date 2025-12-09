@@ -3,11 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreVertical, Eye, Play, Archive, Trash2, Calendar, Clock, Layers, Users, Pencil } from 'lucide-react';
+import { MoreVertical, Eye, Play, Archive, Trash2, Calendar, Clock, Layers, Users, Pencil, Settings, CalendarRange } from 'lucide-react';
 import { StrategicSnapshot, useSnapshotConfiguration, useActivateSnapshot, useArchiveSnapshot } from '@/hooks/useStrategicSnapshots';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RenameSnapshotModal } from './RenameSnapshotModal';
+import { EditSnapshotDetailsModal } from './EditSnapshotDetailsModal';
+import { ManageQuartersDrawer } from './ManageQuartersDrawer';
 
 interface SnapshotCardProps {
   snapshot: StrategicSnapshot;
@@ -17,6 +19,8 @@ interface SnapshotCardProps {
 
 export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCardProps) {
   const [renameModalOpen, setRenameModalOpen] = useState(false);
+  const [editDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
+  const [manageQuartersOpen, setManageQuartersOpen] = useState(false);
   const { data: configuration } = useSnapshotConfiguration(snapshot.id);
   const activateSnapshot = useActivateSnapshot();
   const archiveSnapshot = useArchiveSnapshot();
@@ -81,6 +85,18 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
               <DropdownMenuItem onClick={() => setRenameModalOpen(true)}>
                 <Pencil className="h-4 w-4 mr-2" />
                 Rename
+              </DropdownMenuItem>
+            )}
+            {!isArchived && (
+              <DropdownMenuItem onClick={() => setEditDetailsModalOpen(true)}>
+                <Settings className="h-4 w-4 mr-2" />
+                Edit details
+              </DropdownMenuItem>
+            )}
+            {!isArchived && (
+              <DropdownMenuItem onClick={() => setManageQuartersOpen(true)}>
+                <CalendarRange className="h-4 w-4 mr-2" />
+                Manage quarters
               </DropdownMenuItem>
             )}
             <DropdownMenuItem onClick={() => onViewDetails(snapshot)}>
@@ -152,6 +168,18 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
       <RenameSnapshotModal
         open={renameModalOpen}
         onClose={() => setRenameModalOpen(false)}
+        snapshot={snapshot}
+      />
+
+      <EditSnapshotDetailsModal
+        open={editDetailsModalOpen}
+        onClose={() => setEditDetailsModalOpen(false)}
+        snapshot={snapshot}
+      />
+
+      <ManageQuartersDrawer
+        open={manageQuartersOpen}
+        onClose={() => setManageQuartersOpen(false)}
         snapshot={snapshot}
       />
     </>
