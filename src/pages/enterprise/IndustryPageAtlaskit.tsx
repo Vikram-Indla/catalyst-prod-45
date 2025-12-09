@@ -12,11 +12,12 @@ import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import { DynamicTableStateless } from '@atlaskit/dynamic-table';
 import type { RowType, HeadType } from '@atlaskit/dynamic-table/types';
-import { Content, LeftSidebar, Main, PageLayout } from '@atlaskit/page-layout';
-import { SideNavigation, NavigationHeader, Header, NestableNavigationContent, Section, ButtonItem } from '@atlaskit/side-navigation';
+import { Content, LeftSidebar, Main, PageLayout, TopNavigation } from '@atlaskit/page-layout';
+import { SideNavigation, NavigationHeader, Header, NestableNavigationContent, Section, ButtonItem, HeadingItem } from '@atlaskit/side-navigation';
+import Avatar from '@atlaskit/avatar';
 
 // Icons
-import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Lock } from 'lucide-react';
+import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Lock, Bell, Settings, Home, Briefcase, Package, Folder, Layers, Box } from 'lucide-react';
 
 // Local components
 import { FilterDemandsDialog, SmartFilters } from '@/components/business-requests/FilterDemandsDialog';
@@ -339,21 +340,173 @@ export default function IndustryPageAtlaskit() {
 
   return (
     <PageLayout>
+      {/* Top Navigation Bar */}
+      <TopNavigation isFixed height={56}>
+        <div style={{
+          height: '56px',
+          backgroundColor: token('elevation.surface', '#FFFFFF'),
+          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 16px',
+        }}>
+          {/* Left: Logo + Navigation */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            {/* Logo */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{
+                width: '32px',
+                height: '32px',
+                backgroundColor: token('color.background.brand.bold', '#0052CC'),
+                borderRadius: '4px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <Layers size={18} color="#FFFFFF" />
+              </div>
+              <span style={{ 
+                fontSize: '16px', 
+                fontWeight: 600, 
+                color: token('color.text', '#172B4D'),
+              }}>
+                Catalyst
+              </span>
+            </div>
+            
+            {/* Navigation Items */}
+            <nav style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+              {[
+                { label: 'Home', isActive: false },
+                { label: 'Enterprise', isActive: false },
+                { label: 'Product', isActive: true },
+                { label: 'Program', isActive: false },
+                { label: 'Project', isActive: false },
+                { label: 'Release', isActive: false },
+                { label: 'Items', isActive: false },
+              ].map((item) => (
+                <button
+                  key={item.label}
+                  style={{
+                    padding: '8px 12px',
+                    fontSize: '14px',
+                    fontWeight: 500,
+                    color: item.isActive ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    borderBottom: item.isActive ? `2px solid ${token('color.border.brand', '#0052CC')}` : '2px solid transparent',
+                    cursor: 'pointer',
+                    borderRadius: '3px 3px 0 0',
+                    marginBottom: '-1px',
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </nav>
+          </div>
+          
+          {/* Right: Actions */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Button appearance="primary" iconBefore={<Plus size={16} />}>
+              Create
+            </Button>
+            <button style={{ 
+              padding: '8px', 
+              background: 'none', 
+              border: 'none', 
+              cursor: 'pointer',
+              borderRadius: '3px',
+              display: 'flex',
+            }}>
+              <Bell size={20} color={token('color.text.subtle', '#6B778C')} />
+            </button>
+            <button style={{ 
+              padding: '8px', 
+              background: 'none', 
+              border: 'none', 
+              cursor: 'pointer',
+              borderRadius: '3px',
+              display: 'flex',
+            }}>
+              <Settings size={20} color={token('color.text.subtle', '#6B778C')} />
+            </button>
+            <button style={{ 
+              padding: '8px', 
+              background: 'none', 
+              border: 'none', 
+              cursor: 'pointer',
+              borderRadius: '3px',
+              display: 'flex',
+            }}>
+              <Search size={20} color={token('color.text.subtle', '#6B778C')} />
+            </button>
+            <Avatar size="small" />
+          </div>
+        </div>
+      </TopNavigation>
+
       <Content>
+        {/* Left Sidebar */}
         <LeftSidebar isFixed width={240}>
-          <SideNavigation label="Product navigation">
-            <NavigationHeader>
-              <Header>Product</Header>
-            </NavigationHeader>
-            <NestableNavigationContent>
-              <Section>
-                <ButtonItem isSelected>Demand Intake</ButtonItem>
-                <ButtonItem>Roadmaps</ButtonItem>
-                <ButtonItem>Backlog</ButtonItem>
-                <ButtonItem>Reports</ButtonItem>
-              </Section>
-            </NestableNavigationContent>
-          </SideNavigation>
+          <div style={{ 
+            backgroundColor: token('color.background.neutral.subtle', '#F4F5F7'),
+            height: '100%',
+          }}>
+            <SideNavigation label="Product navigation">
+              <NavigationHeader>
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '12px',
+                  padding: '12px 16px',
+                }}>
+                  <div style={{
+                    width: '36px',
+                    height: '36px',
+                    backgroundColor: token('color.background.accent.blue.subtle', '#DEEBFF'),
+                    borderRadius: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: token('color.text.brand', '#0052CC'),
+                  }}>
+                    PR
+                  </div>
+                  <div>
+                    <div style={{ 
+                      fontSize: '14px', 
+                      fontWeight: 600, 
+                      color: token('color.text', '#172B4D'),
+                    }}>
+                      Product
+                    </div>
+                    <div style={{ 
+                      fontSize: '12px', 
+                      color: token('color.text.subtlest', '#6B778C'),
+                    }}>
+                      Industry
+                    </div>
+                  </div>
+                </div>
+              </NavigationHeader>
+              <NestableNavigationContent>
+                <Section>
+                  <ButtonItem iconBefore={<Home size={16} />}>Product Room</ButtonItem>
+                  <ButtonItem iconBefore={<Briefcase size={16} />} isSelected>Backlog</ButtonItem>
+                  <ButtonItem iconBefore={<Layers size={16} />}>Roadmap</ButtonItem>
+                  <ButtonItem iconBefore={<Box size={16} />}>Capacity</ButtonItem>
+                  <ButtonItem iconBefore={<Folder size={16} />}>Knowledge Hub</ButtonItem>
+                </Section>
+                <Section hasSeparator>
+                  <ButtonItem iconBefore={<Settings size={16} />}>Product Settings</ButtonItem>
+                </Section>
+              </NestableNavigationContent>
+            </SideNavigation>
+          </div>
         </LeftSidebar>
         
         <Main>
