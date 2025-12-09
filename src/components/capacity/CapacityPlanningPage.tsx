@@ -11,6 +11,8 @@ import { PeopleRoster } from './PeopleRoster';
 import { ProjectGrid } from './ProjectGrid';
 import { TimelineView } from './TimelineView';
 import { VacancyCards } from './VacancyCards';
+import { AvailableCapacityTab } from './AvailableCapacityTab';
+import { ExecutiveReportsTab } from './ExecutiveReportsTab';
 import { FilterDrawer } from './FilterDrawer';
 import { CopyWeekModal } from './CopyWeekModal';
 import { AddMemberDrawer } from './AddMemberDrawer';
@@ -136,11 +138,12 @@ export function CapacityPlanningPage() {
           openVacancies={openVacancies}
         />
 
-        {/* Capacity Preview - 4 weeks */}
+        {/* Capacity Preview - 4 weeks (clickable to Available Capacity tab) */}
         <CapacityPreview
           weeks={capacityPreview}
           currentWeek={currentWeek}
           totalPeople={stats.total}
+          onWeekClick={() => setActiveTab('available')}
         />
 
         {/* Search and Filter */}
@@ -236,9 +239,16 @@ export function CapacityPlanningPage() {
             </TabsContent>
 
             <TabsContent value="available" className="m-0">
-              <div className="text-center py-12 text-muted-foreground">
-                Available Capacity view coming soon
-              </div>
+              <AvailableCapacityTab
+                resources={allResources}
+                projects={projects}
+                currentWeek={currentWeek}
+                currentYear={currentYear}
+                onAllocate={(resourceId) => {
+                  setSelectedResourceId(resourceId);
+                  setNewAllocationOpen(true);
+                }}
+              />
             </TabsContent>
 
             <TabsContent value="vacancies" className="m-0">
@@ -250,9 +260,13 @@ export function CapacityPlanningPage() {
             </TabsContent>
 
             <TabsContent value="reports" className="m-0">
-              <div className="text-center py-12 text-muted-foreground">
-                Executive Reports view coming soon
-              </div>
+              <ExecutiveReportsTab
+                resources={allResources}
+                projects={projects}
+                vacancies={vacancies}
+                currentWeek={currentWeek}
+                currentYear={currentYear}
+              />
             </TabsContent>
           </div>
         </Tabs>
