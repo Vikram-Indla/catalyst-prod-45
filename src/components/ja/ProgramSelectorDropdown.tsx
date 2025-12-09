@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
@@ -12,7 +12,10 @@ interface ProgramSelectorDropdownProps {
   onCreateClick?: () => void;
 }
 
-export function ProgramSelectorDropdown({ onClose, onCreateClick }: ProgramSelectorDropdownProps) {
+export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdown({ 
+  onClose, 
+  onCreateClick 
+}: ProgramSelectorDropdownProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const { setProgramId, setProjectId, setProgramName, setProjectName } = useCatalystContext();
@@ -34,24 +37,28 @@ export function ProgramSelectorDropdown({ onClose, onCreateClick }: ProgramSelec
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleSelect = (programId: string, programName: string) => {
+  const handleSelect = useCallback((programId: string, programName: string) => {
     setProgramId(programId);
     setProgramName(programName);
     setProjectId(null);
     setProjectName(null);
     navigate(getProgramLandingRoute(programId));
     onClose();
-  };
+  }, [navigate, onClose, setProgramId, setProgramName, setProjectId, setProjectName]);
 
-  const handleCreateClick = () => {
+  const handleCreateClick = useCallback(() => {
     onClose();
     onCreateClick?.();
-  };
+  }, [onClose, onCreateClick]);
 
-  const handleManageClick = () => {
+  const handleManageClick = useCallback(() => {
     navigate('/admin/portfolios');
     onClose();
-  };
+  }, [navigate, onClose]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  }, []);
 
   return (
     <div style={{
@@ -80,7 +87,7 @@ export function ProgramSelectorDropdown({ onClose, onCreateClick }: ProgramSelec
             type="text"
             placeholder="Search programs..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             style={{
               width: '100%',
               height: '32px',
@@ -122,99 +129,121 @@ export function ProgramSelectorDropdown({ onClose, onCreateClick }: ProgramSelec
           </div>
         ) : (
           filtered.map((program) => (
-            <button
+            <ProgramListItem
               key={program.id}
-              onClick={() => handleSelect(program.id, program.name)}
-              style={{
-                width: '100%',
-                textAlign: 'left',
-                padding: '8px 12px',
-                borderRadius: '3px',
-                border: 'none',
-                background: 'transparent',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '14px',
-                color: token('color.text', '#172B4D'),
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent';
-              }}
-            >
-              <Building2 style={{
-                width: '16px',
-                height: '16px',
-                color: token('color.icon', '#6B778C'),
-                flexShrink: 0,
-              }} />
-              <span style={{ flex: 1 }}>{program.name}</span>
-            </button>
+              id={program.id}
+              name={program.name}
+              onSelect={handleSelect}
+            />
           ))
         )}
       </div>
 
       {/* Bottom Actions */}
       <div style={{ borderTop: `1px solid ${token('color.border', '#DFE1E6')}`, padding: '8px' }}>
-        <button
-          onClick={handleCreateClick}
-          style={{
-            width: '100%',
-            textAlign: 'left',
-            padding: '8px 12px',
-            borderRadius: '3px',
-            border: 'none',
-            background: 'transparent',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '14px',
-            fontWeight: 500,
-            color: '#C69C6D',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
-          }}
-        >
-          <Plus style={{ width: '16px', height: '16px' }} />
+        <ActionButton onClick={handleCreateClick} icon={<Plus style={{ width: '16px', height: '16px' }} />} isPrimary>
           Create Program
-        </button>
+        </ActionButton>
         
-        <button
-          onClick={handleManageClick}
-          style={{
-            width: '100%',
-            textAlign: 'left',
-            padding: '8px 12px',
-            borderRadius: '3px',
-            border: 'none',
-            background: 'transparent',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '14px',
-            color: token('color.text.subtlest', '#6B778C'),
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
-          }}
-        >
-          <Settings style={{ width: '16px', height: '16px' }} />
+        <ActionButton onClick={handleManageClick} icon={<Settings style={{ width: '16px', height: '16px' }} />}>
           Manage Programs
-        </button>
+        </ActionButton>
       </div>
     </div>
   );
+});
+
+// Memoized list item component
+interface ProgramListItemProps {
+  id: string;
+  name: string;
+  onSelect: (id: string, name: string) => void;
 }
+
+const ProgramListItem = React.memo(function ProgramListItem({ id, name, onSelect }: ProgramListItemProps) {
+  const handleClick = useCallback(() => {
+    onSelect(id, name);
+  }, [id, name, onSelect]);
+
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+  }, []);
+
+  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = 'transparent';
+  }, []);
+
+  return (
+    <button
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        width: '100%',
+        textAlign: 'left',
+        padding: '8px 12px',
+        borderRadius: '3px',
+        border: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontSize: '14px',
+        color: token('color.text', '#172B4D'),
+      }}
+    >
+      <Building2 style={{
+        width: '16px',
+        height: '16px',
+        color: token('color.icon', '#6B778C'),
+        flexShrink: 0,
+      }} />
+      <span style={{ flex: 1 }}>{name}</span>
+    </button>
+  );
+});
+
+// Action button component
+interface ActionButtonProps {
+  onClick: () => void;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  isPrimary?: boolean;
+}
+
+const ActionButton = React.memo(function ActionButton({ onClick, icon, children, isPrimary }: ActionButtonProps) {
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+  }, []);
+
+  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = 'transparent';
+  }, []);
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        width: '100%',
+        textAlign: 'left',
+        padding: '8px 12px',
+        borderRadius: '3px',
+        border: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontSize: '14px',
+        fontWeight: isPrimary ? 500 : 400,
+        color: isPrimary ? '#C69C6D' : token('color.text.subtlest', '#6B778C'),
+      }}
+    >
+      {icon}
+      {children}
+    </button>
+  );
+});

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { token } from '@atlaskit/tokens';
@@ -13,7 +13,10 @@ interface ProjectSelectorDropdownProps {
   onCreateClick?: () => void;
 }
 
-export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelectorDropdownProps) {
+export const ProjectSelectorDropdown = React.memo(function ProjectSelectorDropdown({ 
+  onClose, 
+  onCreateClick 
+}: ProjectSelectorDropdownProps) {
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const { isStarred, toggleStar } = useStarredItems();
@@ -49,7 +52,7 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleSelect = (project: typeof filtered[0]) => {
+  const handleSelect = useCallback((project: typeof filtered[0]) => {
     setProjectId(project.id);
     setProjectName(project.name);
     
@@ -60,9 +63,9 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
     
     navigate(getProjectLandingRoute(project.id));
     onClose();
-  };
+  }, [navigate, onClose, setProgramId, setProgramName, setProjectId, setProjectName]);
 
-  const handleToggleStar = async (e: React.MouseEvent, project: typeof filtered[0]) => {
+  const handleToggleStar = useCallback(async (e: React.MouseEvent, project: typeof filtered[0]) => {
     e.stopPropagation();
     await toggleStar({
       room_type: 'program',
@@ -72,22 +75,26 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
       room_path: getProjectLandingRoute(project.id),
       pi_label: null,
     });
-  };
+  }, [toggleStar]);
 
-  const handleCreateClick = () => {
+  const handleCreateClick = useCallback(() => {
     onClose();
     onCreateClick?.();
-  };
+  }, [onClose, onCreateClick]);
 
-  const handleManageClick = () => {
+  const handleManageClick = useCallback(() => {
     navigate('/admin/programs');
     onClose();
-  };
+  }, [navigate, onClose]);
 
-  const handleClearFilter = () => {
+  const handleClearFilter = useCallback(() => {
     setProgramId(null);
     setProgramName(null);
-  };
+  }, [setProgramId, setProgramName]);
+
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  }, []);
 
   return (
     <div style={{
@@ -150,7 +157,7 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
             type="text"
             placeholder="Search projects..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             style={{
               width: '100%',
               height: '32px',
@@ -191,129 +198,164 @@ export function ProjectSelectorDropdown({ onClose, onCreateClick }: ProjectSelec
             {search ? 'No projects found' : programId ? 'No projects in this program' : 'No projects available'}
           </div>
         ) : (
-          filtered.map((project) => {
-            const starred = isStarred('program', project.id);
-            return (
-              <button
-                key={project.id}
-                onClick={() => handleSelect(project)}
-                style={{
-                  width: '100%',
-                  textAlign: 'left',
-                  padding: '8px 12px',
-                  borderRadius: '3px',
-                  border: 'none',
-                  background: 'transparent',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  fontSize: '14px',
-                  color: token('color.text', '#172B4D'),
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                }}
-              >
-                <Layers style={{
-                  width: '16px',
-                  height: '16px',
-                  color: token('color.icon', '#6B778C'),
-                  flexShrink: 0,
-                }} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {project.name}
-                  </div>
-                  {project.portfolios && (
-                    <div style={{
-                      fontSize: '12px',
-                      color: token('color.text.subtlest', '#6B778C'),
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap',
-                    }}>
-                      {project.portfolios.name}
-                    </div>
-                  )}
-                </div>
-                <Star
-                  onClick={(e) => handleToggleStar(e, project)}
-                  style={{
-                    width: '16px',
-                    height: '16px',
-                    color: starred ? '#C69C6D' : token('color.icon', '#6B778C'),
-                    fill: starred ? '#C69C6D' : 'none',
-                    cursor: 'pointer',
-                    flexShrink: 0,
-                  }}
-                />
-              </button>
-            );
-          })
+          filtered.map((project) => (
+            <ProjectListItem
+              key={project.id}
+              project={project}
+              isStarred={isStarred('program', project.id)}
+              onSelect={handleSelect}
+              onToggleStar={handleToggleStar}
+            />
+          ))
         )}
       </div>
 
       {/* Bottom Actions */}
       <div style={{ borderTop: `1px solid ${token('color.border', '#DFE1E6')}`, padding: '8px' }}>
-        <button
-          onClick={handleCreateClick}
-          style={{
-            width: '100%',
-            textAlign: 'left',
-            padding: '8px 12px',
-            borderRadius: '3px',
-            border: 'none',
-            background: 'transparent',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '14px',
-            fontWeight: 500,
-            color: '#C69C6D',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
-          }}
-        >
-          <Plus style={{ width: '16px', height: '16px' }} />
+        <ActionButton onClick={handleCreateClick} icon={<Plus style={{ width: '16px', height: '16px' }} />} isPrimary>
           Create Project
-        </button>
+        </ActionButton>
         
-        <button
-          onClick={handleManageClick}
-          style={{
-            width: '100%',
-            textAlign: 'left',
-            padding: '8px 12px',
-            borderRadius: '3px',
-            border: 'none',
-            background: 'transparent',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '14px',
-            color: token('color.text.subtlest', '#6B778C'),
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent';
-          }}
-        >
-          <Settings style={{ width: '16px', height: '16px' }} />
+        <ActionButton onClick={handleManageClick} icon={<Settings style={{ width: '16px', height: '16px' }} />}>
           Manage Projects
-        </button>
+        </ActionButton>
       </div>
     </div>
   );
+});
+
+// Memoized list item component
+interface ProjectListItemProps {
+  project: {
+    id: string;
+    name: string;
+    portfolio_id: string | null;
+    portfolios: { id: string; name: string } | null;
+  };
+  isStarred: boolean;
+  onSelect: (project: any) => void;
+  onToggleStar: (e: React.MouseEvent, project: any) => void;
 }
+
+const ProjectListItem = React.memo(function ProjectListItem({ 
+  project, 
+  isStarred, 
+  onSelect, 
+  onToggleStar 
+}: ProjectListItemProps) {
+  const handleClick = useCallback(() => {
+    onSelect(project);
+  }, [project, onSelect]);
+
+  const handleStarClick = useCallback((e: React.MouseEvent) => {
+    onToggleStar(e, project);
+  }, [project, onToggleStar]);
+
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+  }, []);
+
+  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = 'transparent';
+  }, []);
+
+  return (
+    <button
+      onClick={handleClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        width: '100%',
+        textAlign: 'left',
+        padding: '8px 12px',
+        borderRadius: '3px',
+        border: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontSize: '14px',
+        color: token('color.text', '#172B4D'),
+      }}
+    >
+      <Layers style={{
+        width: '16px',
+        height: '16px',
+        color: token('color.icon', '#6B778C'),
+        flexShrink: 0,
+      }} />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {project.name}
+        </div>
+        {project.portfolios && (
+          <div style={{
+            fontSize: '12px',
+            color: token('color.text.subtlest', '#6B778C'),
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}>
+            {project.portfolios.name}
+          </div>
+        )}
+      </div>
+      <Star
+        onClick={handleStarClick}
+        style={{
+          width: '16px',
+          height: '16px',
+          color: isStarred ? '#C69C6D' : token('color.icon', '#6B778C'),
+          fill: isStarred ? '#C69C6D' : 'none',
+          cursor: 'pointer',
+          flexShrink: 0,
+        }}
+      />
+    </button>
+  );
+});
+
+// Action button component
+interface ActionButtonProps {
+  onClick: () => void;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+  isPrimary?: boolean;
+}
+
+const ActionButton = React.memo(function ActionButton({ onClick, icon, children, isPrimary }: ActionButtonProps) {
+  const handleMouseEnter = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+  }, []);
+
+  const handleMouseLeave = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    e.currentTarget.style.background = 'transparent';
+  }, []);
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        width: '100%',
+        textAlign: 'left',
+        padding: '8px 12px',
+        borderRadius: '3px',
+        border: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontSize: '14px',
+        fontWeight: isPrimary ? 500 : 400,
+        color: isPrimary ? '#C69C6D' : token('color.text.subtlest', '#6B778C'),
+      }}
+    >
+      {icon}
+      {children}
+    </button>
+  );
+});
