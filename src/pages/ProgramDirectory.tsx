@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { token } from '@atlaskit/tokens';
+import { Content, Main, PageLayout } from '@atlaskit/page-layout';
 import Avatar from '@atlaskit/avatar';
 import Button from '@atlaskit/button';
+import ButtonGroup from '@atlaskit/button-group';
 import Lozenge from '@atlaskit/lozenge';
 import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
@@ -13,84 +15,79 @@ import Textfield from '@atlaskit/textfield';
 import StarIcon from '@atlaskit/icon/glyph/star';
 import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
 import SearchIcon from '@atlaskit/icon/glyph/search';
-import GridIcon from '@atlaskit/icon/glyph/board';
-import ListIcon from '@atlaskit/icon/glyph/bullet-list';
+import GridIcon from '@atlaskit/icon/glyph/media-services/grid';
+import ListIcon from '@atlaskit/icon/glyph/list';
 import AddIcon from '@atlaskit/icon/glyph/add';
-import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import { CreateProgramDialog } from '@/components/programs/CreateProgramDialog';
 
 interface Program {
   id: string;
+  key: string;
   name: string;
-  status: string;
-  owner_id: string | null;
-  created_at: string;
-  updated_at: string;
-  projects_count?: number;
-  epics_count?: number;
+  description: string;
+  lead: {
+    name: string;
+    avatar?: string;
+  };
+  projectCount: number;
+  epicCount: number;
+  isDefault: boolean;
+  isStarred: boolean;
+  updatedAt: Date;
 }
-
-type ViewMode = 'grid' | 'list';
 
 export default function ProgramDirectory() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [starredPrograms, setStarredPrograms] = useState<Set<string>>(new Set());
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
   // Fetch programs from portfolios table (Programs in UI = portfolios in DB)
-  const { data: programs, isLoading, error } = useQuery({
+  const { data: programsData, isLoading, error } = useQuery({
     queryKey: ['programs-directory'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('portfolios')
-        .select('*')
+        .select('*, programs(id)')
         .order('name');
       
       if (error) throw error;
-      
-      // Get counts for each program
-      const programsWithCounts = await Promise.all(
-        (data || []).map(async (program) => {
-          // Count projects (programs table with portfolio_id)
-          const { count: projectsCount } = await supabase
-            .from('programs')
-            .select('*', { count: 'exact', head: true })
-            .eq('portfolio_id', program.id);
-
-          // Count epics
-          const { count: epicsCount } = await supabase
-            .from('epics')
-            .select('*', { count: 'exact', head: true })
-            .eq('portfolio_id', program.id);
-
-          return {
-            ...program,
-            projects_count: projectsCount || 0,
-            epics_count: epicsCount || 0,
-          };
-        })
-      );
-
-      return programsWithCounts as Program[];
+      return data;
     },
   });
 
-  const filteredPrograms = programs?.filter((program) =>
-    program.name.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  // Transform data to Program interface
+  const programs: Program[] = (programsData || []).map(p => ({
+    id: p.id,
+    key: p.name.substring(0, 4).toUpperCase(),
+    name: p.name,
+    description: 'No description provided',
+    lead: {
+      name: 'Unassigned',
+      avatar: undefined,
+    },
+    projectCount: p.programs?.length || 0,
+    epicCount: 0,
+    isDefault: p.name === 'Default',
+    isStarred: starredPrograms.has(p.id),
+    updatedAt: new Date(p.updated_at || p.created_at),
+  }));
 
-  const toggleStar = (programId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setStarredPrograms((prev) => {
-      const next = new Set(prev);
-      if (next.has(programId)) {
-        next.delete(programId);
+  const filteredPrograms = programs.filter(prog =>
+    prog.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    prog.key.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const toggleStar = (programId: string) => {
+    setStarredPrograms(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(programId)) {
+        newSet.delete(programId);
       } else {
-        next.add(programId);
+        newSet.add(programId);
       }
-      return next;
+      return newSet;
     });
   };
 
@@ -98,204 +95,196 @@ export default function ProgramDirectory() {
     navigate(`/program/${programId}/room`);
   };
 
-  const getStatusAppearance = (status: string) => {
-    switch (status?.toLowerCase()) {
-      case 'active':
-        return 'success';
-      case 'inactive':
-        return 'default';
-      case 'archived':
-        return 'removed';
-      default:
-        return 'default';
-    }
-  };
-
   if (error) {
     return (
-      <div style={{ padding: token('space.400') }}>
-        <EmptyState
-          header="Error loading programs"
-          description="There was an error loading the program directory. Please try again."
-        />
-      </div>
+      <PageLayout>
+        <Content>
+          <Main>
+            <div style={{ padding: '32px' }}>
+              <EmptyState
+                header="Error loading programs"
+                description="There was an error loading the program directory. Please try again."
+              />
+            </div>
+          </Main>
+        </Content>
+      </PageLayout>
     );
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        background: token('elevation.surface'),
-      }}
-    >
-      {/* Header */}
-      <div
-        style={{
-          padding: `${token('space.400')} ${token('space.500')}`,
-          borderBottom: `1px solid ${token('color.border')}`,
-          background: token('elevation.surface'),
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: token('space.300'),
-          }}
-        >
-          <div>
-            <h1
-              style={{
-                fontSize: '24px',
-                fontWeight: 600,
-                color: token('color.text'),
-                margin: 0,
-              }}
-            >
-              Programs
-            </h1>
-            <p
-              style={{
-                fontSize: '14px',
-                color: token('color.text.subtlest'),
-                margin: 0,
-                marginTop: token('space.050'),
-              }}
-            >
-              {filteredPrograms.length} program{filteredPrograms.length !== 1 ? 's' : ''}
-            </p>
-          </div>
-
-          <Button
-            appearance="primary"
-            iconBefore={<AddIcon label="Create" size="small" />}
-            onClick={() => setShowCreateDialog(true)}
-          >
-            Create program
-          </Button>
-        </div>
-
-        {/* Search and View Controls */}
-        <div
-          style={{
-            display: 'flex',
-            gap: token('space.200'),
-            alignItems: 'center',
-          }}
-        >
-          <div style={{ flex: 1, maxWidth: '400px' }}>
-            <Textfield
-              placeholder="Search programs..."
-              elemBeforeInput={
-                <div style={{ marginLeft: token('space.100'), display: 'flex' }}>
-                  <SearchIcon label="Search" size="small" />
-                </div>
-              }
-              value={searchQuery}
-              onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
-            />
-          </div>
-
-          <div
-            style={{
+    <PageLayout>
+      <Content>
+        <Main>
+          <div style={{
+            padding: '32px',
+            background: '#FAFBFC',
+            minHeight: '100vh',
+          }}>
+            {/* PAGE HEADER */}
+            <div style={{
               display: 'flex',
-              gap: token('space.050'),
-              background: token('color.background.neutral'),
-              borderRadius: token('border.radius'),
-              padding: '2px',
-            }}
-          >
-            <Tooltip content="Grid view">
-              <Button
-                appearance={viewMode === 'grid' ? 'primary' : 'subtle'}
-                iconBefore={<GridIcon label="Grid" size="small" />}
-                onClick={() => setViewMode('grid')}
-                spacing="compact"
-              />
-            </Tooltip>
-            <Tooltip content="List view">
-              <Button
-                appearance={viewMode === 'list' ? 'primary' : 'subtle'}
-                iconBefore={<ListIcon label="List" size="small" />}
-                onClick={() => setViewMode('list')}
-                spacing="compact"
-              />
-            </Tooltip>
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div style={{ padding: token('space.400') }}>
-        {isLoading ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
+              justifyContent: 'space-between',
               alignItems: 'center',
-              minHeight: '200px',
-            }}
-          >
-            <Spinner size="large" />
-          </div>
-        ) : filteredPrograms.length === 0 ? (
-          <EmptyState
-            header={searchQuery ? 'No programs found' : 'No programs yet'}
-            description={
-              searchQuery
-                ? 'Try adjusting your search query'
-                : 'Create your first program to get started'
-            }
-            primaryAction={
-              !searchQuery ? (
-                <Button
-                  appearance="primary"
-                  onClick={() => setShowCreateDialog(true)}
-                >
-                  Create program
-                </Button>
-              ) : undefined
-            }
-          />
-        ) : viewMode === 'grid' ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-              gap: token('space.300'),
-            }}
-          >
-            {filteredPrograms.map((program) => (
-              <ProgramCard
-                key={program.id}
-                program={program}
-                isStarred={starredPrograms.has(program.id)}
-                onToggleStar={(e) => toggleStar(program.id, e)}
-                onClick={() => handleProgramClick(program.id)}
-                onSettingsClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/program/${program.id}/settings`);
-                }}
-              />
-            ))}
-          </div>
-        ) : (
-          <ProgramList
-            programs={filteredPrograms}
-            starredPrograms={starredPrograms}
-            onToggleStar={toggleStar}
-            onProgramClick={handleProgramClick}
-          />
-        )}
-      </div>
+              marginBottom: '32px',
+            }}>
+              <div>
+                <h1 style={{
+                  fontSize: '24px',
+                  fontWeight: 500,
+                  color: '#172B4D',
+                  margin: 0,
+                  marginBottom: '4px',
+                }}>
+                  Programs
+                </h1>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#6B778C',
+                  margin: 0,
+                }}>
+                  {filteredPrograms.length} program{filteredPrograms.length !== 1 ? 's' : ''}
+                </p>
+              </div>
 
-      {/* Create Dialog */}
+              <Button
+                appearance="primary"
+                iconBefore={<AddIcon label="Create" size="small" />}
+                onClick={() => setShowCreateDialog(true)}
+              >
+                Create program
+              </Button>
+            </div>
+
+            {/* CONTROLS BAR */}
+            <div style={{
+              background: '#FFFFFF',
+              padding: '16px',
+              borderRadius: '3px',
+              marginBottom: '24px',
+              boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              gap: '16px',
+            }}>
+              {/* Search */}
+              <div style={{ width: '320px' }}>
+                <Textfield
+                  placeholder="Search programs..."
+                  elemBeforeInput={
+                    <div style={{ marginLeft: '8px', display: 'flex', alignItems: 'center' }}>
+                      <SearchIcon label="Search" size="small" primaryColor="#6B778C" />
+                    </div>
+                  }
+                  value={searchQuery}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                />
+              </div>
+
+              {/* View Toggle */}
+              <ButtonGroup>
+                <Button
+                  isSelected={viewMode === 'grid'}
+                  onClick={() => setViewMode('grid')}
+                  iconBefore={<GridIcon label="Grid view" size="small" />}
+                >
+                  Grid
+                </Button>
+                <Button
+                  isSelected={viewMode === 'list'}
+                  onClick={() => setViewMode('list')}
+                  iconBefore={<ListIcon label="List view" size="small" />}
+                >
+                  List
+                </Button>
+              </ButtonGroup>
+            </div>
+
+            {/* CONTENT */}
+            {isLoading ? (
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                minHeight: '200px',
+              }}>
+                <Spinner size="large" />
+              </div>
+            ) : filteredPrograms.length === 0 ? (
+              <EmptyState
+                header="No programs found"
+                description={searchQuery ? 'Try adjusting your search query' : 'Create your first program to get started'}
+                primaryAction={
+                  <Button 
+                    appearance="primary"
+                    onClick={() => setShowCreateDialog(true)}
+                  >
+                    Create program
+                  </Button>
+                }
+                secondaryAction={
+                  searchQuery ? (
+                    <Button 
+                      appearance="subtle"
+                      onClick={() => setSearchQuery('')}
+                    >
+                      Clear search
+                    </Button>
+                  ) : undefined
+                }
+              />
+            ) : viewMode === 'grid' ? (
+              <ProgramGrid 
+                programs={filteredPrograms}
+                onToggleStar={toggleStar}
+                onProgramClick={handleProgramClick}
+              />
+            ) : (
+              <ProgramList 
+                programs={filteredPrograms}
+                onToggleStar={toggleStar}
+                onProgramClick={handleProgramClick}
+              />
+            )}
+          </div>
+        </Main>
+      </Content>
+
+      {/* CREATE PROGRAM DIALOG */}
       <CreateProgramDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
       />
+    </PageLayout>
+  );
+}
+
+// ============================================
+// PROGRAM GRID VIEW
+// ============================================
+
+interface ProgramGridProps {
+  programs: Program[];
+  onToggleStar: (id: string) => void;
+  onProgramClick: (id: string) => void;
+}
+
+function ProgramGrid({ programs, onToggleStar, onProgramClick }: ProgramGridProps) {
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+      gap: '24px',
+    }}>
+      {programs.map((program) => (
+        <ProgramCard
+          key={program.id}
+          program={program}
+          onToggleStar={() => onToggleStar(program.id)}
+          onClick={() => onProgramClick(program.id)}
+        />
+      ))}
     </div>
   );
 }
@@ -306,19 +295,11 @@ export default function ProgramDirectory() {
 
 interface ProgramCardProps {
   program: Program;
-  isStarred: boolean;
-  onToggleStar: (e: React.MouseEvent) => void;
+  onToggleStar: () => void;
   onClick: () => void;
-  onSettingsClick: (e: React.MouseEvent) => void;
 }
 
-function ProgramCard({
-  program,
-  isStarred,
-  onToggleStar,
-  onClick,
-  onSettingsClick,
-}: ProgramCardProps) {
+function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -327,201 +308,174 @@ function ProgramCard({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        background: token('elevation.surface'),
-        borderRadius: token('border.radius'),
-        border: `1px solid ${token('color.border')}`,
-        padding: token('space.300'),
-        cursor: 'pointer',
+        background: '#FFFFFF',
+        borderRadius: '3px',
+        padding: '24px',
+        boxShadow: isHovered 
+          ? '0 4px 8px -2px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)'
+          : '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+        border: '1px solid #DFE1E6',
         transition: 'box-shadow 150ms, transform 150ms',
-        boxShadow: isHovered
-          ? token('elevation.shadow.overlay')
-          : token('elevation.shadow.raised'),
-        transform: isHovered ? 'translateY(-2px)' : 'none',
+        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
+        cursor: 'pointer',
         position: 'relative',
       }}
     >
-      {/* Star and Settings */}
-      <div
-        style={{
-          position: 'absolute',
-          top: token('space.200'),
-          right: token('space.200'),
-          display: 'flex',
-          gap: token('space.050'),
-          opacity: isHovered || isStarred ? 1 : 0,
-          transition: 'opacity 150ms',
-        }}
-      >
-        <Tooltip content={isStarred ? 'Unstar' : 'Star'}>
+      {/* STAR BUTTON */}
+      <div style={{
+        position: 'absolute',
+        top: '12px',
+        right: '12px',
+        opacity: isHovered || program.isStarred ? 1 : 0,
+        transition: 'opacity 150ms',
+      }}>
+        <Tooltip content={program.isStarred ? 'Unstar' : 'Star'}>
           <Button
             appearance="subtle"
-            spacing="compact"
             iconBefore={
-              isStarred ? (
-                <StarFilledIcon
-                  label="Starred"
-                  size="small"
-                  primaryColor={token('color.icon.warning')}
+              program.isStarred ? (
+                <StarFilledIcon 
+                  label="Starred" 
+                  size="small" 
+                  primaryColor="#FFAB00"
                 />
               ) : (
-                <StarIcon label="Star" size="small" />
+                <StarIcon 
+                  label="Star" 
+                  size="small" 
+                  primaryColor="#6B778C"
+                />
               )
             }
-            onClick={onToggleStar}
-          />
-        </Tooltip>
-        <Tooltip content="Settings">
-          <Button
-            appearance="subtle"
-            spacing="compact"
-            iconBefore={<SettingsIcon label="Settings" size="small" />}
-            onClick={onSettingsClick}
+            onClick={(e: React.MouseEvent) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleStar();
+            }}
           />
         </Tooltip>
       </div>
 
-      {/* Icon */}
-      <div
-        style={{
-          width: '48px',
-          height: '48px',
-          borderRadius: token('border.radius'),
-          background: token('color.background.brand.bold'),
+      {/* PROGRAM INFO */}
+      <div style={{ marginBottom: '16px' }}>
+        <div style={{
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
-          marginBottom: token('space.200'),
-        }}
-      >
-        <span style={{ fontSize: '24px', color: 'white' }}>
-          {program.name.charAt(0).toUpperCase()}
-        </span>
-      </div>
-
-      {/* Name and Status */}
-      <div style={{ marginBottom: token('space.150') }}>
-        <h3
-          style={{
+          gap: '8px',
+          marginBottom: '8px',
+        }}>
+          <h3 style={{
             fontSize: '16px',
             fontWeight: 600,
-            color: token('color.text'),
+            color: '#172B4D',
             margin: 0,
-            marginBottom: token('space.050'),
-          }}
-        >
-          {program.name}
-        </h3>
-        <Lozenge appearance={getStatusAppearance(program.status)}>
-          {program.status || 'Active'}
-        </Lozenge>
+          }}>
+            {program.name}
+          </h3>
+          {program.isDefault && (
+            <Lozenge appearance="default">Default</Lozenge>
+          )}
+        </div>
+        
+        <p style={{
+          fontSize: '12px',
+          color: '#6B778C',
+          margin: 0,
+          marginBottom: '4px',
+        }}>
+          {program.key}
+        </p>
+
+        <p style={{
+          fontSize: '14px',
+          color: '#6B778C',
+          margin: 0,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          lineHeight: '20px',
+          minHeight: '40px',
+        }}>
+          {program.description}
+        </p>
       </div>
 
-      {/* Stats */}
-      <div
-        style={{
+      {/* METADATA */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingTop: '16px',
+        borderTop: '1px solid #DFE1E6',
+      }}>
+        <div style={{
           display: 'flex',
-          gap: token('space.300'),
-          fontSize: '13px',
-          color: token('color.text.subtlest'),
-        }}
-      >
-        <span>{program.projects_count || 0} projects</span>
-        <span>{program.epics_count || 0} epics</span>
+          gap: '16px',
+          fontSize: '12px',
+          color: '#6B778C',
+        }}>
+          <span>{program.projectCount} project{program.projectCount !== 1 ? 's' : ''}</span>
+          <span>•</span>
+          <span>{program.epicCount} epic{program.epicCount !== 1 ? 's' : ''}</span>
+        </div>
+
+        <Tooltip content={program.lead.name}>
+          <Avatar
+            size="small"
+            src={program.lead.avatar}
+            name={program.lead.name}
+          />
+        </Tooltip>
       </div>
     </div>
   );
 }
 
-function getStatusAppearance(status: string) {
-  switch (status?.toLowerCase()) {
-    case 'active':
-      return 'success' as const;
-    case 'inactive':
-      return 'default' as const;
-    case 'archived':
-      return 'removed' as const;
-    default:
-      return 'default' as const;
-  }
-}
-
 // ============================================
-// PROGRAM LIST COMPONENT
+// PROGRAM LIST VIEW
 // ============================================
 
 interface ProgramListProps {
   programs: Program[];
-  starredPrograms: Set<string>;
-  onToggleStar: (programId: string, e: React.MouseEvent) => void;
-  onProgramClick: (programId: string) => void;
+  onToggleStar: (id: string) => void;
+  onProgramClick: (id: string) => void;
 }
 
-function ProgramList({
-  programs,
-  starredPrograms,
-  onToggleStar,
-  onProgramClick,
-}: ProgramListProps) {
+function ProgramList({ programs, onToggleStar, onProgramClick }: ProgramListProps) {
   return (
-    <div
-      style={{
-        background: token('elevation.surface'),
-        borderRadius: token('border.radius'),
-        border: `1px solid ${token('color.border')}`,
-        overflow: 'hidden',
-      }}
-    >
-      {/* Header */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '40px 1fr 120px 100px 100px 80px',
-          gap: token('space.200'),
-          padding: `${token('space.150')} ${token('space.200')}`,
-          background: token('color.background.neutral'),
-          borderBottom: `1px solid ${token('color.border')}`,
-          fontSize: '12px',
-          fontWeight: 600,
-          color: token('color.text.subtlest'),
-          textTransform: 'uppercase',
-          letterSpacing: '0.5px',
-        }}
-      >
-        <div></div>
-        <div>Name</div>
-        <div>Status</div>
-        <div>Projects</div>
-        <div>Epics</div>
-        <div></div>
-      </div>
-
-      {/* Rows */}
-      {programs.map((program) => (
-        <ProgramListRow
+    <div style={{
+      background: '#FFFFFF',
+      borderRadius: '3px',
+      boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+      overflow: 'hidden',
+    }}>
+      {programs.map((program, index) => (
+        <ProgramListItem
           key={program.id}
           program={program}
-          isStarred={starredPrograms.has(program.id)}
-          onToggleStar={(e) => onToggleStar(program.id, e)}
+          onToggleStar={() => onToggleStar(program.id)}
           onClick={() => onProgramClick(program.id)}
+          isLast={index === programs.length - 1}
         />
       ))}
     </div>
   );
 }
 
-interface ProgramListRowProps {
+// ============================================
+// PROGRAM LIST ITEM
+// ============================================
+
+interface ProgramListItemProps {
   program: Program;
-  isStarred: boolean;
-  onToggleStar: (e: React.MouseEvent) => void;
+  onToggleStar: () => void;
   onClick: () => void;
+  isLast: boolean;
 }
 
-function ProgramListRow({
-  program,
-  isStarred,
-  onToggleStar,
-  onClick,
-}: ProgramListRowProps) {
+function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramListItemProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -530,81 +484,95 @@ function ProgramListRow({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
-        display: 'grid',
-        gridTemplateColumns: '40px 1fr 120px 100px 100px 80px',
-        gap: token('space.200'),
-        padding: `${token('space.200')} ${token('space.200')}`,
-        borderBottom: `1px solid ${token('color.border')}`,
-        background: isHovered
-          ? token('color.background.neutral.hovered')
-          : 'transparent',
-        cursor: 'pointer',
+        display: 'flex',
         alignItems: 'center',
+        gap: '24px',
+        padding: '24px',
+        background: isHovered ? '#F4F5F7' : 'transparent',
+        borderBottom: isLast ? 'none' : '1px solid #DFE1E6',
+        cursor: 'pointer',
         transition: 'background 150ms',
       }}
     >
-      {/* Avatar */}
-      <div>
-        <Avatar
-          size="small"
-          appearance="square"
-          name={program.name}
-          src={undefined}
-        />
-      </div>
-
-      {/* Name */}
-      <div
-        style={{
+      {/* PROGRAM INFO */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: token('space.100'),
-        }}
-      >
-        <span
-          style={{
-            fontWeight: 500,
-            color: token('color.text'),
-          }}
-        >
-          {program.name}
-        </span>
+          gap: '8px',
+          marginBottom: '4px',
+        }}>
+          <h4 style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: '#172B4D',
+            margin: 0,
+          }}>
+            {program.name}
+          </h4>
+          {program.isDefault && (
+            <Lozenge appearance="default">Default</Lozenge>
+          )}
+        </div>
+        
+        <p style={{
+          fontSize: '12px',
+          color: '#6B778C',
+          margin: 0,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
+          {program.key} • {program.description}
+        </p>
       </div>
 
-      {/* Status */}
-      <div>
-        <Lozenge appearance={getStatusAppearance(program.status)}>
-          {program.status || 'Active'}
-        </Lozenge>
-      </div>
+      {/* METADATA */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '24px',
+        flexShrink: 0,
+      }}>
+        <div style={{
+          fontSize: '12px',
+          color: '#6B778C',
+          textAlign: 'right',
+        }}>
+          <div>{program.projectCount} projects</div>
+          <div>{program.epicCount} epics</div>
+        </div>
 
-      {/* Projects Count */}
-      <div style={{ color: token('color.text.subtlest') }}>
-        {program.projects_count || 0}
-      </div>
+        <Tooltip content={program.lead.name}>
+          <Avatar
+            size="small"
+            src={program.lead.avatar}
+            name={program.lead.name}
+          />
+        </Tooltip>
 
-      {/* Epics Count */}
-      <div style={{ color: token('color.text.subtlest') }}>
-        {program.epics_count || 0}
-      </div>
-
-      {/* Star */}
-      <div style={{ opacity: isHovered || isStarred ? 1 : 0 }}>
         <Button
           appearance="subtle"
-          spacing="compact"
           iconBefore={
-            isStarred ? (
-              <StarFilledIcon
-                label="Starred"
-                size="small"
-                primaryColor={token('color.icon.warning')}
+            program.isStarred ? (
+              <StarFilledIcon 
+                label="Starred" 
+                size="small" 
+                primaryColor="#FFAB00"
               />
             ) : (
-              <StarIcon label="Star" size="small" />
+              <StarIcon 
+                label="Star" 
+                size="small" 
+                primaryColor="#6B778C"
+              />
             )
           }
-          onClick={onToggleStar}
+          onClick={(e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleStar();
+          }}
         />
       </div>
     </div>
