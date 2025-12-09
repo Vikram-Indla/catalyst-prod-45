@@ -56,7 +56,7 @@ export default function StrategicSnapshots() {
       </div>
 
       {/* Toolbar */}
-      <div className="px-4 md:px-6 py-4 border-b bg-card">
+      <div className="px-4 md:px-6 py-4 bg-card">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <div className="relative w-full sm:w-80">
