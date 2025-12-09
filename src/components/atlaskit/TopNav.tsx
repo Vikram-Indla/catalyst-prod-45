@@ -139,9 +139,9 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: token('space.400', '32px'),
+          gap: token('space.300', '24px'),
         }}>
-          {/* Logo - Cata (black) + lyst (gold) */}
+          {/* Logo - Cata (dark) + lyst (gold) */}
           <div
             onClick={() => navigate('/home')}
             style={{
@@ -151,9 +151,9 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
             }}
           >
             <span style={{
-              fontSize: '20px',
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
+              fontSize: '18px',
+              fontWeight: 600,
+              letterSpacing: '-0.01em',
             }}>
               <span style={{ color: token('color.text', '#172B4D') }}>Cata</span>
               <span style={{ color: '#C69C6D' }}>lyst</span>
@@ -197,25 +197,45 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
                   );
                 }
 
-                // Simple nav items (Home, Enterprise)
+                // Simple nav items (Home, Enterprise) - ATLASSIAN COMPLIANT
                 return (
                   <button
                     key={item.label}
                     onClick={() => item.path && navigate(item.path)}
                     style={{
-                      padding: '8px 12px',
+                      position: 'relative',
+                      padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
                       fontSize: '14px',
-                      fontWeight: isActive ? 600 : 500,
+                      fontWeight: 500,
+                      lineHeight: '20px',
                       color: isActive ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
                       background: 'transparent',
                       border: 'none',
-                      borderBottom: isActive ? `2px solid ${token('color.border.brand', '#0052CC')}` : '2px solid transparent',
+                      borderRadius: token('border.radius', '3px'),
                       cursor: 'pointer',
-                      marginBottom: '-1px',
-                      transition: 'color 150ms, border-color 150ms',
+                      transition: 'background 150ms, color 150ms',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'transparent';
                     }}
                   >
                     {item.label}
+                    {isActive && (
+                      <div style={{
+                        position: 'absolute',
+                        bottom: '-1px',
+                        left: token('space.150', '12px'),
+                        right: token('space.150', '12px'),
+                        height: '2px',
+                        background: token('color.border.brand', '#0052CC'),
+                        borderRadius: '1px',
+                      }} />
+                    )}
                   </button>
                 );
               })}
@@ -387,20 +407,30 @@ function NavDropdownItem({ label, isActive, isOpen, onToggle, onClose, onCreateC
             onToggle();
           }}
           style={{
-            padding: '8px 12px',
+            position: 'relative',
+            padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
             fontSize: '14px',
-            fontWeight: isActive || isOpen ? 600 : 500,
+            fontWeight: 500,
+            lineHeight: '20px',
             color: isActive || isOpen ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
-            background: isOpen ? '#F4F5F7' : 'transparent',
+            background: isOpen ? token('color.background.neutral.hovered', '#F4F5F7') : 'transparent',
             border: 'none',
-            borderRadius: '3px',
-            borderBottom: isActive ? `2px solid ${token('color.border.brand', '#0052CC')}` : '2px solid transparent',
+            borderRadius: token('border.radius', '3px'),
             cursor: 'pointer',
-            marginBottom: '-1px',
-            transition: 'all 150ms',
+            transition: 'background 150ms, color 150ms',
             display: 'flex',
             alignItems: 'center',
-            gap: '4px',
+            gap: token('space.050', '4px'),
+          }}
+          onMouseEnter={(e) => {
+            if (!isOpen) {
+              e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (!isOpen) {
+              e.currentTarget.style.background = 'transparent';
+            }
           }}
         >
           {label}
@@ -410,6 +440,17 @@ function NavDropdownItem({ label, isActive, isOpen, onToggle, onClose, onCreateC
           }}>
             <path d="M8.292 10.293a1.009 1.009 0 0 0 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955a1.01 1.01 0 0 0 0-1.419.987.987 0 0 0-1.406 0l-2.298 2.317-2.307-2.327a.99.99 0 0 0-1.406 0z" fill="currentColor"/>
           </svg>
+          {isActive && (
+            <div style={{
+              position: 'absolute',
+              bottom: '-1px',
+              left: token('space.150', '12px'),
+              right: token('space.150', '12px'),
+              height: '2px',
+              background: token('color.border.brand', '#0052CC'),
+              borderRadius: '1px',
+            }} />
+          )}
         </button>
       }
     >
