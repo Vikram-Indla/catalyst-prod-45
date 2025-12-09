@@ -196,21 +196,23 @@ export default {
         slow: "300ms",
       },
       fontFamily: {
-        sans: ['"IBM Plex Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
-        body: ['"IBM Plex Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
-        heading: ['"IBM Plex Sans"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],
+        body: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],
+        heading: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', '"Roboto"', '"Oxygen"', '"Ubuntu"', '"Fira Sans"', '"Droid Sans"', '"Helvetica Neue"', 'sans-serif'],
         mono: ['Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
       },
       fontSize: {
-        xs: '0.6875rem',    // 11px - Jira Align XS for helpers
-        sm: '0.75rem',      // 12px - Jira Align SM for grid cells
-        base: '0.8125rem',
-        md: '0.875rem',     // 14px - Jira Align MD for row titles
-        lg: '1rem',         // 16px - Jira Align LG for page titles
-        xl: '1.125rem',
-        '2xl': '1.25rem',
-        '3xl': '1.5rem',
-        '4xl': '1.875rem',
+        // Atlassian Typography Scale
+        'code': ['11px', { lineHeight: '16px', fontWeight: '400' }],
+        'xs': ['12px', { lineHeight: '16px', fontWeight: '400' }],          // small
+        'sm': ['12px', { lineHeight: '16px', fontWeight: '600' }],          // h6
+        'base': ['14px', { lineHeight: '20px', fontWeight: '400' }],        // body
+        'md': ['14px', { lineHeight: '20px', fontWeight: '400' }],          // body
+        'lg': ['16px', { lineHeight: '20px', fontWeight: '600' }],          // h4
+        'xl': ['20px', { lineHeight: '24px', fontWeight: '500' }],          // h3
+        '2xl': ['24px', { lineHeight: '28px', fontWeight: '500' }],         // h2
+        '3xl': ['29px', { lineHeight: '32px', fontWeight: '500' }],         // h1
+        '4xl': ['35px', { lineHeight: '40px', fontWeight: '500' }],
       },
       keyframes: {
         "accordion-down": {
