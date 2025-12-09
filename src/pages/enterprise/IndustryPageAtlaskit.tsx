@@ -14,7 +14,6 @@ import { Checkbox } from '@atlaskit/checkbox';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
-import Avatar from '@atlaskit/avatar';
 
 // Icons
 import { Plus, Search, Download, ChevronLeft, ChevronRight, Filter, Bell, Settings, Home, Briefcase, Folder, Layers, Box, MoreHorizontal, AlertTriangle } from 'lucide-react';
@@ -107,6 +106,116 @@ const formatDate = (dateStr: string | null) => {
 };
 
 const ITEMS_PER_PAGE = 20;
+
+// NavButton component for top navigation
+interface NavButtonProps {
+  children: React.ReactNode;
+  isSelected?: boolean;
+  href?: string;
+}
+
+const NavButton = ({ children, isSelected = false, href = '#' }: NavButtonProps) => {
+  return (
+    <a
+      href={href}
+      style={{
+        display: 'inline-block',
+        padding: `${token('space.200', '16px')} ${token('space.150', '12px')}`,
+        color: isSelected ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
+        fontSize: '14px',
+        fontWeight: isSelected ? 600 : 400,
+        textDecoration: 'none',
+        position: 'relative',
+        borderBottom: isSelected 
+          ? `3px solid ${token('color.border.brand', '#0052CC')}` 
+          : '3px solid transparent',
+        transition: 'all 150ms ease-in-out',
+        cursor: 'pointer',
+      }}
+    >
+      {children}
+    </a>
+  );
+};
+
+// TopNavigationBar component
+interface TopNavigationBarProps {
+  isMobile: boolean;
+}
+
+const TopNavigationBar = ({ isMobile }: TopNavigationBarProps) => {
+  return (
+    <nav style={{
+      height: '56px',
+      backgroundColor: token('elevation.surface', '#FFFFFF'),
+      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: `0 ${token('space.300', '24px')}`,
+      flexShrink: 0,
+      zIndex: 100,
+    }}>
+      {/* Left Section */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: token('space.400', '32px'),
+      }}>
+        {/* Logo */}
+        <div style={{
+          fontSize: '20px',
+          fontWeight: 600,
+          color: token('color.text', '#172B4D'),
+          letterSpacing: '-0.5px',
+        }}>
+          Catalyst
+        </div>
+        
+        {/* Navigation Items */}
+        {!isMobile && (
+          <div style={{ display: 'flex', gap: token('space.050', '4px') }}>
+            <NavButton href="/home">Home</NavButton>
+            <NavButton href="/enterprise">Enterprise</NavButton>
+            <NavButton href="/product" isSelected>Product</NavButton>
+            <NavButton href="/program">Program</NavButton>
+            <NavButton href="/project">Project</NavButton>
+            <NavButton href="/release">Release</NavButton>
+            <NavButton href="/items">Items</NavButton>
+          </div>
+        )}
+      </div>
+      
+      {/* Right Section */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: token('space.200', '16px'),
+      }}>
+        <Button appearance="primary" iconBefore={<Plus size={16} />}>
+          Create
+        </Button>
+        <Button appearance="subtle" iconBefore={<Bell size={20} />} />
+        <Button appearance="subtle" iconBefore={<Settings size={20} />} />
+        <Button appearance="subtle" iconBefore={<Search size={20} />} />
+        <div style={{
+          width: '32px',
+          height: '32px',
+          borderRadius: '50%',
+          background: token('color.background.accent.orange.subtle', '#FFEBE6'),
+          color: token('color.text.accent.orange', '#DE350B'),
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 600,
+          fontSize: '14px',
+        }}>
+          V
+        </div>
+      </div>
+    </nav>
+  );
+};
 
 // Responsive hook for mobile detection
 const useResponsive = () => {
@@ -415,112 +524,7 @@ export default function IndustryPageAtlaskit() {
       background: token('color.background.neutral', '#F4F5F7'),
     }}>
       {/* Top Navigation Bar - 56px height */}
-      <div style={{
-        height: '56px',
-        backgroundColor: token('elevation.surface', '#FFFFFF'),
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '0 16px',
-        flexShrink: 0,
-      }}>
-        {/* Left: Logo + Navigation */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              backgroundColor: token('color.background.brand.bold', '#0052CC'),
-              borderRadius: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <Layers size={18} color="#FFFFFF" />
-            </div>
-            <span style={{ 
-              fontSize: '16px', 
-              fontWeight: 600, 
-              color: token('color.text', '#172B4D'),
-            }}>
-              Catalyst
-            </span>
-          </div>
-          
-          {/* Navigation Items */}
-          {!isMobile && (
-            <nav style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              {[
-                { label: 'Home', isActive: false },
-                { label: 'Enterprise', isActive: false },
-                { label: 'Product', isActive: true },
-                { label: 'Program', isActive: false },
-                { label: 'Project', isActive: false },
-                { label: 'Release', isActive: false },
-                { label: 'Items', isActive: false },
-              ].map((item) => (
-                <button
-                  key={item.label}
-                  style={{
-                    padding: '8px 12px',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    color: item.isActive ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
-                    backgroundColor: 'transparent',
-                    border: 'none',
-                    borderBottom: item.isActive ? `2px solid ${token('color.border.brand', '#0052CC')}` : '2px solid transparent',
-                    cursor: 'pointer',
-                    borderRadius: '3px 3px 0 0',
-                    marginBottom: '-1px',
-                  }}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </nav>
-          )}
-        </div>
-        
-        {/* Right: Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Button appearance="primary" iconBefore={<Plus size={16} />}>
-            Create
-          </Button>
-          <button style={{ 
-            padding: '8px', 
-            background: 'none', 
-            border: 'none', 
-            cursor: 'pointer',
-            borderRadius: '3px',
-            display: 'flex',
-          }}>
-            <Bell size={20} color={token('color.text.subtle', '#6B778C')} />
-          </button>
-          <button style={{ 
-            padding: '8px', 
-            background: 'none', 
-            border: 'none', 
-            cursor: 'pointer',
-            borderRadius: '3px',
-            display: 'flex',
-          }}>
-            <Settings size={20} color={token('color.text.subtle', '#6B778C')} />
-          </button>
-          <button style={{ 
-            padding: '8px', 
-            background: 'none', 
-            border: 'none', 
-            cursor: 'pointer',
-            borderRadius: '3px',
-            display: 'flex',
-          }}>
-            <Search size={20} color={token('color.text.subtle', '#6B778C')} />
-          </button>
-          <Avatar size="small" />
-        </div>
-      </div>
+      <TopNavigationBar isMobile={isMobile} />
       
       {/* Main Container with Sidebar */}
       <div style={{
