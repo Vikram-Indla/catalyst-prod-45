@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import {
   ChevronLeft,
   ChevronRight,
@@ -37,6 +37,7 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { useCatalystContext, TierType } from '@/contexts/CatalystContext';
+import { useStrategicSnapshots } from '@/hooks/useStrategicSnapshots';
 
 interface MenuItem {
   id: string;
@@ -85,6 +86,7 @@ interface LeftContextPanelProps {
 export function LeftContextPanel({ className }: LeftContextPanelProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   
   // Start collapsed when on admin routes
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -105,6 +107,21 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   } = useCatalystContext();
 
   const { isModuleEnabled } = useEnabledModules();
+  
+  // Fetch snapshots from database
+  const { data: snapshotsData } = useStrategicSnapshots(false);
+  const snapshots = useMemo(() => 
+    (snapshotsData || []).map(s => ({ id: s.id, name: s.name })),
+    [snapshotsData]
+  );
+
+  // Sync snapshot from URL param
+  useEffect(() => {
+    const urlSnapshotId = searchParams.get('snapshotId');
+    if (urlSnapshotId && urlSnapshotId !== snapshotId) {
+      setSnapshotId(urlSnapshotId);
+    }
+  }, [searchParams, snapshotId, setSnapshotId]);
 
   // Auto-collapse when navigating to admin routes
   useEffect(() => {
@@ -154,7 +171,6 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   const portfolios: { id: string; name: string; abbr: string; color: string }[] = [];
   const programs: { id: string; name: string; portfolioId: string }[] = [];
   const pis: { id: string; code: string; dates: string; status: string }[] = [];
-  const snapshots: { id: string; name: string }[] = [];
 
   const currentPortfolio = portfolios.find(p => p.id === portfolioId);
   const currentProgram = programs.find(p => p.id === programId);
@@ -286,14 +302,18 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                   </label>
                   <Select value={snapshotId || undefined} onValueChange={setSnapshotId}>
                     <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
-                      <SelectValue placeholder="Select Snapshot" />
+                      <SelectValue placeholder={snapshots.length === 0 ? "No snapshots" : "Select Snapshot"} />
                     </SelectTrigger>
                     <SelectContent className="bg-background border-border z-[100]">
-                      {snapshots.map(snap => (
-                        <SelectItem key={snap.id} value={snap.id}>
-                          {snap.name}
-                        </SelectItem>
-                      ))}
+                      {snapshots.length === 0 ? (
+                        <div className="py-2 px-3 text-sm text-muted-foreground">No snapshots available</div>
+                      ) : (
+                        snapshots.map(snap => (
+                          <SelectItem key={snap.id} value={snap.id}>
+                            {snap.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
               </div>
