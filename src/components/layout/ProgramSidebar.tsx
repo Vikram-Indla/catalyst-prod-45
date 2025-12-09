@@ -40,8 +40,9 @@ interface ProgramSidebarProps {
 }
 
 // Program sidebar menu items (per spec - no Tests, no More items)
-const menuItems = [
-  { id: 'program-room', label: 'Program Room', icon: LayoutDashboard, path: '/program/:programId/room' },
+// Note: label uses workspaceType to conditionally show "Program Room" or "Project Room"
+const getMenuItems = (workspaceLabel: string) => [
+  { id: 'program-room', label: `${workspaceLabel} Room`, icon: LayoutDashboard, path: '/program/:programId/room' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/program/:programId/work-tree' },
   { id: 'dependencies', label: 'Dependencies', icon: GitBranch, path: '/program/:programId/dependencies' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/program/:programId/roadmaps' },
@@ -51,6 +52,15 @@ const menuItems = [
   { id: 'quarters', label: 'Quarters', icon: Calendar, path: '/program/:programId/quarters' },
   { id: 'reports', label: 'Reports', icon: FileText, path: '/program/:programId/reports' },
 ];
+
+// Get current quarter based on current date
+function getCurrentQuarter(): string {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+  const quarter = Math.floor(month / 3) + 1;
+  return `Q${quarter} ${year}`;
+}
 
 export function ProgramSidebar({ 
   programId, 
@@ -62,6 +72,10 @@ export function ProgramSidebar({
 }: ProgramSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Get workspace label from context - always "Program" for this sidebar
+  const workspaceLabel = 'Program';
+  const menuItems = getMenuItems(workspaceLabel);
 
   // Fetch program details
   const { data: program } = useQuery({
@@ -92,10 +106,18 @@ export function ProgramSidebar({
       return data || [];
     },
   });
+  
+  // Default to current quarter if not selected
+  const currentQuarter = getCurrentQuarter();
+  const effectiveQuarter = selectedQuarter || currentQuarter;
 
   const handleNavigation = (path: string) => {
     const resolvedPath = path.replace(':programId', programId);
-    navigate(resolvedPath + (selectedQuarter ? `?quarter=${selectedQuarter}` : ''));
+    navigate(resolvedPath + (effectiveQuarter ? `?quarter=${effectiveQuarter}` : ''));
+    // Collapse sidebar after navigation
+    if (expanded) {
+      onToggle();
+    }
   };
 
   const isActive = (path: string) => {
@@ -144,24 +166,27 @@ export function ProgramSidebar({
                 </div>
               </div>
 
-              {/* Quarter Filter */}
               <div>
                 <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
                   QUARTER
                 </label>
-                <Select value={selectedQuarter || undefined} onValueChange={onQuarterChange}>
+                <Select 
+                  value={effectiveQuarter || undefined} 
+                  onValueChange={onQuarterChange}
+                  defaultValue={currentQuarter}
+                >
                   <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
-                    <SelectValue placeholder="Select Quarter" />
+                    <SelectValue placeholder={currentQuarter} />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-border z-[100]">
-                    {quarters?.map((q) => (
-                      <SelectItem key={q.id} value={q.id}>{q.name}</SelectItem>
-                    )) || (
+                    {quarters?.length ? quarters.map((q) => (
+                      <SelectItem key={q.id} value={q.name || q.id}>{q.name}</SelectItem>
+                    )) : (
                       <>
-                        <SelectItem value="q1-2025">Q1 2025</SelectItem>
-                        <SelectItem value="q2-2025">Q2 2025</SelectItem>
-                        <SelectItem value="q3-2025">Q3 2025</SelectItem>
-                        <SelectItem value="q4-2025">Q4 2025</SelectItem>
+                        <SelectItem value="Q1 2025">Q1 2025</SelectItem>
+                        <SelectItem value="Q2 2025">Q2 2025</SelectItem>
+                        <SelectItem value="Q3 2025">Q3 2025</SelectItem>
+                        <SelectItem value="Q4 2025">Q4 2025</SelectItem>
                       </>
                     )}
                   </SelectContent>

@@ -38,6 +38,7 @@ interface ProjectSidebarProps {
 }
 
 // Project sidebar menu items (per spec - no Tests, no More items, no Epics)
+// Uses "Project" label as this is the Project sidebar
 const menuItems = [
   { id: 'project-room', label: 'Project Room', icon: LayoutDashboard, path: '/programs/:projectId/room' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/programs/:projectId/work-tree' },
@@ -47,6 +48,15 @@ const menuItems = [
   { id: 'quarters', label: 'Quarters', icon: Calendar, path: '/programs/:projectId/quarters' },
   { id: 'reports', label: 'Reports', icon: FileText, path: '/programs/:projectId/reports' },
 ];
+
+// Get current quarter based on current date
+function getCurrentQuarter(): string {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+  const quarter = Math.floor(month / 3) + 1;
+  return `Q${quarter} ${year}`;
+}
 
 export function ProjectSidebar({ 
   projectId, 
@@ -58,6 +68,10 @@ export function ProjectSidebar({
 }: ProjectSidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Current quarter for default
+  const currentQuarter = getCurrentQuarter();
+  const effectiveQuarter = selectedQuarter || currentQuarter;
 
   // Fetch project details
   const { data: project } = useQuery({
@@ -98,7 +112,11 @@ export function ProjectSidebar({
 
   const handleNavigation = (path: string) => {
     const resolvedPath = path.replace(':projectId', projectId);
-    navigate(resolvedPath + (selectedQuarter ? `?quarter=${selectedQuarter}` : ''));
+    navigate(resolvedPath + (effectiveQuarter ? `?quarter=${effectiveQuarter}` : ''));
+    // Collapse sidebar after navigation
+    if (expanded) {
+      onToggle();
+    }
   };
 
   const isActive = (path: string) => {
@@ -152,19 +170,23 @@ export function ProjectSidebar({
                 <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
                   QUARTER
                 </label>
-                <Select value={selectedQuarter || undefined} onValueChange={onQuarterChange}>
+                <Select 
+                  value={effectiveQuarter || undefined} 
+                  onValueChange={onQuarterChange}
+                  defaultValue={currentQuarter}
+                >
                   <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
-                    <SelectValue placeholder="Select Quarter" />
+                    <SelectValue placeholder={currentQuarter} />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-border z-[100]">
-                    {quarters?.map((q) => (
-                      <SelectItem key={q.id} value={q.id}>{q.name}</SelectItem>
-                    )) || (
+                    {quarters?.length ? quarters.map((q) => (
+                      <SelectItem key={q.id} value={q.name || q.id}>{q.name}</SelectItem>
+                    )) : (
                       <>
-                        <SelectItem value="q1-2025">Q1 2025</SelectItem>
-                        <SelectItem value="q2-2025">Q2 2025</SelectItem>
-                        <SelectItem value="q3-2025">Q3 2025</SelectItem>
-                        <SelectItem value="q4-2025">Q4 2025</SelectItem>
+                        <SelectItem value="Q1 2025">Q1 2025</SelectItem>
+                        <SelectItem value="Q2 2025">Q2 2025</SelectItem>
+                        <SelectItem value="Q3 2025">Q3 2025</SelectItem>
+                        <SelectItem value="Q4 2025">Q4 2025</SelectItem>
                       </>
                     )}
                   </SelectContent>
