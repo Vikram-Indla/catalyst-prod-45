@@ -20,7 +20,7 @@ interface CapacityPreviewProps {
 
 export function CapacityPreview({ weeks, currentWeek, totalPeople, onWeekClick }: CapacityPreviewProps) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
       {weeks.map((w, idx) => {
         const isCurrent = idx === 0;
         const colorClass = w.available > 200 ? 'text-[#5c7c5c]' : 
@@ -31,20 +31,20 @@ export function CapacityPreview({ weeks, currentWeek, totalPeople, onWeekClick }
             key={`${w.year}-${w.week}`}
             onClick={onWeekClick}
             className={cn(
-              "rounded-md p-3 text-center transition-colors cursor-pointer hover:shadow-sm",
+              "rounded p-2 text-center transition-colors cursor-pointer hover:shadow-sm",
               isCurrent 
                 ? "border-2 border-[#c69c6d] bg-[#F5EDE4]" 
                 : "border border-border bg-card hover:border-[#c69c6d]/50"
             )}
           >
-            <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+            <div className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
               W{w.week}{isCurrent ? ' (CURRENT)' : ''}
             </div>
-            <div className={cn("text-xl font-bold", colorClass)}>
+            <div className={cn("text-base font-bold", colorClass)}>
               {w.available}%
             </div>
-            <div className="text-xs text-muted-foreground">
-              {w.peopleWithCapacity} people available
+            <div className="text-[10px] text-muted-foreground">
+              {w.peopleWithCapacity} of {totalPeople} have capacity
             </div>
           </div>
         );
