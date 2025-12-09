@@ -212,7 +212,6 @@ const getTableRows = (data: any[], selectedRows: string[], onRowSelect: (id: str
 export default function DemandIntakeScreen() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [showSavedFilters, setShowSavedFilters] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [showExport, setShowExport] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'kanban'>('list');
@@ -307,9 +306,6 @@ export default function DemandIntakeScreen() {
               </Button>
             </ButtonGroup>
             
-            <Button appearance="default" iconBefore={<FilterIcon label="Saved filters" size="small" />} onClick={() => setShowSavedFilters(true)}>
-              Saved Filters
-            </Button>
             <Button appearance="default" iconBefore={<FilterIcon label="Filters" size="small" />} onClick={() => setShowFilters(true)}>
               Filters
             </Button>
@@ -363,7 +359,6 @@ export default function DemandIntakeScreen() {
       )}
 
       {/* MODALS & DRAWERS */}
-      <SavedFiltersDrawer isOpen={showSavedFilters} onClose={() => setShowSavedFilters(false)} />
       <FiltersModal isOpen={showFilters} onClose={() => setShowFilters(false)} />
       <ExportModal isOpen={showExport} onClose={() => setShowExport(false)} />
     </div>
@@ -510,39 +505,6 @@ function Pagination({ currentPage, totalPages, totalItems, onPageChange }: any) 
         </Button>
       </div>
     </div>
-  );
-}
-
-// ============================================
-// SAVED FILTERS DRAWER
-// ============================================
-function SavedFiltersDrawer({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const savedFilters = [
-    { id: 1, name: 'My Requests', count: 23 },
-    { id: 2, name: 'High Priority', count: 8 },
-    { id: 3, name: 'This Quarter', count: 45 },
-    { id: 4, name: 'Unassigned', count: 12 },
-  ];
-
-  return (
-    <Drawer isOpen={isOpen} onClose={onClose} width="medium">
-      <div style={{ padding: token('space.400') }}>
-        <h2 style={{ font: token('font.heading.medium'), marginBottom: token('space.300') }}>Saved Filters</h2>
-        {savedFilters.map(filter => (
-          <button key={filter.id} style={{
-            width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            padding: token('space.200'), background: 'transparent', border: 'none', borderRadius: token('border.radius'),
-            cursor: 'pointer', marginBottom: token('space.100'), transition: 'background 150ms',
-          }} onClick={() => { alert(`Apply filter: ${filter.name}`); onClose(); }}>
-            <span style={{ fontSize: '14px', color: token('color.text') }}>{filter.name}</span>
-            <span style={{ fontSize: '12px', color: token('color.text.subtlest'), background: token('color.background.neutral'), padding: `${token('space.050')} ${token('space.100')}`, borderRadius: token('border.radius') }}>
-              {filter.count}
-            </span>
-          </button>
-        ))}
-        <Button appearance="primary" style={{ marginTop: token('space.300'), width: '100%' }}>Create New Filter</Button>
-      </div>
-    </Drawer>
   );
 }
 
