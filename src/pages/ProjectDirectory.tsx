@@ -2,22 +2,20 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { token } from '@atlaskit/tokens';
 import { Content, Main, PageLayout } from '@atlaskit/page-layout';
+import DynamicTable from '@atlaskit/dynamic-table';
 import Avatar from '@atlaskit/avatar';
 import Button from '@atlaskit/button';
-import ButtonGroup from '@atlaskit/button-group';
-import Lozenge from '@atlaskit/lozenge';
-import Tooltip from '@atlaskit/tooltip';
 import Spinner from '@atlaskit/spinner';
 import EmptyState from '@atlaskit/empty-state';
 import Textfield from '@atlaskit/textfield';
+import Select from '@atlaskit/select';
+import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import StarIcon from '@atlaskit/icon/glyph/star';
 import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
 import SearchIcon from '@atlaskit/icon/glyph/search';
-import GridIcon from '@atlaskit/icon/glyph/media-services/grid';
-import ListIcon from '@atlaskit/icon/glyph/list';
 import AddIcon from '@atlaskit/icon/glyph/add';
+import MoreIcon from '@atlaskit/icon/glyph/more';
 import { CreateProjectDialog } from '@/components/projects/CreateProjectDialog';
 
 interface Project {
@@ -28,29 +26,23 @@ interface Project {
   programKey: string;
   programName: string;
   programId: string;
-  type: 'scrum' | 'kanban';
+  type: string;
+  category: string;
   lead: {
     name: string;
     avatar?: string;
   };
-  issueCount: number;
+  icon: string;
+  iconBg: string;
   isStarred: boolean;
-  updatedAt: Date;
-}
-
-interface ProjectGroup {
-  programKey: string;
-  programName: string;
-  programId: string;
-  projects: Project[];
 }
 
 export default function ProjectDirectory() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [starredProjects, setStarredProjects] = useState<Set<string>>(new Set());
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [filterCategory, setFilterCategory] = useState<any>(null);
 
   // Fetch projects from programs table (Projects in UI = programs in DB)
   const { data: projectsData, isLoading, error } = useQuery({
@@ -66,8 +58,11 @@ export default function ProjectDirectory() {
     },
   });
 
+  const iconColors = ['#4C9AFF', '#FF5630', '#00B8D9', '#FFC400', '#36B37E', '#6554C0'];
+  const icons = ['🧭', '💼', '🏢', '🔧', '📊', '📱', '⚙️', '🚀'];
+
   // Transform data to Project interface
-  const projects: Project[] = (projectsData || []).map(p => ({
+  const projects: Project[] = (projectsData || []).map((p, index) => ({
     id: p.id,
     key: p.name.substring(0, 4).toUpperCase(),
     name: p.name,
@@ -75,36 +70,21 @@ export default function ProjectDirectory() {
     programKey: p.portfolios?.name?.substring(0, 4).toUpperCase() || 'DEF',
     programName: p.portfolios?.name || 'Default',
     programId: p.portfolio_id || '',
-    type: 'scrum' as const,
+    type: 'Company-managed software',
+    category: 'Software',
     lead: {
       name: 'Unassigned',
       avatar: undefined,
     },
-    issueCount: 0,
+    icon: icons[index % icons.length],
+    iconBg: iconColors[index % iconColors.length],
     isStarred: starredProjects.has(p.id),
-    updatedAt: new Date(p.updated_at || p.created_at),
   }));
 
   const filteredProjects = projects.filter(proj =>
     proj.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    proj.key.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    proj.programName.toLowerCase().includes(searchQuery.toLowerCase())
+    proj.key.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  // Group projects by program
-  const projectsByProgram = filteredProjects.reduce((acc, project) => {
-    const programKey = project.programKey;
-    if (!acc[programKey]) {
-      acc[programKey] = {
-        programKey,
-        programName: project.programName,
-        programId: project.programId,
-        projects: [],
-      };
-    }
-    acc[programKey].projects.push(project);
-    return acc;
-  }, {} as Record<string, ProjectGroup>);
 
   const toggleStar = (projectId: string) => {
     setStarredProjects(prev => {
@@ -121,6 +101,216 @@ export default function ProjectDirectory() {
   const handleProjectClick = (projectId: string) => {
     navigate(`/project/${projectId}/room`);
   };
+
+  // Create table head
+  const head = {
+    cells: [
+      {
+        key: 'star',
+        content: '',
+        isSortable: false,
+        width: 5,
+      },
+      {
+        key: 'name',
+        content: 'Name',
+        isSortable: true,
+        width: 25,
+      },
+      {
+        key: 'key',
+        content: 'Key',
+        isSortable: true,
+        width: 10,
+      },
+      {
+        key: 'type',
+        content: 'Type',
+        isSortable: true,
+        width: 20,
+      },
+      {
+        key: 'lead',
+        content: 'Lead',
+        isSortable: true,
+        width: 15,
+      },
+      {
+        key: 'category',
+        content: 'Category',
+        isSortable: true,
+        width: 15,
+      },
+      {
+        key: 'actions',
+        content: '',
+        isSortable: false,
+        width: 5,
+      },
+    ],
+  };
+
+  // Create table rows
+  const rows = filteredProjects.map((project) => ({
+    key: project.id,
+    onClick: () => handleProjectClick(project.id),
+    cells: [
+      {
+        key: 'star',
+        content: (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleStar(project.id);
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+          >
+            {project.isStarred ? (
+              <StarFilledIcon 
+                label="Starred" 
+                size="small" 
+                primaryColor="#FFAB00"
+              />
+            ) : (
+              <StarIcon 
+                label="Star" 
+                size="small" 
+                primaryColor="#6B778C"
+              />
+            )}
+          </button>
+        ),
+      },
+      {
+        key: 'name',
+        content: (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}
+          >
+            <div style={{
+              width: '24px',
+              height: '24px',
+              background: project.iconBg,
+              borderRadius: '3px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '14px',
+              flexShrink: 0,
+            }}>
+              {project.icon}
+            </div>
+            <span style={{
+              fontSize: '14px',
+              fontWeight: 500,
+              color: '#0052CC',
+            }}>
+              {project.name}
+            </span>
+          </div>
+        ),
+      },
+      {
+        key: 'key',
+        content: (
+          <span style={{
+            fontSize: '14px',
+            fontWeight: 400,
+            color: '#172B4D',
+          }}>
+            {project.key}
+          </span>
+        ),
+      },
+      {
+        key: 'type',
+        content: (
+          <span style={{
+            fontSize: '14px',
+            fontWeight: 400,
+            color: '#5E6C84',
+          }}>
+            {project.type}
+          </span>
+        ),
+      },
+      {
+        key: 'lead',
+        content: (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+          }}>
+            <Avatar
+              size="xsmall"
+              src={project.lead.avatar}
+              name={project.lead.name}
+            />
+            <span style={{
+              fontSize: '14px',
+              fontWeight: 400,
+              color: '#172B4D',
+            }}>
+              {project.lead.name}
+            </span>
+          </div>
+        ),
+      },
+      {
+        key: 'category',
+        content: (
+          <span style={{
+            fontSize: '14px',
+            fontWeight: 400,
+            color: '#5E6C84',
+          }}>
+            {project.category}
+          </span>
+        ),
+      },
+      {
+        key: 'actions',
+        content: (
+          <DropdownMenu
+            trigger={({ triggerRef, ...props }) => (
+              <button
+                {...props}
+                ref={triggerRef as React.Ref<HTMLButtonElement>}
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '4px',
+                }}
+              >
+                <MoreIcon label="More" size="small" />
+              </button>
+            )}
+          >
+            <DropdownItemGroup>
+              <DropdownItem onClick={() => handleProjectClick(project.id)}>View project</DropdownItem>
+              <DropdownItem>Project settings</DropdownItem>
+              <DropdownItem>Copy URL</DropdownItem>
+              <DropdownItem>Archive</DropdownItem>
+            </DropdownItemGroup>
+          </DropdownMenu>
+        ),
+      },
+    ],
+  }));
 
   if (error) {
     return (
@@ -145,7 +335,7 @@ export default function ProjectDirectory() {
         <Main>
           <div style={{
             padding: '24px 40px',
-            background: '#FAFBFC',
+            background: '#FFFFFF',
             minHeight: '100vh',
           }}>
             {/* PAGE HEADER */}
@@ -157,79 +347,68 @@ export default function ProjectDirectory() {
             }}>
               <div>
                 <h1 style={{
-                  fontSize: '20px',
+                  fontSize: '24px',
                   fontWeight: 500,
-                  lineHeight: '24px',
+                  lineHeight: '28px',
                   color: '#172B4D',
-                  margin: '0 0 4px 0',
+                  margin: 0,
                 }}>
                   Projects
                 </h1>
-                <p style={{
-                  fontSize: '12px',
-                  lineHeight: '16px',
-                  color: '#5E6C84',
-                  margin: 0,
-                }}>
-                  {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''}
-                </p>
               </div>
 
-              <Button
-                appearance="primary"
-                iconBefore={<AddIcon label="Create" size="small" />}
-                onClick={() => setShowCreateDialog(true)}
-              >
-                Create project
-              </Button>
+              <div style={{
+                display: 'flex',
+                gap: '8px',
+              }}>
+                <Button
+                  appearance="primary"
+                  iconBefore={<AddIcon label="Create" size="small" />}
+                  onClick={() => setShowCreateDialog(true)}
+                >
+                  Create project
+                </Button>
+                <Button appearance="default">
+                  Templates
+                </Button>
+              </div>
             </div>
 
-            {/* CONTROLS BAR */}
+            {/* FILTERS BAR */}
             <div style={{
-              background: '#FFFFFF',
-              padding: '12px 16px',
-              borderRadius: '3px',
-              marginBottom: '24px',
-              border: '1px solid #DFE1E6',
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
               gap: '12px',
+              marginBottom: '16px',
             }}>
-              {/* Search */}
-              <div style={{ width: '320px' }}>
-                <Textfield
-                  placeholder="Search projects..."
-                  elemBeforeInput={
-                    <div style={{ marginLeft: '8px', display: 'flex', alignItems: 'center' }}>
-                      <SearchIcon label="Search" size="small" primaryColor="#6B778C" />
-                    </div>
-                  }
-                  value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                />
-              </div>
+              <Textfield
+                placeholder="Search projects"
+                elemBeforeInput={
+                  <div style={{ marginLeft: '8px', display: 'flex', alignItems: 'center' }}>
+                    <SearchIcon label="Search" size="small" primaryColor="#6B778C" />
+                  </div>
+                }
+                value={searchQuery}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                width={280}
+              />
 
-              {/* View Toggle */}
-              <ButtonGroup>
-                <Button
-                  isSelected={viewMode === 'grid'}
-                  onClick={() => setViewMode('grid')}
-                  iconBefore={<GridIcon label="Grid view" size="small" />}
-                >
-                  Grid
-                </Button>
-                <Button
-                  isSelected={viewMode === 'list'}
-                  onClick={() => setViewMode('list')}
-                  iconBefore={<ListIcon label="List view" size="small" />}
-                >
-                  List
-                </Button>
-              </ButtonGroup>
+              <Select
+                inputId="filter-category"
+                placeholder="All categories"
+                options={[
+                  { label: 'All categories', value: 'all' },
+                  { label: 'Company-managed software', value: 'company-software' },
+                  { label: 'Team-managed business', value: 'team-business' },
+                ]}
+                value={filterCategory}
+                onChange={setFilterCategory}
+                styles={{
+                  container: (base: any) => ({ ...base, width: 200 }),
+                }}
+              />
             </div>
 
-            {/* CONTENT - GROUPED BY PROGRAM */}
+            {/* TABLE */}
             {isLoading ? (
               <div style={{
                 display: 'flex',
@@ -263,47 +442,15 @@ export default function ProjectDirectory() {
                 }
               />
             ) : (
-              Object.values(projectsByProgram).map((group) => (
-                <div key={group.programKey} style={{ marginBottom: '32px' }}>
-                  {/* PROGRAM HEADER */}
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginBottom: '12px',
-                  }}>
-                    <h2 style={{
-                      fontSize: '14px',
-                      fontWeight: 600,
-                      color: '#172B4D',
-                      margin: 0,
-                    }}>
-                      {group.programName}
-                    </h2>
-                    <span style={{
-                      fontSize: '11px',
-                      color: '#6B778C',
-                    }}>
-                      {group.projects.length} project{group.projects.length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-
-                  {/* PROJECTS */}
-                  {viewMode === 'grid' ? (
-                    <ProjectGrid 
-                      projects={group.projects}
-                      onToggleStar={toggleStar}
-                      onProjectClick={handleProjectClick}
-                    />
-                  ) : (
-                    <ProjectList 
-                      projects={group.projects}
-                      onToggleStar={toggleStar}
-                      onProjectClick={handleProjectClick}
-                    />
-                  )}
-                </div>
-              ))
+              <DynamicTable
+                head={head}
+                rows={rows}
+                rowsPerPage={20}
+                defaultPage={1}
+                isFixedSize
+                defaultSortKey="name"
+                defaultSortOrder="ASC"
+              />
             )}
           </div>
         </Main>
@@ -315,346 +462,5 @@ export default function ProjectDirectory() {
         onOpenChange={setShowCreateDialog}
       />
     </PageLayout>
-  );
-}
-
-// ============================================
-// PROJECT GRID VIEW
-// ============================================
-
-interface ProjectGridProps {
-  projects: Project[];
-  onToggleStar: (id: string) => void;
-  onProjectClick: (id: string) => void;
-}
-
-function ProjectGrid({ projects, onToggleStar, onProjectClick }: ProjectGridProps) {
-  return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-      gap: '12px',
-    }}>
-      {projects.map((project) => (
-        <ProjectCard
-          key={project.id}
-          project={project}
-          onToggleStar={() => onToggleStar(project.id)}
-          onClick={() => onProjectClick(project.id)}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ============================================
-// PROJECT CARD COMPONENT
-// ============================================
-
-interface ProjectCardProps {
-  project: Project;
-  onToggleStar: () => void;
-  onClick: () => void;
-}
-
-function ProjectCard({ project, onToggleStar, onClick }: ProjectCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        display: 'block',
-        background: '#FFFFFF',
-        border: '1px solid #DFE1E6',
-        borderRadius: '3px',
-        padding: '12px',
-        position: 'relative',
-        minHeight: '120px',
-        transition: 'box-shadow 150ms',
-        boxShadow: isHovered ? '0 4px 8px rgba(9, 30, 66, 0.15)' : 'none',
-        cursor: 'pointer',
-      }}
-    >
-      {/* STAR BUTTON */}
-      <div style={{
-        position: 'absolute',
-        top: '8px',
-        right: '8px',
-        opacity: isHovered || project.isStarred ? 1 : 0,
-        transition: 'opacity 150ms',
-      }}>
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onToggleStar();
-          }}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {project.isStarred ? (
-            <StarFilledIcon 
-              label="Starred" 
-              size="small" 
-              primaryColor="#FFAB00"
-            />
-          ) : (
-            <StarIcon 
-              label="Star" 
-              size="small" 
-              primaryColor="#6B778C"
-            />
-          )}
-        </button>
-      </div>
-
-      {/* PROJECT ICON */}
-      <div style={{
-        width: '32px',
-        height: '32px',
-        background: '#FFF0B3',
-        borderRadius: '3px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '8px',
-        fontSize: '16px',
-      }}>
-        🏢
-      </div>
-
-      {/* PROJECT INFO */}
-      <div style={{ marginBottom: '8px' }}>
-        <h3 style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          lineHeight: '20px',
-          color: '#172B4D',
-          margin: '0 0 2px 0',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}>
-          {project.name}
-        </h3>
-        <p style={{
-          fontSize: '11px',
-          fontWeight: 400,
-          lineHeight: '16px',
-          color: '#5E6C84',
-          margin: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}>
-          {project.key}
-        </p>
-      </div>
-
-      {/* METADATA */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: '8px',
-        borderTop: '1px solid #DFE1E6',
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-        }}>
-          <Lozenge appearance={project.type === 'scrum' ? 'inprogress' : 'default'}>
-            {project.type}
-          </Lozenge>
-        </div>
-
-        <Tooltip content={project.lead.name}>
-          <Avatar
-            size="xsmall"
-            src={project.lead.avatar}
-            name={project.lead.name}
-          />
-        </Tooltip>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// PROJECT LIST VIEW
-// ============================================
-
-interface ProjectListProps {
-  projects: Project[];
-  onToggleStar: (id: string) => void;
-  onProjectClick: (id: string) => void;
-}
-
-function ProjectList({ projects, onToggleStar, onProjectClick }: ProjectListProps) {
-  return (
-    <div style={{
-      background: '#FFFFFF',
-      borderRadius: '3px',
-      border: '1px solid #DFE1E6',
-      overflow: 'hidden',
-    }}>
-      {projects.map((project, index) => (
-        <ProjectListItem
-          key={project.id}
-          project={project}
-          onToggleStar={() => onToggleStar(project.id)}
-          onClick={() => onProjectClick(project.id)}
-          isLast={index === projects.length - 1}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ============================================
-// PROJECT LIST ITEM
-// ============================================
-
-interface ProjectListItemProps {
-  project: Project;
-  onToggleStar: () => void;
-  onClick: () => void;
-  isLast: boolean;
-}
-
-function ProjectListItem({ project, onToggleStar, onClick, isLast }: ProjectListItemProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        padding: '8px 12px',
-        background: isHovered ? '#F4F5F7' : 'transparent',
-        borderBottom: isLast ? 'none' : '1px solid #DFE1E6',
-        cursor: 'pointer',
-        transition: 'background 150ms',
-      }}
-    >
-      {/* PROJECT ICON */}
-      <div style={{
-        width: '24px',
-        height: '24px',
-        background: '#FFF0B3',
-        borderRadius: '3px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        fontSize: '14px',
-      }}>
-        🏢
-      </div>
-
-      {/* PROJECT INFO */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          marginBottom: '2px',
-        }}>
-          <h4 style={{
-            fontSize: '14px',
-            fontWeight: 500,
-            lineHeight: '20px',
-            color: '#172B4D',
-            margin: 0,
-          }}>
-            {project.name}
-          </h4>
-          <Lozenge appearance={project.type === 'scrum' ? 'inprogress' : 'default'}>
-            {project.type}
-          </Lozenge>
-        </div>
-        
-        <p style={{
-          fontSize: '12px',
-          lineHeight: '16px',
-          color: '#6B778C',
-          margin: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}>
-          {project.key} • {project.description}
-        </p>
-      </div>
-
-      {/* METADATA */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        flexShrink: 0,
-      }}>
-        <div style={{
-          fontSize: '11px',
-          color: '#6B778C',
-        }}>
-          {project.issueCount} issues
-        </div>
-
-        <Tooltip content={project.lead.name}>
-          <Avatar
-            size="xsmall"
-            src={project.lead.avatar}
-            name={project.lead.name}
-          />
-        </Tooltip>
-
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onToggleStar();
-          }}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '4px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {project.isStarred ? (
-            <StarFilledIcon 
-              label="Starred" 
-              size="small" 
-              primaryColor="#FFAB00"
-            />
-          ) : (
-            <StarIcon 
-              label="Star" 
-              size="small" 
-              primaryColor="#6B778C"
-            />
-          )}
-        </button>
-      </div>
-    </div>
   );
 }
