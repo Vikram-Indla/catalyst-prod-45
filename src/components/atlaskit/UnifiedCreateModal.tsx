@@ -7,9 +7,9 @@ import Modal, {
   ModalTransition,
 } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button';
-import { FileText, Zap, Building2, Layers, Ship, X } from 'lucide-react';
+import { X, Folder, LayoutGrid, BookOpen } from 'lucide-react';
 
-export type CreateType = 'issue' | 'epic' | 'program' | 'project' | 'release';
+export type CreateType = 'program' | 'project' | 'work-item';
 
 interface UnifiedCreateModalProps {
   isOpen: boolean;
@@ -17,15 +17,42 @@ interface UnifiedCreateModalProps {
   onSelectType: (type: CreateType) => void;
 }
 
+const createOptions = [
+  {
+    id: 'program' as CreateType,
+    label: 'Program',
+    description: 'Create a program to house epics',
+    Icon: Folder,
+    iconColor: '#FF991F',
+    iconBg: '#FFF0B3',
+  },
+  {
+    id: 'project' as CreateType,
+    label: 'Project',
+    description: 'Create a project linked to a program',
+    Icon: LayoutGrid,
+    iconColor: '#00B8D9',
+    iconBg: '#B3F5FF',
+  },
+  {
+    id: 'work-item' as CreateType,
+    label: 'Work Item',
+    description: 'Create epic, feature, story, defect, etc.',
+    Icon: BookOpen,
+    iconColor: '#4C9AFF',
+    iconBg: '#DEEBFF',
+  },
+];
+
 export function UnifiedCreateModal({
   isOpen,
   onClose,
   onSelectType,
 }: UnifiedCreateModalProps) {
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
   const handleSelect = (type: CreateType) => {
-    console.log('[UnifiedCreateModal] handleSelect called with type:', type);
     onClose();
-    // Call onSelectType AFTER closing the modal to ensure parent state is set correctly
     setTimeout(() => {
       onSelectType(type);
     }, 0);
@@ -55,50 +82,68 @@ export function UnifiedCreateModal({
                 What would you like to create?
               </p>
 
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-              }}>
-                <CreateOption
-                  icon={FileText}
-                  iconColor="#4C9AFF"
-                  title="Issue"
-                  description="Create a new work item (Story, Task, Bug)"
-                  onClick={() => handleSelect('issue')}
-                />
+              <div>
+                {createOptions.map((option, index) => {
+                  const Icon = option.Icon;
+                  const isHovered = hoveredId === option.id;
+                  
+                  return (
+                    <button
+                      key={option.id}
+                      type="button"
+                      onClick={() => handleSelect(option.id)}
+                      onMouseEnter={() => setHoveredId(option.id)}
+                      onMouseLeave={() => setHoveredId(null)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: '16px',
+                        padding: '16px',
+                        background: isHovered ? '#F4F5F7' : 'transparent',
+                        border: 'none',
+                        borderBottom: index === createOptions.length - 1 ? 'none' : '1px solid #EBECF0',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        width: '100%',
+                        transition: 'background 150ms',
+                      }}
+                    >
+                      <div style={{
+                        width: '40px',
+                        height: '40px',
+                        background: option.iconBg,
+                        borderRadius: '3px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                      }}>
+                        <Icon
+                          size={20}
+                          color={option.iconColor}
+                        />
+                      </div>
 
-                <CreateOption
-                  icon={Zap}
-                  iconColor="#6554C0"
-                  title="Epic"
-                  description="Create a large body of work in a program"
-                  onClick={() => handleSelect('epic')}
-                />
-
-                <CreateOption
-                  icon={Building2}
-                  iconColor="#FFC400"
-                  title="Program"
-                  description="Create a program to house epics"
-                  onClick={() => handleSelect('program')}
-                />
-
-                <CreateOption
-                  icon={Layers}
-                  iconColor="#00B8D9"
-                  title="Project"
-                  description="Create a project linked to a program"
-                  onClick={() => handleSelect('project')}
-                />
-
-                <CreateOption
-                  icon={Ship}
-                  iconColor="#36B37E"
-                  title="Release"
-                  description="Create a release for version management"
-                  onClick={() => handleSelect('release')}
-                />
+                      <div style={{ flex: 1, paddingTop: '2px' }}>
+                        <div style={{
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: '#172B4D',
+                          marginBottom: '4px',
+                        }}>
+                          {option.label}
+                        </div>
+                        <div style={{
+                          fontSize: '12px',
+                          color: '#5E6C84',
+                          lineHeight: '16px',
+                        }}>
+                          {option.description}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </ModalBody>
@@ -111,80 +156,5 @@ export function UnifiedCreateModal({
         </Modal>
       )}
     </ModalTransition>
-  );
-}
-
-interface CreateOptionProps {
-  icon: React.ElementType;
-  iconColor: string;
-  title: string;
-  description: string;
-  onClick: () => void;
-}
-
-function CreateOption({ icon: Icon, iconColor, title, description, onClick }: CreateOptionProps) {
-  const [isHovered, setIsHovered] = useState(false);
-
-  return (
-    <button
-      type="button"
-      onClick={(e) => {
-        console.log('[CreateOption] Button clicked for:', title);
-        e.preventDefault();
-        e.stopPropagation();
-        onClick();
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        padding: '12px',
-        background: isHovered ? '#F4F5F7' : 'transparent',
-        border: '1px solid',
-        borderColor: isHovered ? '#0052CC' : '#DFE1E6',
-        borderRadius: '3px',
-        cursor: 'pointer',
-        textAlign: 'left',
-        transition: 'background 150ms, border-color 150ms',
-        width: '100%',
-      }}
-    >
-      <div style={{
-        width: '40px',
-        height: '40px',
-        background: isHovered ? `${iconColor}20` : '#F4F5F7',
-        borderRadius: '3px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        transition: 'background 150ms',
-      }}>
-        <Icon
-          size={20}
-          color={iconColor}
-        />
-      </div>
-
-      <div style={{ flex: 1 }}>
-        <div style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: '#172B4D',
-          marginBottom: '2px',
-        }}>
-          {title}
-        </div>
-        <div style={{
-          fontSize: '12px',
-          color: '#5E6C84',
-          lineHeight: '16px',
-        }}>
-          {description}
-        </div>
-      </div>
-    </button>
   );
 }
