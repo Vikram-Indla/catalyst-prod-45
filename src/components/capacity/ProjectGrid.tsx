@@ -8,7 +8,7 @@ import { Resource, CapacityProject } from '@/types/capacity';
 import { calculateUtilization, getStatus, isWeekEditable } from '@/lib/capacityUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { RotateCcw, Save, Lock, ChevronLeft, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { RotateCcw, Save, Lock, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -47,10 +47,15 @@ export function ProjectGrid({
   lockedBy
 }: ProjectGridProps) {
   const [currentPage, setCurrentPage] = useState(1);
-  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set(projects.map(p => p.id)));
+  // Start collapsed by default
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
+  // Edit mode - off by default
+  const [isEditMode, setIsEditMode] = useState(false);
   
   const hasChanges = Object.keys(gridChanges).length > 0;
-  const editable = isWeekEditable(startWeek, startYear, currentWeek, currentYear, adminMode) && !isLocked;
+  const baseEditable = isWeekEditable(startWeek, startYear, currentWeek, currentYear, adminMode) && !isLocked;
+  // Only editable when in edit mode
+  const editable = baseEditable && isEditMode;
 
   // Group resources by their primary project (first allocation's project)
   const groupedResources = useMemo(() => {
@@ -152,6 +157,26 @@ export function ProjectGrid({
     });
   };
 
+  const handleEdit = () => {
+    setIsEditMode(true);
+    // Expand all groups when entering edit mode
+    setExpandedProjects(new Set(pageProjectGroups.map(g => g.projectId)));
+  };
+
+  const handleSave = () => {
+    onSave();
+    setIsEditMode(false);
+  };
+
+  const handleReset = () => {
+    onReset();
+  };
+
+  const handleCancelEdit = () => {
+    onReset();
+    setIsEditMode(false);
+  };
+
   return (
     <TooltipProvider>
     <div>
@@ -164,25 +189,48 @@ export function ProjectGrid({
           </div>
         )}
         <div className="flex items-center gap-2 ml-auto">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={onReset}
-            disabled={!hasChanges || isLocked}
-            className="h-8"
-          >
-            <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
-            Reset
-          </Button>
-          <Button 
-            size="sm" 
-            onClick={onSave}
-            disabled={!hasChanges || isLocked}
-            className="h-8 bg-brand-gold hover:bg-brand-gold/90 text-white"
-          >
-            <Save className="h-3.5 w-3.5 mr-1.5" />
-            Save
-          </Button>
+          {!isEditMode ? (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleEdit}
+              disabled={isLocked}
+              className="h-8"
+            >
+              <Pencil className="h-3.5 w-3.5 mr-1.5" />
+              Edit
+            </Button>
+          ) : (
+            <>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleCancelEdit}
+                className="h-8"
+              >
+                Cancel
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleReset}
+                disabled={!hasChanges}
+                className="h-8"
+              >
+                <RotateCcw className="h-3.5 w-3.5 mr-1.5" />
+                Reset
+              </Button>
+              <Button 
+                size="sm" 
+                onClick={handleSave}
+                disabled={!hasChanges}
+                className="h-8 bg-brand-gold hover:bg-brand-gold/90 text-white"
+              >
+                <Save className="h-3.5 w-3.5 mr-1.5" />
+                Save
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -278,10 +326,14 @@ export function ProjectGrid({
                                         className={cn(
                                           "w-16 h-8 text-center text-sm mx-auto",
                                           changed && "bg-brand-gold/10 border-brand-gold",
+                                          !isEditMode && "bg-muted/50 text-muted-foreground cursor-not-allowed opacity-60",
                                           isLocked && "bg-muted text-muted-foreground cursor-not-allowed"
                                         )}
                                       />
                                     </TooltipTrigger>
+                                    {!isEditMode && !isLocked && (
+                                      <TooltipContent>Click Edit to modify</TooltipContent>
+                                    )}
                                     {isLocked && (
                                       <TooltipContent>Locked by {lockedBy}</TooltipContent>
                                     )}
