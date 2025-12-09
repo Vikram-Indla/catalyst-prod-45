@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
 import Button from '@atlaskit/button';
@@ -46,6 +46,15 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
     },
   });
 
+  // Memoized close handlers to prevent recreation
+  const handleCloseDemand = useCallback(() => setActiveDropdown(null), []);
+  const handleCloseProgram = useCallback(() => setActiveDropdown(null), []);
+  const handleCloseProject = useCallback(() => setActiveDropdown(null), []);
+  const handleCloseRelease = useCallback(() => setActiveDropdown(null), []);
+  
+  const handleCreateProgram = useCallback(() => setCreateDialogType('program'), []);
+  const handleCreateProject = useCallback(() => setCreateDialogType('project'), []);
+
   const handleUnifiedCreateSelect = (type: CreateType) => {
     switch (type) {
       case 'program':
@@ -86,7 +95,7 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
     }
   };
 
-  const navItems = [
+  const navItems = useMemo(() => [
     { label: "Home", path: "/home" },
     { label: "Enterprise", path: "/enterprise/strategy-room" },
     { label: "Demand", hasDropdown: true },
@@ -94,9 +103,9 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
     { label: "Project", hasDropdown: true },
     { label: "Release", hasDropdown: true },
     { label: "Items", hasDropdown: true },
-  ];
+  ], []);
 
-  const isItemActive = (item: typeof navItems[0]) => {
+  const isItemActive = useCallback((item: typeof navItems[0]) => {
     if (item.label === "Home") return location.pathname === '/home';
     if (item.label === "Enterprise") return location.pathname.startsWith('/enterprise');
     if (item.label === "Demand") return location.pathname.startsWith('/industry');
@@ -104,7 +113,11 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
     if (item.label === "Project") return location.pathname.startsWith('/programs/') || location.pathname.startsWith('/project/');
     if (item.label === "Release") return location.pathname.startsWith('/release');
     return false;
-  };
+  }, [location.pathname]);
+
+  const handleDropdownToggle = useCallback((label: string, isOpen: boolean) => {
+    setActiveDropdown(isOpen ? null : label);
+  }, []);
 
   return (
     <>
@@ -162,74 +175,24 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
                 if (item.hasDropdown) {
                   const isDropdownOpen = activeDropdown === item.label;
                   
-                  const getDropdownContent = () => {
-                    switch (item.label) {
-                      case "Demand":
-                        return <DemandSelectorDropdown onClose={() => setActiveDropdown(null)} />;
-                      case "Program":
-                        return (
-                          <ProgramSelectorDropdown 
-                            onClose={() => setActiveDropdown(null)} 
-                            onCreateClick={() => setCreateDialogType('program')}
-                          />
-                        );
-                      case "Project":
-                        return (
-                          <ProjectSelectorDropdown 
-                            onClose={() => setActiveDropdown(null)} 
-                            onCreateClick={() => setCreateDialogType('project')}
-                          />
-                        );
-                      case "Release":
-                        return <ReleaseDropdown onClose={() => setActiveDropdown(null)} />;
-                      default:
-                        return null;
-                    }
-                  };
-                  
                   return (
-                    <Popup
+                    <NavDropdownItem
                       key={item.label}
+                      label={item.label}
+                      isActive={isActive}
                       isOpen={isDropdownOpen}
-                      onClose={() => setActiveDropdown(null)}
-                      placement="bottom-start"
-                      content={getDropdownContent}
-                      trigger={(triggerProps) => (
-                        <button
-                          ref={triggerProps.ref as React.Ref<HTMLButtonElement>}
-                          aria-expanded={triggerProps['aria-expanded']}
-                          aria-haspopup={triggerProps['aria-haspopup']}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setActiveDropdown(isDropdownOpen ? null : item.label);
-                          }}
-                          style={{
-                            padding: '8px 12px',
-                            fontSize: '14px',
-                            fontWeight: isActive || isDropdownOpen ? 600 : 500,
-                            color: isActive || isDropdownOpen ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
-                            background: isDropdownOpen ? '#F4F5F7' : 'transparent',
-                            border: 'none',
-                            borderRadius: '3px',
-                            borderBottom: isActive ? `2px solid ${token('color.border.brand', '#0052CC')}` : '2px solid transparent',
-                            cursor: 'pointer',
-                            marginBottom: '-1px',
-                            transition: 'all 150ms',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                          }}
-                        >
-                          {item.label}
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{
-                            transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                            transition: 'transform 150ms',
-                          }}>
-                            <path d="M8.292 10.293a1.009 1.009 0 0 0 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955a1.01 1.01 0 0 0 0-1.419.987.987 0 0 0-1.406 0l-2.298 2.317-2.307-2.327a.99.99 0 0 0-1.406 0z" fill="currentColor"/>
-                          </svg>
-                        </button>
-                      )}
+                      onToggle={() => handleDropdownToggle(item.label, isDropdownOpen)}
+                      onClose={
+                        item.label === "Demand" ? handleCloseDemand :
+                        item.label === "Program" ? handleCloseProgram :
+                        item.label === "Project" ? handleCloseProject :
+                        handleCloseRelease
+                      }
+                      onCreateClick={
+                        item.label === "Program" ? handleCreateProgram :
+                        item.label === "Project" ? handleCreateProject :
+                        undefined
+                      }
                     />
                   );
                 }
@@ -383,5 +346,78 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
     </>
   );
 };
+
+// Separate component for dropdown items to isolate re-renders
+interface NavDropdownItemProps {
+  label: string;
+  isActive: boolean;
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+  onCreateClick?: () => void;
+}
+
+function NavDropdownItem({ label, isActive, isOpen, onToggle, onClose, onCreateClick }: NavDropdownItemProps) {
+  // Render the appropriate dropdown content based on label
+  const renderContent = useCallback(() => {
+    switch (label) {
+      case "Demand":
+        return <DemandSelectorDropdown onClose={onClose} />;
+      case "Program":
+        return <ProgramSelectorDropdown onClose={onClose} onCreateClick={onCreateClick} />;
+      case "Project":
+        return <ProjectSelectorDropdown onClose={onClose} onCreateClick={onCreateClick} />;
+      case "Release":
+        return <ReleaseDropdown onClose={onClose} />;
+      default:
+        return null;
+    }
+  }, [label, onClose, onCreateClick]);
+
+  return (
+    <Popup
+      isOpen={isOpen}
+      onClose={onClose}
+      placement="bottom-start"
+      content={renderContent}
+      trigger={(triggerProps) => (
+        <button
+          ref={triggerProps.ref as React.Ref<HTMLButtonElement>}
+          aria-expanded={triggerProps['aria-expanded']}
+          aria-haspopup={triggerProps['aria-haspopup']}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggle();
+          }}
+          style={{
+            padding: '8px 12px',
+            fontSize: '14px',
+            fontWeight: isActive || isOpen ? 600 : 500,
+            color: isActive || isOpen ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
+            background: isOpen ? '#F4F5F7' : 'transparent',
+            border: 'none',
+            borderRadius: '3px',
+            borderBottom: isActive ? `2px solid ${token('color.border.brand', '#0052CC')}` : '2px solid transparent',
+            cursor: 'pointer',
+            marginBottom: '-1px',
+            transition: 'all 150ms',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+          }}
+        >
+          {label}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={{
+            transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 150ms',
+          }}>
+            <path d="M8.292 10.293a1.009 1.009 0 0 0 0 1.419l2.939 2.965c.218.215.5.322.779.322s.556-.107.769-.322l2.93-2.955a1.01 1.01 0 0 0 0-1.419.987.987 0 0 0-1.406 0l-2.298 2.317-2.307-2.327a.99.99 0 0 0-1.406 0z" fill="currentColor"/>
+          </svg>
+        </button>
+      )}
+    />
+  );
+}
 
 export default TopNav;
