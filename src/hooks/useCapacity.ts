@@ -36,7 +36,9 @@ export function useCapacity() {
   const [activeFilters, setActiveFilters] = useState<CapacityFilterState>({});
   const [activeQuickFilters, setActiveQuickFilters] = useState<CapacityQuickFilter[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [isLocked, setIsLocked] = useState(false);
+  const [lockedBy, setLockedBy] = useState<string | null>(null);
+  const [lockedAt, setLockedAt] = useState<Date | null>(null);
   // Calculate summary stats
   const stats = useMemo(() => {
     const result = { total: resources.length, under: 0, full: 0, over: 0 };
@@ -274,6 +276,19 @@ export function useCapacity() {
     return projects.find(p => p.id === id);
   }, [projects]);
 
+  // Lock allocations
+  const toggleLock = useCallback((userName: string) => {
+    if (isLocked) {
+      setIsLocked(false);
+      setLockedBy(null);
+      setLockedAt(null);
+    } else {
+      setIsLocked(true);
+      setLockedBy(userName);
+      setLockedAt(new Date());
+    }
+  }, [isLocked]);
+
   return {
     // Data
     resources: filteredResources,
@@ -315,6 +330,12 @@ export function useCapacity() {
     activeQuickFilters,
     toggleQuickFilter,
     clearAllFilters,
+    
+    // Lock
+    isLocked,
+    lockedBy,
+    lockedAt,
+    toggleLock,
     
     // Utils
     getProject
