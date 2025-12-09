@@ -63,26 +63,11 @@ export const generateCapacityPDF = async (data: CapacityReportData): Promise<jsP
   doc.setFillColor(...brandGold);
   doc.rect(0, 35, pageWidth, 2, 'F');
   
-  // Logo placeholder (gold circle with C)
-  doc.setFillColor(...brandGold);
-  const circleX = margin + 8;
-  const circleY = 17.5;
-  doc.circle(circleX, circleY, 8, 'F');
+  // Report title (centered in header)
   doc.setTextColor(...white);
-  doc.setFontSize(12);
+  doc.setFontSize(16);
   doc.setFont('helvetica', 'bold');
-  // Center the "C" text in the circle
-  doc.text('C', circleX, circleY + 4, { align: 'center' });
-  
-  // Title
-  doc.setTextColor(...white);
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'bold');
-  doc.text('CATALYST', margin + 20, 14);
-  doc.setFontSize(7);
-  doc.setFont('helvetica', 'normal');
-  doc.setTextColor(...brandGold);
-  doc.text('Ministry of Investment', margin + 20, 19);
+  doc.text('Executive Capacity Report', pageWidth / 2, 18, { align: 'center' });
   
   // Report title
   doc.setTextColor(...white);
