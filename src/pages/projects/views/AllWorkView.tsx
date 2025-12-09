@@ -7,6 +7,5 @@ interface AllWorkViewProps {
 }
 
 export default function AllWorkView({ project }: AllWorkViewProps) {
-  // All work view reuses ListView with all items shown
   return <ListView project={project} />;
 }

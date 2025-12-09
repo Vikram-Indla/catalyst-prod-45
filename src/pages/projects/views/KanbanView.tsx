@@ -7,26 +7,48 @@ interface KanbanViewProps {
   project: ProjectData;
 }
 
+interface KanbanItem {
+  key: string;
+  summary: string;
+  status: string;
+  assignee: string;
+  type: 'feature' | 'story';
+  parentKey?: string;
+}
+
 export default function KanbanView({ project }: KanbanViewProps) {
   const columns = [
-    { id: 'TO DO', title: 'TO DO', status: 'TO DO' },
-    { id: 'IN PROGRESS', title: 'IN PROGRESS', status: 'IN PROGRESS' },
-    { id: 'DONE', title: 'DONE', status: 'DONE' },
-    { id: 'EMPTY', title: '0', status: null },
+    { id: 'TO DO', title: 'TO DO' },
+    { id: 'IN PROGRESS', title: 'IN PROGRESS' },
+    { id: 'DONE', title: 'DONE' },
+    { id: 'EMPTY', title: '0' },
   ];
 
-  const getItemsForColumn = (status: string | null) => {
-    if (!status) return [];
+  const getItemsForColumn = (columnId: string): KanbanItem[] => {
+    if (columnId === 'EMPTY') return [];
     
-    const items: any[] = [];
+    const items: KanbanItem[] = [];
     
     project.features.forEach(feature => {
-      if (feature.status === status) {
-        items.push({ ...feature, type: 'feature' });
+      if (feature.status === columnId) {
+        items.push({
+          key: feature.key,
+          summary: feature.summary,
+          status: feature.status,
+          assignee: feature.assignee,
+          type: 'feature',
+        });
       }
       feature.stories.forEach(story => {
-        if (story.status === status) {
-          items.push({ ...story, type: 'story', parentKey: feature.key });
+        if (story.status === columnId) {
+          items.push({
+            key: story.key,
+            summary: story.summary,
+            status: story.status,
+            assignee: story.assignee,
+            type: 'story',
+            parentKey: feature.key,
+          });
         }
       });
     });
@@ -36,69 +58,77 @@ export default function KanbanView({ project }: KanbanViewProps) {
 
   return (
     <div style={{
-      padding: token('space.300'),
-      height: 'calc(100vh - 200px)',
+      padding: '24px',
+      background: token('elevation.surface.sunken'),
+      minHeight: 'calc(100vh - 180px)',
       overflowX: 'auto',
     }}>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 300px)',
-        gap: token('space.200'),
+        gridTemplateColumns: 'repeat(4, 280px)',
+        gap: '16px',
         minWidth: 'fit-content',
       }}>
         {columns.map((column) => {
-          const items = getItemsForColumn(column.status);
+          const items = getItemsForColumn(column.id);
           
           return (
             <div
               key={column.id}
               style={{
-                background: token('elevation.surface.sunken'),
-                borderRadius: token('border.radius'),
-                padding: token('space.150'),
+                background: token('color.background.neutral'),
+                borderRadius: '4px',
                 minHeight: '400px',
+                display: 'flex',
+                flexDirection: 'column',
               }}
             >
               {/* COLUMN HEADER */}
               <div style={{
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                color: token('color.text.subtlest'),
-                marginBottom: token('space.150'),
-                padding: `${token('space.100')} ${token('space.050')}`,
+                padding: '12px 16px',
+                borderBottom: `1px solid ${token('color.border')}`,
               }}>
-                {column.title}
+                <span style={{
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  color: token('color.text.subtlest'),
+                  letterSpacing: '0.5px',
+                }}>
+                  {column.title}
+                  {items.length > 0 && (
+                    <span style={{ marginLeft: '8px', fontWeight: 400 }}>
+                      {items.length}
+                    </span>
+                  )}
+                </span>
               </div>
 
-              {/* CARDS */}
-              {items.length === 0 ? (
-                <div style={{
-                  padding: token('space.300'),
-                  textAlign: 'center',
-                  fontSize: '14px',
-                  color: token('color.text.subtlest'),
-                }}>
-                  No items
-                </div>
-              ) : (
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: token('space.100'),
-                }}>
-                  {items.map((item) => (
-                    <KanbanCard
-                      key={item.key}
-                      itemKey={item.key}
-                      summary={item.summary}
-                      assignee={item.assignee}
-                      type={item.type}
-                      parentKey={item.parentKey}
-                    />
-                  ))}
-                </div>
-              )}
+              {/* CARDS CONTAINER */}
+              <div style={{
+                padding: '8px',
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+              }}>
+                {items.length === 0 ? (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100px',
+                    color: token('color.text.subtlest'),
+                    fontSize: '14px',
+                  }}>
+                    No items
+                  </div>
+                ) : (
+                  items.map((item) => (
+                    <KanbanCard key={item.key} item={item} />
+                  ))
+                )}
+              </div>
             </div>
           );
         })}
@@ -107,31 +137,35 @@ export default function KanbanView({ project }: KanbanViewProps) {
   );
 }
 
-function KanbanCard({ itemKey, summary, assignee, type, parentKey }: any) {
+function KanbanCard({ item }: { item: KanbanItem }) {
   return (
     <div style={{
       background: token('elevation.surface'),
       border: `1px solid ${token('color.border')}`,
-      borderRadius: token('border.radius'),
-      padding: token('space.150'),
+      borderRadius: '4px',
+      padding: '12px',
       cursor: 'pointer',
-      transition: 'box-shadow 150ms',
+      boxShadow: '0 1px 1px rgba(9, 30, 66, 0.08)',
+      transition: 'box-shadow 0.2s ease, background 0.2s ease',
     }}
     onMouseEnter={(e) => {
-      e.currentTarget.style.boxShadow = token('elevation.shadow.raised');
+      e.currentTarget.style.boxShadow = '0 4px 8px rgba(9, 30, 66, 0.16)';
+      e.currentTarget.style.background = token('elevation.surface.hovered');
     }}
     onMouseLeave={(e) => {
-      e.currentTarget.style.boxShadow = 'none';
+      e.currentTarget.style.boxShadow = '0 1px 1px rgba(9, 30, 66, 0.08)';
+      e.currentTarget.style.background = token('elevation.surface');
     }}
     >
       {/* SUMMARY */}
       <div style={{
         fontSize: '14px',
         color: token('color.text'),
-        marginBottom: token('space.100'),
+        marginBottom: '12px',
         lineHeight: '20px',
+        fontWeight: 400,
       }}>
-        {summary}
+        {item.summary}
       </div>
 
       {/* FOOTER */}
@@ -143,31 +177,25 @@ function KanbanCard({ itemKey, summary, assignee, type, parentKey }: any) {
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: token('space.050'),
+          gap: '6px',
         }}>
-          <span style={{ fontSize: '16px' }}>
-            {type === 'feature' ? '📦' : '📗'}
+          <span style={{ fontSize: '14px' }}>
+            {item.type === 'feature' ? '📦' : '📗'}
           </span>
           <a
-            href={`/browse/${itemKey}`}
+            href={`/browse/${item.key}`}
             style={{
               fontSize: '12px',
               fontWeight: 500,
               color: token('color.text.subtlest'),
+              textDecoration: 'none',
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            {itemKey}
+            {item.key}
           </a>
-          {parentKey && (
-            <span style={{
-              fontSize: '12px',
-              color: token('color.text.subtlest'),
-            }}>
-              ({parentKey})
-            </span>
-          )}
         </div>
-        <Avatar size="small" name={assignee} />
+        <Avatar size="small" name={item.assignee} />
       </div>
     </div>
   );
