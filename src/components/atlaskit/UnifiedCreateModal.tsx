@@ -1,13 +1,12 @@
 import React from 'react';
-import Modal, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  ModalTransition,
-} from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button';
-import { X, Folder, LayoutGrid, BookOpen } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Folder, LayoutGrid, BookOpen, X } from 'lucide-react';
 
 export type CreateType = 'program' | 'project' | 'work-item';
 
@@ -17,154 +16,101 @@ interface UnifiedCreateModalProps {
   onSelectType: (type: CreateType) => void;
 }
 
-interface OptionProps {
+const options: Array<{
   type: CreateType;
-  icon: React.ReactNode;
-  iconBg: string;
   label: string;
   description: string;
-  onSelect: (type: CreateType) => void;
-  hasBorder?: boolean;
-}
-
-function OptionButton({ type, icon, iconBg, label, description, onSelect, hasBorder = true }: OptionProps) {
-  const handleClick = () => {
-    console.log('[OptionButton] handleClick called for:', type);
-    onSelect(type);
-  };
-
-  return (
-    <button
-      type="button"
-      onClick={handleClick}
-      style={{
-        display: 'block',
-        width: '100%',
-        padding: 0,
-        border: 'none',
-        background: 'transparent',
-        cursor: 'pointer',
-        textAlign: 'left',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: '16px',
-          padding: '16px',
-          width: '100%',
-          borderBottom: hasBorder ? '1px solid #EBECF0' : 'none',
-        }}
-      >
-        <div style={{
-          width: '40px',
-          height: '40px',
-          background: iconBg,
-          borderRadius: '3px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexShrink: 0,
-        }}>
-          {icon}
-        </div>
-        <div style={{ flex: 1, paddingTop: '2px' }}>
-          <div style={{
-            fontSize: '14px',
-            fontWeight: 600,
-            color: '#172B4D',
-            marginBottom: '4px',
-          }}>
-            {label}
-          </div>
-          <div style={{
-            fontSize: '12px',
-            color: '#5E6C84',
-            lineHeight: '16px',
-            fontWeight: 400,
-          }}>
-            {description}
-          </div>
-        </div>
-      </div>
-    </button>
-  );
-}
+  Icon: typeof Folder;
+  iconColor: string;
+  iconBg: string;
+}> = [
+  {
+    type: 'program',
+    label: 'Program',
+    description: 'Create a program to house epics',
+    Icon: Folder,
+    iconColor: '#FF991F',
+    iconBg: '#FFF0B3',
+  },
+  {
+    type: 'project',
+    label: 'Project',
+    description: 'Create a project linked to a program',
+    Icon: LayoutGrid,
+    iconColor: '#00B8D9',
+    iconBg: '#B3F5FF',
+  },
+  {
+    type: 'work-item',
+    label: 'Work Item',
+    description: 'Create epic, feature, story, defect, etc.',
+    Icon: BookOpen,
+    iconColor: '#4C9AFF',
+    iconBg: '#DEEBFF',
+  },
+];
 
 export function UnifiedCreateModal({
   isOpen,
   onClose,
   onSelectType,
 }: UnifiedCreateModalProps) {
-
-  const handleSelect = (type: CreateType) => {
-    console.log('[UnifiedCreateModal] handleSelect:', type);
+  
+  const handleOptionClick = (type: CreateType) => {
+    console.log('[UnifiedCreateModal] Option clicked:', type);
     onSelectType(type);
     onClose();
   };
 
   return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose} width="medium">
-          <ModalHeader>
-            <ModalTitle>Create</ModalTitle>
-            <Button
-              appearance="subtle"
-              iconBefore={<X size={16} />}
-              onClick={onClose}
-              aria-label="Close"
-            />
-          </ModalHeader>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-md p-0">
+        <DialogHeader className="p-4 pb-2 border-b">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-base font-semibold text-[#172B4D]">
+              Create
+            </DialogTitle>
+          </div>
+        </DialogHeader>
 
-          <ModalBody>
-            <div style={{ padding: '8px 0' }}>
-              <p style={{
-                fontSize: '14px',
-                color: '#5E6C84',
-                margin: '0 0 16px 0',
-              }}>
-                What would you like to create?
-              </p>
+        <div className="p-4">
+          <p className="text-sm text-[#5E6C84] mb-4">
+            What would you like to create?
+          </p>
 
-              <div>
-                <OptionButton
-                  type="program"
-                  icon={<Folder size={20} color="#FF991F" />}
-                  iconBg="#FFF0B3"
-                  label="Program"
-                  description="Create a program to house epics"
-                  onSelect={handleSelect}
-                />
-                <OptionButton
-                  type="project"
-                  icon={<LayoutGrid size={20} color="#00B8D9" />}
-                  iconBg="#B3F5FF"
-                  label="Project"
-                  description="Create a project linked to a program"
-                  onSelect={handleSelect}
-                />
-                <OptionButton
-                  type="work-item"
-                  icon={<BookOpen size={20} color="#4C9AFF" />}
-                  iconBg="#DEEBFF"
-                  label="Work Item"
-                  description="Create epic, feature, story, defect, etc."
-                  onSelect={handleSelect}
-                  hasBorder={false}
-                />
-              </div>
-            </div>
-          </ModalBody>
+          <div className="space-y-0">
+            {options.map((option, index) => (
+              <button
+                key={option.type}
+                type="button"
+                onClick={() => handleOptionClick(option.type)}
+                className="w-full flex items-start gap-4 p-4 text-left hover:bg-[#F4F5F7] transition-colors border-b border-[#EBECF0] last:border-b-0"
+              >
+                <div
+                  className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0"
+                  style={{ backgroundColor: option.iconBg }}
+                >
+                  <option.Icon size={20} color={option.iconColor} />
+                </div>
+                <div className="flex-1 pt-0.5">
+                  <div className="text-sm font-semibold text-[#172B4D] mb-1">
+                    {option.label}
+                  </div>
+                  <div className="text-xs text-[#5E6C84] leading-4">
+                    {option.description}
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
 
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
+        <div className="p-4 pt-2 border-t flex justify-end">
+          <Button variant="ghost" onClick={onClose} className="text-[#5E6C84]">
+            Cancel
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
