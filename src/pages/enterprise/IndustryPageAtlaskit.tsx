@@ -723,6 +723,8 @@ export default function IndustryPageAtlaskit() {
           overflow: 'auto',
           background: token('color.background.neutral', '#F4F5F7'),
           padding: isMobile ? token('space.200', '16px') : token('space.400', '32px'),
+          position: 'relative',
+          zIndex: 1,
         }}>
           {/* Page Header */}
           <div style={{ marginBottom: token('space.300', '24px') }}>
