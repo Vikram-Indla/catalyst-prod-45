@@ -28,19 +28,22 @@ interface OptionProps {
 }
 
 function OptionButton({ type, icon, iconBg, label, description, onSelect, hasBorder = true }: OptionProps) {
+  const handleClick = () => {
+    console.log('[OptionButton] handleClick called for:', type);
+    onSelect(type);
+  };
+
   return (
-    <Button
-      appearance="subtle"
-      shouldFitContainer
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        console.log('[OptionButton] clicked:', type);
-        onSelect(type);
-      }}
+    <button
+      type="button"
+      onClick={handleClick}
       style={{
+        display: 'block',
+        width: '100%',
         padding: 0,
-        height: 'auto',
+        border: 'none',
+        background: 'transparent',
+        cursor: 'pointer',
         textAlign: 'left',
       }}
     >
@@ -85,7 +88,7 @@ function OptionButton({ type, icon, iconBg, label, description, onSelect, hasBor
           </div>
         </div>
       </div>
-    </Button>
+    </button>
   );
 }
 
