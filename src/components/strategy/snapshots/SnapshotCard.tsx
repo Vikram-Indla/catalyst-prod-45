@@ -5,8 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreVertical, Eye, Play, Archive, Trash2, Calendar, Clock, Layers, Users, Pencil, Settings, CalendarRange } from 'lucide-react';
 import { StrategicSnapshot, useSnapshotConfiguration } from '@/hooks/useStrategicSnapshots';
+import { useSnapshotStrategyLinks } from '@/hooks/useStrategicBacklog';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useNavigate } from 'react-router-dom';
 import { RenameSnapshotModal } from './RenameSnapshotModal';
 import { EditSnapshotDetailsModal } from './EditSnapshotDetailsModal';
 import { ManageQuartersDrawer } from './ManageQuartersDrawer';
@@ -20,16 +22,22 @@ interface SnapshotCardProps {
 }
 
 export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCardProps) {
+  const navigate = useNavigate();
   const [renameModalOpen, setRenameModalOpen] = useState(false);
   const [editDetailsModalOpen, setEditDetailsModalOpen] = useState(false);
   const [manageQuartersOpen, setManageQuartersOpen] = useState(false);
   const [activateModalOpen, setActivateModalOpen] = useState(false);
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const { data: configuration } = useSnapshotConfiguration(snapshot.id);
+  const { data: links } = useSnapshotStrategyLinks(snapshot.id);
 
   const isArchived = snapshot.status === 'ARCHIVED';
   const isActive = snapshot.status === 'ACTIVE';
   const isDraft = snapshot.status === 'DRAFT';
+  
+  // Theme count from SnapshotStrategyLinks (primary) or configuration (fallback)
+  const themeCount = links?.theme_ids?.length || configuration?.themes?.length || 0;
+  const quarterCount = configuration?.quarters?.length || 0;
 
   const formatDate = (dateStr: string | null | undefined) => {
     if (!dateStr) return 'N/A';
@@ -147,16 +155,28 @@ export function SnapshotCard({ snapshot, onViewDetails, onDelete }: SnapshotCard
           </div>
           
           <div className="flex items-center gap-4 mt-3 pt-3 border-t">
-            <div className="flex items-center gap-1.5">
+            <div 
+              className="flex items-center gap-1.5 cursor-pointer hover:opacity-80"
+              onClick={(e) => {
+                e.stopPropagation();
+                setManageQuartersOpen(true);
+              }}
+            >
               <Layers className="h-3.5 w-3.5 text-brand-gold" />
               <span className="text-xs font-medium">
-                {configuration?.quarters?.length || 0} Quarters
+                {quarterCount} Quarters
               </span>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div 
+              className="flex items-center gap-1.5 cursor-pointer hover:opacity-80"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/enterprise/strategic-backlog?snapshot=${snapshot.id}&tab=themes`);
+              }}
+            >
               <Users className="h-3.5 w-3.5 text-brand-gold" />
               <span className="text-xs font-medium">
-                {configuration?.themes?.length || 0} Themes
+                {themeCount} Themes
               </span>
             </div>
           </div>
