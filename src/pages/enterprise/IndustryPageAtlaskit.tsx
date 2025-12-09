@@ -8,6 +8,7 @@ import { token } from '@atlaskit/tokens';
 import { DynamicTableStateless } from '@atlaskit/dynamic-table';
 import type { RowType, HeadType } from '@atlaskit/dynamic-table/types';
 import Textfield from '@atlaskit/textfield';
+import SearchIcon from '@atlaskit/icon/glyph/search';
 import Button from '@atlaskit/button';
 import Lozenge from '@atlaskit/lozenge';
 import { Checkbox } from '@atlaskit/checkbox';
@@ -525,6 +526,7 @@ export default function IndustryPageAtlaskit() {
                 placeholder="Search industry requests..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery((e.target as HTMLInputElement).value)}
+                elemBeforeInput={<SearchIcon label="Search" size="small" />}
               />
             </div>
 
