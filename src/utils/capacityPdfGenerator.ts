@@ -63,15 +63,18 @@ export const generateCapacityPDF = async (data: CapacityReportData): Promise<jsP
   doc.setFillColor(...brandGold);
   doc.rect(0, 35, pageWidth, 2, 'F');
   
+  // Catalyst branding (left aligned) - "Cata" in white, "lyst" in gold
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...white);
+  doc.text('Cata', margin, 18);
+  const cataWidth = doc.getTextWidth('Cata');
+  doc.setTextColor(...brandGold);
+  doc.text('lyst', margin + cataWidth, 18);
+  
   // Report title (centered in header)
   doc.setTextColor(...white);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Executive Capacity Report', pageWidth / 2, 18, { align: 'center' });
-  
-  // Report title
-  doc.setTextColor(...white);
-  doc.setFontSize(16);
+  doc.setFontSize(12);
   doc.setFont('helvetica', 'bold');
   doc.text('Executive Capacity Report', pageWidth / 2, 18, { align: 'center' });
   
