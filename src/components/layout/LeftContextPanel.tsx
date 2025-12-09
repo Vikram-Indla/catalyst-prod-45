@@ -51,6 +51,7 @@ interface MenuItem {
 const getEnterpriseMenuItems = (): MenuItem[] => [
   { id: 'strategy-room', label: 'Strategy Room', icon: Focus, path: '/enterprise/strategy-room', tiers: ['enterprise'] },
   { id: 'strategic-snapshots', label: 'Strategic Snapshots', icon: CircleDot, path: '/enterprise/snapshots', tiers: ['enterprise'] },
+  { id: 'strategic-backlog', label: 'Strategic Backlog', icon: ListTree, path: '/enterprise/strategic-backlog', tiers: ['enterprise'] },
   { id: 'objective-tree', label: 'Objective tree', icon: Workflow, path: '/enterprise/okr-hub', tiers: ['enterprise'] },
   { id: 'work-tree', label: 'Work tree', icon: Share2, path: '/work-tree', tiers: ['enterprise'] },
   { id: 'backlog', label: 'Backlog', icon: ListTree, path: '/enterprise/backlog', tiers: ['enterprise'] },
