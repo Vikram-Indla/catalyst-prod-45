@@ -144,7 +144,7 @@ export default function ProjectDirectory() {
       <Content>
         <Main>
           <div style={{
-            padding: '32px',
+            padding: '24px 40px',
             background: '#FAFBFC',
             minHeight: '100vh',
           }}>
@@ -153,21 +153,22 @@ export default function ProjectDirectory() {
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '32px',
+              marginBottom: '24px',
             }}>
               <div>
                 <h1 style={{
-                  fontSize: '24px',
+                  fontSize: '20px',
                   fontWeight: 500,
+                  lineHeight: '24px',
                   color: '#172B4D',
-                  margin: 0,
-                  marginBottom: '4px',
+                  margin: '0 0 4px 0',
                 }}>
                   Projects
                 </h1>
                 <p style={{
-                  fontSize: '14px',
-                  color: '#6B778C',
+                  fontSize: '12px',
+                  lineHeight: '16px',
+                  color: '#5E6C84',
                   margin: 0,
                 }}>
                   {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''}
@@ -186,17 +187,17 @@ export default function ProjectDirectory() {
             {/* CONTROLS BAR */}
             <div style={{
               background: '#FFFFFF',
-              padding: '16px',
+              padding: '12px 16px',
               borderRadius: '3px',
               marginBottom: '24px',
-              boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+              border: '1px solid #DFE1E6',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              gap: '16px',
+              gap: '12px',
             }}>
               {/* Search */}
-              <div style={{ width: '400px' }}>
+              <div style={{ width: '320px' }}>
                 <Textfield
                   placeholder="Search projects..."
                   elemBeforeInput={
@@ -263,16 +264,16 @@ export default function ProjectDirectory() {
               />
             ) : (
               Object.values(projectsByProgram).map((group) => (
-                <div key={group.programKey} style={{ marginBottom: '48px' }}>
+                <div key={group.programKey} style={{ marginBottom: '32px' }}>
                   {/* PROGRAM HEADER */}
                   <div style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '16px',
-                    marginBottom: '24px',
+                    gap: '8px',
+                    marginBottom: '12px',
                   }}>
                     <h2 style={{
-                      fontSize: '16px',
+                      fontSize: '14px',
                       fontWeight: 600,
                       color: '#172B4D',
                       margin: 0,
@@ -280,7 +281,7 @@ export default function ProjectDirectory() {
                       {group.programName}
                     </h2>
                     <span style={{
-                      fontSize: '12px',
+                      fontSize: '11px',
                       color: '#6B778C',
                     }}>
                       {group.projects.length} project{group.projects.length !== 1 ? 's' : ''}
@@ -331,8 +332,8 @@ function ProjectGrid({ projects, onToggleStar, onProjectClick }: ProjectGridProp
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-      gap: '24px',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+      gap: '12px',
     }}>
       {projects.map((project) => (
         <ProjectCard
@@ -365,97 +366,98 @@ function ProjectCard({ project, onToggleStar, onClick }: ProjectCardProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
+        display: 'block',
         background: '#FFFFFF',
-        borderRadius: '3px',
-        padding: '24px',
-        boxShadow: isHovered 
-          ? '0 4px 8px -2px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)'
-          : '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
         border: '1px solid #DFE1E6',
-        transition: 'box-shadow 150ms, transform 150ms',
-        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-        cursor: 'pointer',
+        borderRadius: '3px',
+        padding: '12px',
         position: 'relative',
+        minHeight: '120px',
+        transition: 'box-shadow 150ms',
+        boxShadow: isHovered ? '0 4px 8px rgba(9, 30, 66, 0.15)' : 'none',
+        cursor: 'pointer',
       }}
     >
       {/* STAR BUTTON */}
       <div style={{
         position: 'absolute',
-        top: '12px',
-        right: '12px',
+        top: '8px',
+        right: '8px',
         opacity: isHovered || project.isStarred ? 1 : 0,
         transition: 'opacity 150ms',
       }}>
-        <Tooltip content={project.isStarred ? 'Unstar' : 'Star'}>
-          <Button
-            appearance="subtle"
-            iconBefore={
-              project.isStarred ? (
-                <StarFilledIcon 
-                  label="Starred" 
-                  size="small" 
-                  primaryColor="#FFAB00"
-                />
-              ) : (
-                <StarIcon 
-                  label="Star" 
-                  size="small" 
-                  primaryColor="#6B778C"
-                />
-              )
-            }
-            onClick={(e: React.MouseEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleStar();
-            }}
-          />
-        </Tooltip>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onToggleStar();
+          }}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {project.isStarred ? (
+            <StarFilledIcon 
+              label="Starred" 
+              size="small" 
+              primaryColor="#FFAB00"
+            />
+          ) : (
+            <StarIcon 
+              label="Star" 
+              size="small" 
+              primaryColor="#6B778C"
+            />
+          )}
+        </button>
+      </div>
+
+      {/* PROJECT ICON */}
+      <div style={{
+        width: '32px',
+        height: '32px',
+        background: '#FFF0B3',
+        borderRadius: '3px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: '8px',
+        fontSize: '16px',
+      }}>
+        🏢
       </div>
 
       {/* PROJECT INFO */}
-      <div style={{ marginBottom: '16px' }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '8px',
-        }}>
-          <h3 style={{
-            fontSize: '16px',
-            fontWeight: 600,
-            color: '#172B4D',
-            margin: 0,
-          }}>
-            {project.name}
-          </h3>
-          <Lozenge appearance={project.type === 'scrum' ? 'inprogress' : 'default'}>
-            {project.type}
-          </Lozenge>
-        </div>
-        
-        <p style={{
-          fontSize: '12px',
-          color: '#6B778C',
-          margin: 0,
-          marginBottom: '4px',
-        }}>
-          {project.key}
-        </p>
-
-        <p style={{
+      <div style={{ marginBottom: '8px' }}>
+        <h3 style={{
           fontSize: '14px',
-          color: '#6B778C',
+          fontWeight: 600,
+          lineHeight: '20px',
+          color: '#172B4D',
+          margin: '0 0 2px 0',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}>
+          {project.name}
+        </h3>
+        <p style={{
+          fontSize: '11px',
+          fontWeight: 400,
+          lineHeight: '16px',
+          color: '#5E6C84',
           margin: 0,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          lineHeight: '20px',
-          minHeight: '40px',
+          whiteSpace: 'nowrap',
         }}>
-          {project.description}
+          {project.key}
         </p>
       </div>
 
@@ -464,19 +466,22 @@ function ProjectCard({ project, onToggleStar, onClick }: ProjectCardProps) {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingTop: '16px',
+        paddingTop: '8px',
         borderTop: '1px solid #DFE1E6',
       }}>
         <div style={{
-          fontSize: '12px',
-          color: '#6B778C',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '4px',
         }}>
-          {project.issueCount} issue{project.issueCount !== 1 ? 's' : ''}
+          <Lozenge appearance={project.type === 'scrum' ? 'inprogress' : 'default'}>
+            {project.type}
+          </Lozenge>
         </div>
 
         <Tooltip content={project.lead.name}>
           <Avatar
-            size="small"
+            size="xsmall"
             src={project.lead.avatar}
             name={project.lead.name}
           />
@@ -501,7 +506,7 @@ function ProjectList({ projects, onToggleStar, onProjectClick }: ProjectListProp
     <div style={{
       background: '#FFFFFF',
       borderRadius: '3px',
-      boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
+      border: '1px solid #DFE1E6',
       overflow: 'hidden',
     }}>
       {projects.map((project, index) => (
@@ -539,25 +544,41 @@ function ProjectListItem({ project, onToggleStar, onClick, isLast }: ProjectList
       style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '24px',
-        padding: '24px',
+        gap: '12px',
+        padding: '8px 12px',
         background: isHovered ? '#F4F5F7' : 'transparent',
         borderBottom: isLast ? 'none' : '1px solid #DFE1E6',
         cursor: 'pointer',
         transition: 'background 150ms',
       }}
     >
+      {/* PROJECT ICON */}
+      <div style={{
+        width: '24px',
+        height: '24px',
+        background: '#FFF0B3',
+        borderRadius: '3px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+        fontSize: '14px',
+      }}>
+        🏢
+      </div>
+
       {/* PROJECT INFO */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
-          marginBottom: '4px',
+          gap: '6px',
+          marginBottom: '2px',
         }}>
           <h4 style={{
             fontSize: '14px',
-            fontWeight: 600,
+            fontWeight: 500,
+            lineHeight: '20px',
             color: '#172B4D',
             margin: 0,
           }}>
@@ -570,6 +591,7 @@ function ProjectListItem({ project, onToggleStar, onClick, isLast }: ProjectList
         
         <p style={{
           fontSize: '12px',
+          lineHeight: '16px',
           color: '#6B778C',
           margin: 0,
           overflow: 'hidden',
@@ -584,11 +606,11 @@ function ProjectListItem({ project, onToggleStar, onClick, isLast }: ProjectList
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '24px',
+        gap: '12px',
         flexShrink: 0,
       }}>
         <div style={{
-          fontSize: '12px',
+          fontSize: '11px',
           color: '#6B778C',
         }}>
           {project.issueCount} issues
@@ -596,35 +618,42 @@ function ProjectListItem({ project, onToggleStar, onClick, isLast }: ProjectList
 
         <Tooltip content={project.lead.name}>
           <Avatar
-            size="small"
+            size="xsmall"
             src={project.lead.avatar}
             name={project.lead.name}
           />
         </Tooltip>
 
-        <Button
-          appearance="subtle"
-          iconBefore={
-            project.isStarred ? (
-              <StarFilledIcon 
-                label="Starred" 
-                size="small" 
-                primaryColor="#FFAB00"
-              />
-            ) : (
-              <StarIcon 
-                label="Star" 
-                size="small" 
-                primaryColor="#6B778C"
-              />
-            )
-          }
-          onClick={(e: React.MouseEvent) => {
+        <button
+          onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             onToggleStar();
           }}
-        />
+          style={{
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {project.isStarred ? (
+            <StarFilledIcon 
+              label="Starred" 
+              size="small" 
+              primaryColor="#FFAB00"
+            />
+          ) : (
+            <StarIcon 
+              label="Star" 
+              size="small" 
+              primaryColor="#6B778C"
+            />
+          )}
+        </button>
       </div>
     </div>
   );
