@@ -385,6 +385,7 @@ export function CapacityPlanningPage() {
                 vacancies={vacancies} 
                 projects={projects} 
                 onFillGap={(vacancyId) => console.log('Fill gap:', vacancyId)}
+                onAddVacancy={(vacancy) => console.log('New vacancy:', vacancy)}
               />
             </TabsContent>
 
