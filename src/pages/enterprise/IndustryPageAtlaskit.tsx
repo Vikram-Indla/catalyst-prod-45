@@ -119,16 +119,18 @@ const NavButton = ({ children, isSelected = false, href = '#' }: NavButtonProps)
     <a
       href={href}
       style={{
-        display: 'inline-block',
-        padding: `${token('space.200', '16px')} ${token('space.150', '12px')}`,
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: '56px',
+        padding: `0 ${token('space.150', '12px')}`,
         color: isSelected ? token('color.text.selected', '#0052CC') : token('color.text', '#172B4D'),
         fontSize: '14px',
         fontWeight: isSelected ? 600 : 400,
         textDecoration: 'none',
-        position: 'relative',
         borderBottom: isSelected 
-          ? `3px solid ${token('color.border.brand', '#0052CC')}` 
+          ? `3px solid ${token('color.border.selected', '#0052CC')}` 
           : '3px solid transparent',
+        boxSizing: 'border-box',
         transition: 'all 150ms ease-in-out',
         cursor: 'pointer',
       }}
@@ -147,6 +149,8 @@ const TopNavigationBar = ({ isMobile }: TopNavigationBarProps) => {
   return (
     <nav style={{
       height: '56px',
+      minHeight: '56px',
+      maxHeight: '56px',
       backgroundColor: token('elevation.surface', '#FFFFFF'),
       borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
       display: 'flex',
