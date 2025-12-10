@@ -31,6 +31,8 @@ import { useNavigation } from '@/contexts/NavigationContext';
 import { ObjectiveTierBadge } from '@/modules/objectives/components/shared/ObjectiveTierBadge';
 import { ObjectiveHierarchyDialog } from '@/modules/objectives/components/ObjectiveHierarchyDialog';
 import { cn } from '@/lib/utils';
+import { useOKRv2Enabled } from '@/hooks/useFeatureFlags';
+import { OKRHubV2 } from '@/modules/okr-v2';
 
 interface Column {
   key: string;
@@ -58,6 +60,15 @@ interface OKRHubProps {
 }
 
 export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) {
+  // Check feature flag for OKR v2
+  const { enabled: isOKRv2Enabled, isLoading: isLoadingFlag } = useOKRv2Enabled();
+
+  // If v2 is enabled, render the v2 hub
+  if (!isLoadingFlag && isOKRv2Enabled) {
+    return <OKRHubV2 />;
+  }
+
+  // v1 implementation continues below
   const navigate = useNavigate();
   const params = useParams();
   const navigationContext = useNavigation();

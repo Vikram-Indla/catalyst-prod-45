@@ -43,12 +43,13 @@ export interface ObjectiveFiltersV2 {
 export interface CreateObjectiveInputV2 {
   name: string;
   description?: string;
-  theme_id?: string;
+  theme_id: string; // Required in v2
   owner_id?: string;
   start_date?: string;
   due_date?: string;
   status?: ObjectiveStatusV2;
-  visibility?: string;
+  health?: ObjectiveHealthV2;
+  notes?: string;
 }
 
 export interface UpdateObjectiveInputV2 {
@@ -60,7 +61,7 @@ export interface UpdateObjectiveInputV2 {
   due_date?: string;
   status?: ObjectiveStatusV2;
   health?: ObjectiveHealthV2;
-  visibility?: string;
+  notes?: string;
 }
 
 function determineHealth(progress: number, hasKRs: boolean): ObjectiveHealthV2 {
@@ -250,15 +251,15 @@ export function useCreateObjectiveV2() {
         .insert({
           name: input.name,
           description: input.description || null,
-          theme_id: input.theme_id || null,
+          theme_id: input.theme_id, // Required in v2
           owner_id: input.owner_id || null,
           start_date: input.start_date || null,
           due_date: input.due_date || null,
           status: input.status || 'pending',
-          visibility: input.visibility || 'org-wide',
+          health: input.health || 'at_risk',
+          notes: input.notes || null,
           is_v2: true,
           overall_progress: 0,
-          health: 'at_risk', // Valid enum value for "not yet tracked"
           created_by: user?.user?.id || null,
           // Clear v1 hierarchy fields
           tier: null,
@@ -301,7 +302,7 @@ export function useUpdateObjectiveV2() {
       if (input.due_date !== undefined) updateData.due_date = input.due_date;
       if (input.status !== undefined) updateData.status = input.status;
       if (input.health !== undefined) updateData.health = input.health;
-      if (input.visibility !== undefined) updateData.visibility = input.visibility;
+      if (input.notes !== undefined) updateData.notes = input.notes;
 
       const { data, error } = await supabase
         .from('objectives')

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useCreateObjectiveV2, ObjectiveStatusV2 } from '@/hooks/useObjectivesV2';
+import { useCreateObjectiveV2, ObjectiveStatusV2, ObjectiveHealthV2 } from '@/hooks/useObjectivesV2';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import {
@@ -20,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { toast } from 'sonner';
 
 interface CreateObjectiveDialogV2Props {
   open: boolean;
@@ -36,7 +37,8 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
   const [startDate, setStartDate] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [status, setStatus] = useState<ObjectiveStatusV2>('pending');
-  const [visibility, setVisibility] = useState('org-wide');
+  const [health, setHealth] = useState<ObjectiveHealthV2>('at_risk');
+  const [notes, setNotes] = useState('');
 
   // Fetch themes
   const { data: themes } = useQuery({
@@ -67,17 +69,25 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!name.trim()) return;
+    // Validate required fields
+    if (!name.trim()) {
+      toast.error('Name is required');
+      return;
+    }
+    
+    if (!themeId) {
+      toast.error('Theme is required for OKR v2 objectives');
+      return;
+    }
 
     await createObjective.mutateAsync({
       name: name.trim(),
       description: description.trim() || undefined,
-      theme_id: themeId || undefined,
+      theme_id: themeId,
       owner_id: ownerId || undefined,
       start_date: startDate || undefined,
       due_date: dueDate || undefined,
       status,
-      visibility,
     });
 
     // Reset form
@@ -88,29 +98,34 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
     setStartDate('');
     setDueDate('');
     setStatus('pending');
-    setVisibility('org-wide');
+    setHealth('at_risk');
+    setNotes('');
     onOpenChange(false);
   };
+
+  const isValid = name.trim() && themeId;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create Objective</DialogTitle>
+          <DialogTitle>Create Objective (v2)</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Name (required) */}
           <div className="space-y-2">
-            <Label htmlFor="name">Title *</Label>
+            <Label htmlFor="name">Name *</Label>
             <Input
               id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Enter objective title"
+              placeholder="Enter objective name"
               required
             />
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
             <Label htmlFor="description">Description</Label>
             <Textarea
@@ -122,65 +137,28 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Theme</Label>
-              <Select value={themeId} onValueChange={setThemeId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select theme" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">None</SelectItem>
-                  {themes?.map((theme) => (
-                    <SelectItem key={theme.id} value={theme.id}>
-                      {theme.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Owner</Label>
-              <Select value={ownerId} onValueChange={setOwnerId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select owner" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Unassigned</SelectItem>
-                  {users?.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      {user.full_name || 'Unknown'}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Theme (required) */}
+          <div className="space-y-2">
+            <Label>Theme *</Label>
+            <Select value={themeId} onValueChange={setThemeId}>
+              <SelectTrigger className={!themeId ? 'border-destructive' : ''}>
+                <SelectValue placeholder="Select theme (required)" />
+              </SelectTrigger>
+              <SelectContent>
+                {themes?.map((theme) => (
+                  <SelectItem key={theme.id} value={theme.id}>
+                    {theme.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {!themeId && (
+              <p className="text-xs text-destructive">Theme is required</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="startDate">Start Date</Label>
-              <Input
-                id="startDate"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="dueDate">Due Date</Label>
-              <Input
-                id="dueDate"
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
+            {/* Status */}
             <div className="space-y-2">
               <Label>Status</Label>
               <Select value={status} onValueChange={(v) => setStatus(v as ObjectiveStatusV2)}>
@@ -197,26 +175,82 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
               </Select>
             </div>
 
+            {/* Health */}
             <div className="space-y-2">
-              <Label>Visibility</Label>
-              <Select value={visibility} onValueChange={setVisibility}>
+              <Label>Health</Label>
+              <Select value={health} onValueChange={(v) => setHealth(v as ObjectiveHealthV2)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="org-wide">Organization-wide</SelectItem>
-                  <SelectItem value="business-unit">Business Unit</SelectItem>
-                  <SelectItem value="product-line">Product Line</SelectItem>
+                  <SelectItem value="good">Good</SelectItem>
+                  <SelectItem value="fair">Fair</SelectItem>
+                  <SelectItem value="poor">Poor</SelectItem>
+                  <SelectItem value="at_risk">At Risk</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Start Date */}
+            <div className="space-y-2">
+              <Label htmlFor="startDate">Start Date</Label>
+              <Input
+                id="startDate"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+
+            {/* Due Date */}
+            <div className="space-y-2">
+              <Label htmlFor="dueDate">Due Date</Label>
+              <Input
+                id="dueDate"
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {/* Owner */}
+          <div className="space-y-2">
+            <Label>Owner</Label>
+            <Select value={ownerId} onValueChange={setOwnerId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select owner" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">Unassigned</SelectItem>
+                {users?.map((user) => (
+                  <SelectItem key={user.id} value={user.id}>
+                    {user.full_name || 'Unknown'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Notes */}
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Add notes..."
+              rows={2}
+            />
           </div>
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
-            <Button type="submit" disabled={!name.trim() || createObjective.isPending}>
+            <Button type="submit" disabled={!isValid || createObjective.isPending}>
               {createObjective.isPending ? 'Creating...' : 'Create Objective'}
             </Button>
           </DialogFooter>
