@@ -12,7 +12,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CatalystShell } from "./components/layout/CatalystShell";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import Auth from "./pages/Auth";
-import { JiraCloneTestPage } from "./pages/jira-test";
+import { JiraCloneTestPage, JiraListViewPage } from "./pages/jira-test";
 import BrowsePage from "./pages/BrowsePage";
 import SearchPage from "./pages/SearchPage";
 import Home from "./pages/jira-align/Home";
@@ -238,6 +238,7 @@ const App = () => (
 <Route path="/" element={<Navigate to="/home" replace />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/jira-test" element={<JiraCloneTestPage />} />
+              <Route path="/jira-list" element={<JiraListViewPage />} />
               <Route path="/request-access" element={<RequestAccess />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               
