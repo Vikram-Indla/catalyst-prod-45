@@ -19,6 +19,16 @@ import { useState, useEffect } from "react";
 import { useCreateKeyResult, useUpdateKeyResult } from "@/hooks/useKeyResults";
 import { getCurrencyLabel } from "@/lib/currencyConfig";
 
+// Mapping between UI labels and DB values per constraint:
+// DB allows: 'percentage', 'count', 'cost_currency', 'nps', 'score'
+const METRIC_TYPE_OPTIONS = [
+  { label: "Percentage", value: "percentage" },
+  { label: "Count", value: "count" },
+  { label: "Currency", value: "cost_currency" },
+  { label: "Decimal Score", value: "score" },
+  { label: "Net Promoter Score", value: "nps" },
+] as const;
+
 interface KeyResultDialogProps {
   open: boolean;
   onClose: () => void;
@@ -34,9 +44,10 @@ export function KeyResultDialog({
 }: KeyResultDialogProps) {
   const [summary, setSummary] = useState("");
   const [metricType, setMetricType] = useState<string>("percentage");
-  const [baselineValue, setBaselineValue] = useState<number>(0);
-  const [goalValue, setGoalValue] = useState<number>(100);
-  const [currentValue, setCurrentValue] = useState<number>(0);
+  // Use string state for inputs to avoid leading zero issue
+  const [baselineValue, setBaselineValue] = useState<string>("0");
+  const [goalValue, setGoalValue] = useState<string>("100");
+  const [currentValue, setCurrentValue] = useState<string>("0");
 
   const createMutation = useCreateKeyResult();
   const updateMutation = useUpdateKeyResult();
@@ -45,17 +56,27 @@ export function KeyResultDialog({
     if (keyResult) {
       setSummary(keyResult.summary || "");
       setMetricType(keyResult.metric_type || "percentage");
-      setBaselineValue(keyResult.baseline_value || 0);
-      setGoalValue(keyResult.goal_value || 100);
-      setCurrentValue(keyResult.current_value || 0);
+      setBaselineValue(String(keyResult.baseline_value ?? 0));
+      setGoalValue(String(keyResult.goal_value ?? 100));
+      setCurrentValue(String(keyResult.current_value ?? 0));
     } else {
       setSummary("");
       setMetricType("percentage");
-      setBaselineValue(0);
-      setGoalValue(100);
-      setCurrentValue(0);
+      setBaselineValue("0");
+      setGoalValue("100");
+      setCurrentValue("0");
     }
   }, [keyResult, open]);
+
+  // Parse string to number for calculations and submission
+  const parseValue = (val: string): number => {
+    const parsed = parseFloat(val);
+    return isNaN(parsed) ? 0 : parsed;
+  };
+
+  const baselineNum = parseValue(baselineValue);
+  const currentNum = parseValue(currentValue);
+  const goalNum = parseValue(goalValue);
 
   const handleSubmit = () => {
     if (!summary.trim()) {
@@ -66,13 +87,12 @@ export function KeyResultDialog({
       objective_id: objectiveId,
       summary,
       metric_type: metricType,
-      baseline_value: baselineValue,
-      goal_value: goalValue,
-      current_value: currentValue,
+      baseline_value: baselineNum,
+      goal_value: goalNum,
+      current_value: currentNum,
     };
 
     if (keyResult) {
-      // Update - just call mutation, toast is handled in hook
       updateMutation.mutate(
         { id: keyResult.id, ...data },
         {
@@ -82,13 +102,19 @@ export function KeyResultDialog({
         }
       );
     } else {
-      // Create - just call mutation, toast is handled in hook
       createMutation.mutate(data, {
         onSuccess: () => {
           onClose();
         },
       });
     }
+  };
+
+  // Get display suffix based on metric type
+  const getMetricSuffix = () => {
+    if (metricType === "percentage") return "%";
+    if (metricType === "cost_currency") return ` ${getCurrencyLabel()}`;
+    return "";
   };
 
   return (
@@ -118,11 +144,11 @@ export function KeyResultDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="percentage">Percentage</SelectItem>
-                <SelectItem value="count">Count</SelectItem>
-                <SelectItem value="currency">Currency</SelectItem>
-                <SelectItem value="decimal_score">Decimal Score</SelectItem>
-                <SelectItem value="nps">Net Promoter Score</SelectItem>
+                {METRIC_TYPE_OPTIONS.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -132,9 +158,15 @@ export function KeyResultDialog({
               <Label htmlFor="baselineValue">Baseline Value</Label>
               <Input
                 id="baselineValue"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={baselineValue}
-                onChange={(e) => setBaselineValue(Number(e.target.value))}
+                onChange={(e) => setBaselineValue(e.target.value)}
+                onBlur={() => {
+                  // Normalize to clean number on blur
+                  const num = parseValue(baselineValue);
+                  setBaselineValue(String(num));
+                }}
               />
             </div>
 
@@ -142,9 +174,14 @@ export function KeyResultDialog({
               <Label htmlFor="currentValue">Current Value</Label>
               <Input
                 id="currentValue"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={currentValue}
-                onChange={(e) => setCurrentValue(Number(e.target.value))}
+                onChange={(e) => setCurrentValue(e.target.value)}
+                onBlur={() => {
+                  const num = parseValue(currentValue);
+                  setCurrentValue(String(num));
+                }}
               />
             </div>
 
@@ -152,9 +189,14 @@ export function KeyResultDialog({
               <Label htmlFor="goalValue">Goal Value</Label>
               <Input
                 id="goalValue"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 value={goalValue}
-                onChange={(e) => setGoalValue(Number(e.target.value))}
+                onChange={(e) => setGoalValue(e.target.value)}
+                onBlur={() => {
+                  const num = parseValue(goalValue);
+                  setGoalValue(String(num));
+                }}
               />
             </div>
           </div>
@@ -162,9 +204,8 @@ export function KeyResultDialog({
           <div className="bg-muted p-3 rounded-md">
             <div className="text-sm font-medium mb-2">Progress</div>
             <div className="text-sm text-muted-foreground">
-              {baselineValue} → {currentValue} / {goalValue}
-              {metricType === "percentage" && "%"}
-              {metricType === "currency" && ` ${getCurrencyLabel()}`}
+              {baselineNum} → {currentNum} / {goalNum}
+              {getMetricSuffix()}
             </div>
             <div className="mt-2">
               <div className="w-full bg-background rounded-full h-2">
@@ -175,9 +216,9 @@ export function KeyResultDialog({
                       100,
                       Math.max(
                         0,
-                        ((currentValue - baselineValue) /
-                          (goalValue - baselineValue)) *
-                          100
+                        goalNum !== baselineNum
+                          ? ((currentNum - baselineNum) / (goalNum - baselineNum)) * 100
+                          : 0
                       )
                     )}%`,
                   }}

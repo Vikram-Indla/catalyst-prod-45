@@ -1,7 +1,5 @@
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -17,7 +15,20 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useUpdateObjective } from "@/hooks/useObjectives";
-import { toast } from "sonner";
+
+// OKR Objectives only support Portfolio and Program tiers
+const OKR_TIER_OPTIONS = [
+  { label: "Portfolio", value: "portfolio" },
+  { label: "Program", value: "program" },
+] as const;
+
+const STATUS_OPTIONS = [
+  { label: "Pending", value: "pending" },
+  { label: "On Track", value: "on_track" },
+  { label: "At Risk", value: "at_risk" },
+  { label: "Off Track", value: "off_track" },
+  { label: "Completed", value: "completed" },
+] as const;
 
 interface ObjectiveDetailsTabProps {
   objective: any;
@@ -33,17 +44,7 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
   );
 
   const handleFieldUpdate = (field: string, value: any) => {
-    updateMutation.mutate(
-      { id: objective.id, [field]: value },
-      {
-        onSuccess: () => {
-          toast.success("Objective updated");
-        },
-        onError: () => {
-          toast.error("Failed to update objective");
-        },
-      }
-    );
+    updateMutation.mutate({ id: objective.id, [field]: value });
   };
 
   const handleDateUpdate = (field: string, date: Date | undefined) => {
@@ -53,6 +54,12 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
       setDueDate(date);
     }
     handleFieldUpdate(field, date ? date.toISOString() : null);
+  };
+
+  // Get display label for tier (handle legacy values gracefully)
+  const getTierLabel = (tier: string) => {
+    const found = OKR_TIER_OPTIONS.find(o => o.value === tier);
+    return found?.label || tier;
   };
 
   return (
@@ -68,14 +75,16 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
                 onValueChange={(value) => handleFieldUpdate("tier", value)}
               >
                 <SelectTrigger id="tier">
-                  <SelectValue />
+                  <SelectValue placeholder="Select tier">
+                    {getTierLabel(objective.tier)}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="strategic">Strategic</SelectItem>
-                  <SelectItem value="portfolio">Portfolio</SelectItem>
-                  <SelectItem value="solution">Solution</SelectItem>
-                  <SelectItem value="program">Program</SelectItem>
-                  <SelectItem value="team">Team</SelectItem>
+                  {OKR_TIER_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -90,11 +99,11 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="on_track">On Track</SelectItem>
-                  <SelectItem value="at_risk">At Risk</SelectItem>
-                  <SelectItem value="off_track">Off Track</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
+                  {STATUS_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -183,11 +192,11 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
               <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-primary"
-                  style={{ width: `${objective.key_result_progress * 100}%` }}
+                  style={{ width: `${(objective.key_result_progress || 0) * 100}%` }}
                 />
               </div>
               <span className="text-sm font-medium">
-                {Math.round(objective.key_result_progress * 100)}%
+                {Math.round((objective.key_result_progress || 0) * 100)}%
               </span>
             </div>
           </div>
@@ -197,11 +206,11 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
               <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
                 <div
                   className="h-full bg-primary"
-                  style={{ width: `${objective.work_progress * 100}%` }}
+                  style={{ width: `${(objective.work_progress || 0) * 100}%` }}
                 />
               </div>
               <span className="text-sm font-medium">
-                {Math.round(objective.work_progress * 100)}%
+                {Math.round((objective.work_progress || 0) * 100)}%
               </span>
             </div>
           </div>
@@ -214,7 +223,7 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
           <div>
             <div className="text-sm text-muted-foreground">Program Increments</div>
             <div className="flex flex-wrap gap-1 mt-1">
-              {objective.program_increment_ids.length > 0 ? (
+              {objective.program_increment_ids?.length > 0 ? (
                 objective.program_increment_ids.map((piId: string) => (
                   <Badge key={piId} variant="outline">
                     {piId.slice(0, 8)}

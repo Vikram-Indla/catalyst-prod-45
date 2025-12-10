@@ -15,7 +15,6 @@ interface ObjectivesWidgetProps {
   tier: ObjectiveTier;
   portfolioId?: string;
   programId?: string;
-  teamId?: string;
   piId?: string;
   limit?: number;
   title?: string;
@@ -27,7 +26,6 @@ export function ObjectivesWidget({
   tier,
   portfolioId,
   programId,
-  teamId,
   piId,
   limit = 5,
   title,
@@ -41,7 +39,6 @@ export function ObjectivesWidget({
     tier: [tier],
     portfolioIds: portfolioId ? [portfolioId] : undefined,
     programIds: programId ? [programId] : undefined,
-    teamIds: teamId ? [teamId] : undefined,
     piIds: piId ? [piId] : undefined,
   };
 
@@ -153,7 +150,6 @@ export function ObjectivesWidget({
         tier={tier}
         portfolioId={portfolioId}
         programId={programId}
-        teamId={teamId}
       />
 
       {selectedObjectiveId && (

@@ -78,9 +78,9 @@ export const useCreateKeyResult = () => {
       toast.success('Key result created successfully');
     },
     onError: (error: any) => {
-      const message = error?.message || 'Failed to create key result';
-      toast.error(message);
+      // Show friendly message instead of raw DB constraint errors
       console.error('Create key result error:', error);
+      toast.error('Failed to create key result. Please try again.');
     },
   });
 };
@@ -125,9 +125,8 @@ export const useUpdateKeyResult = () => {
       toast.success('Key result updated successfully');
     },
     onError: (error: any) => {
-      const message = error?.message || 'Failed to update key result';
-      toast.error(message);
       console.error('Update key result error:', error);
+      toast.error('Failed to update key result. Please try again.');
     },
   });
 };
