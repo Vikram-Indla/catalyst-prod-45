@@ -1,5 +1,7 @@
-import HomeScreen from "@/components/atlaskit/HomeScreen";
-
 export default function Home() {
-  return <HomeScreen />;
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Home page content will be rebuilt */}
+    </div>
+  );
 }
