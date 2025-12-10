@@ -1,3 +1,7 @@
+// LEGACY: This component is no longer used at runtime.
+// Use ObjectiveDetailsPanelNew from src/components/okr/ObjectiveDetailsPanelNew.tsx instead.
+// Kept temporarily for reference.
+
 import { useState } from 'react';
 import { useObjective, useUpdateObjective } from '@/hooks/useObjectives';
 import { useKeyResults } from '@/hooks/useKeyResults';

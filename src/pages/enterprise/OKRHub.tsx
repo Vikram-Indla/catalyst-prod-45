@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/table';
 import { ObjectiveDetailsPanelNew } from '@/components/okr/ObjectiveDetailsPanelNew';
 import { OKRColumnsDialog } from '@/components/okr/OKRColumnsDialog';
-import { ObjectiveDialog } from '@/components/forms/ObjectiveDialog';
+import { CreateObjectiveDialog } from '@/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog';
 import { useObjectives } from '@/hooks/useObjectives';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -303,7 +303,6 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                 <SelectItem value="all">All Tiers</SelectItem>
                 <SelectItem value="portfolio">Portfolio</SelectItem>
                 <SelectItem value="program">Program</SelectItem>
-                <SelectItem value="team">Team</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -648,9 +647,10 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
         onSave={setColumns}
       />
 
-      <ObjectiveDialog
+      <CreateObjectiveDialog
         open={createDialogOpen}
-        onClose={() => setCreateDialogOpen(false)}
+        onOpenChange={setCreateDialogOpen}
+        tier="portfolio"
       />
     </div>
   );
