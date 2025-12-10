@@ -237,7 +237,6 @@ export function useExecutionAgainstOutcomes(snapshotId?: string) {
 }
 
 export interface PyramidCounts {
-  strategicGoals: number;
   themes: number;
   epics: number;
   features: number;
@@ -253,7 +252,6 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
     queryFn: async (): Promise<PyramidCounts> => {
       if (!snapshotId) {
         return {
-          strategicGoals: 0,
           themes: 0,
           epics: 0,
           features: 0,
@@ -272,12 +270,6 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
         .maybeSingle();
 
       const linkedThemeIds = snapshotLinks?.theme_ids || [];
-
-      // Count strategic goals linked to snapshot
-      const { count: strategicGoalsCount } = await supabase
-        .from('strategic_goals')
-        .select('id', { count: 'exact', head: true })
-        .eq('snapshot_id', snapshotId);
 
       // Count themes linked to snapshot from strategic_themes table
       const { count: themesCount } = await supabase
@@ -327,7 +319,6 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
       const misalignedFeaturesCount = (totalFeaturesCount || 0) - alignedFeaturesCount;
 
       return {
-        strategicGoals: strategicGoalsCount || 0,
         themes: finalThemesCount,
         epics: totalEpicsCount || 0,
         features: totalFeaturesCount || 0,

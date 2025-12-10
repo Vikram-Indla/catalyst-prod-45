@@ -40,16 +40,29 @@ export function PyramidDrilldownDrawer({
       const isMisalignedView = layer.includes('Misaligned');
       const cleanLayer = layer.replace(' (Misaligned)', '');
 
-      if (cleanLayer === 'Strategic Goals') {
-        const { data } = await supabase
-          .from('strategic_goals')
-          .select('id, title, description, health_status')
+      if (cleanLayer === 'Objectives') {
+        // OKR v2: Fetch objectives where is_v2 = true, linked via themes
+        const { data: themes } = await supabase
+          .from('strategic_themes')
+          .select('id')
           .eq('snapshot_id', snapshotId);
-        return data?.map(g => ({
-          id: g.id,
-          name: g.title,
-          type: 'goal',
-          status: g.health_status || 'unknown',
+        
+        const themeIds = themes?.map(t => t.id) || [];
+        if (themeIds.length === 0) return [];
+
+        const { data } = await supabase
+          .from('objectives')
+          .select('id, name, health, overall_progress, status')
+          .eq('is_v2', true)
+          .in('theme_id', themeIds);
+        
+        return data?.map(o => ({
+          id: o.id,
+          name: o.name,
+          type: 'objective',
+          status: o.status || 'pending',
+          health: o.health,
+          progress: o.overall_progress,
           aligned: true,
         })) || [];
       }

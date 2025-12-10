@@ -62,7 +62,7 @@ export function MisalignedWorkItems({ snapshotId }: MisalignedWorkItemsProps) {
           </div>
 
           <p className="text-xs text-muted-foreground mt-4 italic">
-            Misaligned work items are associated with objectives or goals in the pyramid, 
+            Misaligned work items are associated with themes or objectives in the pyramid, 
             but not planned in an aligned Program Increment.
           </p>
         </div>
