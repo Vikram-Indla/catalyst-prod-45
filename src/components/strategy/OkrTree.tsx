@@ -83,12 +83,11 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
     return (
       <div key={item.id}>
         <div
-          className={`grid items-center py-2.5 px-4 border-b hover:bg-muted/20 transition-colors ${
+          className={`grid items-center py-2.5 border-b hover:bg-muted/20 transition-colors ${
             isObjective ? 'cursor-pointer' : ''
           } ${isTheme ? 'bg-muted/30' : ''}`}
           style={{
-            gridTemplateColumns: '1fr 180px 100px 100px',
-            paddingLeft: `${indentPx + 16}px`
+            gridTemplateColumns: '1fr 180px 80px 80px',
           }}
           onClick={() => {
             if (isObjective) {
@@ -97,7 +96,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
             }
           }}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3" style={{ paddingLeft: `${indentPx + 16}px` }}>
             {hasChildren ? (
               <button
                 onClick={(e) => {
@@ -148,8 +147,8 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
           </div>
 
           {/* Progress */}
-          <div className="flex justify-center px-3">
-            <div className="w-full max-w-[140px] h-2.5 bg-muted rounded-full overflow-hidden">
+          <div className="flex justify-center">
+            <div className="w-[140px] h-2.5 bg-muted rounded-full overflow-hidden">
               <div
                 className="h-full rounded-full transition-all"
                 style={{
@@ -161,7 +160,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
           </div>
 
           {/* Progress % */}
-          <div className="text-center">
+          <div className="flex justify-center">
             <span className="text-sm font-semibold" style={{ color: getProgressColor(item.progress) }}>
               {Math.round(item.progress)}%
             </span>
@@ -237,16 +236,15 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
         <div className="border rounded-md overflow-hidden bg-card">
           {/* Column Headers */}
           <div
-            className="grid items-center py-2.5 px-4 bg-muted/30 border-b font-semibold text-sm sticky top-0 z-10"
+            className="grid items-center py-2.5 bg-muted/30 border-b font-semibold text-sm sticky top-0 z-10"
             style={{
-              gridTemplateColumns: '1fr 180px 100px 100px',
-              paddingLeft: '16px'
+              gridTemplateColumns: '1fr 180px 80px 80px',
             }}
           >
-            <div className="text-foreground/90">Item</div>
-            <div className="text-center text-foreground/80">Progress</div>
-            <div className="text-center text-foreground/80">%</div>
-            <div className="text-center text-foreground/80">Owner</div>
+            <div className="text-foreground/90 pl-4">Item</div>
+            <div className="text-foreground/80 text-center">Progress</div>
+            <div className="text-foreground/80 text-center">%</div>
+            <div className="text-foreground/80 text-center">Owner</div>
           </div>
 
           {/* Tree Content */}
