@@ -41,7 +41,7 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
   const { data: dependencies = [] } = useTeamDependencies(team?.id);
   const { data: teamMembers = [] } = useTeamMembers(team?.id);
   const { data: objectives = [] } = useObjectives({ 
-    teamIds: team?.id ? [team.id] : [],
+    programIds: team?.program_id ? [team.program_id] : [],
     includeParentHierarchy: true
   });
   const [activeView, setActiveView] = useState<'team' | 'my'>('team');

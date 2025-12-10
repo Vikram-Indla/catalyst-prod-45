@@ -3,7 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // Objectives Module - Proper Types per Technical Specification
-export type ObjectiveTier = 'portfolio' | 'program' | 'team';
+// OKR Module ONLY supports Portfolio and Program tiers
+export type ObjectiveTier = 'portfolio' | 'program';
 
 export type ObjectiveStatus = 
   | 'pending'
@@ -28,7 +29,8 @@ export type ObjectiveType =
 
 export interface Objective {
   id: string;
-  summary: string;
+  name: string; // Required DB field
+  summary?: string;
   description?: string;
   tier: ObjectiveTier;
   status: ObjectiveStatus;
@@ -38,7 +40,6 @@ export interface Objective {
   owner_id?: string;
   portfolio_id?: string;
   program_id?: string;
-  team_id?: string;
   parent_objective_id?: string;
   parent_key_result_id?: string;
   theme_id?: string;
@@ -65,7 +66,6 @@ export interface ObjectiveFilters {
   tier?: ObjectiveTier[];
   portfolioIds?: string[];
   programIds?: string[];
-  teamIds?: string[];
   piIds?: string[];
   statuses?: ObjectiveStatus[];
   ownerIds?: string[];
@@ -95,137 +95,86 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         keyResultsByObjective.get(kr.objective_id)!.push(kr);
       });
 
-  // Handle hierarchical filtering by fetching related entity IDs
-  let portfolioIdsToQuery: string[] = [];
-  let programIdsToQuery: string[] = [];
-  let teamIdsToQuery: string[] = [];
+      // Handle hierarchical filtering by fetching related entity IDs
+      let portfolioIdsToQuery: string[] = [];
+      let programIdsToQuery: string[] = [];
 
-  // Portfolio context - include all children (portfolio + programs + teams in portfolio)
-  if (filters?.portfolioIds && filters.portfolioIds.length > 0) {
-    portfolioIdsToQuery = filters.portfolioIds;
-    
-    if (filters.includeAllChildren) {
-      // Fetch programs in this portfolio
-      const { data: programs } = await supabase
-        .from('programs')
-        .select('id')
-        .in('portfolio_id', filters.portfolioIds);
-      
-      if (programs && programs.length > 0) {
-        programIdsToQuery = programs.map(p => p.id);
+      // Portfolio context - include all children (portfolio + programs in portfolio)
+      if (filters?.portfolioIds && filters.portfolioIds.length > 0) {
+        portfolioIdsToQuery = filters.portfolioIds;
         
-        // Fetch teams in these programs
-        const { data: teams } = await supabase
-          .from('teams')
-          .select('id')
-          .in('program_id', programIdsToQuery);
-        
-        if (teams && teams.length > 0) {
-          teamIdsToQuery = teams.map(t => t.id);
+        if (filters.includeAllChildren) {
+          // Fetch programs in this portfolio
+          const { data: programs } = await supabase
+            .from('programs')
+            .select('id')
+            .in('portfolio_id', filters.portfolioIds);
+          
+          if (programs && programs.length > 0) {
+            programIdsToQuery = programs.map(p => p.id);
+          }
         }
       }
-    }
-  }
 
-  // Program context - include program objectives and child team objectives
-  if (filters?.programIds && filters.programIds.length > 0) {
-    programIdsToQuery = [...programIdsToQuery, ...filters.programIds];
-    
-    if (filters.includeChildTeams) {
-      // Fetch teams in this program
-      const { data: teams } = await supabase
-        .from('teams')
-        .select('id')
-        .in('program_id', filters.programIds);
-      
-      if (teams && teams.length > 0) {
-        teamIdsToQuery = [...teamIdsToQuery, ...teams.map(t => t.id)];
+      // Program context - include program objectives
+      if (filters?.programIds && filters.programIds.length > 0) {
+        programIdsToQuery = [...programIdsToQuery, ...filters.programIds];
       }
-    }
-  }
 
-  // Team context - include team objectives and optionally parent hierarchy
-  if (filters?.teamIds && filters.teamIds.length > 0) {
-    teamIdsToQuery = [...teamIdsToQuery, ...filters.teamIds];
-    
-    if (filters.includeParentHierarchy) {
-      // Fetch parent program for this team
-      const { data: teams } = await supabase
-        .from('teams')
-        .select('program_id')
-        .in('id', filters.teamIds);
-      
-      if (teams && teams.length > 0) {
-        const parentProgramIds = teams.map(t => t.program_id).filter(Boolean) as string[];
-        programIdsToQuery = [...programIdsToQuery, ...parentProgramIds];
-        
-        // Fetch parent portfolio for these programs
-        const { data: programs } = await supabase
-          .from('programs')
-          .select('portfolio_id')
-          .in('id', parentProgramIds);
-        
-        if (programs && programs.length > 0) {
-          const parentPortfolioIds = programs.map(p => p.portfolio_id).filter(Boolean) as string[];
-          portfolioIdsToQuery = [...portfolioIdsToQuery, ...parentPortfolioIds];
+      // Build the query with collected IDs
+      let query = supabase
+        .from('objectives')
+        .select('*')
+        .in('tier', ['portfolio', 'program']) // Only fetch Portfolio and Program tier objectives
+        .order('created_at', { ascending: false });
+
+      // Apply hierarchical filters using OR conditions
+      const hierarchyFilters: string[] = [];
+      if (portfolioIdsToQuery.length > 0) {
+        hierarchyFilters.push(`portfolio_id.in.(${portfolioIdsToQuery.join(',')})`);
+      }
+      if (programIdsToQuery.length > 0) {
+        hierarchyFilters.push(`program_id.in.(${programIdsToQuery.join(',')})`);
+      }
+
+      if (hierarchyFilters.length > 0) {
+        query = query.or(hierarchyFilters.join(','));
+      }
+
+      // Apply tier filter (only allow portfolio and program)
+      if (filters?.tier && filters.tier.length > 0) {
+        const validTiers = filters.tier.filter(t => t === 'portfolio' || t === 'program');
+        if (validTiers.length > 0) {
+          query = query.in('tier', validTiers);
         }
       }
-    }
-  }
 
-  // Build the query with collected IDs
-  let query = supabase
-    .from('objectives')
-    .select('*')
-    .order('created_at', { ascending: false });
+      // Apply status filter
+      if (filters?.statuses && filters.statuses.length > 0) {
+        query = query.in('status', filters.statuses);
+      }
 
-  // Apply hierarchical filters using OR conditions
-  const hierarchyFilters: string[] = [];
-  if (portfolioIdsToQuery.length > 0) {
-    hierarchyFilters.push(`portfolio_id.in.(${portfolioIdsToQuery.join(',')})`);
-  }
-  if (programIdsToQuery.length > 0) {
-    hierarchyFilters.push(`program_id.in.(${programIdsToQuery.join(',')})`);
-  }
-  if (teamIdsToQuery.length > 0) {
-    hierarchyFilters.push(`team_id.in.(${teamIdsToQuery.join(',')})`);
-  }
+      // Apply owner filter
+      if (filters?.ownerIds && filters.ownerIds.length > 0) {
+        query = query.in('owner_id', filters.ownerIds);
+      }
 
-  if (hierarchyFilters.length > 0) {
-    query = query.or(hierarchyFilters.join(','));
-  }
+      // Apply blocked filter
+      if (filters?.blockedOnly) {
+        query = query.eq('is_blocked', true);
+      }
 
-  // Apply tier filter
-  if (filters?.tier && filters.tier.length > 0) {
-    query = query.in('tier', filters.tier);
-  }
+      // Apply search filter - search in 'name' field (DB column)
+      if (filters?.search) {
+        query = query.or(`name.ilike.%${filters.search}%,id.ilike.%${filters.search}%`);
+      }
 
-  // Apply status filter
-  if (filters?.statuses && filters.statuses.length > 0) {
-    query = query.in('status', filters.statuses);
-  }
-
-  // Apply owner filter
-  if (filters?.ownerIds && filters.ownerIds.length > 0) {
-    query = query.in('owner_id', filters.ownerIds);
-  }
-
-  // Apply blocked filter
-  if (filters?.blockedOnly) {
-    query = query.eq('is_blocked', true);
-  }
-
-  // Apply search filter
-  if (filters?.search) {
-    query = query.or(`summary.ilike.%${filters.search}%,id.ilike.%${filters.search}%`);
-  }
-
-  const { data, error } = await query;
+      const { data, error } = await query;
       if (error) throw error;
 
-      // Attach key results count to each objective
-      // Calculate progress values for each objective
-      const objectivesWithKRData = (data as Objective[]).map(obj => {
+      // Map DB 'name' field to 'summary' for display compatibility
+      // and attach key results count to each objective
+      const objectivesWithKRData = ((data || []) as any[]).map(obj => {
         const keyResults = keyResultsByObjective.get(obj.id) || [];
         
         // Calculate Key Results Progress (average of all KR progress)
@@ -246,16 +195,16 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         }
         
         // Work Progress would need work item alignments data
-        // For now, use the stored value or default to krProgress as fallback
         const workProgress = obj.work_progress ?? krProgress;
         
         return {
           ...obj,
+          summary: obj.name, // Map 'name' to 'summary' for UI compatibility
           keyResults,
           keyResultsCount: keyResults.length,
           work_progress: workProgress,
           key_result_progress: krProgress,
-        };
+        } as Objective & { keyResults: any[]; keyResultsCount: number };
       });
 
       return objectivesWithKRData;
@@ -277,7 +226,12 @@ export const useObjective = (objectiveId?: string) => {
         .single();
 
       if (error) throw error;
-      return data as Objective;
+      
+      // Map 'name' to 'summary' for UI compatibility
+      return {
+        ...data,
+        summary: data.name,
+      } as Objective;
     },
     enabled: !!objectiveId,
   });
@@ -289,9 +243,51 @@ export const useCreateObjective = () => {
 
   return useMutation({
     mutationFn: async (objective: any) => {
+      // Validate tier - only allow portfolio and program
+      const tier = objective.tier;
+      if (tier !== 'portfolio' && tier !== 'program') {
+        throw new Error('Only Portfolio and Program tiers are supported');
+      }
+
+      // Build the insert payload with correct field mapping
+      const insertPayload: any = {
+        name: objective.summary || objective.name, // Map summary to name (required DB field)
+        tier: tier,
+        status: objective.status || 'pending',
+        description: objective.description,
+        health: objective.health,
+        category: objective.category,
+        type: objective.type,
+        owner_id: objective.owner_id,
+        portfolio_id: objective.portfolio_id,
+        program_id: objective.program_id,
+        parent_objective_id: objective.parent_objective_id,
+        parent_key_result_id: objective.parent_key_result_id,
+        theme_id: objective.theme_id,
+        anchor_sprint_id: objective.anchor_sprint_id,
+        start_date: objective.start_date,
+        due_date: objective.due_date,
+        program_increment_ids: objective.program_increment_ids || [],
+        contributors: objective.contributors || [],
+        planned_value: objective.planned_value,
+        delivered_value: objective.delivered_value,
+        is_blocked: objective.is_blocked || false,
+        notes: objective.notes,
+        tags: objective.tags || [],
+        work_progress: objective.work_progress || 0,
+        key_result_progress: objective.key_result_progress || 0,
+      };
+
+      // Remove undefined values
+      Object.keys(insertPayload).forEach(key => {
+        if (insertPayload[key] === undefined) {
+          delete insertPayload[key];
+        }
+      });
+
       const { data, error } = await supabase
         .from('objectives')
-        .insert(objective)
+        .insert(insertPayload)
         .select()
         .single();
 
@@ -302,9 +298,10 @@ export const useCreateObjective = () => {
       queryClient.invalidateQueries({ queryKey: ['objectives'] });
       toast.success('Objective created successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to create objective');
-      console.error(error);
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to create objective';
+      toast.error(message);
+      console.error('Create objective error:', error);
     },
   });
 };
@@ -315,9 +312,16 @@ export const useUpdateObjective = () => {
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Objective> & { id: string }) => {
+      // Map summary to name if provided
+      const updatePayload: any = { ...updates };
+      if (updatePayload.summary) {
+        updatePayload.name = updatePayload.summary;
+        delete updatePayload.summary;
+      }
+
       const { data, error } = await supabase
         .from('objectives')
-        .update(updates)
+        .update(updatePayload)
         .eq('id', id)
         .select()
         .single();
@@ -330,9 +334,10 @@ export const useUpdateObjective = () => {
       queryClient.invalidateQueries({ queryKey: ['objective', data.id] });
       toast.success('Objective updated successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to update objective');
-      console.error(error);
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to update objective';
+      toast.error(message);
+      console.error('Update objective error:', error);
     },
   });
 };
@@ -354,9 +359,10 @@ export const useDeleteObjective = () => {
       queryClient.invalidateQueries({ queryKey: ['objectives'] });
       toast.success('Objective deleted successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to delete objective');
-      console.error(error);
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to delete objective';
+      toast.error(message);
+      console.error('Delete objective error:', error);
     },
   });
 };

@@ -15,7 +15,6 @@ export function exportObjectivesToCSV(objectives: Objective[], filename = 'objec
     'Owner ID',
     'Portfolio ID',
     'Program ID',
-    'Team ID',
     'Start Date',
     'Due Date',
     'Is Blocked',
@@ -24,7 +23,7 @@ export function exportObjectivesToCSV(objectives: Objective[], filename = 'objec
 
   const rows = objectives.map((obj) => [
     obj.id,
-    `"${obj.summary.replace(/"/g, '""')}"`,
+    `"${(obj.summary || obj.name || '').replace(/"/g, '""')}"`,
     obj.tier,
     obj.status,
     obj.health || '',
@@ -36,7 +35,6 @@ export function exportObjectivesToCSV(objectives: Objective[], filename = 'objec
     obj.owner_id || '',
     obj.portfolio_id || '',
     obj.program_id || '',
-    obj.team_id || '',
     obj.start_date || '',
     obj.due_date || '',
     obj.is_blocked ? 'Yes' : 'No',

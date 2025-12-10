@@ -1,6 +1,8 @@
 // Objectives Module - TypeScript Types (Centralized)
+// OKR Module ONLY supports Portfolio and Program tiers
+// Team and Solution tiers are explicitly NOT supported per governance
 
-export type ObjectiveTier = 'portfolio' | 'program' | 'team';
+export type ObjectiveTier = 'portfolio' | 'program';
 
 export type ObjectiveStatus = 
   | 'pending'
@@ -25,7 +27,8 @@ export type ObjectiveType =
 
 export interface ObjectiveBase {
   id: string;
-  summary: string;
+  name: string; // Database requires 'name' column
+  summary?: string; // Optional alias
   description?: string;
   tier: ObjectiveTier;
   status: ObjectiveStatus;
@@ -35,7 +38,6 @@ export interface ObjectiveBase {
   owner_id?: string;
   portfolio_id?: string;
   program_id?: string;
-  team_id?: string;
   parent_objective_id?: string;
   parent_key_result_id?: string;
   theme_id?: string;
@@ -76,7 +78,8 @@ export interface ObjectiveWithRelations extends ObjectiveBase {
 }
 
 export interface CreateObjectiveInput {
-  summary: string;
+  name: string; // Required - maps to DB 'name' column
+  summary?: string;
   description?: string;
   tier: ObjectiveTier;
   status?: ObjectiveStatus;
@@ -86,7 +89,6 @@ export interface CreateObjectiveInput {
   owner_id?: string;
   portfolio_id?: string;
   program_id?: string;
-  team_id?: string;
   parent_objective_id?: string;
   parent_key_result_id?: string;
   theme_id?: string;
@@ -103,6 +105,7 @@ export interface CreateObjectiveInput {
 }
 
 export interface UpdateObjectiveInput {
+  name?: string;
   summary?: string;
   description?: string;
   status?: ObjectiveStatus;
@@ -133,7 +136,6 @@ export interface ObjectiveFilters {
   tier?: ObjectiveTier[];
   portfolioIds?: string[];
   programIds?: string[];
-  teamIds?: string[];
   piIds?: string[];
   statuses?: ObjectiveStatus[];
   ownerIds?: string[];

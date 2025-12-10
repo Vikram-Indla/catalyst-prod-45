@@ -1,11 +1,13 @@
 // Objectives Module - Constants per Technical Specification
+// OKR Module ONLY supports Portfolio and Program tiers
+// Team and Solution tiers are explicitly NOT supported per governance
 
-import { ObjectiveStatus, ObjectiveHealth, ObjectiveCategory, ObjectiveType, ObjectiveTier } from '@/hooks/useObjectives';
+import { ObjectiveStatus, ObjectiveHealth, ObjectiveCategory, ObjectiveType, ObjectiveTier } from '../types/objective.types';
 
 export const OBJECTIVE_TIERS: { value: ObjectiveTier; label: string }[] = [
   { value: 'portfolio', label: 'Portfolio' },
   { value: 'program', label: 'Program' },
-  { value: 'team', label: 'Team' },
+  // Team and Solution tiers are NOT supported in OKR module
 ];
 
 export const OBJECTIVE_STATUSES: { value: ObjectiveStatus; label: string; color: string }[] = [

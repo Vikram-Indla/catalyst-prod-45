@@ -1,9 +1,10 @@
-import { Briefcase, Layers, FolderKanban, Users } from 'lucide-react';
+import { Briefcase, FolderKanban } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { ObjectiveTier } from '../../types/objective.types';
 import { cn } from '@/lib/utils';
 
-const TIER_CONFIG = {
+// Only Portfolio and Program tiers are supported in OKR module
+const TIER_CONFIG: Record<ObjectiveTier, { label: string; className: string; icon: typeof Briefcase }> = {
   portfolio: {
     label: 'Portfolio',
     className: 'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300',
@@ -14,12 +15,7 @@ const TIER_CONFIG = {
     className: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
     icon: FolderKanban,
   },
-  team: {
-    label: 'Team',
-    className: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300',
-    icon: Users,
-  },
-} as const;
+};
 
 interface ObjectiveTierBadgeProps {
   tier: ObjectiveTier;
@@ -28,7 +24,9 @@ interface ObjectiveTierBadgeProps {
 }
 
 export function ObjectiveTierBadge({ tier, showIcon = true, size = 'md' }: ObjectiveTierBadgeProps) {
-  const config = TIER_CONFIG[tier];
+  // Handle legacy 'team' tier by treating as program (fallback for historical data)
+  const safeTier: ObjectiveTier = tier === 'portfolio' || tier === 'program' ? tier : 'program';
+  const config = TIER_CONFIG[safeTier];
   const Icon = config.icon;
 
   return (
