@@ -71,7 +71,7 @@ export function ObjectiveHierarchyDialog({
               </div>
             </div>
 
-            {/* Key Results Section */}
+            {/* Key Results Section - ONLY for this objective, not children */}
             {hierarchy.current.keyResults?.length > 0 && (
               <div className="space-y-2">
                 <h4 className="text-sm font-semibold text-foreground border-b border-border pb-1">
@@ -138,34 +138,36 @@ interface ChildObjectiveRowProps {
 }
 
 function ChildObjectiveRow({ objective }: ChildObjectiveRowProps) {
+  // Use calculated KR progress from the child's own KRs
+  const krProgress = (objective.calculatedKrProgress || objective.key_result_progress || 0) * 100;
+  const workProgress = (objective.work_progress || 0) * 100;
+
   return (
     <div className="pl-3 py-2 border-l-2 border-muted">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      {/* Main row: tier badge, summary, score, status */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
           <ObjectiveTierBadge tier={objective.tier as any} size="sm" />
-          <span className="text-sm font-medium text-foreground">{objective.summary}</span>
+          <span className="text-sm font-medium text-foreground truncate">
+            {objective.summary || 'Untitled Objective'}
+          </span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Compact progress bars inline */}
+          <div className="flex items-center gap-1">
+            <div className="w-16">
+              <ProgressBar progress={workProgress} height="sm" />
+            </div>
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-16">
+              <ProgressBar progress={krProgress} height="sm" />
+            </div>
+          </div>
           <span className="text-xs text-muted-foreground">
             {objective.score ? `${Math.round(objective.score * 100)}%` : 'N/A'}
           </span>
           <ObjectiveStatusBadge status={objective.status} size="sm" />
-        </div>
-      </div>
-      
-      {/* Compact progress bars for child */}
-      <div className="mt-1.5 grid grid-cols-2 gap-4 pl-6">
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-muted-foreground">Work</span>
-          <div className="flex-1">
-            <ProgressBar progress={(objective.work_progress || 0) * 100} height="sm" />
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-muted-foreground">KR</span>
-          <div className="flex-1">
-            <ProgressBar progress={(objective.key_result_progress || 0) * 100} height="sm" />
-          </div>
         </div>
       </div>
     </div>
