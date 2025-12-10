@@ -41,11 +41,12 @@ export const OBJECTIVE_TYPES: { value: ObjectiveType; label: string; description
   { value: 'event', label: 'Event', description: 'Specific date or milestone' },
 ];
 
+// Metric types must match DB constraint: 'percentage', 'count', 'cost_currency', 'nps', 'score'
 export const METRIC_TYPES = [
   { value: 'count', label: 'Count', description: 'Numeric count (e.g., 150 customers)' },
-  { value: 'currency', label: 'Currency', description: 'Dollar/SAR values (e.g., $50,000)' },
+  { value: 'cost_currency', label: 'Currency', description: 'Dollar/SAR values (e.g., SAR 50,000)' },
   { value: 'percentage', label: 'Percentage', description: 'Percent complete (0-100)' },
-  { value: 'decimal_score', label: 'Decimal Score', description: 'Score 0.0-1.0 (e.g., 0.75)' },
+  { value: 'score', label: 'Decimal Score', description: 'Score 0.0-1.0 (e.g., 0.75)' },
   { value: 'nps', label: 'NPS', description: 'Net Promoter Score (-100 to 100)' },
 ];
 

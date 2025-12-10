@@ -1,7 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ObjectiveForm, type ObjectiveFormValues } from "./ObjectiveForm";
 import { useCreateObjective } from "@/hooks/useObjectives";
-import { toast } from "sonner";
 import type { ObjectiveTier } from "../../types/objective.types";
 
 interface CreateObjectiveDialogProps {
@@ -10,7 +9,6 @@ interface CreateObjectiveDialogProps {
   tier?: ObjectiveTier;
   portfolioId?: string;
   programId?: string;
-  teamId?: string;
 }
 
 export function CreateObjectiveDialog({ 
@@ -19,7 +17,6 @@ export function CreateObjectiveDialog({
   tier = "portfolio",
   portfolioId,
   programId,
-  teamId 
 }: CreateObjectiveDialogProps) {
   const createObjective = useCreateObjective();
 
@@ -27,10 +24,9 @@ export function CreateObjectiveDialog({
     try {
       await createObjective.mutateAsync({
         ...values,
-        tier,
+        tier: values.tier, // Use the tier from form, not prop override
         portfolio_id: portfolioId,
         program_id: programId,
-        team_id: teamId,
         tags: [],
         program_increment_ids: [],
         contributors: [],
@@ -38,10 +34,8 @@ export function CreateObjectiveDialog({
         key_result_progress: 0,
       });
       onOpenChange(false);
-      toast.success("Objective created successfully");
     } catch (error) {
       console.error("Failed to create objective:", error);
-      toast.error("Failed to create objective");
     }
   };
 

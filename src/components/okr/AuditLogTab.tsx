@@ -1,13 +1,46 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { formatDistanceToNow } from "date-fns";
-import { Clock, User, FileText, Target } from "lucide-react";
+import { format } from "date-fns";
+import { Target, FileText } from "lucide-react";
 
 interface AuditLogTabProps {
   objectiveId: string;
 }
+
+// Fields to exclude from change display (noise/metadata)
+const EXCLUDED_FIELDS = [
+  'updated_at', 
+  'created_at', 
+  'id', 
+  'score_config',
+  'program_increment_ids',
+  'contributors',
+  'tags',
+];
+
+// Human-readable field names
+const FIELD_LABELS: Record<string, string> = {
+  name: 'Name',
+  summary: 'Summary',
+  description: 'Description',
+  tier: 'Tier',
+  status: 'Status',
+  health: 'Health',
+  owner_id: 'Owner',
+  start_date: 'Start Date',
+  due_date: 'Due Date',
+  is_blocked: 'Blocked',
+  current_value: 'Current Value',
+  goal_value: 'Goal Value',
+  baseline_value: 'Baseline Value',
+  metric_type: 'Metric Type',
+  confidence_score: 'Confidence Score',
+  work_progress: 'Work Progress',
+  key_result_progress: 'KR Progress',
+};
 
 export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
   const { data: auditLogs = [], isLoading } = useQuery({
@@ -16,7 +49,7 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
       // Fetch objective audit logs
       const { data: objectiveLogs, error: objError } = await supabase
         .from("activity_logs")
-        .select("*")
+        .select("*, profiles:actor_id(full_name, avatar_url)")
         .eq("entity_type", "objective")
         .eq("entity_id", objectiveId)
         .order("created_at", { ascending: false });
@@ -36,7 +69,7 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
       if (krIds.length > 0) {
         const { data, error: krError } = await supabase
           .from("activity_logs")
-          .select("*")
+          .select("*, profiles:actor_id(full_name, avatar_url)")
           .eq("entity_type", "key_result")
           .in("entity_id", krIds)
           .order("created_at", { ascending: false });
@@ -59,29 +92,11 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
     return <div className="p-4 text-center text-muted-foreground">Loading audit log...</div>;
   }
 
-  const getActionBadgeVariant = (action: string) => {
-    if (action.includes("create")) return "default";
-    if (action.includes("update")) return "secondary";
-    if (action.includes("delete")) return "destructive";
+  const getActionBadgeVariant = (action: string): "default" | "secondary" | "destructive" | "outline" => {
+    if (action.includes("created")) return "default";
+    if (action.includes("updated") || action.includes("status_changed")) return "secondary";
+    if (action.includes("deleted")) return "destructive";
     return "outline";
-  };
-
-  const formatFieldChange = (before: any, after: any, field: string) => {
-    const beforeVal = before?.[field];
-    const afterVal = after?.[field];
-    
-    if (beforeVal === afterVal) return null;
-    
-    return (
-      <div className="text-sm space-y-1">
-        <div className="font-medium text-foreground">{field}</div>
-        <div className="flex items-center gap-2 text-xs">
-          <span className="text-muted-foreground line-through">{String(beforeVal || 'null')}</span>
-          <span>→</span>
-          <span className="text-foreground">{String(afterVal || 'null')}</span>
-        </div>
-      </div>
-    );
   };
 
   const getEntityIcon = (entityType: string) => {
@@ -94,6 +109,73 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
     return 'Objective';
   };
 
+  const formatDate = (dateStr: string) => {
+    try {
+      return format(new Date(dateStr), "d MMM yyyy, HH:mm");
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const formatValue = (value: any): string => {
+    if (value === null || value === undefined) return '—';
+    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    if (typeof value === 'object') {
+      // Don't show [object Object] - just show a summary or skip
+      return '(complex value)';
+    }
+    if (typeof value === 'number') {
+      return value.toLocaleString();
+    }
+    return String(value);
+  };
+
+  const getChangedFields = (before: any, after: any) => {
+    if (!before || !after) return [];
+    
+    const changes: { field: string; from: any; to: any }[] = [];
+    const allKeys = new Set([...Object.keys(before || {}), ...Object.keys(after || {})]);
+    
+    for (const key of allKeys) {
+      if (EXCLUDED_FIELDS.includes(key)) continue;
+      
+      const beforeVal = before?.[key];
+      const afterVal = after?.[key];
+      
+      // Skip if both are objects (complex fields)
+      if (typeof beforeVal === 'object' && beforeVal !== null) continue;
+      if (typeof afterVal === 'object' && afterVal !== null) continue;
+      
+      // Compare stringified values for simple comparison
+      if (JSON.stringify(beforeVal) !== JSON.stringify(afterVal)) {
+        changes.push({ 
+          field: FIELD_LABELS[key] || key, 
+          from: beforeVal, 
+          to: afterVal 
+        });
+      }
+    }
+    
+    return changes;
+  };
+
+  const getUserDisplay = (log: any) => {
+    const profile = log.profiles;
+    const name = profile?.full_name || 'User';
+    const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+    
+    return (
+      <div className="flex items-center gap-2">
+        <Avatar className="h-6 w-6">
+          <AvatarFallback className="text-xs bg-muted">
+            {initials}
+          </AvatarFallback>
+        </Avatar>
+        <span className="text-sm">{name}</span>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-3">
       {auditLogs.length === 0 ? (
@@ -101,42 +183,51 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
           No activity recorded yet
         </Card>
       ) : (
-        auditLogs.map((log) => (
-          <Card key={log.id} className="p-4">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Badge variant={getActionBadgeVariant(log.action)}>
-                    {log.action}
-                  </Badge>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    {getEntityIcon(log.entity_type)}
-                    <span>{getEntityLabel(log.entity_type)}</span>
+        auditLogs.map((log) => {
+          const changes = getChangedFields(log.before_json, log.after_json);
+          
+          return (
+            <Card key={log.id} className="p-4">
+              <div className="space-y-3">
+                {/* Header row */}
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-3">
+                    <Badge variant={getActionBadgeVariant(log.action)}>
+                      {log.action}
+                    </Badge>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      {getEntityIcon(log.entity_type)}
+                      <span>{getEntityLabel(log.entity_type)}</span>
+                    </div>
+                    {getUserDisplay(log)}
                   </div>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <User className="w-3 h-3" />
-                    <span>User</span>
+                  <div className="text-xs text-muted-foreground">
+                    {log.created_at && formatDate(log.created_at)}
                   </div>
                 </div>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock className="w-3 h-3" />
-                  {log.created_at && formatDistanceToNow(new Date(log.created_at), { addSuffix: true })}
-                </div>
-              </div>
 
-              {log.before_json && log.after_json && (
-                <div className="space-y-2 pt-2 border-t">
-                  <div className="text-xs font-medium text-muted-foreground">Changes:</div>
-                  <div className="space-y-2 pl-4">
-                    {Object.keys(log.after_json as object).map((field) =>
-                      formatFieldChange(log.before_json, log.after_json, field)
-                    ).filter(Boolean)}
+                {/* Changes section - only show for updates with actual changes */}
+                {log.action !== 'created' && changes.length > 0 && (
+                  <div className="pt-2 border-t space-y-2">
+                    <div className="text-xs font-medium text-muted-foreground">Changes:</div>
+                    <div className="space-y-1.5 pl-2">
+                      {changes.map((change, idx) => (
+                        <div key={idx} className="text-sm">
+                          <span className="font-medium">{change.field}:</span>{' '}
+                          <span className="text-muted-foreground line-through">
+                            {formatValue(change.from)}
+                          </span>
+                          {' → '}
+                          <span>{formatValue(change.to)}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          </Card>
-        ))
+                )}
+              </div>
+            </Card>
+          );
+        })
       )}
     </div>
   );
