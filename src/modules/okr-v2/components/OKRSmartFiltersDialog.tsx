@@ -358,15 +358,21 @@ export function OKRSmartFiltersDialog({
         </div>
 
         <DialogFooter className="flex justify-between border-t border-border pt-4">
-          <Button variant="ghost" size="sm" onClick={handleClearFilters} className="text-muted-foreground">
+          <Button 
+            type="button"
+            variant="ghost" 
+            size="sm" 
+            onClick={handleClearFilters} 
+            className="text-muted-foreground"
+          >
             <X className="h-4 w-4 mr-1" />
             Clear all
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleCancel}>
+            <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button onClick={handleApplyFilters}>
+            <Button type="button" onClick={handleApplyFilters}>
               Apply Filters
             </Button>
           </div>
