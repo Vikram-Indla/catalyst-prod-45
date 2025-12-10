@@ -30,7 +30,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { MoreVertical, Trash2, Users, Calendar, Target } from 'lucide-react';
+import { MoreVertical, Trash2, Users, Calendar, Target, ChevronDown, X } from 'lucide-react';
 import { ObjectiveOverviewTabV2, ObjectiveFormData } from './ObjectiveOverviewTabV2';
 import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
@@ -266,11 +266,12 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
             </div>
           ) : objective ? (
             <>
-              {/* Header */}
-              <SheetHeader className="px-6 py-5 border-b border-border bg-card flex-shrink-0">
-                <div className="flex items-start justify-between">
+              {/* Header - Business Drawer pattern: Save button in header, no footer */}
+              <SheetHeader className="px-6 py-4 border-b-2 border-brand-gold bg-card flex-shrink-0">
+                <div className="flex items-center justify-between gap-4">
+                  {/* Left: Title area */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-1">
                       {objective.theme_name && (
                         <Badge variant="secondary" className="text-xs">
                           {objective.theme_name}
@@ -281,50 +282,72 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                       </Badge>
                       <div className={`w-2 h-2 rounded-full ${getHealthColor(objective.health)}`} />
                     </div>
-                    <SheetTitle className="text-lg font-semibold">
+                    <SheetTitle className="text-lg font-semibold truncate">
                       {objective.name}
                     </SheetTitle>
                     <SheetDescription className="sr-only">
                       Objective details and key results
                     </SheetDescription>
-                    {objective.description && (
-                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                        {objective.description}
-                      </p>
-                    )}
                   </div>
 
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8">
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                      <DropdownMenuItem>Export</DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => setShowDeleteDialog(true)}
-                      >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  {/* Right: Save dropdown + Kebab + X (Business Drawer pattern) */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {/* Save dropdown button */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button 
+                          className="bg-brand-gold hover:bg-brand-gold-hover text-white gap-1"
+                          disabled={!hasChanges}
+                        >
+                          Save
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={handleSave}>
+                          Save
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleSaveAndClose}>
+                          Save & Close
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Kebab menu */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-9 w-9">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem>Duplicate</DropdownMenuItem>
+                        <DropdownMenuItem>Export</DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() => setShowDeleteDialog(true)}
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    {/* Close X button */}
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-9 w-9"
+                      onClick={handleAttemptClose}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
-                {/* Progress & Meta */}
-                <div className="mt-4 space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-muted-foreground">Overall Progress</span>
-                      <span className="font-medium">{objective.overall_progress || 0}%</span>
-                    </div>
-                    <Progress value={objective.overall_progress || 0} className="h-2" />
-                  </div>
-
+                {/* Progress & Meta row below title */}
+                <div className="mt-3 space-y-2">
                   <div className="flex items-center gap-6 text-sm text-muted-foreground">
                     {objective.owner_name && (
                       <div className="flex items-center gap-1.5">
@@ -342,6 +365,13 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                       <Target className="h-3.5 w-3.5" />
                       <span>{keyResults?.length || 0} Key Results</span>
                     </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between text-sm mb-1">
+                      <span className="text-muted-foreground">Overall Progress</span>
+                      <span className="font-medium">{objective.overall_progress || 0}%</span>
+                    </div>
+                    <Progress value={objective.overall_progress || 0} className="h-2" />
                   </div>
                 </div>
               </SheetHeader>
@@ -396,23 +426,6 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                   </TabsContent>
                 </div>
               </Tabs>
-
-              {/* Sticky Footer - same pattern as Business Drawer */}
-              <div className="border-t border-border bg-card px-6 py-4 flex items-center justify-end gap-3 flex-shrink-0">
-                <Button
-                  variant="outline"
-                  onClick={handleAttemptClose}
-                >
-                  Close
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={!hasChanges}
-                  className="bg-brand-gold hover:bg-brand-gold-hover text-white"
-                >
-                  Save
-                </Button>
-              </div>
             </>
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">

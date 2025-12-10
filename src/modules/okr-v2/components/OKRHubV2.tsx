@@ -171,11 +171,6 @@ function ObjectiveCard({ objective, onClick }: ObjectiveCardProps) {
                   </Badge>
                 </div>
                 <h3 className="font-medium text-foreground truncate">{objective.name}</h3>
-                {objective.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
-                    {objective.description}
-                  </p>
-                )}
               </div>
 
               {/* Progress */}
