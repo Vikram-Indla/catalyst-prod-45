@@ -92,18 +92,18 @@ code, pre {
   font-family: 'SFMono-Medium', 'SF Mono', 'Segoe UI Mono', 'Roboto Mono', 'Ubuntu Mono', Menlo, Consolas, Courier, monospace !important;
 }
 
-/* LINKS */
+/* LINKS - Catalyst Brand Gold */
 a {
   font-size: 14px !important;
   line-height: 20px !important;
   font-weight: 400 !important;
-  color: #0052CC !important;
+  color: #C69C6D !important;
   text-decoration: none !important;
   cursor: pointer !important;
 }
 
 a:hover {
-  color: #0065FF !important;
+  color: #B8905F !important;
   text-decoration: underline !important;
 }
 
