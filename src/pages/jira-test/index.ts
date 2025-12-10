@@ -1,0 +1,1 @@
+export { JiraCloneTestPage } from './JiraCloneTestPage';
