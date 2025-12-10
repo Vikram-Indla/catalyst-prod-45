@@ -11,6 +11,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { OBJECTIVE_TIERS, OBJECTIVE_STATUSES, OBJECTIVE_HEALTH, OBJECTIVE_CATEGORIES, OBJECTIVE_TYPES } from "../../constants/objectiveConstants";
 import type { ObjectiveTier, ObjectiveStatus } from "../../types/objective.types";
 
@@ -29,6 +31,21 @@ const objectiveFormSchema = z.object({
   delivered_value: z.number().min(0).max(100).optional(),
   is_blocked: z.boolean().default(false),
   notes: z.string().optional(),
+  portfolio_id: z.string().optional(),
+  program_id: z.string().optional(),
+}).refine((data) => {
+  // Portfolio tier requires portfolio_id
+  if (data.tier === 'portfolio' && !data.portfolio_id) {
+    return false;
+  }
+  // Program tier requires program_id
+  if (data.tier === 'program' && !data.program_id) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Please select a Portfolio for Portfolio-tier or Program for Program-tier objectives",
+  path: ["portfolio_id"], // This will show the error on portfolio_id field
 });
 
 export type ObjectiveFormValues = z.infer<typeof objectiveFormSchema>;
@@ -50,7 +67,37 @@ export function ObjectiveForm({ initialValues, onSubmit, onCancel, isSubmitting 
       tier: tier || "portfolio",
       status: "pending",
       is_blocked: false,
+      portfolio_id: undefined,
+      program_id: undefined,
       ...initialValues,
+    },
+  });
+
+  const watchedTier = form.watch("tier");
+
+  // Fetch portfolios for Portfolio-tier objectives
+  const { data: portfolios = [] } = useQuery({
+    queryKey: ["portfolios-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("portfolios")
+        .select("id, name")
+        .order("name");
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch programs for Program-tier objectives
+  const { data: programs = [] } = useQuery({
+    queryKey: ["programs-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("programs")
+        .select("id, name")
+        .order("name");
+      if (error) throw error;
+      return data || [];
     },
   });
 
@@ -168,6 +215,62 @@ export function ObjectiveForm({ initialValues, onSubmit, onCancel, isSubmitting 
             )}
           />
         </div>
+
+        {/* Portfolio dropdown - shown for Portfolio tier */}
+        {watchedTier === 'portfolio' && (
+          <FormField
+            control={form.control}
+            name="portfolio_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Portfolio *</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select portfolio" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {portfolios.map((p: any) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {/* Program dropdown - shown for Program tier */}
+        {watchedTier === 'program' && (
+          <FormField
+            control={form.control}
+            name="program_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Program *</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select program" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {programs.map((p: any) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         {/* Category & Type - Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-[var(--s4)]">
