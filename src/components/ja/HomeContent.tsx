@@ -174,7 +174,7 @@ function ActivityRow({ item }: { item: typeof activityItems[0] }) {
     }}>
       {/* Bookmark icon */}
       <div style={{ color: '#C1C7D0', flexShrink: 0, paddingTop: '2px' }}>
-        <BookmarkIcon label="" size="medium" />
+        <StarIcon label="" size="medium" />
       </div>
 
       {/* Content */}
