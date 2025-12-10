@@ -99,12 +99,28 @@ input[type="search"] {
   line-height: 20px !important;
 }
 
-/* INPUT & SELECT HOVER - Thin Gold Border */
-input:hover,
-textarea:hover,
+/* INPUT & SELECT HOVER - Thin Gold Border (Global Pattern) */
+input:hover:not(:disabled),
+textarea:hover:not(:disabled),
+select:hover:not(:disabled),
 [role="combobox"]:hover,
-button[data-state]:hover {
+[role="listbox"]:hover,
+[data-radix-collection-item]:hover,
+button[data-state]:hover,
+.border:hover:not(button):not([role="button"]),
+[class*="SelectTrigger"]:hover,
+[class*="Input"]:hover:not(:disabled) {
   border-color: #C69C6D !important;
+}
+
+/* Ensure focus also uses gold */
+input:focus,
+textarea:focus,
+select:focus,
+[role="combobox"]:focus,
+[role="combobox"][data-state="open"] {
+  border-color: #C69C6D !important;
+  box-shadow: 0 0 0 1px #C69C6D !important;
 }
 
 /* BUTTONS */
