@@ -60,15 +60,10 @@ interface OKRHubProps {
 }
 
 export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) {
-  // Check feature flag for OKR v2
+  // Check feature flag for OKR v2 - MUST be called unconditionally at top
   const { enabled: isOKRv2Enabled, isLoading: isLoadingFlag } = useOKRv2Enabled();
 
-  // If v2 is enabled, render the v2 hub
-  if (!isLoadingFlag && isOKRv2Enabled) {
-    return <OKRHubV2 />;
-  }
-
-  // v1 implementation continues below
+  // All hooks MUST be called unconditionally before any early returns
   const navigate = useNavigate();
   const params = useParams();
   const navigationContext = useNavigation();
@@ -205,6 +200,11 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
   const { data: objectivesData, isLoading } = useObjectives(filters);
   const objectives = objectivesData?.flat || [];
   const objectivesTree = objectivesData?.tree || [];
+
+  // If OKR v2 is enabled, render the v2 hub (AFTER all hooks are called)
+  if (!isLoadingFlag && isOKRv2Enabled) {
+    return <OKRHubV2 />;
+  }
 
   // Toggle expand/collapse for tree rows
   const toggleExpand = (id: string) => {
