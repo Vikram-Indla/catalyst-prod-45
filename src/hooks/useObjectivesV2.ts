@@ -163,32 +163,32 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
         .in('id', ownerIds.length > 0 ? ownerIds : ['00000000-0000-0000-0000-000000000000']);
       const ownerMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
 
-      // Fetch KR counts
+      // Fetch KRs with progress for real-time calculation
       const objectiveIds = objectives?.map(o => o.id) || [];
-      const { data: krCounts } = await supabase
+      const { data: allKRs } = await supabase
         .from('key_results_v2')
-        .select('objective_id')
+        .select('id, objective_id, progress')
         .in('objective_id', objectiveIds.length > 0 ? objectiveIds : ['00000000-0000-0000-0000-000000000000']);
       
+      // Calculate KR count and real-time progress per objective
       const krCountMap = new Map<string, number>();
-      krCounts?.forEach(kr => {
+      const krProgressMap = new Map<string, number[]>();
+      allKRs?.forEach(kr => {
         krCountMap.set(kr.objective_id, (krCountMap.get(kr.objective_id) || 0) + 1);
+        const progressList = krProgressMap.get(kr.objective_id) || [];
+        progressList.push(kr.progress || 0);
+        krProgressMap.set(kr.objective_id, progressList);
       });
 
       // Fetch work contribution counts (via KRs)
-      const { data: krs } = await supabase
-        .from('key_results_v2')
-        .select('id, objective_id')
-        .in('objective_id', objectiveIds.length > 0 ? objectiveIds : ['00000000-0000-0000-0000-000000000000']);
-      
-      const krIds = krs?.map(kr => kr.id) || [];
+      const krIds = allKRs?.map(kr => kr.id) || [];
       const { data: contributions } = await supabase
         .from('kr_work_contributions')
         .select('key_result_id')
         .in('key_result_id', krIds.length > 0 ? krIds : ['00000000-0000-0000-0000-000000000000']);
       
       // Map KR contributions back to objectives
-      const krToObjectiveMap = new Map(krs?.map(kr => [kr.id, kr.objective_id]) || []);
+      const krToObjectiveMap = new Map(allKRs?.map(kr => [kr.id, kr.objective_id]) || []);
       const workCountMap = new Map<string, number>();
       contributions?.forEach(c => {
         const objectiveId = krToObjectiveMap.get(c.key_result_id);
@@ -197,28 +197,45 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
         }
       });
 
-      // Enrich objectives
-      const enrichedObjectives = (objectives || []).map(obj => ({
-        id: obj.id,
-        name: obj.name,
-        description: obj.description,
-        theme_id: obj.theme_id,
-        owner_id: obj.owner_id,
-        start_date: obj.start_date,
-        due_date: obj.due_date,
-        status: (obj.status || 'pending') as ObjectiveStatusV2,
-        health: (obj.health || 'at_risk') as ObjectiveHealthV2,
-        visibility: obj.visibility || 'org-wide',
-        overall_progress: obj.overall_progress || 0,
-        is_v2: obj.is_v2 ?? true,
-        created_at: obj.created_at,
-        updated_at: obj.updated_at,
-        created_by: obj.created_by,
-        theme_name: obj.theme_id ? themeMap.get(obj.theme_id) : undefined,
-        owner_name: obj.owner_id ? ownerMap.get(obj.owner_id) : undefined,
-        key_results_count: krCountMap.get(obj.id) || 0,
-        linked_work_count: workCountMap.get(obj.id) || 0,
-      }));
+      // Enrich objectives with real-time calculated progress
+      const enrichedObjectives = (objectives || []).map(obj => {
+        // Calculate progress from KRs (average of all KR progress values)
+        const krProgressList = krProgressMap.get(obj.id) || [];
+        const calculatedProgress = krProgressList.length > 0
+          ? Math.round(krProgressList.reduce((sum, p) => sum + p, 0) / krProgressList.length)
+          : 0;
+        
+        // Derive health from calculated progress
+        let calculatedHealth: ObjectiveHealthV2 = 'at_risk';
+        if (krProgressList.length > 0) {
+          if (calculatedProgress >= 70) calculatedHealth = 'good';
+          else if (calculatedProgress >= 40) calculatedHealth = 'fair';
+          else if (calculatedProgress >= 20) calculatedHealth = 'at_risk';
+          else calculatedHealth = 'poor';
+        }
+
+        return {
+          id: obj.id,
+          name: obj.name,
+          description: obj.description,
+          theme_id: obj.theme_id,
+          owner_id: obj.owner_id,
+          start_date: obj.start_date,
+          due_date: obj.due_date,
+          status: (obj.status || 'pending') as ObjectiveStatusV2,
+          health: calculatedHealth,
+          visibility: obj.visibility || 'org-wide',
+          overall_progress: calculatedProgress,
+          is_v2: obj.is_v2 ?? true,
+          created_at: obj.created_at,
+          updated_at: obj.updated_at,
+          created_by: obj.created_by,
+          theme_name: obj.theme_id ? themeMap.get(obj.theme_id) : undefined,
+          owner_name: obj.owner_id ? ownerMap.get(obj.owner_id) : undefined,
+          key_results_count: krCountMap.get(obj.id) || 0,
+          linked_work_count: workCountMap.get(obj.id) || 0,
+        };
+      });
 
       if (filters?.hasLinkedWork === true) {
         return enrichedObjectives.filter(o => (o.linked_work_count || 0) > 0);
