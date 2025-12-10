@@ -77,7 +77,7 @@ export function CreateDropdown() {
       'story': '/stories?create=true',
       'defect': '/items/defects?create=true',
       'task': '/items/tasks?create=true',
-      'objective': '/enterprise/objectives?create=true',
+      'objective': '/enterprise/okr-hub?create=true',
       'dependency': '/dependencies?create=true',
       'ideation': '/items/ideation?create=true',
       'risk': '/enterprise/risks?create=true',

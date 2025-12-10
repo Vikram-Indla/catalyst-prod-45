@@ -155,9 +155,7 @@ import { AdminGuard } from "./components/admin/AdminGuard";
 import OKRHeatmap from "./pages/enterprise/OKRHeatmap";
 import OKRTree from "./pages/enterprise/OKRTree";
 import OKRHub from "./pages/enterprise/OKRHub";
-import { OKRHub as PortfolioOKRHub } from "./pages/portfolio/OKRHub";
-import { OKRHub as ProgramOKRHub } from "./pages/program/OKRHub";
-import { OKRHub as TeamOKRHub } from "./pages/team/OKRHub";
+// OKR v2 is now the single source - no separate portfolio/program/team OKR hubs
 import RoadmapsPage from "./pages/enterprise/Roadmaps";
 import StrategicSnapshots from "./pages/enterprise/StrategicSnapshots";
 import StrategicBacklog from "./pages/enterprise/StrategicBacklog";
@@ -265,7 +263,7 @@ const App = () => (
               <Route path="/portfolio/:portfolioId/epics" element={<EpicsPage />} />
               <Route path="/portfolio/:portfolioId/backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<PlaceholderPage />} />
-              <Route path="/portfolio/:portfolioId/objective-tree" element={<PortfolioOKRHub />} />
+              <Route path="/portfolio/:portfolioId/objective-tree" element={<OKRHub />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<WorkTreePage />} />
               <Route path="/portfolio/:portfolioId/forecast" element={<Forecast />} />
               <Route path="/portfolio/:portfolioId/capacity" element={<PlaceholderPage />} />
@@ -277,13 +275,13 @@ const App = () => (
               <Route path="/enterprise/okr-heatmap" element={<OKRHeatmap />} />
               <Route path="/enterprise/okr-tree" element={<OKRTree />} />
               <Route path="/enterprise/okr-hub" element={<OKRHub />} />
-              <Route path="/portfolio/:portfolioId/okr-hub" element={<PortfolioOKRHub />} />
-              <Route path="/program/:programId/okr-hub" element={<ProgramOKRHub />} />
+              <Route path="/portfolio/:portfolioId/okr-hub" element={<OKRHub />} />
+              <Route path="/program/:programId/okr-hub" element={<OKRHub />} />
               <Route path="/program/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/program/:programId/room" element={<ProgramRoom />} />
               <Route path="/program/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/program/:programId/program-board" element={<ProgramBoardWithSidebar />} />
-              <Route path="/team/:teamId/okr-hub" element={<TeamOKRHub />} />
+              <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               <Route path="/work-tree" element={<WorkTreePage />} />
               <Route path="/enterprise/work-tree" element={<WorkTreePage />} />
@@ -384,7 +382,7 @@ const App = () => (
               <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
               <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
-              <Route path="/programs/:programId/objective-tree" element={<ProgramOKRHub />} />
+              <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
               <Route path="/programs/:programId/forecast" element={<ForecastWithSidebar />} />
@@ -412,7 +410,7 @@ const App = () => (
               <Route path="/teams/:teamId/work-tree" element={<WorkTreePage />} />
               <Route path="/teams/:teamId/backlog" element={<TeamBacklog />} />
               <Route path="/teams/:teamId/board" element={<TeamComingSoon />} />
-              <Route path="/teams/:teamId/objective-tree" element={<TeamOKRHub />} />
+              <Route path="/teams/:teamId/objective-tree" element={<OKRHub />} />
               <Route path="/teams/:teamId/roadmaps" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/sprints" element={<TeamComingSoon />} />
               <Route path="/teams/:teamId/velocity" element={<TeamComingSoon />} />
@@ -434,7 +432,7 @@ const App = () => (
 
               {/* Portfolio Routes with :portfolioId */}
               <Route path="/portfolio/:portfolioId/room" element={<PortfolioRoomPage />} />
-              <Route path="/portfolio/:portfolioId/objective-tree" element={<PortfolioOKRHub />} />
+              <Route path="/portfolio/:portfolioId/objective-tree" element={<OKRHub />} />
               <Route path="/portfolio/:portfolioId/work-tree" element={<WorkTreePage />} />
               <Route path="/portfolio/:portfolioId/backlog" element={<PortfolioBacklog />} />
               <Route path="/portfolio/:portfolioId/roadmaps" element={<Roadmaps />} />
@@ -464,7 +462,7 @@ const App = () => (
               {/* Program Routes with :programId */}
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
               <Route path="/programs/:programId/program-board" element={<ProgramBoardWithSidebar />} />
-              <Route path="/programs/:programId/objective-tree" element={<ProgramOKRHub />} />
+              <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
               <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
@@ -496,7 +494,7 @@ const App = () => (
               <Route path="/team/:teamId/backlog" element={<TeamBacklog />} />
               <Route path="/team/:teamId/stories" element={<TeamStoriesPage />} />
               <Route path="/team/:teamId/roadmaps" element={<TeamComingSoon />} />
-              <Route path="/team/:teamId/objective-tree" element={<TeamOKRHub />} />
+              <Route path="/team/:teamId/objective-tree" element={<OKRHub />} />
               <Route path="/team/:teamId/work-tree" element={<WorkTreePage />} />
               <Route path="/team/:teamId/meetings" element={<TeamComingSoon />} />
               
