@@ -318,7 +318,7 @@ export function HomeContent() {
     }}>
       {/* Page title with bottom divider */}
       <h1 style={{
-        fontSize: '24px',
+        fontSize: '29px',
         fontWeight: 500,
         color: '#172B4D',
         lineHeight: '32px',
@@ -339,13 +339,13 @@ export function HomeContent() {
           marginBottom: '12px',
         }}>
           <h2 style={{
-            fontSize: '12px',
-            fontWeight: 600,
+            fontSize: '16px',
+            fontWeight: 500,
             color: '#172B4D',
             margin: 0,
-            lineHeight: '16px',
+            lineHeight: '20px',
           }}>
-            Recent spaces
+            Recent projects
           </h2>
           <a href="#" style={{
             fontSize: '14px',
