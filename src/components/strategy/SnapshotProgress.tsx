@@ -68,7 +68,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
     : 0;
 
   return (
-    <Card>
+    <Card className="border bg-card">
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle className="text-lg">Snapshot Progress</CardTitle>

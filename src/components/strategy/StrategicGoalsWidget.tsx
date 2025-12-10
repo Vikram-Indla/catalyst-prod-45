@@ -30,7 +30,7 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="border bg-card">
         <CardHeader>
           <div className="flex items-center gap-2">
             <Target className="h-5 w-5 text-primary" />
@@ -50,7 +50,7 @@ export function StrategicGoalsWidget({ snapshotId }: StrategicGoalsWidgetProps) 
   const topObjectives = objectives.slice(0, 4);
 
   return (
-    <Card>
+    <Card className="border bg-card">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
