@@ -18,7 +18,7 @@ import { DemandSelectorDropdown } from "@/components/ja/DemandSelectorDropdown";
 import { ProgramSelectorDropdown } from "@/components/ja/ProgramSelectorDropdown";
 import { ProjectSelectorDropdown } from "@/components/ja/ProjectSelectorDropdown";
 import { ReleaseDropdown } from "@/components/ja/ReleaseDropdown";
-import { ItemsDropdown } from "@/components/ja/ItemsDropdown";
+
 import { UnifiedCreateModal, CreateType } from "./UnifiedCreateModal";
 import { CreateWorkItemModal } from "./CreateWorkItemModal";
 import { CreateEntityDialog } from "@/components/dialogs/CreateEntityDialog";
@@ -102,7 +102,6 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
     { label: "Program", hasDropdown: true },
     { label: "Project", hasDropdown: true },
     { label: "Release", hasDropdown: true },
-    { label: "Items", hasDropdown: true },
   ], []);
 
   const isItemActive = useCallback((item: typeof navItems[0]) => {
@@ -166,10 +165,6 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
               {navItems.map((item) => {
                 const isActive = isItemActive(item);
 
-                // Items dropdown
-                if (item.label === "Items") {
-                  return <ItemsDropdown key={item.label} />;
-                }
 
                 // Dropdowns for Product, Program, Project, Release
                 if (item.hasDropdown) {
