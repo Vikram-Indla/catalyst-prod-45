@@ -21,11 +21,14 @@ import { useCreateKeyResultV2, useUpdateKeyResultV2, MetricType, Direction } fro
 import { getCurrencyLabel } from "@/lib/currencyConfig";
 
 // V1-style metric type options mapped to v2 types
+// NOTE: DB CHECK constraint allows: 'percentage', 'count', 'cost_currency', 'nps', 'score'
+// These UI values are mapped to DB values in useKeyResultsV2.ts
 const METRIC_TYPE_OPTIONS = [
   { label: "Percentage", value: "percentage" },
-  { label: "Number", value: "number" },
-  { label: "Currency", value: "currency" },
-  { label: "Boolean", value: "boolean" },
+  { label: "Number", value: "number" },  // maps to 'count' in DB
+  { label: "Currency", value: "currency" }, // maps to 'cost_currency' in DB
+  { label: "NPS", value: "nps" },
+  { label: "Score", value: "score" },
 ] as const;
 
 const DIRECTION_OPTIONS = [

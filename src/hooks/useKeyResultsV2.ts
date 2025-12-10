@@ -2,9 +2,30 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
-export type MetricType = 'number' | 'percentage' | 'currency' | 'boolean';
+// UI-friendly metric type labels
+export type MetricType = 'number' | 'percentage' | 'currency' | 'boolean' | 'nps' | 'score';
 export type Direction = 'increase' | 'decrease' | 'maintain';
 export type UpdateFrequency = 'weekly' | 'monthly' | 'quarterly';
+
+// DB CHECK constraint only allows: 'percentage', 'count', 'cost_currency', 'nps', 'score'
+// Map UI types to DB values
+const UI_TO_DB_METRIC_TYPE: Record<MetricType, string> = {
+  number: 'count',
+  percentage: 'percentage',
+  currency: 'cost_currency',
+  boolean: 'score', // Use score for boolean (0 or 100)
+  nps: 'nps',
+  score: 'score',
+};
+
+// Map DB values back to UI types for display
+const DB_TO_UI_METRIC_TYPE: Record<string, MetricType> = {
+  count: 'number',
+  percentage: 'percentage',
+  cost_currency: 'currency',
+  nps: 'nps',
+  score: 'score',
+};
 
 export interface KeyResultV2 {
   id: string;
@@ -88,8 +109,11 @@ export function useKeyResultsV2(objectiveId?: string) {
         const goal = kr.goal_value || kr.target_value || 0;
         const direction = (kr.direction || 'increase') as Direction;
         const progress = calculateKRProgress(baseline, current, goal, direction);
+        // Map DB metric_type back to UI type for display
+        const uiMetricType = DB_TO_UI_METRIC_TYPE[kr.metric_type] || (kr.metric_type as MetricType);
         return {
           ...kr,
+          metric_type: uiMetricType,
           baseline_value: baseline,
           current_value: current,
           goal_value: goal,
@@ -108,12 +132,15 @@ export function useCreateKeyResultV2() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: CreateKeyResultInput) => {
+      // Map UI metric type to DB-valid value
+      const dbMetricType = UI_TO_DB_METRIC_TYPE[input.metric_type] || 'count';
+      
       const { data, error } = await supabase
         .from('key_results_v2')
         .insert({
           objective_id: input.objective_id,
           summary: input.summary,
-          metric_type: input.metric_type,
+          metric_type: dbMetricType,
           baseline_value: input.baseline_value || 0,
           goal_value: input.goal_value,
           current_value: input.baseline_value || 0,
@@ -122,7 +149,11 @@ export function useCreateKeyResultV2() {
         })
         .select()
         .single();
-      if (error) throw error;
+      
+      if (error) {
+        console.error('KR create error:', error);
+        throw error;
+      }
       
       // Write audit log for KR creation
       await writeAuditLog('key_result', data.id, 'created', null, data);
@@ -135,7 +166,10 @@ export function useCreateKeyResultV2() {
       queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Key Result created');
     },
-    onError: () => toast.error('Failed to create Key Result'),
+    onError: (error: any) => {
+      const msg = error?.message || error?.code || 'Unknown error';
+      toast.error(`Failed to create Key Result: ${msg}`);
+    },
   });
 }
 
