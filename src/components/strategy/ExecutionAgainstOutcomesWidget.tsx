@@ -9,14 +9,9 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { 
-  useExecutionAgainstOutcomes, 
-  useThemeProgress,
-  getThresholdColor,
-  type ExecutionMetrics,
-  type ThemeProgress,
-} from "@/hooks/useExecutionMetrics";
+import { useOKRv2StrategyMetrics } from "@/hooks/useOKRv2StrategyMetrics";
 import { ExecutionDrilldownDrawer } from "./ExecutionDrilldownDrawer";
+import { getThresholdColor, type ExecutionMetrics } from "@/hooks/useExecutionMetrics";
 
 interface ExecutionAgainstOutcomesWidgetProps {
   snapshotId?: string;
@@ -25,8 +20,7 @@ interface ExecutionAgainstOutcomesWidgetProps {
 
 export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstOutcomesWidgetProps) {
   const [selectedLevel, setSelectedLevel] = useState<ExecutionMetrics | null>(null);
-  const { data, isLoading } = useExecutionAgainstOutcomes(snapshotId);
-  const { data: themeProgressData, isLoading: themesLoading } = useThemeProgress(snapshotId);
+  const { data: okrMetrics, isLoading } = useOKRv2StrategyMetrics(snapshotId);
 
   const getColorClass = (color: 'red' | 'yellow' | 'green' | 'na') => {
     switch (color) {
@@ -46,12 +40,59 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
     }
   };
 
-  // Get color for theme progress (0-1 value)
-  const getThemeColor = (progress: number | null): 'red' | 'yellow' | 'green' | 'na' => {
-    if (progress === null) return 'na';
-    const percentage = Math.round(progress * 100);
-    return getThresholdColor(percentage);
+  // Calculate color based on average progress
+  const getObjectivesColor = (): 'red' | 'yellow' | 'green' | 'na' => {
+    if (!okrMetrics || okrMetrics.count === 0) return 'na';
+    return getThresholdColor(okrMetrics.avgProgress);
   };
+
+  // Calculate accepted objectives (completed/accepted status)
+  const getAcceptedCount = () => {
+    if (!okrMetrics) return 0;
+    return okrMetrics.objectives.filter(obj => 
+      ['completed', 'accepted', 'done', 'closed'].includes(obj.status?.toLowerCase() || '')
+    ).length;
+  };
+
+  // Group objectives by theme for theme progress display
+  const themeProgressData = () => {
+    if (!okrMetrics) return [];
+    
+    const themeMap = new Map<string, { 
+      themeId: string; 
+      themeName: string; 
+      objectives: typeof okrMetrics.objectives;
+      avgProgress: number;
+    }>();
+
+    okrMetrics.objectives.forEach(obj => {
+      if (!obj.theme_id) return;
+      
+      if (!themeMap.has(obj.theme_id)) {
+        themeMap.set(obj.theme_id, {
+          themeId: obj.theme_id,
+          themeName: obj.theme_name || 'Unknown Theme',
+          objectives: [],
+          avgProgress: 0,
+        });
+      }
+      themeMap.get(obj.theme_id)!.objectives.push(obj);
+    });
+
+    // Calculate average progress per theme
+    themeMap.forEach(theme => {
+      if (theme.objectives.length > 0) {
+        const total = theme.objectives.reduce((sum, obj) => sum + obj.overall_progress, 0);
+        theme.avgProgress = Math.round(total / theme.objectives.length);
+      }
+    });
+
+    return Array.from(themeMap.values());
+  };
+
+  const themes = themeProgressData();
+  const objectivesColor = getObjectivesColor();
+  const acceptedCount = getAcceptedCount();
 
   return (
     <>
@@ -69,7 +110,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                 </TooltipTrigger>
                 <TooltipContent side="left" className="max-w-xs">
                   <p className="text-xs">
-                    Shows execution metrics by objective level and strategic theme progress based on linked Portfolio objectives' KR progress.
+                    Shows execution metrics for OKR v2 Objectives and strategic theme progress based on linked objectives' overall progress.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -92,79 +133,80 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
           </div>
         </CardHeader>
         <CardContent className="pt-0">
-          {isLoading || themesLoading ? (
+          {isLoading ? (
             <div className="space-y-3">
               {[1, 2, 3, 4].map((i) => (
                 <Skeleton key={i} className="h-12 w-full" />
               ))}
             </div>
-          ) : !data || !snapshotId ? (
+          ) : !okrMetrics || !snapshotId ? (
             <div className="text-center py-8 text-sm text-muted-foreground">
               <AlertCircle className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
               Select a snapshot to view execution metrics
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Execution Metrics by Level */}
+              {/* Strategic Objectives (OKR v2) Row */}
               <div className="space-y-2">
-                {data.metrics.map((metric) => (
-                  <button
-                    key={metric.level}
-                    onClick={() => setSelectedLevel(metric)}
-                    className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:border-brand-gold/50 hover:bg-muted/30 transition-colors text-left"
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(metric.color)}`} />
-                      <span className="text-sm font-medium truncate">{metric.levelLabel}</span>
+                <button
+                  onClick={() => setSelectedLevel({
+                    level: 'objectives',
+                    levelLabel: 'Strategic Objectives (OKR v2)',
+                    alignedAccepted: acceptedCount,
+                    alignedTotal: okrMetrics.count,
+                    percentage: okrMetrics.avgProgress,
+                    color: objectivesColor,
+                  })}
+                  className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:border-brand-gold/50 hover:bg-muted/30 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
+                    <span className="text-sm font-medium truncate">Strategic Objectives (OKR v2)</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {objectivesColor === 'na' ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="outline" className="text-xs">N/A</Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">No objectives linked to this snapshot's themes</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <span className={`text-sm font-bold ${getColorText(objectivesColor)}`}>
+                        {okrMetrics.avgProgress}%
+                      </span>
+                    )}
+
+                    <div className="w-16 h-2 bg-muted rounded-full overflow-hidden hidden sm:block">
+                      <div
+                        className={`h-full transition-all ${getColorClass(objectivesColor)}`}
+                        style={{ width: `${okrMetrics.avgProgress}%` }}
+                      />
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      {metric.color === 'na' ? (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Badge variant="outline" className="text-xs">N/A</Badge>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">No aligned execution items</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      ) : (
-                        <span className={`text-sm font-bold ${getColorText(metric.color)}`}>
-                          {metric.percentage}%
-                        </span>
-                      )}
+                    <Badge variant="outline" className="text-[10px] font-normal">
+                      {acceptedCount}/{okrMetrics.count}
+                    </Badge>
 
-                      <div className="w-16 h-2 bg-muted rounded-full overflow-hidden hidden sm:block">
-                        <div
-                          className={`h-full transition-all ${getColorClass(metric.color)}`}
-                          style={{ width: `${metric.percentage}%` }}
-                        />
-                      </div>
-
-                      <Badge variant="outline" className="text-[10px] font-normal">
-                        {metric.alignedAccepted}/{metric.alignedTotal}
-                      </Badge>
-
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  </button>
-                ))}
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </button>
               </div>
 
               {/* Strategic Themes Progress Section */}
-              {themeProgressData && themeProgressData.length > 0 && (
+              {themes.length > 0 && (
                 <div className="space-y-2 pt-2 border-t border-border">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                     <Layers className="h-3.5 w-3.5" />
                     <span className="font-medium">Strategic Themes (KR Progress)</span>
                   </div>
-                  {themeProgressData.map((theme) => {
-                    const color = getThemeColor(theme.krProgress);
-                    const percentage = theme.krProgress !== null 
-                      ? Math.round(theme.krProgress * 100) 
-                      : 0;
+                  {themes.map((theme) => {
+                    const color = theme.objectives.length === 0 ? 'na' : getThresholdColor(theme.avgProgress);
 
                     return (
                       <div
@@ -184,20 +226,20 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                                   <Badge variant="outline" className="text-xs">N/S</Badge>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p className="text-xs">No linked Portfolio objectives with KR progress</p>
+                                  <p className="text-xs">No objectives linked to this theme</p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
                           ) : (
                             <span className={`text-sm font-bold ${getColorText(color)}`}>
-                              {percentage}%
+                              {theme.avgProgress}%
                             </span>
                           )}
 
                           <div className="w-16 h-2 bg-muted rounded-full overflow-hidden hidden sm:block">
                             <div
                               className={`h-full transition-all ${getColorClass(color)}`}
-                              style={{ width: `${percentage}%` }}
+                              style={{ width: `${theme.avgProgress}%` }}
                             />
                           </div>
 
@@ -205,20 +247,18 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Badge variant="outline" className="text-[10px] font-normal">
-                                  {theme.objectiveCount} obj
+                                  {theme.objectives.length} obj
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent side="left" className="max-w-xs">
-                                <p className="text-xs font-medium mb-1">Linked Portfolio Objectives:</p>
+                                <p className="text-xs font-medium mb-1">Linked Objectives (OKR v2):</p>
                                 {theme.objectives.length === 0 ? (
                                   <p className="text-xs text-muted-foreground">None linked</p>
                                 ) : (
                                   <ul className="text-xs space-y-0.5">
                                     {theme.objectives.slice(0, 5).map(obj => (
                                       <li key={obj.id} className="truncate">
-                                        • {obj.name} ({obj.key_result_progress !== null 
-                                          ? `${Math.round(obj.key_result_progress * 100)}%` 
-                                          : 'N/S'})
+                                        • {obj.name} ({obj.overall_progress}%)
                                       </li>
                                     ))}
                                     {theme.objectives.length > 5 && (

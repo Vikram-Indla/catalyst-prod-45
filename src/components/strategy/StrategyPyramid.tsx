@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useStrategyPyramidCounts } from '@/hooks/useExecutionMetrics';
+import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
 import { PyramidDrilldownDrawer } from './PyramidDrilldownDrawer';
 
 interface StrategyPyramidProps {
@@ -22,6 +23,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   const navigate = useNavigate();
   const [drilldownLayer, setDrilldownLayer] = useState<string | null>(null);
   const { data: counts, isLoading } = useStrategyPyramidCounts(snapshotId);
+  const { data: okrMetrics, isLoading: okrLoading } = useOKRv2StrategyMetrics(snapshotId);
 
   // Pyramid geometry - enlarged for better visibility
   const centerX = 400;
@@ -39,8 +41,8 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   };
 
   // Layer Y coordinates (4 layers) - taller layers
-  const y1 = 20;   // Strategic Goals top
-  const y2 = 110;  // Strategic Goals base / Themes top
+  const y1 = 20;   // Objectives top
+  const y2 = 110;  // Objectives base / Themes top
   const y3 = 200;  // Themes base / Epics top
   const y4 = 290;  // Epics base / Features top
   const y5 = 380;  // Features base
@@ -52,7 +54,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   const level5 = getXAtY(y5);
 
   const colors = {
-    strategicGoals: 'hsl(28, 39%, 58%)',
+    objectives: 'hsl(28, 39%, 58%)',
     themes: 'hsl(28, 39%, 54%)',
     epics: 'hsl(28, 37%, 50%)',
     features: 'hsl(28, 35%, 46%)',
@@ -67,14 +69,17 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
     navigate(`/enterprise/backlog?snapshotId=${snapshotId}`);
   };
 
+  // OKR v2 Objectives count (replaces Strategic Goals)
+  const objectivesCount = okrMetrics?.count || 0;
+
   const layers = [
     { 
-      key: 'strategicGoals', 
-      label: 'Strategic Goals', 
-      count: counts?.strategicGoals || 0,
+      key: 'objectives', 
+      label: 'Objectives', 
+      count: objectivesCount,
       misaligned: 0,
       icon: Target,
-      y1: y1, y2: y2, color: colors.strategicGoals,
+      y1: y1, y2: y2, color: colors.objectives,
     },
     { 
       key: 'themes', 

@@ -20,8 +20,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useStrategyRoomFiltersStore } from '@/stores/strategyRoomFiltersStore';
 
-// Type definition - not importing from mock data
-type ObjectiveLevel = "STRATEGIC" | "PORTFOLIO" | "PROGRAM" | "TEAM";
+// Type definition - OKR v2 only uses a single Objectives layer
+type ObjectiveLevel = "OBJECTIVES";
 
 export default function StrategyRoomPage() {
   const navigate = useNavigate();
@@ -135,26 +135,18 @@ export default function StrategyRoomPage() {
   };
 
   const handleLevelClick = (level: string) => {
-    const levelMap: Record<string, ObjectiveLevel> = {
-      'Strategic Goals': 'STRATEGIC',
-      'Portfolio Objectives': 'PORTFOLIO',
-      'Program Objectives': 'PROGRAM',
-      'Team Objectives': 'TEAM',
-    };
-    setFilterLevel(levelMap[level]);
+    // OKR v2: Single objectives layer only
+    setFilterLevel('OBJECTIVES');
     setFilterPI(undefined);
   };
 
   const handlePyramidLayerClick = (label: string) => {
-    const layerMap: Record<string, ObjectiveLevel> = {
-      'Strategic Goals': 'STRATEGIC',
-      'Portfolio Objectives': 'PORTFOLIO',
-      'Program Objectives': 'PROGRAM',
-    };
-    if (layerMap[label]) {
-      setFilterLevel(layerMap[label]);
+    // OKR v2: Single objectives layer, other layers (Themes, Epics, Features) drill down
+    if (label === 'Objectives') {
+      setFilterLevel('OBJECTIVES');
       setFilterPI(undefined);
     }
+    // For Themes/Epics/Features, the pyramid drilldown drawer handles the display
   };
 
   const handleHeatmapCellClick = (level: ObjectiveLevel, pi: string) => {
