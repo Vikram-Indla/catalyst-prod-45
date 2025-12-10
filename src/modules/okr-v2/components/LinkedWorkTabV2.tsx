@@ -4,7 +4,7 @@ import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Target, Layers } from 'lucide-react';
+import { Target, Layers, Link2 } from 'lucide-react';
 
 interface LinkedWorkTabV2Props {
   objectiveId: string;
@@ -16,17 +16,24 @@ interface LinkedWorkItem {
   name: string;
   status?: string;
   progress: number;
-  krName: string;
   contributionPercent: number;
+  effectiveContribution: number;
+}
+
+interface KRWorkGroup {
+  krId: string;
+  krName: string;
+  krProgress: number;
+  workItems: LinkedWorkItem[];
 }
 
 export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
-  const { data: keyResults } = useKeyResultsV2(objectiveId);
+  const { data: keyResults, isLoading: isLoadingKRs } = useKeyResultsV2(objectiveId);
   const krIds = keyResults?.map(kr => kr.id) || [];
 
-  // Fetch all work contributions for this objective's KRs
-  const { data: linkedWork, isLoading } = useQuery({
-    queryKey: ['linked-work-v2', objectiveId, krIds],
+  // Fetch all work contributions for this objective's KRs grouped by KR
+  const { data: workGroups, isLoading: isLoadingWork } = useQuery({
+    queryKey: ['linked-work-v2-grouped', objectiveId, krIds],
     queryFn: async () => {
       if (krIds.length === 0) return [];
 
@@ -37,138 +44,167 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
 
       if (error) throw error;
 
-      // Map contributions to linked work items with KR names
-      const krMap = new Map(keyResults?.map(kr => [kr.id, kr.summary]) || []);
+      // Group by KR
+      const groups: KRWorkGroup[] = [];
+      const krMap = new Map(keyResults?.map(kr => [kr.id, { name: kr.summary, progress: kr.progress }]) || []);
 
-      // Fetch work item names
-      const enrichedContributions = await Promise.all(
-        (contributions || []).map(async (c) => {
-          let name = c.work_item_id;
-          if (c.work_item_type === 'epic') {
-            const { data } = await supabase.from('epics').select('name').eq('id', c.work_item_id).single();
-            if (data) name = data.name;
-          } else if (c.work_item_type === 'feature') {
-            const { data } = await supabase.from('features').select('name').eq('id', c.work_item_id).single();
-            if (data) name = data.name;
-          }
-          return {
-            id: c.id,
-            type: c.work_item_type as 'epic' | 'feature',
-            name,
-            progress: c.calculated_progress || 0,
-            krName: krMap.get(c.key_result_id) || 'Unknown KR',
-            contributionPercent: c.contribution_percent || 0,
-          };
-        })
-      );
+      for (const kr of keyResults || []) {
+        const krContributions = contributions?.filter(c => c.key_result_id === kr.id) || [];
+        if (krContributions.length === 0) continue;
 
-      return enrichedContributions as LinkedWorkItem[];
+        // Fetch work item details for this KR's contributions
+        const workItems: LinkedWorkItem[] = await Promise.all(
+          krContributions.map(async (c) => {
+            let name = c.work_item_id;
+            let progress = c.calculated_progress || 0;
+            let status = '';
+            
+            if (c.work_item_type === 'epic') {
+              const { data } = await supabase.from('epics').select('name, state').eq('id', c.work_item_id).single();
+              if (data) {
+                name = data.name;
+                status = data.state || '';
+                if (['done', 'completed', 'closed'].includes(status.toLowerCase())) {
+                  progress = 100;
+                }
+              }
+            } else if (c.work_item_type === 'feature') {
+              const { data } = await supabase.from('features').select('name, status').eq('id', c.work_item_id).single();
+              if (data) {
+                name = data.name;
+                status = data.status || '';
+                if (['done', 'completed', 'closed'].includes(status.toLowerCase())) {
+                  progress = 100;
+                }
+              }
+            }
+
+            const contributionPercent = c.contribution_percent || 0;
+            const effectiveContribution = Math.round((progress * contributionPercent) / 100);
+
+            return {
+              id: c.id,
+              type: c.work_item_type as 'epic' | 'feature',
+              name,
+              status,
+              progress,
+              contributionPercent,
+              effectiveContribution,
+            };
+          })
+        );
+
+        groups.push({
+          krId: kr.id,
+          krName: kr.summary,
+          krProgress: kr.progress,
+          workItems,
+        });
+      }
+
+      return groups;
     },
     enabled: krIds.length > 0,
+    staleTime: 30000,
   });
+
+  const isLoading = isLoadingKRs || isLoadingWork;
 
   if (isLoading) {
     return (
       <div className="p-6 space-y-4">
-        <Skeleton className="h-16 w-full" />
-        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-4 w-48" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-24 w-full" />
       </div>
     );
   }
 
-  // Group by work item type
-  const epics = linkedWork?.filter(w => w.type === 'epic') || [];
-  const features = linkedWork?.filter(w => w.type === 'feature') || [];
-
-  const hasLinkedWork = (linkedWork?.length || 0) > 0;
+  const hasLinkedWork = (workGroups?.length || 0) > 0;
 
   return (
     <div className="p-6 space-y-6">
       {hasLinkedWork ? (
         <>
           {/* Summary */}
-          <div className="flex items-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1.5">
-              <Target className="h-4 w-4" />
-              <span>{epics.length} Epics</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Layers className="h-4 w-4" />
-              <span>{features.length} Features</span>
-            </div>
+          <div className="text-sm text-muted-foreground">
+            Work items linked via Key Results. Edit alignment from the Key Results tab.
           </div>
 
-          {/* Epics section */}
-          {epics.length > 0 && (
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Target className="h-4 w-4 text-brand-gold" />
-                Epics
-              </h4>
-              <div className="space-y-2">
-                {epics.map((item) => (
-                  <WorkItemCard key={item.id} item={item} />
-                ))}
+          {/* KR groups */}
+          {workGroups?.map((group) => (
+            <div key={group.krId} className="space-y-3">
+              {/* KR header */}
+              <div className="flex items-center gap-3 pb-2 border-b border-border">
+                <Target className="h-4 w-4 text-brand-gold flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-sm truncate">KR – {group.krName}</div>
+                </div>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <Progress value={group.krProgress} className="w-20 h-1.5" />
+                  <span className="text-xs text-muted-foreground">{Math.round(group.krProgress)}%</span>
+                </div>
               </div>
-            </div>
-          )}
 
-          {/* Features section */}
-          {features.length > 0 && (
-            <div className="space-y-3">
-              <h4 className="text-sm font-medium text-foreground flex items-center gap-2">
-                <Layers className="h-4 w-4 text-brand-gold" />
-                Features
-              </h4>
-              <div className="space-y-2">
-                {features.map((item) => (
-                  <WorkItemCard key={item.id} item={item} />
-                ))}
+              {/* Work items table */}
+              <div className="rounded-lg border border-border overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-muted/50">
+                    <tr className="text-left text-xs text-muted-foreground">
+                      <th className="px-3 py-2 font-medium">Work Item</th>
+                      <th className="px-3 py-2 font-medium w-20">Type</th>
+                      <th className="px-3 py-2 font-medium w-24 text-right">Progress</th>
+                      <th className="px-3 py-2 font-medium w-28 text-right">Contribution</th>
+                      <th className="px-3 py-2 font-medium w-24 text-right">Effective</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {group.workItems.map((item) => (
+                      <tr key={item.id} className="border-t border-border hover:bg-muted/30">
+                        <td className="px-3 py-2">
+                          <div className="flex items-center gap-2">
+                            {item.type === 'epic' ? (
+                              <Target className="h-3.5 w-3.5 text-muted-foreground" />
+                            ) : (
+                              <Layers className="h-3.5 w-3.5 text-muted-foreground" />
+                            )}
+                            <span className="truncate">{item.name}</span>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <Badge variant="outline" className="text-xs capitalize">
+                            {item.type}
+                          </Badge>
+                        </td>
+                        <td className="px-3 py-2 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Progress value={item.progress} className="w-12 h-1" />
+                            <span className="text-xs">{item.progress}%</span>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2 text-right text-xs">
+                          {item.contributionPercent}%
+                        </td>
+                        <td className="px-3 py-2 text-right text-xs font-medium">
+                          {item.effectiveContribution}%
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-          )}
+          ))}
         </>
       ) : (
-        <div className="text-center py-8 text-muted-foreground">
-          <Target className="h-10 w-10 mx-auto mb-3 opacity-50" />
-          <p className="text-sm">No work items linked yet</p>
-          <p className="text-xs mt-1">
-            Link epics and features to key results to track execution
+        <div className="text-center py-12 text-muted-foreground">
+          <Link2 className="h-10 w-10 mx-auto mb-3 opacity-50" />
+          <p className="text-sm font-medium">No work items linked yet</p>
+          <p className="text-xs mt-1 max-w-xs mx-auto">
+            Add Epics or Features via the Key Results tab to start tracking execution.
           </p>
         </div>
       )}
-    </div>
-  );
-}
-
-interface WorkItemCardProps {
-  item: LinkedWorkItem;
-}
-
-function WorkItemCard({ item }: WorkItemCardProps) {
-  return (
-    <div className="p-3 bg-card border border-border rounded-lg">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <Badge variant="outline" className="text-xs capitalize">
-              {item.type}
-            </Badge>
-            <span className="text-sm font-medium truncate">{item.name}</span>
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Linked to: {item.krName} ({item.contributionPercent}%)
-          </div>
-        </div>
-
-        <div className="flex-shrink-0 w-24 text-right">
-          <div className="text-xs text-muted-foreground mb-1">Progress</div>
-          <div className="flex items-center gap-2">
-            <Progress value={item.progress} className="h-1.5 flex-1" />
-            <span className="text-xs font-medium">{item.progress}%</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
