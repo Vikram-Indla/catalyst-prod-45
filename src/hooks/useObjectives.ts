@@ -186,11 +186,12 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
 
       // Map DB 'name' field to 'summary' for display compatibility
       // and attach key results count to each objective
+      // Store ownKrProgress for each objective (computed from its own KRs only)
       const objectivesWithKRData = ((data || []) as any[]).map(obj => {
         const keyResults = keyResultsByObjective.get(obj.id) || [];
         
-        // Calculate Key Results Progress (average of all KR progress)
-        let krProgress = 0;
+        // Calculate Own Key Results Progress (from this objective's own KRs only)
+        let ownKrProgress: number | null = null;
         if (keyResults.length > 0) {
           let totalProgress = 0;
           keyResults.forEach(kr => {
@@ -203,11 +204,11 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
               totalProgress += Math.max(0, Math.min(1, progress));
             }
           });
-          krProgress = totalProgress / keyResults.length;
+          ownKrProgress = totalProgress / keyResults.length;
         }
         
         // Work Progress would need work item alignments data
-        const workProgress = obj.work_progress ?? krProgress;
+        const workProgress = obj.work_progress ?? (ownKrProgress || 0);
         
         return {
           ...obj,
@@ -215,10 +216,11 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
           keyResults,
           keyResultsCount: keyResults.length,
           work_progress: workProgress,
-          key_result_progress: krProgress,
+          ownKrProgress, // Store own KR progress separately for roll-up calculation
+          key_result_progress: ownKrProgress || 0, // Will be overwritten with rolled-up value for Portfolio
           portfolio_name: obj.portfolio_id ? portfolioMap.get(obj.portfolio_id) : undefined,
           program_name: obj.program_id ? programMap.get(obj.program_id) : undefined,
-        } as Objective & { keyResults: any[]; keyResultsCount: number; portfolio_name?: string; program_name?: string };
+        } as Objective & { keyResults: any[]; keyResultsCount: number; portfolio_name?: string; program_name?: string; ownKrProgress: number | null };
       });
 
       // Build hierarchical tree structure
@@ -243,6 +245,58 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
           // This is a root (Portfolio objectives or orphan Program objectives)
           roots.push(node);
         }
+      });
+
+      // ============================================
+      // PHASE 4: KR Roll-Up Logic (Program → Portfolio)
+      // ============================================
+      // For Portfolio tier objectives: compute rolledUpKrProgress
+      // = average of (portfolio's own KR progress + each child Program's own KR progress)
+      // For Program tier objectives: rolledUpKrProgress = ownKrProgress (no children aggregated)
+      
+      const computeRolledUpKrProgress = (node: any): number | null => {
+        // For Program tier (or any non-portfolio), just use own progress
+        if (node.tier !== 'portfolio') {
+          node.rolledUpKrProgress = node.ownKrProgress;
+          node.key_result_progress = node.ownKrProgress || 0;
+          return node.ownKrProgress;
+        }
+        
+        // For Portfolio tier: aggregate own progress + child Program progress
+        const progressValues: number[] = [];
+        
+        // Include own KR progress if it exists (has KRs)
+        if (node.ownKrProgress !== null && !Number.isNaN(node.ownKrProgress)) {
+          progressValues.push(node.ownKrProgress);
+        }
+        
+        // Include each child's KR progress
+        if (node.children && node.children.length > 0) {
+          node.children.forEach((child: any) => {
+            // Recursively compute child's rolled-up progress first
+            const childProgress = computeRolledUpKrProgress(child);
+            if (childProgress !== null && !Number.isNaN(childProgress)) {
+              progressValues.push(childProgress);
+            }
+          });
+        }
+        
+        // Calculate average of all progress values
+        if (progressValues.length > 0) {
+          const average = progressValues.reduce((sum, val) => sum + val, 0) / progressValues.length;
+          node.rolledUpKrProgress = average;
+          node.key_result_progress = average; // UI uses key_result_progress
+        } else {
+          node.rolledUpKrProgress = null;
+          node.key_result_progress = 0;
+        }
+        
+        return node.rolledUpKrProgress;
+      };
+      
+      // Apply roll-up to all root nodes (and their descendants)
+      roots.forEach(root => {
+        computeRolledUpKrProgress(root);
       });
 
       // Sort roots: Portfolio tier first, then by created_at
