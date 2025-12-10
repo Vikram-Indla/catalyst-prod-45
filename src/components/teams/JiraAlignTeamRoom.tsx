@@ -40,10 +40,11 @@ export function JiraAlignTeamRoom({ team }: JiraAlignTeamRoomProps) {
   const { data: stories = [] } = useSprintStories(selectedSprintId || sprints[0]?.id);
   const { data: dependencies = [] } = useTeamDependencies(team?.id);
   const { data: teamMembers = [] } = useTeamMembers(team?.id);
-  const { data: objectives = [] } = useObjectives({ 
+  const { data: objectivesData } = useObjectives({ 
     programIds: team?.program_id ? [team.program_id] : [],
     includeParentHierarchy: true
   });
+  const objectives = objectivesData?.flat || [];
   const [activeView, setActiveView] = useState<'team' | 'my'>('team');
   const [activeTab, setActiveTab] = useState<'dashboard' | 'sprint-board'>('dashboard');
   const [workItemFilter, setWorkItemFilter] = useState('stories');

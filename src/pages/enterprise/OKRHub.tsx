@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Search, Filter, Settings, Download, Plus, ArrowRight, GitBranch, MessageSquare, Star } from 'lucide-react';
+import { Search, Filter, Settings, Download, Plus, ArrowRight, GitBranch, MessageSquare, Star, ChevronRight, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -30,6 +30,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useNavigation } from '@/contexts/NavigationContext';
 import { ObjectiveTierBadge } from '@/modules/objectives/components/shared/ObjectiveTierBadge';
 import { ObjectiveHierarchyDialog } from '@/modules/objectives/components/ObjectiveHierarchyDialog';
+import { cn } from '@/lib/utils';
 
 interface Column {
   key: string;
@@ -72,6 +73,9 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
   const [columnsDialogOpen, setColumnsDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [columns, setColumns] = useState<Column[]>(defaultColumns);
+  
+  // Tree expand/collapse state
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
   // Quick filter states
   const [showBlockedOnly, setShowBlockedOnly] = useState(false);
@@ -186,8 +190,21 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
     navigationContext,
   ]);
 
-  // Fetch objectives with filters
-  const { data: objectives = [], isLoading } = useObjectives(filters);
+  // Fetch objectives with filters - returns { tree, flat } structure
+  const { data: objectivesData, isLoading } = useObjectives(filters);
+  const objectives = objectivesData?.flat || [];
+  const objectivesTree = objectivesData?.tree || [];
+
+  // Toggle expand/collapse for tree rows
+  const toggleExpand = (id: string) => {
+    const newExpanded = new Set(expandedIds);
+    if (newExpanded.has(id)) {
+      newExpanded.delete(id);
+    } else {
+      newExpanded.add(id);
+    }
+    setExpandedIds(newExpanded);
+  };
 
   const getScoreColor = (score: number | null): string => {
     if (score === null || score === undefined) return 'text-muted-foreground';
@@ -462,163 +479,201 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                   Loading objectives...
                 </TableCell>
               </TableRow>
-            ) : objectives.length === 0 ? (
+            ) : objectivesTree.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={enabledColumns.length} className="text-center py-8 text-muted-foreground">
                   No objectives found
                 </TableCell>
               </TableRow>
             ) : (
-              objectives.map((objective) => (
-                <TableRow
-                  key={objective.id}
-                  className="cursor-pointer hover:bg-accent/50"
-                  onClick={() => setSelectedObjectiveId(objective.id)}
-                >
-                  {enabledColumns.map(col => {
-                    if (col.key === 'id') {
-                      return (
-                        <TableCell key={col.key}>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-muted-foreground">
-                              ◎ {objective.id.slice(0, 4)}
-                            </span>
-                            <span className="text-sm text-foreground">{objective.summary}</span>
-                            {objective.is_blocked && (
-                              <GitBranch className="h-4 w-4 text-warning" />
-                            )}
-                          </div>
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'tier') {
-                      return (
-                        <TableCell key={col.key}>
-                          <ObjectiveTierBadge tier={objective.tier} size="sm" />
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'status') {
-                      return (
-                        <TableCell key={col.key}>
-                          <Badge className={`text-xs font-semibold ${getStatusBadgeVariant(objective.status)}`}>
-                            {getStatusLabel(objective.status)}
-                            {objective.score !== null && objective.score !== undefined && (
-                              <span className="ml-1">{objective.score.toFixed(1)}</span>
-                            )}
-                          </Badge>
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'work_progress') {
-                      return (
-                        <TableCell key={col.key}>
-                          <div className="w-full bg-muted rounded-full h-2">
-                            <div
-                              className="bg-brand-gold h-2 rounded-full"
-                              style={{ width: `${(objective.work_progress || 0) * 100}%` }}
-                            />
-                          </div>
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'kr_progress') {
-                      return (
-                        <TableCell key={col.key}>
-                          <div className="w-full bg-muted rounded-full h-2">
-                            <div
-                              className="bg-brand-gold h-2 rounded-full"
-                              style={{ width: `${(objective.key_result_progress || 0) * 100}%` }}
-                            />
-                          </div>
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'kr_count') {
-                      const krCount = (objective as any).keyResultsCount || 0;
-                      return (
-                        <TableCell key={col.key}>
-                          <div className="flex items-center justify-center w-6 h-6 rounded-full bg-brand-gold text-brand-dark text-xs font-semibold">
-                            {krCount}
-                          </div>
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'pi') {
-                      const piNames = objective.program_increment_ids?.length > 0 
-                        ? objective.program_increment_ids.map(id => id.slice(0, 6)).join(', ')
-                        : '—';
-                      return (
-                        <TableCell key={col.key} className="text-sm text-foreground">
-                          {piNames}
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'owner') {
-                      return (
-                        <TableCell key={col.key}>
-                          <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark text-xs font-semibold">
-                              {objective.owner_id ? objective.owner_id.slice(0, 2).toUpperCase() : 'UN'}
-                            </div>
-                          </div>
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'team') {
-                      return (
-                        <TableCell key={col.key} className="text-sm text-foreground">
-                          {objective.program_id ? objective.program_id.slice(0, 8) : '—'}
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'due_date') {
-                      return (
-                        <TableCell key={col.key} className="text-sm text-foreground">
-                          {objective.due_date ? new Date(objective.due_date).toLocaleDateString() : '—'}
-                        </TableCell>
-                      );
-                    }
-                    if (col.key === 'view_tree') {
-                      return (
-                        <TableCell key={col.key}>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setHierarchyObjectiveId(objective.id);
-                            }}
-                          >
-                            <GitBranch className="h-4 w-4" />
-                          </Button>
-                        </TableCell>
-                      );
-                    }
-                    return <TableCell key={col.key}>—</TableCell>;
-                  })}
-                </TableRow>
-              ))
+              // Render tree structure recursively
+              (() => {
+                const renderObjectiveRow = (objective: any, depth: number = 0): React.ReactNode[] => {
+                  const hasChildren = objective.children && objective.children.length > 0;
+                  const isExpanded = expandedIds.has(objective.id);
+                  const rows: React.ReactNode[] = [];
+                  
+                  rows.push(
+                    <TableRow
+                      key={objective.id}
+                      className={cn(
+                        "cursor-pointer hover:bg-accent/50",
+                        depth > 0 && "bg-muted/30"
+                      )}
+                      onClick={() => setSelectedObjectiveId(objective.id)}
+                    >
+                      {enabledColumns.map(col => {
+                        if (col.key === 'id') {
+                          return (
+                            <TableCell key={col.key}>
+                              <div 
+                                className="flex items-center gap-2"
+                                style={{ paddingLeft: `${depth * 24}px` }}
+                              >
+                                {/* Expand/Collapse Icon */}
+                                <div 
+                                  className="w-5 flex items-center justify-center flex-shrink-0"
+                                  onClick={(e) => {
+                                    if (hasChildren) {
+                                      e.stopPropagation();
+                                      toggleExpand(objective.id);
+                                    }
+                                  }}
+                                >
+                                  {hasChildren ? (
+                                    isExpanded ? (
+                                      <ChevronDown className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-foreground" />
+                                    ) : (
+                                      <ChevronRight className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-foreground" />
+                                    )
+                                  ) : (
+                                    <span className="w-4" />
+                                  )}
+                                </div>
+                                <span className="text-sm font-medium text-muted-foreground">
+                                  ◎ {objective.id.slice(0, 4)}
+                                </span>
+                                <span className="text-sm text-foreground">{objective.summary}</span>
+                                {hasChildren && (
+                                  <GitBranch className="h-4 w-4 text-brand-gold" />
+                                )}
+                                {objective.is_blocked && (
+                                  <GitBranch className="h-4 w-4 text-warning" />
+                                )}
+                              </div>
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'tier') {
+                          return (
+                            <TableCell key={col.key}>
+                              <ObjectiveTierBadge tier={objective.tier} size="sm" />
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'status') {
+                          return (
+                            <TableCell key={col.key}>
+                              <Badge className={`text-xs font-semibold ${getStatusBadgeVariant(objective.status)}`}>
+                                {getStatusLabel(objective.status)}
+                                {objective.score !== null && objective.score !== undefined && (
+                                  <span className="ml-1">{objective.score.toFixed(1)}</span>
+                                )}
+                              </Badge>
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'work_progress') {
+                          return (
+                            <TableCell key={col.key}>
+                              <div className="w-full bg-muted rounded-full h-2">
+                                <div
+                                  className="bg-brand-gold h-2 rounded-full"
+                                  style={{ width: `${(objective.work_progress || 0) * 100}%` }}
+                                />
+                              </div>
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'kr_progress') {
+                          return (
+                            <TableCell key={col.key}>
+                              <div className="w-full bg-muted rounded-full h-2">
+                                <div
+                                  className="bg-brand-gold h-2 rounded-full"
+                                  style={{ width: `${(objective.key_result_progress || 0) * 100}%` }}
+                                />
+                              </div>
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'kr_count') {
+                          const krCount = (objective as any).keyResultsCount || 0;
+                          return (
+                            <TableCell key={col.key}>
+                              <div className="flex items-center justify-center w-6 h-6 rounded-full bg-brand-gold text-brand-dark text-xs font-semibold">
+                                {krCount}
+                              </div>
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'pi') {
+                          const piNames = objective.program_increment_ids?.length > 0 
+                            ? objective.program_increment_ids.map((id: string) => id.slice(0, 6)).join(', ')
+                            : '—';
+                          return (
+                            <TableCell key={col.key} className="text-sm text-foreground">
+                              {piNames}
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'owner') {
+                          return (
+                            <TableCell key={col.key}>
+                              <div className="flex items-center gap-2">
+                                <div className="w-7 h-7 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark text-xs font-semibold">
+                                  {objective.owner_id ? objective.owner_id.slice(0, 2).toUpperCase() : 'UN'}
+                                </div>
+                              </div>
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'team') {
+                          return (
+                            <TableCell key={col.key} className="text-sm text-foreground">
+                              {objective.program_name || objective.portfolio_name || '—'}
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'due_date') {
+                          return (
+                            <TableCell key={col.key} className="text-sm text-foreground">
+                              {objective.due_date ? new Date(objective.due_date).toLocaleDateString() : '—'}
+                            </TableCell>
+                          );
+                        }
+                        if (col.key === 'view_tree') {
+                          return (
+                            <TableCell key={col.key}>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-8 w-8"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setHierarchyObjectiveId(objective.id);
+                                }}
+                              >
+                                <GitBranch className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          );
+                        }
+                        return <TableCell key={col.key}>—</TableCell>;
+                      })}
+                    </TableRow>
+                  );
+                  
+                  // Render children if expanded
+                  if (hasChildren && isExpanded) {
+                    objective.children.forEach((child: any) => {
+                      rows.push(...renderObjectiveRow(child, depth + 1));
+                    });
+                  }
+                  
+                  return rows;
+                };
+                
+                return objectivesTree.flatMap((obj: any) => renderObjectiveRow(obj, 0));
+              })()
             )}
           </TableBody>
         </Table>
 
         {/* Pagination Info */}
-        {objectives.length > 0 && (
+        {objectivesTree.length > 0 && (
           <div className="flex items-center justify-center gap-4 mt-4 text-sm text-muted-foreground">
-            <span>1 - 1 of 1</span>
-            <div className="flex items-center gap-1">
-              <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
-                ‹
-              </Button>
-              <Button variant="ghost" size="sm" className="h-8 px-3">
-                1
-              </Button>
-              <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
-                ›
-              </Button>
-            </div>
+            <span>Showing {objectives.length} objective{objectives.length !== 1 ? 's' : ''}</span>
           </div>
         )}
       </div>

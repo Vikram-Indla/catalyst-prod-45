@@ -26,7 +26,8 @@ export function ObjectiveSummaryCard({
     piIds: piId ? [piId] : undefined,
   };
 
-  const { data: objectives = [] } = useObjectives(filters);
+  const { data: objectivesData } = useObjectives(filters);
+  const objectives = objectivesData?.flat || [];
 
   const onTrack = objectives.filter(obj => 
     obj.status === 'on_track' || obj.status === 'completed'
