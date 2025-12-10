@@ -103,12 +103,19 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
   const activeContributions = localContributions.filter(c => !c.isDeleted);
   const totalPercent = activeContributions.reduce((sum, c) => sum + c.contribution_percent, 0);
   const remainingPercent = 100 - totalPercent;
-  const isValidTotal = totalPercent >= 99 && totalPercent <= 101;
+  const isValidTotal = totalPercent === 100;
+  const isUnderweight = totalPercent > 0 && totalPercent < 100;
+  const isOverweight = totalPercent > 100;
 
   // Calculate default contribution for new items
+  // First item gets 100%, subsequent items get remaining %
   useEffect(() => {
-    setNewContributionPercent(Math.max(0, remainingPercent));
-  }, [remainingPercent]);
+    if (activeContributions.length === 0) {
+      setNewContributionPercent(100);
+    } else {
+      setNewContributionPercent(Math.max(1, remainingPercent));
+    }
+  }, [remainingPercent, activeContributions.length]);
 
   const handleAddWorkItem = () => {
     if (!selectedWorkItemId || newContributionPercent <= 0) return;
@@ -164,7 +171,8 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
   };
 
   const handleSave = async () => {
-    if (!keyResult || !isValidTotal) return;
+    if (!keyResult) return;
+    if (isOverweight) return; // Block save if over 100%
 
     setIsSaving(true);
     try {
@@ -255,9 +263,9 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
             </div>
             <Progress value={keyResult.progress} className="h-2" />
           </div>
-          <div className="mt-3 flex items-center justify-between text-sm">
+          <div className="mt-3 flex items-center justify-between text-sm border-t border-border pt-3">
             <span className="text-muted-foreground">Contribution Total</span>
-            <span className={`font-medium ${isValidTotal ? 'text-green-600' : totalPercent > 100 ? 'text-destructive' : 'text-amber-600'}`}>
+            <span className={`font-semibold ${isValidTotal ? 'text-emerald-600' : isOverweight ? 'text-destructive' : 'text-amber-600'}`}>
               {totalPercent}% / 100%
             </span>
           </div>
@@ -266,12 +274,12 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
         <div className="flex-1 overflow-auto px-6 py-4 space-y-4">
           {/* Validation warning */}
           {activeContributions.length > 0 && !isValidTotal && (
-            <Alert variant={totalPercent > 100 ? "destructive" : "default"} className="py-2">
+            <Alert variant={isOverweight ? "destructive" : "default"} className={`py-2 ${isUnderweight ? 'border-amber-400 bg-amber-50 text-amber-800' : ''}`}>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription className="text-xs">
-                {totalPercent > 100 
-                  ? `Contributions exceed 100% (current: ${totalPercent}%). Please adjust.`
-                  : `Contributions must total 100%. Current: ${totalPercent}%, remaining: ${remainingPercent}%`
+                {isOverweight 
+                  ? `Contribution total exceeds 100%. Please adjust.`
+                  : `Contribution total is less than 100%. Progress will be underweighted.`
                 }
               </AlertDescription>
             </Alert>
@@ -317,23 +325,26 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Input
-                      type="number"
-                      min="1"
-                      max="100"
-                      value={contribution.contribution_percent}
-                      onChange={(e) => handlePercentChange(
-                        localContributions.indexOf(contribution),
-                        Math.max(1, Math.min(100, parseInt(e.target.value) || 0))
-                      )}
-                      className="w-16 h-8 text-center text-sm"
-                    />
-                    <span className="text-sm text-muted-foreground">%</span>
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <div className="relative flex items-center">
+                      <Input
+                        type="number"
+                        min={1}
+                        max={100}
+                        step={1}
+                        value={contribution.contribution_percent}
+                        onChange={(e) => handlePercentChange(
+                          localContributions.indexOf(contribution),
+                          Math.max(1, Math.min(100, parseInt(e.target.value) || 1))
+                        )}
+                        className="w-[70px] h-9 text-center text-sm pr-6 border-border focus:border-brand-gold"
+                      />
+                      <span className="absolute right-2.5 text-sm text-muted-foreground pointer-events-none">%</span>
+                    </div>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
+                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={() => handleRemove(localContributions.indexOf(contribution))}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -438,7 +449,7 @@ export function KRWorkAlignmentDrawer({ keyResult, open, onClose, objectiveId }:
           </Button>
           <Button 
             onClick={handleSave} 
-            disabled={!isValidTotal || isSaving || activeContributions.length === 0}
+            disabled={isOverweight || isSaving || activeContributions.length === 0}
           >
             {isSaving ? 'Saving...' : 'Save Alignment'}
           </Button>
