@@ -19,12 +19,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Target, Plus, Trash2, AlertCircle, Pencil } from 'lucide-react';
+import { Target, Plus, Trash2, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
 import { KeyResultV2 } from '@/hooks/useKeyResultsV2';
 
 interface LinkedWorkTabV2Props {
   objectiveId: string;
+  onMutation?: () => void;
 }
 
 interface LinkedWorkItem {
@@ -45,12 +46,13 @@ interface KRWorkGroup {
   totalContribution: number;
 }
 
-export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
+export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Props) {
   const queryClient = useQueryClient();
   const { data: keyResults, isLoading: isLoadingKRs } = useKeyResultsV2(objectiveId);
   const updatePercent = useUpdateContributionPercent();
   const removeContribution = useRemoveWorkContribution();
 
+  const [expandedKRs, setExpandedKRs] = useState<Set<string>>(new Set());
   const [editingItem, setEditingItem] = useState<{ id: string; value: number } | null>(null);
   const [unlinkConfirm, setUnlinkConfirm] = useState<{ id: string; krId: string; name: string } | null>(null);
   const [alignDrawerKR, setAlignDrawerKR] = useState<KeyResultV2 | null>(null);
@@ -134,6 +136,16 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
 
   const isLoading = isLoadingKRs || isLoadingWork;
 
+  const toggleKRExpanded = (krId: string) => {
+    const newExpanded = new Set(expandedKRs);
+    if (newExpanded.has(krId)) {
+      newExpanded.delete(krId);
+    } else {
+      newExpanded.add(krId);
+    }
+    setExpandedKRs(newExpanded);
+  };
+
   const handleContributionChange = (id: string, krId: string, value: number) => {
     const clampedValue = Math.max(1, Math.min(100, value));
     updatePercent.mutate(
@@ -145,6 +157,7 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
           queryClient.invalidateQueries({ queryKey: ['kr-work-contributions'] });
           queryClient.invalidateQueries({ queryKey: ['key-results-v2'] });
           queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+          onMutation?.();
         },
       }
     );
@@ -161,6 +174,7 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
           queryClient.invalidateQueries({ queryKey: ['kr-work-contributions'] });
           queryClient.invalidateQueries({ queryKey: ['key-results-v2'] });
           queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+          onMutation?.();
         },
       }
     );
@@ -189,154 +203,165 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
   const hasAnyKRs = (workGroups?.length || 0) > 0;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-4">
       {hasAnyKRs ? (
         <>
           <div className="text-sm text-muted-foreground">
             Work items linked via Key Results. Edit contributions directly in this tab or from Key Results.
           </div>
 
-          {workGroups?.map((group) => {
-            const status = getContributionStatus(group.totalContribution);
-            const hasWorkItems = group.workItems.length > 0;
+          <div className="space-y-2">
+            {workGroups?.map((group) => {
+              const status = getContributionStatus(group.totalContribution);
+              const hasWorkItems = group.workItems.length > 0;
+              const isExpanded = expandedKRs.has(group.krId);
 
-            return (
-              <div key={group.krId} className="space-y-3">
-                {/* KR header */}
-                <div className="flex items-center gap-3">
-                  <Target className="h-4 w-4 text-brand-gold flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <span className="text-sm font-medium">KR – {group.krName}</span>
+              return (
+                <div key={group.krId} className="border border-border rounded-lg overflow-hidden">
+                  {/* Collapsible KR header */}
+                  <div
+                    className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-muted/50 bg-card"
+                    onClick={() => toggleKRExpanded(group.krId)}
+                  >
+                    <Button variant="ghost" size="icon" className="h-6 w-6 flex-shrink-0 p-0">
+                      {isExpanded ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Target className="h-4 w-4 text-brand-gold flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <span className="text-sm font-medium truncate block">KR – {group.krName}</span>
+                    </div>
+                    <div className="flex items-center gap-3 flex-shrink-0">
+                      <Progress value={group.krProgress} className="w-20 h-2" />
+                      <span className="text-sm text-muted-foreground w-10 text-right">{Math.round(group.krProgress)}%</span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <Progress value={group.krProgress} className="w-24 h-2" />
-                    <span className="text-sm text-muted-foreground w-10 text-right">{Math.round(group.krProgress)}%</span>
-                  </div>
+
+                  {/* Expanded content */}
+                  {isExpanded && (
+                    <div className="border-t border-border bg-muted/20">
+                      {/* Contribution total */}
+                      {hasWorkItems && (
+                        <div className="flex items-center justify-between text-xs px-4 py-2 border-b border-border">
+                          <span className="text-muted-foreground">Contribution Total</span>
+                          <span className={`font-semibold ${status.valid ? 'text-emerald-600' : status.overweight ? 'text-destructive' : 'text-amber-600'}`}>
+                            {group.totalContribution}% / 100%
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Validation warning */}
+                      {hasWorkItems && !status.valid && (
+                        <div className="px-4 py-2">
+                          <Alert variant={status.overweight ? "destructive" : "default"} className={`py-2 ${status.underweight ? 'border-amber-400 bg-amber-50 text-amber-800' : ''}`}>
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertDescription className="text-xs">
+                              {status.overweight 
+                                ? `Contribution total exceeds 100%. Please adjust.`
+                                : `Contribution total is less than 100%. Progress will be underweighted.`
+                              }
+                            </AlertDescription>
+                          </Alert>
+                        </div>
+                      )}
+
+                      {/* Work items table */}
+                      {hasWorkItems && (
+                        <div className="px-4 py-2">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="text-left text-xs text-muted-foreground uppercase tracking-wide border-b border-border">
+                                <th className="pb-2 font-medium">Work Item</th>
+                                <th className="pb-2 font-medium w-16 text-center">Type</th>
+                                <th className="pb-2 font-medium w-24 text-center">Progress</th>
+                                <th className="pb-2 font-medium w-24 text-center">Contribution</th>
+                                <th className="pb-2 font-medium w-12"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {group.workItems.map((item) => (
+                                <tr key={item.id} className="border-b border-border last:border-0 hover:bg-muted/30">
+                                  <td className="py-2.5">
+                                    <div className="flex items-center gap-2">
+                                      <Target className="h-3.5 w-3.5 text-brand-gold flex-shrink-0" />
+                                      <span className="truncate">{item.name}</span>
+                                    </div>
+                                  </td>
+                                  <td className="py-2.5 text-center">
+                                    <Badge variant="outline" className="text-xs capitalize">
+                                      {item.type}
+                                    </Badge>
+                                  </td>
+                                  <td className="py-2.5">
+                                    <div className="flex items-center justify-center gap-2">
+                                      <Progress value={item.progress} className="w-12 h-1.5" />
+                                      <span className="text-xs text-muted-foreground w-8">{item.progress}%</span>
+                                    </div>
+                                  </td>
+                                  <td className="py-2.5 text-center">
+                                    {editingItem?.id === item.id ? (
+                                      <Input
+                                        type="number"
+                                        min={1}
+                                        max={100}
+                                        autoFocus
+                                        value={editingItem.value}
+                                        onChange={(e) => setEditingItem({ id: item.id, value: parseInt(e.target.value) || 1 })}
+                                        onBlur={() => handleContributionChange(item.id, group.krId, editingItem.value)}
+                                        onKeyDown={(e) => {
+                                          if (e.key === 'Enter') handleContributionChange(item.id, group.krId, editingItem.value);
+                                          else if (e.key === 'Escape') setEditingItem(null);
+                                        }}
+                                        className="w-16 h-7 text-xs text-center mx-auto"
+                                      />
+                                    ) : (
+                                      <button
+                                        onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
+                                        className="text-sm font-medium hover:text-brand-gold transition-colors px-2 py-0.5 rounded hover:bg-muted"
+                                      >
+                                        {item.contributionPercent}%
+                                      </button>
+                                    )}
+                                  </td>
+                                  <td className="py-2.5 text-right">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                      onClick={() => setUnlinkConfirm({ id: item.id, krId: group.krId, name: item.name })}
+                                      title="Remove link"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </Button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+
+                      {/* Add Work Item CTA */}
+                      <div className="px-4 py-3 border-t border-border">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full justify-center text-muted-foreground hover:text-foreground gap-1.5"
+                          onClick={() => openAlignDrawer(group.krId)}
+                        >
+                          <Plus className="h-4 w-4" />
+                          Add Work Item
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {/* Contribution total */}
-                {hasWorkItems && (
-                  <div className="flex items-center justify-between text-xs text-muted-foreground pl-7">
-                    <span>Contribution Total</span>
-                    <span className={`font-medium ${status.valid ? 'text-emerald-600' : status.overweight ? 'text-destructive' : 'text-amber-600'}`}>
-                      {group.totalContribution}% / 100%
-                    </span>
-                  </div>
-                )}
-
-                {/* Validation warning */}
-                {hasWorkItems && !status.valid && (
-                  <Alert variant={status.overweight ? "destructive" : "default"} className={`py-2 ml-7 ${status.underweight ? 'border-amber-400 bg-amber-50 text-amber-800' : ''}`}>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription className="text-xs">
-                      {status.overweight 
-                        ? `Contribution total exceeds 100%. Please adjust.`
-                        : `Contribution total is less than 100%. Progress will be underweighted.`
-                      }
-                    </AlertDescription>
-                  </Alert>
-                )}
-
-                {/* Work items table */}
-                {hasWorkItems && (
-                  <div className="ml-7 rounded-md border border-border overflow-hidden">
-                    <table className="w-full text-sm">
-                      <thead className="bg-muted/30">
-                        <tr className="text-left text-xs text-muted-foreground uppercase tracking-wide">
-                          <th className="px-3 py-2.5 font-medium">Work Item</th>
-                          <th className="px-3 py-2.5 font-medium w-20 text-center">Type</th>
-                          <th className="px-3 py-2.5 font-medium w-28 text-center">Progress</th>
-                          <th className="px-3 py-2.5 font-medium w-28 text-center">Contribution</th>
-                          <th className="px-3 py-2.5 font-medium w-20 text-center">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {group.workItems.map((item) => (
-                          <tr key={item.id} className="border-t border-border hover:bg-muted/20">
-                            <td className="px-3 py-2.5">
-                              <div className="flex items-center gap-2">
-                                <Target className="h-3.5 w-3.5 text-brand-gold flex-shrink-0" />
-                                <span className="truncate text-sm">{item.name}</span>
-                              </div>
-                            </td>
-                            <td className="px-3 py-2.5 text-center">
-                              <Badge variant="outline" className="text-xs capitalize">
-                                {item.type}
-                              </Badge>
-                            </td>
-                            <td className="px-3 py-2.5">
-                              <div className="flex items-center justify-center gap-2">
-                                <Progress value={item.progress} className="w-14 h-1.5" />
-                                <span className="text-xs text-muted-foreground w-8">{item.progress}%</span>
-                              </div>
-                            </td>
-                            <td className="px-3 py-2.5 text-center">
-                              {editingItem?.id === item.id ? (
-                                <Input
-                                  type="number"
-                                  min={1}
-                                  max={100}
-                                  autoFocus
-                                  value={editingItem.value}
-                                  onChange={(e) => setEditingItem({ id: item.id, value: parseInt(e.target.value) || 1 })}
-                                  onBlur={() => handleContributionChange(item.id, group.krId, editingItem.value)}
-                                  onKeyDown={(e) => {
-                                    if (e.key === 'Enter') handleContributionChange(item.id, group.krId, editingItem.value);
-                                    else if (e.key === 'Escape') setEditingItem(null);
-                                  }}
-                                  className="w-16 h-7 text-xs text-center mx-auto"
-                                />
-                              ) : (
-                                <button
-                                  onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
-                                  className="text-sm font-medium hover:text-brand-gold transition-colors"
-                                >
-                                  {item.contributionPercent}%
-                                </button>
-                              )}
-                            </td>
-                            <td className="px-3 py-2.5">
-                              <div className="flex items-center justify-center gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                                  onClick={() => openAlignDrawer(group.krId)}
-                                  title="Edit alignment"
-                                >
-                                  <Pencil className="h-3.5 w-3.5" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                  onClick={() => setUnlinkConfirm({ id: item.id, krId: group.krId, name: item.name })}
-                                  title="Remove link"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-
-                {/* Add Work Item CTA */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full ml-7 max-w-[calc(100%-1.75rem)] justify-center text-muted-foreground hover:text-foreground"
-                  onClick={() => openAlignDrawer(group.krId)}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Work Item
-                </Button>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </>
       ) : (
         <div className="text-center py-12 text-muted-foreground">
@@ -371,6 +396,7 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
         onClose={() => {
           setAlignDrawerKR(null);
           queryClient.invalidateQueries({ queryKey: ['linked-work-v2-grouped'] });
+          onMutation?.();
         }}
         objectiveId={objectiveId}
       />
