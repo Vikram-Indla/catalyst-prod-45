@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { token } from '@atlaskit/tokens';
-import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
+import Tabs, { Tab, TabList } from '@atlaskit/tabs';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import { Globe, Grid3X3, List, Package, Archive, Users, MoreHorizontal } from 'lucide-react';
 import { SummaryTab } from './components/tabs/SummaryTab';
@@ -11,6 +11,12 @@ import { ReleasesTab } from './components/tabs/ReleasesTab';
 import { ArchivedTab } from './components/tabs/ArchivedTab';
 import { FilterDrawer } from './components/FilterDrawer';
 import { CreateWorkItemDropdown } from './components/CreateWorkItemDropdown';
+import { WorkItemDetailsDrawer } from './components/WorkItemDetailsDrawer';
+import { CreateFeatureDialog } from './components/dialogs/CreateFeatureDialog';
+import { CreateStoryDialog } from './components/dialogs/CreateStoryDialog';
+import { CreateSubtaskDialog } from './components/dialogs/CreateSubtaskDialog';
+import { LogDefectDialog } from './components/dialogs/LogDefectDialog';
+import { LogIncidentDialog } from './components/dialogs/LogIncidentDialog';
 import { WorkHubFilters, WorkItem, WorkItemType, WorkHubTab } from './types';
 
 export const ProjectWorkHubPage: React.FC = () => {
@@ -18,7 +24,7 @@ export const ProjectWorkHubPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<WorkHubTab>('summary');
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<WorkItem | null>(null);
-  const [createItemType, setCreateItemType] = useState<WorkItemType | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState<WorkItemType | null>(null);
   const [filters, setFilters] = useState<WorkHubFilters>({
     search: '',
     types: [],
@@ -38,8 +44,13 @@ export const ProjectWorkHubPage: React.FC = () => {
   };
 
   const handleCreateItem = (type: WorkItemType) => {
-    setCreateItemType(type);
-    // TODO: Open create dialog
+    setCreateDialogOpen(type);
+  };
+
+  const handleCreateSubmit = (data: Partial<WorkItem>) => {
+    console.log('Creating work item:', data);
+    // TODO: Implement actual creation via API
+    setCreateDialogOpen(null);
   };
 
   const tabIndex = ['summary', 'board', 'list', 'releases', 'archived'].indexOf(activeTab);
@@ -188,6 +199,49 @@ export const ProjectWorkHubPage: React.FC = () => {
         onClose={() => setFilterDrawerOpen(false)}
         filters={filters}
         onApply={setFilters}
+      />
+
+      {/* Work Item Details Drawer */}
+      <WorkItemDetailsDrawer
+        item={selectedItem}
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+      />
+
+      {/* Create Dialogs */}
+      <CreateFeatureDialog
+        isOpen={createDialogOpen === 'FEATURE'}
+        onClose={() => setCreateDialogOpen(null)}
+        onSubmit={handleCreateSubmit}
+        projectId={projectId}
+      />
+
+      <CreateStoryDialog
+        isOpen={createDialogOpen === 'STORY'}
+        onClose={() => setCreateDialogOpen(null)}
+        onSubmit={handleCreateSubmit}
+        projectId={projectId}
+      />
+
+      <CreateSubtaskDialog
+        isOpen={createDialogOpen === 'SUBTASK'}
+        onClose={() => setCreateDialogOpen(null)}
+        onSubmit={handleCreateSubmit}
+        projectId={projectId}
+      />
+
+      <LogDefectDialog
+        isOpen={createDialogOpen === 'DEFECT'}
+        onClose={() => setCreateDialogOpen(null)}
+        onSubmit={handleCreateSubmit}
+        projectId={projectId}
+      />
+
+      <LogIncidentDialog
+        isOpen={createDialogOpen === 'INCIDENT'}
+        onClose={() => setCreateDialogOpen(null)}
+        onSubmit={handleCreateSubmit}
+        projectId={projectId}
       />
     </div>
   );
