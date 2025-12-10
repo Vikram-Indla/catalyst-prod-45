@@ -23,8 +23,19 @@ export function CreateObjectiveDialog({
   const handleSubmit = async (values: ObjectiveFormValues) => {
     try {
       await createObjective.mutateAsync({
-        ...values,
-        tier: values.tier, // Use the tier from form, not prop override
+        name: values.name, // Use canonical 'name' field
+        description: values.description,
+        tier: values.tier,
+        status: values.status,
+        health: values.health,
+        category: values.category,
+        type: values.type,
+        start_date: values.start_date?.toISOString(),
+        due_date: values.due_date?.toISOString(),
+        planned_value: values.planned_value,
+        delivered_value: values.delivered_value,
+        is_blocked: values.is_blocked,
+        notes: values.notes,
         // Use form values first, fallback to props if form value is empty
         portfolio_id: values.portfolio_id || portfolioId,
         program_id: values.program_id || programId,

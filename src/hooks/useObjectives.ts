@@ -43,7 +43,7 @@ export interface Objective {
   program_id?: string;
   parent_objective_id?: string;
   parent_key_result_id?: string;
-  theme_id?: string;
+  theme_id?: string; // LEGACY: Use objective_theme_links junction table instead
   anchor_sprint_id?: string;
   start_date?: string;
   due_date?: string;
@@ -317,8 +317,10 @@ export const useCreateObjective = () => {
       }
 
       // Build the insert payload with correct field mapping
+      // IMPORTANT: Use 'name' as canonical field, support 'summary' for backward compat
+      // DO NOT write to theme_id - use objective_theme_links junction table instead
       const insertPayload: any = {
-        name: objective.summary || objective.name, // Map summary to name (required DB field)
+        name: objective.name || objective.summary, // Prefer name, fallback to summary
         tier: tier,
         status: objective.status || 'pending',
         description: objective.description,
@@ -330,7 +332,7 @@ export const useCreateObjective = () => {
         program_id: objective.program_id,
         parent_objective_id: objective.parent_objective_id,
         parent_key_result_id: objective.parent_key_result_id,
-        theme_id: objective.theme_id,
+        // theme_id: REMOVED - use objective_theme_links junction table instead
         anchor_sprint_id: objective.anchor_sprint_id,
         start_date: objective.start_date,
         due_date: objective.due_date,
@@ -385,6 +387,7 @@ export const useCreateObjective = () => {
 };
 
 // Update objective - single toast only, with audit logging
+// IMPORTANT: Do NOT update theme_id - use objective_theme_links junction table
 export const useUpdateObjective = () => {
   const queryClient = useQueryClient();
 
@@ -397,12 +400,15 @@ export const useUpdateObjective = () => {
         .eq('id', id)
         .single();
 
-      // Map summary to name if provided
+      // Map summary to name if provided (backward compatibility)
       const updatePayload: any = { ...updates };
       if (updatePayload.summary) {
         updatePayload.name = updatePayload.summary;
         delete updatePayload.summary;
       }
+      
+      // NEVER write to theme_id - use junction table instead
+      delete updatePayload.theme_id;
 
       const { data, error } = await supabase
         .from('objectives')
