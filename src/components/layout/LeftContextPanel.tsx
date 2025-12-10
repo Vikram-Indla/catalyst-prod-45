@@ -39,7 +39,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useCatalystContext, TierType } from '@/contexts/CatalystContext';
 import { useStrategicSnapshots } from '@/hooks/useStrategicSnapshots';
-import { CreateStrategyItemDropdown } from '@/components/strategy/CreateStrategyItemDropdown';
+
 
 interface MenuItem {
   id: string;
@@ -249,19 +249,14 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
             </div>
           )}
           {expanded && tier === 'enterprise' && (
-            <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
-                  EN
-                </div>
-                <div>
-                  <div className="text-sm font-medium">Enterprise</div>
-                  <div className="text-xs text-muted-foreground">Strategy</div>
-                </div>
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
+                EN
               </div>
-              {snapshotId && (
-                <CreateStrategyItemDropdown snapshotId={snapshotId} />
-              )}
+              <div>
+                <div className="text-sm font-medium">Enterprise</div>
+                <div className="text-xs text-muted-foreground">Strategy</div>
+              </div>
             </div>
           )}
           {expanded && (tier === 'portfolio' || tier === 'program') && currentPortfolio && (

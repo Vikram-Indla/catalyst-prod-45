@@ -15,6 +15,7 @@ import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
 import { OkrHeatmap } from '@/components/strategy/OkrHeatmap';
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
+import { CreateStrategyItemDropdown } from '@/components/strategy/CreateStrategyItemDropdown';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -238,6 +239,9 @@ export default function StrategyRoomPage() {
               </Badge>
             )}
           </Button>
+          {effectiveSelectedSnapshotId && (
+            <CreateStrategyItemDropdown snapshotId={effectiveSelectedSnapshotId} />
+          )}
         </div>
       </div>
 
