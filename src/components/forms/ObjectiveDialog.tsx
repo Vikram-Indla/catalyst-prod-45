@@ -1,3 +1,7 @@
+// LEGACY: This component is no longer used at runtime.
+// Use CreateObjectiveDialog from src/modules/objectives/components/ObjectivePanel/CreateObjectiveDialog.tsx instead.
+// Kept temporarily for reference.
+
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';

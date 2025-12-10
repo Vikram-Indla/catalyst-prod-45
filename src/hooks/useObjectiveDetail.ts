@@ -118,7 +118,9 @@ export function useObjectiveDetail(objectiveId?: string) {
   });
 }
 
-// Update objective with audit logging (no duplicate toasts)
+// LEGACY: This hook is a DUPLICATE. Use useUpdateObjective from useObjectives.ts instead.
+// Kept for backward compatibility but should be migrated.
+// The canonical hook is in src/hooks/useObjectives.ts
 export function useUpdateObjective() {
   const queryClient = useQueryClient();
 
