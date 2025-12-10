@@ -40,7 +40,7 @@ export interface ObjectiveBase {
   program_id?: string;
   parent_objective_id?: string;
   parent_key_result_id?: string;
-  theme_id?: string;
+  theme_id?: string; // LEGACY: Use objective_theme_links junction table instead
   anchor_sprint_id?: string;
   start_date?: string;
   due_date?: string;
@@ -91,7 +91,7 @@ export interface CreateObjectiveInput {
   program_id?: string;
   parent_objective_id?: string;
   parent_key_result_id?: string;
-  theme_id?: string;
+  theme_id?: string; // LEGACY: Use objective_theme_links junction table instead
   anchor_sprint_id?: string;
   start_date?: string;
   due_date?: string;
@@ -115,7 +115,7 @@ export interface UpdateObjectiveInput {
   owner_id?: string;
   parent_objective_id?: string;
   parent_key_result_id?: string;
-  theme_id?: string;
+  theme_id?: string; // LEGACY: Use objective_theme_links junction table instead
   anchor_sprint_id?: string;
   start_date?: string;
   due_date?: string;

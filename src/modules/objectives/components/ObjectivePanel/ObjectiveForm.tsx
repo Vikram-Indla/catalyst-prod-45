@@ -17,8 +17,9 @@ import { OBJECTIVE_TIERS, OBJECTIVE_STATUSES, OBJECTIVE_HEALTH, OBJECTIVE_CATEGO
 import type { ObjectiveTier, ObjectiveStatus } from "../../types/objective.types";
 
 // Schema only allows 'portfolio' and 'program' tiers
+// IMPORTANT: 'name' is the canonical DB field - used throughout for display
 const objectiveFormSchema = z.object({
-  summary: z.string().min(3, "Summary must be at least 3 characters").max(500),
+  name: z.string().min(3, "Name must be at least 3 characters").max(500),
   description: z.string().optional(),
   tier: z.enum(['portfolio', 'program'] as const),
   status: z.enum(['pending', 'in_progress', 'on_track', 'at_risk', 'off_track', 'paused', 'completed', 'canceled', 'missed'] as const).default('pending'),
@@ -62,7 +63,7 @@ export function ObjectiveForm({ initialValues, onSubmit, onCancel, isSubmitting 
   const form = useForm<ObjectiveFormValues>({
     resolver: zodResolver(objectiveFormSchema),
     defaultValues: {
-      summary: "",
+      name: "",
       description: "",
       tier: tier || "portfolio",
       status: "pending",
@@ -104,15 +105,15 @@ export function ObjectiveForm({ initialValues, onSubmit, onCancel, isSubmitting 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-[var(--s6)]">
-        {/* Summary */}
+        {/* Name - canonical display field */}
         <FormField
           control={form.control}
-          name="summary"
+          name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Summary *</FormLabel>
+              <FormLabel>Name *</FormLabel>
               <FormControl>
-                <Input placeholder="Enter objective summary..." {...field} />
+                <Input placeholder="Enter objective name..." {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
