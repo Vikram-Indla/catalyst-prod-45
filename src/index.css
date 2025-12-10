@@ -282,12 +282,19 @@ span[class*="Lozenge"] {
   --shadow-raised: 0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31);
   --shadow-overflow: 0 0 8px rgba(9, 30, 66, 0.08), 0 0 1px rgba(9, 30, 66, 0.15);
   
-  /* Golden Hour Palette */
-  --palette-expert: 120 15% 43%;
-  --palette-advanced: 28 26% 44%;
-  --palette-intermediate: 35 46% 60%;
-  --palette-beginner: 35 42% 71%;
-  --palette-none: 210 8% 80%;
+  /* Golden Hour Palette - Secondary Colors */
+  --palette-expert: 120 15% 43%;               /* #5c7c5c - Olive Green */
+  --palette-advanced: 28 26% 44%;              /* #8b7355 - Bronze */
+  --palette-intermediate: 35 46% 60%;          /* #c69c6d - Gold (same as brand) */
+  --palette-beginner: 35 42% 71%;              /* #d4b896 - Champagne */
+  --palette-none: 210 8% 80%;                  /* #c8ccd0 - Cool Grey */
+  
+  /* Secondary palette semantic mappings for body content */
+  --secondary-green: 120 15% 43%;              /* #5c7c5c - Links in body */
+  --secondary-green-hover: 120 15% 38%;        /* Darker green for hover */
+  --secondary-bronze: 28 26% 44%;              /* #8b7355 - Accents in body */
+  --secondary-champagne: 35 42% 71%;           /* #d4b896 - Light accents */
+  --secondary-grey: 210 8% 80%;                /* #c8ccd0 - Muted elements */
 }
 
 .dark {
@@ -842,13 +849,13 @@ code, .text-code {
 
 .executive-tab:hover {
   color: hsl(var(--text-secondary));
-  background-color: hsl(var(--brand-gold-pale));
+  background-color: hsl(var(--secondary-champagne) / 0.3);
 }
 
 .executive-tab[data-state="active"] {
-  color: hsl(var(--brand-gold));
+  color: hsl(var(--secondary-bronze));
   font-weight: 600;
-  border-bottom: 2px solid hsl(var(--brand-gold));
+  border-bottom: 2px solid hsl(var(--secondary-bronze));
   background: transparent;
 }
 
@@ -887,14 +894,14 @@ code, .text-code {
 
 .executive-input:focus {
   background-color: hsl(var(--surface-white));   /* N0 on focus */
-  border-color: hsl(var(--brand-gold));
-  box-shadow: 0 0 0 2px hsl(var(--brand-gold) / 0.2);
+  border-color: hsl(var(--secondary-bronze));
+  box-shadow: 0 0 0 2px hsl(var(--secondary-bronze) / 0.2);
   outline: none;
 }
 
-/* Primary Button - Atlassian button with brand gold */
+/* Primary Button - Using secondary bronze for body content */
 .executive-btn-primary {
-  background-color: hsl(var(--brand-gold));
+  background-color: hsl(var(--secondary-bronze));
   color: hsl(var(--surface-white));
   border: none;
   border-radius: 4px;                            /* Atlassian uses 3px, we use 4px */
@@ -907,7 +914,7 @@ code, .text-code {
 }
 
 .executive-btn-primary:hover {
-  background-color: hsl(var(--brand-gold-hover));
+  background-color: hsl(28 26% 38%);             /* Darker bronze on hover */
 }
 
 .executive-btn-primary:active {
@@ -983,7 +990,7 @@ code, .text-code {
 }
 
 .executive-drawer-content::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--brand-gold));            /* Gold on hover */
+  background: hsl(var(--secondary-bronze));       /* Bronze on hover */
 }
 
 /* Badge styles for drawer */
@@ -1046,8 +1053,8 @@ code, .text-code {
 
 .executive-drawer-content button[role="combobox"]:focus,
 .executive-drawer-content button[role="combobox"][data-state="open"] {
-  border-color: hsl(var(--brand-gold)) !important;
-  box-shadow: 0 0 0 3px hsl(var(--brand-gold) / 0.12) !important;
+  border-color: hsl(var(--secondary-bronze)) !important;
+  box-shadow: 0 0 0 3px hsl(var(--secondary-bronze) / 0.12) !important;
   outline: none !important;
   ring: none !important;
 }
@@ -1069,8 +1076,8 @@ code, .text-code {
 
 .executive-drawer-content input:not([type="checkbox"]):not([type="radio"]):focus,
 .executive-drawer-content textarea:focus {
-  border-color: hsl(var(--brand-gold)) !important;
-  box-shadow: 0 0 0 3px hsl(var(--brand-gold) / 0.12) !important;
+  border-color: hsl(var(--secondary-bronze)) !important;
+  box-shadow: 0 0 0 3px hsl(var(--secondary-bronze) / 0.12) !important;
   outline: none !important;
 }
 
@@ -1081,9 +1088,9 @@ code, .text-code {
   opacity: 1;
 }
 
-/* Section headings in drawer tabs */
+/* Section headings in drawer tabs - Using secondary bronze */
 .executive-drawer-content h3 {
-  color: hsl(var(--brand-gold));
+  color: hsl(var(--secondary-bronze));
   font-weight: 600;
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -1108,10 +1115,10 @@ code, .text-code {
   border-radius: 8px;
 }
 
-/* Primary buttons in drawer */
+/* Primary buttons in drawer - Using secondary bronze */
 .executive-drawer-content button[class*="bg-primary"],
 .executive-drawer-content .btn-primary {
-  background-color: hsl(var(--brand-gold)) !important;
+  background-color: hsl(var(--secondary-bronze)) !important;
   color: white !important;
   border: none;
   font-weight: 500;
@@ -1119,7 +1126,7 @@ code, .text-code {
 
 .executive-drawer-content button[class*="bg-primary"]:hover,
 .executive-drawer-content .btn-primary:hover {
-  background-color: hsl(var(--brand-gold-hover)) !important;
+  background-color: hsl(28 26% 38%) !important;
 }
 
 /* Muted/secondary text */
@@ -1127,19 +1134,19 @@ code, .text-code {
   color: hsl(var(--text-tertiary));
 }
 
-/* Links */
+/* Links - Using secondary green */
 .executive-drawer-content a,
 .executive-drawer-content button[class*="text-primary"] {
-  color: hsl(var(--brand-gold));
+  color: hsl(var(--secondary-green));
 }
 
 .executive-drawer-content a:hover {
-  color: hsl(var(--brand-gold-hover));
+  color: hsl(var(--secondary-green-hover));
 }
 
-/* Progress bars */
+/* Progress bars - Using secondary bronze */
 .executive-drawer-content [role="progressbar"] > div {
-  background-color: hsl(var(--brand-gold));
+  background-color: hsl(var(--secondary-bronze));
 }
 
 /* Badges */
