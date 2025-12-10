@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -72,7 +73,19 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
       <CardHeader>
         <div className="flex items-center gap-2">
           <CardTitle className="text-lg">Snapshot Progress</CardTitle>
-          <Info className="h-4 w-4 text-muted-foreground" />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Info className="h-4 w-4 text-muted-foreground cursor-help hover:text-brand-gold transition-colors" />
+              </TooltipTrigger>
+              <TooltipContent side="right" className="max-w-xs">
+                <p className="text-sm">
+                  Shows counts of work items (Themes, Epics, Features) assigned to the Program Increments in this snapshot. 
+                  <span className="block mt-1 text-muted-foreground">* Values differ from Strategy Pyramid which only counts items linked to Objectives.</span>
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
