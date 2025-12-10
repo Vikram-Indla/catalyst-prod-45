@@ -75,7 +75,7 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
   return useQuery({
     queryKey: ['objectives-v2', filters],
     queryFn: async () => {
-      // Fetch objectives marked as v2 or all objectives in v2 mode
+      // Fetch objectives marked as v2 - NO join on profiles (no FK relationship)
       let query = supabase
         .from('objectives')
         .select(`
@@ -93,8 +93,7 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
           is_v2,
           created_at,
           updated_at,
-          created_by,
-          profiles:owner_id (id, full_name, avatar_url)
+          created_by
         `)
         .eq('is_v2', true)
         .order('created_at', { ascending: false });
@@ -132,6 +131,14 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
         .select('id, name')
         .in('id', themeIds.length > 0 ? themeIds : ['00000000-0000-0000-0000-000000000000']);
       const themeMap = new Map(themes?.map(t => [t.id, t.name]) || []);
+
+      // Fetch owner names from profiles table
+      const ownerIds = [...new Set(objectives?.filter(o => o.owner_id).map(o => o.owner_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', ownerIds.length > 0 ? ownerIds : ['00000000-0000-0000-0000-000000000000']);
+      const ownerMap = new Map(profiles?.map(p => [p.id, p.full_name]) || []);
 
       // Fetch KR counts
       const objectiveIds = objectives?.map(o => o.id) || [];
@@ -185,7 +192,7 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
         updated_at: obj.updated_at,
         created_by: obj.created_by,
         theme_name: obj.theme_id ? themeMap.get(obj.theme_id) : undefined,
-        owner_name: (obj.profiles as any)?.full_name,
+        owner_name: obj.owner_id ? ownerMap.get(obj.owner_id) : undefined,
         key_results_count: krCountMap.get(obj.id) || 0,
         linked_work_count: workCountMap.get(obj.id) || 0,
       }));
@@ -207,12 +214,10 @@ export function useObjectiveV2(objectiveId?: string) {
     queryFn: async () => {
       if (!objectiveId) return null;
       
+      // Fetch objective WITHOUT profile join (no FK relationship)
       const { data, error } = await supabase
         .from('objectives')
-        .select(`
-          *,
-          profiles:owner_id (id, full_name, avatar_url)
-        `)
+        .select('*')
         .eq('id', objectiveId)
         .single();
       
@@ -229,10 +234,21 @@ export function useObjectiveV2(objectiveId?: string) {
         theme_name = theme?.name;
       }
 
+      // Fetch owner name
+      let owner_name: string | undefined;
+      if (data.owner_id) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', data.owner_id)
+          .single();
+        owner_name = profile?.full_name;
+      }
+
       return {
         ...data,
         theme_name,
-        owner_name: (data.profiles as any)?.full_name,
+        owner_name,
       } as ObjectiveV2;
     },
     enabled: !!objectiveId,
