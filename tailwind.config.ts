@@ -135,6 +135,12 @@ export default {
           beginner: "hsl(var(--palette-beginner))",     // #d4b896 - Light champagne
           none: "hsl(var(--palette-none))",             // #c8ccd0 - Cool grey
         },
+        // Secondary colors for body content (Golden Hour)
+        "secondary-green": "hsl(var(--secondary-green))",
+        "secondary-green-hover": "hsl(var(--secondary-green-hover))",
+        "secondary-bronze": "hsl(var(--secondary-bronze))",
+        "secondary-champagne": "hsl(var(--secondary-champagne))",
+        "secondary-grey": "hsl(var(--secondary-grey))",
         // Chart colors using Golden Hour palette
         chartGolden: {
           1: "hsl(var(--chart-golden-1))",  // Expert - Olive
