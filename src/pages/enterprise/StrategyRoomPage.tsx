@@ -217,23 +217,15 @@ export default function StrategyRoomPage() {
         <div className="flex items-center gap-2 flex-shrink-0">
           <Button 
             variant="outline" 
-            size="sm"
-            onClick={() => navigate('/enterprise/backlog')}
-          >
-            Strategic Backlog
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm"
+            size="icon"
             onClick={openDrawer}
-            className="relative"
+            className="relative h-9 w-9"
           >
-            <Filter className="h-4 w-4 mr-1.5" />
-            Filters
+            <Filter className="h-4 w-4" />
             {activeFilterCount > 0 && (
               <Badge 
                 variant="default" 
-                className="ml-1.5 h-5 min-w-[20px] px-1.5 text-xs bg-brand-gold text-white"
+                className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1.5 text-xs bg-brand-gold text-white"
               >
                 {activeFilterCount}
               </Badge>
