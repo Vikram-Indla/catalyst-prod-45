@@ -1,11 +1,11 @@
-import { Building2, Briefcase, FolderKanban, Users } from "lucide-react";
+import { Building2, Briefcase, FolderKanban } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ObjectiveTier } from "../../types/objective.types";
 
+// Only Portfolio and Program tiers are supported
 const TIER_CONFIG: Record<ObjectiveTier, { icon: typeof Building2; color: string; label: string }> = {
   portfolio: { icon: Building2, color: "text-brand-gold", label: "Portfolio" },
   program: { icon: Briefcase, color: "text-primary", label: "Program" },
-  team: { icon: Users, color: "text-accent", label: "Team" },
 };
 
 interface ObjectiveTierIconProps {
@@ -16,7 +16,9 @@ interface ObjectiveTierIconProps {
 }
 
 export function ObjectiveTierIcon({ tier, size = "default", showLabel = false, className }: ObjectiveTierIconProps) {
-  const config = TIER_CONFIG[tier];
+  // Fallback for any legacy tiers
+  const safeTier: ObjectiveTier = tier === 'portfolio' || tier === 'program' ? tier : 'program';
+  const config = TIER_CONFIG[safeTier];
   const Icon = config.icon;
   
   const iconSize = size === "sm" ? "h-3 w-3" : size === "lg" ? "h-5 w-5" : "h-4 w-4";

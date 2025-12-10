@@ -569,7 +569,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                     if (col.key === 'team') {
                       return (
                         <TableCell key={col.key} className="text-sm text-foreground">
-                          {objective.team_id ? objective.team_id.slice(0, 8) : '—'}
+                          {objective.program_id ? objective.program_id.slice(0, 8) : '—'}
                         </TableCell>
                       );
                     }

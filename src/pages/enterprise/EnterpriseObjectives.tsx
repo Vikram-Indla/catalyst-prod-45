@@ -7,7 +7,6 @@ import { useObjectives } from '@/hooks/useObjectives';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ObjectiveStatusBadge } from '@/modules/objectives/components/shared/ObjectiveStatusBadge';
 import { ObjectiveScoreBadge } from '@/modules/objectives/components/shared/ObjectiveScoreBadge';
-import { ObjectiveTierIcon } from '@/modules/objectives/components/shared/ObjectiveTierIcon';
 import { ObjectiveTierBadge } from '@/modules/objectives/components/shared/ObjectiveTierBadge';
 import { ProgressBar } from '@/modules/objectives/components/shared/ProgressBar';
 import { CreateObjectiveDialog } from '@/modules/objectives/components/ObjectivePanel';
@@ -43,7 +42,7 @@ export default function EnterpriseObjectives() {
         <div>
           <h1 className="text-2xl font-semibold mb-1">Enterprise Objectives</h1>
           <p className="text-sm text-muted-foreground">
-            Strategic objectives and key results across all tiers
+            Strategic objectives and key results across Portfolio and Program tiers
           </p>
         </div>
         <div className="flex items-center gap-[var(--s3)]">
@@ -73,7 +72,7 @@ export default function EnterpriseObjectives() {
             />
           </div>
 
-          {/* Filters */}
+          {/* Tier Filter - Only Portfolio and Program */}
           <Select value={tierFilter} onValueChange={(v) => setTierFilter(v as any)}>
             <SelectTrigger className="w-[140px]" style={{ height: 'var(--grid-row)' }}>
               <SelectValue placeholder="All Tiers" />
@@ -82,7 +81,6 @@ export default function EnterpriseObjectives() {
               <SelectItem value="all">All Tiers</SelectItem>
               <SelectItem value="portfolio">Portfolio</SelectItem>
               <SelectItem value="program">Program</SelectItem>
-              <SelectItem value="team">Team</SelectItem>
             </SelectContent>
           </Select>
 
@@ -148,7 +146,7 @@ export default function EnterpriseObjectives() {
                       {objective.id.slice(0, 8)}
                     </td>
                     <td className="px-[var(--s4)] text-sm font-medium">
-                      {objective.summary}
+                      {objective.summary || objective.name}
                     </td>
                     <td className="px-[var(--s4)]">
                       <ObjectiveTierBadge tier={objective.tier} size="sm" />

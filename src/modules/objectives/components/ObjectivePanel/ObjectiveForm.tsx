@@ -14,10 +14,11 @@ import { cn } from "@/lib/utils";
 import { OBJECTIVE_TIERS, OBJECTIVE_STATUSES, OBJECTIVE_HEALTH, OBJECTIVE_CATEGORIES, OBJECTIVE_TYPES } from "../../constants/objectiveConstants";
 import type { ObjectiveTier, ObjectiveStatus } from "../../types/objective.types";
 
+// Schema only allows 'portfolio' and 'program' tiers
 const objectiveFormSchema = z.object({
   summary: z.string().min(3, "Summary must be at least 3 characters").max(500),
   description: z.string().optional(),
-  tier: z.enum(['portfolio', 'program', 'team'] as const),
+  tier: z.enum(['portfolio', 'program'] as const),
   status: z.enum(['pending', 'in_progress', 'on_track', 'at_risk', 'off_track', 'paused', 'completed', 'canceled', 'missed'] as const).default('pending'),
   health: z.enum(['good', 'fair', 'poor', 'at_risk'] as const).optional(),
   category: z.enum(['critical_path', 'stretch_goal'] as const).optional(),
@@ -105,9 +106,9 @@ export function ObjectiveForm({ initialValues, onSubmit, onCancel, isSubmitting 
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {OBJECTIVE_TIERS.map((tier) => (
-                      <SelectItem key={tier.value} value={tier.value}>
-                        {tier.label}
+                    {OBJECTIVE_TIERS.map((tierOption) => (
+                      <SelectItem key={tierOption.value} value={tierOption.value}>
+                        {tierOption.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
