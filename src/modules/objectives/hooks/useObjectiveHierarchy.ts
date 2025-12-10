@@ -88,7 +88,7 @@ export function useObjectiveHierarchy(objectiveId: string) {
         .select('*')
         .eq('parent_objective_id', objectiveId);
 
-      // For each child, fetch their own KRs and context to calculate their progress
+      // For each child, fetch their own KRs, context, and child count to calculate their progress
       const childrenWithKRs = await Promise.all(
         (children || []).map(async (child) => {
           // Fetch child's KRs
@@ -119,6 +119,12 @@ export function useObjectiveHierarchy(objectiveId: string) {
             childProgramName = program?.name;
           }
 
+          // Count grandchildren (children of this child)
+          const { count: grandchildCount } = await supabase
+            .from('objectives')
+            .select('id', { count: 'exact', head: true })
+            .eq('parent_objective_id', child.id);
+
           // Calculate child's KR progress from their own KRs only
           const childKeyResults = childKRs || [];
           let krProgress = 0;
@@ -140,6 +146,7 @@ export function useObjectiveHierarchy(objectiveId: string) {
             krCount: childKeyResults.length,
             portfolioName: childPortfolioName,
             programName: childProgramName,
+            childCount: grandchildCount || 0,
           };
         })
       );

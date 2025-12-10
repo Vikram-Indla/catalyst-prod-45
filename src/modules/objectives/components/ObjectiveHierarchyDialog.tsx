@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { GitBranch, Loader2, Target } from 'lucide-react';
+import { GitBranch, Loader2, Target, ChevronRight } from 'lucide-react';
 import { useObjectiveHierarchy } from '../hooks/useObjectiveHierarchy';
 import { ObjectiveTierBadge } from './shared/ObjectiveTierBadge';
 import { ObjectiveStatusBadge } from './shared/ObjectiveStatusBadge';
 import { ProgressBar } from './shared/ProgressBar';
+import { cn } from '@/lib/utils';
 
 interface ObjectiveHierarchyDialogProps {
   objectiveId: string;
@@ -16,19 +18,28 @@ export function ObjectiveHierarchyDialog({
   open,
   onOpenChange,
 }: ObjectiveHierarchyDialogProps) {
-  const { data: hierarchy, isLoading } = useObjectiveHierarchy(objectiveId);
+  const [currentObjectiveId, setCurrentObjectiveId] = useState(objectiveId);
+  const { data: hierarchy, isLoading } = useObjectiveHierarchy(currentObjectiveId);
+
+  // Reset to initial objective when dialog opens
+  const handleOpenChange = (newOpen: boolean) => {
+    if (newOpen) {
+      setCurrentObjectiveId(objectiveId);
+    }
+    onOpenChange(newOpen);
+  };
 
   // EXPLICIT FILTER: Only KRs that belong to THIS objective (not children)
   const parentKeyResults = (hierarchy?.current?.keyResults || []).filter(
-    (kr: any) => kr.objective_id === objectiveId
+    (kr: any) => kr.objective_id === currentObjectiveId
   );
 
   // EXPLICIT FILTER: Only direct children of this objective
   const childObjectives = (hierarchy?.children || []).filter(
-    (child: any) => child.parent_objective_id === objectiveId
+    (child: any) => child.parent_objective_id === currentObjectiveId
   );
 
-  // Get display name - use 'name' field, fallback to 'summary', then 'Untitled Objective'
+  // Get display name - use 'name' field as canonical, fallback to 'summary'
   const getDisplayName = (obj: any) => {
     return obj?.name || obj?.summary || 'Untitled Objective';
   };
@@ -44,8 +55,22 @@ export function ObjectiveHierarchyDialog({
     return null;
   };
 
+  // Navigate to child objective within the dialog
+  const handleChildClick = (childId: string) => {
+    setCurrentObjectiveId(childId);
+  };
+
+  // Navigate back to parent
+  const handleBackToParent = () => {
+    if (hierarchy?.parents && hierarchy.parents.length > 0) {
+      // Go to immediate parent
+      const parent = hierarchy.parents[hierarchy.parents.length - 1];
+      setCurrentObjectiveId(parent.id);
+    }
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto p-6">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -60,6 +85,17 @@ export function ObjectiveHierarchyDialog({
           </div>
         ) : hierarchy ? (
           <div className="space-y-5">
+            {/* Breadcrumb navigation if viewing a child */}
+            {currentObjectiveId !== objectiveId && hierarchy.parents && hierarchy.parents.length > 0 && (
+              <button
+                onClick={handleBackToParent}
+                className="flex items-center gap-1 text-sm text-brand-gold hover:underline"
+              >
+                <ChevronRight className="h-4 w-4 rotate-180" />
+                Back to parent
+              </button>
+            )}
+
             {/* Parent Objective Section */}
             <div className="space-y-3">
               {/* Parent objective header row */}
@@ -133,6 +169,7 @@ export function ObjectiveHierarchyDialog({
                       objective={child}
                       getDisplayName={getDisplayName}
                       getContextString={getContextString}
+                      onClick={() => handleChildClick(child.id)}
                     />
                   ))}
                 </div>
@@ -158,15 +195,16 @@ function KeyResultRow({ keyResult }: KeyResultRowProps) {
   const progress = goal !== baseline ? ((current - baseline) / (goal - baseline)) * 100 : 0;
   const clampedProgress = Math.max(0, Math.min(100, progress));
 
-  // Use 'summary' or 'name' for KR display
-  const krName = keyResult.summary || keyResult.name || 'Untitled Key Result';
+  // Use 'name' as canonical, fallback to 'summary'
+  const krName = keyResult.name || keyResult.summary || 'Untitled Key Result';
+  const unit = keyResult.metric_type || '';
 
   return (
     <div className="flex items-center gap-3 py-1.5">
       <Target className="h-4 w-4 text-muted-foreground flex-shrink-0" />
       <span className="flex-1 text-sm text-foreground truncate">{krName}</span>
       <span className="text-xs text-muted-foreground whitespace-nowrap">
-        {current} / {goal}
+        {current} / {goal} {unit}
       </span>
       <div className="w-20 flex-shrink-0">
         <ProgressBar progress={clampedProgress} height="sm" />
@@ -182,18 +220,26 @@ interface ChildObjectiveRowProps {
   objective: any;
   getDisplayName: (obj: any) => string;
   getContextString: (obj: any) => string | null;
+  onClick: () => void;
 }
 
-function ChildObjectiveRow({ objective, getDisplayName, getContextString }: ChildObjectiveRowProps) {
+function ChildObjectiveRow({ objective, getDisplayName, getContextString, onClick }: ChildObjectiveRowProps) {
   // Use the pre-calculated KR progress from the hook
   const krProgress = (objective.calculatedKrProgress || 0) * 100;
   // Use child's own work_progress from DB, or 0
   const workProgress = (objective.work_progress || 0) * 100;
 
   const context = getContextString(objective);
+  const hasChildren = (objective.childCount || 0) > 0;
 
   return (
-    <div className="pl-4 py-2 border-l-2 border-muted">
+    <div 
+      className={cn(
+        "pl-4 py-2 border-l-2 border-muted rounded-r cursor-pointer transition-colors",
+        "hover:bg-accent/50 hover:border-brand-gold"
+      )}
+      onClick={onClick}
+    >
       {/* Row layout: tier badge + name + context on left, progress + status on right */}
       <div className="flex items-center justify-between gap-3">
         {/* Left side: tier badge + name + context */}
@@ -203,6 +249,10 @@ function ChildObjectiveRow({ objective, getDisplayName, getContextString }: Chil
             <span className="text-sm font-medium text-foreground truncate">
               {getDisplayName(objective)}
             </span>
+            {hasChildren && (
+              <GitBranch className="h-3.5 w-3.5 text-brand-gold flex-shrink-0" />
+            )}
+            <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
           </div>
           {context && (
             <span className="text-xs text-muted-foreground pl-1">{context}</span>
