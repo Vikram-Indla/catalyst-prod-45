@@ -5038,63 +5038,90 @@ export type Database = {
           baseline_value: number | null
           created_at: string | null
           current_value: number | null
+          direction: string | null
           due_date: string | null
           end_date: string | null
           goal_value: number
+          health: string | null
           id: string
+          is_manual_override_allowed: boolean | null
           last_checkin_at: string | null
+          last_update_date: string | null
+          locked: boolean | null
           metric_type: string
           objective_id: string | null
+          override_reason: string | null
+          override_value: number | null
           owner_id: string | null
           owner_user_id: string | null
+          progress: number | null
           score: number | null
           score_config: Json | null
           start_date: string | null
           status: string | null
           summary: string
           target_value: number | null
+          update_frequency: string | null
           updated_at: string | null
         }
         Insert: {
           baseline_value?: number | null
           created_at?: string | null
           current_value?: number | null
+          direction?: string | null
           due_date?: string | null
           end_date?: string | null
           goal_value: number
+          health?: string | null
           id?: string
+          is_manual_override_allowed?: boolean | null
           last_checkin_at?: string | null
+          last_update_date?: string | null
+          locked?: boolean | null
           metric_type: string
           objective_id?: string | null
+          override_reason?: string | null
+          override_value?: number | null
           owner_id?: string | null
           owner_user_id?: string | null
+          progress?: number | null
           score?: number | null
           score_config?: Json | null
           start_date?: string | null
           status?: string | null
           summary: string
           target_value?: number | null
+          update_frequency?: string | null
           updated_at?: string | null
         }
         Update: {
           baseline_value?: number | null
           created_at?: string | null
           current_value?: number | null
+          direction?: string | null
           due_date?: string | null
           end_date?: string | null
           goal_value?: number
+          health?: string | null
           id?: string
+          is_manual_override_allowed?: boolean | null
           last_checkin_at?: string | null
+          last_update_date?: string | null
+          locked?: boolean | null
           metric_type?: string
           objective_id?: string | null
+          override_reason?: string | null
+          override_value?: number | null
           owner_id?: string | null
           owner_user_id?: string | null
+          progress?: number | null
           score?: number | null
           score_config?: Json | null
           start_date?: string | null
           status?: string | null
           summary?: string
           target_value?: number | null
+          update_frequency?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -5110,6 +5137,53 @@ export type Database = {
             columns: ["owner_user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kr_work_contributions: {
+        Row: {
+          calculated_progress: number | null
+          contribution_percent: number
+          created_at: string | null
+          created_by: string | null
+          id: string
+          key_result_id: string
+          notes: string | null
+          updated_at: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Insert: {
+          calculated_progress?: number | null
+          contribution_percent: number
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          key_result_id: string
+          notes?: string | null
+          updated_at?: string | null
+          work_item_id: string
+          work_item_type: string
+        }
+        Update: {
+          calculated_progress?: number | null
+          contribution_percent?: number
+          created_at?: string | null
+          created_by?: string | null
+          id?: string
+          key_result_id?: string
+          notes?: string | null
+          updated_at?: string | null
+          work_item_id?: string
+          work_item_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kr_work_contributions_key_result_id_fkey"
+            columns: ["key_result_id"]
+            isOneToOne: false
+            referencedRelation: "key_results_v2"
             referencedColumns: ["id"]
           },
         ]
@@ -5824,12 +5898,14 @@ export type Database = {
           health: Database["public"]["Enums"]["objective_health"] | null
           id: string
           is_blocked: boolean | null
+          is_v2: boolean | null
           key_result_progress: number | null
           level: string | null
           name: string
           notes: string | null
           objective_level_id: string | null
           objective_type: string | null
+          overall_progress: number | null
           owner_id: string | null
           parent_goal_id: string | null
           parent_key_result_id: string | null
@@ -5852,6 +5928,7 @@ export type Database = {
           type: Database["public"]["Enums"]["objective_type"] | null
           updated_at: string | null
           updated_by: string | null
+          visibility: string | null
           work_progress: number | null
         }
         Insert: {
@@ -5873,12 +5950,14 @@ export type Database = {
           health?: Database["public"]["Enums"]["objective_health"] | null
           id?: string
           is_blocked?: boolean | null
+          is_v2?: boolean | null
           key_result_progress?: number | null
           level?: string | null
           name: string
           notes?: string | null
           objective_level_id?: string | null
           objective_type?: string | null
+          overall_progress?: number | null
           owner_id?: string | null
           parent_goal_id?: string | null
           parent_key_result_id?: string | null
@@ -5901,6 +5980,7 @@ export type Database = {
           type?: Database["public"]["Enums"]["objective_type"] | null
           updated_at?: string | null
           updated_by?: string | null
+          visibility?: string | null
           work_progress?: number | null
         }
         Update: {
@@ -5922,12 +6002,14 @@ export type Database = {
           health?: Database["public"]["Enums"]["objective_health"] | null
           id?: string
           is_blocked?: boolean | null
+          is_v2?: boolean | null
           key_result_progress?: number | null
           level?: string | null
           name?: string
           notes?: string | null
           objective_level_id?: string | null
           objective_type?: string | null
+          overall_progress?: number | null
           owner_id?: string | null
           parent_goal_id?: string | null
           parent_key_result_id?: string | null
@@ -5950,6 +6032,7 @@ export type Database = {
           type?: Database["public"]["Enums"]["objective_type"] | null
           updated_at?: string | null
           updated_by?: string | null
+          visibility?: string | null
           work_progress?: number | null
         }
         Relationships: [
