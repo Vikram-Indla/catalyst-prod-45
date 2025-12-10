@@ -234,14 +234,16 @@ export function HomeContent() {
       minHeight: '100vh',
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
     }}>
-      {/* Page title */}
+      {/* Page title with bottom divider */}
       <h1 style={{
         fontSize: '24px',
         fontWeight: 500,
         color: '#172B4D',
-        lineHeight: '28px',
+        lineHeight: '32px',
         margin: 0,
-        marginBottom: '24px',
+        paddingBottom: '16px',
+        borderBottom: '1px solid #EBECF0',
+        marginBottom: '20px',
       }}>
         For you
       </h1>
@@ -255,9 +257,9 @@ export function HomeContent() {
           marginBottom: '12px',
         }}>
           <h2 style={{
-            fontSize: '12px',
+            fontSize: '11px',
             fontWeight: 600,
-            color: '#5E6C84',
+            color: '#626F86',
             margin: 0,
             lineHeight: '16px',
           }}>
