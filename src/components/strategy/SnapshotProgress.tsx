@@ -84,7 +84,13 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
           <>
             {/* Category Table - Atlaskit/Jira style */}
             <div className="border border-border rounded-lg overflow-hidden">
-              <table className="w-full border-collapse">
+              <table className="w-full border-collapse table-fixed">
+                <colgroup>
+                  <col className="w-[30%]" />
+                  <col className="w-[23.33%]" />
+                  <col className="w-[23.33%]" />
+                  <col className="w-[23.33%]" />
+                </colgroup>
                 <thead>
                   <tr className="border-b border-border">
                     <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
