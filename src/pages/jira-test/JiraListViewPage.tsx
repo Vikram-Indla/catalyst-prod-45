@@ -4,7 +4,7 @@ import DynamicTable from '@atlaskit/dynamic-table';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
 import Button from '@atlaskit/button';
-import Textfield from '@atlaskit/textfield';
+
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Checkbox } from '@atlaskit/checkbox';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
@@ -551,26 +551,50 @@ export const JiraListViewPage: React.FC = () => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
-          padding: '16px 24px',
-          borderBottom: '1px solid #DFE1E6',
-          marginLeft: '-24px',
-          marginRight: '-24px',
+          gap: '12px',
+          padding: '12px 0',
         }}
       >
-        <div style={{ width: '300px' }}>
-          <Textfield
-            placeholder="Search..."
-            elemBeforeInput={
-              <div style={{ paddingLeft: '8px', display: 'flex', alignItems: 'center' }}>
-                <SearchIcon label="Search" size="small" primaryColor="#5E6C84" />
-              </div>
-            }
-            value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-          />
+        <div 
+          style={{ 
+            width: '300px',
+            position: 'relative',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#FAFBFC',
+              border: '2px solid #DFE1E6',
+              borderRadius: '3px',
+              padding: '6px 8px',
+              transition: 'border-color 0.2s, background-color 0.2s',
+            }}
+          >
+            <SearchIcon label="Search" size="small" primaryColor="#5E6C84" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                outline: 'none',
+                fontSize: '14px',
+                lineHeight: '20px',
+                color: '#172B4D',
+                marginLeft: '8px',
+                width: '100%',
+              }}
+            />
+          </div>
         </div>
-        <Button appearance="subtle" iconBefore={<FilterIcon label="Filter" size="small" />}>
+        <Button 
+          appearance="subtle" 
+          iconBefore={<FilterIcon label="Filter" size="small" />}
+        >
           Filter
         </Button>
       </div>
