@@ -30,11 +30,31 @@ export interface ExecutionAgainstOutcomesData {
   misalignedItems: AlignedItem[];
 }
 
+// Theme progress interface
+export interface ThemeProgress {
+  themeId: string;
+  themeName: string;
+  krProgress: number | null; // 0..1, null if no linked objectives with progress
+  objectiveCount: number;
+  objectives: { id: string; name: string; key_result_progress: number | null }[];
+}
+
 // Determine color based on percentage thresholds
-function getThresholdColor(percentage: number): 'red' | 'yellow' | 'green' {
+export function getThresholdColor(percentage: number): 'red' | 'yellow' | 'green' {
   if (percentage <= 39) return 'red';
   if (percentage <= 69) return 'yellow';
   return 'green';
+}
+
+// Helper: Compute theme KR progress as average of linked Portfolio objectives' KR progress
+function computeThemeKrProgress(objectivesForTheme: { key_result_progress: number | null }[]): number | null {
+  const values = objectivesForTheme
+    .map(o => o.key_result_progress)
+    .filter((v): v is number => v != null && !Number.isNaN(v));
+  
+  if (values.length === 0) return null;
+  const sum = values.reduce((a, b) => a + b, 0);
+  return sum / values.length;
 }
 
 export function useExecutionAgainstOutcomes(snapshotId?: string) {
@@ -316,6 +336,92 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
         alignedFeatures: alignedFeaturesCount,
         misalignedFeatures: Math.max(0, misalignedFeaturesCount),
       };
+    },
+    enabled: !!snapshotId,
+  });
+}
+
+/**
+ * Hook to compute theme-level KR progress based on linked Portfolio objectives.
+ * Theme KR Progress = average of linked Portfolio objectives' key_result_progress.
+ */
+export function useThemeProgress(snapshotId?: string) {
+  return useQuery({
+    queryKey: ['theme-progress', snapshotId],
+    queryFn: async (): Promise<ThemeProgress[]> => {
+      if (!snapshotId) return [];
+
+      // 1. Fetch all strategic themes (optionally linked to snapshot)
+      const { data: themes = [] } = await supabase
+        .from('strategic_themes')
+        .select('id, name, snapshot_id')
+        .order('name');
+
+      // Also get themes linked to snapshot via snapshot_strategy_links
+      const { data: snapshotLinks } = await supabase
+        .from('snapshot_strategy_links')
+        .select('theme_ids')
+        .eq('snapshot_id', snapshotId)
+        .maybeSingle();
+      
+      const linkedThemeIds = new Set(snapshotLinks?.theme_ids || []);
+
+      // Combine: themes directly with snapshot_id OR in linked theme_ids
+      const relevantThemes = themes.filter(t => 
+        t.snapshot_id === snapshotId || linkedThemeIds.has(t.id)
+      );
+
+      if (relevantThemes.length === 0) return [];
+
+      // 2. Fetch all Portfolio objectives with their rolled-up key_result_progress
+      const { data: objectives = [] } = await supabase
+        .from('objectives')
+        .select('id, name, summary, tier, key_result_progress')
+        .eq('tier', 'portfolio');
+
+      // 3. Fetch objective-theme links
+      const { data: objectiveThemeLinks = [] } = await supabase
+        .from('objective_theme_links')
+        .select('objective_id, theme_id');
+
+      // Build theme -> objectives mapping
+      const themeToObjectives = new Map<string, typeof objectives>();
+      
+      relevantThemes.forEach(theme => {
+        themeToObjectives.set(theme.id, []);
+      });
+
+      objectiveThemeLinks.forEach(link => {
+        if (themeToObjectives.has(link.theme_id)) {
+          const objective = objectives.find(o => o.id === link.objective_id);
+          if (objective) {
+            themeToObjectives.get(link.theme_id)!.push(objective);
+          }
+        }
+      });
+
+      // 4. Compute theme progress for each theme
+      const themeProgressList: ThemeProgress[] = relevantThemes.map(theme => {
+        const linkedObjectives = themeToObjectives.get(theme.id) || [];
+        
+        const objectivesWithProgress = linkedObjectives.map(obj => ({
+          id: obj.id,
+          name: obj.name || obj.summary || 'Untitled Objective',
+          key_result_progress: obj.key_result_progress,
+        }));
+
+        const krProgress = computeThemeKrProgress(objectivesWithProgress);
+
+        return {
+          themeId: theme.id,
+          themeName: theme.name,
+          krProgress,
+          objectiveCount: linkedObjectives.length,
+          objectives: objectivesWithProgress,
+        };
+      });
+
+      return themeProgressList;
     },
     enabled: !!snapshotId,
   });
