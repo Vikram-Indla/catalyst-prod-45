@@ -10,6 +10,7 @@ import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
 
 interface KeyResultsTabV2Props {
   objectiveId: string;
+  onMutation?: () => void;
 }
 
 function getDirectionIcon(direction: string) {
@@ -20,7 +21,7 @@ function getDirectionIcon(direction: string) {
   }
 }
 
-export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
+export function KeyResultsTabV2({ objectiveId, onMutation }: KeyResultsTabV2Props) {
   const { data: keyResults, isLoading } = useKeyResultsV2(objectiveId);
   const deleteKR = useDeleteKeyResultV2();
   const [krDialogOpen, setKrDialogOpen] = useState(false);
@@ -52,13 +53,27 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
   const handleDelete = (kr: KeyResultV2, e: React.MouseEvent) => {
     e.stopPropagation();
     if (confirm('Are you sure you want to delete this key result?')) {
-      deleteKR.mutate({ id: kr.id, objectiveId: kr.objective_id });
+      deleteKR.mutate(
+        { id: kr.id, objectiveId: kr.objective_id },
+        { onSuccess: () => onMutation?.() }
+      );
     }
   };
 
   const handleAlignWork = (kr: KeyResultV2, e: React.MouseEvent) => {
     e.stopPropagation();
     setAlignmentDrawerKR(kr);
+  };
+
+  const handleKRDialogClose = () => {
+    setKrDialogOpen(false);
+    setSelectedKR(null);
+    onMutation?.();
+  };
+
+  const handleAlignmentDrawerClose = () => {
+    setAlignmentDrawerKR(null);
+    onMutation?.();
   };
 
   if (isLoading) {
@@ -177,10 +192,7 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
 
       <KeyResultDialogV2
         open={krDialogOpen}
-        onClose={() => {
-          setKrDialogOpen(false);
-          setSelectedKR(null);
-        }}
+        onClose={handleKRDialogClose}
         objectiveId={objectiveId}
         keyResult={selectedKR}
       />
@@ -188,7 +200,7 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
       <KRWorkAlignmentDrawer
         keyResult={alignmentDrawerKR}
         open={!!alignmentDrawerKR}
-        onClose={() => setAlignmentDrawerKR(null)}
+        onClose={handleAlignmentDrawerClose}
         objectiveId={objectiveId}
       />
     </div>

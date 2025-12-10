@@ -540,10 +540,10 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
                     )}
                   </TabsContent>
                   <TabsContent value="key-results" className="m-0 h-full">
-                    <KeyResultsTabV2 objectiveId={objective.id} />
+                    <KeyResultsTabV2 objectiveId={objective.id} onMutation={markDrawerChanged} />
                   </TabsContent>
                   <TabsContent value="work" className="m-0 h-full">
-                    <LinkedWorkTabV2 objectiveId={objective.id} />
+                    <LinkedWorkTabV2 objectiveId={objective.id} onMutation={markDrawerChanged} />
                   </TabsContent>
                   <TabsContent value="links" className="m-0 p-6">
                     <LinkedItemsTab objectiveId={objective.id} />
