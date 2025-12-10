@@ -33,7 +33,8 @@ export function WorkHubLayout() {
   const activeTab = getActiveTab();
 
   const handleTabClick = (path: string) => {
-    navigate(`/projects/${projectKey}/${path}`);
+    const basePath = projectKey ? `/projects/${projectKey}` : '/work-hub-test';
+    navigate(`${basePath}/${path}`);
   };
 
   return (

@@ -242,6 +242,16 @@ const App = () => (
               <Route path="/jira-test" element={<JiraCloneTestPage />} />
               <Route path="/jira-list" element={<JiraListViewPage />} />
               <Route path="/request-access" element={<RequestAccess />} />
+              
+              {/* Work Hub Test Route */}
+              <Route path="/work-hub-test" element={<WorkHubLayout />}>
+                <Route index element={<Navigate to="summary" replace />} />
+                <Route path="summary" element={<SummaryView />} />
+                <Route path="list" element={<ListView />} />
+                <Route path="all-work" element={<AllWorkView />} />
+                <Route path="releases" element={<ReleasesView />} />
+                <Route path="releases/:versionId" element={<ReleaseDetailsView />} />
+              </Route>
               <Route path="/reset-password" element={<ResetPassword />} />
               
               
