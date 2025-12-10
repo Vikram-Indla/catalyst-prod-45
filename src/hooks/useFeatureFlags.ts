@@ -75,8 +75,5 @@ export function useUpdateFeatureFlag() {
   });
 }
 
-// Convenience hook for OKR v2 specifically
-export function useOKRv2Enabled() {
-  const { data: flag, isLoading } = useFeatureFlag('okr_v2_enabled');
-  return { enabled: flag?.enabled ?? false, isLoading };
-}
+// OKR v2 is now the single source of truth - no feature flag needed
+// Removed: useOKRv2Enabled hook
