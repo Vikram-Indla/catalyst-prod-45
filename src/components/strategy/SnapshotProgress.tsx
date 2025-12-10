@@ -82,40 +82,48 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
           <div className="text-center py-6 text-sm text-muted-foreground">No progress data available</div>
         ) : (
           <>
-            {/* Category Table */}
-            <div className="border rounded-md overflow-hidden">
-              <table className="w-full text-sm">
+            {/* Category Table - Atlaskit/Jira style */}
+            <div className="border border-border rounded-lg overflow-hidden">
+              <table className="w-full border-collapse">
                 <thead>
-                  <tr className="border-b bg-muted/50">
-                    <th className="text-left p-3 font-semibold">Category</th>
-                    <th className="text-center p-3 font-semibold">Themes</th>
-                    <th className="text-center p-3 font-semibold">Epics*</th>
-                    <th className="text-center p-3 font-semibold">Features*</th>
+                  <tr className="border-b border-border">
+                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                      Category
+                    </th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                      Themes
+                    </th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                      Epics*
+                    </th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                      Features*
+                    </th>
                   </tr>
                 </thead>
-                <tbody>
-                  <tr className="border-b">
-                    <td className="p-3 font-medium text-muted-foreground">Total Count</td>
-                    <td className="text-center p-3">{progressData.themes.total}</td>
-                    <td className="text-center p-3">{progressData.epics.total}</td>
-                    <td className="text-center p-3">{progressData.features.total}</td>
+                <tbody className="text-sm leading-5">
+                  <tr className="border-b border-border">
+                    <td className="text-left px-4 py-4 font-medium">Total Count</td>
+                    <td className="text-right px-4 py-4">{progressData.themes.total}</td>
+                    <td className="text-right px-4 py-4">{progressData.epics.total}</td>
+                    <td className="text-right px-4 py-4">{progressData.features.total}</td>
                   </tr>
-                  <tr className="border-b">
-                    <td className="p-3 font-medium text-muted-foreground">Accepted</td>
-                    <td className="text-center p-3">—</td>
-                    <td className="text-center p-3 font-semibold">{progressData.epics.accepted}/{progressData.epics.total}</td>
-                    <td className="text-center p-3 font-semibold">{progressData.features.accepted}/{progressData.features.total}</td>
+                  <tr className="border-b border-border">
+                    <td className="text-left px-4 py-4 font-medium">Accepted</td>
+                    <td className="text-right px-4 py-4">—</td>
+                    <td className="text-right px-4 py-4">{progressData.epics.accepted}/{progressData.epics.total}</td>
+                    <td className="text-right px-4 py-4">{progressData.features.accepted}/{progressData.features.total}</td>
                   </tr>
                   <tr>
-                    <td className="p-3 font-medium text-muted-foreground">Acceptance %</td>
-                    <td className="text-center p-3">—</td>
-                    <td className="text-center p-3">
-                      <span className="font-bold" style={{ color: progressData.epics.total > 0 ? getDonutColor(Math.round((progressData.epics.accepted / progressData.epics.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
+                    <td className="text-left px-4 py-4 font-medium">Acceptance %</td>
+                    <td className="text-right px-4 py-4">—</td>
+                    <td className="text-right px-4 py-4">
+                      <span className="font-semibold" style={{ color: progressData.epics.total > 0 ? getDonutColor(Math.round((progressData.epics.accepted / progressData.epics.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
                         {progressData.epics.total > 0 ? Math.round((progressData.epics.accepted / progressData.epics.total) * 100) : 0}%
                       </span>
                     </td>
-                    <td className="text-center p-3">
-                      <span className="font-bold" style={{ color: progressData.features.total > 0 ? getDonutColor(Math.round((progressData.features.accepted / progressData.features.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
+                    <td className="text-right px-4 py-4">
+                      <span className="font-semibold" style={{ color: progressData.features.total > 0 ? getDonutColor(Math.round((progressData.features.accepted / progressData.features.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
                         {progressData.features.total > 0 ? Math.round((progressData.features.accepted / progressData.features.total) * 100) : 0}%
                       </span>
                     </td>
