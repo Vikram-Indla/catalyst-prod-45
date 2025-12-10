@@ -1,17 +1,21 @@
 import React, { useState, useCallback } from 'react';
-import { token } from '@atlaskit/tokens';
 import Lozenge from '@atlaskit/lozenge';
 import Avatar from '@atlaskit/avatar';
-import Button from '@atlaskit/button';
+import Button, { ButtonGroup } from '@atlaskit/button';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Checkbox } from '@atlaskit/checkbox';
-import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
+import Textfield from '@atlaskit/textfield';
+import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
+import DynamicTable from '@atlaskit/dynamic-table';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
 import SearchIcon from '@atlaskit/icon/glyph/search';
 import ShareIcon from '@atlaskit/icon/glyph/share';
 import SettingsIcon from '@atlaskit/icon/glyph/settings';
 import EditorMoreIcon from '@atlaskit/icon/glyph/editor/more';
+import ListIcon from '@atlaskit/icon/glyph/list';
+import BoardIcon from '@atlaskit/icon/glyph/board';
+import AddIcon from '@atlaskit/icon/glyph/add';
 
 // Types
 type ItemType = 'epic' | 'story' | 'subtask' | 'bug';
@@ -30,7 +34,7 @@ interface WorkItem {
   level: number;
 }
 
-// Mock Data matching the screenshot
+// Mock Data
 const mockData: WorkItem[] = [
   {
     id: '1',
@@ -172,7 +176,16 @@ const mockData: WorkItem[] = [
 
 // Helper functions
 const getTypeIcon = (type: ItemType) => {
-  const iconStyle = { width: '16px', height: '16px', borderRadius: '3px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px' };
+  const iconStyle: React.CSSProperties = { 
+    width: '16px', 
+    height: '16px', 
+    borderRadius: '3px', 
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    fontSize: '10px',
+    flexShrink: 0
+  };
   switch (type) {
     case 'epic':
       return <span style={{ ...iconStyle, backgroundColor: '#6554C0', color: 'white' }}>⚡</span>;
@@ -185,22 +198,28 @@ const getTypeIcon = (type: ItemType) => {
   }
 };
 
-const getStatusConfig = (status: StatusType) => {
+const getLozengeAppearance = (status: StatusType): 'new' | 'default' | 'success' | 'inprogress' => {
   switch (status) {
-    case 'new':
-      return { label: 'NEW', appearance: 'new' as const, bgColor: '#0052CC', textColor: 'white' };
-    case 'backlog':
-      return { label: 'BACKLOG', appearance: 'default' as const, bgColor: '#42526E', textColor: 'white' };
-    case 'done':
-      return { label: 'DONE', appearance: 'success' as const, bgColor: '#00875A', textColor: 'white' };
-    case 'inprogress':
-      return { label: 'IN PROGRESS', appearance: 'inprogress' as const, bgColor: '#0052CC', textColor: 'white' };
+    case 'new': return 'new';
+    case 'backlog': return 'default';
+    case 'done': return 'success';
+    case 'inprogress': return 'inprogress';
+  }
+};
+
+const getStatusLabel = (status: StatusType): string => {
+  switch (status) {
+    case 'new': return 'NEW';
+    case 'backlog': return 'BACKLOG';
+    case 'done': return 'DONE';
+    case 'inprogress': return 'IN PROGRESS';
   }
 };
 
 export const JiraListViewPage: React.FC = () => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(['1', '3']));
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTab, setSelectedTab] = useState(3);
 
   const toggleExpand = useCallback((id: string) => {
     setExpandedRows(prev => {
@@ -230,13 +249,145 @@ export const JiraListViewPage: React.FC = () => {
 
   const flatItems = flattenItems(mockData);
 
+  // Create table head
+  const head = {
+    cells: [
+      { key: 'checkbox', content: <Checkbox />, width: 5 },
+      { key: 'work', content: 'WORK', isSortable: true, width: 40 },
+      { key: 'fixVersions', content: 'FIX VERSIONS', isSortable: true, width: 15 },
+      { key: 'status', content: 'STATUS', isSortable: true, width: 15 },
+      { key: 'parent', content: 'PARENT', isSortable: true, width: 12 },
+      { key: 'assignee', content: 'ASSIGNEE', isSortable: true, width: 18 },
+    ],
+  };
+
+  // Create table rows
+  const rows = flatItems.map((item) => {
+    const hasChildren = item.children && item.children.length > 0;
+    const isExpanded = expandedRows.has(item.id);
+    const indent = item.level * 24;
+
+    return {
+      key: item.id,
+      cells: [
+        {
+          key: 'checkbox',
+          content: (
+            <div onClick={(e) => e.stopPropagation()}>
+              <Checkbox />
+            </div>
+          ),
+        },
+        {
+          key: 'work',
+          content: (
+            <div style={{ display: 'flex', alignItems: 'center', paddingLeft: `${indent}px` }}>
+              {hasChildren ? (
+                <Button
+                  appearance="subtle"
+                  spacing="none"
+                  onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }}
+                  iconBefore={isExpanded ? 
+                    <ChevronDownIcon label="Collapse" size="small" /> : 
+                    <ChevronRightIcon label="Expand" size="small" />
+                  }
+                />
+              ) : (
+                <span style={{ width: '24px' }} />
+              )}
+              <span style={{ marginRight: '8px', marginLeft: '4px' }}>{getTypeIcon(item.type)}</span>
+              <a 
+                href="#" 
+                onClick={(e) => e.preventDefault()}
+                style={{ 
+                  color: '#0052CC', 
+                  fontSize: '14px', 
+                  fontWeight: 500, 
+                  textDecoration: 'none',
+                  marginRight: '8px',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {item.key}
+              </a>
+              <span style={{ 
+                fontSize: '14px', 
+                color: '#172B4D',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>
+                {item.summary}
+              </span>
+            </div>
+          ),
+        },
+        {
+          key: 'fixVersions',
+          content: <span style={{ fontSize: '14px', color: '#5E6C84' }}>{item.fixVersions}</span>,
+        },
+        {
+          key: 'status',
+          content: (
+            <DropdownMenu
+              trigger={({ triggerRef, ...props }) => (
+                <Button
+                  {...props}
+                  ref={triggerRef}
+                  appearance="subtle"
+                  spacing="compact"
+                  iconAfter={<ChevronDownIcon label="" size="small" />}
+                >
+                  <Lozenge appearance={getLozengeAppearance(item.status)} isBold>
+                    {getStatusLabel(item.status)}
+                  </Lozenge>
+                </Button>
+              )}
+            >
+              <DropdownItemGroup>
+                <DropdownItem>NEW</DropdownItem>
+                <DropdownItem>BACKLOG</DropdownItem>
+                <DropdownItem>IN PROGRESS</DropdownItem>
+                <DropdownItem>DONE</DropdownItem>
+              </DropdownItemGroup>
+            </DropdownMenu>
+          ),
+        },
+        {
+          key: 'parent',
+          content: <span style={{ fontSize: '14px', color: '#5E6C84' }}>{item.parent}</span>,
+        },
+        {
+          key: 'assignee',
+          content: (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Avatar size="small" name={item.assignee.name} />
+              <span style={{ fontSize: '14px', color: '#172B4D' }}>
+                {item.assignee.name}
+              </span>
+            </div>
+          ),
+        },
+      ],
+    };
+  });
+
+  const tabs = [
+    { label: 'Summary', icon: '📋' },
+    { label: 'Kanban board', icon: '📊' },
+    { label: 'List', icon: '📝' },
+    { label: 'All work', icon: '📁' },
+    { label: 'Releases', icon: '🏷️' },
+    { label: 'Archived work items', icon: '📦' },
+  ];
+
   return (
     <div style={{ backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
-      {/* Breadcrumbs */}
+      {/* Breadcrumbs & Header */}
       <div style={{ padding: '12px 24px 0', borderBottom: '1px solid #EBECF0' }}>
         <div style={{ marginBottom: '8px' }}>
           <span style={{ fontSize: '14px', color: '#5E6C84' }}>
-            Spaces / <span style={{ color: '#0052CC' }}>Enterprise Shared Services</span>
+            Spaces / <a href="#" style={{ color: '#0052CC', textDecoration: 'none' }}>Enterprise Shared Services</a>
           </span>
         </div>
         
@@ -246,52 +397,30 @@ export const JiraListViewPage: React.FC = () => {
             <span style={{ fontSize: '20px', fontWeight: 500, color: '#172B4D' }}>
               ESS Defects Kanban
             </span>
-            <button style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="#5E6C84">
-                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-              </svg>
-            </button>
+            <Button appearance="subtle" iconBefore={<EditorMoreIcon label="More" size="small" />} />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <ButtonGroup>
             <Button appearance="subtle" iconBefore={<ShareIcon label="Share" size="small" />} />
             <Button appearance="subtle" iconBefore={<SettingsIcon label="Settings" size="small" />} />
-          </div>
+          </ButtonGroup>
         </div>
 
-        {/* Tabs */}
-        <div style={{ display: 'flex', gap: '0', marginBottom: '-1px' }}>
-          {[
-            { icon: '📋', label: 'Summary', active: false },
-            { icon: '📊', label: 'Kanban board', active: false },
-            { icon: '📝', label: 'List', active: false },
-            { icon: '📁', label: 'All work', active: true },
-            { icon: '🏷️', label: 'Releases', active: false },
-            { icon: '📦', label: 'Archived work items', active: false },
-          ].map((tab, index) => (
-            <button
-              key={tab.label}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '10px 16px',
-                fontSize: '14px',
-                fontWeight: tab.active ? 600 : 400,
-                color: tab.active ? '#0052CC' : '#42526E',
-                background: 'none',
-                border: 'none',
-                borderBottom: tab.active ? '2px solid #0052CC' : '2px solid transparent',
-                cursor: 'pointer',
-              }}
-            >
-              <span>{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
-          <button style={{ padding: '10px 12px', background: 'none', border: 'none', cursor: 'pointer', color: '#42526E', fontSize: '16px' }}>
-            +
-          </button>
-        </div>
+        {/* Tabs using Atlaskit */}
+        <Tabs id="project-tabs" onChange={(index) => setSelectedTab(index)} selected={selectedTab}>
+          <TabList>
+            {tabs.map((tab, index) => (
+              <Tab key={index}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span>{tab.icon}</span>
+                  {tab.label}
+                </span>
+              </Tab>
+            ))}
+            <Tab>
+              <AddIcon label="Add tab" size="small" />
+            </Tab>
+          </TabList>
+        </Tabs>
       </div>
 
       {/* Filter Bar */}
@@ -304,405 +433,138 @@ export const JiraListViewPage: React.FC = () => {
         flexWrap: 'wrap'
       }}>
         {/* Ask AI */}
-        <button style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '4px', 
-          padding: '6px 12px', 
-          background: 'none', 
-          border: '1px solid #DFE1E6', 
-          borderRadius: '3px', 
-          cursor: 'pointer',
-          fontSize: '14px',
-          color: '#42526E'
-        }}>
-          ✨ Ask AI
-        </button>
+        <Button appearance="default">✨ Ask AI</Button>
 
         {/* Basic/JQL Toggle */}
-        <div style={{ display: 'flex', border: '1px solid #DFE1E6', borderRadius: '3px', overflow: 'hidden' }}>
-          <button style={{ 
-            padding: '6px 12px', 
-            background: '#0052CC', 
-            color: 'white', 
-            border: 'none', 
-            fontSize: '14px',
-            fontWeight: 500,
-            cursor: 'pointer'
-          }}>
-            Basic
-          </button>
-          <button style={{ 
-            padding: '6px 12px', 
-            background: 'white', 
-            color: '#42526E', 
-            border: 'none', 
-            fontSize: '14px',
-            cursor: 'pointer'
-          }}>
-            JQL
-          </button>
-        </div>
+        <ButtonGroup>
+          <Button appearance="primary">Basic</Button>
+          <Button appearance="default">JQL</Button>
+        </ButtonGroup>
 
-        {/* Search */}
-        <div style={{ 
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '6px',
-          padding: '6px 10px',
-          border: '1px solid #DFE1E6',
-          borderRadius: '3px',
-          backgroundColor: '#FAFBFC',
-          width: '160px'
-        }}>
-          <SearchIcon label="Search" size="small" primaryColor="#5E6C84" />
-          <input
-            type="text"
+        {/* Search using Atlaskit Textfield */}
+        <div style={{ width: '180px' }}>
+          <Textfield
             placeholder="Search work"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              border: 'none',
-              background: 'transparent',
-              outline: 'none',
-              fontSize: '14px',
-              color: '#172B4D',
-              width: '100%',
-            }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+            elemBeforeInput={
+              <div style={{ paddingLeft: '8px', display: 'flex', alignItems: 'center' }}>
+                <SearchIcon label="Search" size="small" primaryColor="#5E6C84" />
+              </div>
+            }
           />
         </div>
 
-        {/* Project Filter */}
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '6px 12px',
-          background: '#0052CC',
-          color: 'white',
-          border: 'none',
-          borderRadius: '3px',
-          fontSize: '14px',
-          cursor: 'pointer',
-        }}>
-          Project = <span style={{ fontWeight: 500 }}>Enterprise Shared Services</span>
-          <ChevronDownIcon label="" size="small" />
-        </button>
+        {/* Filter Dropdowns */}
+        <DropdownMenu
+          trigger={({ triggerRef, ...props }) => (
+            <Button {...props} ref={triggerRef} appearance="primary" iconAfter={<ChevronDownIcon label="" size="small" />}>
+              Project = Enterprise Shared Services
+            </Button>
+          )}
+        >
+          <DropdownItemGroup>
+            <DropdownItem>Enterprise Shared Services</DropdownItem>
+            <DropdownItem>Other Project</DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
 
-        {/* Assignee */}
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '6px 12px',
-          background: 'white',
-          color: '#42526E',
-          border: '1px solid #DFE1E6',
-          borderRadius: '3px',
-          fontSize: '14px',
-          cursor: 'pointer',
-        }}>
-          Assignee
-          <ChevronDownIcon label="" size="small" />
-        </button>
+        <DropdownMenu
+          trigger={({ triggerRef, ...props }) => (
+            <Button {...props} ref={triggerRef} appearance="default" iconAfter={<ChevronDownIcon label="" size="small" />}>
+              Assignee
+            </Button>
+          )}
+        >
+          <DropdownItemGroup>
+            <DropdownItem>Unassigned</DropdownItem>
+            <DropdownItem>Saud Bindakheel</DropdownItem>
+            <DropdownItem>Ahmed Yousry</DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
 
-        {/* Type */}
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '6px 12px',
-          background: 'white',
-          color: '#42526E',
-          border: '1px solid #DFE1E6',
-          borderRadius: '3px',
-          fontSize: '14px',
-          cursor: 'pointer',
-        }}>
-          Type
-          <ChevronDownIcon label="" size="small" />
-        </button>
+        <DropdownMenu
+          trigger={({ triggerRef, ...props }) => (
+            <Button {...props} ref={triggerRef} appearance="default" iconAfter={<ChevronDownIcon label="" size="small" />}>
+              Type
+            </Button>
+          )}
+        >
+          <DropdownItemGroup>
+            <DropdownItem>Epic</DropdownItem>
+            <DropdownItem>Story</DropdownItem>
+            <DropdownItem>Bug</DropdownItem>
+            <DropdownItem>Sub-task</DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
 
-        {/* Status */}
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '6px 12px',
-          background: 'white',
-          color: '#42526E',
-          border: '1px solid #DFE1E6',
-          borderRadius: '3px',
-          fontSize: '14px',
-          cursor: 'pointer',
-        }}>
-          Status
-          <ChevronDownIcon label="" size="small" />
-        </button>
+        <DropdownMenu
+          trigger={({ triggerRef, ...props }) => (
+            <Button {...props} ref={triggerRef} appearance="default" iconAfter={<ChevronDownIcon label="" size="small" />}>
+              Status
+            </Button>
+          )}
+        >
+          <DropdownItemGroup>
+            <DropdownItem>New</DropdownItem>
+            <DropdownItem>Backlog</DropdownItem>
+            <DropdownItem>In Progress</DropdownItem>
+            <DropdownItem>Done</DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
 
-        {/* More filters */}
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '6px 12px',
-          background: 'white',
-          color: '#42526E',
-          border: '1px solid #DFE1E6',
-          borderRadius: '3px',
-          fontSize: '14px',
-          cursor: 'pointer',
-        }}>
-          More filters
-          <ChevronDownIcon label="" size="small" />
-        </button>
+        <DropdownMenu
+          trigger={({ triggerRef, ...props }) => (
+            <Button {...props} ref={triggerRef} appearance="default" iconAfter={<ChevronDownIcon label="" size="small" />}>
+              More filters
+            </Button>
+          )}
+        >
+          <DropdownItemGroup>
+            <DropdownItem>Priority</DropdownItem>
+            <DropdownItem>Labels</DropdownItem>
+            <DropdownItem>Sprint</DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
 
         <div style={{ flex: 1 }} />
 
-        {/* Saved filters */}
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '6px 12px',
-          background: 'white',
-          color: '#42526E',
-          border: 'none',
-          fontSize: '14px',
-          cursor: 'pointer',
-        }}>
-          Saved filters
-          <ChevronDownIcon label="" size="small" />
-        </button>
+        {/* Right side actions */}
+        <DropdownMenu
+          trigger={({ triggerRef, ...props }) => (
+            <Button {...props} ref={triggerRef} appearance="subtle" iconAfter={<ChevronDownIcon label="" size="small" />}>
+              Saved filters
+            </Button>
+          )}
+        >
+          <DropdownItemGroup>
+            <DropdownItem>My open issues</DropdownItem>
+            <DropdownItem>All bugs</DropdownItem>
+          </DropdownItemGroup>
+        </DropdownMenu>
 
-        {/* Group */}
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          padding: '6px 12px',
-          background: 'white',
-          color: '#42526E',
-          border: '1px solid #DFE1E6',
-          borderRadius: '3px',
-          fontSize: '14px',
-          cursor: 'pointer',
-        }}>
-          Group
-        </button>
+        <Button appearance="default">Group</Button>
 
-        {/* View icons */}
-        <div style={{ display: 'flex', gap: '4px' }}>
-          <button style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#5E6C84">
-              <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
-            </svg>
-          </button>
-          <button style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer' }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#5E6C84">
-              <path d="M4 4h4v4H4V4zm6 0h4v4h-4V4zm6 0h4v4h-4V4zM4 10h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4zM4 16h4v4H4v-4zm6 0h4v4h-4v-4zm6 0h4v4h-4v-4z"/>
-            </svg>
-          </button>
-          <button style={{ padding: '6px', background: 'none', border: 'none', cursor: 'pointer' }}>
-            <EditorMoreIcon label="More" size="small" primaryColor="#5E6C84" />
-          </button>
-        </div>
+        <ButtonGroup>
+          <Button appearance="subtle" iconBefore={<ListIcon label="List view" size="small" />} />
+          <Button appearance="subtle" iconBefore={<BoardIcon label="Board view" size="small" />} />
+          <Button appearance="subtle" iconBefore={<EditorMoreIcon label="More" size="small" />} />
+        </ButtonGroup>
       </div>
 
-      {/* Table */}
-      <div style={{ overflow: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '1000px' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#FAFBFC' }}>
-              <th style={{ width: '40px', padding: '8px 12px', borderBottom: '2px solid #DFE1E6' }}>
-                <Checkbox />
-              </th>
-              <th style={{ 
-                textAlign: 'left', 
-                padding: '8px 12px', 
-                borderBottom: '2px solid #DFE1E6',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                color: '#5E6C84',
-                letterSpacing: '0.06em'
-              }}>
-                Work
-              </th>
-              <th style={{ 
-                width: '140px',
-                textAlign: 'left', 
-                padding: '8px 12px', 
-                borderBottom: '2px solid #DFE1E6',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                color: '#5E6C84',
-                letterSpacing: '0.06em'
-              }}>
-                Fix versions
-              </th>
-              <th style={{ 
-                width: '120px',
-                textAlign: 'left', 
-                padding: '8px 12px', 
-                borderBottom: '2px solid #DFE1E6',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                color: '#5E6C84',
-                letterSpacing: '0.06em'
-              }}>
-                Status
-              </th>
-              <th style={{ 
-                width: '120px',
-                textAlign: 'left', 
-                padding: '8px 12px', 
-                borderBottom: '2px solid #DFE1E6',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                color: '#5E6C84',
-                letterSpacing: '0.06em'
-              }}>
-                Parent
-              </th>
-              <th style={{ 
-                width: '180px',
-                textAlign: 'left', 
-                padding: '8px 12px', 
-                borderBottom: '2px solid #DFE1E6',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                color: '#5E6C84',
-                letterSpacing: '0.06em'
-              }}>
-                Assignee
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {flatItems.map((item) => {
-              const hasChildren = item.children && item.children.length > 0;
-              const isExpanded = expandedRows.has(item.id);
-              const statusConfig = getStatusConfig(item.status);
-              const indent = item.level * 24;
-
-              return (
-                <tr 
-                  key={item.id} 
-                  style={{ 
-                    borderBottom: '1px solid #EBECF0',
-                    cursor: 'pointer',
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F4F5F7'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                >
-                  <td style={{ padding: '8px 12px' }} onClick={(e) => e.stopPropagation()}>
-                    <Checkbox />
-                  </td>
-                  <td style={{ padding: '8px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', paddingLeft: `${indent}px` }}>
-                      {hasChildren ? (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); toggleExpand(item.id); }}
-                          style={{ 
-                            background: 'none', 
-                            border: 'none', 
-                            cursor: 'pointer', 
-                            padding: '2px',
-                            marginRight: '4px',
-                            display: 'flex',
-                            alignItems: 'center'
-                          }}
-                        >
-                          {isExpanded ? 
-                            <ChevronDownIcon label="Collapse" size="small" primaryColor="#5E6C84" /> : 
-                            <ChevronRightIcon label="Expand" size="small" primaryColor="#5E6C84" />
-                          }
-                        </button>
-                      ) : (
-                        <span style={{ width: '24px' }} />
-                      )}
-                      <span style={{ marginRight: '8px' }}>{getTypeIcon(item.type)}</span>
-                      <a 
-                        href="#" 
-                        onClick={(e) => e.preventDefault()}
-                        style={{ 
-                          color: '#0052CC', 
-                          fontSize: '14px', 
-                          fontWeight: 500, 
-                          textDecoration: 'none',
-                          marginRight: '8px',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
-                        {item.key}
-                      </a>
-                      <span style={{ 
-                        fontSize: '14px', 
-                        color: '#172B4D',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap'
-                      }}>
-                        {item.summary}
-                      </span>
-                    </div>
-                  </td>
-                  <td style={{ padding: '8px 12px', fontSize: '14px', color: '#5E6C84' }}>
-                    {item.fixVersions}
-                  </td>
-                  <td style={{ padding: '8px 12px' }}>
-                    <button style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '2px',
-                      padding: '2px 8px',
-                      backgroundColor: statusConfig.bgColor,
-                      color: statusConfig.textColor,
-                      border: 'none',
-                      borderRadius: '3px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      textTransform: 'uppercase',
-                      cursor: 'pointer',
-                    }}>
-                      {statusConfig.label}
-                      <ChevronDownIcon label="" size="small" />
-                    </button>
-                  </td>
-                  <td style={{ padding: '8px 12px', fontSize: '14px', color: '#5E6C84' }}>
-                    {item.parent}
-                  </td>
-                  <td style={{ padding: '8px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{
-                        width: '24px',
-                        height: '24px',
-                        borderRadius: '50%',
-                        backgroundColor: '#6554C0',
-                        color: 'white',
-                        fontSize: '10px',
-                        fontWeight: 600,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                        {item.assignee.initials}
-                      </div>
-                      <span style={{ fontSize: '14px', color: '#172B4D' }}>
-                        {item.assignee.name}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      {/* Table using DynamicTable */}
+      <div style={{ padding: '0 24px' }}>
+        <DynamicTable
+          head={head}
+          rows={rows}
+          rowsPerPage={20}
+          defaultPage={1}
+          isFixedSize
+          defaultSortKey="work"
+          defaultSortOrder="ASC"
+          onSort={() => {}}
+          emptyView={<p>No work items found</p>}
+        />
       </div>
     </div>
   );
