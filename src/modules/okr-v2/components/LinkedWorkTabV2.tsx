@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Target, Plus, Trash2, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
+import { Target, Plus, Trash2, Pencil, AlertCircle, ChevronDown, ChevronRight } from 'lucide-react';
 import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
 import { KeyResultV2 } from '@/hooks/useKeyResultsV2';
 
@@ -278,7 +278,7 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                 <th className="pb-2 font-medium w-16 text-center">Type</th>
                                 <th className="pb-2 font-medium w-24 text-center">Progress</th>
                                 <th className="pb-2 font-medium w-24 text-center">Contribution</th>
-                                <th className="pb-2 font-medium w-12"></th>
+                                <th className="pb-2 font-medium w-20 text-right">Actions</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -327,15 +327,26 @@ export function LinkedWorkTabV2({ objectiveId, onMutation }: LinkedWorkTabV2Prop
                                     )}
                                   </td>
                                   <td className="py-2.5 text-right">
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                      onClick={() => setUnlinkConfirm({ id: item.id, krId: group.krId, name: item.name })}
-                                      title="Remove link"
-                                    >
-                                      <Trash2 className="h-3.5 w-3.5" />
-                                    </Button>
+                                    <div className="flex items-center justify-end gap-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-7 w-7 text-muted-foreground hover:text-brand-gold"
+                                        onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
+                                        title="Edit contribution"
+                                      >
+                                        <Pencil className="h-3.5 w-3.5" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                        onClick={() => setUnlinkConfirm({ id: item.id, krId: group.krId, name: item.name })}
+                                        title="Remove link"
+                                      >
+                                        <Trash2 className="h-3.5 w-3.5" />
+                                      </Button>
+                                    </div>
                                   </td>
                                 </tr>
                               ))}
