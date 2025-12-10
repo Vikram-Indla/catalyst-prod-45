@@ -456,7 +456,23 @@ export const JiraListViewPage: React.FC = () => {
       }}
     >
       {/* Breadcrumbs */}
-      <div style={{ marginBottom: token('space.200', '16px') }}>
+      <div 
+        style={{ marginBottom: token('space.200', '16px') }}
+        className="jira-breadcrumbs"
+      >
+        <style>
+          {`
+            .jira-breadcrumbs a {
+              font-size: 14px !important;
+              font-weight: 400 !important;
+              color: #5E6C84 !important;
+            }
+            .jira-breadcrumbs span {
+              font-size: 14px !important;
+              color: #5E6C84 !important;
+            }
+          `}
+        </style>
         <Breadcrumbs>
           <BreadcrumbsItem text="Projects" href="#" />
           <BreadcrumbsItem text="Test Project" href="#" />
@@ -489,21 +505,24 @@ export const JiraListViewPage: React.FC = () => {
           >
             TP
           </div>
-          <div>
-            <h1
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+            <span
               style={{
                 fontSize: '24px',
                 fontWeight: 500,
-                color: token('color.text', '#172B4D'),
+                lineHeight: '28px',
+                color: '#172B4D',
                 margin: 0,
               }}
             >
               Test Project
-            </h1>
+            </span>
             <span
               style={{
-                fontSize: '12px',
-                color: token('color.text.subtlest', '#5E6C84'),
+                fontSize: '14px',
+                fontWeight: 400,
+                color: '#5E6C84',
+                marginLeft: '4px',
               }}
             >
               :projectKey
