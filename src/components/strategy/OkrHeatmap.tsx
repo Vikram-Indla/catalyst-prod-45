@@ -115,9 +115,9 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
           {heatmapData.rows.map((row) => (
             <div
               key={row.themeId}
-              className="grid grid-cols-[1fr_120px_160px_100px] gap-3 px-4 py-3 border rounded-md hover:bg-muted/20 cursor-pointer transition-colors"
+              className="grid grid-cols-[1fr_120px_160px_100px] gap-3 px-4 py-3 border rounded-md hover:bg-muted/20 cursor-pointer transition-colors focus:outline-none"
               onClick={() => handleThemeClick(row.themeId)}
-            >
+              data-no-focus-ring>
               {/* Theme Name */}
               <div className="flex items-center">
                 <span className="font-medium text-sm">{row.themeName}</span>
