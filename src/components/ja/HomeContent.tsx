@@ -314,7 +314,7 @@ export function HomeContent() {
       padding: '24px 40px',
       backgroundColor: '#FFFFFF',
       minHeight: '100vh',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
+      fontFamily: '"Atlassian Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
     }}>
       {/* Page title with bottom divider */}
       <h1 style={{
@@ -354,7 +354,7 @@ export function HomeContent() {
             lineHeight: '20px',
             fontWeight: 400,
           }}>
-            View all spaces
+            View all projects
           </a>
         </div>
 
