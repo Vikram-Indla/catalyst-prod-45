@@ -318,8 +318,8 @@ export function HomeContent() {
     }}>
       {/* Page title */}
       <h1 style={{
-        fontSize: '28px',
-        fontWeight: 600,
+        fontSize: '24px',
+        fontWeight: 500,
         color: '#172B4D',
         lineHeight: '32px',
         letterSpacing: '-0.01em',
@@ -345,7 +345,7 @@ export function HomeContent() {
           marginBottom: '12px',
         }}>
           <h2 style={{
-            fontSize: '14px',
+            fontSize: '10px',
             fontWeight: 600,
             color: '#172B4D',
             margin: 0,
