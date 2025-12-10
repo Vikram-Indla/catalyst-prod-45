@@ -78,6 +78,58 @@ export interface ObjectiveFilters {
   includeAllChildren?: boolean;
 }
 
+// Define "done" statuses for work items
+const DONE_STATUSES = ['done', 'completed', 'accepted', 'closed', 'released', 'deployed'];
+
+// Helper: compute own work progress for an objective from its aligned work items
+// Returns 0-1 value or null if no aligned work items
+function computeOwnWorkProgressForObjective(
+  objectiveId: string,
+  featureLinksByObjective: Map<string, any[]>,
+  workItemAlignmentsByObjective: Map<string, any[]>,
+  featuresById: Map<string, any>,
+  storiesById: Map<string, any>
+): number | null {
+  const linkedFeatures = featureLinksByObjective.get(objectiveId) || [];
+  const workAlignments = workItemAlignmentsByObjective.get(objectiveId) || [];
+  
+  let totalItems = 0;
+  let completedItems = 0;
+  
+  // Count features linked via objective_feature_links
+  linkedFeatures.forEach(link => {
+    const feature = featuresById.get(link.feature_id);
+    if (feature) {
+      totalItems++;
+      if (DONE_STATUSES.includes(feature.status?.toLowerCase())) {
+        completedItems++;
+      }
+    }
+  });
+  
+  // Count work items linked via objective_work_item_alignments
+  workAlignments.forEach(alignment => {
+    totalItems++;
+    // Determine status based on work_item_type
+    let status: string | null = null;
+    if (alignment.work_item_type === 'feature') {
+      const feature = featuresById.get(alignment.work_item_id);
+      status = feature?.status;
+    } else if (alignment.work_item_type === 'story') {
+      const story = storiesById.get(alignment.work_item_id);
+      status = story?.status;
+    }
+    // For other types, we'd need to fetch from respective tables
+    // For now, if we can't determine status, we don't count as completed
+    if (status && DONE_STATUSES.includes(status.toLowerCase())) {
+      completedItems++;
+    }
+  });
+  
+  if (totalItems === 0) return null;
+  return completedItems / totalItems;
+}
+
 // Fetch objectives with filters - returns hierarchical tree structure
 export const useObjectives = (filters?: ObjectiveFilters) => {
   return useQuery({
@@ -95,6 +147,48 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         }
         keyResultsByObjective.get(kr.objective_id)!.push(kr);
       });
+
+      // ============================================
+      // PHASE 5: Fetch work alignment data for work progress calculation
+      // ============================================
+      
+      // Fetch objective_feature_links
+      const { data: allFeatureLinks } = await supabase
+        .from('objective_feature_links')
+        .select('id, objective_id, feature_id');
+      
+      const featureLinksByObjective = new Map<string, any[]>();
+      allFeatureLinks?.forEach(link => {
+        if (!featureLinksByObjective.has(link.objective_id)) {
+          featureLinksByObjective.set(link.objective_id, []);
+        }
+        featureLinksByObjective.get(link.objective_id)!.push(link);
+      });
+      
+      // Fetch objective_work_item_alignments
+      const { data: allWorkAlignments } = await supabase
+        .from('objective_work_item_alignments')
+        .select('id, objective_id, work_item_id, work_item_type');
+      
+      const workItemAlignmentsByObjective = new Map<string, any[]>();
+      allWorkAlignments?.forEach(alignment => {
+        if (!workItemAlignmentsByObjective.has(alignment.objective_id)) {
+          workItemAlignmentsByObjective.set(alignment.objective_id, []);
+        }
+        workItemAlignmentsByObjective.get(alignment.objective_id)!.push(alignment);
+      });
+      
+      // Fetch all features for status lookup
+      const { data: allFeatures } = await supabase
+        .from('features')
+        .select('id, status');
+      const featuresById = new Map(allFeatures?.map(f => [f.id, f]) || []);
+      
+      // Fetch all stories for status lookup
+      const { data: allStories } = await supabase
+        .from('stories')
+        .select('id, status');
+      const storiesById = new Map(allStories?.map(s => [s.id, s]) || []);
 
       // Fetch portfolio and program names for context display
       const { data: portfoliosData } = await supabase
@@ -186,7 +280,7 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
 
       // Map DB 'name' field to 'summary' for display compatibility
       // and attach key results count to each objective
-      // Store ownKrProgress for each objective (computed from its own KRs only)
+      // Store ownKrProgress and ownWorkProgress for each objective (computed from its own data only)
       const objectivesWithKRData = ((data || []) as any[]).map(obj => {
         const keyResults = keyResultsByObjective.get(obj.id) || [];
         
@@ -207,20 +301,29 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
           ownKrProgress = totalProgress / keyResults.length;
         }
         
-        // Work Progress would need work item alignments data
-        const workProgress = obj.work_progress ?? (ownKrProgress || 0);
+        // ============================================
+        // PHASE 5: Calculate Own Work Progress (from aligned work items only)
+        // ============================================
+        const ownWorkProgress = computeOwnWorkProgressForObjective(
+          obj.id,
+          featureLinksByObjective,
+          workItemAlignmentsByObjective,
+          featuresById,
+          storiesById
+        );
         
         return {
           ...obj,
           summary: obj.name, // Map 'name' to 'summary' for UI compatibility
           keyResults,
           keyResultsCount: keyResults.length,
-          work_progress: workProgress,
-          ownKrProgress, // Store own KR progress separately for roll-up calculation
+          ownKrProgress, // Store own KR progress for roll-up calculation
+          ownWorkProgress, // Store own work progress for roll-up calculation
+          work_progress: ownWorkProgress || 0, // Will be overwritten with rolled-up value for Portfolio
           key_result_progress: ownKrProgress || 0, // Will be overwritten with rolled-up value for Portfolio
           portfolio_name: obj.portfolio_id ? portfolioMap.get(obj.portfolio_id) : undefined,
           program_name: obj.program_id ? programMap.get(obj.program_id) : undefined,
-        } as Objective & { keyResults: any[]; keyResultsCount: number; portfolio_name?: string; program_name?: string; ownKrProgress: number | null };
+        } as Objective & { keyResults: any[]; keyResultsCount: number; portfolio_name?: string; program_name?: string; ownKrProgress: number | null; ownWorkProgress: number | null };
       });
 
       // Build hierarchical tree structure
@@ -294,9 +397,57 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         return node.rolledUpKrProgress;
       };
       
-      // Apply roll-up to all root nodes (and their descendants)
+      // ============================================
+      // PHASE 5: Work Progress Roll-Up Logic (Program → Portfolio)
+      // ============================================
+      // For Portfolio tier objectives: compute rolledUpWorkProgress
+      // = average of (portfolio's own work progress + each child Program's work progress)
+      // For Program tier objectives: rolledUpWorkProgress = ownWorkProgress (no children aggregated)
+      
+      const computeRolledUpWorkProgress = (node: any): number | null => {
+        // For Program tier (or any non-portfolio), just use own progress
+        if (node.tier !== 'portfolio') {
+          node.rolledUpWorkProgress = node.ownWorkProgress;
+          node.work_progress = node.ownWorkProgress || 0;
+          return node.ownWorkProgress;
+        }
+        
+        // For Portfolio tier: aggregate own progress + child Program progress
+        const progressValues: number[] = [];
+        
+        // Include own work progress if it exists (has aligned work items)
+        if (node.ownWorkProgress !== null && !Number.isNaN(node.ownWorkProgress)) {
+          progressValues.push(node.ownWorkProgress);
+        }
+        
+        // Include each child's work progress
+        if (node.children && node.children.length > 0) {
+          node.children.forEach((child: any) => {
+            // Recursively compute child's rolled-up work progress first
+            const childProgress = computeRolledUpWorkProgress(child);
+            if (childProgress !== null && !Number.isNaN(childProgress)) {
+              progressValues.push(childProgress);
+            }
+          });
+        }
+        
+        // Calculate average of all progress values
+        if (progressValues.length > 0) {
+          const average = progressValues.reduce((sum, val) => sum + val, 0) / progressValues.length;
+          node.rolledUpWorkProgress = average;
+          node.work_progress = average; // UI uses work_progress
+        } else {
+          node.rolledUpWorkProgress = null;
+          node.work_progress = 0;
+        }
+        
+        return node.rolledUpWorkProgress;
+      };
+      
+      // Apply both roll-ups to all root nodes (and their descendants)
       roots.forEach(root => {
         computeRolledUpKrProgress(root);
+        computeRolledUpWorkProgress(root);
       });
 
       // Sort roots: Portfolio tier first, then by created_at
