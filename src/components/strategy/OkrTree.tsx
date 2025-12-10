@@ -205,7 +205,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
       <CardHeader className="pb-3 space-y-3">
         <CardTitle className="text-xl font-semibold text-foreground">OKR Tree</CardTitle>
         <p className="text-sm text-muted-foreground italic">
-          Theme → Objective → Key Results hierarchy for this snapshot (OKR v2)
+          Theme → Objective → Key Results hierarchy for this snapshot
         </p>
         <div className="flex items-center justify-between pt-1">
           <div className="relative flex-1 max-w-[280px]">
