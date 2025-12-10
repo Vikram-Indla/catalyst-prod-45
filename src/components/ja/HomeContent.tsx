@@ -317,7 +317,7 @@ export function HomeContent() {
       fontFamily: '"Atlassian Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
     }}>
       {/* Page title */}
-      <h1 style={{
+      <div style={{
         fontSize: '24px',
         fontWeight: 600,
         color: '#172B4D',
@@ -326,7 +326,7 @@ export function HomeContent() {
         margin: 0,
       }}>
         For you
-      </h1>
+      </div>
 
       {/* Divider */}
       <div style={{ 
@@ -344,7 +344,7 @@ export function HomeContent() {
           alignItems: 'center',
           marginBottom: '12px',
         }}>
-          <h2 style={{
+          <div style={{
             fontSize: '14px',
             fontWeight: 400,
             color: '#172B4D',
@@ -352,7 +352,7 @@ export function HomeContent() {
             lineHeight: '20px',
           }}>
             Recent spaces
-          </h2>
+          </div>
           <a href="#" style={{
             fontSize: '14px',
             color: '#0052CC',
