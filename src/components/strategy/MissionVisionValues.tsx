@@ -19,7 +19,7 @@ export function MissionVisionValues({ snapshot }: MissionVisionValuesProps) {
       
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <Card className="border bg-card">
+      <Card className="border-l-4 border-l-brand-gold">
         <CardHeader>
           <CardTitle className="text-primary text-base">Mission</CardTitle>
           <p className="text-xs text-muted-foreground italic">Why do we exist?</p>
@@ -35,7 +35,7 @@ export function MissionVisionValues({ snapshot }: MissionVisionValuesProps) {
         </CardContent>
       </Card>
 
-      <Card className="border bg-card">
+      <Card className="border-l-4 border-l-brand-gold">
         <CardHeader>
           <CardTitle className="text-primary text-base">Vision</CardTitle>
           <p className="text-xs text-muted-foreground italic">What value do we provide?</p>
@@ -51,7 +51,7 @@ export function MissionVisionValues({ snapshot }: MissionVisionValuesProps) {
         </CardContent>
       </Card>
 
-      <Card className="border bg-card">
+      <Card className="border-l-4 border-l-brand-gold">
         <CardHeader>
           <CardTitle className="text-primary text-base">Values</CardTitle>
           <p className="text-xs text-muted-foreground italic">How do we behave?</p>

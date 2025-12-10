@@ -38,7 +38,7 @@ export function MisalignedWorkItems({ snapshotId }: MisalignedWorkItemsProps) {
   const totalMisaligned = misalignedData.themes + misalignedData.epics + misalignedData.features;
 
   return (
-    <Card className="border bg-card">
+    <Card className="border-l-4 border-l-brand-gold">
       <CardHeader>
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-brand-gold" />

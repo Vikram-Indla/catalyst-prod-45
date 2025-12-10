@@ -44,7 +44,7 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
 
   if (isLoading) {
     return (
-      <Card className="border bg-card">
+      <Card className="border-l-4 border-l-brand-gold">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
         </CardHeader>
@@ -59,7 +59,7 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
 
   if (!heatmapData || !heatmapData.rows || heatmapData.rows.length === 0) {
     return (
-      <Card className="border bg-card">
+      <Card className="border-l-4 border-l-brand-gold">
         <CardHeader>
           <CardTitle className="text-xl font-semibold">OKR Heatmap</CardTitle>
         </CardHeader>
@@ -82,7 +82,7 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
   }
 
   return (
-    <Card className="border bg-card">
+    <Card className="border-l-4 border-l-brand-gold">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="space-y-2">
