@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { ObjectiveV2, useUpdateObjectiveV2, ObjectiveStatusV2, ObjectiveHealthV2 } from '@/hooks/useObjectivesV2';
+import { ObjectiveV2 } from '@/hooks/useObjectivesV2';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -13,24 +12,25 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+export interface ObjectiveFormData {
+  name: string;
+  description: string;
+  notes: string;
+  theme_id: string;
+  status: string;
+  health: string;
+  start_date: string;
+  due_date: string;
+  owner_id: string;
+}
+
 interface ObjectiveOverviewTabV2Props {
+  formData: ObjectiveFormData;
+  onChange: (data: ObjectiveFormData) => void;
   objective: ObjectiveV2;
 }
 
-export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Props) {
-  const updateObjective = useUpdateObjectiveV2();
-  
-  const [name, setName] = useState(objective.name);
-  const [description, setDescription] = useState(objective.description || '');
-  const [notes, setNotes] = useState((objective as any).notes || '');
-
-  // Sync state when objective changes
-  useEffect(() => {
-    setName(objective.name);
-    setDescription(objective.description || '');
-    setNotes((objective as any).notes || '');
-  }, [objective]);
-
+export function ObjectiveOverviewTabV2({ formData, onChange, objective }: ObjectiveOverviewTabV2Props) {
   // Fetch themes
   const { data: themes } = useQuery({
     queryKey: ['strategic-themes'],
@@ -57,26 +57,12 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
     },
   });
 
-  const handleFieldUpdate = (field: string, value: any) => {
-    updateObjective.mutate({ id: objective.id, [field]: value });
-  };
-
-  const handleNameBlur = () => {
-    if (name.trim() !== objective.name) {
-      handleFieldUpdate('name', name.trim());
-    }
-  };
-
-  const handleDescriptionBlur = () => {
-    if (description !== (objective.description || '')) {
-      handleFieldUpdate('description', description || null);
-    }
-  };
-
-  const handleNotesBlur = () => {
-    if (notes !== ((objective as any).notes || '')) {
-      handleFieldUpdate('notes', notes || null);
-    }
+  // Update a single field - NO auto-save on blur
+  const handleFieldChange = (field: keyof ObjectiveFormData, value: string) => {
+    onChange({
+      ...formData,
+      [field]: value,
+    });
   };
 
   return (
@@ -86,12 +72,14 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
         <Label htmlFor="name">Name *</Label>
         <Input
           id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={handleNameBlur}
-          className="font-medium"
+          value={formData.name}
+          onChange={(e) => handleFieldChange('name', e.target.value)}
+          className={`font-medium ${!formData.name.trim() ? 'border-destructive' : ''}`}
           required
         />
+        {!formData.name.trim() && (
+          <p className="text-xs text-destructive">Name is required</p>
+        )}
       </div>
 
       {/* Description */}
@@ -99,9 +87,8 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
         <Label htmlFor="description">Description</Label>
         <Textarea
           id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          onBlur={handleDescriptionBlur}
+          value={formData.description}
+          onChange={(e) => handleFieldChange('description', e.target.value)}
           rows={3}
           placeholder="Add a description..."
         />
@@ -111,10 +98,10 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
       <div className="space-y-2">
         <Label>Theme *</Label>
         <Select
-          value={objective.theme_id || ''}
-          onValueChange={(v) => handleFieldUpdate('theme_id', v || null)}
+          value={formData.theme_id || ''}
+          onValueChange={(v) => handleFieldChange('theme_id', v || '')}
         >
-          <SelectTrigger className={!objective.theme_id ? 'border-destructive' : ''}>
+          <SelectTrigger className={!formData.theme_id ? 'border-destructive' : ''}>
             <SelectValue placeholder="Select theme (required)" />
           </SelectTrigger>
           <SelectContent>
@@ -125,7 +112,7 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
             ))}
           </SelectContent>
         </Select>
-        {!objective.theme_id && (
+        {!formData.theme_id && (
           <p className="text-xs text-destructive">Theme is required for v2 objectives</p>
         )}
       </div>
@@ -135,8 +122,8 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
         <div className="space-y-2">
           <Label>Status</Label>
           <Select
-            value={objective.status}
-            onValueChange={(v) => handleFieldUpdate('status', v)}
+            value={formData.status}
+            onValueChange={(v) => handleFieldChange('status', v)}
           >
             <SelectTrigger>
               <SelectValue />
@@ -156,8 +143,8 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
         <div className="space-y-2">
           <Label>Health</Label>
           <Select
-            value={objective.health || 'at_risk'}
-            onValueChange={(v) => handleFieldUpdate('health', v)}
+            value={formData.health || 'at_risk'}
+            onValueChange={(v) => handleFieldChange('health', v)}
           >
             <SelectTrigger>
               <SelectValue />
@@ -178,8 +165,8 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
           <Label>Start Date</Label>
           <Input
             type="date"
-            value={objective.start_date || ''}
-            onChange={(e) => handleFieldUpdate('start_date', e.target.value || null)}
+            value={formData.start_date || ''}
+            onChange={(e) => handleFieldChange('start_date', e.target.value)}
           />
         </div>
 
@@ -188,8 +175,8 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
           <Label>Due Date</Label>
           <Input
             type="date"
-            value={objective.due_date || ''}
-            onChange={(e) => handleFieldUpdate('due_date', e.target.value || null)}
+            value={formData.due_date || ''}
+            onChange={(e) => handleFieldChange('due_date', e.target.value)}
           />
         </div>
       </div>
@@ -198,8 +185,8 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
       <div className="space-y-2">
         <Label>Owner</Label>
         <Select
-          value={objective.owner_id || '__unassigned__'}
-          onValueChange={(v) => handleFieldUpdate('owner_id', v === '__unassigned__' ? null : v)}
+          value={formData.owner_id || '__unassigned__'}
+          onValueChange={(v) => handleFieldChange('owner_id', v === '__unassigned__' ? '' : v)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select owner" />
@@ -220,9 +207,8 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
         <Label htmlFor="notes">Notes</Label>
         <Textarea
           id="notes"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          onBlur={handleNotesBlur}
+          value={formData.notes}
+          onChange={(e) => handleFieldChange('notes', e.target.value)}
           rows={3}
           placeholder="Add notes..."
         />
