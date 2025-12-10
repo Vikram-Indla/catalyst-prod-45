@@ -203,7 +203,7 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
                       fontSize: '14px',
                       fontWeight: 500,
                       lineHeight: '20px',
-                      color: isActive ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
+                      color: isActive ? '#C69C6D' : token('color.text', '#172B4D'),
                       background: 'transparent',
                       border: 'none',
                       borderRadius: token('border.radius', '3px'),
@@ -227,7 +227,7 @@ export const TopNav = ({ isMobile = false }: TopNavProps) => {
                         left: token('space.150', '12px'),
                         right: token('space.150', '12px'),
                         height: '2px',
-                        background: token('color.border.brand', '#0052CC'),
+                        background: '#C69C6D',
                         borderRadius: '1px',
                       }} />
                     )}
@@ -407,7 +407,7 @@ function NavDropdownItem({ label, isActive, isOpen, onToggle, onClose, onCreateC
             fontSize: '14px',
             fontWeight: 500,
             lineHeight: '20px',
-            color: isActive || isOpen ? token('color.text.brand', '#0052CC') : token('color.text', '#172B4D'),
+            color: isActive || isOpen ? '#C69C6D' : token('color.text', '#172B4D'),
             background: isOpen ? token('color.background.neutral.hovered', '#F4F5F7') : 'transparent',
             border: 'none',
             borderRadius: token('border.radius', '3px'),
@@ -442,7 +442,7 @@ function NavDropdownItem({ label, isActive, isOpen, onToggle, onClose, onCreateC
               left: token('space.150', '12px'),
               right: token('space.150', '12px'),
               height: '2px',
-              background: token('color.border.brand', '#0052CC'),
+              background: '#C69C6D',
               borderRadius: '1px',
             }} />
           )}
