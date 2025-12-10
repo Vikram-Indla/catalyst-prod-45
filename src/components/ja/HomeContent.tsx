@@ -318,20 +318,22 @@ export function HomeContent() {
     }}>
       {/* Page title */}
       <h1 style={{
-        fontSize: '29px',
-        fontWeight: 500,
+        fontSize: '36px',
+        fontWeight: 700,
         color: '#172B4D',
-        lineHeight: '32px',
+        lineHeight: '44px',
         letterSpacing: '-0.01em',
         margin: 0,
+        marginBottom: '16px',
       }}>
         For you
       </h1>
 
       {/* Divider */}
       <div style={{ 
-        marginTop: '16px', 
-        borderTop: '1px solid rgba(0, 0, 0, 0.1)' 
+        height: '1px',
+        backgroundColor: '#DFE1E6',
+        margin: '16px 0',
       }} />
 
       {/* Recent Projects Section */}
@@ -340,15 +342,16 @@ export function HomeContent() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginTop: '24px',
-          marginBottom: '12px',
+          marginTop: '48px',
+          marginBottom: '16px',
         }}>
           <h2 style={{
-            fontSize: '20px',
+            fontSize: '24px',
             fontWeight: 600,
             color: '#172B4D',
             margin: 0,
-            lineHeight: '24px',
+            lineHeight: '32px',
+            letterSpacing: '-0.005em',
           }}>
             Recent projects
           </h2>
