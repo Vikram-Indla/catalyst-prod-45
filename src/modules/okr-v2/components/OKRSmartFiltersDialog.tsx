@@ -81,11 +81,20 @@ export function OKRSmartFiltersDialog({
   });
 
   const handleClearFilters = () => {
-    setLocalFilters({});
+    // Reset to empty filters and also update parent immediately
+    const emptyFilters: OKRSmartFilters = {};
+    setLocalFilters(emptyFilters);
+    onFiltersChange(emptyFilters);
   };
 
   const handleApplyFilters = () => {
     onFiltersChange(localFilters);
+    onOpenChange(false);
+  };
+
+  const handleCancel = () => {
+    // Restore to previous applied filters and close
+    setLocalFilters(filters);
     onOpenChange(false);
   };
 
@@ -112,6 +121,9 @@ export function OKRSmartFiltersDialog({
       progressMax: max < 100 ? max : undefined,
     }));
   };
+
+  // Computed slider value for controlled component
+  const sliderValue = [localFilters.progressMin ?? 0, localFilters.progressMax ?? 100];
 
   const activeFilterCount = Object.entries(localFilters).filter(([_, value]) => {
     if (Array.isArray(value)) return value.length > 0;
@@ -208,7 +220,7 @@ export function OKRSmartFiltersDialog({
               <Label className="text-sm font-medium">Progress Range</Label>
               <div className="px-1">
                 <Slider
-                  defaultValue={[localFilters.progressMin || 0, localFilters.progressMax || 100]}
+                  value={sliderValue}
                   max={100}
                   min={0}
                   step={5}
@@ -216,8 +228,8 @@ export function OKRSmartFiltersDialog({
                   className="w-full"
                 />
                 <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                  <span>{localFilters.progressMin || 0}%</span>
-                  <span>{localFilters.progressMax || 100}%</span>
+                  <span>{sliderValue[0]}%</span>
+                  <span>{sliderValue[1]}%</span>
                 </div>
               </div>
             </div>
@@ -351,7 +363,7 @@ export function OKRSmartFiltersDialog({
             Clear all
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+            <Button variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
             <Button onClick={handleApplyFilters}>
