@@ -51,17 +51,29 @@ export interface CreateKeyResultInput {
   summary: string;
   metric_type: MetricType;
   baseline_value?: number;
+  current_value?: number;
   goal_value: number;
   direction?: Direction;
   owner_id?: string;
 }
 
 function calculateKRProgress(baseline: number, current: number, goal: number, direction: Direction): number {
-  if (goal === baseline) return 0;
-  let progress = direction === 'increase' 
-    ? ((current - baseline) / (goal - baseline)) * 100
-    : ((baseline - current) / (baseline - goal)) * 100;
-  return Math.max(0, Math.min(100, progress));
+  // Handle edge cases
+  if (direction === 'increase') {
+    if (goal <= baseline) return 0;
+    const progress = ((current - baseline) / (goal - baseline)) * 100;
+    return Math.max(0, Math.min(100, progress));
+  } else if (direction === 'decrease') {
+    if (goal >= baseline) return 0;
+    const progress = ((baseline - current) / (baseline - goal)) * 100;
+    return Math.max(0, Math.min(100, progress));
+  } else {
+    // maintain: 100% if current equals baseline, else diminish based on deviation
+    const range = Math.max(1, Math.abs(goal - baseline));
+    const deviation = Math.abs(current - baseline);
+    const progress = Math.max(0, 100 - (deviation / range) * 100);
+    return Math.min(100, progress);
+  }
 }
 
 // Helper to write audit log entry
@@ -104,9 +116,9 @@ export function useKeyResultsV2(objectiveId?: string) {
 
       // Process KRs without additional queries - owner lookup is optional/secondary
       return (krs || []).map(kr => {
-        const baseline = kr.baseline_value || 0;
-        const current = kr.current_value || baseline;
-        const goal = kr.goal_value || kr.target_value || 0;
+        const baseline = kr.baseline_value ?? 0;
+        const current = kr.current_value ?? baseline; // Only use baseline if current_value is null/undefined
+        const goal = kr.goal_value ?? kr.target_value ?? 0;
         const direction = (kr.direction || 'increase') as Direction;
         const progress = calculateKRProgress(baseline, current, goal, direction);
         // Map DB metric_type back to UI type for display
@@ -147,9 +159,9 @@ async function updateObjectiveProgressInDB(objectiveId: string) {
   
   if (hasKRs) {
     const progressValues = krs.map(kr => {
-      const baseline = kr.baseline_value || 0;
-      const current = kr.current_value || baseline;
-      const goal = kr.goal_value || kr.target_value || 0;
+      const baseline = kr.baseline_value ?? 0;
+      const current = kr.current_value ?? baseline;
+      const goal = kr.goal_value ?? kr.target_value ?? 0;
       const direction = (kr.direction || 'increase') as Direction;
       return calculateKRProgress(baseline, current, goal, direction);
     });
@@ -187,10 +199,14 @@ export function useCreateKeyResultV2() {
       // Map UI metric type to DB-valid value
       const dbMetricType = UI_TO_DB_METRIC_TYPE[input.metric_type] || 'count';
       
-      // Calculate initial progress
-      const baseline = input.baseline_value || 0;
+      // Use provided values - current_value defaults to baseline only if not provided
+      const baseline = input.baseline_value ?? 0;
+      const current = input.current_value ?? baseline;
+      const goal = input.goal_value;
       const direction = input.direction || 'increase';
-      const progress = calculateKRProgress(baseline, baseline, input.goal_value, direction as Direction);
+      
+      // Calculate initial progress using the actual current value
+      const progress = calculateKRProgress(baseline, current, goal, direction as Direction);
       
       const { data, error } = await supabase
         .from('key_results_v2')
@@ -199,8 +215,8 @@ export function useCreateKeyResultV2() {
           summary: input.summary,
           metric_type: dbMetricType,
           baseline_value: baseline,
-          goal_value: input.goal_value,
-          current_value: baseline,
+          goal_value: goal,
+          current_value: current,
           direction: direction,
           status: 'pending',
           progress: Math.round(progress), // Store progress in DB
@@ -248,8 +264,8 @@ export function useUpdateKeyResultV2() {
       if (!beforeData) throw new Error('KR not found');
 
       // Calculate new progress
-      const baseline = beforeData.baseline_value || 0;
-      const goal = beforeData.goal_value || beforeData.target_value || 0;
+      const baseline = beforeData.baseline_value ?? 0;
+      const goal = beforeData.goal_value ?? beforeData.target_value ?? 0;
       const direction = (beforeData.direction || 'increase') as Direction;
       const progress = calculateKRProgress(baseline, current_value, goal, direction);
 
