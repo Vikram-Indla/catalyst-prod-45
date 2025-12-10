@@ -318,7 +318,7 @@ export function HomeContent() {
     }}>
       {/* Page title */}
       <h1 style={{
-        fontSize: '24px',
+        fontSize: '20px',
         fontWeight: 500,
         color: '#172B4D',
         lineHeight: '32px',
