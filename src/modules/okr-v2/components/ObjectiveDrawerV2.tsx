@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { useObjectiveV2, useUpdateObjectiveV2, useDeleteObjectiveV2 } from '@/hooks/useObjectivesV2';
+import { useObjectiveV2, useDeleteObjectiveV2 } from '@/hooks/useObjectivesV2';
 import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription,
 } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -33,6 +34,11 @@ import { MoreVertical, Trash2, Users, Calendar, Target } from 'lucide-react';
 import { ObjectiveOverviewTabV2 } from './ObjectiveOverviewTabV2';
 import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
+// Reuse v1 tab components for Links, Details, Discussions, Audit Log
+import { LinkedItemsTab } from '@/components/okr/LinkedItemsTab';
+import { ObjectiveDetailsTab } from '@/components/okr/ObjectiveDetailsTab';
+import { DiscussionsTab } from '@/components/okr/DiscussionsTab';
+import { AuditLogTab } from '@/components/okr/AuditLogTab';
 
 interface ObjectiveDrawerV2Props {
   objectiveId: string | null;
@@ -95,6 +101,9 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                     <SheetTitle className="text-lg font-semibold">
                       {objective.name}
                     </SheetTitle>
+                    <SheetDescription className="sr-only">
+                      Objective details and key results
+                    </SheetDescription>
                     {objective.description && (
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                         {objective.description}
@@ -154,17 +163,29 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                 </div>
               </SheetHeader>
 
-              {/* Tabs */}
+              {/* Tabs - v1 style tabs */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
-                <TabsList className="px-6 py-0 h-12 bg-card border-b border-border justify-start rounded-none">
-                  <TabsTrigger value="overview" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none">
+                <TabsList className="px-4 py-0 h-12 bg-card border-b border-border justify-start rounded-none gap-0 flex-shrink-0">
+                  <TabsTrigger value="overview" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
                     Overview
                   </TabsTrigger>
-                  <TabsTrigger value="key-results" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none">
+                  <TabsTrigger value="key-results" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
                     Key Results
                   </TabsTrigger>
-                  <TabsTrigger value="linked-work" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none">
-                    Linked Work
+                  <TabsTrigger value="work" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
+                    Work
+                  </TabsTrigger>
+                  <TabsTrigger value="links" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
+                    Links
+                  </TabsTrigger>
+                  <TabsTrigger value="details" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
+                    Details
+                  </TabsTrigger>
+                  <TabsTrigger value="discussions" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
+                    Discussions
+                  </TabsTrigger>
+                  <TabsTrigger value="audit" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
+                    Audit Log
                   </TabsTrigger>
                 </TabsList>
 
@@ -175,8 +196,20 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                   <TabsContent value="key-results" className="m-0 h-full">
                     <KeyResultsTabV2 objectiveId={objective.id} />
                   </TabsContent>
-                  <TabsContent value="linked-work" className="m-0 h-full">
+                  <TabsContent value="work" className="m-0 h-full">
                     <LinkedWorkTabV2 objectiveId={objective.id} />
+                  </TabsContent>
+                  <TabsContent value="links" className="m-0 p-6">
+                    <LinkedItemsTab objectiveId={objective.id} />
+                  </TabsContent>
+                  <TabsContent value="details" className="m-0 p-6">
+                    <ObjectiveDetailsTab objective={objective} />
+                  </TabsContent>
+                  <TabsContent value="discussions" className="m-0 p-6">
+                    <DiscussionsTab objectiveId={objective.id} />
+                  </TabsContent>
+                  <TabsContent value="audit" className="m-0 p-6">
+                    <AuditLogTab objectiveId={objective.id} />
                   </TabsContent>
                 </div>
               </Tabs>
