@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Trash2, TrendingUp, TrendingDown, Minus, Edit, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, TrendingUp, TrendingDown, Minus, Edit, ChevronDown, ChevronRight, Link2 } from 'lucide-react';
 import { KeyResultDialogV2 } from './KeyResultDialogV2';
+import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
 
 interface KeyResultsTabV2Props {
   objectiveId: string;
@@ -25,6 +26,7 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
   const [krDialogOpen, setKrDialogOpen] = useState(false);
   const [selectedKR, setSelectedKR] = useState<KeyResultV2 | null>(null);
   const [expandedKrs, setExpandedKrs] = useState<Set<string>>(new Set());
+  const [alignmentDrawerKR, setAlignmentDrawerKR] = useState<KeyResultV2 | null>(null);
 
   const toggleExpanded = (krId: string) => {
     const newExpanded = new Set(expandedKrs);
@@ -52,6 +54,11 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
     if (confirm('Are you sure you want to delete this key result?')) {
       deleteKR.mutate({ id: kr.id, objectiveId: kr.objective_id });
     }
+  };
+
+  const handleAlignWork = (kr: KeyResultV2, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setAlignmentDrawerKR(kr);
   };
 
   if (isLoading) {
@@ -98,7 +105,10 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
                   {getDirectionIcon(kr.direction)}
                   <span className="font-medium truncate">{kr.summary}</span>
                 </div>
-                <Badge variant="outline" className="flex-shrink-0">{kr.metric_type}</Badge>
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <span className="text-sm text-muted-foreground">{Math.round(kr.progress)}%</span>
+                  <Badge variant="outline" className="text-xs">{kr.metric_type}</Badge>
+                </div>
               </div>
 
               {expandedKrs.has(kr.id) && (
@@ -126,7 +136,16 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
                     <Progress value={kr.progress} className="h-2" />
                   </div>
 
-                  <div className="flex gap-2 pt-2 border-t border-border">
+                  <div className="flex gap-2 pt-2 border-t border-border flex-wrap">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={(e) => handleAlignWork(kr, e)}
+                      className="gap-1.5"
+                    >
+                      <Link2 className="h-4 w-4" />
+                      Align Work
+                    </Button>
                     <Button 
                       variant="outline" 
                       size="sm"
@@ -164,6 +183,13 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
         }}
         objectiveId={objectiveId}
         keyResult={selectedKR}
+      />
+
+      <KRWorkAlignmentDrawer
+        keyResult={alignmentDrawerKR}
+        open={!!alignmentDrawerKR}
+        onClose={() => setAlignmentDrawerKR(null)}
+        objectiveId={objectiveId}
       />
     </div>
   );
