@@ -64,18 +64,31 @@ a {
   text-decoration: none !important;
 }
 
-/* GLOBAL FOCUS RING OVERRIDE - Catalyst Brand Gold */
-*:focus-visible {
+/* GLOBAL FOCUS RING - Only for inputs, textareas, and interactive form elements */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="listbox"]:focus-visible,
+[role="combobox"]:focus-visible,
+[contenteditable="true"]:focus-visible {
   outline: 2px solid #C69C6D !important;
   outline-offset: 2px !important;
 }
 
+/* Buttons and links - subtle focus ring */
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible {
   outline: 2px solid #C69C6D !important;
   outline-offset: 2px !important;
   box-shadow: none !important;
+}
+
+/* Cards and non-editable containers - no focus ring */
+[role="article"]:focus-visible,
+.card:focus-visible,
+[data-no-focus-ring]:focus-visible {
+  outline: none !important;
 }
 
 /* TABS */
