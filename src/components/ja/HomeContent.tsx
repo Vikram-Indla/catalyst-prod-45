@@ -339,9 +339,9 @@ export function HomeContent() {
           marginBottom: '12px',
         }}>
           <h2 style={{
-            fontSize: '11px',
+            fontSize: '12px',
             fontWeight: 600,
-            color: '#626F86',
+            color: '#172B4D',
             margin: 0,
             lineHeight: '16px',
           }}>
