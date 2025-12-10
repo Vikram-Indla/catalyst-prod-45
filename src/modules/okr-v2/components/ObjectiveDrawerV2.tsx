@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useObjectiveV2, useDeleteObjectiveV2 } from '@/hooks/useObjectivesV2';
+import { useState, useEffect, useCallback } from 'react';
+import { useObjectiveV2, useUpdateObjectiveV2, useDeleteObjectiveV2 } from '@/hooks/useObjectivesV2';
 import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
 import {
   Sheet,
@@ -31,13 +31,16 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { MoreVertical, Trash2, Users, Calendar, Target } from 'lucide-react';
-import { ObjectiveOverviewTabV2 } from './ObjectiveOverviewTabV2';
+import { ObjectiveOverviewTabV2, ObjectiveFormData } from './ObjectiveOverviewTabV2';
 import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
 // Reuse v1 tab components for Links, Discussions, Audit Log (NO Details tab in v2)
 import { LinkedItemsTab } from '@/components/okr/LinkedItemsTab';
 import { DiscussionsTab } from '@/components/okr/DiscussionsTab';
 import { AuditLogTab } from '@/components/okr/AuditLogTab';
+import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
+import { logAuditEntry, getChangedFields } from '@/lib/auditLogger';
 
 interface ObjectiveDrawerV2Props {
   objectiveId: string | null;
@@ -56,12 +59,193 @@ function getHealthColor(health?: string): string {
 }
 
 export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawerV2Props) {
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
+  
+  // Form state for dirty tracking
+  const [formData, setFormData] = useState<ObjectiveFormData | null>(null);
+  const [originalData, setOriginalData] = useState<ObjectiveFormData | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const { data: objective, isLoading } = useObjectiveV2(objectiveId || undefined);
   const { data: keyResults } = useKeyResultsV2(objectiveId || undefined);
+  const updateObjective = useUpdateObjectiveV2();
   const deleteObjective = useDeleteObjectiveV2();
+
+  // Sync form data when objective loads
+  useEffect(() => {
+    if (objective) {
+      const data: ObjectiveFormData = {
+        name: objective.name,
+        description: objective.description || '',
+        notes: (objective as any).notes || '',
+        theme_id: objective.theme_id || '',
+        status: objective.status,
+        health: objective.health || 'at_risk',
+        start_date: objective.start_date || '',
+        due_date: objective.due_date || '',
+        owner_id: objective.owner_id || '',
+      };
+      setFormData(data);
+      setOriginalData(data);
+      setHasChanges(false);
+    }
+  }, [objective]);
+
+  // Reset tab when drawer opens
+  useEffect(() => {
+    if (open) {
+      setActiveTab('overview');
+    }
+  }, [open]);
+
+  // Handle form changes from Overview tab
+  const handleFormChange = useCallback((newData: ObjectiveFormData) => {
+    setFormData(newData);
+    setHasChanges(true);
+  }, []);
+
+  // Validate required fields
+  const validateForm = (): string[] => {
+    const errors: string[] = [];
+    if (!formData?.name?.trim()) {
+      errors.push('Name is required');
+    }
+    if (!formData?.theme_id) {
+      errors.push('Theme is required');
+    }
+    return errors;
+  };
+
+  // Handle Save
+  const handleSave = async () => {
+    if (!objectiveId || !formData) return;
+
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast.error(errors.join('. '));
+      return;
+    }
+
+    try {
+      // Prepare update payload
+      const updatePayload = {
+        id: objectiveId,
+        name: formData.name.trim(),
+        description: formData.description || null,
+        notes: formData.notes || null,
+        theme_id: formData.theme_id || null,
+        status: formData.status as any,
+        health: formData.health as any,
+        start_date: formData.start_date || null,
+        due_date: formData.due_date || null,
+        owner_id: formData.owner_id || null,
+      };
+
+      // Log audit entry for changes
+      if (originalData) {
+        const changedFields = getChangedFields(originalData as any, formData as any);
+        if (changedFields.length > 0) {
+          await logAuditEntry({
+            entityType: 'objective',
+            entityId: objectiveId,
+            action: 'updated',
+            beforeData: originalData,
+            afterData: formData,
+          });
+        }
+      }
+
+      await updateObjective.mutateAsync(updatePayload);
+
+      // Update original data to current
+      setOriginalData(formData);
+      setHasChanges(false);
+
+      // Refresh relevant queries
+      queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['objective-v2', objectiveId] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
+
+      toast.success('Objective updated successfully');
+    } catch (error: any) {
+      toast.error(`Failed to save: ${error?.message || 'Unknown error'}`);
+    }
+  };
+
+  // Handle Close attempt (checks for unsaved changes)
+  const handleAttemptClose = () => {
+    if (hasChanges) {
+      setShowUnsavedChangesDialog(true);
+    } else {
+      handleClose();
+    }
+  };
+
+  // Actual close
+  const handleClose = () => {
+    setHasChanges(false);
+    setShowUnsavedChangesDialog(false);
+    onClose();
+  };
+
+  // Discard and close
+  const handleDiscardAndClose = () => {
+    setFormData(originalData);
+    setHasChanges(false);
+    setShowUnsavedChangesDialog(false);
+    onClose();
+  };
+
+  // Save and close
+  const handleSaveAndClose = async () => {
+    if (!objectiveId || !formData) return;
+
+    const errors = validateForm();
+    if (errors.length > 0) {
+      toast.error(errors.join('. '));
+      return;
+    }
+
+    setShowUnsavedChangesDialog(false);
+    setHasChanges(false);
+    onClose();
+
+    // Save in background
+    try {
+      const updatePayload = {
+        id: objectiveId,
+        name: formData.name.trim(),
+        description: formData.description || null,
+        notes: formData.notes || null,
+        theme_id: formData.theme_id || null,
+        status: formData.status as any,
+        health: formData.health as any,
+        start_date: formData.start_date || null,
+        due_date: formData.due_date || null,
+        owner_id: formData.owner_id || null,
+      };
+
+      if (originalData) {
+        await logAuditEntry({
+          entityType: 'objective',
+          entityId: objectiveId,
+          action: 'updated',
+          beforeData: originalData,
+          afterData: formData,
+        });
+      }
+
+      await updateObjective.mutateAsync(updatePayload);
+      queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['objective-v2', objectiveId] });
+      toast.success('Objective updated successfully');
+    } catch (error: any) {
+      toast.error(`Failed to save: ${error?.message || 'Unknown error'}`);
+    }
+  };
 
   const handleDelete = async () => {
     if (!objectiveId) return;
@@ -72,7 +256,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
 
   return (
     <>
-      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
+      <Sheet open={open} onOpenChange={(isOpen) => !isOpen && handleAttemptClose()}>
         <SheetContent className="w-full sm:max-w-[600px] p-0 flex flex-col">
           {isLoading ? (
             <div className="p-6 space-y-4">
@@ -83,7 +267,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
           ) : objective ? (
             <>
               {/* Header */}
-              <SheetHeader className="px-6 py-5 border-b border-border bg-card">
+              <SheetHeader className="px-6 py-5 border-b border-border bg-card flex-shrink-0">
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
@@ -187,7 +371,13 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
 
                 <div className="flex-1 overflow-auto">
                   <TabsContent value="overview" className="m-0 h-full">
-                    <ObjectiveOverviewTabV2 objective={objective} />
+                    {formData && (
+                      <ObjectiveOverviewTabV2 
+                        formData={formData} 
+                        onChange={handleFormChange}
+                        objective={objective}
+                      />
+                    )}
                   </TabsContent>
                   <TabsContent value="key-results" className="m-0 h-full">
                     <KeyResultsTabV2 objectiveId={objective.id} />
@@ -206,6 +396,23 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                   </TabsContent>
                 </div>
               </Tabs>
+
+              {/* Sticky Footer - same pattern as Business Drawer */}
+              <div className="border-t border-border bg-card px-6 py-4 flex items-center justify-end gap-3 flex-shrink-0">
+                <Button
+                  variant="outline"
+                  onClick={handleAttemptClose}
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={handleSave}
+                  disabled={!hasChanges}
+                  className="bg-brand-gold hover:bg-brand-gold-hover text-white"
+                >
+                  Save
+                </Button>
+              </div>
             </>
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">
@@ -214,6 +421,35 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
           )}
         </SheetContent>
       </Sheet>
+
+      {/* Unsaved Changes Dialog */}
+      <AlertDialog open={showUnsavedChangesDialog} onOpenChange={setShowUnsavedChangesDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved Changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Are you sure you want to leave? Your changes will be lost.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setShowUnsavedChangesDialog(false)}>
+              Go Back
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDiscardAndClose}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Discard Changes
+            </AlertDialogAction>
+            <AlertDialogAction 
+              onClick={handleSaveAndClose}
+              className="bg-brand-gold text-white hover:bg-brand-gold-hover"
+            >
+              Save & Close
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Delete confirmation */}
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
