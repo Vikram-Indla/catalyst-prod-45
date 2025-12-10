@@ -57,9 +57,9 @@ export function useObjectiveHierarchy(objectiveId: string) {
         programName = program?.name;
       }
 
-      // Calculate parent's KR progress from its own KRs
+      // Calculate parent's OWN KR progress from its own KRs only
       const parentKRs = keyResults || [];
-      let parentKrProgress = 0;
+      let ownKrProgress: number | null = null;
       if (parentKRs.length > 0) {
         const totalProgress = parentKRs.reduce((sum, kr) => {
           const baseline = kr.baseline_value || 0;
@@ -68,19 +68,8 @@ export function useObjectiveHierarchy(objectiveId: string) {
           const progress = goal !== baseline ? ((current - baseline) / (goal - baseline)) : 0;
           return sum + Math.max(0, Math.min(1, progress));
         }, 0);
-        parentKrProgress = totalProgress / parentKRs.length;
+        ownKrProgress = totalProgress / parentKRs.length;
       }
-
-      const currentWithKRs = {
-        ...current,
-        keyResults: keyResults || [],
-        portfolioName,
-        programName,
-        calculatedKrProgress: parentKrProgress,
-      };
-
-      // Fetch parents (recursive up)
-      const parents = await fetchParentChain(currentWithKRs.parent_objective_id);
 
       // Fetch direct children (where parent_objective_id = this objective)
       const { data: children } = await supabase
@@ -125,9 +114,9 @@ export function useObjectiveHierarchy(objectiveId: string) {
             .select('id', { count: 'exact', head: true })
             .eq('parent_objective_id', child.id);
 
-          // Calculate child's KR progress from their own KRs only
+          // Calculate child's OWN KR progress from their own KRs only
           const childKeyResults = childKRs || [];
-          let krProgress = 0;
+          let childOwnKrProgress: number | null = null;
           if (childKeyResults.length > 0) {
             const totalProgress = childKeyResults.reduce((sum, kr) => {
               const baseline = kr.baseline_value || 0;
@@ -136,13 +125,14 @@ export function useObjectiveHierarchy(objectiveId: string) {
               const progress = goal !== baseline ? ((current - baseline) / (goal - baseline)) : 0;
               return sum + Math.max(0, Math.min(1, progress));
             }, 0);
-            krProgress = totalProgress / childKeyResults.length;
+            childOwnKrProgress = totalProgress / childKeyResults.length;
           }
 
           return {
             ...child,
             keyResults: childKeyResults,
-            calculatedKrProgress: krProgress,
+            ownKrProgress: childOwnKrProgress,
+            calculatedKrProgress: childOwnKrProgress || 0, // For Program children, own = rolled-up
             krCount: childKeyResults.length,
             portfolioName: childPortfolioName,
             programName: childProgramName,
@@ -150,6 +140,48 @@ export function useObjectiveHierarchy(objectiveId: string) {
           };
         })
       );
+
+      // ============================================
+      // PHASE 4: KR Roll-Up Logic (Program → Portfolio)
+      // ============================================
+      // For Portfolio tier: rolledUpKrProgress = average of (own KR progress + each child's KR progress)
+      // For Program tier: rolledUpKrProgress = own KR progress (no children aggregated in this model)
+      
+      let rolledUpKrProgress: number | null = ownKrProgress;
+      
+      if (current.tier === 'portfolio') {
+        const progressValues: number[] = [];
+        
+        // Include own KR progress if it exists
+        if (ownKrProgress !== null && !Number.isNaN(ownKrProgress)) {
+          progressValues.push(ownKrProgress);
+        }
+        
+        // Include each child Program's KR progress
+        childrenWithKRs.forEach(child => {
+          if (child.ownKrProgress !== null && !Number.isNaN(child.ownKrProgress)) {
+            progressValues.push(child.ownKrProgress);
+          }
+        });
+        
+        // Calculate average
+        if (progressValues.length > 0) {
+          rolledUpKrProgress = progressValues.reduce((sum, val) => sum + val, 0) / progressValues.length;
+        }
+      }
+
+      const currentWithKRs = {
+        ...current,
+        keyResults: keyResults || [],
+        portfolioName,
+        programName,
+        ownKrProgress, // The objective's own KR progress (from its own KRs only)
+        calculatedKrProgress: rolledUpKrProgress || 0, // Rolled-up value for display
+        rolledUpKrProgress, // Explicit rolled-up field
+      };
+
+      // Fetch parents (recursive up)
+      const parents = await fetchParentChain(currentWithKRs.parent_objective_id);
 
       return {
         current: currentWithKRs,
