@@ -19,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Target, Layers, Link2, Plus, Trash2, AlertCircle } from 'lucide-react';
+import { Target, Plus, Trash2, AlertCircle, Pencil } from 'lucide-react';
 import { KRWorkAlignmentDrawer } from './KRWorkAlignmentDrawer';
 import { KeyResultV2 } from '@/hooks/useKeyResultsV2';
 
@@ -35,7 +35,6 @@ interface LinkedWorkItem {
   status?: string;
   progress: number;
   contributionPercent: number;
-  effectiveContribution: number;
 }
 
 interface KRWorkGroup {
@@ -58,7 +57,6 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
 
   const krIds = keyResults?.map(kr => kr.id) || [];
 
-  // Fetch all work contributions for this objective's KRs grouped by KR
   const { data: workGroups, isLoading: isLoadingWork } = useQuery({
     queryKey: ['linked-work-v2-grouped', objectiveId, krIds],
     queryFn: async () => {
@@ -71,13 +69,11 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
 
       if (error) throw error;
 
-      // Group by KR
       const groups: KRWorkGroup[] = [];
 
       for (const kr of keyResults || []) {
         const krContributions = contributions?.filter(c => c.key_result_id === kr.id) || [];
 
-        // Fetch work item details for this KR's contributions
         const workItems: LinkedWorkItem[] = await Promise.all(
           krContributions.map(async (c) => {
             let name = c.work_item_id;
@@ -89,32 +85,23 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
               if (data) {
                 name = data.name;
                 status = data.state || '';
-                if (['done', 'completed', 'closed'].includes(status.toLowerCase())) {
-                  progress = 100;
-                }
+                if (['done', 'completed', 'closed'].includes(status.toLowerCase())) progress = 100;
               }
             } else if (c.work_item_type === 'feature') {
               const { data } = await supabase.from('features').select('name, status').eq('id', c.work_item_id).single();
               if (data) {
                 name = data.name;
                 status = data.status || '';
-                if (['done', 'completed', 'closed'].includes(status.toLowerCase())) {
-                  progress = 100;
-                }
+                if (['done', 'completed', 'closed'].includes(status.toLowerCase())) progress = 100;
               }
             } else if (c.work_item_type === 'story') {
               const { data } = await supabase.from('stories').select('name, status').eq('id', c.work_item_id).single();
               if (data) {
                 name = data.name;
                 status = data.status || '';
-                if (['done', 'completed', 'closed'].includes(status.toLowerCase())) {
-                  progress = 100;
-                }
+                if (['done', 'completed', 'closed'].includes(status.toLowerCase())) progress = 100;
               }
             }
-
-            const contributionPercent = c.contribution_percent || 0;
-            const effectiveContribution = Math.round((progress * contributionPercent) / 100);
 
             return {
               id: c.id,
@@ -123,15 +110,13 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
               name,
               status,
               progress,
-              contributionPercent,
-              effectiveContribution,
+              contributionPercent: c.contribution_percent || 0,
             };
           })
         );
 
         const totalContribution = workItems.reduce((sum, item) => sum + item.contributionPercent, 0);
 
-        // Always include KR in groups (even if no work items) so we can show + Add
         groups.push({
           krId: kr.id,
           krName: kr.summary,
@@ -157,6 +142,7 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
         onSuccess: () => {
           setEditingItem(null);
           queryClient.invalidateQueries({ queryKey: ['linked-work-v2-grouped'] });
+          queryClient.invalidateQueries({ queryKey: ['kr-work-contributions'] });
           queryClient.invalidateQueries({ queryKey: ['key-results-v2'] });
           queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
         },
@@ -182,9 +168,7 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
 
   const openAlignDrawer = (krId: string) => {
     const kr = keyResults?.find(k => k.id === krId);
-    if (kr) {
-      setAlignDrawerKR(kr);
-    }
+    if (kr) setAlignDrawerKR(kr);
   };
 
   const getContributionStatus = (total: number) => {
@@ -198,24 +182,20 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
       <div className="p-6 space-y-4">
         <Skeleton className="h-4 w-48" />
         <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-24 w-full" />
       </div>
     );
   }
 
   const hasAnyKRs = (workGroups?.length || 0) > 0;
-  const hasLinkedWork = workGroups?.some(g => g.workItems.length > 0);
 
   return (
     <div className="p-6 space-y-6">
       {hasAnyKRs ? (
         <>
-          {/* Summary */}
           <div className="text-sm text-muted-foreground">
             Work items linked via Key Results. Edit contributions directly in this tab or from Key Results.
           </div>
 
-          {/* KR groups */}
           {workGroups?.map((group) => {
             const status = getContributionStatus(group.totalContribution);
             const hasWorkItems = group.workItems.length > 0;
@@ -223,22 +203,22 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
             return (
               <div key={group.krId} className="space-y-3">
                 {/* KR header */}
-                <div className="flex items-center gap-3 pb-2 border-b border-border">
+                <div className="flex items-center gap-3">
                   <Target className="h-4 w-4 text-brand-gold flex-shrink-0" />
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm truncate">KR – {group.krName}</div>
+                    <span className="text-sm font-medium">KR – {group.krName}</span>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <Progress value={group.krProgress} className="w-20 h-1.5" />
-                    <span className="text-xs text-muted-foreground">{Math.round(group.krProgress)}%</span>
+                    <Progress value={group.krProgress} className="w-24 h-2" />
+                    <span className="text-sm text-muted-foreground w-10 text-right">{Math.round(group.krProgress)}%</span>
                   </div>
                 </div>
 
-                {/* Contribution total indicator */}
+                {/* Contribution total */}
                 {hasWorkItems && (
-                  <div className="flex items-center justify-between text-xs px-1">
-                    <span className="text-muted-foreground">Contribution Total</span>
-                    <span className={`font-semibold ${status.valid ? 'text-emerald-600' : status.overweight ? 'text-destructive' : 'text-amber-600'}`}>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground pl-7">
+                    <span>Contribution Total</span>
+                    <span className={`font-medium ${status.valid ? 'text-emerald-600' : status.overweight ? 'text-destructive' : 'text-amber-600'}`}>
                       {group.totalContribution}% / 100%
                     </span>
                   </div>
@@ -246,7 +226,7 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
 
                 {/* Validation warning */}
                 {hasWorkItems && !status.valid && (
-                  <Alert variant={status.overweight ? "destructive" : "default"} className={`py-2 ${status.underweight ? 'border-amber-400 bg-amber-50 text-amber-800' : ''}`}>
+                  <Alert variant={status.overweight ? "destructive" : "default"} className={`py-2 ml-7 ${status.underweight ? 'border-amber-400 bg-amber-50 text-amber-800' : ''}`}>
                     <AlertCircle className="h-4 w-4" />
                     <AlertDescription className="text-xs">
                       {status.overweight 
@@ -259,88 +239,83 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
 
                 {/* Work items table */}
                 {hasWorkItems && (
-                  <div className="rounded-lg border border-border overflow-hidden">
+                  <div className="ml-7 rounded-md border border-border overflow-hidden">
                     <table className="w-full text-sm">
-                      <thead className="bg-muted/50">
-                        <tr className="text-left text-xs text-muted-foreground">
-                          <th className="px-3 py-2 font-medium">Work Item</th>
-                          <th className="px-3 py-2 font-medium w-20">Type</th>
-                          <th className="px-3 py-2 font-medium w-24 text-right">Progress</th>
-                          <th className="px-3 py-2 font-medium w-28 text-right">Contribution</th>
-                          <th className="px-3 py-2 font-medium w-24 text-right">Effective</th>
-                          <th className="px-3 py-2 font-medium w-12"></th>
+                      <thead className="bg-muted/30">
+                        <tr className="text-left text-xs text-muted-foreground uppercase tracking-wide">
+                          <th className="px-3 py-2.5 font-medium">Work Item</th>
+                          <th className="px-3 py-2.5 font-medium w-20 text-center">Type</th>
+                          <th className="px-3 py-2.5 font-medium w-28 text-center">Progress</th>
+                          <th className="px-3 py-2.5 font-medium w-28 text-center">Contribution</th>
+                          <th className="px-3 py-2.5 font-medium w-20 text-center">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {group.workItems.map((item) => (
-                          <tr key={item.id} className="border-t border-border hover:bg-muted/30">
-                            <td className="px-3 py-2">
+                          <tr key={item.id} className="border-t border-border hover:bg-muted/20">
+                            <td className="px-3 py-2.5">
                               <div className="flex items-center gap-2">
-                                {item.type === 'epic' ? (
-                                  <Target className="h-3.5 w-3.5 text-muted-foreground" />
-                                ) : item.type === 'feature' ? (
-                                  <Layers className="h-3.5 w-3.5 text-muted-foreground" />
-                                ) : (
-                                  <Layers className="h-3.5 w-3.5 text-muted-foreground" />
-                                )}
-                                <span className="truncate">{item.name}</span>
+                                <Target className="h-3.5 w-3.5 text-brand-gold flex-shrink-0" />
+                                <span className="truncate text-sm">{item.name}</span>
                               </div>
                             </td>
-                            <td className="px-3 py-2">
+                            <td className="px-3 py-2.5 text-center">
                               <Badge variant="outline" className="text-xs capitalize">
                                 {item.type}
                               </Badge>
                             </td>
-                            <td className="px-3 py-2 text-right">
-                              <div className="flex items-center justify-end gap-2">
-                                <Progress value={item.progress} className="w-12 h-1" />
-                                <span className="text-xs">{item.progress}%</span>
+                            <td className="px-3 py-2.5">
+                              <div className="flex items-center justify-center gap-2">
+                                <Progress value={item.progress} className="w-14 h-1.5" />
+                                <span className="text-xs text-muted-foreground w-8">{item.progress}%</span>
                               </div>
                             </td>
-                            <td className="px-3 py-2 text-right">
+                            <td className="px-3 py-2.5 text-center">
                               {editingItem?.id === item.id ? (
-                                <div className="flex items-center justify-end gap-1">
-                                  <Input
-                                    type="number"
-                                    min={1}
-                                    max={100}
-                                    autoFocus
-                                    value={editingItem.value}
-                                    onChange={(e) => setEditingItem({ id: item.id, value: parseInt(e.target.value) || 1 })}
-                                    onBlur={() => handleContributionChange(item.id, group.krId, editingItem.value)}
-                                    onKeyDown={(e) => {
-                                      if (e.key === 'Enter') {
-                                        handleContributionChange(item.id, group.krId, editingItem.value);
-                                      } else if (e.key === 'Escape') {
-                                        setEditingItem(null);
-                                      }
-                                    }}
-                                    className="w-16 h-7 text-xs text-center"
-                                  />
-                                  <span className="text-xs">%</span>
-                                </div>
+                                <Input
+                                  type="number"
+                                  min={1}
+                                  max={100}
+                                  autoFocus
+                                  value={editingItem.value}
+                                  onChange={(e) => setEditingItem({ id: item.id, value: parseInt(e.target.value) || 1 })}
+                                  onBlur={() => handleContributionChange(item.id, group.krId, editingItem.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleContributionChange(item.id, group.krId, editingItem.value);
+                                    else if (e.key === 'Escape') setEditingItem(null);
+                                  }}
+                                  className="w-16 h-7 text-xs text-center mx-auto"
+                                />
                               ) : (
                                 <button
                                   onClick={() => setEditingItem({ id: item.id, value: item.contributionPercent })}
-                                  className="text-xs px-2 py-1 rounded hover:bg-muted border border-transparent hover:border-border transition-colors cursor-pointer"
+                                  className="text-sm font-medium hover:text-brand-gold transition-colors"
                                 >
                                   {item.contributionPercent}%
                                 </button>
                               )}
                             </td>
-                            <td className="px-3 py-2 text-right text-xs font-medium">
-                              {item.effectiveContribution}%
-                            </td>
-                            <td className="px-3 py-2 text-right">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                                onClick={() => setUnlinkConfirm({ id: item.id, krId: group.krId, name: item.name })}
-                                title="Unlink from Key Result"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </Button>
+                            <td className="px-3 py-2.5">
+                              <div className="flex items-center justify-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                                  onClick={() => openAlignDrawer(group.krId)}
+                                  title="Edit alignment"
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                                  onClick={() => setUnlinkConfirm({ id: item.id, krId: group.krId, name: item.name })}
+                                  title="Remove link"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -351,9 +326,9 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
 
                 {/* Add Work Item CTA */}
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  className="w-full border-dashed"
+                  className="w-full ml-7 max-w-[calc(100%-1.75rem)] justify-center text-muted-foreground hover:text-foreground"
                   onClick={() => openAlignDrawer(group.krId)}
                 >
                   <Plus className="h-4 w-4 mr-2" />
@@ -365,33 +340,31 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
         </>
       ) : (
         <div className="text-center py-12 text-muted-foreground">
-          <Link2 className="h-10 w-10 mx-auto mb-3 opacity-50" />
+          <Target className="h-10 w-10 mx-auto mb-3 opacity-50" />
           <p className="text-sm font-medium">No Key Results yet</p>
-          <p className="text-xs mt-1 max-w-xs mx-auto">
-            Create Key Results first, then link work items to track execution.
-          </p>
+          <p className="text-xs mt-1">Create Key Results first, then link work items.</p>
         </div>
       )}
 
-      {/* Unlink confirmation dialog */}
+      {/* Unlink confirmation */}
       <AlertDialog open={!!unlinkConfirm} onOpenChange={(open) => !open && setUnlinkConfirm(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Unlink Work Item</AlertDialogTitle>
+            <AlertDialogTitle>Remove Link</AlertDialogTitle>
             <AlertDialogDescription>
-              Remove "{unlinkConfirm?.name}" from this Key Result? This will recalculate progress.
+              Remove "{unlinkConfirm?.name}" from this Key Result? The work item itself will not be deleted.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleUnlink} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Unlink
+              Remove
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Align Work Items drawer */}
+      {/* Align drawer */}
       <KRWorkAlignmentDrawer
         keyResult={alignDrawerKR}
         open={!!alignDrawerKR}
