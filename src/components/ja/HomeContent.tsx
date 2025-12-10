@@ -3,8 +3,10 @@ import Avatar from '@atlaskit/avatar';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import { projects, activityItems, Project, ActivityItem } from '@/data/homePageData';
+import { projects, activityItems, Project, ActivityItem, groupItemsByTimePeriod } from '@/data/homePageData';
 import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
+
+const ITEMS_PER_PAGE = 10;
 
 function RecentProjectCard({ project }: { project: Project }) {
   return (
@@ -197,14 +199,14 @@ function ActivityRow({ item }: { item: ActivityItem }) {
         </div>
       </div>
 
-      {/* Updated label */}
+      {/* Activity type label */}
       <div style={{
         fontSize: '12px',
         color: '#5E6C84',
         lineHeight: '16px',
         fontWeight: 400,
       }}>
-        Updated
+        {item.activityType}
       </div>
 
       {/* Avatar stack */}
@@ -220,12 +222,92 @@ function ActivityRow({ item }: { item: ActivityItem }) {
   );
 }
 
+function GroupedActivityList({ items, visibleCount, onLoadMore }: { 
+  items: ActivityItem[]; 
+  visibleCount: number;
+  onLoadMore: () => void;
+}) {
+  const groupedItems = groupItemsByTimePeriod(items);
+  let displayedCount = 0;
+  const hasMore = visibleCount < items.length;
+
+  return (
+    <div style={{ marginTop: '20px' }}>
+      {groupedItems.map((group, groupIndex) => {
+        const remainingSlots = visibleCount - displayedCount;
+        if (remainingSlots <= 0) return null;
+        
+        const itemsToShow = group.items.slice(0, remainingSlots);
+        displayedCount += itemsToShow.length;
+
+        return (
+          <div key={groupIndex}>
+            <div style={{
+              fontSize: '11px',
+              fontWeight: 700,
+              color: '#5E6C84',
+              textTransform: 'uppercase',
+              marginBottom: '4px',
+              marginTop: groupIndex > 0 ? '16px' : '0',
+              letterSpacing: '0',
+              lineHeight: '16px',
+            }}>
+              {group.label}
+            </div>
+            {itemsToShow.map((item, index) => (
+              <ActivityRow key={`${group.label}-${index}`} item={item} />
+            ))}
+          </div>
+        );
+      })}
+      
+      {/* Load more button */}
+      {hasMore && (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          marginTop: '24px',
+          paddingBottom: '16px',
+        }}>
+          <button
+            onClick={onLoadMore}
+            style={{
+              padding: '8px 16px',
+              fontSize: '14px',
+              fontWeight: 500,
+              color: '#172B4D',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #DFE1E6',
+              borderRadius: '3px',
+              cursor: 'pointer',
+              lineHeight: '20px',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#F4F5F7';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = '#FFFFFF';
+            }}
+          >
+            Load more
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function HomeContent() {
   const [selectedTab, setSelectedTab] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   const totalAssigned = activityItems.filter(item => 
     item.status !== 'In Production' && item.status !== 'Done'
   ).length;
+
+  const handleLoadMore = () => {
+    setVisibleCount(prev => prev + ITEMS_PER_PAGE);
+  };
 
   return (
     <div style={{
@@ -345,22 +427,11 @@ export function HomeContent() {
           <Tab>Boards</Tab>
         </TabList>
         <TabPanel>
-          <div style={{ marginTop: '20px' }}>
-            <div style={{
-              fontSize: '11px',
-              fontWeight: 700,
-              color: '#5E6C84',
-              textTransform: 'uppercase',
-              marginBottom: '4px',
-              letterSpacing: '0',
-              lineHeight: '16px',
-            }}>
-              Yesterday
-            </div>
-            {activityItems.map((item, index) => (
-              <ActivityRow key={index} item={item} />
-            ))}
-          </div>
+          <GroupedActivityList 
+            items={activityItems} 
+            visibleCount={visibleCount}
+            onLoadMore={handleLoadMore}
+          />
         </TabPanel>
         <TabPanel>
           <div style={{ padding: '40px', textAlign: 'center', color: '#5E6C84', fontSize: '14px', lineHeight: '20px' }}>
@@ -368,24 +439,11 @@ export function HomeContent() {
           </div>
         </TabPanel>
         <TabPanel>
-          <div style={{ marginTop: '20px' }}>
-            <div style={{
-              fontSize: '11px',
-              fontWeight: 700,
-              color: '#5E6C84',
-              textTransform: 'uppercase',
-              marginBottom: '4px',
-              letterSpacing: '0',
-              lineHeight: '16px',
-            }}>
-              Assigned Work Items
-            </div>
-            {activityItems
-              .filter(item => item.status !== 'In Production' && item.status !== 'Done')
-              .map((item, index) => (
-                <ActivityRow key={index} item={item} />
-              ))}
-          </div>
+          <GroupedActivityList 
+            items={activityItems.filter(item => item.status !== 'In Production' && item.status !== 'Done')} 
+            visibleCount={visibleCount}
+            onLoadMore={handleLoadMore}
+          />
         </TabPanel>
         <TabPanel>
           <div style={{ padding: '40px', textAlign: 'center', color: '#5E6C84', fontSize: '14px', lineHeight: '20px' }}>
