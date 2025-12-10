@@ -28,33 +28,21 @@ export function ObjectiveHierarchyDialog({
     (child: any) => child.parent_objective_id === objectiveId
   );
 
-  // Debug logging - remove after verification
-  if (hierarchy && open) {
-    console.log('=== OBJECTIVE HIERARCHY DEBUG ===');
-    console.log('Selected objectiveId:', objectiveId);
-    console.log('Current objective:', hierarchy.current?.id, hierarchy.current?.summary);
-    console.log('Raw keyResults from hook:', hierarchy.current?.keyResults?.map((kr: any) => ({
-      id: kr.id,
-      summary: kr.summary,
-      objective_id: kr.objective_id,
-    })));
-    console.log('Filtered parentKeyResults:', parentKeyResults.map((kr: any) => ({
-      id: kr.id,
-      summary: kr.summary,
-      objective_id: kr.objective_id,
-    })));
-    console.log('Raw children from hook:', hierarchy.children?.map((c: any) => ({
-      id: c.id,
-      summary: c.summary,
-      parent_objective_id: c.parent_objective_id,
-    })));
-    console.log('Filtered childObjectives:', childObjectives.map((c: any) => ({
-      id: c.id,
-      summary: c.summary,
-      parent_objective_id: c.parent_objective_id,
-    })));
-    console.log('=================================');
-  }
+  // Get display name - use 'name' field, fallback to 'summary', then 'Untitled Objective'
+  const getDisplayName = (obj: any) => {
+    return obj?.name || obj?.summary || 'Untitled Objective';
+  };
+
+  // Get context string (Portfolio/Program name)
+  const getContextString = (obj: any) => {
+    if (obj?.tier === 'program' && obj?.programName) {
+      return `Program: ${obj.programName}`;
+    }
+    if (obj?.tier === 'portfolio' && obj?.portfolioName) {
+      return `Portfolio: ${obj.portfolioName}`;
+    }
+    return null;
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -79,16 +67,23 @@ export function ObjectiveHierarchyDialog({
                 <div className="flex items-center gap-2">
                   <ObjectiveTierBadge tier={hierarchy.current.tier as any} size="sm" />
                   <span className="text-base font-medium text-foreground">
-                    {hierarchy.current.summary}
+                    {getDisplayName(hierarchy.current)}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-muted-foreground">
-                    {hierarchy.current.score ? `${Math.round(hierarchy.current.score * 100)}%` : 'N/A'}
+                    {Math.round((hierarchy.current.calculatedKrProgress || 0) * 100)}%
                   </span>
                   <ObjectiveStatusBadge status={hierarchy.current.status} size="sm" />
                 </div>
               </div>
+
+              {/* Context line */}
+              {getContextString(hierarchy.current) && (
+                <span className="text-xs text-muted-foreground">
+                  {getContextString(hierarchy.current)}
+                </span>
+              )}
 
               {/* Progress bars row */}
               <div className="grid grid-cols-2 gap-6">
@@ -102,7 +97,7 @@ export function ObjectiveHierarchyDialog({
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground">KR Progress</span>
                   <ProgressBar
-                    progress={(hierarchy.current.key_result_progress || 0) * 100}
+                    progress={(hierarchy.current.calculatedKrProgress || 0) * 100}
                     height="sm"
                   />
                 </div>
@@ -110,36 +105,41 @@ export function ObjectiveHierarchyDialog({
             </div>
 
             {/* Key Results Section - ONLY KRs where objective_id === this objective */}
-            {parentKeyResults.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-foreground border-b border-border pb-1">
-                  Key Results ({parentKeyResults.length})
-                </h4>
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-foreground border-b border-border pb-1">
+                Key Results ({parentKeyResults.length})
+              </h4>
+              {parentKeyResults.length > 0 ? (
                 <div className="space-y-2">
                   {parentKeyResults.map((kr: any) => (
                     <KeyResultRow key={kr.id} keyResult={kr} />
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                <p className="text-sm text-muted-foreground py-2">No key results for this objective.</p>
+              )}
+            </div>
 
             {/* Child Objectives Section - ONLY direct children */}
-            {childObjectives.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-semibold text-foreground border-b border-border pb-1">
-                  Child Objectives ({childObjectives.length})
-                </h4>
+            <div className="space-y-2">
+              <h4 className="text-sm font-semibold text-foreground border-b border-border pb-1">
+                Child Objectives ({childObjectives.length})
+              </h4>
+              {childObjectives.length > 0 ? (
                 <div className="space-y-2">
                   {childObjectives.map((child: any) => (
                     <ChildObjectiveRow 
                       key={child.id} 
                       objective={child}
-                      parentObjectiveId={objectiveId}
+                      getDisplayName={getDisplayName}
+                      getContextString={getContextString}
                     />
                   ))}
                 </div>
-              </div>
-            )}
+              ) : (
+                <p className="text-sm text-muted-foreground py-2">No child objectives.</p>
+              )}
+            </div>
           </div>
         ) : null}
       </DialogContent>
@@ -158,10 +158,13 @@ function KeyResultRow({ keyResult }: KeyResultRowProps) {
   const progress = goal !== baseline ? ((current - baseline) / (goal - baseline)) * 100 : 0;
   const clampedProgress = Math.max(0, Math.min(100, progress));
 
+  // Use 'summary' or 'name' for KR display
+  const krName = keyResult.summary || keyResult.name || 'Untitled Key Result';
+
   return (
     <div className="flex items-center gap-3 py-1.5">
       <Target className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-      <span className="flex-1 text-sm text-foreground truncate">{keyResult.summary}</span>
+      <span className="flex-1 text-sm text-foreground truncate">{krName}</span>
       <span className="text-xs text-muted-foreground whitespace-nowrap">
         {current} / {goal}
       </span>
@@ -177,62 +180,54 @@ function KeyResultRow({ keyResult }: KeyResultRowProps) {
 
 interface ChildObjectiveRowProps {
   objective: any;
-  parentObjectiveId: string;
+  getDisplayName: (obj: any) => string;
+  getContextString: (obj: any) => string | null;
 }
 
-function ChildObjectiveRow({ objective, parentObjectiveId }: ChildObjectiveRowProps) {
-  // Calculate KR progress from child's own KRs (already fetched in hook)
-  const childKRs = objective.keyResults || [];
-  let calculatedKrProgress = 0;
-  
-  if (childKRs.length > 0) {
-    const totalProgress = childKRs.reduce((sum: number, kr: any) => {
-      const baseline = kr.baseline_value || 0;
-      const current = kr.current_value || baseline;
-      const goal = kr.goal_value || 1;
-      const progress = goal !== baseline ? ((current - baseline) / (goal - baseline)) : 0;
-      return sum + Math.max(0, Math.min(1, progress));
-    }, 0);
-    calculatedKrProgress = (totalProgress / childKRs.length) * 100;
-  }
-
+function ChildObjectiveRow({ objective, getDisplayName, getContextString }: ChildObjectiveRowProps) {
+  // Use the pre-calculated KR progress from the hook
+  const krProgress = (objective.calculatedKrProgress || 0) * 100;
   // Use child's own work_progress from DB, or 0
   const workProgress = (objective.work_progress || 0) * 100;
 
-  // Debug log for this child
-  console.log('Child objective row:', {
-    id: objective.id,
-    summary: objective.summary,
-    tier: objective.tier,
-    krCount: childKRs.length,
-    calculatedKrProgress,
-    workProgress,
-  });
+  const context = getContextString(objective);
 
   return (
     <div className="pl-4 py-2 border-l-2 border-muted">
-      {/* Single row: tier badge, summary, progress bars, score, status */}
+      {/* Row layout: tier badge + name + context on left, progress + status on right */}
       <div className="flex items-center justify-between gap-3">
-        {/* Left side: tier badge + summary */}
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <ObjectiveTierBadge tier={objective.tier as any} size="sm" />
-          <span className="text-sm font-medium text-foreground truncate">
-            {objective.summary || objective.title || `Objective ${objective.id?.slice(0, 8)}`}
-          </span>
+        {/* Left side: tier badge + name + context */}
+        <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <ObjectiveTierBadge tier={objective.tier as any} size="sm" />
+            <span className="text-sm font-medium text-foreground truncate">
+              {getDisplayName(objective)}
+            </span>
+          </div>
+          {context && (
+            <span className="text-xs text-muted-foreground pl-1">{context}</span>
+          )}
         </div>
         
-        {/* Right side: progress bars + score + status */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        {/* Right side: progress bars + status */}
+        <div className="flex items-center gap-3 flex-shrink-0">
           {/* Work progress */}
-          <div className="w-14">
-            <ProgressBar progress={workProgress} height="sm" />
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-[10px] text-muted-foreground">Work</span>
+            <div className="w-14">
+              <ProgressBar progress={workProgress} height="sm" />
+            </div>
           </div>
           {/* KR progress */}
-          <div className="w-14">
-            <ProgressBar progress={calculatedKrProgress} height="sm" />
+          <div className="flex flex-col items-center gap-0.5">
+            <span className="text-[10px] text-muted-foreground">KR</span>
+            <div className="w-14">
+              <ProgressBar progress={krProgress} height="sm" />
+            </div>
           </div>
-          <span className="text-xs text-muted-foreground w-8 text-right">
-            {objective.score ? `${Math.round(objective.score * 100)}%` : 'N/A'}
+          {/* Overall score percentage */}
+          <span className="text-xs font-medium text-foreground w-10 text-right">
+            {Math.round(krProgress)}%
           </span>
           <ObjectiveStatusBadge status={objective.status} size="sm" />
         </div>
