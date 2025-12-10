@@ -4,15 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Plus, MoreVertical, Trash2, TrendingUp, TrendingDown, Minus, Edit, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, TrendingUp, TrendingDown, Minus, Edit, ChevronDown, ChevronRight } from 'lucide-react';
 import { KeyResultDialogV2 } from './KeyResultDialogV2';
-import { KRWorkContributionsV2 } from './KRWorkContributionsV2';
 
 interface KeyResultsTabV2Props {
   objectiveId: string;
@@ -63,9 +56,13 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
 
   if (isLoading) {
     return (
-      <div className="p-6 space-y-4">
-        <Skeleton className="h-20 w-full" />
-        <Skeleton className="h-20 w-full" />
+      <div className="p-6 space-y-3">
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-9 w-28" />
+        </div>
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
       </div>
     );
   }
@@ -127,12 +124,6 @@ export function KeyResultsTabV2({ objectiveId }: KeyResultsTabV2Props) {
                       <span className="font-medium">{Math.round(kr.progress)}%</span>
                     </div>
                     <Progress value={kr.progress} className="h-2" />
-                  </div>
-
-                  {/* Work Contributions */}
-                  <div>
-                    <h4 className="text-xs font-medium mb-2 text-muted-foreground">Linked Work</h4>
-                    <KRWorkContributionsV2 keyResultId={kr.id} />
                   </div>
 
                   <div className="flex gap-2 pt-2 border-t border-border">

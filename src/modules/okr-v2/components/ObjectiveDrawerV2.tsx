@@ -34,9 +34,8 @@ import { MoreVertical, Trash2, Users, Calendar, Target } from 'lucide-react';
 import { ObjectiveOverviewTabV2 } from './ObjectiveOverviewTabV2';
 import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
-// Reuse v1 tab components for Links, Details, Discussions, Audit Log
+// Reuse v1 tab components for Links, Discussions, Audit Log (NO Details tab in v2)
 import { LinkedItemsTab } from '@/components/okr/LinkedItemsTab';
-import { ObjectiveDetailsTab } from '@/components/okr/ObjectiveDetailsTab';
 import { DiscussionsTab } from '@/components/okr/DiscussionsTab';
 import { AuditLogTab } from '@/components/okr/AuditLogTab';
 
@@ -163,7 +162,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                 </div>
               </SheetHeader>
 
-              {/* Tabs - v1 style tabs */}
+              {/* Tabs - v2 tabs: Overview, Key Results, Work, Links, Discussions, Audit Log (NO Details) */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
                 <TabsList className="px-4 py-0 h-12 bg-card border-b border-border justify-start rounded-none gap-0 flex-shrink-0">
                   <TabsTrigger value="overview" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
@@ -177,9 +176,6 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                   </TabsTrigger>
                   <TabsTrigger value="links" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
                     Links
-                  </TabsTrigger>
-                  <TabsTrigger value="details" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
-                    Details
                   </TabsTrigger>
                   <TabsTrigger value="discussions" className="data-[state=active]:border-b-2 data-[state=active]:border-brand-gold rounded-none px-4">
                     Discussions
@@ -201,9 +197,6 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                   </TabsContent>
                   <TabsContent value="links" className="m-0 p-6">
                     <LinkedItemsTab objectiveId={objective.id} />
-                  </TabsContent>
-                  <TabsContent value="details" className="m-0 p-6">
-                    <ObjectiveDetailsTab objective={objective} />
                   </TabsContent>
                   <TabsContent value="discussions" className="m-0 p-6">
                     <DiscussionsTab objectiveId={objective.id} />
