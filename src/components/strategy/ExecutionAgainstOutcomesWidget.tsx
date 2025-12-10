@@ -148,17 +148,17 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
             <div className="space-y-4">
               {/* Strategic Objectives Row */}
               <div className="space-y-2">
-                <button
-                  onClick={() => setSelectedLevel({
-                    level: 'objectives',
-                    levelLabel: 'Strategic Objectives',
-                    alignedAccepted: acceptedCount,
-                    alignedTotal: okrMetrics.count,
-                    percentage: okrMetrics.avgProgress,
-                    color: objectivesColor,
-                  })}
-                  className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:border-brand-gold/50 hover:bg-muted/30 transition-colors text-left"
-                >
+                  <button
+                    onClick={() => setSelectedLevel({
+                      level: 'objectives',
+                      levelLabel: 'Strategic Objectives',
+                      alignedAccepted: acceptedCount,
+                      alignedTotal: okrMetrics.count,
+                      percentage: okrMetrics.avgProgress,
+                      color: objectivesColor,
+                    })}
+                    className="w-full flex items-center justify-between p-3 rounded-lg border border-border hover:border-brand-gold/50 hover:bg-muted/30 transition-colors text-left focus:outline-none focus:ring-0"
+                  >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
                     <span className="text-sm font-medium truncate">Strategic Objectives</span>
@@ -211,7 +211,8 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                     return (
                       <div
                         key={theme.themeId}
-                        className="flex items-center justify-between p-3 rounded-lg border border-border bg-card"
+                        className="flex items-center justify-between p-3 rounded-lg border border-border bg-card focus:outline-none focus:ring-0"
+                        tabIndex={-1}
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(color)}`} />

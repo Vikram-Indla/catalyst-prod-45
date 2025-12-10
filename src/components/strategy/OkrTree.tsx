@@ -83,7 +83,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
     return (
       <div key={item.id}>
         <div
-          className={`grid items-center py-2.5 border-b hover:bg-muted/20 transition-colors focus:outline-none ${
+          className={`grid items-center py-2.5 border-b hover:bg-muted/20 transition-colors focus:outline-none focus:ring-0 ${
             isObjective ? 'cursor-pointer' : ''
           } ${isTheme ? 'bg-muted/30' : ''}`}
           style={{
@@ -95,7 +95,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
               onObjectiveClick({ id: item.id, title: item.title, type: 'objective_v2' });
             }
           }}
-          data-no-focus-ring>
+          tabIndex={-1}>
           <div className="flex items-center gap-3" style={{ paddingLeft: `${indentPx + 16}px` }}>
             {hasChildren ? (
               <button
