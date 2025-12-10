@@ -84,15 +84,15 @@ a:focus-visible,
   box-shadow: none !important;
 }
 
-/* Cards, rows, and non-editable containers - NO focus ring */
+/* Remove ALL focus outlines from divs, cards, and non-form elements */
+div:focus,
+div:focus-visible,
+section:focus,
+section:focus-visible,
+article:focus,
+article:focus-visible,
 [data-no-focus-ring]:focus,
-[data-no-focus-ring]:focus-visible,
-[role="article"]:focus,
-[role="article"]:focus-visible,
-.card:focus,
-.card:focus-visible,
-div[class*="cursor-pointer"]:focus,
-div[class*="cursor-pointer"]:focus-visible {
+[data-no-focus-ring]:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
