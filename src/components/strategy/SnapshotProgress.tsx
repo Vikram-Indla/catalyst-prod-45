@@ -86,53 +86,83 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
             <div className="border border-border rounded-lg overflow-hidden">
               <table className="w-full border-collapse table-fixed">
                 <colgroup>
-                  <col className="w-[30%]" />
-                  <col className="w-[23.33%]" />
-                  <col className="w-[23.33%]" />
-                  <col className="w-[23.33%]" />
+                  <col style={{ width: '30%' }} />
+                  <col style={{ width: '5%' }} />
+                  <col style={{ width: '13.33%' }} />
+                  <col style={{ width: '5%' }} />
+                  <col style={{ width: '5%' }} />
+                  <col style={{ width: '13.33%' }} />
+                  <col style={{ width: '5%' }} />
+                  <col style={{ width: '5%' }} />
+                  <col style={{ width: '13.33%' }} />
+                  <col style={{ width: '5%' }} />
                 </colgroup>
                 <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                  <tr className="border-b border-border bg-muted/30">
+                    <th className="text-left px-4 py-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                       Category
                     </th>
-                    <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                    <th></th>
+                    <th className="text-center py-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                       Themes
                     </th>
-                    <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                    <th></th>
+                    <th></th>
+                    <th className="text-center py-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                       Epics*
                     </th>
-                    <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                    <th></th>
+                    <th></th>
+                    <th className="text-center py-4 text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">
                       Features*
                     </th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody className="text-sm leading-5">
                   <tr className="border-b border-border">
                     <td className="text-left px-4 py-4 font-medium">Total Count</td>
-                    <td className="text-center px-4 py-4">{progressData.themes.total}</td>
-                    <td className="text-center px-4 py-4">{progressData.epics.total}</td>
-                    <td className="text-center px-4 py-4">{progressData.features.total}</td>
+                    <td></td>
+                    <td className="text-center py-4">{progressData.themes.total}</td>
+                    <td></td>
+                    <td></td>
+                    <td className="text-center py-4">{progressData.epics.total}</td>
+                    <td></td>
+                    <td></td>
+                    <td className="text-center py-4">{progressData.features.total}</td>
+                    <td></td>
                   </tr>
                   <tr className="border-b border-border">
                     <td className="text-left px-4 py-4 font-medium">Accepted</td>
-                    <td className="text-center px-4 py-4">—</td>
-                    <td className="text-center px-4 py-4">{progressData.epics.accepted}/{progressData.epics.total}</td>
-                    <td className="text-center px-4 py-4">{progressData.features.accepted}/{progressData.features.total}</td>
+                    <td></td>
+                    <td className="text-center py-4">—</td>
+                    <td></td>
+                    <td></td>
+                    <td className="text-center py-4">{progressData.epics.accepted}/{progressData.epics.total}</td>
+                    <td></td>
+                    <td></td>
+                    <td className="text-center py-4">{progressData.features.accepted}/{progressData.features.total}</td>
+                    <td></td>
                   </tr>
                   <tr>
                     <td className="text-left px-4 py-4 font-medium">Acceptance %</td>
-                    <td className="text-center px-4 py-4">—</td>
-                    <td className="text-center px-4 py-4">
+                    <td></td>
+                    <td className="text-center py-4">—</td>
+                    <td></td>
+                    <td></td>
+                    <td className="text-center py-4">
                       <span className="font-semibold" style={{ color: progressData.epics.total > 0 ? getDonutColor(Math.round((progressData.epics.accepted / progressData.epics.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
                         {progressData.epics.total > 0 ? Math.round((progressData.epics.accepted / progressData.epics.total) * 100) : 0}%
                       </span>
                     </td>
-                    <td className="text-center px-4 py-4">
+                    <td></td>
+                    <td></td>
+                    <td className="text-center py-4">
                       <span className="font-semibold" style={{ color: progressData.features.total > 0 ? getDonutColor(Math.round((progressData.features.accepted / progressData.features.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
                         {progressData.features.total > 0 ? Math.round((progressData.features.accepted / progressData.features.total) * 100) : 0}%
                       </span>
                     </td>
+                    <td></td>
                   </tr>
                 </tbody>
               </table>
