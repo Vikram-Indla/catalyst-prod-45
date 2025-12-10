@@ -355,7 +355,7 @@ export function HomeContent() {
           </div>
           <a href="#" style={{
             fontSize: '14px',
-            color: '#0052CC',
+            color: '#C69C6D',
             textDecoration: 'none',
             lineHeight: '20px',
             fontWeight: 400,
@@ -395,12 +395,12 @@ export function HomeContent() {
         }
         #activity-tabs [role="tablist"] [role="tab"][aria-selected="true"] {
           font-weight: 600 !important;
-          color: #0052CC !important;
-          border-bottom-color: #0052CC;
+          color: #C69C6D !important;
+          border-bottom-color: #C69C6D;
         }
         #activity-tabs [role="tablist"] [role="tab"]:hover {
           background: transparent !important;
-          color: #0052CC !important;
+          color: #B8905F !important;
         }
         #activity-tabs [role="tablist"] [role="tab"]:focus {
           box-shadow: none !important;
