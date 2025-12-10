@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { useCreateKeyResult, useUpdateKeyResult } from "@/hooks/useKeyResults";
-import { toast } from "sonner";
+import { getCurrencyLabel } from "@/lib/currencyConfig";
 
 interface KeyResultDialogProps {
   open: boolean;
@@ -59,7 +59,6 @@ export function KeyResultDialog({
 
   const handleSubmit = () => {
     if (!summary.trim()) {
-      toast.error("Summary is required");
       return;
     }
 
@@ -73,26 +72,20 @@ export function KeyResultDialog({
     };
 
     if (keyResult) {
+      // Update - just call mutation, toast is handled in hook
       updateMutation.mutate(
         { id: keyResult.id, ...data },
         {
           onSuccess: () => {
-            toast.success("Key result updated");
             onClose();
-          },
-          onError: () => {
-            toast.error("Failed to update key result");
           },
         }
       );
     } else {
+      // Create - just call mutation, toast is handled in hook
       createMutation.mutate(data, {
         onSuccess: () => {
-          toast.success("Key result created");
           onClose();
-        },
-        onError: () => {
-          toast.error("Failed to create key result");
         },
       });
     }
@@ -171,7 +164,7 @@ export function KeyResultDialog({
             <div className="text-sm text-muted-foreground">
               {baselineValue} → {currentValue} / {goalValue}
               {metricType === "percentage" && "%"}
-              {metricType === "currency" && " USD"}
+              {metricType === "currency" && ` ${getCurrencyLabel()}`}
             </div>
             <div className="mt-2">
               <div className="w-full bg-background rounded-full h-2">

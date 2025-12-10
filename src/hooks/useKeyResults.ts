@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logAuditEntry } from '@/lib/auditLogger';
 
 export interface KeyResult {
   id: string;
@@ -46,7 +47,7 @@ export const useKeyResults = (objectiveId?: string) => {
   });
 };
 
-// Create key result
+// Create key result - single toast only
 export const useCreateKeyResult = () => {
   const queryClient = useQueryClient();
 
@@ -61,23 +62,42 @@ export const useCreateKeyResult = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ['key-results', data.objective_id] });
+      queryClient.invalidateQueries({ queryKey: ['objective-detail', data.objective_id] });
+      queryClient.invalidateQueries({ queryKey: ['objectives'] });
+      
+      // Log audit entry for key result creation
+      await logAuditEntry({
+        entityType: 'key_result',
+        entityId: data.id,
+        action: 'created',
+        afterData: data,
+      });
+      
       toast.success('Key result created successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to create key result');
-      console.error(error);
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to create key result';
+      toast.error(message);
+      console.error('Create key result error:', error);
     },
   });
 };
 
-// Update key result
+// Update key result - single toast only
 export const useUpdateKeyResult = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: any) => {
+      // Fetch before state for audit
+      const { data: beforeData } = await supabase
+        .from('key_results_v2')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { data, error } = await supabase
         .from('key_results_v2')
         .update(updates)
@@ -86,40 +106,72 @@ export const useUpdateKeyResult = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      return { data, beforeData };
     },
-    onSuccess: (data) => {
+    onSuccess: async ({ data, beforeData }) => {
       queryClient.invalidateQueries({ queryKey: ['key-results', data.objective_id] });
+      queryClient.invalidateQueries({ queryKey: ['objective-detail', data.objective_id] });
+      queryClient.invalidateQueries({ queryKey: ['objectives'] });
+      
+      // Log audit entry for key result update
+      await logAuditEntry({
+        entityType: 'key_result',
+        entityId: data.id,
+        action: 'updated',
+        beforeData,
+        afterData: data,
+      });
+      
       toast.success('Key result updated successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to update key result');
-      console.error(error);
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to update key result';
+      toast.error(message);
+      console.error('Update key result error:', error);
     },
   });
 };
 
-// Delete key result
+// Delete key result - single toast only
 export const useDeleteKeyResult = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ id, objectiveId }: { id: string; objectiveId: string }) => {
+      // Fetch before state for audit
+      const { data: beforeData } = await supabase
+        .from('key_results_v2')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { error } = await supabase
         .from('key_results_v2')
         .delete()
         .eq('id', id);
 
       if (error) throw error;
-      return objectiveId;
+      return { objectiveId, id, beforeData };
     },
-    onSuccess: (objectiveId) => {
+    onSuccess: async ({ objectiveId, id, beforeData }) => {
       queryClient.invalidateQueries({ queryKey: ['key-results', objectiveId] });
+      queryClient.invalidateQueries({ queryKey: ['objective-detail', objectiveId] });
+      queryClient.invalidateQueries({ queryKey: ['objectives'] });
+      
+      // Log audit entry for key result deletion
+      await logAuditEntry({
+        entityType: 'key_result',
+        entityId: id,
+        action: 'deleted',
+        beforeData,
+      });
+      
       toast.success('Key result deleted successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to delete key result');
-      console.error(error);
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to delete key result';
+      toast.error(message);
+      console.error('Delete key result error:', error);
     },
   });
 };
@@ -144,7 +196,7 @@ export const useKeyResultCheckIns = (keyResultId?: string) => {
   });
 };
 
-// Create check-in
+// Create check-in - single toast only
 export const useCreateCheckIn = () => {
   const queryClient = useQueryClient();
 
@@ -162,16 +214,18 @@ export const useCreateCheckIn = () => {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['key-result-checkins', data.key_result_id] });
       queryClient.invalidateQueries({ queryKey: ['key-results'] });
+      queryClient.invalidateQueries({ queryKey: ['objectives'] });
       toast.success('Check-in recorded successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to record check-in');
-      console.error(error);
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to record check-in';
+      toast.error(message);
+      console.error('Create check-in error:', error);
     },
   });
 };
 
-// Delete check-in
+// Delete check-in - single toast only
 export const useDeleteCheckIn = () => {
   const queryClient = useQueryClient();
 
@@ -187,11 +241,14 @@ export const useDeleteCheckIn = () => {
     },
     onSuccess: (keyResultId) => {
       queryClient.invalidateQueries({ queryKey: ['key-result-checkins', keyResultId] });
+      queryClient.invalidateQueries({ queryKey: ['key-results'] });
+      queryClient.invalidateQueries({ queryKey: ['objectives'] });
       toast.success('Check-in deleted successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to delete check-in');
-      console.error(error);
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to delete check-in';
+      toast.error(message);
+      console.error('Delete check-in error:', error);
     },
   });
 };
