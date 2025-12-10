@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logAuditEntry } from '@/lib/auditLogger';
 
 export function useObjectiveDetail(objectiveId?: string) {
   return useQuery({
@@ -34,21 +35,22 @@ export function useObjectiveDetail(objectiveId?: string) {
         ownerProfile = profile;
       }
 
-      // Fetch key results
+      // Fetch key results from key_results_v2 table
       const { data: keyResults } = await supabase
-        .from('key_results')
+        .from('key_results_v2')
         .select('*')
         .eq('objective_id', objectiveId);
 
-      // Fetch key results with profiles (using type assertion due to pending types.ts regeneration)
+      // Fetch key results with profiles
       const keyResultsWithProfiles = await Promise.all(
         (keyResults || []).map(async (kr: any) => {
           let krProfile = null;
-          if (kr.owner_id) {
+          if (kr.owner_id || kr.owner_user_id) {
+            const ownerId = kr.owner_id || kr.owner_user_id;
             const { data: profile } = await supabase
               .from('profiles')
               .select('id, full_name, avatar_url')
-              .eq('id', kr.owner_id)
+              .eq('id', ownerId)
               .single();
             krProfile = profile;
           }
@@ -96,11 +98,12 @@ export function useObjectiveDetail(objectiveId?: string) {
       // Fetch child objectives
       const { data: childObjectives } = await supabase
         .from('objectives')
-        .select('id, summary, confidence_score, work_progress, tier, status')
+        .select('id, name, confidence_score, work_progress, tier, status')
         .eq('parent_objective_id', objectiveId);
 
       return {
         ...objective,
+        summary: objective.name, // Map name to summary for UI compatibility
         profiles: ownerProfile,
         keyResults: keyResultsWithProfiles,
         themes: themeLinks?.map(link => link.strategic_themes).filter(Boolean) || [],
@@ -115,11 +118,19 @@ export function useObjectiveDetail(objectiveId?: string) {
   });
 }
 
+// Update objective with audit logging (no duplicate toasts)
 export function useUpdateObjective() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ id, updates }: { id: string; updates: any }) => {
+      // Fetch before state for audit
+      const { data: beforeData } = await supabase
+        .from('objectives')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { data, error } = await supabase
         .from('objectives')
         .update(updates)
@@ -128,46 +139,83 @@ export function useUpdateObjective() {
         .single();
 
       if (error) throw error;
-      return data;
+      return { data, beforeData };
     },
-    onSuccess: (_, variables) => {
+    onSuccess: async ({ data, beforeData }, variables) => {
       queryClient.invalidateQueries({ queryKey: ['objective-detail', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['objectives'] });
       queryClient.invalidateQueries({ queryKey: ['okr-tree'] });
       queryClient.invalidateQueries({ queryKey: ['okr-heatmap'] });
+      
+      // Determine action type
+      const action = beforeData?.status !== data.status ? 'status_changed' : 'updated';
+      
+      // Log audit entry
+      await logAuditEntry({
+        entityType: 'objective',
+        entityId: data.id,
+        action,
+        beforeData,
+        afterData: data,
+      });
+      
       toast.success('Objective updated successfully');
     },
-    onError: (error) => {
-      toast.error('Failed to update objective');
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to update objective';
+      toast.error(message);
       console.error('Update error:', error);
     },
   });
 }
 
+// Update key result current value (for quick updates)
 export function useUpdateKeyResult() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ id, current_value }: { id: string; current_value: number }) => {
+      // Fetch before state for audit
+      const { data: beforeData } = await supabase
+        .from('key_results_v2')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { data, error } = await supabase
-        .from('key_results')
+        .from('key_results_v2')
         .update({ current_value })
         .eq('id', id)
         .select()
         .single();
 
       if (error) throw error;
-      return data;
+      return { data, beforeData };
     },
-    onSuccess: () => {
+    onSuccess: async ({ data, beforeData }) => {
       queryClient.invalidateQueries({ queryKey: ['objective-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['key-results'] });
+      queryClient.invalidateQueries({ queryKey: ['objectives'] });
+      
+      // Log audit entry
+      await logAuditEntry({
+        entityType: 'key_result',
+        entityId: data.id,
+        action: 'updated',
+        beforeData,
+        afterData: data,
+      });
+      
       toast.success('Key result updated');
     },
-    onError: () => {
-      toast.error('Failed to update key result');
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to update key result';
+      toast.error(message);
     },
   });
 }
 
+// Create check-in with audit logging
 export function useCreateCheckIn() {
   const queryClient = useQueryClient();
 
@@ -189,7 +237,7 @@ export function useCreateCheckIn() {
       
       // Update current value on key result
       await supabase
-        .from('key_results')
+        .from('key_results_v2')
         .update({ current_value: value })
         .eq('id', keyResultId);
       
@@ -197,11 +245,18 @@ export function useCreateCheckIn() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['objective-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['key-results'] });
+      queryClient.invalidateQueries({ queryKey: ['objectives'] });
       toast.success('Check-in created');
+    },
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to create check-in';
+      toast.error(message);
     },
   });
 }
 
+// Delete check-in
 export function useDeleteCheckIn() {
   const queryClient = useQueryClient();
 
@@ -216,7 +271,12 @@ export function useDeleteCheckIn() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['objective-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['key-results'] });
       toast.success('Check-in deleted');
+    },
+    onError: (error: any) => {
+      const message = error?.message || 'Failed to delete check-in';
+      toast.error(message);
     },
   });
 }

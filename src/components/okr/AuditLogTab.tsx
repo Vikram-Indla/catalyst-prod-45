@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { formatDistanceToNow } from "date-fns";
-import { Clock, User } from "lucide-react";
+import { Clock, User, FileText, Target } from "lucide-react";
 
 interface AuditLogTabProps {
   objectiveId: string;
@@ -13,15 +13,45 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
   const { data: auditLogs = [], isLoading } = useQuery({
     queryKey: ["audit-logs", objectiveId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch objective audit logs
+      const { data: objectiveLogs, error: objError } = await supabase
         .from("activity_logs")
         .select("*")
         .eq("entity_type", "objective")
         .eq("entity_id", objectiveId)
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return data || [];
+      if (objError) throw objError;
+
+      // Fetch key_results_v2 for this objective to get their IDs
+      const { data: keyResults } = await supabase
+        .from("key_results_v2")
+        .select("id")
+        .eq("objective_id", objectiveId);
+
+      const krIds = keyResults?.map(kr => kr.id) || [];
+
+      // Fetch key result audit logs if there are key results
+      let krLogs: any[] = [];
+      if (krIds.length > 0) {
+        const { data, error: krError } = await supabase
+          .from("activity_logs")
+          .select("*")
+          .eq("entity_type", "key_result")
+          .in("entity_id", krIds)
+          .order("created_at", { ascending: false });
+
+        if (!krError && data) {
+          krLogs = data;
+        }
+      }
+
+      // Combine and sort by created_at
+      const allLogs = [...(objectiveLogs || []), ...krLogs].sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+
+      return allLogs;
     },
   });
 
@@ -54,6 +84,16 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
     );
   };
 
+  const getEntityIcon = (entityType: string) => {
+    if (entityType === 'key_result') return <Target className="w-3 h-3" />;
+    return <FileText className="w-3 h-3" />;
+  };
+
+  const getEntityLabel = (entityType: string) => {
+    if (entityType === 'key_result') return 'Key Result';
+    return 'Objective';
+  };
+
   return (
     <div className="space-y-3">
       {auditLogs.length === 0 ? (
@@ -69,6 +109,10 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
                   <Badge variant={getActionBadgeVariant(log.action)}>
                     {log.action}
                   </Badge>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    {getEntityIcon(log.entity_type)}
+                    <span>{getEntityLabel(log.entity_type)}</span>
+                  </div>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <User className="w-3 h-3" />
                     <span>User</span>

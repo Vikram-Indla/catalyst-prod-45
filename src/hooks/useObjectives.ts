@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logAuditEntry } from '@/lib/auditLogger';
 
 // Objectives Module - Proper Types per Technical Specification
 // OKR Module ONLY supports Portfolio and Program tiers
@@ -237,7 +238,7 @@ export const useObjective = (objectiveId?: string) => {
   });
 };
 
-// Create objective
+// Create objective - single toast only, with audit logging
 export const useCreateObjective = () => {
   const queryClient = useQueryClient();
 
@@ -294,8 +295,19 @@ export const useCreateObjective = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: async (data) => {
       queryClient.invalidateQueries({ queryKey: ['objectives'] });
+      queryClient.invalidateQueries({ queryKey: ['okr-tree'] });
+      queryClient.invalidateQueries({ queryKey: ['okr-heatmap'] });
+      
+      // Log audit entry for objective creation
+      await logAuditEntry({
+        entityType: 'objective',
+        entityId: data.id,
+        action: 'created',
+        afterData: data,
+      });
+      
       toast.success('Objective created successfully');
     },
     onError: (error: any) => {
@@ -306,12 +318,19 @@ export const useCreateObjective = () => {
   });
 };
 
-// Update objective
+// Update objective - single toast only, with audit logging
 export const useUpdateObjective = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<Objective> & { id: string }) => {
+      // Fetch before state for audit
+      const { data: beforeData } = await supabase
+        .from('objectives')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       // Map summary to name if provided
       const updatePayload: any = { ...updates };
       if (updatePayload.summary) {
@@ -327,11 +346,27 @@ export const useUpdateObjective = () => {
         .single();
 
       if (error) throw error;
-      return data;
+      return { data, beforeData };
     },
-    onSuccess: (data) => {
+    onSuccess: async ({ data, beforeData }) => {
       queryClient.invalidateQueries({ queryKey: ['objectives'] });
       queryClient.invalidateQueries({ queryKey: ['objective', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['objective-detail', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['okr-tree'] });
+      queryClient.invalidateQueries({ queryKey: ['okr-heatmap'] });
+      
+      // Determine action type - check if status changed
+      const action = beforeData?.status !== data.status ? 'status_changed' : 'updated';
+      
+      // Log audit entry for objective update
+      await logAuditEntry({
+        entityType: 'objective',
+        entityId: data.id,
+        action,
+        beforeData,
+        afterData: data,
+      });
+      
       toast.success('Objective updated successfully');
     },
     onError: (error: any) => {
@@ -342,21 +377,40 @@ export const useUpdateObjective = () => {
   });
 };
 
-// Delete objective
+// Delete objective - single toast only, with audit logging
 export const useDeleteObjective = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (objectiveId: string) => {
+      // Fetch before state for audit
+      const { data: beforeData } = await supabase
+        .from('objectives')
+        .select('*')
+        .eq('id', objectiveId)
+        .single();
+
       const { error } = await supabase
         .from('objectives')
         .delete()
         .eq('id', objectiveId);
 
       if (error) throw error;
+      return { objectiveId, beforeData };
     },
-    onSuccess: () => {
+    onSuccess: async ({ objectiveId, beforeData }) => {
       queryClient.invalidateQueries({ queryKey: ['objectives'] });
+      queryClient.invalidateQueries({ queryKey: ['okr-tree'] });
+      queryClient.invalidateQueries({ queryKey: ['okr-heatmap'] });
+      
+      // Log audit entry for objective deletion
+      await logAuditEntry({
+        entityType: 'objective',
+        entityId: objectiveId,
+        action: 'deleted',
+        beforeData,
+      });
+      
       toast.success('Objective deleted successfully');
     },
     onError: (error: any) => {
