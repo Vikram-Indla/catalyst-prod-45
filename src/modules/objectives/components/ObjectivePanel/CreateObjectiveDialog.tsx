@@ -25,8 +25,9 @@ export function CreateObjectiveDialog({
       await createObjective.mutateAsync({
         ...values,
         tier: values.tier, // Use the tier from form, not prop override
-        portfolio_id: portfolioId,
-        program_id: programId,
+        // Use form values first, fallback to props if form value is empty
+        portfolio_id: values.portfolio_id || portfolioId,
+        program_id: values.program_id || programId,
         tags: [],
         program_increment_ids: [],
         contributors: [],
