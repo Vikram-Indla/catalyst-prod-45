@@ -128,6 +128,58 @@ export function useKeyResultsV2(objectiveId?: string) {
   });
 }
 
+// Helper to update objective progress in DB after KR changes
+async function updateObjectiveProgressInDB(objectiveId: string) {
+  // Fetch all KRs for this objective with their values
+  const { data: krs, error: krError } = await supabase
+    .from('key_results_v2')
+    .select('baseline_value, current_value, goal_value, target_value, direction')
+    .eq('objective_id', objectiveId);
+
+  if (krError) {
+    console.error('Failed to fetch KRs for progress update:', krError);
+    return;
+  }
+
+  // Calculate average progress from all KRs
+  const hasKRs = krs && krs.length > 0;
+  let avgProgress = 0;
+  
+  if (hasKRs) {
+    const progressValues = krs.map(kr => {
+      const baseline = kr.baseline_value || 0;
+      const current = kr.current_value || baseline;
+      const goal = kr.goal_value || kr.target_value || 0;
+      const direction = (kr.direction || 'increase') as Direction;
+      return calculateKRProgress(baseline, current, goal, direction);
+    });
+    avgProgress = progressValues.reduce((sum, p) => sum + p, 0) / progressValues.length;
+  }
+
+  // Determine health based on progress
+  let health: 'good' | 'fair' | 'at_risk' | 'poor' = 'at_risk';
+  if (hasKRs) {
+    if (avgProgress >= 75) health = 'good';
+    else if (avgProgress >= 40) health = 'fair';
+    else if (avgProgress >= 20) health = 'at_risk';
+    else health = 'poor';
+  }
+
+  // Update objective in DB
+  const { error: updateError } = await supabase
+    .from('objectives')
+    .update({
+      overall_progress: Math.round(avgProgress),
+      health,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', objectiveId);
+
+  if (updateError) {
+    console.error('Failed to update objective progress:', updateError);
+  }
+}
+
 export function useCreateKeyResultV2() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -135,17 +187,23 @@ export function useCreateKeyResultV2() {
       // Map UI metric type to DB-valid value
       const dbMetricType = UI_TO_DB_METRIC_TYPE[input.metric_type] || 'count';
       
+      // Calculate initial progress
+      const baseline = input.baseline_value || 0;
+      const direction = input.direction || 'increase';
+      const progress = calculateKRProgress(baseline, baseline, input.goal_value, direction as Direction);
+      
       const { data, error } = await supabase
         .from('key_results_v2')
         .insert({
           objective_id: input.objective_id,
           summary: input.summary,
           metric_type: dbMetricType,
-          baseline_value: input.baseline_value || 0,
+          baseline_value: baseline,
           goal_value: input.goal_value,
-          current_value: input.baseline_value || 0,
-          direction: input.direction || 'increase',
+          current_value: baseline,
+          direction: direction,
           status: 'pending',
+          progress: Math.round(progress), // Store progress in DB
         })
         .select()
         .single();
@@ -154,6 +212,9 @@ export function useCreateKeyResultV2() {
         console.error('KR create error:', error);
         throw error;
       }
+      
+      // Update objective's overall_progress in DB
+      await updateObjectiveProgressInDB(input.objective_id);
       
       // Write audit log for KR creation
       await writeAuditLog('key_result', data.id, 'created', null, data);
@@ -177,20 +238,35 @@ export function useUpdateKeyResultV2() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, objectiveId, current_value }: { id: string; objectiveId: string; current_value: number }) => {
-      // Fetch current state for audit log
+      // Fetch current state for audit log and progress calculation
       const { data: beforeData } = await supabase
         .from('key_results_v2')
         .select('*')
         .eq('id', id)
         .single();
 
+      if (!beforeData) throw new Error('KR not found');
+
+      // Calculate new progress
+      const baseline = beforeData.baseline_value || 0;
+      const goal = beforeData.goal_value || beforeData.target_value || 0;
+      const direction = (beforeData.direction || 'increase') as Direction;
+      const progress = calculateKRProgress(baseline, current_value, goal, direction);
+
       const { data, error } = await supabase
         .from('key_results_v2')
-        .update({ current_value, updated_at: new Date().toISOString() })
+        .update({ 
+          current_value, 
+          progress: Math.round(progress), // Store progress in DB
+          updated_at: new Date().toISOString() 
+        })
         .eq('id', id)
         .select()
         .single();
       if (error) throw error;
+      
+      // Update objective's overall_progress in DB
+      await updateObjectiveProgressInDB(objectiveId);
       
       // Write audit log for KR update
       await writeAuditLog('key_result', id, 'updated', beforeData, data);
@@ -219,6 +295,9 @@ export function useDeleteKeyResultV2() {
 
       const { error } = await supabase.from('key_results_v2').delete().eq('id', id);
       if (error) throw error;
+      
+      // Update objective's overall_progress in DB after deletion
+      await updateObjectiveProgressInDB(objectiveId);
       
       // Write audit log for KR deletion
       await writeAuditLog('key_result', id, 'deleted', beforeData, null);
