@@ -564,14 +564,19 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                           );
                         }
                         if (col.key === 'work_progress') {
+                          const hasWorkProgress = objective.work_progress != null && objective.work_progress > 0;
                           return (
                             <TableCell key={col.key}>
-                              <div className="w-full bg-muted rounded-full h-2">
-                                <div
-                                  className="bg-brand-gold h-2 rounded-full"
-                                  style={{ width: `${(objective.work_progress || 0) * 100}%` }}
-                                />
-                              </div>
+                              {hasWorkProgress ? (
+                                <div className="w-full bg-muted rounded-full h-2">
+                                  <div
+                                    className="bg-brand-gold h-2 rounded-full"
+                                    style={{ width: `${objective.work_progress * 100}%` }}
+                                  />
+                                </div>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">N/S</span>
+                              )}
                             </TableCell>
                           );
                         }

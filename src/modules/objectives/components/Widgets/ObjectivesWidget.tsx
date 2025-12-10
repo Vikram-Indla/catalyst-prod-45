@@ -132,11 +132,15 @@ export function ObjectivesWidget({
                   </div>
                   <div>
                     <p className="text-xs text-muted-foreground mb-1">Work Progress</p>
-                    <ProgressBar
-                      progress={objective.work_progress * 100}
-                      score={objective.score ?? null}
-                      height="sm"
-                    />
+                    {objective.work_progress != null && objective.work_progress > 0 ? (
+                      <ProgressBar
+                        progress={objective.work_progress * 100}
+                        score={objective.score ?? null}
+                        height="sm"
+                      />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">N/S</span>
+                    )}
                   </div>
                 </div>
               </div>
