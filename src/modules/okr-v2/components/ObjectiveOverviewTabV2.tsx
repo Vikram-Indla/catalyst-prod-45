@@ -1,4 +1,5 @@
 import { ObjectiveV2 } from '@/hooks/useObjectivesV2';
+import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useMemo } from 'react';
 
 export interface ObjectiveFormData {
   name: string;
@@ -30,7 +32,30 @@ interface ObjectiveOverviewTabV2Props {
   objective: ObjectiveV2;
 }
 
+// Determine health from progress (v2 logic)
+function determineHealthFromProgress(progress: number): string {
+  if (progress >= 70) return 'good';
+  if (progress >= 40) return 'fair';
+  if (progress >= 20) return 'at_risk';
+  return 'poor';
+}
+
 export function ObjectiveOverviewTabV2({ formData, onChange, objective }: ObjectiveOverviewTabV2Props) {
+  // Fetch KRs for v2 progress calculation
+  const { data: keyResults } = useKeyResultsV2(objective.id);
+
+  // Calculate v2 progress from KRs (average of all KR progress values)
+  const v2Progress = useMemo(() => {
+    if (!keyResults || keyResults.length === 0) return 0;
+    const totalProgress = keyResults.reduce((sum, kr) => sum + (kr.progress || 0), 0);
+    return Math.round(totalProgress / keyResults.length);
+  }, [keyResults]);
+
+  // Derive health from v2 progress
+  const v2Health = useMemo(() => {
+    return determineHealthFromProgress(v2Progress);
+  }, [v2Progress]);
+
   // Fetch themes
   const { data: themes } = useQuery({
     queryKey: ['strategic-themes'],
@@ -214,19 +239,22 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
         />
       </div>
 
-      {/* Read-only metrics */}
+      {/* Read-only metrics - v2 calculation from KRs */}
       <div className="pt-4 border-t border-border">
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">Calculated Metrics</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">Calculated Metrics (v2)</h4>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <span className="text-muted-foreground">Overall Progress:</span>
-            <span className="ml-2 font-medium">{objective.overall_progress || 0}%</span>
+            <span className="ml-2 font-medium">{v2Progress}%</span>
           </div>
           <div>
             <span className="text-muted-foreground">Health:</span>
-            <span className="ml-2 font-medium capitalize">{objective.health?.replace('_', ' ') || 'N/A'}</span>
+            <span className="ml-2 font-medium capitalize">{v2Health.replace('_', ' ')}</span>
           </div>
         </div>
+        <p className="text-xs text-muted-foreground mt-2">
+          Based on {keyResults?.length || 0} Key Result(s)
+        </p>
       </div>
     </div>
   );
