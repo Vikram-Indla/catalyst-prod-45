@@ -13,13 +13,23 @@ interface OkrHeatmapWidgetProps {
 
 export function OkrHeatmapWidget({ snapshotId, piIds }: OkrHeatmapWidgetProps) {
   const navigate = useNavigate();
-  const { data: heatmapData, isLoading } = useOKRHeatmap(snapshotId, piIds.slice(0, 3)); // Show max 3 PIs
+  const { data: heatmapData, isLoading } = useOKRHeatmap(snapshotId, piIds.slice(0, 3));
 
   const getCellColor = (score: number | null) => {
     if (score === null) return 'bg-muted';
     if (score >= 0.7) return 'bg-success/30';
     if (score >= 0.4) return 'bg-warning/30';
     return 'bg-destructive/30';
+  };
+
+  const getHealthBadgeClass = (health: string): string => {
+    switch (health) {
+      case 'good': return 'bg-green-100 text-green-700';
+      case 'fair': return 'bg-amber-100 text-amber-700';
+      case 'poor': return 'bg-red-100 text-red-700';
+      case 'at_risk': return 'bg-amber-100 text-amber-700';
+      default: return 'bg-muted text-muted-foreground';
+    }
   };
 
   return (
@@ -29,7 +39,7 @@ export function OkrHeatmapWidget({ snapshotId, piIds }: OkrHeatmapWidgetProps) {
         <Button 
           variant="ghost" 
           size="sm"
-          onClick={() => navigate(`/enterprise/okr-heatmap?snapshotId=${snapshotId}&piIds=${piIds.join(',')}`)}
+          onClick={() => navigate('/enterprise/okr-hub')}
         >
           View Full
           <ArrowRight className="ml-2 h-4 w-4" />
@@ -49,32 +59,48 @@ export function OkrHeatmapWidget({ snapshotId, piIds }: OkrHeatmapWidgetProps) {
         ) : (
           <div className="space-y-3">
             {heatmapData.rows.slice(0, 4).map((row) => (
-              <div key={row.level} className="space-y-1">
+              <div key={row.themeId} className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium">{row.level}</span>
+                  <span className="text-xs font-medium truncate flex-1">{row.themeName}</span>
                   <Badge variant="outline" className="text-[10px] h-5">
                     {row.itemCount}
                   </Badge>
                 </div>
-                <div className="grid gap-1" style={{ 
-                  gridTemplateColumns: row.spanAllColumns 
-                    ? '1fr' 
-                    : `repeat(${heatmapData.programIncrements.length}, 1fr)` 
-                }}>
-                  {row.spanAllColumns ? (
-                    <div className={`rounded p-2 text-center ${getCellColor(row.cells[0]?.avgScore)}`}>
-                      <div className="text-sm font-semibold">
-                        {row.cells[0]?.percentage !== null ? `${row.cells[0].percentage}%` : 'N/A'}
-                      </div>
-                    </div>
-                  ) : (
-                    row.cells.map((cell, idx) => (
-                      <div key={idx} className={`rounded p-2 text-center ${getCellColor(cell.avgScore)}`}>
-                        <div className="text-sm font-semibold">
-                          {cell.percentage !== null ? `${cell.percentage}%` : 'N/A'}
-                        </div>
-                      </div>
-                    ))
+                <div className="flex items-center gap-2">
+                  {/* Progress bar */}
+                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="h-full rounded-full transition-all"
+                      style={{ 
+                        width: `${row.avgProgress}%`,
+                        backgroundColor: row.avgProgress >= 70 
+                          ? 'hsl(var(--success))' 
+                          : row.avgProgress >= 40 
+                            ? 'hsl(var(--warning))' 
+                            : 'hsl(var(--destructive))'
+                      }}
+                    />
+                  </div>
+                  <span className="text-xs text-muted-foreground w-8 text-right">
+                    {row.avgProgress}%
+                  </span>
+                </div>
+                {/* Health breakdown */}
+                <div className="flex gap-1">
+                  {row.byHealth.good > 0 && (
+                    <Badge className={`${getHealthBadgeClass('good')} text-[10px] px-1`}>
+                      {row.byHealth.good}
+                    </Badge>
+                  )}
+                  {row.byHealth.fair > 0 && (
+                    <Badge className={`${getHealthBadgeClass('fair')} text-[10px] px-1`}>
+                      {row.byHealth.fair}
+                    </Badge>
+                  )}
+                  {row.byHealth.poor > 0 && (
+                    <Badge className={`${getHealthBadgeClass('poor')} text-[10px] px-1`}>
+                      {row.byHealth.poor}
+                    </Badge>
                   )}
                 </div>
               </div>

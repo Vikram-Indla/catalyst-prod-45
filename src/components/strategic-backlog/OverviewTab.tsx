@@ -1,24 +1,35 @@
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Target, Eye, Heart, Flag, Palette } from 'lucide-react';
-import type { StrategicTheme, StrategicGoal, StrategyMission, StrategyVision, StrategyValue, SnapshotStrategyLinks } from '@/types/strategicBacklog';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, Target, Eye, Heart, Flag, Palette, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useOKRv2StrategyMetrics } from '@/hooks/useOKRv2StrategyMetrics';
+import type { StrategicTheme, StrategyMission, StrategyVision, StrategyValue, SnapshotStrategyLinks } from '@/types/strategicBacklog';
 
 interface OverviewTabProps {
   missions: StrategyMission[];
   visions: StrategyVision[];
   values: StrategyValue[];
-  goals: StrategicGoal[];
+  goals: any[]; // Legacy - kept for backward compatibility
   themes: StrategicTheme[];
   links: SnapshotStrategyLinks | null;
   isArchived: boolean;
+  snapshotId?: string;
 }
 
-export function OverviewTab({ missions, visions, values, goals, themes, links, isArchived }: OverviewTabProps) {
+export function OverviewTab({ missions, visions, values, themes, links, isArchived, snapshotId }: OverviewTabProps) {
+  const navigate = useNavigate();
+  
+  // Fetch OKR v2 metrics for objectives
+  const { data: okrMetrics, isLoading: metricsLoading } = useOKRv2StrategyMetrics(snapshotId);
+
   const linkedMissionCount = links?.mission_ids?.length || 0;
   const linkedVisionCount = links?.vision_ids?.length || 0;
   const linkedValueCount = links?.value_ids?.length || 0;
-  const linkedGoalCount = links?.goal_ids?.length || 0;
   const linkedThemeCount = themes.length;
+  
+  // Use OKR v2 objective count
+  const linkedObjectiveCount = okrMetrics?.count || 0;
 
   const summaryCards = [
     { 
@@ -46,12 +57,14 @@ export function OverviewTab({ missions, visions, values, goals, themes, links, i
       bgColor: 'bg-pink-50',
     },
     { 
-      label: 'Goals', 
-      count: linkedGoalCount, 
-      total: goals.length,
+      label: 'Objectives', 
+      count: linkedObjectiveCount, 
+      total: linkedObjectiveCount,
       icon: Flag,
       color: 'text-green-600',
       bgColor: 'bg-green-50',
+      clickable: true,
+      onClick: () => navigate('/enterprise/okr-hub'),
     },
     { 
       label: 'Themes', 
@@ -65,6 +78,10 @@ export function OverviewTab({ missions, visions, values, goals, themes, links, i
   ];
 
   const showThemeWarning = linkedThemeCount === 0 && !isArchived;
+
+  const handleOpenOKRHub = () => {
+    navigate('/enterprise/okr-hub');
+  };
 
   return (
     <div className="space-y-6">
@@ -86,7 +103,11 @@ export function OverviewTab({ missions, visions, values, goals, themes, links, i
         {summaryCards.map((card) => {
           const Icon = card.icon;
           return (
-            <Card key={card.label} className="p-4 border-border">
+            <Card 
+              key={card.label} 
+              className={`p-4 border-border ${card.clickable ? 'cursor-pointer hover:bg-muted/30 transition-colors' : ''}`}
+              onClick={card.onClick}
+            >
               <div className="flex items-center gap-3">
                 <div className={`p-2 rounded-lg ${card.bgColor}`}>
                   <Icon className={`h-5 w-5 ${card.color}`} />
@@ -98,6 +119,9 @@ export function OverviewTab({ missions, visions, values, goals, themes, links, i
                       <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
                         Required
                       </Badge>
+                    )}
+                    {card.clickable && (
+                      <ExternalLink className="h-3.5 w-3.5 text-muted-foreground" />
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground truncate">
@@ -111,42 +135,56 @@ export function OverviewTab({ missions, visions, values, goals, themes, links, i
         })}
       </div>
 
-      {/* Quick Stats */}
+      {/* Quick Stats - OKR v2 Objectives */}
       <Card className="p-6 border-border">
-        <h3 className="text-sm font-semibold text-foreground mb-4">Strategy Overview</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-foreground">Strategy Overview</h3>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleOpenOKRHub}
+          >
+            <ExternalLink className="h-3.5 w-3.5 mr-1.5" />
+            OKR Hub
+          </Button>
+        </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Objects</p>
             <p className="text-xl font-semibold text-foreground mt-1">
-              {missions.length + visions.length + values.length + goals.length + themes.length}
+              {missions.length + visions.length + values.length + linkedObjectiveCount + themes.length}
             </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wider">Linked to Snapshot</p>
             <p className="text-xl font-semibold text-foreground mt-1">
-              {linkedMissionCount + linkedVisionCount + linkedValueCount + linkedGoalCount + linkedThemeCount}
+              {linkedMissionCount + linkedVisionCount + linkedValueCount + linkedObjectiveCount + linkedThemeCount}
             </p>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Goals by Health</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">Objectives by Health</p>
             <div className="flex items-center gap-2 mt-1">
-              <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700">
-                {goals.filter(g => g.health_status === 'green').length}
-              </span>
-              <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
-                {goals.filter(g => g.health_status === 'amber').length}
-              </span>
-              <span className="text-xs px-1.5 py-0.5 rounded bg-red-100 text-red-700">
-                {goals.filter(g => g.health_status === 'red').length}
-              </span>
+              {metricsLoading ? (
+                <span className="text-xs text-muted-foreground">Loading...</span>
+              ) : (
+                <>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700">
+                    {okrMetrics?.byHealth.good || 0}
+                  </span>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-amber-100 text-amber-700">
+                    {okrMetrics?.byHealth.fair || 0}
+                  </span>
+                  <span className="text-xs px-1.5 py-0.5 rounded bg-red-100 text-red-700">
+                    {okrMetrics?.byHealth.poor || 0}
+                  </span>
+                </>
+              )}
             </div>
           </div>
           <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Avg Goal Progress</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">Avg Objective Progress</p>
             <p className="text-xl font-semibold text-foreground mt-1">
-              {goals.length > 0 
-                ? Math.round(goals.reduce((sum, g) => sum + (g.complete_percent || 0), 0) / goals.length)
-                : 0}%
+              {metricsLoading ? '...' : `${okrMetrics?.avgProgress || 0}%`}
             </p>
           </div>
         </div>

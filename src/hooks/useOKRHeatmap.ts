@@ -4,13 +4,21 @@ import { supabase } from '@/integrations/supabase/client';
 export interface HeatmapCell {
   percentage: number | null;
   avgScore: number | null;
+  objectiveCount: number;
 }
 
 export interface HeatmapRow {
-  level: 'Strategic Goals' | 'Portfolio Objectives' | 'Program Objectives' | 'Team Objectives';
+  themeId: string;
+  themeName: string;
   itemCount: number;
   cells: HeatmapCell[];
-  spanAllColumns?: boolean;
+  avgProgress: number;
+  byHealth: {
+    good: number;
+    fair: number;
+    poor: number;
+    at_risk: number;
+  };
 }
 
 export interface ProgramIncrementInfo {
@@ -18,187 +26,92 @@ export interface ProgramIncrementInfo {
   name: string;
 }
 
-interface KeyResultWithObjective {
-  id: string;
-  objective_id: string;
-  current_value: number;
-  target_value: number;
-  objective_level: string;
-  objective_pi_ids: string[];
-}
-
+// OKR v2 Heatmap: Shows objectives grouped by Theme across quarters
 export function useOKRHeatmap(snapshotId?: string, piIds: string[] = []) {
   return useQuery({
-    queryKey: ['okr-heatmap', snapshotId, piIds],
+    queryKey: ['okr-heatmap-v2', snapshotId, piIds],
     queryFn: async () => {
-      console.log('🔥 useOKRHeatmap queryFn executing:', { snapshotId, piIds, piIdsLength: piIds.length });
+      console.log('🔥 useOKRHeatmap V2 queryFn executing:', { snapshotId, piIds });
       
       if (!snapshotId) {
-        console.log('❌ No snapshotId provided, returning empty');
+        console.log('❌ No snapshotId provided');
         return { programIncrements: [], rows: [] };
       }
-      
-      if (!piIds || piIds.length === 0) {
-        console.log('❌ No piIds provided or empty array, returning empty');
-        return { programIncrements: [], rows: [] };
-      }
-      
-      console.log('✅ Proceeding with data fetch...');
 
-      // Fetch PI names
-      const { data: piNames } = await supabase
-        .from('program_increments')
+      // Step 1: Fetch themes for this snapshot
+      const { data: themes, error: themesError } = await supabase
+        .from('strategic_themes')
         .select('id, name')
-        .in('id', piIds);
-      
-      const piNameMap = new Map(piNames?.map(pi => [pi.id, pi.name]) || []);
+        .eq('snapshot_id', snapshotId)
+        .order('name');
 
-      // Fetch objectives with their key results for this snapshot
-      const { data: objectives, error: objectivesError } = await supabase
-        .from('objectives')
-        .select('id, level, program_increment_ids')
-        .eq('snapshot_id', snapshotId);
+      if (themesError) throw themesError;
 
-      console.log('📊 Fetched objectives:', {
-        count: objectives?.length,
-        error: objectivesError?.message,
-        sample: objectives?.slice(0, 3)
-      });
+      const themeIds = themes?.map(t => t.id) || [];
       
-      if (!objectives || objectives.length === 0) {
-        console.log('❌ No objectives found');
+      if (themeIds.length === 0) {
+        console.log('❌ No themes found for snapshot');
         return { programIncrements: [], rows: [] };
       }
 
-      // Fetch ALL key results for these objectives
-      const objectiveIds = objectives.map(o => o.id);
-      const { data: keyResults, error: keyResultsError } = await supabase
-        .from('key_results')
-        .select('id, objective_id, current_value, target_value')
-        .in('objective_id', objectiveIds);
-      
-      console.log('🎯 Fetched key results:', {
-        count: keyResults?.length,
-        error: keyResultsError?.message,
-        objectiveIdsCount: objectiveIds.length,
-        sample: keyResults?.slice(0, 3)
+      // Step 2: Fetch OKR v2 objectives linked to these themes
+      const { data: objectives, error: objError } = await supabase
+        .from('objectives')
+        .select('id, name, theme_id, overall_progress, health')
+        .eq('is_v2', true)
+        .in('theme_id', themeIds);
+
+      if (objError) throw objError;
+
+      console.log('📊 Fetched OKR v2 objectives:', {
+        count: objectives?.length,
+        themes: themes?.length,
       });
 
-      // Create a map of objective_id to key results
-      const keyResultsByObjective = new Map<string, Array<{ current_value: number; target_value: number }>>();
-      keyResults?.forEach(kr => {
-        if (!keyResultsByObjective.has(kr.objective_id)) {
-          keyResultsByObjective.set(kr.objective_id, []);
-        }
-        keyResultsByObjective.get(kr.objective_id)!.push({
-          current_value: kr.current_value || 0,
-          target_value: kr.target_value || 1
-        });
-      });
-
-      // Build statistics per level per PI
-      const levelMap: Record<string, { totalObjectives: number; keyResultScores: number[] }[]> = {
-        strategic_goal: piIds.map(() => ({ totalObjectives: 0, keyResultScores: [] })),
-        portfolio: piIds.map(() => ({ totalObjectives: 0, keyResultScores: [] })),
-        program: piIds.map(() => ({ totalObjectives: 0, keyResultScores: [] })),
-        team: piIds.map(() => ({ totalObjectives: 0, keyResultScores: [] })),
-      };
-
-      objectives.forEach(obj => {
-        const levelStats = levelMap[obj.level];
-        if (!levelStats) return;
-
-        const objKeyResults = keyResultsByObjective.get(obj.id) || [];
-        // Handle JSONB array - Supabase returns program_increment_ids as Json[] but they're actually strings
-        const objPiIds: string[] = Array.isArray(obj.program_increment_ids) 
-          ? obj.program_increment_ids.map(id => String(id)) 
-          : [];
-
-        // Calculate key result scores for this objective
-        const krScores = objKeyResults.map(kr => {
-          if (kr.target_value === 0) return 0;
-          return Math.min(1, kr.current_value / kr.target_value);
-        });
-
-        // Strategic goals span all PIs
-        if (obj.level === 'strategic_goal') {
-          piIds.forEach((_, index) => {
-            levelStats[index].totalObjectives++;
-            levelStats[index].keyResultScores.push(...krScores);
-          });
-        } else {
-          // For other levels, only count if PI is in the objective's program_increment_ids
-          piIds.forEach((piId, index) => {
-            if (objPiIds.includes(piId)) {
-              levelStats[index].totalObjectives++;
-              levelStats[index].keyResultScores.push(...krScores);
-            }
-          });
-        }
-      });
-      
-      console.log('📈 Level statistics:', {
-        strategic_goal: levelMap.strategic_goal.map(s => ({ totalObjectives: s.totalObjectives, keyResultsCount: s.keyResultScores.length })),
-        portfolio: levelMap.portfolio.map(s => ({ totalObjectives: s.totalObjectives, keyResultsCount: s.keyResultScores.length })),
-        program: levelMap.program.map(s => ({ totalObjectives: s.totalObjectives, keyResultsCount: s.keyResultScores.length })),
-        team: levelMap.team.map(s => ({ totalObjectives: s.totalObjectives, keyResultsCount: s.keyResultScores.length })),
-      });
-
-      // Calculate cells for each level
-      const calculateCell = (stats: { totalObjectives: number; keyResultScores: number[] }): HeatmapCell => {
-        if (stats.keyResultScores.length === 0) {
-          return { percentage: null, avgScore: null };
-        }
+      // Step 3: Build rows by theme
+      const rows: HeatmapRow[] = themes?.map(theme => {
+        const themeObjectives = objectives?.filter(o => o.theme_id === theme.id) || [];
         
-        const avgScore = stats.keyResultScores.reduce((sum, score) => sum + score, 0) / stats.keyResultScores.length;
-        const percentage = Math.round(avgScore * 100);
-        
-        return { percentage, avgScore };
-      };
+        // Calculate health breakdown
+        const byHealth = {
+          good: themeObjectives.filter(o => o.health === 'good').length,
+          fair: themeObjectives.filter(o => o.health === 'fair').length,
+          poor: themeObjectives.filter(o => o.health === 'poor').length,
+          at_risk: themeObjectives.filter(o => o.health === 'at_risk').length,
+        };
 
-      // Build rows
-      const rows: HeatmapRow[] = [
-        {
-          level: 'Strategic Goals',
-          itemCount: objectives.filter(o => o.level === 'strategic_goal').length,
-          spanAllColumns: true,
-          cells: [{
-            ...calculateCell({
-              totalObjectives: levelMap.strategic_goal[0].totalObjectives,
-              keyResultScores: levelMap.strategic_goal.flatMap(s => s.keyResultScores)
-            })
-          }],
-        },
-        {
-          level: 'Portfolio Objectives',
-          itemCount: objectives.filter(o => o.level === 'portfolio').length,
-          cells: levelMap.portfolio.map(stats => calculateCell(stats)),
-        },
-        {
-          level: 'Program Objectives',
-          itemCount: objectives.filter(o => o.level === 'program').length,
-          cells: levelMap.program.map(stats => calculateCell(stats)),
-        },
-        {
-          level: 'Team Objectives',
-          itemCount: objectives.filter(o => o.level === 'team').length,
-          cells: levelMap.team.map(stats => calculateCell(stats)),
-        },
-      ];
+        // Calculate average progress
+        const avgProgress = themeObjectives.length > 0
+          ? Math.round(themeObjectives.reduce((sum, o) => sum + (o.overall_progress || 0), 0) / themeObjectives.length)
+          : 0;
+
+        // For now, create a single cell per theme (can be extended for quarterly breakdown)
+        const cells: HeatmapCell[] = [{
+          percentage: avgProgress,
+          avgScore: avgProgress / 100,
+          objectiveCount: themeObjectives.length,
+        }];
+
+        return {
+          themeId: theme.id,
+          themeName: theme.name,
+          itemCount: themeObjectives.length,
+          cells,
+          avgProgress,
+          byHealth,
+        };
+      }) || [];
 
       console.log('✅ Final heatmap data:', { 
-        programIncrements: piIds.length,
-        rows: rows.map(r => ({ level: r.level, itemCount: r.itemCount, cellCount: r.cells.length }))
+        rows: rows.length,
+        totalObjectives: objectives?.length || 0,
       });
 
       return {
-        programIncrements: piIds.map(id => ({
-          id,
-          name: piNameMap.get(id) || id
-        })),
+        programIncrements: [] as ProgramIncrementInfo[],
         rows,
       };
     },
-    enabled: !!snapshotId && piIds.length > 0,
+    enabled: !!snapshotId,
   });
 }

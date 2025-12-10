@@ -168,6 +168,7 @@ export default function StrategicBacklog() {
                 themes={themes}
                 links={links || null}
                 isArchived={isArchived}
+                snapshotId={snapshotId}
               />
             </TabsContent>
 
