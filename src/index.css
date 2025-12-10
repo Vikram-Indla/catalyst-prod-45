@@ -113,14 +113,15 @@ button[data-state]:hover,
   border-color: #C69C6D !important;
 }
 
-/* Ensure focus also uses gold */
+/* Ensure focus also uses gold - single line only */
 input:focus,
 textarea:focus,
 select:focus,
 [role="combobox"]:focus,
 [role="combobox"][data-state="open"] {
   border-color: #C69C6D !important;
-  box-shadow: 0 0 0 1px #C69C6D !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 /* BUTTONS */
