@@ -140,20 +140,23 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
           {/* Theme (required) */}
           <div className="space-y-2">
             <Label>Theme *</Label>
-            <Select value={themeId} onValueChange={setThemeId}>
+            <Select value={themeId} onValueChange={setThemeId} disabled={!themes?.length}>
               <SelectTrigger className={!themeId ? 'border-destructive' : ''}>
-                <SelectValue placeholder="Select theme (required)" />
+                <SelectValue placeholder={themes?.length ? "Select theme (required)" : "No themes available"} />
               </SelectTrigger>
               <SelectContent>
-                {themes?.map((theme) => (
+                {themes?.filter(theme => theme.id).map((theme) => (
                   <SelectItem key={theme.id} value={theme.id}>
                     {theme.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            {!themeId && (
+            {!themeId && themes?.length ? (
               <p className="text-xs text-destructive">Theme is required</p>
+            ) : null}
+            {!themes?.length && (
+              <p className="text-xs text-muted-foreground">Create a theme first to use OKR v2</p>
             )}
           </div>
 
@@ -219,13 +222,13 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
           {/* Owner */}
           <div className="space-y-2">
             <Label>Owner</Label>
-            <Select value={ownerId} onValueChange={setOwnerId}>
+            <Select value={ownerId || "__unassigned__"} onValueChange={(v) => setOwnerId(v === "__unassigned__" ? "" : v)}>
               <SelectTrigger>
                 <SelectValue placeholder="Select owner" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Unassigned</SelectItem>
-                {users?.map((user) => (
+                <SelectItem value="__unassigned__">Unassigned</SelectItem>
+                {users?.filter(user => user.id).map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.full_name || 'Unknown'}
                   </SelectItem>
