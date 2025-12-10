@@ -71,6 +71,29 @@ function determineHealth(progress: number, hasKRs: boolean): ObjectiveHealthV2 {
   return 'poor';
 }
 
+// Helper to write audit log entry
+async function writeAuditLog(
+  entityType: 'objective' | 'key_result',
+  entityId: string,
+  action: string,
+  beforeJson?: any,
+  afterJson?: any
+) {
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    await supabase.from('activity_logs').insert({
+      entity_type: entityType,
+      entity_id: entityId,
+      action,
+      actor_id: user?.user?.id || null,
+      before_json: beforeJson || null,
+      after_json: afterJson || null,
+    });
+  } catch (err) {
+    console.error('Failed to write audit log:', err);
+  }
+}
+
 export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
   return useQuery({
     queryKey: ['objectives-v2', filters],
@@ -287,10 +310,15 @@ export function useCreateObjectiveV2() {
         .single();
 
       if (error) throw error;
+      
+      // Write audit log for creation
+      await writeAuditLog('objective', data.id, 'created', null, data);
+      
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Objective created');
     },
     onError: (error) => {
@@ -305,6 +333,13 @@ export function useUpdateObjectiveV2() {
 
   return useMutation({
     mutationFn: async ({ id, ...input }: UpdateObjectiveInputV2 & { id: string }) => {
+      // Fetch current state for audit log
+      const { data: beforeData } = await supabase
+        .from('objectives')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const updateData: Record<string, any> = {
         updated_at: new Date().toISOString(),
       };
@@ -328,11 +363,16 @@ export function useUpdateObjectiveV2() {
         .single();
 
       if (error) throw error;
+      
+      // Write audit log for update
+      await writeAuditLog('objective', id, 'updated', beforeData, data);
+      
       return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
       queryClient.invalidateQueries({ queryKey: ['objective-v2', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
     },
     onError: (error) => {
       toast.error('Failed to update objective');
@@ -346,15 +386,26 @@ export function useDeleteObjectiveV2() {
 
   return useMutation({
     mutationFn: async (objectiveId: string) => {
+      // Fetch current state for audit log
+      const { data: beforeData } = await supabase
+        .from('objectives')
+        .select('*')
+        .eq('id', objectiveId)
+        .single();
+
       const { error } = await supabase
         .from('objectives')
         .delete()
         .eq('id', objectiveId);
 
       if (error) throw error;
+      
+      // Write audit log for deletion
+      await writeAuditLog('objective', objectiveId, 'deleted', beforeData, null);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Objective deleted');
     },
     onError: (error) => {

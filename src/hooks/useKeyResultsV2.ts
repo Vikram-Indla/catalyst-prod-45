@@ -43,18 +43,45 @@ function calculateKRProgress(baseline: number, current: number, goal: number, di
   return Math.max(0, Math.min(100, progress));
 }
 
+// Helper to write audit log entry
+async function writeAuditLog(
+  entityType: 'objective' | 'key_result',
+  entityId: string,
+  action: string,
+  beforeJson?: any,
+  afterJson?: any
+) {
+  try {
+    const { data: user } = await supabase.auth.getUser();
+    await supabase.from('activity_logs').insert({
+      entity_type: entityType,
+      entity_id: entityId,
+      action,
+      actor_id: user?.user?.id || null,
+      before_json: beforeJson || null,
+      after_json: afterJson || null,
+    });
+  } catch (err) {
+    console.error('Failed to write audit log:', err);
+  }
+}
+
 export function useKeyResultsV2(objectiveId?: string) {
   return useQuery({
     queryKey: ['key-results-v2', objectiveId],
     queryFn: async () => {
       if (!objectiveId) return [];
+      
+      // Single query - no joins, just fetch KRs
       const { data: krs, error } = await supabase
         .from('key_results_v2')
-        .select('*, profiles:owner_id (id, full_name)')
+        .select('*')
         .eq('objective_id', objectiveId)
         .order('created_at', { ascending: true });
+      
       if (error) throw error;
 
+      // Process KRs without additional queries - owner lookup is optional/secondary
       return (krs || []).map(kr => {
         const baseline = kr.baseline_value || 0;
         const current = kr.current_value || baseline;
@@ -69,11 +96,11 @@ export function useKeyResultsV2(objectiveId?: string) {
           target_value: goal,
           direction,
           progress,
-          owner_name: (kr.profiles as any)?.full_name,
         } as KeyResultV2;
       });
     },
     enabled: !!objectiveId,
+    staleTime: 30000, // Cache for 30 seconds to avoid refetching on tab switch
   });
 }
 
@@ -96,11 +123,16 @@ export function useCreateKeyResultV2() {
         .select()
         .single();
       if (error) throw error;
+      
+      // Write audit log for KR creation
+      await writeAuditLog('key_result', data.id, 'created', null, data);
+      
       return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['key-results-v2', variables.objective_id] });
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Key Result created');
     },
     onError: () => toast.error('Failed to create Key Result'),
@@ -111,6 +143,13 @@ export function useUpdateKeyResultV2() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, objectiveId, current_value }: { id: string; objectiveId: string; current_value: number }) => {
+      // Fetch current state for audit log
+      const { data: beforeData } = await supabase
+        .from('key_results_v2')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { data, error } = await supabase
         .from('key_results_v2')
         .update({ current_value, updated_at: new Date().toISOString() })
@@ -118,11 +157,16 @@ export function useUpdateKeyResultV2() {
         .select()
         .single();
       if (error) throw error;
+      
+      // Write audit log for KR update
+      await writeAuditLog('key_result', id, 'updated', beforeData, data);
+      
       return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['key-results-v2', variables.objectiveId] });
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
     },
     onError: () => toast.error('Failed to update Key Result'),
   });
@@ -132,12 +176,23 @@ export function useDeleteKeyResultV2() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, objectiveId }: { id: string; objectiveId: string }) => {
+      // Fetch current state for audit log
+      const { data: beforeData } = await supabase
+        .from('key_results_v2')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { error } = await supabase.from('key_results_v2').delete().eq('id', id);
       if (error) throw error;
+      
+      // Write audit log for KR deletion
+      await writeAuditLog('key_result', id, 'deleted', beforeData, null);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['key-results-v2', variables.objectiveId] });
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['audit-logs'] });
       toast.success('Key Result deleted');
     },
     onError: () => toast.error('Failed to delete Key Result'),
