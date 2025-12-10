@@ -100,18 +100,18 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
             {heatmapData.rows.map((row) => (
               <div
                 key={row.themeId}
-                className="flex-1 min-w-[140px] px-2 py-3 text-center"
+                className="flex-1 min-w-[100px] max-w-[180px] px-1 py-2 text-center"
               >
-                <span className="text-sm font-semibold text-foreground">
+                <span className="text-xs font-semibold text-foreground truncate block">
                   {row.themeName}
                 </span>
               </div>
             ))}
-            <div className="w-[100px] px-2 py-3 text-center">
-              <span className="text-sm font-semibold text-foreground">Level</span>
+            <div className="w-[80px] px-1 py-2 text-center">
+              <span className="text-xs font-semibold text-foreground">Level</span>
             </div>
-            <div className="w-[100px] px-2 py-3 text-center">
-              <span className="text-sm font-semibold text-foreground">Item Count</span>
+            <div className="w-[70px] px-1 py-2 text-center">
+              <span className="text-xs font-semibold text-foreground">Item Count</span>
             </div>
           </div>
 
@@ -125,25 +125,25 @@ export function OkrHeatmap({ selectedSnapshot, programIncrements, onCellClick }:
               return (
                 <div
                   key={row.themeId}
-                  className="flex-1 min-w-[140px] p-1"
+                  className="flex-1 min-w-[100px] max-w-[180px] p-0.5"
                 >
                   <div
-                    className="rounded-md py-6 px-3 text-center cursor-pointer transition-opacity hover:opacity-90"
+                    className="rounded py-3 px-2 text-center cursor-pointer transition-opacity hover:opacity-90"
                     style={{ backgroundColor: cellColor }}
                     onClick={() => handleThemeClick(row.themeId)}
                     tabIndex={-1}
                   >
                     {row.itemCount > 0 ? (
                       <>
-                        <div className="text-2xl font-bold" style={{ color: textColor }}>
+                        <div className="text-base font-bold" style={{ color: textColor }}>
                           {row.avgProgress}%
                         </div>
-                        <div className="text-sm mt-1" style={{ color: textColor, opacity: 0.9 }}>
+                        <div className="text-xs" style={{ color: textColor, opacity: 0.9 }}>
                           {avgScore.toFixed(1)} avg score
                         </div>
                       </>
                     ) : (
-                      <div className="text-lg font-semibold text-muted-foreground">
+                      <div className="text-sm font-semibold text-muted-foreground">
                         N/A
                       </div>
                     )}
