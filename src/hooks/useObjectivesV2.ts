@@ -3,11 +3,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 // OKR v2 Types - Unified Objectives (no Portfolio/Program tiers)
-// Map to existing DB statuses for compatibility
-export type ObjectiveStatusV2 = 'pending' | 'in_progress' | 'completed' | 'at_risk' | 'off_track' | 'on_track';
-
+// Using actual DB enum values
+export type ObjectiveStatusV2 = 'pending' | 'in_progress' | 'on_track' | 'at_risk' | 'off_track' | 'paused' | 'completed' | 'canceled' | 'missed';
 export type ObjectiveHealthV2 = 'good' | 'fair' | 'poor' | 'at_risk';
-
 export type ObjectiveVisibility = 'org-wide' | 'business-unit' | 'product-line';
 
 export interface ObjectiveV2 {
@@ -20,7 +18,7 @@ export interface ObjectiveV2 {
   due_date?: string;
   status: ObjectiveStatusV2;
   health?: ObjectiveHealthV2;
-  visibility: ObjectiveVisibility;
+  visibility?: string;
   overall_progress: number;
   is_v2: boolean;
   created_at: string;
@@ -50,7 +48,7 @@ export interface CreateObjectiveInputV2 {
   start_date?: string;
   due_date?: string;
   status?: ObjectiveStatusV2;
-  visibility?: ObjectiveVisibility;
+  visibility?: string;
 }
 
 export interface UpdateObjectiveInputV2 {
@@ -62,7 +60,7 @@ export interface UpdateObjectiveInputV2 {
   due_date?: string;
   status?: ObjectiveStatusV2;
   health?: ObjectiveHealthV2;
-  visibility?: ObjectiveVisibility;
+  visibility?: string;
 }
 
 function determineHealth(progress: number, hasKRs: boolean): ObjectiveHealthV2 {
@@ -179,7 +177,7 @@ export function useObjectivesV2(filters?: ObjectiveFiltersV2) {
         due_date: obj.due_date,
         status: (obj.status || 'pending') as ObjectiveStatusV2,
         health: (obj.health || 'at_risk') as ObjectiveHealthV2,
-        visibility: (obj.visibility || 'org-wide') as ObjectiveVisibility,
+        visibility: obj.visibility || 'org-wide',
         overall_progress: obj.overall_progress || 0,
         is_v2: obj.is_v2 ?? true,
         created_at: obj.created_at,
@@ -251,17 +249,17 @@ export function useCreateObjectiveV2() {
         .from('objectives')
         .insert({
           name: input.name,
-          description: input.description,
-          theme_id: input.theme_id,
-          owner_id: input.owner_id,
-          start_date: input.start_date,
-          due_date: input.due_date,
-          status: input.status || 'not_started',
+          description: input.description || null,
+          theme_id: input.theme_id || null,
+          owner_id: input.owner_id || null,
+          start_date: input.start_date || null,
+          due_date: input.due_date || null,
+          status: input.status || 'pending',
           visibility: input.visibility || 'org-wide',
           is_v2: true,
           overall_progress: 0,
-          health: 'grey',
-          created_by: user?.user?.id,
+          health: 'at_risk', // Valid enum value for "not yet tracked"
+          created_by: user?.user?.id || null,
           // Clear v1 hierarchy fields
           tier: null,
           parent_objective_id: null,
@@ -290,17 +288,24 @@ export function useUpdateObjectiveV2() {
 
   return useMutation({
     mutationFn: async ({ id, ...input }: UpdateObjectiveInputV2 & { id: string }) => {
+      const updateData: Record<string, any> = {
+        updated_at: new Date().toISOString(),
+      };
+      
+      // Only include fields that are explicitly provided
+      if (input.name !== undefined) updateData.name = input.name;
+      if (input.description !== undefined) updateData.description = input.description;
+      if (input.theme_id !== undefined) updateData.theme_id = input.theme_id;
+      if (input.owner_id !== undefined) updateData.owner_id = input.owner_id;
+      if (input.start_date !== undefined) updateData.start_date = input.start_date;
+      if (input.due_date !== undefined) updateData.due_date = input.due_date;
+      if (input.status !== undefined) updateData.status = input.status;
+      if (input.health !== undefined) updateData.health = input.health;
+      if (input.visibility !== undefined) updateData.visibility = input.visibility;
+
       const { data, error } = await supabase
         .from('objectives')
-        .update({
-          name: input.name,
-          description: input.description,
-          theme_id: input.theme_id,
-          owner_id: input.owner_id,
-          start_date: input.start_date,
-          due_date: input.due_date,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
@@ -311,7 +316,6 @@ export function useUpdateObjectiveV2() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
       queryClient.invalidateQueries({ queryKey: ['objective-v2', variables.id] });
-      toast.success('Objective updated');
     },
     onError: (error) => {
       toast.error('Failed to update objective');
@@ -339,6 +343,56 @@ export function useDeleteObjectiveV2() {
     onError: (error) => {
       toast.error('Failed to delete objective');
       console.error('Delete objective error:', error);
+    },
+  });
+}
+
+// Recalculate objective progress from its KRs
+export function useRecalculateObjectiveProgress() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (objectiveId: string) => {
+      // Fetch all KRs for this objective
+      const { data: krs, error: krError } = await supabase
+        .from('key_results_v2')
+        .select('progress')
+        .eq('objective_id', objectiveId);
+
+      if (krError) throw krError;
+
+      // Calculate average progress
+      const hasKRs = krs && krs.length > 0;
+      const avgProgress = hasKRs 
+        ? krs.reduce((sum, kr) => sum + (kr.progress || 0), 0) / krs.length
+        : 0;
+
+      // Determine health based on progress
+      let health: ObjectiveHealthV2 = 'at_risk';
+      if (hasKRs) {
+        if (avgProgress >= 75) health = 'good';
+        else if (avgProgress >= 40) health = 'fair';
+        else health = 'poor';
+      }
+
+      // Update objective
+      const { data, error } = await supabase
+        .from('objectives')
+        .update({
+          overall_progress: Math.round(avgProgress),
+          health,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', objectiveId)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, objectiveId) => {
+      queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['objective-v2', objectiveId] });
     },
   });
 }
