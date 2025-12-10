@@ -21,6 +21,7 @@ export interface CreateWorkContributionInput {
   key_result_id: string;
   work_item_id: string;
   work_item_type: WorkItemType;
+  work_item_name?: string; // Optional display name
   contribution_percent: number;
   notes?: string;
 }
@@ -116,6 +117,31 @@ export function useDeleteWorkContribution() {
       toast.success('Work item unlinked');
     },
     onError: () => toast.error('Failed to unlink'),
+  });
+}
+
+// Alias exports for component compatibility
+export const useAddWorkContribution = useCreateWorkContribution;
+export const useRemoveWorkContribution = useDeleteWorkContribution;
+
+export function useUpdateContributionPercent() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, keyResultId, percent }: { id: string; keyResultId: string; percent: number }) => {
+      const { data, error } = await supabase
+        .from('kr_work_contributions')
+        .update({ contribution_percent: percent, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['kr-work-contributions', variables.keyResultId] });
+      queryClient.invalidateQueries({ queryKey: ['key-results-v2'] });
+    },
+    onError: () => toast.error('Failed to update contribution'),
   });
 }
 

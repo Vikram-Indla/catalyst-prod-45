@@ -159,20 +159,23 @@ function AddWorkContributionDialog({ open, onOpenChange, keyResultId, currentTot
   const { data: workItems } = useQuery({
     queryKey: ['work-items-for-kr', workItemType],
     queryFn: async () => {
-      const table = workItemType === 'epic' ? 'epics' : 'features';
-      const nameField = workItemType === 'epic' ? 'title' : 'title';
-      
-      const { data, error } = await supabase
-        .from(table)
-        .select(`id, ${nameField}`)
-        .order(nameField)
-        .limit(100);
-      
-      if (error) throw error;
-      return data?.map(item => ({
-        id: item.id,
-        name: (item as any)[nameField] || item.id,
-      }));
+      if (workItemType === 'epic') {
+        const { data, error } = await supabase
+          .from('epics')
+          .select('id, name')
+          .order('name')
+          .limit(100);
+        if (error) throw error;
+        return data?.map(item => ({ id: item.id, name: item.name || item.id }));
+      } else {
+        const { data, error } = await supabase
+          .from('features')
+          .select('id, name')
+          .order('name')
+          .limit(100);
+        if (error) throw error;
+        return data?.map(item => ({ id: item.id, name: item.name || item.id }));
+      }
     },
   });
 

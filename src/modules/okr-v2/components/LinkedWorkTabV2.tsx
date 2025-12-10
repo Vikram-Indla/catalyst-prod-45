@@ -40,14 +40,29 @@ export function LinkedWorkTabV2({ objectiveId }: LinkedWorkTabV2Props) {
       // Map contributions to linked work items with KR names
       const krMap = new Map(keyResults?.map(kr => [kr.id, kr.summary]) || []);
 
-      return (contributions || []).map(c => ({
-        id: c.id,
-        type: c.work_item_type as 'epic' | 'feature',
-        name: c.work_item_name || c.work_item_id,
-        progress: c.calculated_progress || 0,
-        krName: krMap.get(c.key_result_id) || 'Unknown KR',
-        contributionPercent: c.contribution_percent || 0,
-      })) as LinkedWorkItem[];
+      // Fetch work item names
+      const enrichedContributions = await Promise.all(
+        (contributions || []).map(async (c) => {
+          let name = c.work_item_id;
+          if (c.work_item_type === 'epic') {
+            const { data } = await supabase.from('epics').select('name').eq('id', c.work_item_id).single();
+            if (data) name = data.name;
+          } else if (c.work_item_type === 'feature') {
+            const { data } = await supabase.from('features').select('name').eq('id', c.work_item_id).single();
+            if (data) name = data.name;
+          }
+          return {
+            id: c.id,
+            type: c.work_item_type as 'epic' | 'feature',
+            name,
+            progress: c.calculated_progress || 0,
+            krName: krMap.get(c.key_result_id) || 'Unknown KR',
+            contributionPercent: c.contribution_percent || 0,
+          };
+        })
+      );
+
+      return enrichedContributions as LinkedWorkItem[];
     },
     enabled: krIds.length > 0,
   });
