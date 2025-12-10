@@ -109,7 +109,7 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
 
   return (
     <>
-      <Card>
+      <Card className="border bg-card">
         <CardHeader className="pb-2">
           <div className="flex items-start justify-between">
             <div className="space-y-1">

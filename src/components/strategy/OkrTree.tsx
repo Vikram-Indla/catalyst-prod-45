@@ -190,7 +190,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
 
   if (isLoading) {
     return (
-      <Card className="border rounded-lg">
+      <Card className="border bg-card">
         <CardContent className="p-8">
           <div className="flex items-center justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -201,7 +201,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
   }
 
   return (
-    <Card className="border rounded-lg">
+    <Card className="border bg-card">
       <CardHeader className="pb-3 space-y-3">
         <CardTitle className="text-xl font-semibold text-foreground">OKR Tree</CardTitle>
         <p className="text-sm text-muted-foreground italic">
