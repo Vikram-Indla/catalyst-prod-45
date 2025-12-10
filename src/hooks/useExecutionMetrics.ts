@@ -342,8 +342,62 @@ export function useStrategyPyramidCounts(snapshotId?: string) {
 }
 
 /**
+ * Helper: Compute KR progress for a single objective from its key results
+ * Same formula as useObjectives.ts: progress = (current - baseline) / (goal - baseline), clamped 0..1
+ */
+function computeOwnKrProgressFromKeyResults(keyResults: any[]): number | null {
+  if (!keyResults || keyResults.length === 0) return null;
+  
+  let totalProgress = 0;
+  keyResults.forEach(kr => {
+    const baseline = kr.baseline_value || 0;
+    const current = kr.current_value || baseline;
+    const goal = kr.goal_value;
+    
+    if (goal !== baseline) {
+      const progress = (current - baseline) / (goal - baseline);
+      totalProgress += Math.max(0, Math.min(1, progress));
+    }
+  });
+  
+  return totalProgress / keyResults.length;
+}
+
+/**
+ * Helper: Compute rolled-up KR progress for a Portfolio objective
+ * Includes own KR progress + average of child Program objectives' KR progress
+ */
+function computeRolledUpKrProgressForObjective(
+  objectiveId: string,
+  ownKrProgress: number | null,
+  childObjectiveIds: string[],
+  objectiveKrProgressMap: Map<string, number | null>
+): number | null {
+  const progressValues: number[] = [];
+  
+  // Include own KR progress if valid
+  if (ownKrProgress !== null && !Number.isNaN(ownKrProgress)) {
+    progressValues.push(ownKrProgress);
+  }
+  
+  // Include child objectives' KR progress
+  childObjectiveIds.forEach(childId => {
+    const childProgress = objectiveKrProgressMap.get(childId);
+    if (childProgress !== null && childProgress !== undefined && !Number.isNaN(childProgress)) {
+      progressValues.push(childProgress);
+    }
+  });
+  
+  if (progressValues.length === 0) return null;
+  return progressValues.reduce((sum, val) => sum + val, 0) / progressValues.length;
+}
+
+/**
  * Hook to compute theme-level KR progress based on linked Portfolio objectives.
- * Theme KR Progress = average of linked Portfolio objectives' key_result_progress.
+ * Theme KR Progress = average of linked Portfolio objectives' ROLLED-UP key_result_progress.
+ * 
+ * PHASE 8: Now recomputes KR progress in-memory using the same logic as useObjectives,
+ * rather than reading stale key_result_progress from DB.
  */
 export function useThemeProgress(snapshotId?: string) {
   return useQuery({
@@ -373,42 +427,99 @@ export function useThemeProgress(snapshotId?: string) {
 
       if (relevantThemes.length === 0) return [];
 
-      // 2. Fetch all Portfolio objectives with their rolled-up key_result_progress
-      const { data: objectives = [] } = await supabase
+      // 2. Fetch ALL objectives (Portfolio AND Program) for roll-up calculation
+      const { data: allObjectives = [] } = await supabase
         .from('objectives')
-        .select('id, name, summary, tier, key_result_progress')
-        .eq('tier', 'portfolio');
+        .select('id, name, summary, tier, parent_objective_id')
+        .in('tier', ['portfolio', 'program']);
 
-      // 3. Fetch objective-theme links
+      // 3. Fetch ALL key results from key_results_v2 for KR progress computation
+      const { data: allKeyResults = [] } = await supabase
+        .from('key_results_v2')
+        .select('id, objective_id, baseline_value, current_value, goal_value');
+
+      // Build key results by objective map
+      const keyResultsByObjective = new Map<string, any[]>();
+      allKeyResults.forEach(kr => {
+        if (!keyResultsByObjective.has(kr.objective_id)) {
+          keyResultsByObjective.set(kr.objective_id, []);
+        }
+        keyResultsByObjective.get(kr.objective_id)!.push(kr);
+      });
+
+      // 4. Compute own KR progress for each objective
+      const objectiveOwnKrProgress = new Map<string, number | null>();
+      allObjectives.forEach(obj => {
+        const krs = keyResultsByObjective.get(obj.id) || [];
+        objectiveOwnKrProgress.set(obj.id, computeOwnKrProgressFromKeyResults(krs));
+      });
+
+      // 5. Build parent-child relationships for roll-up
+      const childrenByParent = new Map<string, string[]>();
+      allObjectives.forEach(obj => {
+        if (obj.parent_objective_id) {
+          if (!childrenByParent.has(obj.parent_objective_id)) {
+            childrenByParent.set(obj.parent_objective_id, []);
+          }
+          childrenByParent.get(obj.parent_objective_id)!.push(obj.id);
+        }
+      });
+
+      // 6. Compute rolled-up KR progress for Portfolio objectives
+      const objectiveRolledUpKrProgress = new Map<string, number | null>();
+      
+      allObjectives.forEach(obj => {
+        if (obj.tier === 'portfolio') {
+          const childIds = childrenByParent.get(obj.id) || [];
+          const ownProgress = objectiveOwnKrProgress.get(obj.id) ?? null;
+          const rolledUp = computeRolledUpKrProgressForObjective(
+            obj.id,
+            ownProgress,
+            childIds,
+            objectiveOwnKrProgress // Children use their own KR progress
+          );
+          objectiveRolledUpKrProgress.set(obj.id, rolledUp);
+        } else {
+          // Program objectives use their own progress (no further roll-up)
+          objectiveRolledUpKrProgress.set(obj.id, objectiveOwnKrProgress.get(obj.id) ?? null);
+        }
+      });
+
+      // 7. Fetch objective-theme links
       const { data: objectiveThemeLinks = [] } = await supabase
         .from('objective_theme_links')
         .select('objective_id, theme_id');
 
-      // Build theme -> objectives mapping
-      const themeToObjectives = new Map<string, typeof objectives>();
+      // Build theme -> Portfolio objectives mapping (themes link to Portfolio objectives)
+      const portfolioObjectives = allObjectives.filter(o => o.tier === 'portfolio');
+      const portfolioObjectiveMap = new Map(portfolioObjectives.map(o => [o.id, o]));
       
+      const themeToObjectives = new Map<string, any[]>();
       relevantThemes.forEach(theme => {
         themeToObjectives.set(theme.id, []);
       });
 
       objectiveThemeLinks.forEach(link => {
         if (themeToObjectives.has(link.theme_id)) {
-          const objective = objectives.find(o => o.id === link.objective_id);
+          const objective = portfolioObjectiveMap.get(link.objective_id);
           if (objective) {
             themeToObjectives.get(link.theme_id)!.push(objective);
           }
         }
       });
 
-      // 4. Compute theme progress for each theme
+      // 8. Compute theme progress using ROLLED-UP objective KR progress
       const themeProgressList: ThemeProgress[] = relevantThemes.map(theme => {
         const linkedObjectives = themeToObjectives.get(theme.id) || [];
         
-        const objectivesWithProgress = linkedObjectives.map(obj => ({
-          id: obj.id,
-          name: obj.name || obj.summary || 'Untitled Objective',
-          key_result_progress: obj.key_result_progress,
-        }));
+        const objectivesWithProgress = linkedObjectives.map(obj => {
+          const rolledUpProgress = objectiveRolledUpKrProgress.get(obj.id) ?? null;
+          return {
+            id: obj.id,
+            name: obj.name || obj.summary || 'Untitled Objective',
+            key_result_progress: rolledUpProgress, // Use computed rolled-up value, NOT DB column
+          };
+        });
 
         const krProgress = computeThemeKrProgress(objectivesWithProgress);
 
