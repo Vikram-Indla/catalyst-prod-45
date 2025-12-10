@@ -14,7 +14,7 @@ import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
 import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
 import { OkrHeatmap } from '@/components/strategy/OkrHeatmap';
 import { OkrTree } from '@/components/strategy/OkrTree';
-import { ObjectiveDrawer } from '@/components/strategy/ObjectiveDrawer';
+import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
 
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -304,8 +304,8 @@ export default function StrategyRoomPage() {
         </div>
       </div>
 
-      {/* Objective Drawer */}
-      <ObjectiveDrawer
+      {/* Objective Drawer - OKR v2 */}
+      <ObjectiveDrawerV2
         objectiveId={selectedObjective?.id || null}
         open={drawerOpen}
         onClose={() => {
