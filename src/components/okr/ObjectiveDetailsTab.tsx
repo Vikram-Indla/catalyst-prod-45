@@ -11,12 +11,14 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CalendarIcon, X, Link2 } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useUpdateObjective } from "@/hooks/useObjectives";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useObjectiveThemes, useAllThemes, useLinkThemesToObjective, useUnlinkThemesFromObjective } from "@/hooks/useObjectiveThemeLinks";
 
 // OKR Objectives only support Portfolio and Program tiers
 const OKR_TIER_OPTIONS = [
@@ -44,6 +46,13 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
   const [dueDate, setDueDate] = useState<Date | undefined>(
     objective.due_date ? new Date(objective.due_date) : undefined
   );
+  const [themePopoverOpen, setThemePopoverOpen] = useState(false);
+
+  // Theme linking hooks (for Portfolio tier objectives)
+  const { data: linkedThemes = [] } = useObjectiveThemes(objective.id);
+  const { data: allThemes = [] } = useAllThemes();
+  const linkThemesMutation = useLinkThemesToObjective();
+  const unlinkThemesMutation = useUnlinkThemesFromObjective();
 
   // Fetch portfolios for Portfolio-tier objectives
   const { data: portfolios = [] } = useQuery({
@@ -84,6 +93,18 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
     handleFieldUpdate(field, date ? date.toISOString() : null);
   };
 
+  const handleThemeToggle = (themeId: string, isLinked: boolean) => {
+    if (isLinked) {
+      unlinkThemesMutation.mutate({ objectiveId: objective.id, themeIds: [themeId] });
+    } else {
+      linkThemesMutation.mutate({ objectiveId: objective.id, themeIds: [themeId] });
+    }
+  };
+
+  const handleRemoveTheme = (themeId: string) => {
+    unlinkThemesMutation.mutate({ objectiveId: objective.id, themeIds: [themeId] });
+  };
+
   // Get display label for tier (handle legacy values gracefully)
   const getTierLabel = (tier: string) => {
     const found = OKR_TIER_OPTIONS.find(o => o.value === tier);
@@ -92,6 +113,9 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
 
   const isPortfolioTier = objective.tier === 'portfolio';
   const isProgramTier = objective.tier === 'program';
+  
+  // Get linked theme IDs for easy lookup
+  const linkedThemeIds = new Set(linkedThemes.map(t => t.id));
 
   return (
     <div className="space-y-6">
@@ -181,6 +205,73 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          )}
+
+          {/* Strategic Themes - Portfolio tier only */}
+          {isPortfolioTier && (
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Link2 className="h-4 w-4" />
+                Strategic Themes
+              </Label>
+              
+              {/* Linked themes display */}
+              {linkedThemes.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {linkedThemes.map((theme) => (
+                    <Badge 
+                      key={theme.id} 
+                      variant="secondary" 
+                      className="flex items-center gap-1 pr-1"
+                    >
+                      {theme.name}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4 hover:bg-destructive/20"
+                        onClick={() => handleRemoveTheme(theme.id)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+              )}
+
+              {/* Theme selector popover */}
+              <Popover open={themePopoverOpen} onOpenChange={setThemePopoverOpen}>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="w-full justify-start">
+                    <Link2 className="mr-2 h-4 w-4" />
+                    {linkedThemes.length === 0 ? "Link themes..." : "Add more themes..."}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-2" align="start">
+                  <div className="space-y-1 max-h-48 overflow-y-auto">
+                    {allThemes.length === 0 ? (
+                      <p className="text-sm text-muted-foreground p-2">No themes available</p>
+                    ) : (
+                      allThemes.map((theme) => {
+                        const isLinked = linkedThemeIds.has(theme.id);
+                        return (
+                          <div
+                            key={theme.id}
+                            className="flex items-center gap-2 p-2 hover:bg-muted rounded-sm cursor-pointer"
+                            onClick={() => handleThemeToggle(theme.id, isLinked)}
+                          >
+                            <Checkbox 
+                              checked={isLinked}
+                              onCheckedChange={() => handleThemeToggle(theme.id, isLinked)}
+                            />
+                            <span className="text-sm flex-1 truncate">{theme.name}</span>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
           )}
 
