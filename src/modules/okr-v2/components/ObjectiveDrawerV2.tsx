@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { useObjectiveV2, useUpdateObjectiveV2, useDeleteObjectiveV2 } from '@/hooks/useObjectivesV2';
+import { useObjectiveV2, useUpdateObjectiveV2, useDeleteObjectiveV2, useCreateObjectiveV2 } from '@/hooks/useObjectivesV2';
 import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
 import {
   Sheet,
@@ -30,7 +30,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { MoreVertical, Trash2, Users, Calendar, Target, ChevronDown, X } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { MoreVertical, Trash2, Users, Calendar, Target, ChevronDown, X, Copy, Download } from 'lucide-react';
 import { ObjectiveOverviewTabV2, ObjectiveFormData } from './ObjectiveOverviewTabV2';
 import { KeyResultsTabV2 } from './KeyResultsTabV2';
 import { LinkedWorkTabV2 } from './LinkedWorkTabV2';
@@ -46,6 +47,7 @@ interface ObjectiveDrawerV2Props {
   objectiveId: string | null;
   open: boolean;
   onClose: () => void;
+  onDuplicated?: (newObjectiveId: string) => void;
 }
 
 // Determine health from progress (v2 logic)
@@ -66,11 +68,12 @@ function getHealthColor(health?: string): string {
   }
 }
 
-export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawerV2Props) {
+export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: ObjectiveDrawerV2Props) {
   const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState('overview');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showUnsavedChangesDialog, setShowUnsavedChangesDialog] = useState(false);
+  const [isDuplicating, setIsDuplicating] = useState(false);
   
   // Form state for dirty tracking
   const [formData, setFormData] = useState<ObjectiveFormData | null>(null);
@@ -81,6 +84,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
   const { data: keyResults } = useKeyResultsV2(objectiveId || undefined);
   const updateObjective = useUpdateObjectiveV2();
   const deleteObjective = useDeleteObjectiveV2();
+  const createObjective = useCreateObjectiveV2();
 
   // V2 Progress calculation - average of all KR progress values
   const v2Progress = useMemo(() => {
@@ -267,17 +271,102 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
     }
   };
 
+  // Handle Delete with audit log
   const handleDelete = async () => {
     if (!objectiveId) return;
-    await deleteObjective.mutateAsync(objectiveId);
-    setShowDeleteDialog(false);
-    onClose();
+    
+    try {
+      // Audit log is written inside the hook
+      await deleteObjective.mutateAsync(objectiveId);
+      setShowDeleteDialog(false);
+      toast.success('Objective deleted successfully');
+      onClose();
+    } catch (error: any) {
+      toast.error(`Failed to delete: ${error?.message || 'Unknown error'}`);
+    }
+  };
+
+  // Handle Duplicate Objective
+  const handleDuplicate = async () => {
+    if (!objective) return;
+    
+    setIsDuplicating(true);
+    try {
+      const newObjective = await createObjective.mutateAsync({
+        name: `${objective.name} (copy)`,
+        description: objective.description || undefined,
+        theme_id: objective.theme_id || '',
+        owner_id: objective.owner_id || undefined,
+        start_date: objective.start_date || undefined,
+        due_date: objective.due_date || undefined,
+        status: objective.status,
+        health: objective.health || 'at_risk',
+        notes: (objective as any).notes || undefined,
+      });
+      
+      toast.success('Objective duplicated');
+      
+      // Refresh the hub list
+      queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
+      
+      // Open the duplicated objective
+      if (onDuplicated && newObjective?.id) {
+        onDuplicated(newObjective.id);
+      }
+    } catch (error: any) {
+      toast.error(`Failed to duplicate: ${error?.message || 'Unknown error'}`);
+    } finally {
+      setIsDuplicating(false);
+    }
+  };
+
+  // Handle Export
+  const handleExport = () => {
+    if (!objective) return;
+    
+    try {
+      const exportData = {
+        id: objective.id,
+        name: objective.name,
+        description: objective.description,
+        theme: objective.theme_name,
+        owner: objective.owner_name,
+        status: objective.status,
+        health: objective.health,
+        start_date: objective.start_date,
+        due_date: objective.due_date,
+        overall_progress: objective.overall_progress,
+        key_results: keyResults?.map(kr => ({
+          summary: kr.summary,
+          metric_type: kr.metric_type,
+          baseline_value: kr.baseline_value,
+          current_value: kr.current_value,
+          target_value: kr.target_value,
+          progress: kr.progress,
+        })) || [],
+        exported_at: new Date().toISOString(),
+      };
+      
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `objective-${objective.name.toLowerCase().replace(/\s+/g, '-')}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success('Objective exported');
+    } catch (error: any) {
+      toast.error(`Failed to export: ${error?.message || 'Unknown error'}`);
+    }
   };
 
   return (
     <>
       <Sheet open={open} onOpenChange={(isOpen) => !isOpen && handleAttemptClose()}>
-        <SheetContent className="w-full sm:max-w-[600px] p-0 flex flex-col">
+        <SheetContent className="w-full sm:max-w-[600px] p-0 flex flex-col" hideClose>
           {isLoading ? (
             <div className="p-6 space-y-4">
               <Skeleton className="h-8 w-3/4" />
@@ -333,7 +422,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                       </DropdownMenuContent>
                     </DropdownMenu>
 
-                    {/* Kebab menu */}
+                    {/* Kebab menu - wired actions */}
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="h-9 w-9">
@@ -341,8 +430,14 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Duplicate</DropdownMenuItem>
-                        <DropdownMenuItem>Export</DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleDuplicate} disabled={isDuplicating}>
+                          <Copy className="h-4 w-4 mr-2" />
+                          {isDuplicating ? 'Duplicating...' : 'Duplicate'}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleExport}>
+                          <Download className="h-4 w-4 mr-2" />
+                          Export
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="text-destructive"

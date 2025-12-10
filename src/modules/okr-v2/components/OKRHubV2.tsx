@@ -135,6 +135,7 @@ export function OKRHubV2() {
         objectiveId={selectedObjectiveId}
         open={!!selectedObjectiveId}
         onClose={() => setSelectedObjectiveId(null)}
+        onDuplicated={(newId) => setSelectedObjectiveId(newId)}
       />
     </div>
   );
