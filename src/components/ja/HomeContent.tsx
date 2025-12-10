@@ -1,38 +1,13 @@
 import React, { useState } from 'react';
 import Avatar from '@atlaskit/avatar';
-import Badge from '@atlaskit/badge';
-import Button from '@atlaskit/button/standard-button';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import Lozenge from '@atlaskit/lozenge';
-import { token } from '@atlaskit/tokens';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
 import StarIcon from '@atlaskit/icon/glyph/star';
+import { projects, activityItems, Project, ActivityItem } from '@/data/homePageData';
+import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
 
-// Mock data - replace "spaces" with "projects" in Catalyst terminology
-const recentProjects = [
-  { id: '1', key: 'SB', name: 'Senaei BAU', type: 'Company-managed software', color: '#0052CC', openCount: 18, doneCount: 0, boardsCount: 0 },
-  { id: '2', key: 'IP', name: 'IP Implementation', type: 'Company-managed software', color: '#FF5630', openCount: 18, doneCount: 0, boardsCount: 1 },
-  { id: '3', key: 'OB', name: 'One Backlog', type: 'Company-managed software', color: '#FFAB00', openCount: 0, doneCount: 0, boardsCount: 1 },
-  { id: '4', key: 'ES', name: 'Enterprise Shared Servic...', type: 'Company-managed software', color: '#36B37E', openCount: 1, doneCount: 0, boardsCount: 2 },
-  { id: '5', key: 'IC', name: 'ICP Project', type: 'Company-managed software', color: '#6554C0', openCount: 0, doneCount: 0, boardsCount: 1 },
-];
-
-const activityItems = [
-  { key: 'US-02', id: 'IP-302', summary: 'View Detailed Performance Reviews (Innovator & Partner)', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-02', id: 'IP-341', summary: 'Innovator Submits Performance Review', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-01', id: 'IP-340', summary: 'Trigger Performance Review Period Automatically', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-03', id: 'IP-303', summary: 'View Evaluation Criteria for Context', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-03', id: 'IP-342', summary: 'Partner Submits Performance Review', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-04', id: 'IP-343', summary: 'Send Reminders for Pending Reviews', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-08', id: 'IP-467', summary: 'Configurable Evaluation Period for Selected Contracts', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-07', id: 'IP-346', summary: 'Mark Review as Not Submitted (System Auto)', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-06', id: 'IP-345', summary: 'Innovation Management Views Submitted Performance Reviews', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-05', id: 'IP-349', summary: 'Audit Logging for All Evaluation Actions', project: 'IP Implementation', updated: 'Updated' },
-  { key: 'US-04', id: 'IP-348', summary: 'Export Performance Review Reports', project: 'IP Implementation', updated: 'Updated' },
-];
-
-function RecentProjectCard({ project }: { project: typeof recentProjects[0] }) {
+function RecentProjectCard({ project }: { project: Project }) {
   return (
     <div style={{
       width: '200px',
@@ -123,12 +98,30 @@ function RecentProjectCard({ project }: { project: typeof recentProjects[0] }) {
             )}
           </a>
           <a href="#" style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
             fontSize: '14px',
             color: '#172B4D',
             textDecoration: 'none',
             padding: '4px 0',
           }}>
-            Done work items
+            <span>Done work items</span>
+            {project.doneCount > 0 && (
+              <span style={{
+                backgroundColor: '#DFE1E6',
+                borderRadius: '10px',
+                padding: '2px 6px',
+                fontSize: '12px',
+                fontWeight: 500,
+                height: '20px',
+                lineHeight: '16px',
+                display: 'inline-flex',
+                alignItems: 'center',
+              }}>
+                {project.doneCount}
+              </span>
+            )}
           </a>
         </div>
       </div>
@@ -171,7 +164,7 @@ function RecentProjectCard({ project }: { project: typeof recentProjects[0] }) {
   );
 }
 
-function ActivityRow({ item }: { item: typeof activityItems[0] }) {
+function ActivityRow({ item }: { item: ActivityItem }) {
   return (
     // Activity rows: padding 8px vertical, min-height 52px
     <div style={{
@@ -182,9 +175,9 @@ function ActivityRow({ item }: { item: typeof activityItems[0] }) {
       borderBottom: '1px solid #EBECF0',
       gap: '12px',
     }}>
-      {/* Star icon: margin-top 2px for alignment */}
-      <div style={{ color: '#C1C7D0', flexShrink: 0, marginTop: '2px' }}>
-        <StarIcon label="" size="medium" />
+      {/* Work item type icon */}
+      <div style={{ flexShrink: 0, marginTop: '2px' }}>
+        <WorkItemTypeIcon type={item.type} size={16} />
       </div>
 
       {/* Content */}
@@ -211,14 +204,11 @@ function ActivityRow({ item }: { item: typeof activityItems[0] }) {
 
       {/* Right side */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-        {/* "Updated" label: font-size 12px, color #626F86 */}
-        <span style={{ fontSize: '12px', color: '#626F86' }}>{item.updated}</span>
+        {/* Status label: font-size 12px, color #626F86 */}
+        <span style={{ fontSize: '12px', color: '#626F86' }}>{item.status}</span>
         {/* Avatar clusters: margin -4px (tighter overlap) */}
         <div style={{ display: 'flex' }}>
-          <Avatar size="small" />
-          <div style={{ marginLeft: '-4px' }}>
-            <Avatar size="small" />
-          </div>
+          <Avatar size="small" name={item.assignee} />
         </div>
       </div>
     </div>
@@ -227,6 +217,11 @@ function ActivityRow({ item }: { item: typeof activityItems[0] }) {
 
 export function HomeContent() {
   const [selectedTab, setSelectedTab] = useState(0);
+
+  // Calculate total assigned items
+  const totalAssigned = activityItems.filter(item => 
+    item.status !== 'In Production' && item.status !== 'Done'
+  ).length;
 
   return (
     <div style={{
@@ -279,7 +274,7 @@ export function HomeContent() {
           overflowX: 'auto',
           paddingBottom: '8px',
         }}>
-          {recentProjects.map((project) => (
+          {projects.map((project) => (
             <RecentProjectCard key={project.id} project={project} />
           ))}
         </div>
@@ -316,7 +311,7 @@ export function HomeContent() {
                 display: 'inline-flex',
                 alignItems: 'center',
               }}>
-                99+
+                {totalAssigned}
               </span>
             </span>
           </Tab>
@@ -333,7 +328,7 @@ export function HomeContent() {
               marginBottom: '8px',
               letterSpacing: '0.5px',
             }}>
-              Yesterday
+              Recent Activity
             </div>
             {activityItems.map((item, index) => (
               <ActivityRow key={index} item={item} />
@@ -346,8 +341,22 @@ export function HomeContent() {
           </div>
         </TabPanel>
         <TabPanel>
-          <div style={{ padding: '40px', textAlign: 'center', color: '#626F86' }}>
-            No items assigned to you
+          <div style={{ marginTop: '16px' }}>
+            <div style={{
+              fontSize: '11px',
+              fontWeight: 600,
+              color: '#626F86',
+              textTransform: 'uppercase',
+              marginBottom: '8px',
+              letterSpacing: '0.5px',
+            }}>
+              Assigned Work Items
+            </div>
+            {activityItems
+              .filter(item => item.status !== 'In Production' && item.status !== 'Done')
+              .map((item, index) => (
+                <ActivityRow key={index} item={item} />
+              ))}
           </div>
         </TabPanel>
         <TabPanel>
