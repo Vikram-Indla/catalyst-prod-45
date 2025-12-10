@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useObjectivesV2, ObjectiveFiltersV2, ObjectiveV2 } from '@/hooks/useObjectivesV2';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useMemo } from 'react';
+import { useObjectivesV2, ObjectiveV2 } from '@/hooks/useObjectivesV2';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -9,7 +9,7 @@ import { Plus, Search, Filter, Target, Users, Calendar, TrendingUp } from 'lucid
 import { Skeleton } from '@/components/ui/skeleton';
 import { CreateObjectiveDialogV2 } from './CreateObjectiveDialogV2';
 import { ObjectiveDrawerV2 } from './ObjectiveDrawerV2';
-import { OKRFiltersV2 } from './OKRFiltersV2';
+import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from './OKRSmartFiltersDialog';
 
 function getHealthColor(health?: string): string {
   switch (health) {
@@ -33,20 +33,95 @@ function getStatusBadgeVariant(status: string): 'default' | 'secondary' | 'destr
 }
 
 export function OKRHubV2() {
-  const [filters, setFilters] = useState<ObjectiveFiltersV2>({});
+  const [smartFilters, setSmartFilters] = useState<OKRSmartFilters>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFiltersDialog, setShowFiltersDialog] = useState(false);
 
-  const { data: objectives, isLoading } = useObjectivesV2({
-    ...filters,
+  // Fetch all objectives (unfiltered from backend)
+  const { data: allObjectives, isLoading } = useObjectivesV2({
     search: searchQuery || undefined,
   });
+
+  // Client-side filtering
+  const filteredObjectives = useMemo(() => {
+    if (!allObjectives) return [];
+    
+    return allObjectives.filter((obj) => {
+      // Theme filter
+      if (smartFilters.themeIds && smartFilters.themeIds.length > 0) {
+        if (!obj.theme_id || !smartFilters.themeIds.includes(obj.theme_id)) {
+          return false;
+        }
+      }
+
+      // Status filter
+      if (smartFilters.status && smartFilters.status.length > 0) {
+        if (!smartFilters.status.includes(obj.status)) {
+          return false;
+        }
+      }
+
+      // Health filter
+      if (smartFilters.health && smartFilters.health.length > 0) {
+        if (!obj.health || !smartFilters.health.includes(obj.health)) {
+          return false;
+        }
+      }
+
+      // Progress range filter
+      if (smartFilters.progressMin !== undefined) {
+        if (obj.overall_progress < smartFilters.progressMin) {
+          return false;
+        }
+      }
+      if (smartFilters.progressMax !== undefined) {
+        if (obj.overall_progress > smartFilters.progressMax) {
+          return false;
+        }
+      }
+
+      // Owner filter
+      if (smartFilters.ownerIds && smartFilters.ownerIds.length > 0) {
+        if (!obj.owner_id || !smartFilters.ownerIds.includes(obj.owner_id)) {
+          return false;
+        }
+      }
+
+      // Start date range filter
+      if (smartFilters.startDateFrom) {
+        if (!obj.start_date || new Date(obj.start_date) < smartFilters.startDateFrom) {
+          return false;
+        }
+      }
+      if (smartFilters.startDateTo) {
+        if (!obj.start_date || new Date(obj.start_date) > smartFilters.startDateTo) {
+          return false;
+        }
+      }
+
+      // Due date range filter
+      if (smartFilters.dueDateFrom) {
+        if (!obj.due_date || new Date(obj.due_date) < smartFilters.dueDateFrom) {
+          return false;
+        }
+      }
+      if (smartFilters.dueDateTo) {
+        if (!obj.due_date || new Date(obj.due_date) > smartFilters.dueDateTo) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [allObjectives, smartFilters]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
+
+  const activeFilterCount = countActiveFilters(smartFilters);
 
   return (
     <div className="flex flex-col h-full">
@@ -77,18 +152,18 @@ export function OKRHubV2() {
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setShowFilters(!showFilters)}
+          onClick={() => setShowFiltersDialog(true)}
           className="gap-2"
         >
           <Filter className="h-4 w-4" />
           Filters
+          {activeFilterCount > 0 && (
+            <Badge variant="secondary" className="ml-1 h-5 px-1.5 bg-brand-gold/20 text-brand-gold">
+              {activeFilterCount}
+            </Badge>
+          )}
         </Button>
       </div>
-
-      {/* Filters Panel */}
-      {showFilters && (
-        <OKRFiltersV2 filters={filters} onFiltersChange={setFilters} />
-      )}
 
       {/* Content */}
       <div className="flex-1 overflow-auto p-6 bg-background">
@@ -98,9 +173,9 @@ export function OKRHubV2() {
               <Skeleton key={i} className="h-24 w-full" />
             ))}
           </div>
-        ) : objectives && objectives.length > 0 ? (
+        ) : filteredObjectives && filteredObjectives.length > 0 ? (
           <div className="space-y-4">
-            {objectives.map((objective) => (
+            {filteredObjectives.map((objective) => (
               <ObjectiveCard
                 key={objective.id}
                 objective={objective}
@@ -112,15 +187,21 @@ export function OKRHubV2() {
           <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
             <Target className="h-12 w-12 mb-4 opacity-50" />
             <p className="text-lg font-medium">No objectives found</p>
-            <p className="text-sm">Create your first objective to get started</p>
-            <Button
-              onClick={() => setShowCreateDialog(true)}
-              variant="outline"
-              className="mt-4"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Create Objective
-            </Button>
+            <p className="text-sm">
+              {activeFilterCount > 0 
+                ? 'Try adjusting your filters' 
+                : 'Create your first objective to get started'}
+            </p>
+            {activeFilterCount === 0 && (
+              <Button
+                onClick={() => setShowCreateDialog(true)}
+                variant="outline"
+                className="mt-4"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Create Objective
+              </Button>
+            )}
           </div>
         )}
       </div>
@@ -136,6 +217,13 @@ export function OKRHubV2() {
         open={!!selectedObjectiveId}
         onClose={() => setSelectedObjectiveId(null)}
         onDuplicated={(newId) => setSelectedObjectiveId(newId)}
+      />
+
+      <OKRSmartFiltersDialog
+        open={showFiltersDialog}
+        onOpenChange={setShowFiltersDialog}
+        filters={smartFilters}
+        onFiltersChange={setSmartFilters}
       />
     </div>
   );
