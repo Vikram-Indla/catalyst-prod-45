@@ -150,15 +150,15 @@ export function OverviewTab({ missions, visions, values, themes, links, isArchiv
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           <div>
-            <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Objects</p>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider">Total Objectives</p>
             <p className="text-xl font-semibold text-foreground mt-1">
-              {missions.length + visions.length + values.length + linkedObjectiveCount + themes.length}
+              {linkedObjectiveCount}
             </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground uppercase tracking-wider">Linked to Snapshot</p>
             <p className="text-xl font-semibold text-foreground mt-1">
-              {linkedMissionCount + linkedVisionCount + linkedValueCount + linkedObjectiveCount + linkedThemeCount}
+              {linkedObjectiveCount}
             </p>
           </div>
           <div>
