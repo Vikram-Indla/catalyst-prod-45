@@ -90,13 +90,13 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
                     <th className="text-left px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
                       Category
                     </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                    <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
                       Themes
                     </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                    <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
                       Epics*
                     </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
+                    <th className="text-center px-4 py-3 text-xs font-semibold uppercase tracking-[0.08em] leading-4">
                       Features*
                     </th>
                   </tr>
@@ -104,25 +104,25 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
                 <tbody className="text-sm leading-5">
                   <tr className="border-b border-border">
                     <td className="text-left px-4 py-4 font-medium">Total Count</td>
-                    <td className="text-right px-4 py-4">{progressData.themes.total}</td>
-                    <td className="text-right px-4 py-4">{progressData.epics.total}</td>
-                    <td className="text-right px-4 py-4">{progressData.features.total}</td>
+                    <td className="text-center px-4 py-4">{progressData.themes.total}</td>
+                    <td className="text-center px-4 py-4">{progressData.epics.total}</td>
+                    <td className="text-center px-4 py-4">{progressData.features.total}</td>
                   </tr>
                   <tr className="border-b border-border">
                     <td className="text-left px-4 py-4 font-medium">Accepted</td>
-                    <td className="text-right px-4 py-4">—</td>
-                    <td className="text-right px-4 py-4">{progressData.epics.accepted}/{progressData.epics.total}</td>
-                    <td className="text-right px-4 py-4">{progressData.features.accepted}/{progressData.features.total}</td>
+                    <td className="text-center px-4 py-4">—</td>
+                    <td className="text-center px-4 py-4">{progressData.epics.accepted}/{progressData.epics.total}</td>
+                    <td className="text-center px-4 py-4">{progressData.features.accepted}/{progressData.features.total}</td>
                   </tr>
                   <tr>
                     <td className="text-left px-4 py-4 font-medium">Acceptance %</td>
-                    <td className="text-right px-4 py-4">—</td>
-                    <td className="text-right px-4 py-4">
+                    <td className="text-center px-4 py-4">—</td>
+                    <td className="text-center px-4 py-4">
                       <span className="font-semibold" style={{ color: progressData.epics.total > 0 ? getDonutColor(Math.round((progressData.epics.accepted / progressData.epics.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
                         {progressData.epics.total > 0 ? Math.round((progressData.epics.accepted / progressData.epics.total) * 100) : 0}%
                       </span>
                     </td>
-                    <td className="text-right px-4 py-4">
+                    <td className="text-center px-4 py-4">
                       <span className="font-semibold" style={{ color: progressData.features.total > 0 ? getDonutColor(Math.round((progressData.features.accepted / progressData.features.total) * 100)) : 'hsl(var(--muted-foreground))' }}>
                         {progressData.features.total > 0 ? Math.round((progressData.features.accepted / progressData.features.total) * 100) : 0}%
                       </span>
