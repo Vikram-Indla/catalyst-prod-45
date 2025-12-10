@@ -101,12 +101,13 @@ export function KeyResultDialogV2({
       });
       onClose();
     } else {
-      // Create new KR
+      // Create new KR - include current_value
       await createMutation.mutateAsync({
         objective_id: objectiveId,
         summary: summary.trim(),
         metric_type: metricType,
         baseline_value: baselineNum,
+        current_value: currentNum,
         goal_value: goalNum,
         direction,
       });
