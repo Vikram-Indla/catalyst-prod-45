@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useObjectiveV2, useUpdateObjectiveV2, useDeleteObjectiveV2 } from '@/hooks/useObjectivesV2';
 import { useKeyResultsV2 } from '@/hooks/useKeyResultsV2';
 import {
@@ -48,6 +48,14 @@ interface ObjectiveDrawerV2Props {
   onClose: () => void;
 }
 
+// Determine health from progress (v2 logic)
+function determineHealthFromProgress(progress: number): string {
+  if (progress >= 70) return 'good';
+  if (progress >= 40) return 'fair';
+  if (progress >= 20) return 'at_risk';
+  return 'poor';
+}
+
 function getHealthColor(health?: string): string {
   switch (health) {
     case 'good': return 'bg-green-500';
@@ -73,6 +81,18 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
   const { data: keyResults } = useKeyResultsV2(objectiveId || undefined);
   const updateObjective = useUpdateObjectiveV2();
   const deleteObjective = useDeleteObjectiveV2();
+
+  // V2 Progress calculation - average of all KR progress values
+  const v2Progress = useMemo(() => {
+    if (!keyResults || keyResults.length === 0) return 0;
+    const totalProgress = keyResults.reduce((sum, kr) => sum + (kr.progress || 0), 0);
+    return Math.round(totalProgress / keyResults.length);
+  }, [keyResults]);
+
+  // V2 Health derived from progress
+  const v2Health = useMemo(() => {
+    return determineHealthFromProgress(v2Progress);
+  }, [v2Progress]);
 
   // Sync form data when objective loads
   useEffect(() => {
@@ -280,7 +300,7 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                       <Badge variant="outline" className="text-xs">
                         {objective.status?.replace('_', ' ')}
                       </Badge>
-                      <div className={`w-2 h-2 rounded-full ${getHealthColor(objective.health)}`} />
+                      <div className={`w-2 h-2 rounded-full ${getHealthColor(v2Health)}`} />
                     </div>
                     <SheetTitle className="text-lg font-semibold truncate">
                       {objective.name}
@@ -369,9 +389,9 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose }: ObjectiveDrawe
                   <div>
                     <div className="flex items-center justify-between text-sm mb-1">
                       <span className="text-muted-foreground">Overall Progress</span>
-                      <span className="font-medium">{objective.overall_progress || 0}%</span>
+                      <span className="font-medium">{v2Progress}%</span>
                     </div>
-                    <Progress value={objective.overall_progress || 0} className="h-2" />
+                    <Progress value={v2Progress} className="h-2" />
                   </div>
                 </div>
               </SheetHeader>
