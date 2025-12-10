@@ -488,46 +488,28 @@ export const JiraListViewPage: React.FC = () => {
           marginBottom: token('space.300', '24px'),
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
-          <div
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
+          <span
             style={{
-              width: '40px',
-              height: '40px',
-              borderRadius: '3px',
-              background: 'linear-gradient(135deg, #6554C0 0%, #8777D9 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontWeight: 600,
-              fontSize: '18px',
+              fontSize: '24px',
+              fontWeight: 500,
+              lineHeight: '28px',
+              color: '#172B4D',
+              margin: 0,
             }}
           >
-            TP
-          </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
-            <span
-              style={{
-                fontSize: '24px',
-                fontWeight: 500,
-                lineHeight: '28px',
-                color: '#172B4D',
-                margin: 0,
-              }}
-            >
-              Test Project
-            </span>
-            <span
-              style={{
-                fontSize: '14px',
-                fontWeight: 400,
-                color: '#5E6C84',
-                marginLeft: '4px',
-              }}
-            >
-              :projectKey
-            </span>
-          </div>
+            Test Project
+          </span>
+          <span
+            style={{
+              fontSize: '14px',
+              fontWeight: 400,
+              color: '#5E6C84',
+              marginLeft: '4px',
+            }}
+          >
+            :projectKey
+          </span>
         </div>
         <Button appearance="subtle" iconBefore={<SettingsIcon label="Settings" />}>
           Settings
