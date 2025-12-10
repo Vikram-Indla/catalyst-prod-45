@@ -355,7 +355,7 @@ export function HomeContent() {
           </div>
           <a href="#" style={{
             fontSize: '14px',
-            color: '#C69C6D',
+            color: '#5c7c5c',
             textDecoration: 'none',
             lineHeight: '20px',
             fontWeight: 400,
