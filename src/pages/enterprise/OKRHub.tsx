@@ -533,7 +533,7 @@ export function OKRHub({ scopeType = 'enterprise', scopeId }: OKRHubProps = {}) 
                                 <span className="text-sm font-medium text-muted-foreground">
                                   ◎ {objective.id.slice(0, 4)}
                                 </span>
-                                <span className="text-sm text-foreground">{objective.summary}</span>
+                                <span className="text-sm text-foreground">{objective.name || objective.summary}</span>
                                 {hasChildren && (
                                   <GitBranch className="h-4 w-4 text-brand-gold" />
                                 )}

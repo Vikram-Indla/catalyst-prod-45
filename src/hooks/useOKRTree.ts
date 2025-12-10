@@ -114,7 +114,7 @@ export function useOKRTree(snapshotId?: string) {
         const item: OKRTreeItem = {
           id: obj.id,
           numericId,
-          title: obj.summary,
+          title: obj.name || obj.summary, // Prefer 'name' as canonical field
           tier: obj.tier as any,
           entityType: 'objective',
           score: obj.score || obj.confidence_score,
