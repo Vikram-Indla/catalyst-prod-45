@@ -56,11 +56,11 @@ table td,
   color: #172B4D !important;
 }
 
-/* LINKS */
+/* LINKS - Using Catalyst Brand Gold instead of blue */
 a {
   font-size: 14px !important;
   font-weight: 500 !important;
-  color: #0052CC !important;
+  color: #C69C6D !important;
   text-decoration: none !important;
 }
 
@@ -201,8 +201,8 @@ span[class*="Lozenge"] {
   --popover: var(--n0);
   --popover-foreground: var(--n800);
   
-  /* Primary - Atlassian Blue */
-  --primary: var(--b400);                      /* #0052CC */
+  /* Primary - Catalyst Brand Gold */
+  --primary: var(--brand-gold);                  /* #C69C6D */
   --primary-foreground: var(--n0);
   
   /* Secondary */
@@ -224,14 +224,14 @@ span[class*="Lozenge"] {
   /* Border */
   --border: var(--n40);                        /* #DFE1E6 */
   --input: var(--n40);
-  --ring: var(--b400);                         /* #0052CC */
+  --ring: var(--brand-gold);                   /* #C69C6D */
   
   /* State colors */
   --success: var(--g300);                      /* #36B37E */
   --success-foreground: var(--n0);
   --warning: var(--y200);                      /* #FFC400 */
   --warning-foreground: var(--n800);
-  --info: var(--b300);                         /* #0065FF */
+  --info: var(--brand-gold);                   /* #C69C6D - using brand gold instead of blue */
   --info-foreground: var(--n0);
   
   /* Health colors */
