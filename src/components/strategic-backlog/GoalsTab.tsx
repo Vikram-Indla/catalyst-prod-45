@@ -74,7 +74,7 @@ export function GoalsTab({ snapshotId, isArchived }: GoalsTabProps) {
       <Card className="border-dashed">
         <CardContent className="py-8 text-center">
           <p className="text-sm text-muted-foreground">
-            Legacy strategic goals have been migrated to OKR v2 Objectives.
+            Legacy strategic goals have been migrated to OKRs.
           </p>
           <p className="text-xs text-muted-foreground mt-2">
             Create and manage objectives in the OKR Hub for full functionality including 

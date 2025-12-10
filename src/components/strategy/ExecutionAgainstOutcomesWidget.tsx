@@ -110,7 +110,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                 </TooltipTrigger>
                 <TooltipContent side="left" className="max-w-xs">
                   <p className="text-xs">
-                    Shows execution metrics for OKR v2 Objectives and strategic theme progress based on linked objectives' overall progress.
+                    Shows execution metrics for Objectives and strategic theme progress based on linked objectives' overall progress.
                   </p>
                 </TooltipContent>
               </Tooltip>
@@ -146,12 +146,12 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Strategic Objectives (OKR v2) Row */}
+              {/* Strategic Objectives Row */}
               <div className="space-y-2">
                 <button
                   onClick={() => setSelectedLevel({
                     level: 'objectives',
-                    levelLabel: 'Strategic Objectives (OKR v2)',
+                    levelLabel: 'Strategic Objectives',
                     alignedAccepted: acceptedCount,
                     alignedTotal: okrMetrics.count,
                     percentage: okrMetrics.avgProgress,
@@ -161,7 +161,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
                     <div className={`w-3 h-3 rounded-full flex-shrink-0 ${getColorClass(objectivesColor)}`} />
-                    <span className="text-sm font-medium truncate">Strategic Objectives (OKR v2)</span>
+                    <span className="text-sm font-medium truncate">Strategic Objectives</span>
                   </div>
 
                   <div className="flex items-center gap-3">
@@ -251,7 +251,7 @@ export function ExecutionAgainstOutcomesWidget({ snapshotId }: ExecutionAgainstO
                                 </Badge>
                               </TooltipTrigger>
                               <TooltipContent side="left" className="max-w-xs">
-                                <p className="text-xs font-medium mb-1">Linked Objectives (OKR v2):</p>
+                                <p className="text-xs font-medium mb-1">Linked Objectives:</p>
                                 {theme.objectives.length === 0 ? (
                                   <p className="text-xs text-muted-foreground">None linked</p>
                                 ) : (

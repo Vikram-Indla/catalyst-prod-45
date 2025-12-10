@@ -113,7 +113,7 @@ export function ObjectiveOverviewTabV2({ formData, onChange, objective }: Object
           </SelectContent>
         </Select>
         {!formData.theme_id && (
-          <p className="text-xs text-destructive">Theme is required for v2 objectives</p>
+          <p className="text-xs text-destructive">Theme is required</p>
         )}
       </div>
 

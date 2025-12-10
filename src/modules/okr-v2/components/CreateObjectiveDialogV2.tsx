@@ -76,7 +76,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
     }
     
     if (!themeId) {
-      toast.error('Theme is required for OKR v2 objectives');
+      toast.error('Theme is required');
       return;
     }
 
@@ -109,7 +109,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Create Objective (v2)</DialogTitle>
+          <DialogTitle>Create Objective</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -156,7 +156,7 @@ export function CreateObjectiveDialogV2({ open, onOpenChange }: CreateObjectiveD
               <p className="text-xs text-destructive">Theme is required</p>
             ) : null}
             {!themes?.length && (
-              <p className="text-xs text-muted-foreground">Create a theme first to use OKR v2</p>
+              <p className="text-xs text-muted-foreground">Create a theme first to create objectives</p>
             )}
           </div>
 
