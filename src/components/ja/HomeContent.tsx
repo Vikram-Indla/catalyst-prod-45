@@ -316,19 +316,23 @@ export function HomeContent() {
       minHeight: '100vh',
       fontFamily: '"Atlassian Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
     }}>
-      {/* Page title with bottom divider */}
+      {/* Page title */}
       <h1 style={{
         fontSize: '29px',
         fontWeight: 500,
         color: '#172B4D',
         lineHeight: '32px',
+        letterSpacing: '-0.01em',
         margin: 0,
-        paddingBottom: '16px',
-        borderBottom: '1px solid #EBECF0',
-        marginBottom: '20px',
       }}>
         For you
       </h1>
+
+      {/* Divider */}
+      <div style={{ 
+        marginTop: '16px', 
+        borderTop: '1px solid rgba(0, 0, 0, 0.1)' 
+      }} />
 
       {/* Recent Projects Section */}
       <div style={{ marginBottom: '32px' }}>
@@ -336,14 +340,15 @@ export function HomeContent() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          marginTop: '24px',
           marginBottom: '12px',
         }}>
           <h2 style={{
-            fontSize: '16px',
-            fontWeight: 500,
+            fontSize: '20px',
+            fontWeight: 600,
             color: '#172B4D',
             margin: 0,
-            lineHeight: '20px',
+            lineHeight: '24px',
           }}>
             Recent projects
           </h2>
