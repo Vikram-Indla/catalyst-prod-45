@@ -351,7 +351,7 @@ export function HomeContent() {
             margin: 0,
             lineHeight: '20px',
           }}>
-            Recent spaces
+            Recent projects
           </div>
           <a href="#" style={{
             fontSize: '14px',
