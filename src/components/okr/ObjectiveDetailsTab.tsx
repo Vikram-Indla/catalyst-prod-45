@@ -369,15 +369,21 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Work Progress</span>
             <div className="flex items-center gap-2">
-              <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary"
-                  style={{ width: `${(objective.work_progress || 0) * 100}%` }}
-                />
-              </div>
-              <span className="text-sm font-medium">
-                {Math.round((objective.work_progress || 0) * 100)}%
-              </span>
+              {objective.work_progress != null && objective.work_progress > 0 ? (
+                <>
+                  <div className="w-32 h-2 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-primary"
+                      style={{ width: `${objective.work_progress * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-sm font-medium">
+                    {Math.round(objective.work_progress * 100)}%
+                  </span>
+                </>
+              ) : (
+                <span className="text-sm text-muted-foreground">N/S</span>
+              )}
             </div>
           </div>
         </div>

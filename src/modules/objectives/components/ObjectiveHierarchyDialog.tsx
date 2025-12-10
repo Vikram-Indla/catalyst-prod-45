@@ -125,10 +125,14 @@ export function ObjectiveHierarchyDialog({
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground">Work Progress</span>
-                  <ProgressBar
-                    progress={(hierarchy.current.work_progress || 0) * 100}
-                    height="sm"
-                  />
+                  {hierarchy.current.work_progress != null && hierarchy.current.work_progress > 0 ? (
+                    <ProgressBar
+                      progress={hierarchy.current.work_progress * 100}
+                      height="sm"
+                    />
+                  ) : (
+                    <span className="text-xs text-muted-foreground">N/S</span>
+                  )}
                 </div>
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground">KR Progress</span>
@@ -226,8 +230,9 @@ interface ChildObjectiveRowProps {
 function ChildObjectiveRow({ objective, getDisplayName, getContextString, onClick }: ChildObjectiveRowProps) {
   // Use the pre-calculated KR progress from the hook
   const krProgress = (objective.calculatedKrProgress || 0) * 100;
-  // Use child's own work_progress from DB, or 0
-  const workProgress = (objective.work_progress || 0) * 100;
+  // Use child's own work_progress - null means "N/S"
+  const hasWorkProgress = objective.work_progress != null && objective.work_progress > 0;
+  const workProgress = hasWorkProgress ? objective.work_progress * 100 : null;
 
   const context = getContextString(objective);
   const hasChildren = (objective.childCount || 0) > 0;
@@ -265,7 +270,11 @@ function ChildObjectiveRow({ objective, getDisplayName, getContextString, onClic
           <div className="flex flex-col items-center gap-0.5">
             <span className="text-[10px] text-muted-foreground">Work</span>
             <div className="w-14">
-              <ProgressBar progress={workProgress} height="sm" />
+              {workProgress != null ? (
+                <ProgressBar progress={workProgress} height="sm" />
+              ) : (
+                <span className="text-[10px] text-muted-foreground">N/S</span>
+              )}
             </div>
           </div>
           {/* KR progress */}

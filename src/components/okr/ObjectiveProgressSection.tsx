@@ -32,7 +32,8 @@ export function ObjectiveProgressSection({ objective, onUpdateConfidence }: Obje
 
   const score = objective.confidence_score ?? objective.score;
   const krProgress = objective.kr_progress ?? 0;
-  const workProgress = objective.work_progress ?? 0;
+  const hasWorkProgress = objective.work_progress != null && objective.work_progress > 0;
+  const workProgress = hasWorkProgress ? objective.work_progress : null;
 
   return (
     <div className="space-y-4">
@@ -80,9 +81,17 @@ export function ObjectiveProgressSection({ objective, onUpdateConfidence }: Obje
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className="font-medium">Work Progress</span>
-              <span>{workProgress}%</span>
+              {workProgress != null ? (
+                <span>{Math.round(workProgress * 100)}%</span>
+              ) : (
+                <span className="text-muted-foreground">N/S</span>
+              )}
             </div>
-            <Progress value={workProgress} className="h-2" />
+            {workProgress != null ? (
+              <Progress value={workProgress * 100} className="h-2" />
+            ) : (
+              <div className="h-2 bg-muted rounded-full" />
+            )}
           </div>
         </div>
       </Card>

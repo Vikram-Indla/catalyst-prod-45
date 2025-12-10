@@ -239,9 +239,13 @@ export function ObjectiveDrawer({ objectiveId, open, onClose }: ObjectiveDrawerP
                     </div>
                     <div className="space-y-1.5">
                       <div className="text-xs font-medium">Aligned work progress</div>
-                      <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                        <div className="h-full bg-white/60" style={{ width: `${(objective.work_progress || 0) * 100}%` }} />
-                      </div>
+                      {objective.work_progress != null && objective.work_progress > 0 ? (
+                        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                          <div className="h-full bg-white/60" style={{ width: `${objective.work_progress * 100}%` }} />
+                        </div>
+                      ) : (
+                        <span className="text-xs text-white/60">N/S</span>
+                      )}
                     </div>
                     <Button 
                       size="sm" 
