@@ -70,7 +70,7 @@ const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): 
   { id: 'initiatives', label: 'Initiatives', icon: Focus, path: '/initiatives', tiers: ['portfolio', 'program'] },
   { id: 'backlog', label: 'Backlog', icon: ListTree, path: '/items/epics', tiers: ['portfolio', 'program'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['portfolio', 'program'] },
-  { id: 'objective-tree', label: 'Objective tree', icon: Workflow, path: tier === 'portfolio' ? '/portfolio/okr-hub' : tier === 'program' ? '/program/okr-hub' : '/team/okr-hub', tiers: ['portfolio', 'program', 'team'] },
+  { id: 'objective-tree', label: 'Objective tree', icon: Workflow, path: '/enterprise/okr-hub', tiers: ['portfolio', 'program', 'team'] },
   { id: 'work-tree', label: 'Work tree', icon: Share2, path: '/work-tree', tiers: ['portfolio', 'program'] },
   { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: portfolioId ? `/portfolio/${portfolioId}/forecast` : '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
   { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
