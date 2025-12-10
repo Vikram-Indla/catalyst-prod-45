@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { ObjectiveV2, useUpdateObjectiveV2, ObjectiveStatusV2 } from '@/hooks/useObjectivesV2';
+import { useState, useEffect } from 'react';
+import { ObjectiveV2, useUpdateObjectiveV2, ObjectiveStatusV2, ObjectiveHealthV2 } from '@/hooks/useObjectivesV2';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -22,6 +22,14 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
   
   const [name, setName] = useState(objective.name);
   const [description, setDescription] = useState(objective.description || '');
+  const [notes, setNotes] = useState((objective as any).notes || '');
+
+  // Sync state when objective changes
+  useEffect(() => {
+    setName(objective.name);
+    setDescription(objective.description || '');
+    setNotes((objective as any).notes || '');
+  }, [objective]);
 
   // Fetch themes
   const { data: themes } = useQuery({
@@ -65,17 +73,24 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
     }
   };
 
+  const handleNotesBlur = () => {
+    if (notes !== ((objective as any).notes || '')) {
+      handleFieldUpdate('notes', notes || null);
+    }
+  };
+
   return (
     <div className="p-6 space-y-6">
-      {/* Title */}
+      {/* Name (required) */}
       <div className="space-y-2">
-        <Label htmlFor="name">Title</Label>
+        <Label htmlFor="name">Name *</Label>
         <Input
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           onBlur={handleNameBlur}
           className="font-medium"
+          required
         />
       </div>
 
@@ -87,53 +102,32 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           onBlur={handleDescriptionBlur}
-          rows={4}
+          rows={3}
           placeholder="Add a description..."
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        {/* Theme */}
-        <div className="space-y-2">
-          <Label>Theme</Label>
-          <Select
-            value={objective.theme_id || ''}
-            onValueChange={(v) => handleFieldUpdate('theme_id', v || null)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select theme" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">None</SelectItem>
-              {themes?.map((theme) => (
-                <SelectItem key={theme.id} value={theme.id}>
-                  {theme.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Owner */}
-        <div className="space-y-2">
-          <Label>Owner</Label>
-          <Select
-            value={objective.owner_id || ''}
-            onValueChange={(v) => handleFieldUpdate('owner_id', v || null)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select owner" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">Unassigned</SelectItem>
-              {users?.map((user) => (
-                <SelectItem key={user.id} value={user.id}>
-                  {user.full_name || 'Unknown'}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      {/* Theme (required) */}
+      <div className="space-y-2">
+        <Label>Theme *</Label>
+        <Select
+          value={objective.theme_id || ''}
+          onValueChange={(v) => handleFieldUpdate('theme_id', v || null)}
+        >
+          <SelectTrigger className={!objective.theme_id ? 'border-destructive' : ''}>
+            <SelectValue placeholder="Select theme (required)" />
+          </SelectTrigger>
+          <SelectContent>
+            {themes?.map((theme) => (
+              <SelectItem key={theme.id} value={theme.id}>
+                {theme.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        {!objective.theme_id && (
+          <p className="text-xs text-destructive">Theme is required for v2 objectives</p>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -158,20 +152,21 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
           </Select>
         </div>
 
-        {/* Visibility */}
+        {/* Health */}
         <div className="space-y-2">
-          <Label>Visibility</Label>
+          <Label>Health</Label>
           <Select
-            value={objective.visibility || 'org-wide'}
-            onValueChange={(v) => handleFieldUpdate('visibility', v)}
+            value={objective.health || 'at_risk'}
+            onValueChange={(v) => handleFieldUpdate('health', v)}
           >
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="org-wide">Organization-wide</SelectItem>
-              <SelectItem value="business-unit">Business Unit</SelectItem>
-              <SelectItem value="product-line">Product Line</SelectItem>
+              <SelectItem value="good">Good</SelectItem>
+              <SelectItem value="fair">Fair</SelectItem>
+              <SelectItem value="poor">Poor</SelectItem>
+              <SelectItem value="at_risk">At Risk</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -199,9 +194,43 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
         </div>
       </div>
 
-      {/* Read-only fields */}
+      {/* Owner */}
+      <div className="space-y-2">
+        <Label>Owner</Label>
+        <Select
+          value={objective.owner_id || ''}
+          onValueChange={(v) => handleFieldUpdate('owner_id', v || null)}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select owner" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="">Unassigned</SelectItem>
+            {users?.map((user) => (
+              <SelectItem key={user.id} value={user.id}>
+                {user.full_name || 'Unknown'}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Notes */}
+      <div className="space-y-2">
+        <Label htmlFor="notes">Notes</Label>
+        <Textarea
+          id="notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          onBlur={handleNotesBlur}
+          rows={3}
+          placeholder="Add notes..."
+        />
+      </div>
+
+      {/* Read-only metrics */}
       <div className="pt-4 border-t border-border">
-        <h4 className="text-sm font-medium text-muted-foreground mb-3">Metrics</h4>
+        <h4 className="text-sm font-medium text-muted-foreground mb-3">Calculated Metrics</h4>
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
             <span className="text-muted-foreground">Overall Progress:</span>
