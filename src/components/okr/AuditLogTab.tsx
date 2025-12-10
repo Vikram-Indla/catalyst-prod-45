@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { Target, FileText } from "lucide-react";
+import { Target, FileText, AlertCircle } from "lucide-react";
 
 interface AuditLogTabProps {
   objectiveId: string;
@@ -19,6 +19,8 @@ const EXCLUDED_FIELDS = [
   'program_increment_ids',
   'contributors',
   'tags',
+  'updated_by',
+  'created_by',
 ];
 
 // Human-readable field names
@@ -40,16 +42,20 @@ const FIELD_LABELS: Record<string, string> = {
   confidence_score: 'Confidence Score',
   work_progress: 'Work Progress',
   key_result_progress: 'KR Progress',
+  portfolio_id: 'Portfolio',
+  program_id: 'Program',
+  category: 'Category',
+  type: 'Type',
 };
 
 export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
-  const { data: auditLogs = [], isLoading } = useQuery({
+  const { data: auditLogs = [], isLoading, isError, error } = useQuery({
     queryKey: ["audit-logs", objectiveId],
     queryFn: async () => {
-      // Fetch objective audit logs
+      // Fetch objective audit logs - use left join for profiles
       const { data: objectiveLogs, error: objError } = await supabase
         .from("activity_logs")
-        .select("*, profiles:actor_id(full_name, avatar_url)")
+        .select("*")
         .eq("entity_type", "objective")
         .eq("entity_id", objectiveId)
         .order("created_at", { ascending: false });
@@ -69,7 +75,7 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
       if (krIds.length > 0) {
         const { data, error: krError } = await supabase
           .from("activity_logs")
-          .select("*, profiles:actor_id(full_name, avatar_url)")
+          .select("*")
           .eq("entity_type", "key_result")
           .in("entity_id", krIds)
           .order("created_at", { ascending: false });
@@ -79,17 +85,48 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
         }
       }
 
-      // Combine and sort by created_at
-      const allLogs = [...(objectiveLogs || []), ...krLogs].sort(
+      // Combine logs
+      const allLogs = [...(objectiveLogs || []), ...krLogs];
+
+      // Fetch profiles for all actor_ids
+      const actorIds = [...new Set(allLogs.map(log => log.actor_id).filter(Boolean))];
+      let profilesMap: Record<string, any> = {};
+      
+      if (actorIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name, avatar_url")
+          .in("id", actorIds);
+        
+        if (profiles) {
+          profilesMap = Object.fromEntries(profiles.map(p => [p.id, p]));
+        }
+      }
+
+      // Attach profiles to logs and sort
+      const logsWithProfiles = allLogs.map(log => ({
+        ...log,
+        profile: log.actor_id ? profilesMap[log.actor_id] : null,
+      })).sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
 
-      return allLogs;
+      return logsWithProfiles;
     },
   });
 
   if (isLoading) {
     return <div className="p-4 text-center text-muted-foreground">Loading audit log...</div>;
+  }
+
+  if (isError) {
+    return (
+      <Card className="p-8 text-center">
+        <AlertCircle className="w-8 h-8 mx-auto text-destructive mb-2" />
+        <p className="text-muted-foreground">Unable to load audit history</p>
+        <p className="text-xs text-muted-foreground mt-1">{(error as Error)?.message || 'Unknown error'}</p>
+      </Card>
+    );
   }
 
   const getActionBadgeVariant = (action: string): "default" | "secondary" | "destructive" | "outline" => {
@@ -160,9 +197,9 @@ export function AuditLogTab({ objectiveId }: AuditLogTabProps) {
   };
 
   const getUserDisplay = (log: any) => {
-    const profile = log.profiles;
-    const name = profile?.full_name || 'User';
-    const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+    const profile = log.profile;
+    const name = profile?.full_name || 'System';
+    const initials = name.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'SY';
     
     return (
       <div className="flex items-center gap-2">

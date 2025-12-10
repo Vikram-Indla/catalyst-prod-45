@@ -15,6 +15,8 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { useState } from "react";
 import { useUpdateObjective } from "@/hooks/useObjectives";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 // OKR Objectives only support Portfolio and Program tiers
 const OKR_TIER_OPTIONS = [
@@ -43,6 +45,32 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
     objective.due_date ? new Date(objective.due_date) : undefined
   );
 
+  // Fetch portfolios for Portfolio-tier objectives
+  const { data: portfolios = [] } = useQuery({
+    queryKey: ["portfolios-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("portfolios")
+        .select("id, name")
+        .order("name");
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch programs for Program-tier objectives
+  const { data: programs = [] } = useQuery({
+    queryKey: ["programs-list"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("programs")
+        .select("id, name")
+        .order("name");
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
   const handleFieldUpdate = (field: string, value: any) => {
     updateMutation.mutate({ id: objective.id, [field]: value });
   };
@@ -61,6 +89,9 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
     const found = OKR_TIER_OPTIONS.find(o => o.value === tier);
     return found?.label || tier;
   };
+
+  const isPortfolioTier = objective.tier === 'portfolio';
+  const isProgramTier = objective.tier === 'program';
 
   return (
     <div className="space-y-6">
@@ -108,6 +139,50 @@ export function ObjectiveDetailsTab({ objective }: ObjectiveDetailsTabProps) {
               </Select>
             </div>
           </div>
+
+          {/* Portfolio dropdown - shown for Portfolio tier */}
+          {isPortfolioTier && (
+            <div className="space-y-2">
+              <Label htmlFor="portfolio">Portfolio *</Label>
+              <Select
+                value={objective.portfolio_id || undefined}
+                onValueChange={(value) => handleFieldUpdate("portfolio_id", value)}
+              >
+                <SelectTrigger id="portfolio">
+                  <SelectValue placeholder="Select portfolio" />
+                </SelectTrigger>
+                <SelectContent>
+                  {portfolios.map((p: any) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
+          {/* Program dropdown - shown for Program tier */}
+          {isProgramTier && (
+            <div className="space-y-2">
+              <Label htmlFor="program">Program *</Label>
+              <Select
+                value={objective.program_id || undefined}
+                onValueChange={(value) => handleFieldUpdate("program_id", value)}
+              >
+                <SelectTrigger id="program">
+                  <SelectValue placeholder="Select program" />
+                </SelectTrigger>
+                <SelectContent>
+                  {programs.map((p: any) => (
+                    <SelectItem key={p.id} value={p.id}>
+                      {p.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
