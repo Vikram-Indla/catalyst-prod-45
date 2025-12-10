@@ -25,14 +25,14 @@ export interface ActivityItem {
   activityType: 'Updated' | 'Created';
 }
 
-// Projects from catalyst.xlsx
+// Projects from catalyst.xlsx - Using Catalyst brand and Golden Hour secondary palette
 export const projects: Project[] = [
   { 
     id: '1', 
     key: 'BAU', 
     name: 'Senaei BAU', 
     type: 'Company-managed software', 
-    color: '#0052CC', 
+    color: '#C69C6D', // Brand Gold
     openCount: 79,
     doneCount: 53,
     boardsCount: 2 
@@ -42,7 +42,7 @@ export const projects: Project[] = [
     key: 'ICP', 
     name: 'ICP Project', 
     type: 'Company-managed software', 
-    color: '#6554C0', 
+    color: '#8b7355', // Golden Hour - Bronze
     openCount: 35,
     doneCount: 14,
     boardsCount: 1 
@@ -52,7 +52,7 @@ export const projects: Project[] = [
     key: 'IP', 
     name: 'IP Implementation', 
     type: 'Company-managed software', 
-    color: '#FF5630', 
+    color: '#5c7c5c', // Golden Hour - Olive Green
     openCount: 56,
     doneCount: 0,
     boardsCount: 1 
