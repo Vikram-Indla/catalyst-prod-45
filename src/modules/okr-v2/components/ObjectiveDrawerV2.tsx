@@ -78,7 +78,16 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
   // Form state for dirty tracking
   const [formData, setFormData] = useState<ObjectiveFormData | null>(null);
   const [originalData, setOriginalData] = useState<ObjectiveFormData | null>(null);
-  const [hasChanges, setHasChanges] = useState(false);
+  const [hasOverviewChanges, setHasOverviewChanges] = useState(false);
+  const [hasChildChanges, setHasChildChanges] = useState(false);
+  
+  // Unified flag: true if any changes in drawer (overview OR child entities)
+  const hasChanges = hasOverviewChanges || hasChildChanges;
+  
+  // Callback for child components (KRs, Work, Links, etc.) to mark drawer as changed
+  const markDrawerChanged = useCallback(() => {
+    setHasChildChanges(true);
+  }, []);
 
   const { data: objective, isLoading } = useObjectiveV2(objectiveId || undefined);
   const { data: keyResults } = useKeyResultsV2(objectiveId || undefined);
@@ -114,7 +123,8 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
       };
       setFormData(data);
       setOriginalData(data);
-      setHasChanges(false);
+      setHasOverviewChanges(false);
+      setHasChildChanges(false);
     }
   }, [objective]);
 
@@ -122,13 +132,14 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
   useEffect(() => {
     if (open) {
       setActiveTab('overview');
+      setHasChildChanges(false);
     }
   }, [open]);
 
   // Handle form changes from Overview tab
   const handleFormChange = useCallback((newData: ObjectiveFormData) => {
     setFormData(newData);
-    setHasChanges(true);
+    setHasOverviewChanges(true);
   }, []);
 
   // Validate required fields
@@ -186,7 +197,8 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
 
       // Update original data to current
       setOriginalData(formData);
-      setHasChanges(false);
+      setHasOverviewChanges(false);
+      setHasChildChanges(false);
 
       // Refresh relevant queries
       queryClient.invalidateQueries({ queryKey: ['objectives-v2'] });
@@ -210,7 +222,8 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
 
   // Actual close
   const handleClose = () => {
-    setHasChanges(false);
+    setHasOverviewChanges(false);
+    setHasChildChanges(false);
     setShowUnsavedChangesDialog(false);
     onClose();
   };
@@ -218,7 +231,8 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
   // Discard and close
   const handleDiscardAndClose = () => {
     setFormData(originalData);
-    setHasChanges(false);
+    setHasOverviewChanges(false);
+    setHasChildChanges(false);
     setShowUnsavedChangesDialog(false);
     onClose();
   };
@@ -234,7 +248,8 @@ export function ObjectiveDrawerV2({ objectiveId, open, onClose, onDuplicated }: 
     }
 
     setShowUnsavedChangesDialog(false);
-    setHasChanges(false);
+    setHasOverviewChanges(false);
+    setHasChildChanges(false);
     onClose();
 
     // Save in background
