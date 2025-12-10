@@ -99,6 +99,14 @@ input[type="search"] {
   line-height: 20px !important;
 }
 
+/* INPUT & SELECT HOVER - Thin Gold Border */
+input:hover,
+textarea:hover,
+[role="combobox"]:hover,
+button[data-state]:hover {
+  border-color: #C69C6D !important;
+}
+
 /* BUTTONS */
 button {
   font-size: 14px !important;
