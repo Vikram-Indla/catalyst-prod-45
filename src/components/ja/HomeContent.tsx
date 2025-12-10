@@ -3,7 +3,6 @@ import Avatar from '@atlaskit/avatar';
 import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
 import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
-import StarIcon from '@atlaskit/icon/glyph/star';
 import { projects, activityItems, Project, ActivityItem } from '@/data/homePageData';
 import { WorkItemTypeIcon } from './icons/WorkItemTypeIcon';
 
@@ -20,7 +19,7 @@ function RecentProjectCard({ project }: { project: Project }) {
       {/* Header with accent color */}
       <div style={{ height: '4px', backgroundColor: project.color }} />
       
-      {/* Card content - padding 12px vertical, 16px horizontal */}
+      {/* Card content - padding 12-16px */}
       <div style={{ padding: '12px 16px' }}>
         {/* Project info */}
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', marginBottom: '12px' }}>
@@ -40,10 +39,10 @@ function RecentProjectCard({ project }: { project: Project }) {
             {project.key.slice(0, 2)}
           </div>
           <div style={{ minWidth: 0 }}>
-            {/* Card title: font-size 14px, font-weight 500 */}
+            {/* Card title: 14/20, weight 600 */}
             <div style={{
               fontSize: '14px',
-              fontWeight: 500,
+              fontWeight: 600,
               color: '#172B4D',
               lineHeight: '20px',
               overflow: 'hidden',
@@ -52,11 +51,13 @@ function RecentProjectCard({ project }: { project: Project }) {
             }}>
               {project.name}
             </div>
-            {/* Meta text: font-size 12px, color #626F86 */}
+            {/* Meta text: 12/16, weight 400 */}
             <div style={{
               fontSize: '12px',
               color: '#626F86',
               lineHeight: '16px',
+              fontWeight: 400,
+              marginTop: '2px',
             }}>
               {project.type}
             </div>
@@ -78,10 +79,11 @@ function RecentProjectCard({ project }: { project: Project }) {
             color: '#172B4D',
             textDecoration: 'none',
             padding: '4px 0',
+            lineHeight: '20px',
+            fontWeight: 400,
           }}>
             <span>My open work items</span>
             {project.openCount > 0 && (
-              // Badge: height 20px, padding 2px 6px, font-size 12px
               <span style={{
                 backgroundColor: '#DFE1E6',
                 borderRadius: '10px',
@@ -105,6 +107,8 @@ function RecentProjectCard({ project }: { project: Project }) {
             color: '#172B4D',
             textDecoration: 'none',
             padding: '4px 0',
+            lineHeight: '20px',
+            fontWeight: 400,
           }}>
             <span>Done work items</span>
             {project.doneCount > 0 && (
@@ -147,6 +151,8 @@ function RecentProjectCard({ project }: { project: Project }) {
                 border: 'none',
                 cursor: project.boardsCount > 0 ? 'pointer' : 'default',
                 padding: 0,
+                lineHeight: '20px',
+                fontWeight: 400,
               }}
               disabled={project.boardsCount === 0}
             >
@@ -166,50 +172,61 @@ function RecentProjectCard({ project }: { project: Project }) {
 
 function ActivityRow({ item }: { item: ActivityItem }) {
   return (
-    // Activity rows: padding 8px vertical, min-height 52px
+    // 4-column layout: icon (24px), content (1fr), Updated (~70px), avatars (~72px)
     <div style={{
-      display: 'flex',
-      alignItems: 'flex-start',
-      padding: '8px 0',
-      minHeight: '52px',
+      display: 'grid',
+      gridTemplateColumns: '24px 1fr 70px 72px',
+      alignItems: 'center',
+      padding: '12px 0',
       borderBottom: '1px solid #EBECF0',
       gap: '12px',
     }}>
-      {/* Work item type icon */}
-      <div style={{ flexShrink: 0, marginTop: '2px' }}>
+      {/* Column 1: Work item type icon (24px) */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <WorkItemTypeIcon type={item.type} size={16} />
       </div>
 
-      {/* Content */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        {/* Title: font-size 14px, font-weight 500 */}
+      {/* Column 2: Main content (1fr) */}
+      <div style={{ minWidth: 0 }}>
+        {/* Title: 14/20, weight 500 */}
         <div style={{
           fontSize: '14px',
           color: '#172B4D',
           fontWeight: 500,
           lineHeight: '20px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
         }}>
           <span style={{ color: '#0052CC' }}>{item.key}</span>
           <span> — {item.summary}</span>
         </div>
-        {/* Meta text: font-size 12px, color #626F86 */}
+        {/* Subtext: 12/16 */}
         <div style={{
           fontSize: '12px',
           color: '#626F86',
-          marginTop: '4px',
+          lineHeight: '16px',
+          fontWeight: 400,
+          marginTop: '2px',
         }}>
           {item.id} · {item.project}
         </div>
       </div>
 
-      {/* Right side */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-        {/* Status label: font-size 12px, color #626F86 */}
-        <span style={{ fontSize: '12px', color: '#626F86' }}>{item.status}</span>
-        {/* Avatar clusters: margin -4px (tighter overlap) */}
-        <div style={{ display: 'flex' }}>
-          <Avatar size="small" name={item.assignee} />
-        </div>
+      {/* Column 3: Updated status (~70px) */}
+      <div style={{
+        fontSize: '12px',
+        color: '#626F86',
+        lineHeight: '16px',
+        fontWeight: 400,
+        textAlign: 'left',
+      }}>
+        {item.status}
+      </div>
+
+      {/* Column 4: Avatar (~72px), pinned right */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Avatar size="small" name={item.assignee} />
       </div>
     </div>
   );
@@ -225,19 +242,22 @@ export function HomeContent() {
 
   return (
     <div style={{
-      maxWidth: '1200px',
-      margin: '0 auto',
       padding: '32px 40px',
       backgroundColor: '#FFFFFF',
       minHeight: '100vh',
+      fontSize: '14px',
+      lineHeight: '20px',
+      fontWeight: 400,
+      color: '#172B4D',
     }}>
-      {/* Page title: font-size 32px, font-weight 600, line-height 1.25 */}
+      {/* H1: 24/28, weight 600 */}
       <h1 style={{
-        fontSize: '32px',
+        fontSize: '24px',
         fontWeight: 600,
         color: '#172B4D',
+        lineHeight: '28px',
+        margin: 0,
         marginBottom: '24px',
-        lineHeight: 1.25,
       }}>
         For you
       </h1>
@@ -250,12 +270,13 @@ export function HomeContent() {
           alignItems: 'center',
           marginBottom: '16px',
         }}>
-          {/* Section header: font-size 14px, font-weight 400, color #626F86 */}
+          {/* Section label: 14/20, weight 600 */}
           <h2 style={{
             fontSize: '14px',
-            fontWeight: 400,
+            fontWeight: 600,
             color: '#626F86',
             margin: 0,
+            lineHeight: '20px',
           }}>
             Recent projects
           </h2>
@@ -263,11 +284,14 @@ export function HomeContent() {
             fontSize: '14px',
             color: '#0052CC',
             textDecoration: 'none',
+            lineHeight: '20px',
+            fontWeight: 400,
           }}>
             View all projects
           </a>
         </div>
 
+        {/* Cards with 16px gap */}
         <div style={{
           display: 'flex',
           gap: '16px',
@@ -280,15 +304,27 @@ export function HomeContent() {
         </div>
       </div>
 
-      {/* Activity Tabs with custom styling */}
+      {/* Activity Tabs with Jira-style styling */}
       <style>{`
+        #activity-tabs [role="tablist"] {
+          border-bottom: 1px solid #DFE1E6;
+          gap: 16px;
+        }
         #activity-tabs [role="tablist"] [role="tab"] {
-          font-size: 13px !important;
-          padding: 8px 12px !important;
+          font-size: 14px !important;
+          line-height: 20px !important;
+          padding: 12px 0 !important;
           font-weight: 500 !important;
+          margin-right: 16px;
+          border-bottom: 2px solid transparent;
+          margin-bottom: -1px;
         }
         #activity-tabs [role="tablist"] [role="tab"][aria-selected="true"] {
           font-weight: 600 !important;
+          border-bottom-color: #0052CC;
+        }
+        #activity-tabs [role="tablist"] [role="tab"]:hover {
+          background: transparent;
         }
       `}</style>
       <Tabs id="activity-tabs" onChange={setSelectedTab} selected={selectedTab}>
@@ -298,7 +334,6 @@ export function HomeContent() {
           <Tab>
             <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               Assigned to me
-              {/* Badge: height 20px, padding 2px 6px, font-size 12px */}
               <span style={{
                 backgroundColor: '#DFE1E6',
                 borderRadius: '10px',
@@ -327,6 +362,7 @@ export function HomeContent() {
               textTransform: 'uppercase',
               marginBottom: '8px',
               letterSpacing: '0.5px',
+              lineHeight: '16px',
             }}>
               Recent Activity
             </div>
@@ -336,7 +372,7 @@ export function HomeContent() {
           </div>
         </TabPanel>
         <TabPanel>
-          <div style={{ padding: '40px', textAlign: 'center', color: '#626F86' }}>
+          <div style={{ padding: '40px', textAlign: 'center', color: '#626F86', fontSize: '14px', lineHeight: '20px' }}>
             No recently viewed items
           </div>
         </TabPanel>
@@ -349,6 +385,7 @@ export function HomeContent() {
               textTransform: 'uppercase',
               marginBottom: '8px',
               letterSpacing: '0.5px',
+              lineHeight: '16px',
             }}>
               Assigned Work Items
             </div>
@@ -360,12 +397,12 @@ export function HomeContent() {
           </div>
         </TabPanel>
         <TabPanel>
-          <div style={{ padding: '40px', textAlign: 'center', color: '#626F86' }}>
+          <div style={{ padding: '40px', textAlign: 'center', color: '#626F86', fontSize: '14px', lineHeight: '20px' }}>
             No starred items
           </div>
         </TabPanel>
         <TabPanel>
-          <div style={{ padding: '40px', textAlign: 'center', color: '#626F86' }}>
+          <div style={{ padding: '40px', textAlign: 'center', color: '#626F86', fontSize: '14px', lineHeight: '20px' }}>
             No boards available
           </div>
         </TabPanel>
