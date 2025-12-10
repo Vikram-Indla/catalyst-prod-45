@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Star, Filter } from 'lucide-react';
+import { Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
@@ -187,8 +187,7 @@ export default function StrategyRoomPage() {
       {/* Header - single border line */}
       <div className="h-[72px] border-b bg-card px-4 md:px-6 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <Star className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-          <h1 className="text-lg font-semibold truncate">Strategy Room</h1>
+          <h1 className="text-xl font-semibold text-[#1e3a5f] truncate">Strategy Room</h1>
           <span className="text-sm text-muted-foreground hidden md:inline">for Snapshot</span>
           <div className="w-56 md:w-64">
             <Select value={effectiveSelectedSnapshotId} onValueChange={handleSnapshotChange}>
