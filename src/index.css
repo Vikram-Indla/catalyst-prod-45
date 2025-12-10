@@ -21,12 +21,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* PROJECT HEADER */
+/* PROJECT HEADER - Removed !important to allow component overrides */
 h1, h2 {
-  font-size: 24px !important;
-  font-weight: 500 !important;
-  line-height: 28px !important;
-  color: #172B4D !important;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 28px;
+  color: #172B4D;
 }
 
 h3 { 
