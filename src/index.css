@@ -84,7 +84,7 @@ a:focus-visible,
   box-shadow: none !important;
 }
 
-/* Remove ALL focus outlines from divs, cards, and non-form elements */
+/* Remove ALL focus outlines and rings from divs, cards, and non-form elements */
 div:focus,
 div:focus-visible,
 section:focus,
@@ -95,6 +95,19 @@ article:focus-visible,
 [data-no-focus-ring]:focus-visible {
   outline: none !important;
   box-shadow: none !important;
+  --tw-ring-shadow: none !important;
+  --tw-ring-offset-shadow: none !important;
+}
+
+/* Remove ring from badges and non-input elements when inside cards */
+.rounded-lg > div:focus,
+.rounded-lg > div:focus-visible,
+.border-l-brand-gold div:focus,
+.border-l-brand-gold div:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  --tw-ring-shadow: none !important;
+  --tw-ring-offset-shadow: none !important;
 }
 
 /* TABS */
