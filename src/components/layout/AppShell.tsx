@@ -80,9 +80,8 @@ export function AppShell() {
 
               <div className="relative" ref={createDropdownRef}>
                 <Button 
-                  variant="default" 
                   size="sm" 
-                  className="hidden sm:flex"
+                  className="hidden sm:flex bg-brand-gold hover:bg-brand-gold-hover text-white"
                   onClick={() => setCreateDropdownOpen(!createDropdownOpen)}
                 >
                   Create
