@@ -23,7 +23,8 @@ export function ObjectivesRow({ programId, piId, sprints = [] }: ObjectivesRowPr
     piIds: piId ? [piId] : undefined,
   };
 
-  const { data: objectives = [] } = useObjectives(filters);
+  const { data: objectivesData } = useObjectives(filters);
+  const objectives = objectivesData?.flat || [];
 
   return (
     <>

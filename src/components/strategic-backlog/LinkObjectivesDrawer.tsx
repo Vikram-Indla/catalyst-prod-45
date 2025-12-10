@@ -35,7 +35,8 @@ export function LinkObjectivesDrawer({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
-  const { data: allObjectives = [], isLoading } = useObjectives({});
+  const { data: objectivesData, isLoading } = useObjectives({});
+  const allObjectives = objectivesData?.flat || [];
   const linkMutation = useLinkObjectivesToTheme();
 
   // Filter out already linked objectives and apply search

@@ -78,7 +78,7 @@ export interface ObjectiveFilters {
   includeAllChildren?: boolean;
 }
 
-// Fetch objectives with filters
+// Fetch objectives with filters - returns hierarchical tree structure
 export const useObjectives = (filters?: ObjectiveFilters) => {
   return useQuery({
     queryKey: ['objectives', filters],
@@ -95,6 +95,17 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
         }
         keyResultsByObjective.get(kr.objective_id)!.push(kr);
       });
+
+      // Fetch portfolio and program names for context display
+      const { data: portfoliosData } = await supabase
+        .from('portfolios')
+        .select('id, name');
+      const portfolioMap = new Map(portfoliosData?.map(p => [p.id, p.name]) || []);
+
+      const { data: programsData } = await supabase
+        .from('programs')
+        .select('id, name');
+      const programMap = new Map(programsData?.map(p => [p.id, p.name]) || []);
 
       // Handle hierarchical filtering by fetching related entity IDs
       let portfolioIdsToQuery: string[] = [];
@@ -205,10 +216,65 @@ export const useObjectives = (filters?: ObjectiveFilters) => {
           keyResultsCount: keyResults.length,
           work_progress: workProgress,
           key_result_progress: krProgress,
-        } as Objective & { keyResults: any[]; keyResultsCount: number };
+          portfolio_name: obj.portfolio_id ? portfolioMap.get(obj.portfolio_id) : undefined,
+          program_name: obj.program_id ? programMap.get(obj.program_id) : undefined,
+        } as Objective & { keyResults: any[]; keyResultsCount: number; portfolio_name?: string; program_name?: string };
       });
 
-      return objectivesWithKRData;
+      // Build hierarchical tree structure
+      // Portfolio objectives are roots (level 0), Program objectives with parent_objective_id are children (level 1)
+      const objectiveMap = new Map<string, any>();
+      objectivesWithKRData.forEach(obj => {
+        objectiveMap.set(obj.id, { ...obj, children: [], level: 0, has_children: false });
+      });
+
+      const roots: any[] = [];
+      
+      objectivesWithKRData.forEach(obj => {
+        const node = objectiveMap.get(obj.id)!;
+        
+        if (obj.parent_objective_id && objectiveMap.has(obj.parent_objective_id)) {
+          // This is a child - attach to parent
+          const parent = objectiveMap.get(obj.parent_objective_id)!;
+          node.level = parent.level + 1;
+          parent.children.push(node);
+          parent.has_children = true;
+        } else {
+          // This is a root (Portfolio objectives or orphan Program objectives)
+          roots.push(node);
+        }
+      });
+
+      // Sort roots: Portfolio tier first, then by created_at
+      roots.sort((a, b) => {
+        if (a.tier === 'portfolio' && b.tier !== 'portfolio') return -1;
+        if (a.tier !== 'portfolio' && b.tier === 'portfolio') return 1;
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
+      // Sort children within each parent
+      const sortChildren = (nodes: any[]) => {
+        nodes.forEach(node => {
+          if (node.children.length > 0) {
+            node.children.sort((a: any, b: any) => 
+              new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+            );
+            sortChildren(node.children);
+          }
+        });
+      };
+      sortChildren(roots);
+
+      // Flatten tree for display while preserving hierarchy info
+      const flattenTree = (nodes: any[], result: any[] = []): any[] => {
+        nodes.forEach(node => {
+          result.push(node);
+          // Children will be rendered conditionally based on expanded state
+        });
+        return result;
+      };
+
+      return { tree: roots, flat: flattenTree(roots) };
     },
   });
 };

@@ -42,7 +42,8 @@ export function ObjectivesWidget({
     piIds: piId ? [piId] : undefined,
   };
 
-  const { data: objectives = [], isLoading } = useObjectives(filters);
+  const { data: objectivesData = { tree: [], flat: [] }, isLoading } = useObjectives(filters);
+  const objectives = objectivesData?.flat || [];
   const displayObjectives = objectives.slice(0, limit);
 
   const defaultTitle = tier === 'portfolio' 

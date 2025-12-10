@@ -28,7 +28,8 @@ export default function EnterpriseObjectives() {
   if (statusFilter !== 'all') filters.statuses = [statusFilter];
   if (searchQuery) filters.search = searchQuery;
 
-  const { data: objectives = [], isLoading } = useObjectives(filters);
+  const { data: objectivesData, isLoading } = useObjectives(filters);
+  const objectives = objectivesData?.flat || [];
 
   const handleExport = () => {
     // TODO: Implement CSV export
