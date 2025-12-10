@@ -198,15 +198,15 @@ export function ObjectiveOverviewTabV2({ objective }: ObjectiveOverviewTabV2Prop
       <div className="space-y-2">
         <Label>Owner</Label>
         <Select
-          value={objective.owner_id || ''}
-          onValueChange={(v) => handleFieldUpdate('owner_id', v || null)}
+          value={objective.owner_id || '__unassigned__'}
+          onValueChange={(v) => handleFieldUpdate('owner_id', v === '__unassigned__' ? null : v)}
         >
           <SelectTrigger>
             <SelectValue placeholder="Select owner" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Unassigned</SelectItem>
-            {users?.map((user) => (
+            <SelectItem value="__unassigned__">Unassigned</SelectItem>
+            {users?.filter(user => user.id).map((user) => (
               <SelectItem key={user.id} value={user.id}>
                 {user.full_name || 'Unknown'}
               </SelectItem>
