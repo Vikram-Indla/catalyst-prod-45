@@ -569,23 +569,26 @@ export const JiraListViewPage: React.FC = () => {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: token('space.100', '8px'),
-          marginBottom: token('space.200', '16px'),
+          gap: '8px',
+          padding: '16px 24px',
+          borderBottom: '1px solid #DFE1E6',
+          marginLeft: '-24px',
+          marginRight: '-24px',
         }}
       >
         <div style={{ width: '300px' }}>
           <Textfield
-            placeholder="Search issues..."
-            elemAfterInput={
-              <div style={{ paddingRight: token('space.100', '8px'), display: 'flex', alignItems: 'center' }}>
-                <SearchIcon label="Search" size="small" primaryColor={token('color.icon', '#5E6C84')} />
+            placeholder="Search..."
+            elemBeforeInput={
+              <div style={{ paddingLeft: '8px', display: 'flex', alignItems: 'center' }}>
+                <SearchIcon label="Search" size="small" primaryColor="#5E6C84" />
               </div>
             }
             value={searchQuery}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button appearance="subtle" iconBefore={<FilterIcon label="Filter" />}>
+        <Button appearance="subtle" iconBefore={<FilterIcon label="Filter" size="small" />}>
           Filter
         </Button>
       </div>
