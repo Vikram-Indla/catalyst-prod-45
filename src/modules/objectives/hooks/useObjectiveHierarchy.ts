@@ -35,9 +35,48 @@ export function useObjectiveHierarchy(objectiveId: string) {
         .select('*')
         .eq('objective_id', objectiveId);
 
+      // Fetch portfolio and program names for context
+      let portfolioName = null;
+      let programName = null;
+
+      if (current.portfolio_id) {
+        const { data: portfolio } = await supabase
+          .from('portfolios')
+          .select('name')
+          .eq('id', current.portfolio_id)
+          .single();
+        portfolioName = portfolio?.name;
+      }
+
+      if (current.program_id) {
+        const { data: program } = await supabase
+          .from('programs')
+          .select('name')
+          .eq('id', current.program_id)
+          .single();
+        programName = program?.name;
+      }
+
+      // Calculate parent's KR progress from its own KRs
+      const parentKRs = keyResults || [];
+      let parentKrProgress = 0;
+      if (parentKRs.length > 0) {
+        const totalProgress = parentKRs.reduce((sum, kr) => {
+          const baseline = kr.baseline_value || 0;
+          const current = kr.current_value || baseline;
+          const goal = kr.goal_value || 1;
+          const progress = goal !== baseline ? ((current - baseline) / (goal - baseline)) : 0;
+          return sum + Math.max(0, Math.min(1, progress));
+        }, 0);
+        parentKrProgress = totalProgress / parentKRs.length;
+      }
+
       const currentWithKRs = {
         ...current,
         keyResults: keyResults || [],
+        portfolioName,
+        programName,
+        calculatedKrProgress: parentKrProgress,
       };
 
       // Fetch parents (recursive up)
@@ -49,13 +88,36 @@ export function useObjectiveHierarchy(objectiveId: string) {
         .select('*')
         .eq('parent_objective_id', objectiveId);
 
-      // For each child, fetch their own KRs to calculate their progress
+      // For each child, fetch their own KRs and context to calculate their progress
       const childrenWithKRs = await Promise.all(
         (children || []).map(async (child) => {
+          // Fetch child's KRs
           const { data: childKRs } = await supabase
             .from('key_results_v2')
             .select('*')
             .eq('objective_id', child.id);
+
+          // Fetch child's portfolio/program context
+          let childPortfolioName = null;
+          let childProgramName = null;
+
+          if (child.portfolio_id) {
+            const { data: portfolio } = await supabase
+              .from('portfolios')
+              .select('name')
+              .eq('id', child.portfolio_id)
+              .single();
+            childPortfolioName = portfolio?.name;
+          }
+
+          if (child.program_id) {
+            const { data: program } = await supabase
+              .from('programs')
+              .select('name')
+              .eq('id', child.program_id)
+              .single();
+            childProgramName = program?.name;
+          }
 
           // Calculate child's KR progress from their own KRs only
           const childKeyResults = childKRs || [];
@@ -76,6 +138,8 @@ export function useObjectiveHierarchy(objectiveId: string) {
             keyResults: childKeyResults,
             calculatedKrProgress: krProgress,
             krCount: childKeyResults.length,
+            portfolioName: childPortfolioName,
+            programName: childProgramName,
           };
         })
       );
