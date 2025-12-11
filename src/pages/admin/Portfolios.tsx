@@ -1,17 +1,32 @@
+import { useState } from 'react';
 import { AdminGuard } from '@/components/admin/AdminGuard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Plus, Search } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { ResponsivePageContainer, ResponsivePageHeader, ResponsiveGrid, ResponsiveTableWrapper } from '@/components/layout/ResponsivePageContainer';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { toast } from 'sonner';
+
+interface Portfolio {
+  id: string;
+  name: string;
+  status: 'active' | 'archived';
+  owner_id: string;
+}
 
 /**
  * Programs Management Page - Configure program structure and settings
  * Source: Administration guide PDF, Basic Structure section
  */
 export default function Portfolios() {
+  const queryClient = useQueryClient();
+  const [editingProgram, setEditingProgram] = useState<Portfolio | null>(null);
+  const [formData, setFormData] = useState({ name: '' });
+
   const { data: programs, isLoading } = useQuery({
     queryKey: ['admin-programs'],
     queryFn: async () => {
@@ -20,9 +35,40 @@ export default function Portfolios() {
         .select('*')
         .order('name');
       if (error) throw error;
-      return data;
+      return data as Portfolio[];
     }
   });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const { error } = await supabase
+        .from('portfolios')
+        .update({ name })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+      toast.success('Program updated successfully');
+      setEditingProgram(null);
+    },
+    onError: (error) => {
+      toast.error('Failed to update program: ' + error.message);
+    }
+  });
+
+  const handleEdit = (program: Portfolio) => {
+    setEditingProgram(program);
+    setFormData({ name: program.name });
+  };
+
+  const handleSave = () => {
+    if (!editingProgram) return;
+    updateMutation.mutate({
+      id: editingProgram.id,
+      name: formData.name
+    });
+  };
 
   return (
     <AdminGuard>
@@ -109,7 +155,9 @@ export default function Portfolios() {
                           </span>
                         </td>
                         <td className="p-3 text-sm text-right">
-                          <Button variant="ghost" size="sm">Edit</Button>
+                          <Button variant="ghost" size="sm" onClick={() => handleEdit(program)}>
+                            Edit
+                          </Button>
                         </td>
                       </tr>
                     ))}
@@ -119,6 +167,37 @@ export default function Portfolios() {
             )}
           </CardContent>
         </Card>
+
+        {/* Edit Program Dialog */}
+        <Dialog open={!!editingProgram} onOpenChange={(open) => !open && setEditingProgram(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Edit Program</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Program Name</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditingProgram(null)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSave} 
+                disabled={updateMutation.isPending}
+                className="bg-brand-gold hover:bg-brand-gold-hover"
+              >
+                {updateMutation.isPending ? 'Saving...' : 'Save'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </ResponsivePageContainer>
     </AdminGuard>
   );
