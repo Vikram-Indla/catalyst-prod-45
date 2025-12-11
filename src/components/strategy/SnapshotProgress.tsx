@@ -260,7 +260,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
         <span className="text-sm text-secondary-green min-w-[100px] hover:text-foreground hover:underline">
           {label}
         </span>
-        <span className="text-sm text-muted-foreground min-w-[60px] text-right font-medium">
+        <span className="text-sm text-brand-gold min-w-[60px] text-right font-medium">
           {accepted}/{total}
         </span>
         <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
