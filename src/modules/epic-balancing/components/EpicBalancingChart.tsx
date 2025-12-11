@@ -122,6 +122,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             dataKey="x" 
             name="Job Size" 
             domain={[0, maxX]}
+            tickFormatter={(value) => Math.round(value).toString()}
             tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
             axisLine={{ stroke: 'hsl(var(--border))' }}
             label={{ 
@@ -137,6 +138,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             dataKey="y" 
             name="Cost of Delay" 
             domain={[0, maxY]}
+            tickFormatter={(value) => Math.round(value).toString()}
             tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
             axisLine={{ stroke: 'hsl(var(--border))' }}
             label={{ 
