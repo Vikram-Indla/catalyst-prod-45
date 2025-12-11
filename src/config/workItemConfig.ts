@@ -6,29 +6,23 @@ import {
   GitBranch,
   Target,
   AlertTriangle,
-  Calendar,
-  Package,
-  Siren,
-  Users,
-  FolderKanban,
   FileText,
+  Bug,
+  Siren,
   type LucideIcon
 } from 'lucide-react';
 
 export type WorkItemType = 
   | 'theme'
+  | 'objective'
   | 'business-request'
   | 'epic'
   | 'feature'
   | 'story'
-  | 'program'
-  | 'project'
-  | 'objective'
+  | 'defect'
+  | 'incident'
   | 'dependency'
-  | 'risk'
-  | 'sprint'
-  | 'program-increment'
-  | 'incident';
+  | 'risk';
 
 export interface WorkItemConfig {
   key: string;
@@ -37,76 +31,29 @@ export interface WorkItemConfig {
   color: string;
   bgColor: string;
   moduleCode: string | null;
-  category: 'work-items' | 'planning' | 'other';
+  category: 'enterprise' | 'product' | 'program' | 'project' | 'other';
 }
 
 /**
  * Centralized work item configuration for consistent icons and colors across the app.
- * All components should import from here to ensure consistency.
+ * 
+ * Categories:
+ * - enterprise: Themes, Objectives
+ * - product: Business Request
+ * - program: Epics
+ * - project: Feature, Story, Defect, Incidents
+ * - other: Dependencies, Risks
  */
 export const workItemConfig: Record<WorkItemType, WorkItemConfig> = {
+  // === ENTERPRISE ===
   'theme': {
     key: 'theme',
     label: 'Themes',
     icon: Circle,
     color: 'text-workitem-theme',
     bgColor: 'bg-workitem-theme',
-    moduleCode: 'PORTFOLIO',
-    category: 'work-items',
-  },
-  'business-request': {
-    key: 'business-request',
-    label: 'Business Request',
-    icon: Building2,
-    color: 'text-brand-gold',
-    bgColor: 'bg-brand-gold',
-    moduleCode: 'PRODUCT',
-    category: 'work-items',
-  },
-  'epic': {
-    key: 'epic',
-    label: 'Epics',
-    icon: Square,
-    color: 'text-workitem-epic',
-    bgColor: 'bg-workitem-epic',
-    moduleCode: 'PORTFOLIO',
-    category: 'work-items',
-  },
-  'feature': {
-    key: 'feature',
-    label: 'Features',
-    icon: Gem,
-    color: 'text-workitem-feature',
-    bgColor: 'bg-workitem-feature',
-    moduleCode: 'PROGRAM',
-    category: 'work-items',
-  },
-  'story': {
-    key: 'story',
-    label: 'Stories',
-    icon: FileText,
-    color: 'text-workitem-story',
-    bgColor: 'bg-workitem-story',
-    moduleCode: 'TEAMS',
-    category: 'work-items',
-  },
-  'program': {
-    key: 'program',
-    label: 'Programs',
-    icon: FolderKanban,
-    color: 'text-workitem-feature',
-    bgColor: 'bg-workitem-feature',
-    moduleCode: 'PROGRAM',
-    category: 'planning',
-  },
-  'project': {
-    key: 'project',
-    label: 'Projects',
-    icon: FolderKanban,
-    color: 'text-info',
-    bgColor: 'bg-info',
-    moduleCode: 'PROGRAM',
-    category: 'planning',
+    moduleCode: 'ENTERPRISE',
+    category: 'enterprise',
   },
   'objective': {
     key: 'objective',
@@ -115,48 +62,83 @@ export const workItemConfig: Record<WorkItemType, WorkItemConfig> = {
     color: 'text-brand-gold',
     bgColor: 'bg-brand-gold',
     moduleCode: 'ENTERPRISE',
-    category: 'other',
+    category: 'enterprise',
   },
+  
+  // === PRODUCT ===
+  'business-request': {
+    key: 'business-request',
+    label: 'Business Request',
+    icon: Building2,
+    color: 'text-brand-gold',
+    bgColor: 'bg-brand-gold',
+    moduleCode: 'PRODUCT',
+    category: 'product',
+  },
+  
+  // === PROGRAM ===
+  'epic': {
+    key: 'epic',
+    label: 'Epics',
+    icon: Square,
+    color: 'text-workitem-epic',
+    bgColor: 'bg-workitem-epic',
+    moduleCode: 'PROGRAM',
+    category: 'program',
+  },
+  
+  // === PROJECT ===
+  'feature': {
+    key: 'feature',
+    label: 'Features',
+    icon: Gem,
+    color: 'text-workitem-feature',
+    bgColor: 'bg-workitem-feature',
+    moduleCode: 'PROJECT',
+    category: 'project',
+  },
+  'story': {
+    key: 'story',
+    label: 'Stories',
+    icon: FileText,
+    color: 'text-workitem-story',
+    bgColor: 'bg-workitem-story',
+    moduleCode: 'PROJECT',
+    category: 'project',
+  },
+  'defect': {
+    key: 'defect',
+    label: 'Defects',
+    icon: Bug,
+    color: 'text-destructive',
+    bgColor: 'bg-destructive',
+    moduleCode: 'PROJECT',
+    category: 'project',
+  },
+  'incident': {
+    key: 'incident',
+    label: 'Incidents',
+    icon: Siren,
+    color: 'text-destructive',
+    bgColor: 'bg-destructive',
+    moduleCode: 'PROJECT',
+    category: 'project',
+  },
+  
+  // === OTHER ===
   'dependency': {
     key: 'dependency',
     label: 'Dependencies',
     icon: GitBranch,
     color: 'text-brand-gold',
     bgColor: 'bg-brand-gold',
-    moduleCode: 'PROGRAM',
+    moduleCode: null,
     category: 'other',
   },
   'risk': {
     key: 'risk',
     label: 'Risks',
     icon: AlertTriangle,
-    color: 'text-destructive',
-    bgColor: 'bg-destructive',
-    moduleCode: 'ENTERPRISE',
-    category: 'other',
-  },
-  'sprint': {
-    key: 'sprint',
-    label: 'Sprints',
-    icon: Calendar,
-    color: 'text-brand-gold',
-    bgColor: 'bg-brand-gold',
-    moduleCode: 'PROGRAM',
-    category: 'other',
-  },
-  'program-increment': {
-    key: 'program-increment',
-    label: 'Program Increments',
-    icon: Package,
-    color: 'text-workitem-theme',
-    bgColor: 'bg-workitem-theme',
-    moduleCode: 'PROGRAM',
-    category: 'other',
-  },
-  'incident': {
-    key: 'incident',
-    label: 'Incidents',
-    icon: Siren,
     color: 'text-destructive',
     bgColor: 'bg-destructive',
     moduleCode: null,
