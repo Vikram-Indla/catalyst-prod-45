@@ -50,10 +50,7 @@ const getMenuItems = (workspaceLabel: string) => [
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/program/:programId/work-tree' },
   { id: 'dependencies', label: 'Dependencies', icon: GitBranch, path: '/program/:programId/dependencies' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/program/:programId/roadmaps' },
-  { id: 'objectives-tree', label: 'Objectives Tree', icon: Target, path: '/program/:programId/objectives-tree' },
-  { id: 'forecast', label: 'Forecast', icon: Grid3x3, path: '/program/:programId/forecast' },
-  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/program/:programId/capacity', badge: 'NEW' },
-  { id: 'quarters', label: 'Quarters', icon: Calendar, path: '/program/:programId/quarters' },
+  { id: 'epic-balancing', label: 'Epic Balancing', icon: Grid3x3, path: '/program/:programId/epic-balancing' },
   { id: 'reports', label: 'Reports', icon: FileText, path: '/program/:programId/reports' },
 ];
 
@@ -193,14 +190,7 @@ export function ProgramSidebar({
               >
                 <Icon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
                 {expanded && (
-                  <>
-                    <span className="truncate text-left flex-1">{item.label}</span>
-                    {item.badge && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-brand-gold text-white rounded uppercase">
-                        {item.badge}
-                      </span>
-                    )}
-                  </>
+                  <span className="truncate text-left flex-1">{item.label}</span>
                 )}
               </button>
             );
