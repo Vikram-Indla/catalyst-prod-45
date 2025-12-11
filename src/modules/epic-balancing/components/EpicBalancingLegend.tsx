@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { 
-  StrategicDriver,
-  STRATEGIC_DRIVER_COLORS, 
-  STRATEGIC_DRIVER_LABELS,
+  PriorityToExecute,
+  PRIORITY_TO_EXECUTE_COLORS, 
+  PRIORITY_TO_EXECUTE_LABELS,
   AbilityToExecute,
   ABILITY_TO_EXECUTE_STROKE
 } from '../types';
@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils';
 import { RotateCcw } from 'lucide-react';
 
 interface EpicBalancingLegendProps {
-  hiddenDrivers: Set<StrategicDriver>;
-  onToggleDriver: (driver: StrategicDriver) => void;
+  hiddenDrivers: Set<PriorityToExecute>;
+  onToggleDriver: (driver: PriorityToExecute) => void;
   onReset: () => void;
   scoringStats: {
     complete: number;
@@ -19,10 +19,7 @@ interface EpicBalancingLegendProps {
   };
 }
 
-const DRIVERS: StrategicDriver[] = [
-  'EXPAND', 'SUSTAIN', 'INNOVATE', 'CONTAIN', 'EXIT', 'UNKNOWN', 'NOT_SET'
-];
-
+const PRIORITIES: PriorityToExecute[] = ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW'];
 const ABILITIES: AbilityToExecute[] = ['HIGH', 'MEDIUM', 'LOW'];
 
 export function EpicBalancingLegend({ 
@@ -33,27 +30,27 @@ export function EpicBalancingLegend({
 }: EpicBalancingLegendProps) {
   return (
     <div className="space-y-6">
-      {/* Strategic Driver Legend */}
+      {/* Priority to Execute Legend */}
       <div>
-        <h3 className="text-sm font-semibold text-foreground mb-3">Strategic Driver</h3>
+        <h3 className="text-sm font-semibold text-foreground mb-3">Priority to Execute</h3>
         <div className="space-y-2">
-          {DRIVERS.map(driver => (
+          {PRIORITIES.map(priority => (
             <button
-              key={driver}
-              onClick={() => onToggleDriver(driver)}
+              key={priority}
+              onClick={() => onToggleDriver(priority)}
               className={cn(
                 "flex items-center gap-3 w-full text-left px-2 py-1.5 rounded-md transition-colors",
                 "hover:bg-accent/50",
-                hiddenDrivers.has(driver) && "opacity-40"
+                hiddenDrivers.has(priority) && "opacity-40"
               )}
-              aria-pressed={!hiddenDrivers.has(driver)}
+              aria-pressed={!hiddenDrivers.has(priority)}
             >
               <div 
                 className="w-5 h-5 rounded-sm flex-shrink-0"
-                style={{ backgroundColor: STRATEGIC_DRIVER_COLORS[driver] }}
+                style={{ backgroundColor: PRIORITY_TO_EXECUTE_COLORS[priority] }}
               />
               <span className="text-sm text-foreground">
-                {STRATEGIC_DRIVER_LABELS[driver]}
+                {PRIORITY_TO_EXECUTE_LABELS[priority]}
               </span>
             </button>
           ))}
