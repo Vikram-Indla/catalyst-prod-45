@@ -23,24 +23,25 @@ const generateMockEpics = (programId: string): EpicBalancingEpic[] => {
     js: number | null;
     priority: PriorityToExecute;
     ability: AbilityToExecute;
+    plannedQuarter: string;
     themeName?: string;
     businessRequestTitle?: string;
   }> = [
-    { key: "E-101", name: "Modernize Investor Onboarding", ba: 18, tc: 12, ie: 8, js: 5, priority: "VERY_HIGH", ability: "HIGH", themeName: "Digital Transformation", businessRequestTitle: "BR-2024-001: Investor Experience" },
-    { key: "E-102", name: "Mobile App Redesign", ba: 15, tc: 10, ie: 12, js: 8, priority: "HIGH", ability: "HIGH", themeName: "Customer Experience", businessRequestTitle: "BR-2024-002: Mobile Strategy" },
-    { key: "E-103", name: "Legacy System Migration", ba: 8, tc: 15, ie: 5, js: 18, priority: "MEDIUM", ability: "MEDIUM", themeName: "Tech Modernization" },
-    { key: "E-104", name: "AI-Powered Analytics Dashboard", ba: 20, tc: 8, ie: 15, js: 12, priority: "VERY_HIGH", ability: "LOW", themeName: "Data & Analytics", businessRequestTitle: "BR-2024-003: Analytics Platform" },
-    { key: "E-105", name: "Security Compliance Update", ba: 5, tc: 18, ie: 3, js: 6, priority: "HIGH", ability: "HIGH", themeName: "Security & Compliance" },
-    { key: "E-106", name: "Customer Portal Enhancement", ba: 12, tc: 6, ie: 10, js: 4, priority: "VERY_HIGH", ability: "HIGH", themeName: "Customer Experience" },
-    { key: "E-107", name: "Data Warehouse Optimization", ba: 10, tc: 4, ie: 8, js: 14, priority: "MEDIUM", ability: "MEDIUM", themeName: "Data & Analytics" },
-    { key: "E-108", name: "Automated Testing Framework", ba: 6, tc: 3, ie: 12, js: 10, priority: "HIGH", ability: "HIGH", themeName: "Engineering Excellence" },
-    { key: "E-109", name: "Payment Gateway Integration", ba: 16, tc: 14, ie: 6, js: 7, priority: "VERY_HIGH", ability: "MEDIUM", themeName: "Digital Transformation", businessRequestTitle: "BR-2024-004: Payment Modernization" },
-    { key: "E-110", name: "Reporting Module Overhaul", ba: 9, tc: 5, ie: 4, js: 11, priority: "MEDIUM", ability: "LOW" },
-    { key: "E-111", name: "API Gateway Modernization", ba: 14, tc: 11, ie: 9, js: 9, priority: "HIGH", ability: "HIGH", themeName: "Tech Modernization" },
-    { key: "E-112", name: "Sunset Legacy CRM", ba: 3, tc: 2, ie: 1, js: 3, priority: "LOW", ability: "HIGH" },
-    { key: "E-113", name: "Cloud Infrastructure Setup", ba: 17, tc: 16, ie: 14, js: 15, priority: "VERY_HIGH", ability: "MEDIUM", themeName: "Tech Modernization", businessRequestTitle: "BR-2024-005: Cloud Migration" },
-    { key: "E-114", name: "Performance Optimization", ba: 11, tc: 7, ie: 5, js: 5, priority: "HIGH", ability: "HIGH", themeName: "Engineering Excellence" },
-    { key: "E-115", name: "New Feature Discovery", ba: null, tc: null, ie: null, js: null, priority: "LOW", ability: "LOW" },
+    { key: "E-101", name: "Modernize Investor Onboarding", ba: 18, tc: 12, ie: 8, js: 5, priority: "VERY_HIGH", ability: "HIGH", plannedQuarter: "Q4'25", themeName: "Digital Transformation", businessRequestTitle: "BR-2024-001: Investor Experience" },
+    { key: "E-102", name: "Mobile App Redesign", ba: 15, tc: 10, ie: 12, js: 8, priority: "HIGH", ability: "HIGH", plannedQuarter: "Q1'26", themeName: "Customer Experience", businessRequestTitle: "BR-2024-002: Mobile Strategy" },
+    { key: "E-103", name: "Legacy System Migration", ba: 8, tc: 15, ie: 5, js: 18, priority: "MEDIUM", ability: "MEDIUM", plannedQuarter: "Q2'26", themeName: "Tech Modernization" },
+    { key: "E-104", name: "AI-Powered Analytics Dashboard", ba: 20, tc: 8, ie: 15, js: 12, priority: "VERY_HIGH", ability: "LOW", plannedQuarter: "Q4'25", themeName: "Data & Analytics", businessRequestTitle: "BR-2024-003: Analytics Platform" },
+    { key: "E-105", name: "Security Compliance Update", ba: 5, tc: 18, ie: 3, js: 6, priority: "HIGH", ability: "HIGH", plannedQuarter: "Q1'26", themeName: "Security & Compliance" },
+    { key: "E-106", name: "Customer Portal Enhancement", ba: 12, tc: 6, ie: 10, js: 4, priority: "VERY_HIGH", ability: "HIGH", plannedQuarter: "Q4'25", themeName: "Customer Experience" },
+    { key: "E-107", name: "Data Warehouse Optimization", ba: 10, tc: 4, ie: 8, js: 14, priority: "MEDIUM", ability: "MEDIUM", plannedQuarter: "Unscheduled", themeName: "Data & Analytics" },
+    { key: "E-108", name: "Automated Testing Framework", ba: 6, tc: 3, ie: 12, js: 10, priority: "HIGH", ability: "HIGH", plannedQuarter: "Q2'26", themeName: "Engineering Excellence" },
+    { key: "E-109", name: "Payment Gateway Integration", ba: 16, tc: 14, ie: 6, js: 7, priority: "VERY_HIGH", ability: "MEDIUM", plannedQuarter: "Q1'26", themeName: "Digital Transformation", businessRequestTitle: "BR-2024-004: Payment Modernization" },
+    { key: "E-110", name: "Reporting Module Overhaul", ba: 9, tc: 5, ie: 4, js: 11, priority: "MEDIUM", ability: "LOW", plannedQuarter: "Unscheduled" },
+    { key: "E-111", name: "API Gateway Modernization", ba: 14, tc: 11, ie: 9, js: 9, priority: "HIGH", ability: "HIGH", plannedQuarter: "Q4'25", themeName: "Tech Modernization" },
+    { key: "E-112", name: "Sunset Legacy CRM", ba: 3, tc: 2, ie: 1, js: 3, priority: "LOW", ability: "HIGH", plannedQuarter: "Unscheduled" },
+    { key: "E-113", name: "Cloud Infrastructure Setup", ba: 17, tc: 16, ie: 14, js: 15, priority: "VERY_HIGH", ability: "MEDIUM", plannedQuarter: "Q1'26", themeName: "Tech Modernization", businessRequestTitle: "BR-2024-005: Cloud Migration" },
+    { key: "E-114", name: "Performance Optimization", ba: 11, tc: 7, ie: 5, js: 5, priority: "HIGH", ability: "HIGH", plannedQuarter: "Q4'25", themeName: "Engineering Excellence" },
+    { key: "E-115", name: "New Feature Discovery", ba: null, tc: null, ie: null, js: null, priority: "LOW", ability: "LOW", plannedQuarter: "Unscheduled" },
   ];
 
   return mockData.map((item) => {
@@ -65,6 +66,7 @@ const generateMockEpics = (programId: string): EpicBalancingEpic[] => {
       technicalScore,
       priorityToExecute: item.priority,
       abilityToExecute: item.ability,
+      plannedQuarter: item.plannedQuarter,
       themeName: item.themeName,
       businessRequestTitle: item.businessRequestTitle,
     };

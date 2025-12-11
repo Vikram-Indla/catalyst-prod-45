@@ -21,6 +21,9 @@ export interface EpicBalancingEpic {
   priorityToExecute: PriorityToExecute;
   abilityToExecute: AbilityToExecute;
 
+  // Planned quarter (e.g., "Q4'25", "Q1'26", or "Unscheduled")
+  plannedQuarter: string;
+
   // Linked items
   themeId?: string | null;
   themeName?: string | null;
