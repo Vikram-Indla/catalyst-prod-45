@@ -147,6 +147,32 @@
   --health-yellow: var(--y300);
   --health-red: var(--r300);
   --health-gray: var(--n200);
+  --health-on-track: var(--g300);
+  --health-at-risk: var(--y300);
+  --health-off-track: var(--r300);
+  --health-unknown: var(--n200);
+  
+  /* Status colors - brand aligned */
+  --status-backlog-bg: var(--n30);
+  --status-backlog-text: var(--n700);
+  --status-in-progress-bg: var(--b400);
+  --status-in-progress-text: var(--n0);
+  --status-done-bg: var(--g400);
+  --status-done-text: var(--n0);
+  --status-blocked-bg: var(--r400);
+  --status-blocked-text: var(--n0);
+  --status-warning-bg: var(--y300);
+  --status-warning-text: var(--n800);
+  
+  /* Work item type colors */
+  --workitem-theme: var(--p300);
+  --workitem-epic: var(--p300);
+  --workitem-feature: var(--brand-gold);
+  --workitem-story: var(--g300);
+  --workitem-subtask: var(--t300);
+  --workitem-defect: var(--r300);
+  --workitem-task: var(--b400);
+  --workitem-incident: var(--y400);
   
   /* === CATALYST BRAND COLORS === */
   --brand-dark: 0 0% 10%;                      /* #1A1A1A */
