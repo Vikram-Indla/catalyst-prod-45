@@ -18,10 +18,10 @@ export default function OKRHeatmap() {
 
   const getHealthBadgeClass = (health: string): string => {
     switch (health) {
-      case 'good': return 'bg-green-100 text-green-700';
-      case 'fair': return 'bg-amber-100 text-amber-700';
-      case 'poor': return 'bg-red-100 text-red-700';
-      case 'at_risk': return 'bg-amber-100 text-amber-700';
+      case 'good': return 'bg-success/10 text-success';
+      case 'fair': return 'bg-warning/10 text-warning-600';
+      case 'poor': return 'bg-destructive/10 text-destructive';
+      case 'at_risk': return 'bg-warning/10 text-warning-600';
       default: return 'bg-muted text-muted-foreground';
     }
   };
