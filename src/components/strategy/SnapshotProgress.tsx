@@ -140,7 +140,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
               className="flex flex-col items-center cursor-pointer group"
               onClick={onClick}
             >
-              <span className="text-sm font-medium text-muted-foreground mb-2 group-hover:text-foreground transition-colors">
+              <span className="text-sm font-medium text-secondary-green mb-2 group-hover:text-foreground transition-colors">
                 {label}
               </span>
               <div className="relative" style={{ width: size, height: size }}>
