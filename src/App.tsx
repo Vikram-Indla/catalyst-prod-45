@@ -292,6 +292,7 @@ const App = () => (
               <Route path="/program/:programId/okr-hub" element={<OKRHub />} />
               <Route path="/program/:programId/work-tree" element={<WorkTreePage />} />
               <Route path="/program/:programId/room" element={<ProgramRoom />} />
+              <Route path="/program/:programId/epic-backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/program/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/program/:programId/program-board" element={<ProgramBoardWithSidebar />} />
               <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
