@@ -1,4 +1,5 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useObjectivesV2, ObjectiveV2 } from '@/hooks/useObjectivesV2';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,11 +34,22 @@ function getStatusBadgeVariant(status: string): 'default' | 'secondary' | 'destr
 }
 
 export function OKRHubV2() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [smartFilters, setSmartFilters] = useState<OKRSmartFilters>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedObjectiveId, setSelectedObjectiveId] = useState<string | null>(null);
   const [showFiltersDialog, setShowFiltersDialog] = useState(false);
+
+  // Open create dialog when ?create=true is in URL
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      setShowCreateDialog(true);
+      // Remove the param after opening
+      searchParams.delete('create');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   // Fetch all objectives (unfiltered from backend)
   const { data: allObjectives, isLoading } = useObjectivesV2({
