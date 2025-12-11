@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, User, Zap, AlertCircle, CheckSquare, FileText } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, Zap, AlertCircle, CheckSquare, FileText, Columns, RefreshCw } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -17,6 +17,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface WorkItem {
   id: string;
@@ -25,8 +26,10 @@ interface WorkItem {
   summary: string;
   status: string;
   statusCategory: 'todo' | 'in_progress' | 'done';
+  reporter: string;
   assignee: string | null;
-  priority: string;
+  created: string;
+  parent: string | null;
   children?: WorkItem[];
 }
 
@@ -34,39 +37,57 @@ const mockItems: WorkItem[] = [
   {
     id: '1',
     type: 'Feature',
-    key: 'PROJ-1',
-    summary: 'User authentication system',
+    key: 'ICP-371',
+    summary: 'Alignment issue - The system display alignment issue in Competitiveness P...',
     status: 'In Progress',
     statusCategory: 'in_progress',
-    assignee: 'John D.',
-    priority: 'High',
+    reporter: 'Mohammed Hassan',
+    assignee: 'Yazeed Daraz',
+    created: 'Dec 07, 2025, 3:11 PM',
+    parent: null,
     children: [
-      { id: '1-1', type: 'Story', key: 'PROJ-2', summary: 'Implement login page UI', status: 'To Do', statusCategory: 'todo', assignee: 'Sarah M.', priority: 'Medium' },
-      { id: '1-2', type: 'Story', key: 'PROJ-3', summary: 'Add password validation', status: 'Done', statusCategory: 'done', assignee: 'John D.', priority: 'Medium' },
+      { id: '1-1', type: 'Story', key: 'ICP-363', summary: 'Operation L2, L3 update Solutions inside the assigned solutions packages...', status: 'In Progress', statusCategory: 'in_progress', reporter: 'Mohammed Hassan', assignee: 'Abdulrahman Saad', created: 'Nov 30, 2025, 12:42 PM', parent: 'ICP-371' },
+      { id: '1-2', type: 'Task', key: 'ICP-362', summary: 'a testing account that has a factory before 2022', status: 'Backlog', statusCategory: 'todo', reporter: 'Mohammed Hassan', assignee: 'Faisal Javed Paracha', created: 'Nov 25, 2025, 12:44 PM', parent: 'ICP-371' },
     ],
   },
   {
     id: '2',
-    type: 'Feature',
-    key: 'PROJ-4',
-    summary: 'Dashboard redesign',
-    status: 'To Do',
-    statusCategory: 'todo',
-    assignee: 'Mike R.',
-    priority: 'Medium',
+    type: 'Defect',
+    key: 'ICP-354',
+    summary: 'Remove the disclaimer message "Bank account Information" when it\'s a n...',
+    status: 'Ready for QA',
+    statusCategory: 'in_progress',
+    reporter: 'Mohammed Hassan',
+    assignee: 'menna nasser',
+    created: 'Nov 19, 2025, 6:22 PM',
+    parent: null,
     children: [
-      { id: '2-1', type: 'Story', key: 'PROJ-5', summary: 'Create wireframes', status: 'In Progress', statusCategory: 'in_progress', assignee: 'Sarah M.', priority: 'High' },
+      { id: '2-1', type: 'Subtask', key: 'ICP-352', summary: 'Change the rebate start date for one license', status: 'In Production', statusCategory: 'done', reporter: 'Mohammed Hassan', assignee: 'Abdulrahman Saad', created: 'Nov 17, 2025, 6:23 PM', parent: 'ICP-354' },
     ],
   },
   {
     id: '3',
-    type: 'Task',
-    key: 'PROJ-6',
-    summary: 'Set up monitoring',
-    status: 'To Do',
+    type: 'Defect',
+    key: 'ICP-350',
+    summary: 'UX UAT issues',
+    status: 'Ready for QA',
+    statusCategory: 'in_progress',
+    reporter: 'Mohammed Hassan',
+    assignee: 'Mazen',
+    created: 'Nov 17, 2025, 4:09 PM',
+    parent: null,
+  },
+  {
+    id: '4',
+    type: 'Story',
+    key: 'ICP-342',
+    summary: 'Automating the Financial Evaluation Process - أتمتة عملية التقييم المالي',
+    status: 'Backlog',
     statusCategory: 'todo',
-    assignee: null,
-    priority: 'Low',
+    reporter: 'Mohammed Hassan Ali Mohamm...',
+    assignee: 'eid mahmoud',
+    created: 'Nov 15, 2025, 3:57 PM',
+    parent: null,
   },
 ];
 
@@ -77,6 +98,19 @@ const typeColors: Record<string, string> = {
   Defect: 'bg-red-500',
   Subtask: 'bg-cyan-500',
 };
+
+// Available columns for configuration
+const availableColumns = [
+  { id: 'work-type', name: 'Work type', enabled: true },
+  { id: 'work-item-key', name: 'Work item key', enabled: true },
+  { id: 'summary', name: 'Summary', enabled: true },
+  { id: 'status', name: 'Status', enabled: true },
+  { id: 'fix-versions', name: 'Fix versions', enabled: true },
+  { id: 'reporter', name: 'Reporter', enabled: true },
+  { id: 'assignee', name: 'Assignee', enabled: true },
+  { id: 'created', name: 'Created', enabled: true },
+  { id: 'parent', name: 'Parent', enabled: true },
+];
 
 // Mock data for filters
 const mockAssignees = [
@@ -188,6 +222,13 @@ export function AllWorkView() {
   const [selectedAssignees, setSelectedAssignees] = useState<Set<string>>(new Set());
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set());
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(new Set());
+  
+  // Column configuration states
+  const [columnsOpen, setColumnsOpen] = useState(false);
+  const [columnSearch, setColumnSearch] = useState('');
+  const [enabledColumns, setEnabledColumns] = useState<Set<string>>(
+    new Set(availableColumns.filter(c => c.enabled).map(c => c.id))
+  );
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedItems);
@@ -211,9 +252,9 @@ export function AllWorkView() {
 
     return (
       <React.Fragment key={item.id}>
-        <tr className="hover:bg-slate-50 border-b border-slate-200">
+        <tr className="hover:bg-slate-50 border-b border-slate-200 group">
           {/* Checkbox */}
-          <td className="px-3 py-2 w-10 border-r border-slate-200">
+          <td className="px-2 py-2 w-8">
             <Checkbox
               checked={selectedItems.has(item.id)}
               onCheckedChange={(checked) => {
@@ -224,54 +265,76 @@ export function AllWorkView() {
               }}
             />
           </td>
-          {/* Key column */}
-          <td className="px-3 py-2 border-r border-slate-200" style={{ paddingLeft: `${12 + level * 24}px` }}>
+          {/* Expand/collapse */}
+          <td className="px-1 py-2 w-6">
+            {showHierarchy && hasChildren ? (
+              <button
+                onClick={() => toggleExpand(item.id)}
+                className="p-0.5 hover:bg-slate-100 rounded"
+              >
+                {isExpanded ? (
+                  <ChevronDown className="h-4 w-4 text-slate-500" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-slate-500" />
+                )}
+              </button>
+            ) : level > 0 ? null : null}
+          </td>
+          {/* Work column - icon + key + summary combined */}
+          <td className="px-2 py-2" style={{ paddingLeft: level > 0 ? `${level * 20}px` : undefined }}>
             <div className="flex items-center gap-2">
-              {showHierarchy && hasChildren ? (
-                <button
-                  onClick={() => toggleExpand(item.id)}
-                  className="p-0.5 hover:bg-slate-100 rounded"
-                >
-                  {isExpanded ? (
-                    <ChevronDown className="h-4 w-4 text-slate-500" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 text-slate-500" />
-                  )}
-                </button>
-              ) : (
-                <div className="w-5" />
-              )}
-              <div className={cn('w-2.5 h-2.5 rounded-sm flex-shrink-0', typeColors[item.type])} />
-              <span className="text-[14px] leading-[20px] font-medium text-blue-600 hover:underline cursor-pointer">
+              <div className={cn('w-4 h-4 rounded flex-shrink-0 flex items-center justify-center', typeColors[item.type])}>
+                {item.type === 'Defect' && <span className="text-white text-[10px]">!</span>}
+                {item.type === 'Story' && <span className="text-white text-[10px]">✓</span>}
+                {item.type === 'Task' && <span className="text-white text-[10px]">□</span>}
+                {item.type === 'Feature' && <span className="text-white text-[10px]">?</span>}
+                {item.type === 'Subtask' && <span className="text-white text-[10px]">◇</span>}
+              </div>
+              <span className="text-[13px] font-medium text-blue-600 hover:underline cursor-pointer whitespace-nowrap">
                 {item.key}
+              </span>
+              <span className="text-[13px] text-slate-700 truncate max-w-[400px]">
+                {item.summary}
               </span>
             </div>
           </td>
-          {/* Summary */}
-          <td className="px-3 py-2 border-r border-slate-200">
-            <span className="text-[14px] leading-[20px] text-slate-900 truncate block max-w-md">
-              {item.summary}
-            </span>
-          </td>
-          {/* Status */}
-          <td className="px-3 py-2 border-r border-slate-200">
-            <StatusLozenge status={item.status} category={item.statusCategory} />
+          {/* Reporter */}
+          <td className="px-3 py-2">
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-slate-300 flex items-center justify-center text-[10px] text-white font-medium">
+                {item.reporter.split(' ').map(n => n[0]).join('').slice(0, 2)}
+              </div>
+              <span className="text-[13px] text-slate-700 truncate max-w-[140px]">
+                {item.reporter}
+              </span>
+            </div>
           </td>
           {/* Assignee */}
-          <td className="px-3 py-2 border-r border-slate-200">
-            <span className="text-[14px] leading-[20px] text-slate-700">
-              {item.assignee || 'Unassigned'}
-            </span>
-          </td>
-          {/* Priority */}
           <td className="px-3 py-2">
-            <span className={cn(
-              'text-[14px] leading-[20px]',
-              item.priority === 'High' ? 'text-orange-600' : 
-              item.priority === 'Low' ? 'text-slate-500' : 'text-slate-700'
-            )}>
-              {item.priority}
-            </span>
+            {item.assignee ? (
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-[10px] text-white font-medium">
+                  {item.assignee.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                </div>
+                <span className="text-[13px] text-slate-700">{item.assignee}</span>
+              </div>
+            ) : (
+              <span className="text-[13px] text-slate-400">Unassigned</span>
+            )}
+          </td>
+          {/* Created */}
+          <td className="px-3 py-2">
+            <span className="text-[13px] text-slate-700 whitespace-nowrap">{item.created}</span>
+          </td>
+          {/* Parent */}
+          <td className="px-3 py-2">
+            <span className="text-[13px] text-slate-500">{item.parent || 'None'}</span>
+          </td>
+          {/* Actions */}
+          <td className="px-2 py-2 w-8">
+            <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-100 rounded">
+              <MoreHorizontal className="h-4 w-4 text-slate-500" />
+            </button>
           </td>
         </tr>
         {showHierarchy && hasChildren && isExpanded && item.children?.map((child) => renderRow(child, level + 1))}
@@ -511,28 +574,88 @@ export function AllWorkView() {
         </div>
       </div>
 
-      {/* Table Container - Jira style with borders */}
-      <div className="flex-1 overflow-auto mx-4 mt-2 rounded-lg border border-slate-200 bg-white">
+      {/* Table Container - Jira style */}
+      <div className="flex-1 overflow-auto bg-white border-t border-slate-200">
         <table className="min-w-full border-collapse">
-          <thead className="bg-slate-50 sticky top-0 z-10">
-            <tr className="border-b border-slate-200">
-              <th className="w-10 px-3 py-2 border-r border-slate-200">
+          <thead className="bg-white sticky top-0 z-10 border-b border-slate-200">
+            <tr>
+              <th className="w-8 px-2 py-2">
                 <Checkbox />
               </th>
-              <th className="px-3 py-2 text-left text-[12px] leading-[16px] font-medium text-slate-500 border-r border-slate-200 uppercase tracking-wide">
-                Key
+              <th className="w-6 px-1 py-2"></th>
+              <th className="px-2 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
+                Work
               </th>
-              <th className="px-3 py-2 text-left text-[12px] leading-[16px] font-medium text-slate-500 border-r border-slate-200 uppercase tracking-wide">
-                Summary
+              <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
+                Reporter
               </th>
-              <th className="px-3 py-2 text-left text-[12px] leading-[16px] font-medium text-slate-500 border-r border-slate-200 uppercase tracking-wide">
-                Status
-              </th>
-              <th className="px-3 py-2 text-left text-[12px] leading-[16px] font-medium text-slate-500 border-r border-slate-200 uppercase tracking-wide">
+              <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
                 Assignee
               </th>
-              <th className="px-3 py-2 text-left text-[12px] leading-[16px] font-medium text-slate-500 uppercase tracking-wide">
-                Priority
+              <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
+                <div className="flex items-center gap-1">
+                  Created
+                  <ChevronDown className="h-3 w-3" />
+                </div>
+              </th>
+              <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
+                Parent
+              </th>
+              <th className="w-10 px-2 py-2">
+                {/* Column Configuration Popover */}
+                <Popover open={columnsOpen} onOpenChange={setColumnsOpen}>
+                  <PopoverTrigger asChild>
+                    <button className="p-1 hover:bg-slate-100 rounded">
+                      <Columns className="h-4 w-4 text-slate-500" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64 p-0 bg-white border-slate-200 shadow-lg" align="end">
+                    <div className="p-3 border-b border-slate-100">
+                      <Tabs defaultValue="my-defaults" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 h-8">
+                          <TabsTrigger value="my-defaults" className="text-[12px] data-[state=active]:text-blue-600">
+                            My defaults
+                            <RefreshCw className="h-3 w-3 ml-1" />
+                          </TabsTrigger>
+                          <TabsTrigger value="system" className="text-[12px]">System</TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </div>
+                    <div className="p-3 border-b border-slate-100">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                        <Input
+                          placeholder="Search columns"
+                          value={columnSearch}
+                          onChange={(e) => setColumnSearch(e.target.value)}
+                          className="pl-9 h-8 text-[13px] border-slate-200"
+                        />
+                      </div>
+                    </div>
+                    <div className="max-h-64 overflow-y-auto p-2">
+                      {availableColumns
+                        .filter(col => col.name.toLowerCase().includes(columnSearch.toLowerCase()))
+                        .map((column) => (
+                          <label key={column.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 cursor-pointer rounded">
+                            <Checkbox
+                              checked={enabledColumns.has(column.id)}
+                              onCheckedChange={(checked) => {
+                                const newSet = new Set(enabledColumns);
+                                if (checked) newSet.add(column.id);
+                                else newSet.delete(column.id);
+                                setEnabledColumns(newSet);
+                              }}
+                            />
+                            <span className="text-[13px] text-slate-700">{column.name}</span>
+                          </label>
+                        ))}
+                    </div>
+                    <div className="p-3 border-t border-slate-100 flex justify-between items-center">
+                      <button className="text-[12px] text-blue-600 hover:underline">Create a field</button>
+                      <span className="text-[11px] text-slate-500">{enabledColumns.size} of {availableColumns.length}</span>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </th>
             </tr>
           </thead>
