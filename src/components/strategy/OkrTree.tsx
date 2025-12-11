@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Settings, Maximize2, ChevronRight, ChevronDown, Target, Palette } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -40,6 +41,7 @@ function getProgressColor(progress: number): string {
 }
 
 export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
+  const navigate = useNavigate();
   const { data: treeData = [], isLoading } = useOKRTreeV2(selectedSnapshot);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');
@@ -226,7 +228,13 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
             >
               <Settings className="h-4 w-4" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-9 w-9"
+              onClick={() => navigate('/enterprise/okr-hub')}
+              title="Open OKR Hub"
+            >
               <Maximize2 className="h-4 w-4" />
             </Button>
           </div>
