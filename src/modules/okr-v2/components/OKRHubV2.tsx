@@ -144,9 +144,8 @@ export function OKRHubV2() {
           <h1 className="text-lg font-semibold text-foreground">OKR Hub</h1>
           <Badge variant="outline" className="ml-2">v2</Badge>
         </div>
-        <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
+        <Button onClick={() => setShowCreateDialog(true)} size="icon">
           <Plus className="h-4 w-4" />
-          New Objective
         </Button>
       </div>
 
