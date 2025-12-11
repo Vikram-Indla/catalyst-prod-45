@@ -14,11 +14,11 @@ import { OKRSmartFiltersDialog, OKRSmartFilters, countActiveFilters } from './OK
 
 function getHealthColor(health?: string): string {
   switch (health) {
-    case 'good': return 'bg-green-500';
-    case 'fair': return 'bg-amber-500';
-    case 'poor': return 'bg-red-500';
-    case 'at_risk': return 'bg-orange-500';
-    default: return 'bg-muted';
+    case 'good': return 'bg-secondary-green';
+    case 'fair': return 'bg-secondary-bronze';
+    case 'poor': return 'bg-destructive';
+    case 'at_risk': return 'bg-brand-gold';
+    default: return 'bg-secondary-grey';
   }
 }
 
