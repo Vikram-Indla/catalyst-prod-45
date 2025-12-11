@@ -166,9 +166,10 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
   }
 
   return (
-    <div className="h-full w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart margin={{ top: 20, right: 20, bottom: 60, left: 60 }}>
+    <div className="h-full w-full flex flex-col">
+      <div className="flex-1">
+        <ResponsiveContainer width="100%" height="100%">
+          <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 60 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           
           <XAxis 
@@ -211,7 +212,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             y1={stats.medianCostOfDelay}
             y2={maxY}
             fill="transparent"
-            label={{ value: 'Very High', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
+            label={{ value: 'Urgent', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
           />
           <ReferenceArea
             x1={stats.medianJobSize}
@@ -268,7 +269,22 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             )}
           />
         </ScatterChart>
-      </ResponsiveContainer>
+        </ResponsiveContainer>
+      </div>
+      
+      {/* Bottom Legend */}
+      <div className="flex items-center justify-center gap-6 pt-4 pb-2">
+        <span className="text-sm font-medium text-foreground">Priority to Execute:</span>
+        {(['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW'] as const).map((priority) => (
+          <div key={priority} className="flex items-center gap-2">
+            <div 
+              className="w-4 h-4 rounded-sm"
+              style={{ backgroundColor: PRIORITY_TO_EXECUTE_COLORS[priority] }}
+            />
+            <span className="text-sm text-muted-foreground">{PRIORITY_TO_EXECUTE_LABELS[priority]}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
