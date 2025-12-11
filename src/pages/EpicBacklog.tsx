@@ -18,7 +18,7 @@ import { OrphanObjectsDialog } from '@/components/epic-backlog/OrphanObjectsDial
 import { ViewSwitcher, ViewMode, KanbanMode } from '@/components/backlog/ViewSwitcher';
 import { MoreActionsMenu } from '@/components/epic-backlog/MoreActionsMenu';
 import { EnhancedBottomUpDialog } from '@/components/items/epics/dialogs/EnhancedBottomUpDialog';
-import { Star, Eye, ChevronDown, Plus, Grid3x3, Filter, Search, Tag } from 'lucide-react';
+import { Star, Eye, ChevronDown, Plus, Grid3x3, Filter, Search, Tag, TrendingUp, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function EpicBacklog() {
