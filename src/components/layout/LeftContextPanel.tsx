@@ -60,7 +60,6 @@ const getEnterpriseMenuItems = (): MenuItem[] => [
   { id: 'risks', label: 'Risks', icon: Blocks, path: '/risks', tiers: ['enterprise'] },
   { id: 'capacity-planning', label: 'Capacity', icon: UsersIcon, path: '/enterprise/reports/demand-capacity', tiers: ['enterprise'] },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['enterprise'] },
-  { id: 'more-pages', label: 'More pages', icon: Component, path: '#', tiers: ['enterprise'], expandable: true },
 ];
 
 // Portfolio/Program/Team menu items
@@ -76,7 +75,6 @@ const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): 
   { id: 'dependencies', label: 'Dependencies', icon: Link, path: '/dependencies', tiers: ['program'] },
   { id: 'more-items', label: 'More items', icon: Blocks, path: '#', tiers: ['portfolio', 'program'], expandable: true },
   { id: 'reports', label: 'Reports', icon: TrendingUp, path: '/reports-discovery', tiers: ['portfolio', 'program'] },
-  { id: 'more-pages', label: 'More pages', icon: Component, path: '#', tiers: ['portfolio', 'program'], expandable: true },
 ];
 
 interface LeftContextPanelProps {
