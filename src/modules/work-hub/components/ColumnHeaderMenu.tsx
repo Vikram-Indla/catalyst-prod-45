@@ -37,7 +37,7 @@ export function ColumnHeaderMenu({
       <DropdownMenuTrigger asChild>
         <th
           className={cn(
-            "px-2 py-2 text-left text-[11px] font-semibold text-[#6B778C] cursor-pointer hover:bg-[#F4F5F7] select-none whitespace-nowrap border-b border-[#DFE1E6] uppercase tracking-wider group",
+            "px-3 py-2 text-left text-[12px] leading-4 font-medium text-slate-500 cursor-pointer hover:bg-slate-100 select-none whitespace-nowrap border-b border-r border-slate-200 bg-slate-50 last:border-r-0 group",
             className
           )}
         >
