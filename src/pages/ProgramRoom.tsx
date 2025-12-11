@@ -356,11 +356,13 @@ export default function ProgramRoom() {
       )}
 
       {/* Epic Details Drawer */}
-      <EpicDetailsPanel
-        epic={selectedEpic}
-        open={!!selectedEpic}
-        onClose={() => setSelectedEpic(null)}
-      />
+      {selectedEpic && (
+        <EpicDetailsPanel
+          epic={selectedEpic}
+          open={!!selectedEpic}
+          onClose={() => setSelectedEpic(null)}
+        />
+      )}
     </div>
   );
 }
