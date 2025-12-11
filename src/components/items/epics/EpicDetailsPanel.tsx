@@ -3,14 +3,11 @@
  * CANONICAL Epic Details Panel for Catalyst Epics vNext
  * =====================================================
  * 
- * This is the single source of truth for Epic details.
- * All other Epic detail views MUST reuse this component.
- * 
- * Tabs: Details, Children, Value, Design, Intake, Benefits, 
- *       Milestones, Spend, Forecast, Technical Scoring, Links, Discussions
- * 
- * Phase 0: "WSJF" renamed to "Technical Scoring" throughout
- * Phase 1: PI removed from Epic planning, dates/quarters used instead
+ * Epic vNext Drawer Restructure:
+ * - Compact summary strip at top
+ * - Strategy Context moved to collapsible section in Overview tab
+ * - 6 tabs: Overview, Work Items, Estimation, Financials, Links, Discussions
+ * - Retired: Intake, Benefits, Value, Design, Forecast, Milestones tabs
  */
 
 import { useState, useRef, useEffect } from 'react';
@@ -49,25 +46,20 @@ import {
   LayoutGrid,
   X,
   Pencil,
-  HelpCircle,
   ChevronDown,
   Maximize2,
   Minimize2
 } from 'lucide-react';
-import { EpicDetailsTab } from './tabs/EpicDetailsTab';
-import { EpicDesignTab } from './tabs/EpicDesignTab';
-import { EpicIntakeTab } from './tabs/EpicIntakeTab';
-import { EpicBenefitsTab } from './tabs/EpicBenefitsTab';
-import { EpicValueTab } from './tabs/EpicValueTab';
-import { EpicMilestonesTab } from './tabs/EpicMilestonesTab';
-import { EpicSpendTab } from './tabs/EpicSpendTab';
-import { EpicForecastTab } from './tabs/EpicForecastTab';
-import { EpicTechnicalScoringTab } from './tabs/EpicTechnicalScoringTab';
-import { EpicLinksTab } from './tabs/EpicLinksTab';
+// vNext tabs (6 tabs only)
+import { EpicOverviewTab } from './tabs/EpicOverviewTab';
 import { EpicChildrenTab } from './tabs/EpicChildrenTab';
+import { EpicEstimationTab } from './tabs/EpicEstimationTab';
+import { EpicFinancialsTab } from './tabs/EpicFinancialsTab';
 import { EpicDiscussionsTab } from './tabs/EpicDiscussionsTab';
+import { WorkItemLinksSection } from '@/components/work-items/WorkItemLinksSection';
+// Roll-up summary (compact mode)
 import { EpicRollUpSummary } from './EpicRollUpSummary';
-import { EpicStrategyContext } from './EpicStrategyContext';
+// Dialogs
 import { DeleteEpicDialog } from './dialogs/DeleteEpicDialog';
 import { CancelEpicDialog } from './dialogs/CancelEpicDialog';
 import { SplitEpicDialog } from './dialogs/SplitEpicDialog';
@@ -86,7 +78,7 @@ interface EpicDetailsPanelProps {
 }
 
 export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetailsPanelProps) {
-  const [activeTab, setActiveTab] = useState('details');
+  const [activeTab, setActiveTab] = useState('overview');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [splitDialogOpen, setSplitDialogOpen] = useState(false);
@@ -554,65 +546,37 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
             <SheetDescription className="sr-only">Epic details panel</SheetDescription>
           </SheetHeader>
 
-          {/* PHASE II: Roll-up Summary Section */}
-          <div className="px-5 py-3 border-b border-border/40 bg-muted/10">
-            <EpicRollUpSummary epic={epic} />
-          </div>
-          
-          {/* PHASE II Step 2: Strategy Context Section (read-only) */}
-          <div className="px-5 py-3 border-b border-border/40">
-            <EpicStrategyContext epicId={epic.id} themeId={epic.theme_id} />
+          {/* Compact Roll-up Summary Strip */}
+          <div className="px-4 py-2 border-b border-border/40 bg-muted/10">
+            <EpicRollUpSummary epic={epic} compact />
           </div>
 
+          {/* vNext 6-Tab Structure */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
             <TabsList className="executive-tabs-list w-full justify-start rounded-none border-b h-auto shrink-0 overflow-x-auto flex-nowrap bg-[#feffff]">
-              <TabsTrigger value="details" className="executive-tab">Details</TabsTrigger>
-              <TabsTrigger value="children" className="executive-tab">Children</TabsTrigger>
-              <TabsTrigger value="design" className="executive-tab">Design</TabsTrigger>
-              <TabsTrigger value="intake" className="executive-tab">Intake</TabsTrigger>
-              <TabsTrigger value="benefits" className="executive-tab">Benefits</TabsTrigger>
-              <TabsTrigger value="value" className="executive-tab">Value</TabsTrigger>
-              <TabsTrigger value="milestones" className="executive-tab">Milestones</TabsTrigger>
-              <TabsTrigger value="spend" className="executive-tab">Spend</TabsTrigger>
-              <TabsTrigger value="forecast" className="executive-tab">Forecast</TabsTrigger>
-              <TabsTrigger value="technical-scoring" className="executive-tab">Technical Scoring</TabsTrigger>
+              <TabsTrigger value="overview" className="executive-tab">Overview</TabsTrigger>
+              <TabsTrigger value="work-items" className="executive-tab">Work Items</TabsTrigger>
+              <TabsTrigger value="estimation" className="executive-tab">Estimation</TabsTrigger>
+              <TabsTrigger value="financials" className="executive-tab">Financials</TabsTrigger>
               <TabsTrigger value="links" className="executive-tab">Links</TabsTrigger>
               <TabsTrigger value="discussions" className="executive-tab">Discussions</TabsTrigger>
             </TabsList>
 
             <div className="executive-drawer-content flex-1 overflow-y-auto">
-              <TabsContent value="details" className="m-0 focus-visible:outline-none">
-                <EpicDetailsTab epic={epic} />
+              <TabsContent value="overview" className="m-0 focus-visible:outline-none">
+                <EpicOverviewTab epic={epic} />
               </TabsContent>
-              <TabsContent value="children" className="m-0 focus-visible:outline-none">
+              <TabsContent value="work-items" className="m-0 focus-visible:outline-none">
                 <EpicChildrenTab epic={epic} />
               </TabsContent>
-              <TabsContent value="design" className="m-0 focus-visible:outline-none">
-                <EpicDesignTab epic={epic} />
+              <TabsContent value="estimation" className="m-0 focus-visible:outline-none">
+                <EpicEstimationTab epic={epic} />
               </TabsContent>
-              <TabsContent value="intake" className="m-0 focus-visible:outline-none">
-                <EpicIntakeTab epic={epic} />
+              <TabsContent value="financials" className="m-0 focus-visible:outline-none">
+                <EpicFinancialsTab epic={epic} />
               </TabsContent>
-              <TabsContent value="benefits" className="m-0 focus-visible:outline-none">
-                <EpicBenefitsTab epic={epic} />
-              </TabsContent>
-              <TabsContent value="value" className="m-0 focus-visible:outline-none">
-                <EpicValueTab epic={epic} />
-              </TabsContent>
-              <TabsContent value="milestones" className="m-0 focus-visible:outline-none">
-                <EpicMilestonesTab epic={epic} />
-              </TabsContent>
-              <TabsContent value="spend" className="m-0 focus-visible:outline-none">
-                <EpicSpendTab epic={epic} />
-              </TabsContent>
-              <TabsContent value="forecast" className="m-0 focus-visible:outline-none">
-                <EpicForecastTab epic={epic} />
-              </TabsContent>
-              <TabsContent value="technical-scoring" className="m-0 focus-visible:outline-none">
-                <EpicTechnicalScoringTab epic={epic} />
-              </TabsContent>
-              <TabsContent value="links" className="m-0 focus-visible:outline-none">
-                <EpicLinksTab epic={epic} />
+              <TabsContent value="links" className="m-0 focus-visible:outline-none p-4">
+                <WorkItemLinksSection workItemType="epic" workItemId={epic.id} />
               </TabsContent>
               <TabsContent value="discussions" className="m-0 focus-visible:outline-none h-[500px]">
                 <EpicDiscussionsTab epic={epic} />
