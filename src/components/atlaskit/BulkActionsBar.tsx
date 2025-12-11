@@ -1,5 +1,5 @@
-import Button from '@atlaskit/button';
-import { token } from '@atlaskit/tokens';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
 interface BulkActionsBarProps {
   selectedCount: number;
@@ -19,54 +19,33 @@ export function BulkActionsBar({
   if (selectedCount === 0) return null;
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: token('space.300', '24px'),
-      left: '50%',
-      transform: 'translateX(-50%)',
-      background: token('color.background.brand.bold', '#0747A6'),
-      color: token('color.text.inverse', '#FFFFFF'),
-      padding: token('space.200', '16px'),
-      borderRadius: token('border.radius', '3px'),
-      boxShadow: token('elevation.shadow.overlay', '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)'),
-      display: 'flex',
-      alignItems: 'center',
-      gap: token('space.200', '16px'),
-      zIndex: 500,
-      minWidth: '600px',
-    }}>
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-3 rounded-md shadow-lg flex items-center gap-4 z-[500] min-w-[600px]">
       {/* Selected Count */}
-      <span style={{ 
-        fontWeight: 600, 
-        fontSize: '14px',
-        whiteSpace: 'nowrap',
-        color: token('color.text.inverse', '#FFFFFF'),
-      }}>
+      <span className="font-semibold text-sm whitespace-nowrap">
         {selectedCount} selected
       </span>
       
       {/* Clear Button */}
       <Button 
-        appearance="subtle" 
+        variant="ghost" 
+        size="sm"
         onClick={onClear}
-        style={{ color: token('color.text.inverse', '#FFFFFF') }}
+        className="text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10"
       >
+        <X className="h-4 w-4 mr-1" />
         Clear
       </Button>
       
       {/* Divider */}
-      <div style={{
-        width: '1px',
-        height: '24px',
-        background: 'rgba(255, 255, 255, 0.3)',
-      }} />
+      <div className="w-px h-6 bg-primary-foreground/30" />
       
       {/* Update Status Button */}
       {onUpdateStatus && (
         <Button 
-          appearance="subtle" 
+          variant="ghost" 
+          size="sm"
           onClick={onUpdateStatus}
-          style={{ color: token('color.text.inverse', '#FFFFFF') }}
+          className="text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10"
         >
           Update Status
         </Button>
@@ -75,9 +54,10 @@ export function BulkActionsBar({
       {/* Assign Button */}
       {onAssign && (
         <Button 
-          appearance="subtle" 
+          variant="ghost" 
+          size="sm"
           onClick={onAssign}
-          style={{ color: token('color.text.inverse', '#FFFFFF') }}
+          className="text-primary-foreground hover:text-primary-foreground hover:bg-primary-foreground/10"
         >
           Assign
         </Button>
@@ -86,7 +66,8 @@ export function BulkActionsBar({
       {/* Delete Button - Warning appearance for destructive action */}
       {onDelete && (
         <Button 
-          appearance="warning" 
+          variant="destructive" 
+          size="sm"
           onClick={onDelete}
         >
           Delete

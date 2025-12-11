@@ -1,5 +1,5 @@
-import Button from '@atlaskit/button';
-import { token } from '@atlaskit/tokens';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface QuickFilter {
   key: string;
@@ -15,27 +15,14 @@ interface QuickFiltersBarProps {
 
 export function QuickFiltersBar({ filters, activeFilter, onFilterChange }: QuickFiltersBarProps) {
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: token('space.100', '8px'),
-      padding: `${token('space.100', '8px')} 0`,
-      borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-      marginBottom: token('space.200', '16px'),
-      overflowX: 'auto',
-    }}>
-      <span style={{ 
-        fontSize: '12px', 
-        color: token('color.text.subtle', '#6B778C'),
-        whiteSpace: 'nowrap',
-        marginRight: token('space.050', '4px'),
-      }}>
+    <div className="flex items-center gap-2 py-2 border-b border-border mb-4 overflow-x-auto">
+      <span className="text-xs text-muted-foreground whitespace-nowrap mr-1">
         Quick filters:
       </span>
       
       <Button
-        appearance={activeFilter === null ? 'primary' : 'subtle'}
-        spacing="compact"
+        variant={activeFilter === null ? 'default' : 'ghost'}
+        size="sm"
         onClick={() => onFilterChange(null)}
       >
         All
@@ -44,23 +31,19 @@ export function QuickFiltersBar({ filters, activeFilter, onFilterChange }: Quick
       {filters.map((filter) => (
         <Button
           key={filter.key}
-          appearance={activeFilter === filter.key ? 'primary' : 'subtle'}
-          spacing="compact"
+          variant={activeFilter === filter.key ? 'default' : 'ghost'}
+          size="sm"
           onClick={() => onFilterChange(filter.key)}
+          className="gap-1"
         >
           {filter.label}
           {filter.count !== undefined && (
-            <span style={{
-              marginLeft: token('space.050', '4px'),
-              padding: `0 ${token('space.050', '4px')}`,
-              background: activeFilter === filter.key 
-                ? 'rgba(255,255,255,0.2)' 
-                : token('color.background.neutral', '#DFE1E6'),
-              borderRadius: '10px',
-              fontSize: '11px',
-            }}>
+            <Badge 
+              variant={activeFilter === filter.key ? 'secondary' : 'outline'}
+              className="ml-1 text-[11px] px-1.5 py-0"
+            >
               {filter.count}
-            </span>
+            </Badge>
           )}
         </Button>
       ))}
