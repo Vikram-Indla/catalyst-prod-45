@@ -3,16 +3,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { Link2 } from 'lucide-react';
-import { 
-  EpicBalancingEpic, 
-  PriorityToExecute,
-  AbilityToExecute,
-  PRIORITY_TO_EXECUTE_LABELS 
-} from '../types';
+import { EpicBalancingEpic } from '../types';
 
 interface EpicDetailsDrawerProps {
   epic: EpicBalancingEpic | null;
@@ -21,17 +15,12 @@ interface EpicDetailsDrawerProps {
   onSave: (epic: EpicBalancingEpic) => void;
 }
 
-const PRIORITIES: PriorityToExecute[] = ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW'];
-const ABILITIES: AbilityToExecute[] = ['HIGH', 'MEDIUM', 'LOW'];
-
 export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDrawerProps) {
   const [formData, setFormData] = useState({
     businessAlignment: '',
     timeCriticality: '',
     investorEnablement: '',
     jobSize: '',
-    priorityToExecute: 'MEDIUM' as PriorityToExecute,
-    abilityToExecute: 'MEDIUM' as AbilityToExecute,
   });
   const [saving, setSaving] = useState(false);
 
@@ -42,8 +31,6 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
         timeCriticality: epic.timeCriticality?.toString() ?? '',
         investorEnablement: epic.investorEnablement?.toString() ?? '',
         jobSize: epic.jobSize?.toString() ?? '',
-        priorityToExecute: epic.priorityToExecute,
-        abilityToExecute: epic.abilityToExecute,
       });
     }
   }, [epic]);
@@ -84,8 +71,6 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
         timeCriticality: parseNumber(formData.timeCriticality),
         investorEnablement: parseNumber(formData.investorEnablement),
         jobSize: parseNumber(formData.jobSize),
-        priorityToExecute: formData.priorityToExecute,
-        abilityToExecute: formData.abilityToExecute,
         costOfDelay,
         technicalScore,
       };
@@ -111,32 +96,9 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
         </SheetHeader>
 
         <div className="space-y-6">
-          {/* Linked Items */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">Linked Items</h3>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 p-2 bg-accent/30 rounded-md">
-                <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Theme:</span>
-                <span className="text-sm font-medium text-foreground truncate">
-                  {epic.themeName || 'Not linked'}
-                </span>
-              </div>
-              <div className="flex items-center gap-2 p-2 bg-accent/30 rounded-md">
-                <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Business Request:</span>
-                <span className="text-sm font-medium text-foreground truncate">
-                  {epic.businessRequestTitle || 'Not linked'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* WSJF Scoring Fields */}
+          {/* Priority to Execute - Input Fields */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Technical Score (WSJF) Inputs</h3>
+            <h3 className="text-sm font-semibold text-foreground">Priority to Execute</h3>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -195,70 +157,35 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
 
           <Separator />
 
-          {/* Strategic Fields */}
+          {/* Technical Score */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Strategic Classification</h3>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="priorityToExecute">Priority to Execute</Label>
-                <Select
-                  value={formData.priorityToExecute}
-                  onValueChange={(v) => setFormData(prev => ({ ...prev, priorityToExecute: v as PriorityToExecute }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border-border z-[100]">
-                    {PRIORITIES.map(priority => (
-                      <SelectItem key={priority} value={priority}>
-                        {PRIORITY_TO_EXECUTE_LABELS[priority]}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="abilityToExecute">Ability to Execute</Label>
-                <Select
-                  value={formData.abilityToExecute}
-                  onValueChange={(v) => setFormData(prev => ({ ...prev, abilityToExecute: v as AbilityToExecute }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border-border z-[100]">
-                    {ABILITIES.map(ability => (
-                      <SelectItem key={ability} value={ability}>
-                        {ability}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <h3 className="text-sm font-semibold text-foreground">Technical Score</h3>
+            <div className="p-3 bg-brand-gold/10 rounded-lg">
+              <div className="text-lg font-semibold text-brand-gold">
+                {technicalScore !== null ? technicalScore.toFixed(2) : 'N/A'}
               </div>
             </div>
           </div>
 
           <Separator />
 
-          {/* Calculated Values */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-foreground">Calculated Values</h3>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-accent/30 rounded-lg">
-                <div className="text-xs text-muted-foreground">Cost of Delay</div>
-                <div className="text-lg font-semibold text-foreground">
-                  {costOfDelay !== null ? costOfDelay : 'N/A'}
-                </div>
+          {/* Linked Items */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-semibold text-foreground">Linked Items</h3>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 p-2 bg-accent/30 rounded-md">
+                <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <span className="text-sm text-muted-foreground">Theme:</span>
+                <span className="text-sm font-medium text-foreground truncate">
+                  {epic.themeName || 'Not linked'}
+                </span>
               </div>
-              
-              <div className="p-3 bg-brand-gold/10 rounded-lg">
-                <div className="text-xs text-muted-foreground">Technical Score</div>
-                <div className="text-lg font-semibold text-brand-gold">
-                  {technicalScore !== null ? technicalScore.toFixed(2) : 'N/A'}
-                </div>
+              <div className="flex items-center gap-2 p-2 bg-accent/30 rounded-md">
+                <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <span className="text-sm text-muted-foreground">Business Request:</span>
+                <span className="text-sm font-medium text-foreground truncate">
+                  {epic.businessRequestTitle || 'Not linked'}
+                </span>
               </div>
             </div>
           </div>
