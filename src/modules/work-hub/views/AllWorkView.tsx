@@ -225,67 +225,8 @@ export function AllWorkView() {
   return (
     <div className="h-full flex flex-col" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif' }}>
       {/* Filter Toolbar */}
-      <div className="px-4 py-3 space-y-3 bg-white">
-        {/* Row 1: Ask AI + Basic/JQL + Search */}
-        <div className="flex items-center gap-2">
-          {/* Ask AI Button */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8 px-3 gap-2 text-[13px] text-slate-600 border border-slate-200 rounded-md hover:bg-slate-50"
-          >
-            <Sparkles className="h-4 w-4" />
-            Ask AI
-          </Button>
-          
-          {/* Basic / JQL Segmented Control */}
-          <div className="inline-flex rounded-md border border-slate-200 overflow-hidden">
-            <button
-              onClick={() => setViewMode('basic')}
-              className={cn(
-                'px-3 h-8 text-[13px] font-medium transition-colors',
-                viewMode === 'basic' 
-                  ? 'bg-white text-blue-600 border-r border-blue-600' 
-                  : 'bg-slate-50 text-slate-600 border-r border-slate-200 hover:bg-slate-100'
-              )}
-            >
-              Basic
-            </button>
-            <button
-              onClick={() => setViewMode('jql')}
-              className={cn(
-                'px-3 h-8 text-[13px] font-medium transition-colors',
-                viewMode === 'jql' 
-                  ? 'bg-white text-blue-600' 
-                  : 'bg-slate-50 text-slate-600 hover:bg-slate-100'
-              )}
-            >
-              JQL
-            </button>
-          </div>
-
-          {/* Search Input */}
-          {viewMode === 'basic' ? (
-            <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search work"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-8 pl-9 text-[14px] border-slate-200 focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-          ) : (
-            <Textarea
-              value={jqlQuery}
-              onChange={(e) => setJqlQuery(e.target.value)}
-              className="flex-1 h-8 min-h-8 resize-none font-mono text-[13px] border-slate-200"
-              placeholder="Enter JQL query..."
-            />
-          )}
-        </div>
-
-        {/* Row 2: Filter Chips + Right Controls */}
+      <div className="px-4 py-3 bg-white">
+        {/* Filter Chips + Right Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FilterChip label="All..." />
@@ -298,27 +239,6 @@ export function AllWorkView() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* Saved Filters */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="h-8 px-3 text-[13px] gap-1 border-blue-600 text-blue-600 hover:bg-blue-50"
-                >
-                  Saved filters
-                  <ChevronDown className="h-3.5 w-3.5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="bg-white border-slate-200">
-                <DropdownMenuItem className="text-[14px]">My open issues</DropdownMenuItem>
-                <DropdownMenuItem className="text-[14px]">Recently updated</DropdownMenuItem>
-                <DropdownMenuItem className="text-[14px]">High priority</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-[14px]">Save current filter...</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
             {/* Group */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
