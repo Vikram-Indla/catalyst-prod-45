@@ -1,18 +1,32 @@
+/**
+ * =====================================================
+ * useEpicMutations - Canonical Epic Side Effects Orchestrator
+ * =====================================================
+ * Catalyst Epics vNext Phase 1
+ * 
+ * MUTATIONS HANDLED:
+ * - updateEpic: Update Epic fields with side effects
+ * - deleteEpic: Soft delete, disassociates Features (remain in backlog)
+ * - cancelEpic: Cancel Epic, disassociates Features (remain in backlog)
+ * - updateTechnicalScoring: Update scoring inputs, recompute score
+ * - triggerFeatureRollUp: Called when Feature changes
+ * 
+ * SIDE EFFECTS APPLIED:
+ * - Feature → Epic estimate roll-up (sum of Feature estimates)
+ * - Epic progress persistence (weighted by Feature estimates)
+ * - Technical scoring recomputation (formula unchanged)
+ * 
+ * QUERIES INVALIDATED:
+ * - ['epics'], ['backlog-items'], ['epic-wsjf'], ['enterprise-epics']
+ * - ['epic-detail', epicId], ['epic', epicId], ['epic-technical-score', epicId]
+ * - ['features'], ['epic-features', epicId]
+ * 
+ * NOTE: Technical Scoring stores in epic_wsjf table but UI shows "Tech Score"
+ */
+
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-
-/**
- * useEpicMutations - Centralized Epic Side Effects Orchestrator
- * Phase 1: Handles all Epic mutations with proper side effects
- * 
- * Responsibilities:
- * - Create / Update / Delete / Cancel Epic
- * - Feature → Epic estimate roll-up
- * - Progress computation and persistence
- * - Technical scoring recomputation
- * - Proper query invalidations
- */
 
 export interface EpicUpdateData {
   name?: string;

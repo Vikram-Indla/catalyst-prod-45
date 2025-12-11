@@ -1,12 +1,16 @@
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { TrendingUp } from 'lucide-react';
-
 /**
- * WSJFBadge Component (Legacy - now shows as "Tech Score")
- * Phase 0: Renamed from WSJF to Technical Score
- * Displays Technical Score with color coding based on value
+ * =====================================================
+ * WSJFBadge - Legacy Wrapper (Delegates to TechnicalScoreBadge)
+ * =====================================================
+ * 
+ * This component is kept for backwards compatibility with existing
+ * code that references WSJFBadge (e.g., Features, ProgramBoard).
+ * 
+ * It simply delegates to TechnicalScoreBadge with mapped prop names.
+ * All display shows "Tech Score" (not "WSJF").
  */
+
+import { TechnicalScoreBadge } from './TechnicalScoreBadge';
 
 interface WSJFBadgeProps {
   score: number | null;
@@ -25,57 +29,15 @@ export function WSJFBadge({
   jobSize,
   onClick,
 }: WSJFBadgeProps) {
-  if (!score || score === 0) {
-    return (
-      <Badge variant="outline" className="text-xs cursor-pointer" onClick={onClick}>
-        No Score
-      </Badge>
-    );
-  }
-  
-  // Color code based on Technical Score thresholds
-  const getVariant = (): 'default' | 'secondary' | 'outline' => {
-    if (score >= 50) return 'default'; // High priority
-    if (score >= 20) return 'secondary'; // Medium priority
-    return 'outline'; // Low priority
-  };
-  
-  const variant = getVariant();
-  
-  const tooltipContent = businessValue !== undefined && (
-    <div className="space-y-1">
-      <div className="font-semibold">Technical Scoring Components:</div>
-      <div className="text-xs space-y-0.5">
-        <div>Technical Value: {businessValue}</div>
-        <div>Time Criticality: {timeCriticality}</div>
-        <div>Risk Reduction: {riskReduction}</div>
-        <div>Job Size: {jobSize}</div>
-        <div className="pt-1 border-t">
-          <strong>Tech Score: {score.toFixed(2)}</strong>
-        </div>
-      </div>
-    </div>
-  );
-  
+  // Delegate to canonical TechnicalScoreBadge
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Badge 
-            variant={variant} 
-            className="text-xs gap-1 cursor-pointer hover:opacity-80 transition-opacity"
-            onClick={onClick}
-          >
-            <TrendingUp className="h-3 w-3" />
-            {score.toFixed(2)}
-          </Badge>
-        </TooltipTrigger>
-        {tooltipContent && (
-          <TooltipContent>
-            {tooltipContent}
-          </TooltipContent>
-        )}
-      </Tooltip>
-    </TooltipProvider>
+    <TechnicalScoreBadge
+      score={score}
+      technicalValue={businessValue}
+      timeCriticality={timeCriticality}
+      riskReduction={riskReduction}
+      jobSize={jobSize}
+      onClick={onClick}
+    />
   );
 }

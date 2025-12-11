@@ -1,3 +1,18 @@
+/**
+ * =====================================================
+ * CANONICAL Epic Details Panel for Catalyst Epics vNext
+ * =====================================================
+ * 
+ * This is the single source of truth for Epic details.
+ * All other Epic detail views MUST reuse this component.
+ * 
+ * Tabs: Details, Children, Value, Design, Intake, Benefits, 
+ *       Milestones, Spend, Forecast, Technical Scoring, Links, Discussions
+ * 
+ * Phase 0: "WSJF" renamed to "Technical Scoring" throughout
+ * Phase 1: PI removed from Epic planning, dates/quarters used instead
+ */
+
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
