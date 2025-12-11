@@ -650,14 +650,6 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             />
           </div>
           <div>
-            <Label>Initiation Date</Label>
-            <Input 
-              type="date" 
-              value={formData.initiation_date}
-              onChange={(e) => handleFieldChange('initiation_date', e.target.value)}
-            />
-          </div>
-          <div>
             <Label>Target Completion Date</Label>
             <div className="flex gap-2">
               <Input 
@@ -723,7 +715,7 @@ export function EpicDetailsTab({ epic }: EpicDetailsTabProps) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="points">Points</SelectItem>
-              <SelectItem value="wsjf">WSJF</SelectItem>
+              <SelectItem value="technical_scoring">Technical Scoring</SelectItem>
               <SelectItem value="tshirt">T-Shirt Sizing</SelectItem>
               <SelectItem value="team_weeks">Team Weeks</SelectItem>
               <SelectItem value="member_weeks">Member Weeks</SelectItem>

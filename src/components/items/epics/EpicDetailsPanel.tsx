@@ -575,7 +575,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
               <TabsTrigger value="milestones" className="executive-tab">Milestones</TabsTrigger>
               <TabsTrigger value="spend" className="executive-tab">Spend</TabsTrigger>
               <TabsTrigger value="forecast" className="executive-tab">Forecast</TabsTrigger>
-              <TabsTrigger value="wsjf" className="executive-tab">Technical Scoring</TabsTrigger>
+              <TabsTrigger value="technical-scoring" className="executive-tab">Technical Scoring</TabsTrigger>
               <TabsTrigger value="links" className="executive-tab">Links</TabsTrigger>
               <TabsTrigger value="discussions" className="executive-tab">Discussions</TabsTrigger>
             </TabsList>
@@ -608,7 +608,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
               <TabsContent value="forecast" className="m-0 focus-visible:outline-none">
                 <EpicForecastTab epic={epic} />
               </TabsContent>
-              <TabsContent value="wsjf" className="m-0 focus-visible:outline-none">
+              <TabsContent value="technical-scoring" className="m-0 focus-visible:outline-none">
                 <EpicTechnicalScoringTab epic={epic} />
               </TabsContent>
               <TabsContent value="links" className="m-0 focus-visible:outline-none">
