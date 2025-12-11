@@ -1,17 +1,29 @@
 import React, { useState } from 'react';
-import { Content, Main, PageLayout } from '@atlaskit/page-layout';
-import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
-import Button from '@atlaskit/button';
-import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import Avatar from '@atlaskit/avatar';
-import Lozenge from '@atlaskit/lozenge';
-import Tooltip from '@atlaskit/tooltip';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import AddIcon from '@atlaskit/icon/glyph/add';
-import MoreIcon from '@atlaskit/icon/glyph/more';
-import SettingsIcon from '@atlaskit/icon/glyph/settings';
-import StarIcon from '@atlaskit/icon/glyph/star';
-import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
+import { Plus, MoreHorizontal, Settings, Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
 
 interface Program {
   id: string;
@@ -45,238 +57,165 @@ interface Epic {
 export default function ProgramDetailPage({ programKey }: { programKey: string }) {
   const [program, setProgram] = useState<Program>(mockProgram);
   const [epics] = useState<Epic[]>(mockEpics);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState('epics');
 
   const toggleStar = () => {
     setProgram({ ...program, isStarred: !program.isStarred });
   };
 
   return (
-    <PageLayout>
-      <Content>
-        <Main>
-          <div style={{
-            padding: '24px 40px',
-            background: '#FAFBFC',
-            minHeight: '100vh',
-          }}>
-            {/* BREADCRUMBS */}
-            <div style={{ marginBottom: '12px' }}>
-              <Breadcrumbs>
-                <BreadcrumbsItem href="/programs" text="Programs" />
-                <BreadcrumbsItem text={program.name} />
-              </Breadcrumbs>
-            </div>
+    <div className="p-6 px-10 bg-muted min-h-screen">
+      {/* BREADCRUMBS */}
+      <div className="mb-3">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/programs">Programs</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{program.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
 
-            {/* PROGRAM HEADER */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              marginBottom: '24px',
-            }}>
-              <div style={{ flex: 1 }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  marginBottom: '4px',
-                }}>
-                  <h1 style={{
-                    fontSize: '20px',
-                    fontWeight: 500,
-                    lineHeight: '24px',
-                    color: '#172B4D',
-                    margin: 0,
-                  }}>
-                    {program.name}
-                  </h1>
-                  {program.isDefault && (
-                    <Lozenge appearance="default">Default</Lozenge>
-                  )}
-                </div>
-
-                <p style={{
-                  fontSize: '11px',
-                  lineHeight: '16px',
-                  color: '#5E6C84',
-                  margin: '0 0 6px 0',
-                }}>
-                  {program.key}
-                </p>
-
-                {program.description && (
-                  <p style={{
-                    fontSize: '14px',
-                    lineHeight: '20px',
-                    color: '#172B4D',
-                    margin: '0 0 8px 0',
-                  }}>
-                    {program.description}
-                  </p>
-                )}
-
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  fontSize: '11px',
-                  color: '#5E6C84',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <span>Lead:</span>
-                    <Avatar
-                      size="xsmall"
-                      src={program.lead.avatar}
-                      name={program.lead.name}
-                    />
-                    <span>{program.lead.name}</span>
-                  </div>
-                  <span>•</span>
-                  <span>{program.projectCount} projects</span>
-                  <span>•</span>
-                  <span>{program.epicCount} epics</span>
-                </div>
-              </div>
-
-              {/* ACTIONS */}
-              <div style={{
-                display: 'flex',
-                gap: '8px',
-              }}>
-                <Button
-                  appearance="subtle"
-                  iconBefore={
-                    program.isStarred ? (
-                      <StarFilledIcon 
-                        label="Starred" 
-                        size="small" 
-                        primaryColor="#FFAB00"
-                      />
-                    ) : (
-                      <StarIcon 
-                        label="Star" 
-                        size="small"
-                      />
-                    )
-                  }
-                  onClick={toggleStar}
-                >
-                  {program.isStarred ? 'Starred' : 'Star'}
-                </Button>
-
-                <Button
-                  appearance="subtle"
-                  iconBefore={<SettingsIcon label="Settings" size="small" />}
-                  href={`/programs/${programKey}/settings`}
-                >
-                  Settings
-                </Button>
-
-                <DropdownMenu
-                  trigger={({ triggerRef, ...props }) => (
-                    <Button
-                      {...props}
-                      ref={triggerRef}
-                      appearance="subtle"
-                      iconBefore={<MoreIcon label="More" size="small" />}
-                    />
-                  )}
-                >
-                  <DropdownItemGroup>
-                    <DropdownItem>Edit program</DropdownItem>
-                    <DropdownItem>Archive program</DropdownItem>
-                    <DropdownItem>Delete program</DropdownItem>
-                  </DropdownItemGroup>
-                </DropdownMenu>
-              </div>
-            </div>
-
-            {/* TABS */}
-            <Tabs
-              onChange={(index) => setSelectedTab(index)}
-              selected={selectedTab}
-              id="program-tabs"
-            >
-              <TabList>
-                <Tab>Epics ({epics.length})</Tab>
-                <Tab>Projects ({program.projectCount})</Tab>
-                <Tab>Settings</Tab>
-              </TabList>
-
-              {/* EPICS TAB */}
-              <TabPanel>
-                <div style={{ marginTop: '16px' }}>
-                  <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '12px',
-                  }}>
-                    <h2 style={{
-                      fontSize: '14px',
-                      fontWeight: 600,
-                      color: '#172B4D',
-                      margin: 0,
-                    }}>
-                      Epics in this program
-                    </h2>
-                    <Button
-                      appearance="primary"
-                      iconBefore={<AddIcon label="Create" size="small" />}
-                    >
-                      Create epic
-                    </Button>
-                  </div>
-
-                  <EpicsList epics={epics} programKey={programKey} />
-                </div>
-              </TabPanel>
-
-              {/* PROJECTS TAB */}
-              <TabPanel>
-                <div style={{ marginTop: '16px' }}>
-                  <h2 style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    color: '#172B4D',
-                    margin: '0 0 12px 0',
-                  }}>
-                    Projects in this program
-                  </h2>
-                  <p style={{
-                    fontSize: '12px',
-                    color: '#5E6C84',
-                  }}>
-                    Projects list will be implemented in Phase 3
-                  </p>
-                </div>
-              </TabPanel>
-
-              {/* SETTINGS TAB */}
-              <TabPanel>
-                <div style={{ marginTop: '16px' }}>
-                  <h2 style={{
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    color: '#172B4D',
-                    margin: '0 0 12px 0',
-                  }}>
-                    Program settings
-                  </h2>
-                  <p style={{
-                    fontSize: '12px',
-                    color: '#5E6C84',
-                  }}>
-                    Settings will be implemented in Phase 2.4
-                  </p>
-                </div>
-              </TabPanel>
-            </Tabs>
+      {/* PROGRAM HEADER */}
+      <div className="flex justify-between items-start mb-6">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <h1 className="text-xl font-medium text-foreground m-0">
+              {program.name}
+            </h1>
+            {program.isDefault && (
+              <Badge variant="secondary">Default</Badge>
+            )}
           </div>
-        </Main>
-      </Content>
-    </PageLayout>
+
+          <p className="text-[11px] text-muted-foreground mb-1.5">
+            {program.key}
+          </p>
+
+          {program.description && (
+            <p className="text-sm text-foreground mb-2">
+              {program.description}
+            </p>
+          )}
+
+          <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <span>Lead:</span>
+              <Avatar className="w-4 h-4">
+                <AvatarImage src={program.lead.avatar} />
+                <AvatarFallback className="text-[8px]">
+                  {program.lead.name.slice(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span>{program.lead.name}</span>
+            </div>
+            <span>•</span>
+            <span>{program.projectCount} projects</span>
+            <span>•</span>
+            <span>{program.epicCount} epics</span>
+          </div>
+        </div>
+
+        {/* ACTIONS */}
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleStar}
+          >
+            <Star className={`w-4 h-4 mr-1 ${program.isStarred ? 'fill-yellow-400 text-yellow-400' : ''}`} />
+            {program.isStarred ? 'Starred' : 'Star'}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+          >
+            <a href={`/programs/${programKey}/settings`}>
+              <Settings className="w-4 h-4 mr-1" />
+              Settings
+            </a>
+          </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreHorizontal className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Edit program</DropdownMenuItem>
+              <DropdownMenuItem>Archive program</DropdownMenuItem>
+              <DropdownMenuItem>Delete program</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+
+      {/* TABS */}
+      <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+        <TabsList className="bg-transparent border-b border-border rounded-none p-0 h-auto gap-0 w-full justify-start">
+          <TabsTrigger 
+            value="epics"
+            className="text-sm px-0 mr-6 pb-3 pt-2 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none bg-transparent"
+          >
+            Epics ({epics.length})
+          </TabsTrigger>
+          <TabsTrigger 
+            value="projects"
+            className="text-sm px-0 mr-6 pb-3 pt-2 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none bg-transparent"
+          >
+            Projects ({program.projectCount})
+          </TabsTrigger>
+          <TabsTrigger 
+            value="settings"
+            className="text-sm px-0 mr-6 pb-3 pt-2 rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-none bg-transparent"
+          >
+            Settings
+          </TabsTrigger>
+        </TabsList>
+
+        {/* EPICS TAB */}
+        <TabsContent value="epics" className="mt-4">
+          <div className="flex justify-between items-center mb-3">
+            <h2 className="text-sm font-semibold text-foreground m-0">
+              Epics in this program
+            </h2>
+            <Button size="sm">
+              <Plus className="w-4 h-4 mr-1" />
+              Create epic
+            </Button>
+          </div>
+
+          <EpicsList epics={epics} programKey={programKey} />
+        </TabsContent>
+
+        {/* PROJECTS TAB */}
+        <TabsContent value="projects" className="mt-4">
+          <h2 className="text-sm font-semibold text-foreground mb-3">
+            Projects in this program
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Projects list will be implemented in Phase 3
+          </p>
+        </TabsContent>
+
+        {/* SETTINGS TAB */}
+        <TabsContent value="settings" className="mt-4">
+          <h2 className="text-sm font-semibold text-foreground mb-3">
+            Program settings
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            Settings will be implemented in Phase 2.4
+          </p>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
 
@@ -287,21 +226,11 @@ export default function ProgramDetailPage({ programKey }: { programKey: string }
 function EpicsList({ epics, programKey }: { epics: Epic[]; programKey: string }) {
   if (epics.length === 0) {
     return (
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DFE1E6',
-        borderRadius: '3px',
-        padding: '32px',
-        textAlign: 'center',
-      }}>
-        <p style={{
-          fontSize: '14px',
-          color: '#5E6C84',
-          margin: '0 0 12px 0',
-        }}>
+      <div className="bg-card border border-border rounded p-8 text-center">
+        <p className="text-sm text-muted-foreground mb-3">
           No epics in this program yet
         </p>
-        <Button appearance="primary">
+        <Button>
           Create your first epic
         </Button>
       </div>
@@ -309,12 +238,7 @@ function EpicsList({ epics, programKey }: { epics: Epic[]; programKey: string })
   }
 
   return (
-    <div style={{
-      background: '#FFFFFF',
-      border: '1px solid #DFE1E6',
-      borderRadius: '3px',
-      overflow: 'hidden',
-    }}>
+    <div className="bg-card border border-border rounded overflow-hidden">
       {epics.map((epic, index) => (
         <EpicListItem
           key={epic.id}
@@ -350,102 +274,62 @@ function EpicListItem({ epic, programKey, isLast }: { epic: Epic; programKey: st
       href={`/programs/${programKey}/epics/${epic.key}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        padding: '8px 12px',
-        background: isHovered ? '#F4F5F7' : 'transparent',
-        borderBottom: isLast ? 'none' : '1px solid #DFE1E6',
-        textDecoration: 'none',
-        transition: 'background 150ms',
-      }}
+      className={`flex items-center gap-3 px-3 py-2 no-underline transition-colors ${
+        isHovered ? 'bg-muted' : 'bg-transparent'
+      } ${!isLast ? 'border-b border-border' : ''}`}
     >
       {/* PRIORITY INDICATOR */}
-      <div style={{
-        width: '4px',
-        height: '24px',
-        background: getPriorityColor(epic.priority),
-        borderRadius: '2px',
-        flexShrink: 0,
-      }} />
+      <div 
+        className="w-1 h-6 rounded shrink-0"
+        style={{ backgroundColor: getPriorityColor(epic.priority) }}
+      />
 
       {/* EPIC INFO */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          marginBottom: '2px',
-        }}>
-          <span style={{
-            fontSize: '12px',
-            fontWeight: 600,
-            color: '#0052CC',
-          }}>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-1.5 mb-0.5">
+          <span className="text-xs font-semibold text-primary">
             {epic.key}
           </span>
-          <Lozenge appearance="default">{epic.status}</Lozenge>
+          <Badge variant="secondary">{epic.status}</Badge>
         </div>
-        <div style={{
-          fontSize: '14px',
-          fontWeight: 500,
-          lineHeight: '20px',
-          color: '#172B4D',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}>
+        <div className="text-sm font-medium text-foreground truncate">
           {epic.summary}
         </div>
       </div>
 
       {/* METADATA */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        flexShrink: 0,
-      }}>
-        <div style={{
-          fontSize: '11px',
-          color: '#5E6C84',
-        }}>
+      <div className="flex items-center gap-3 shrink-0">
+        <div className="text-[11px] text-muted-foreground">
           {epic.linkedIssues} linked issues
         </div>
 
-        <div style={{
-          width: '60px',
-          height: '6px',
-          background: '#DFE1E6',
-          borderRadius: '3px',
-          overflow: 'hidden',
-        }}>
-          <div style={{
-            width: `${epic.progress}%`,
-            height: '100%',
-            background: '#36B37E',
-            transition: 'width 300ms',
-          }} />
+        <div className="w-[60px] h-1.5 bg-muted rounded overflow-hidden">
+          <div 
+            className="h-full bg-green-500 transition-all"
+            style={{ width: `${epic.progress}%` }}
+          />
         </div>
 
-        <div style={{
-          fontSize: '11px',
-          color: '#5E6C84',
-          width: '32px',
-          textAlign: 'right',
-        }}>
+        <div className="text-[11px] text-muted-foreground w-8 text-right">
           {epic.progress}%
         </div>
 
         {epic.assignee && (
-          <Tooltip content={epic.assignee.name}>
-            <Avatar
-              size="xsmall"
-              src={epic.assignee.avatar}
-              name={epic.assignee.name}
-            />
-          </Tooltip>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Avatar className="w-5 h-5">
+                  <AvatarImage src={epic.assignee.avatar} />
+                  <AvatarFallback className="text-[8px]">
+                    {epic.assignee.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent>
+                {epic.assignee.name}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
     </a>
@@ -501,11 +385,24 @@ const mockEpics: Epic[] = [
   {
     id: '3',
     key: 'PROD-3',
-    summary: 'Mobile App Development',
+    summary: 'Dashboard Analytics & Reporting',
     status: 'In Progress',
     priority: 'medium',
-    assignee: null,
-    linkedIssues: 42,
+    assignee: {
+      name: 'Bob Johnson',
+      avatar: undefined,
+    },
+    linkedIssues: 12,
     progress: 45,
+  },
+  {
+    id: '4',
+    key: 'PROD-4',
+    summary: 'Mobile App Optimization',
+    status: 'Done',
+    priority: 'low',
+    assignee: null,
+    linkedIssues: 8,
+    progress: 100,
   },
 ];
