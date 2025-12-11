@@ -148,25 +148,22 @@ export function ProgramSidebar({
       </button>
 
       <div className="h-full flex flex-col overflow-hidden">
-        {/* Program Context Header */}
-        <div className={cn("px-4 pt-4 pb-3 border-b", !expanded && "px-2")}>
+        {/* Program Context Header - h-14 (56px) to align with main header */}
+        <div className={cn("h-14 px-4 flex items-center border-b", !expanded && "px-2")}>
           {expanded && (
-            <>
-              {/* Program Display */}
-              <div className="py-2 px-3 mb-3 bg-accent/30 border border-border/50 rounded-lg">
-                <div className="flex items-center gap-3 w-full">
-                  <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-                    {program?.name?.substring(0, 2).toUpperCase() || 'PG'}
+            <div className="py-1.5 px-3 bg-accent/30 border border-border/50 rounded-lg w-full">
+              <div className="flex items-center gap-3 w-full">
+                <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
+                  {program?.name?.substring(0, 2).toUpperCase() || 'PG'}
+                </div>
+                <div className="flex-1 text-left min-w-0">
+                  <div className="text-sm font-medium text-foreground truncate">
+                    {program?.name || 'Program'}
                   </div>
-                  <div className="flex-1 text-left min-w-0">
-                    <div className="text-sm font-medium text-foreground truncate">
-                      {program?.name || 'Program'}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Program</div>
-                  </div>
+                  <div className="text-xs text-muted-foreground">Program</div>
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
 
