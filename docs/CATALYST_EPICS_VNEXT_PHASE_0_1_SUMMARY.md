@@ -338,3 +338,88 @@ Added columns (Epic roll-up fields):
 | Column config: Progress %, Feature Counts, Tech Score visible | ✅ PASS |
 | Column config: Program/Portfolio not present | ✅ PASS |
 | Toggling columns works correctly | ✅ PASS |
+
+---
+
+## Phase II – Step 2: Strategy & OKR Context
+
+### Overview
+Epics now display their Strategy / OKR linkage in a read-only context section within the Epic details panel, with deep links to Strategy Room / OKR Hub.
+
+### Data Model (Existing - No Schema Changes)
+
+| Field/Table | Purpose |
+|-------------|---------|
+| `epics.theme_id` | Direct FK to `strategic_themes` for Theme linkage |
+| `theme_epic_links` | Junction table for additional Theme↔Epic links |
+| `objective_epic_links` | Junction table for Objective↔Epic links |
+
+### New Component: EpicStrategyContext
+
+**Location**: `src/components/items/epics/EpicStrategyContext.tsx`
+
+**Responsibilities**:
+- Fetch linked Theme (via `theme_id` or `theme_epic_links`)
+- Fetch linked Objectives (via `objective_epic_links`)
+- Display read-only summary in Epic details panel
+- Provide "Open in Strategy Room" deep link
+
+**Props**:
+```typescript
+interface EpicStrategyContextProps {
+  epicId: string;
+  themeId?: string | null;
+  compact?: boolean;  // For backlog column display
+}
+```
+
+### EpicDetailsPanel Integration
+
+Strategy Context section added after Roll-up Summary section:
+- Shows Theme name, status, color tag
+- Lists linked Objectives with health badges and progress
+- "Open in Strategy Room" button navigates to OKR Hub with context filter
+- Displays neutral message if no linkage exists
+
+### Program Epic Backlog Columns (Optional)
+
+Added to `BacklogColumnsDialog` for Epic Backlog mode:
+- `linkedObjective` - Shows linked objective summary
+- `linkedTheme` - Shows linked theme name
+
+### Guardrails Enforced
+
+| Constraint | Status |
+|------------|--------|
+| No Strategy entities created/edited/deleted from Epic module | ✅ ENFORCED |
+| No new routes created for Strategy | ✅ ENFORCED |
+| No Strategy components duplicated | ✅ ENFORCED |
+| No Portfolio/PI terminology reintroduced | ✅ ENFORCED |
+| Read-only display only | ✅ ENFORCED |
+
+### Modified Files
+
+| File | Change |
+|------|--------|
+| `src/components/items/epics/EpicStrategyContext.tsx` | NEW - Strategy context component |
+| `src/components/items/epics/EpicDetailsPanel.tsx` | Added Strategy Context section |
+| `src/modules/backlog/components/BacklogColumnsDialog.tsx` | Added linkedObjective/linkedTheme columns |
+
+### Validation Tests
+
+| Test | Expected | Status |
+|------|----------|--------|
+| Epic with Theme linkage shows Theme name | Theme displayed with color | ⏳ |
+| Epic with Objective linkage shows Objectives | List with health/progress | ⏳ |
+| "Open in Strategy Room" navigates correctly | Lands in OKR Hub with filter | ⏳ |
+| Epic without linkage shows neutral message | "No Strategy / OKR linkage..." | ⏳ |
+| No Strategy editing capability from Epic | Read-only only | ✅ PASS |
+| No PI/Portfolio concepts visible | None present | ✅ PASS |
+
+### Deep Link Behaviour
+
+| Context | Navigation Target |
+|---------|------------------|
+| Epic linked to Theme | `/enterprise/okr-hub?themeId={themeId}` |
+| Epic linked to Objective | `/enterprise/okr-hub?objectiveId={objectiveId}` |
+| No linkage | `/enterprise/strategy-room` |
