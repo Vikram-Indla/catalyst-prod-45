@@ -284,7 +284,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
     <Card className="border-l-4 border-l-brand-gold">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-2">
-          <CardTitle className="text-xl font-semibold">Progress</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">Snapshot Progress</CardTitle>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
