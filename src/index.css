@@ -924,10 +924,10 @@ code, .text-code {
   background: transparent;
 }
 
-/* Content Area - WHITE not gray */
+/* Content Area - Light grey background matching production */
 .executive-drawer-content {
-  background-color: #FFFFFF !important;           /* Pure white */
-  padding: 12px !important;                       /* Compact padding */
+  background-color: #F8F8F8 !important;           /* Light grey like production */
+  padding: 0 !important;                          /* Padding controlled by tab content */
   overflow-y: auto;
 }
 

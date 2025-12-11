@@ -1174,13 +1174,13 @@ export function ExecutiveRoadmap({ className, apiItems }: ExecutiveRoadmapProps)
                   minHeight: `${ROW_HEIGHT}px`,
                   borderColor: 'hsl(var(--roadmap-sandstone))',
                   backgroundColor: isSelected ? 'hsla(var(--roadmap-status-new) / 0.08)' : hoveredItem === item.id ? 'hsla(var(--roadmap-status-new) / 0.04)' : 'white',
-                  borderLeft: isSelected ? '3px solid hsl(var(--roadmap-status-new))' : '3px solid transparent'
+                  borderLeft: isSelected ? '3px solid hsl(var(--roadmap-status-new))' : 'none'
                 }}
                 onClick={() => setSelectedRow(isSelected ? null : item.id)}
                 onMouseEnter={() => setHoveredItem(item.id)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
-                <div className="h-full px-4 py-2 flex flex-col justify-center overflow-hidden">
+                <div className="h-full px-4 py-2.5 flex flex-col justify-center overflow-hidden">
                   <div className="flex items-center gap-1.5 min-w-0">
                     <span className="text-xs font-bold shrink-0" style={{ color: 'hsl(var(--roadmap-charcoal))' }}>#{item.rank}</span>
                     {(item.rank === 1 || item.rank === 3 || item.rank === 9) && (

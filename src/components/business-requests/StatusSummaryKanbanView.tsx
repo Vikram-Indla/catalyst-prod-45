@@ -22,15 +22,15 @@ interface StatusSummaryKanbanViewProps {
   onRequestSelect: (id: string) => void;
 }
 
-// Status columns with colors matching production
+// Status columns with colors matching production exactly
 const STATUS_COLUMNS = [
-  { id: 'new_request', label: 'New Request', color: 'bg-gray-800' },
-  { id: 'analyse', label: 'Analyse', color: 'bg-gray-400' },
+  { id: 'new_request', label: 'New Request', color: 'bg-neutral-400' },
+  { id: 'analyse', label: 'Analyse', color: 'bg-neutral-300' },
   { id: 'approved', label: 'Approved', color: 'bg-violet-500' },
-  { id: 'implement', label: 'Implement', color: 'bg-gray-900' },
-  { id: 'closed', label: 'Closed', color: 'bg-green-500' },
+  { id: 'implement', label: 'Implement', color: 'bg-emerald-600' },
+  { id: 'closed', label: 'Closed', color: 'bg-neutral-500' },
   { id: 'rejected', label: 'Rejected', color: 'bg-red-500' },
-  { id: 'on_hold', label: 'On-Hold', color: 'bg-pink-300' },
+  { id: 'on_hold', label: 'On-Hold', color: 'bg-amber-400' },
 ];
 
 export function StatusSummaryKanbanView({ requests, onRequestSelect }: StatusSummaryKanbanViewProps) {
@@ -98,8 +98,8 @@ export function StatusSummaryKanbanView({ requests, onRequestSelect }: StatusSum
         </Button>
       </div>
 
-      {/* Status Summary Columns */}
-      <div className="flex gap-3">
+      {/* Status Summary Columns - Production-matched styling */}
+      <div className="flex gap-4 justify-center">
         {STATUS_COLUMNS.map(column => {
           const count = statusCounts[column.id] || 0;
           
@@ -109,19 +109,19 @@ export function StatusSummaryKanbanView({ requests, onRequestSelect }: StatusSum
               onClick={() => setExpandedColumn(column.id)}
               className="flex-shrink-0 cursor-pointer group"
             >
-              <div className="bg-card border rounded-xl p-4 hover:border-brand-gold/50 hover:shadow-md transition-all min-h-[200px] w-[60px] flex flex-col items-center">
+              <div className="bg-card border rounded-xl p-4 hover:border-brand-gold/50 hover:shadow-md transition-all min-h-[180px] w-[56px] flex flex-col items-center">
                 {/* Status Dot */}
-                <div className={cn("w-4 h-4 rounded-full mb-3", column.color)} />
+                <div className={cn("w-3.5 h-3.5 rounded-full mb-3", column.color)} />
                 
                 {/* Count */}
-                <span className="text-lg font-semibold text-foreground mb-3">
+                <span className="text-base font-semibold text-foreground mb-3">
                   {count}
                 </span>
                 
                 {/* Vertical Label */}
                 <div className="flex-1 flex items-center justify-center">
                   <span 
-                    className="text-sm font-medium text-foreground/80 whitespace-nowrap"
+                    className="text-xs font-medium text-muted-foreground whitespace-nowrap"
                     style={{ 
                       writingMode: 'vertical-rl',
                       textOrientation: 'mixed',
