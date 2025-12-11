@@ -161,14 +161,14 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
                   
                   {total > 0 && (
                     <>
-                      {/* Not Started segment (gray) */}
+                      {/* Not Started segment (secondary-grey) */}
                       {notStartedPct > 0 && (
                         <circle
                           cx={size / 2}
                           cy={size / 2}
                           r={radius}
                           fill="none"
-                          stroke="#94a3b8" // Gray
+                          stroke="hsl(var(--secondary-grey))"
                           strokeWidth={strokeWidth}
                           strokeDasharray={circumference}
                           strokeDashoffset={circumference - (notStartedPct / 100) * circumference}
@@ -176,14 +176,14 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
                         />
                       )}
                       
-                      {/* In Progress segment (orange/yellow) */}
+                      {/* In Progress segment (brand-gold) */}
                       {inProgressPct > 0 && (
                         <circle
                           cx={size / 2}
                           cy={size / 2}
                           r={radius}
                           fill="none"
-                          stroke="#f97316" // Orange
+                          stroke="hsl(var(--brand-gold))"
                           strokeWidth={strokeWidth}
                           strokeDasharray={circumference}
                           strokeDashoffset={circumference - (inProgressPct / 100) * circumference}
@@ -191,14 +191,14 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
                         />
                       )}
                       
-                      {/* Completed segment (dark blue/green) */}
+                      {/* Completed segment (secondary-green) */}
                       {completedPct > 0 && (
                         <circle
                           cx={size / 2}
                           cy={size / 2}
                           r={radius}
                           fill="none"
-                          stroke="#1e3a5f" // Dark blue matching screenshot
+                          stroke="hsl(var(--secondary-green))"
                           strokeWidth={strokeWidth}
                           strokeDasharray={circumference}
                           strokeDashoffset={circumference - (completedPct / 100) * circumference}
@@ -220,15 +220,15 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
           <TooltipContent side="bottom" className="text-xs">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#1e3a5f]" />
+                <div className="w-2 h-2 rounded-full bg-secondary-green" />
                 <span>Completed: {completed} ({completedPct.toFixed(0)}%)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#f97316]" />
+                <div className="w-2 h-2 rounded-full bg-brand-gold" />
                 <span>In Progress: {inProgress} ({inProgressPct.toFixed(0)}%)</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[#94a3b8]" />
+                <div className="w-2 h-2 rounded-full bg-secondary-grey" />
                 <span>Not Started: {notStarted} ({notStartedPct.toFixed(0)}%)</span>
               </div>
             </div>
@@ -265,7 +265,7 @@ export function SnapshotProgress({ snapshotId }: SnapshotProgressProps) {
         </span>
         <div className="flex-1 h-2.5 bg-muted rounded-full overflow-hidden">
           <div 
-            className="h-full bg-[#1e3a5f] rounded-full transition-all duration-300"
+            className="h-full bg-secondary-green rounded-full transition-all duration-300"
             style={{ width: `${percent}%` }}
           />
         </div>
