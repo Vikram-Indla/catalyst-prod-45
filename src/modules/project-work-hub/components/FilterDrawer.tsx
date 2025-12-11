@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { token } from '@atlaskit/tokens';
-import Button from '@atlaskit/button';
 import { X, User, Calendar, Activity } from 'lucide-react';
 import { WorkHubFilters, QuickFilter } from '../types';
+import { Button } from '@/components/ui/button';
 
 interface FilterDrawerProps {
   isOpen: boolean;
@@ -70,93 +69,42 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClose, fil
     <>
       {/* Backdrop */}
       <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          zIndex: 999,
-        }}
+        className="fixed inset-0 bg-black/50 z-[999]"
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div
-        style={{
-          position: 'fixed',
-          top: 0,
-          right: 0,
-          bottom: 0,
-          width: 400,
-          backgroundColor: token('elevation.surface', '#FFFFFF'),
-          boxShadow: token('elevation.shadow.overlay', '0 4px 8px rgba(0,0,0,0.2)'),
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <div className="fixed top-0 right-0 bottom-0 w-[400px] bg-card shadow-xl z-[1000] flex flex-col">
         {/* Header */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: token('space.200', '16px'),
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-        }}>
-          <h2 style={{ 
-            fontSize: '20px', 
-            fontWeight: 500, 
-            color: token('color.text', '#172B4D'),
-            margin: 0,
-          }}>
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <h2 className="text-xl font-medium text-foreground m-0">
             Filters
           </h2>
           <button
             onClick={onClose}
-            style={{
-              padding: token('space.050', '4px'),
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: token('color.icon', '#5E6C84'),
-            }}
+            className="p-1 bg-transparent border-none cursor-pointer text-muted-foreground hover:text-foreground"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Content */}
-        <div style={{ flex: 1, overflow: 'auto', padding: token('space.200', '16px') }}>
+        <div className="flex-1 overflow-auto p-4">
           {/* Quick Filters */}
-          <div style={{ marginBottom: token('space.300', '24px') }}>
-            <h3 style={{ 
-              fontSize: '11px', 
-              fontWeight: 600, 
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              color: token('color.text.subtlest', '#5E6C84'),
-              marginBottom: token('space.150', '12px'),
-            }}>
+          <div className="mb-6">
+            <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
               Quick Filter
             </h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: token('space.100', '8px') }}>
+            <div className="flex flex-wrap gap-2">
               {QUICK_FILTERS.map((qf) => (
                 <button
                   key={qf.id}
                   onClick={() => handleQuickFilterClick(qf.id)}
-                  style={{
-                    padding: `${token('space.050', '4px')} ${token('space.150', '12px')}`,
-                    backgroundColor: activeQuickFilter === qf.id 
-                      ? token('color.background.brand.bold', '#0052CC')
-                      : token('color.background.neutral', '#F4F5F7'),
-                    color: activeQuickFilter === qf.id 
-                      ? token('color.text.inverse', '#FFFFFF')
-                      : token('color.text', '#172B4D'),
-                    border: 'none',
-                    borderRadius: '16px',
-                    fontSize: '14px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
+                  className={`px-3 py-1 border-none rounded-full text-sm cursor-pointer transition-all ${
+                    activeQuickFilter === qf.id 
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted text-foreground hover:bg-muted/80'
+                  }`}
                 >
                   {qf.label}
                 </button>
@@ -195,24 +143,15 @@ export const FilterDrawer: React.FC<FilterDrawerProps> = ({ isOpen, onClose, fil
         </div>
 
         {/* Footer */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: token('space.200', '16px'),
-          borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-        }}>
-          <span style={{ 
-            fontSize: '14px', 
-            color: token('color.text.subtlest', '#5E6C84'),
-          }}>
+        <div className="flex items-center justify-between p-4 border-t border-border">
+          <span className="text-sm text-muted-foreground">
             {appliedCount} filters applied
           </span>
-          <div style={{ display: 'flex', gap: token('space.100', '8px') }}>
-            <Button appearance="subtle" onClick={handleClearAll}>
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={handleClearAll}>
               Clear All
             </Button>
-            <Button appearance="primary" onClick={handleApply}>
+            <Button onClick={handleApply}>
               Apply
             </Button>
           </div>
@@ -231,32 +170,18 @@ const FilterSection: React.FC<{
   const [expanded, setExpanded] = useState(true);
 
   return (
-    <div style={{ marginBottom: token('space.200', '16px') }}>
+    <div className="mb-4">
       <button
         onClick={() => setExpanded(!expanded)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: token('space.100', '8px'),
-          width: '100%',
-          padding: `${token('space.100', '8px')} 0`,
-          backgroundColor: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          textAlign: 'left',
-        }}
+        className="flex items-center gap-2 w-full py-2 bg-transparent border-none cursor-pointer text-left"
       >
-        <span style={{ color: token('color.icon', '#5E6C84') }}>{icon}</span>
-        <span style={{ 
-          fontSize: '14px', 
-          fontWeight: 600, 
-          color: token('color.text', '#172B4D'),
-        }}>
+        <span className="text-muted-foreground">{icon}</span>
+        <span className="text-sm font-semibold text-foreground">
           {title}
         </span>
       </button>
       {expanded && (
-        <div style={{ paddingLeft: token('space.300', '24px') }}>
+        <div className="pl-6">
           {children}
         </div>
       )}
@@ -267,26 +192,11 @@ const FilterSection: React.FC<{
 // Filter Field Component
 const FilterField: React.FC<{ label: string }> = ({ label }) => {
   return (
-    <div style={{ marginBottom: token('space.150', '12px') }}>
-      <label style={{ 
-        display: 'block',
-        fontSize: '12px', 
-        fontWeight: 500, 
-        color: token('color.text.subtlest', '#5E6C84'),
-        marginBottom: token('space.050', '4px'),
-      }}>
+    <div className="mb-3">
+      <label className="block text-xs font-medium text-muted-foreground mb-1">
         {label}
       </label>
-      <select
-        style={{
-          width: '100%',
-          padding: `${token('space.075', '6px')} ${token('space.100', '8px')}`,
-          border: `1px solid ${token('color.border', '#DFE1E6')}`,
-          borderRadius: '3px',
-          fontSize: '14px',
-          backgroundColor: token('elevation.surface', '#FFFFFF'),
-        }}
-      >
+      <select className="w-full px-2 py-1.5 border border-border rounded text-sm bg-card">
         <option value="">Any</option>
       </select>
     </div>

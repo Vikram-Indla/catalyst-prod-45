@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react';
-import { token } from '@atlaskit/tokens';
-import Modal, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  ModalTransition,
-} from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button';
-import Textfield from '@atlaskit/textfield';
-import TextArea from '@atlaskit/textarea';
-import CrossIcon from '@atlaskit/icon/glyph/cross';
+import { X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { catalystToast } from '@/lib/catalystToast';
 import { useQueryClient } from '@tanstack/react-query';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 
 export type EntityType = 'program' | 'project' | 'product';
 
@@ -183,108 +183,75 @@ export function CreateEntityDialog({
   };
 
   return (
-    <ModalTransition>
-      {open && (
-        <Modal onClose={handleClose} width="medium">
-          <ModalHeader>
-            <ModalTitle>{config.title}</ModalTitle>
-            <Button
-              appearance="subtle"
-              iconBefore={<CrossIcon label="Close" size="small" />}
-              onClick={handleClose}
-            />
-          </ModalHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>{config.title}</DialogTitle>
+        </DialogHeader>
 
-          <ModalBody>
-            <p style={{
-              fontSize: '14px',
-              color: token('color.text.subtlest', '#6B778C'),
-              margin: `0 0 ${token('space.300', '24px')} 0`,
-            }}>
-              {config.description}
-            </p>
+        <div className="py-4">
+          <p className="text-sm text-muted-foreground mb-6">
+            {config.description}
+          </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
-              {/* Name */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: token('color.text', '#172B4D'),
-                  marginBottom: token('space.050', '4px'),
-                }}>
-                  Name <span style={{ color: token('color.text.danger', '#DE350B') }}>*</span>
-                </label>
-                <Textfield
-                  value={name}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                  placeholder={config.namePlaceholder}
-                  autoFocus
-                />
-              </div>
-
-              {/* Key */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: token('color.text', '#172B4D'),
-                  marginBottom: token('space.050', '4px'),
-                }}>
-                  Key <span style={{ color: token('color.text.danger', '#DE350B') }}>*</span>
-                </label>
-                <Textfield
-                  value={key}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleKeyChange(e.target.value)}
-                  placeholder={config.keyPlaceholder}
-                  maxLength={10}
-                />
-                <p style={{
-                  marginTop: token('space.050', '4px'),
-                  fontSize: '12px',
-                  color: token('color.text.subtlest', '#6B778C'),
-                }}>
-                  This key will be used as a prefix for work items (e.g., {key || 'KEY'}-123)
-                </p>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label style={{
-                  display: 'block',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  color: token('color.text', '#172B4D'),
-                  marginBottom: token('space.050', '4px'),
-                }}>
-                  Description
-                </label>
-                <TextArea
-                  value={description}
-                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-                  placeholder="Brief description (optional)"
-                  minimumRows={3}
-                />
-              </div>
+          <div className="flex flex-col gap-4">
+            {/* Name */}
+            <div className="space-y-2">
+              <Label htmlFor="name">
+                Name <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={config.namePlaceholder}
+                autoFocus
+              />
             </div>
-          </ModalBody>
 
-          <ModalFooter>
-            <Button appearance="subtle" onClick={handleClose} isDisabled={isCreating}>
-              Cancel
-            </Button>
-            <Button
-              appearance="primary"
-              onClick={handleCreate}
-              isDisabled={isCreating || !name.trim() || !key.trim()}
-            >
-              {isCreating ? 'Creating...' : 'Create'}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
+            {/* Key */}
+            <div className="space-y-2">
+              <Label htmlFor="key">
+                Key <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="key"
+                value={key}
+                onChange={(e) => handleKeyChange(e.target.value)}
+                placeholder={config.keyPlaceholder}
+                maxLength={10}
+              />
+              <p className="text-xs text-muted-foreground">
+                This key will be used as a prefix for work items (e.g., {key || 'KEY'}-123)
+              </p>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-2">
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Brief description (optional)"
+                rows={3}
+              />
+            </div>
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={handleClose} disabled={isCreating}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleCreate}
+            disabled={isCreating || !name.trim() || !key.trim()}
+          >
+            {isCreating ? 'Creating...' : 'Create'}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

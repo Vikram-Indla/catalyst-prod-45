@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import { token } from '@atlaskit/tokens';
-import Textfield from '@atlaskit/textfield';
-import Button from '@atlaskit/button';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import Avatar, { AvatarItem } from '@atlaskit/avatar';
 import { Search, ChevronDown, ChevronRight, MoreHorizontal, Settings2, BarChart3 } from 'lucide-react';
 import { useWorkItemsByAssignee, useUpdateWorkItemStatus } from '../../hooks/useWorkItems';
 import { DEFAULT_BOARD_COLUMNS, WorkItem, BoardGrouping } from '../../types';
 import { WorkTypeIcon } from '../WorkTypeIcon';
 import { PriorityIcon } from '../PriorityIcon';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface KanbanBoardTabProps {
   projectId: string;
@@ -41,190 +45,97 @@ export const KanbanBoardTab: React.FC<KanbanBoardTabProps> = ({ projectId, onIte
   const assignees = swimlaneData?.filter(s => s.name !== 'Unassigned').slice(0, 3) || [];
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      height: '100%',
-      backgroundColor: token('elevation.surface', '#F4F5F7'),
-    }}>
+    <div className="flex flex-col h-full bg-muted">
       {/* Top Control Bar */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: `${token('space.150', '12px')} ${token('space.200', '16px')}`,
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-        backgroundColor: token('elevation.surface', '#FFFFFF'),
-      }}>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
         {/* Left side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
+        <div className="flex items-center gap-3">
           {/* Search */}
-          <div style={{ position: 'relative', width: 180 }}>
+          <div className="relative w-[180px]">
             <Search 
-              size={16} 
-              style={{ 
-                position: 'absolute', 
-                left: 8, 
-                top: '50%', 
-                transform: 'translateY(-50%)',
-                color: token('color.icon.subtle', '#5E6C84'),
-              }} 
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" 
             />
-            <input
+            <Input
               type="text"
               placeholder="Search board"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: `${token('space.075', '6px')} ${token('space.100', '8px')} ${token('space.075', '6px')} 32px`,
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                borderRadius: '3px',
-                fontSize: '14px',
-                outline: 'none',
-              }}
+              className="pl-8"
             />
           </div>
 
           {/* Assignee Avatars */}
-          <div style={{ display: 'flex', alignItems: 'center', marginLeft: token('space.100', '8px') }}>
+          <div className="flex items-center ml-2">
             {assignees.map((assignee, idx) => (
               <div 
                 key={assignee.name}
-                style={{ 
-                  marginLeft: idx > 0 ? '-8px' : 0,
-                  zIndex: assignees.length - idx,
-                }}
+                className={idx > 0 ? '-ml-2' : ''}
+                style={{ zIndex: assignees.length - idx }}
               >
-                <Avatar 
-                  size="small" 
-                  src={assignee.avatar}
-                  name={assignee.name}
-                />
+                <Avatar className="w-6 h-6 border-2 border-card">
+                  <AvatarImage src={assignee.avatar} />
+                  <AvatarFallback className="text-[10px]">
+                    {assignee.name.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
               </div>
             ))}
             {swimlaneData && swimlaneData.length > 3 && (
-              <div style={{
-                marginLeft: '-8px',
-                width: 24,
-                height: 24,
-                borderRadius: '50%',
-                backgroundColor: token('color.background.neutral', '#DFE1E6'),
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '11px',
-                fontWeight: 600,
-                color: token('color.text.subtlest', '#5E6C84'),
-              }}>
+              <div className="-ml-2 w-6 h-6 rounded-full bg-muted flex items-center justify-center text-[11px] font-semibold text-muted-foreground border-2 border-card">
                 +{swimlaneData.length - 3}
               </div>
             )}
           </div>
 
           {/* Quick Filters */}
-          <DropdownMenu
-            trigger={({ triggerRef, ...props }) => (
-              <button
-                ref={triggerRef as any}
-                {...props}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: token('space.050', '4px'),
-                  padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  color: token('color.text', '#172B4D'),
-                }}
-              >
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="gap-1">
                 Quick filters
-                <ChevronDown size={16} />
-              </button>
-            )}
-          >
-            <DropdownItemGroup>
-              <DropdownItem>My open items</DropdownItem>
-              <DropdownItem>High priority</DropdownItem>
-              <DropdownItem>Has defects</DropdownItem>
-              <DropdownItem>Has incidents</DropdownItem>
-              <DropdownItem>Current quarter</DropdownItem>
-              <DropdownItem>Unassigned</DropdownItem>
-            </DropdownItemGroup>
+                <ChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>My open items</DropdownMenuItem>
+              <DropdownMenuItem>High priority</DropdownMenuItem>
+              <DropdownMenuItem>Has defects</DropdownMenuItem>
+              <DropdownMenuItem>Has incidents</DropdownMenuItem>
+              <DropdownMenuItem>Current quarter</DropdownMenuItem>
+              <DropdownMenuItem>Unassigned</DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
         {/* Right side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
+        <div className="flex items-center gap-2">
           {/* Group Toggle */}
-          <button
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: token('space.050', '4px'),
-              padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-              backgroundColor: grouping === 'ASSIGNEE' ? token('color.background.brand.bold', '#0052CC') : 'transparent',
-              color: grouping === 'ASSIGNEE' ? token('color.text.inverse', '#FFFFFF') : token('color.text', '#172B4D'),
-              border: `1px solid ${grouping === 'ASSIGNEE' ? token('color.border.brand', '#0052CC') : token('color.border', '#DFE1E6')}`,
-              borderRadius: '3px',
-              fontSize: '14px',
-              fontWeight: 500,
-              cursor: 'pointer',
-            }}
+          <Button
+            variant={grouping === 'ASSIGNEE' ? 'default' : 'outline'}
+            size="sm"
             onClick={() => setGrouping(grouping === 'ASSIGNEE' ? 'NONE' : 'ASSIGNEE')}
           >
             Group: {grouping === 'ASSIGNEE' ? 'Assignee' : 'None'}
-          </button>
+          </Button>
 
-          <button
-            style={{
-              padding: token('space.075', '6px'),
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: token('color.icon', '#5E6C84'),
-            }}
-          >
-            <BarChart3 size={20} />
-          </button>
+          <Button variant="ghost" size="icon">
+            <BarChart3 className="w-5 h-5" />
+          </Button>
 
-          <button
-            style={{
-              padding: token('space.075', '6px'),
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: token('color.icon', '#5E6C84'),
-            }}
-          >
-            <Settings2 size={20} />
-          </button>
+          <Button variant="ghost" size="icon">
+            <Settings2 className="w-5 h-5" />
+          </Button>
 
-          <button
-            style={{
-              padding: token('space.075', '6px'),
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: token('color.icon', '#5E6C84'),
-            }}
-          >
-            <MoreHorizontal size={20} />
-          </button>
+          <Button variant="ghost" size="icon">
+            <MoreHorizontal className="w-5 h-5" />
+          </Button>
         </div>
       </div>
 
       {/* Board Content */}
-      <div style={{ 
-        flex: 1, 
-        overflow: 'auto',
-        padding: token('space.200', '16px'),
-      }}>
+      <div className="flex-1 overflow-auto p-4">
         {grouping === 'ASSIGNEE' && swimlaneData ? (
           // Swimlane View
-          <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
+          <div className="flex flex-col gap-4">
             {swimlaneData.map((swimlane) => (
               <SwimlaneRow
                 key={swimlane.name}
@@ -239,11 +150,7 @@ export const KanbanBoardTab: React.FC<KanbanBoardTabProps> = ({ projectId, onIte
           </div>
         ) : (
           // Single Board View
-          <div style={{ 
-            display: 'flex', 
-            gap: token('space.100', '8px'),
-            minHeight: 400,
-          }}>
+          <div className="flex gap-2 min-h-[400px]">
             {DEFAULT_BOARD_COLUMNS.map((column) => (
               <BoardColumn
                 key={column.id}
@@ -281,35 +188,26 @@ const SwimlaneRow: React.FC<{
       {/* Swimlane Header */}
       <button
         onClick={onToggle}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: token('space.100', '8px'),
-          padding: `${token('space.100', '8px')} 0`,
-          backgroundColor: 'transparent',
-          border: 'none',
-          cursor: 'pointer',
-          width: '100%',
-          textAlign: 'left',
-        }}
+        className="flex items-center gap-2 py-2 bg-transparent border-none cursor-pointer w-full text-left"
       >
-        {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-        <Avatar size="small" src={swimlane.avatar} name={swimlane.name} />
-        <span style={{ fontSize: '14px', fontWeight: 500, color: token('color.text', '#172B4D') }}>
+        {expanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        <Avatar className="w-6 h-6">
+          <AvatarImage src={swimlane.avatar} />
+          <AvatarFallback className="text-[10px]">
+            {swimlane.name.slice(0, 2).toUpperCase()}
+          </AvatarFallback>
+        </Avatar>
+        <span className="text-sm font-medium text-foreground">
           {swimlane.name}
         </span>
-        <span style={{ fontSize: '12px', color: token('color.text.subtlest', '#5E6C84') }}>
+        <span className="text-xs text-muted-foreground">
           ({swimlane.items.length} work items)
         </span>
       </button>
 
       {/* Swimlane Columns */}
       {expanded && (
-        <div style={{ 
-          display: 'flex', 
-          gap: token('space.100', '8px'),
-          marginTop: token('space.100', '8px'),
-        }}>
+        <div className="flex gap-2 mt-2">
           {columns.map((column) => (
             <BoardColumn
               key={column.id}
@@ -336,55 +234,22 @@ const BoardColumn: React.FC<{
 }> = ({ column, items, onItemClick, onDrop, compact }) => {
   return (
     <div
-      style={{
-        flex: 1,
-        minWidth: compact ? 140 : 200,
-        backgroundColor: token('color.background.neutral', '#F4F5F7'),
-        borderRadius: '3px',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+      className={`flex-1 bg-muted rounded flex flex-col ${compact ? 'min-w-[140px]' : 'min-w-[200px]'}`}
     >
       {/* Column Header */}
-      <div style={{
-        padding: `${token('space.100', '8px')} ${token('space.150', '12px')}`,
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <span style={{
-          fontSize: '11px',
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          color: token('color.text.subtlest', '#5E6C84'),
-        }}>
+      <div className="px-3 py-2 border-b border-border flex items-center justify-between">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           {column.name}
         </span>
         {items.length > 0 && (
-          <span style={{
-            fontSize: '11px',
-            fontWeight: 600,
-            color: token('color.text.subtlest', '#5E6C84'),
-            backgroundColor: token('color.background.neutral.bold', '#DFE1E6'),
-            padding: '2px 6px',
-            borderRadius: '10px',
-          }}>
+          <span className="text-[11px] font-semibold text-muted-foreground bg-muted-foreground/20 px-1.5 py-0.5 rounded-full">
             {items.length}
           </span>
         )}
       </div>
 
       {/* Column Content */}
-      <div style={{
-        flex: 1,
-        padding: token('space.100', '8px'),
-        display: 'flex',
-        flexDirection: 'column',
-        gap: token('space.100', '8px'),
-        minHeight: compact ? 100 : 200,
-      }}>
+      <div className={`flex-1 p-2 flex flex-col gap-2 ${compact ? 'min-h-[100px]' : 'min-h-[200px]'}`}>
         {items.map((item) => (
           <StoryCard
             key={item.id}
@@ -395,19 +260,7 @@ const BoardColumn: React.FC<{
         ))}
 
         {/* Create Button */}
-        <button
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: token('space.050', '4px'),
-            padding: token('space.100', '8px'),
-            backgroundColor: 'transparent',
-            border: 'none',
-            cursor: 'pointer',
-            color: token('color.text.subtlest', '#5E6C84'),
-            fontSize: '14px',
-          }}
-        >
+        <button className="flex items-center gap-1 p-2 bg-transparent border-none cursor-pointer text-muted-foreground text-sm hover:text-foreground">
           + Create
         </button>
       </div>
@@ -424,80 +277,52 @@ const StoryCard: React.FC<{
   return (
     <div
       onClick={onClick}
-      style={{
-        backgroundColor: token('elevation.surface.raised', '#FFFFFF'),
-        borderRadius: '3px',
-        padding: token('space.150', '12px'),
-        boxShadow: token('elevation.shadow.raised', '0 1px 2px rgba(0,0,0,0.1)'),
-        cursor: 'pointer',
-        transition: 'box-shadow 0.2s',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,0,0,0.15)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.boxShadow = token('elevation.shadow.raised', '0 1px 2px rgba(0,0,0,0.1)');
-      }}
+      className="bg-card rounded p-3 shadow-sm cursor-pointer transition-shadow hover:shadow-md border border-border"
     >
       {/* Summary */}
-      <div style={{
-        fontSize: '14px',
-        color: token('color.text', '#172B4D'),
-        lineHeight: '20px',
-        marginBottom: token('space.100', '8px'),
-        display: '-webkit-box',
-        WebkitLineClamp: 2,
-        WebkitBoxOrient: 'vertical',
-        overflow: 'hidden',
-      }}>
+      <div className="text-sm text-foreground leading-5 mb-2 line-clamp-2">
         {item.summary}
       </div>
 
       {/* Priority Dots */}
-      <div style={{ marginBottom: token('space.100', '8px') }}>
+      <div className="mb-2">
         <PriorityIcon priority={item.priority} />
       </div>
 
       {/* Footer */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px') }}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-1">
           <WorkTypeIcon type={item.type} size="small" />
-          <span style={{ fontSize: '12px', color: token('color.text.subtlest', '#5E6C84') }}>
+          <span className="text-xs text-muted-foreground">
             {item.key}
           </span>
         </div>
 
         {item.assigneeAvatar && (
-          <Avatar size="xsmall" src={item.assigneeAvatar} name={item.assigneeName} />
+          <Avatar className="w-5 h-5">
+            <AvatarImage src={item.assigneeAvatar} />
+            <AvatarFallback className="text-[8px]">
+              {item.assigneeName?.slice(0, 2).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
         )}
       </div>
 
       {/* Child Counts - Only for Stories */}
       {item.type === 'STORY' && (item.subtaskCount || item.defectCount || item.incidentCount) && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: token('space.150', '12px'),
-          marginTop: token('space.100', '8px'),
-          paddingTop: token('space.100', '8px'),
-          borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-        }}>
+        <div className="flex items-center gap-3 mt-2 pt-2 border-t border-border">
           {item.subtaskCount ? (
-            <span style={{ fontSize: '11px', color: token('color.text.subtlest', '#5E6C84') }}>
+            <span className="text-[11px] text-muted-foreground">
               Subtasks: {item.subtaskCount}
             </span>
           ) : null}
           {item.defectCount ? (
-            <span style={{ fontSize: '11px', color: token('color.text.danger', '#DE350B') }}>
+            <span className="text-[11px] text-destructive">
               Defects: {item.defectCount}
             </span>
           ) : null}
           {item.incidentCount ? (
-            <span style={{ fontSize: '11px', color: token('color.text.warning', '#FF991F') }}>
+            <span className="text-[11px] text-yellow-600">
               Incidents: {item.incidentCount}
             </span>
           ) : null}

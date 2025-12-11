@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { token } from '@atlaskit/tokens';
-import Textfield from '@atlaskit/textfield';
-import Button from '@atlaskit/button';
-import { Checkbox } from '@atlaskit/checkbox';
-import Lozenge from '@atlaskit/lozenge';
-import Avatar from '@atlaskit/avatar';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
-import SearchIcon from '@atlaskit/icon/glyph/search';
-import FilterIcon from '@atlaskit/icon/glyph/filter';
-import MoreIcon from '@atlaskit/icon/glyph/more';
-import ChevronRightIcon from '@atlaskit/icon/glyph/chevron-right';
-import ChevronDownIcon from '@atlaskit/icon/glyph/chevron-down';
+import { Search, Filter, MoreHorizontal, ChevronRight, ChevronDown } from 'lucide-react';
 import { ProjectData } from '../../../types/project.types';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ListViewProps {
   project: ProjectData;
@@ -34,67 +34,46 @@ export default function ListView({ project }: ListViewProps) {
     });
   };
 
-  const getStatusAppearance = (status: string): 'success' | 'inprogress' | 'default' => {
+  const getStatusVariant = (status: string): 'default' | 'secondary' | 'outline' => {
     switch (status) {
-      case 'DONE': return 'success';
-      case 'IN PROGRESS': return 'inprogress';
-      case 'TO DO': return 'default';
-      default: return 'default';
+      case 'DONE': return 'default';
+      case 'IN PROGRESS': return 'secondary';
+      case 'TO DO': return 'outline';
+      default: return 'outline';
     }
   };
 
   return (
-    <div style={{
-      padding: '24px',
-      background: token('elevation.surface'),
-      minHeight: 'calc(100vh - 180px)',
-    }}>
+    <div className="p-6 bg-card min-h-[calc(100vh-180px)]">
       {/* TOOLBAR */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        marginBottom: '16px',
-      }}>
-        <div style={{ width: '280px' }}>
-          <Textfield
+      <div className="flex items-center gap-2 mb-4">
+        <div className="relative w-[280px]">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
             placeholder="Search..."
             value={searchQuery}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-            elemBeforeInput={
-              <span style={{ marginLeft: '8px', display: 'flex' }}>
-                <SearchIcon label="Search" size="small" />
-              </span>
-            }
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-8"
           />
         </div>
-        <Button appearance="subtle" iconBefore={<FilterIcon label="Filter" size="small" />}>
+        <Button variant="ghost" size="sm">
+          <Filter className="w-4 h-4 mr-1" />
           Filter
         </Button>
       </div>
 
       {/* TABLE */}
-      <div style={{
-        border: `1px solid ${token('color.border')}`,
-        borderRadius: '4px',
-        overflow: 'hidden',
-      }}>
+      <div className="border border-border rounded overflow-hidden">
         {/* TABLE HEADER */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '40px 50px 90px 1fr 120px 100px 80px 100px 50px',
-          background: token('color.background.neutral'),
-          borderBottom: `1px solid ${token('color.border')}`,
-          padding: '8px 12px',
-        }}>
+        <div className="grid grid-cols-[40px_50px_90px_1fr_120px_100px_80px_100px_50px] bg-muted border-b border-border px-3 py-2">
           <div><Checkbox /></div>
-          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', color: token('color.text.subtlest') }}>Type</div>
-          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', color: token('color.text.subtlest') }}>Key</div>
-          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', color: token('color.text.subtlest') }}>Summary</div>
-          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', color: token('color.text.subtlest') }}>Status</div>
-          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', color: token('color.text.subtlest') }}>Assignee</div>
-          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', color: token('color.text.subtlest') }}>Priority</div>
-          <div style={{ fontSize: '11px', fontWeight: 600, textTransform: 'uppercase', color: token('color.text.subtlest') }}>Created</div>
+          <div className="text-[11px] font-semibold uppercase text-muted-foreground">Type</div>
+          <div className="text-[11px] font-semibold uppercase text-muted-foreground">Key</div>
+          <div className="text-[11px] font-semibold uppercase text-muted-foreground">Summary</div>
+          <div className="text-[11px] font-semibold uppercase text-muted-foreground">Status</div>
+          <div className="text-[11px] font-semibold uppercase text-muted-foreground">Assignee</div>
+          <div className="text-[11px] font-semibold uppercase text-muted-foreground">Priority</div>
+          <div className="text-[11px] font-semibold uppercase text-muted-foreground">Created</div>
           <div></div>
         </div>
 
@@ -106,58 +85,46 @@ export default function ListView({ project }: ListViewProps) {
             return (
               <React.Fragment key={feature.key}>
                 {/* FEATURE ROW */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '40px 50px 90px 1fr 120px 100px 80px 100px 50px',
-                  padding: '10px 12px',
-                  borderBottom: `1px solid ${token('color.border')}`,
-                  background: token('elevation.surface'),
-                  alignItems: 'center',
-                }}>
+                <div className="grid grid-cols-[40px_50px_90px_1fr_120px_100px_80px_100px_50px] px-3 py-2.5 border-b border-border bg-card items-center">
                   <div><Checkbox /></div>
-                  <div style={{ fontSize: '18px' }}>📦</div>
-                  <a href={`/browse/${feature.key}`} style={{
-                    fontSize: '14px',
-                    fontWeight: 500,
-                    color: token('color.link'),
-                    textDecoration: 'none',
-                  }}>
+                  <div className="text-lg">📦</div>
+                  <a href={`/browse/${feature.key}`} className="text-sm font-medium text-primary no-underline hover:underline">
                     {feature.key}
                   </a>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div className="flex items-center gap-1.5">
                     {feature.stories.length > 0 && (
                       <button
                         onClick={(e) => toggleExpand(feature.key, e)}
-                        style={{
-                          background: 'transparent',
-                          border: 'none',
-                          cursor: 'pointer',
-                          padding: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                        }}
+                        className="bg-transparent border-none cursor-pointer p-0 flex items-center"
                       >
                         {isFeatureExpanded ? (
-                          <ChevronDownIcon label="Collapse" size="small" />
+                          <ChevronDown className="w-4 h-4" />
                         ) : (
-                          <ChevronRightIcon label="Expand" size="small" />
+                          <ChevronRight className="w-4 h-4" />
                         )}
                       </button>
                     )}
-                    <span style={{ fontSize: '14px', color: token('color.text') }}>{feature.summary}</span>
+                    <span className="text-sm text-foreground">{feature.summary}</span>
                   </div>
-                  <div><Lozenge appearance={getStatusAppearance(feature.status)}>{feature.status}</Lozenge></div>
-                  <div><Avatar size="small" name={feature.assignee} /></div>
-                  <div style={{ fontSize: '14px', color: token('color.text') }}>{feature.priority}</div>
-                  <div style={{ fontSize: '14px', color: token('color.text.subtlest') }}>{feature.created}</div>
+                  <div><Badge variant={getStatusVariant(feature.status)}>{feature.status}</Badge></div>
                   <div>
-                    <DropdownMenu trigger={({ triggerRef, ...props }) => (
-                      <Button {...props} ref={triggerRef} appearance="subtle" iconBefore={<MoreIcon label="More" size="small" />} />
-                    )}>
-                      <DropdownItemGroup>
-                        <DropdownItem>Edit</DropdownItem>
-                        <DropdownItem>Delete</DropdownItem>
-                      </DropdownItemGroup>
+                    <Avatar className="w-6 h-6">
+                      <AvatarFallback className="text-[10px]">{feature.assignee?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <div className="text-sm text-foreground">{feature.priority}</div>
+                  <div className="text-sm text-muted-foreground">{feature.created}</div>
+                  <div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                      </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                 </div>
@@ -168,58 +135,46 @@ export default function ListView({ project }: ListViewProps) {
                   
                   return (
                     <React.Fragment key={story.key}>
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: '40px 50px 90px 1fr 120px 100px 80px 100px 50px',
-                        padding: '10px 12px',
-                        borderBottom: `1px solid ${token('color.border')}`,
-                        background: token('elevation.surface'),
-                        alignItems: 'center',
-                      }}>
+                      <div className="grid grid-cols-[40px_50px_90px_1fr_120px_100px_80px_100px_50px] px-3 py-2.5 border-b border-border bg-card items-center">
                         <div><Checkbox /></div>
-                        <div style={{ fontSize: '18px', paddingLeft: '24px' }}>📗</div>
-                        <a href={`/browse/${story.key}`} style={{
-                          fontSize: '14px',
-                          fontWeight: 500,
-                          color: token('color.link'),
-                          textDecoration: 'none',
-                        }}>
+                        <div className="text-lg pl-6">📗</div>
+                        <a href={`/browse/${story.key}`} className="text-sm font-medium text-primary no-underline hover:underline">
                           {story.key}
                         </a>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', paddingLeft: '24px' }}>
+                        <div className="flex items-center gap-1.5 pl-6">
                           {story.subtasks.length > 0 && (
                             <button
                               onClick={(e) => toggleExpand(story.key, e)}
-                              style={{
-                                background: 'transparent',
-                                border: 'none',
-                                cursor: 'pointer',
-                                padding: 0,
-                                display: 'flex',
-                                alignItems: 'center',
-                              }}
+                              className="bg-transparent border-none cursor-pointer p-0 flex items-center"
                             >
                               {isStoryExpanded ? (
-                                <ChevronDownIcon label="Collapse" size="small" />
+                                <ChevronDown className="w-4 h-4" />
                               ) : (
-                                <ChevronRightIcon label="Expand" size="small" />
+                                <ChevronRight className="w-4 h-4" />
                               )}
                             </button>
                           )}
-                          <span style={{ fontSize: '14px', color: token('color.text') }}>{story.summary}</span>
+                          <span className="text-sm text-foreground">{story.summary}</span>
                         </div>
-                        <div><Lozenge appearance={getStatusAppearance(story.status)}>{story.status}</Lozenge></div>
-                        <div><Avatar size="small" name={story.assignee} /></div>
-                        <div style={{ fontSize: '14px', color: token('color.text') }}>{story.priority}</div>
-                        <div style={{ fontSize: '14px', color: token('color.text.subtlest') }}>{story.created}</div>
+                        <div><Badge variant={getStatusVariant(story.status)}>{story.status}</Badge></div>
                         <div>
-                          <DropdownMenu trigger={({ triggerRef, ...props }) => (
-                            <Button {...props} ref={triggerRef} appearance="subtle" iconBefore={<MoreIcon label="More" size="small" />} />
-                          )}>
-                            <DropdownItemGroup>
-                              <DropdownItem>Edit</DropdownItem>
-                              <DropdownItem>Delete</DropdownItem>
-                            </DropdownItemGroup>
+                          <Avatar className="w-6 h-6">
+                            <AvatarFallback className="text-[10px]">{story.assignee?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <div className="text-sm text-foreground">{story.priority}</div>
+                        <div className="text-sm text-muted-foreground">{story.created}</div>
+                        <div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-8 w-8">
+                                <MoreHorizontal className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuItem>Delete</DropdownMenuItem>
+                            </DropdownMenuContent>
                           </DropdownMenu>
                         </div>
                       </div>
@@ -228,40 +183,35 @@ export default function ListView({ project }: ListViewProps) {
                       {isStoryExpanded && story.subtasks.map((subtask) => (
                         <div 
                           key={subtask.key}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: '40px 50px 90px 1fr 120px 100px 80px 100px 50px',
-                            padding: '10px 12px',
-                            borderBottom: `1px solid ${token('color.border')}`,
-                            background: token('elevation.surface'),
-                            alignItems: 'center',
-                          }}
+                          className="grid grid-cols-[40px_50px_90px_1fr_120px_100px_80px_100px_50px] px-3 py-2.5 border-b border-border bg-card items-center"
                         >
                           <div><Checkbox /></div>
-                          <div style={{ fontSize: '18px', paddingLeft: '48px' }}>☑️</div>
-                          <a href={`/browse/${subtask.key}`} style={{
-                            fontSize: '14px',
-                            fontWeight: 500,
-                            color: token('color.link'),
-                            textDecoration: 'none',
-                          }}>
+                          <div className="text-lg pl-12">☑️</div>
+                          <a href={`/browse/${subtask.key}`} className="text-sm font-medium text-primary no-underline hover:underline">
                             {subtask.key}
                           </a>
-                          <div style={{ paddingLeft: '48px' }}>
-                            <span style={{ fontSize: '14px', color: token('color.text') }}>{subtask.summary}</span>
+                          <div className="pl-12">
+                            <span className="text-sm text-foreground">{subtask.summary}</span>
                           </div>
-                          <div><Lozenge appearance={getStatusAppearance(subtask.status)}>{subtask.status}</Lozenge></div>
-                          <div><Avatar size="small" name={subtask.assignee} /></div>
-                          <div style={{ fontSize: '14px', color: token('color.text') }}>{subtask.priority}</div>
-                          <div style={{ fontSize: '14px', color: token('color.text.subtlest') }}>{subtask.created}</div>
+                          <div><Badge variant={getStatusVariant(subtask.status)}>{subtask.status}</Badge></div>
                           <div>
-                            <DropdownMenu trigger={({ triggerRef, ...props }) => (
-                              <Button {...props} ref={triggerRef} appearance="subtle" iconBefore={<MoreIcon label="More" size="small" />} />
-                            )}>
-                              <DropdownItemGroup>
-                                <DropdownItem>Edit</DropdownItem>
-                                <DropdownItem>Delete</DropdownItem>
-                              </DropdownItemGroup>
+                            <Avatar className="w-6 h-6">
+                              <AvatarFallback className="text-[10px]">{subtask.assignee?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                          </div>
+                          <div className="text-sm text-foreground">{subtask.priority}</div>
+                          <div className="text-sm text-muted-foreground">{subtask.created}</div>
+                          <div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon" className="h-8 w-8">
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent>
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                              </DropdownMenuContent>
                             </DropdownMenu>
                           </div>
                         </div>
