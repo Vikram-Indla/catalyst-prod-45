@@ -50,8 +50,10 @@ export function EpicBalancingLegend({
                       className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md hover:bg-accent/50 transition-colors"
                     >
                       <span className="text-xs font-medium text-muted-foreground w-4">{index + 1}.</span>
-                      <span className="text-sm text-brand-gold font-medium whitespace-nowrap">
-                        {epic.key} - {epic.plannedQuarter}
+                      <span className="text-sm font-medium whitespace-nowrap">
+                        <span className="text-brand-gold">{epic.key}</span>
+                        <span className="text-muted-foreground"> - </span>
+                        <span className="text-secondary-green">{epic.plannedQuarter}</span>
                       </span>
                       <span className="text-xs text-muted-foreground truncate flex-1">{epic.name}</span>
                     </button>
@@ -68,20 +70,6 @@ export function EpicBalancingLegend({
         </div>
       </div>
 
-      {/* Scoring Summary */}
-      <div>
-        <h3 className="text-sm font-semibold text-foreground mb-3">Scoring Summary</h3>
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Scored:</span>
-            <span className="font-medium text-secondary-green">{scoringStats.complete}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Unscored:</span>
-            <span className="font-medium text-destructive">{scoringStats.incomplete}</span>
-          </div>
-        </div>
-      </div>
 
       {/* Reset Button */}
       {hiddenDrivers.size > 0 && (
