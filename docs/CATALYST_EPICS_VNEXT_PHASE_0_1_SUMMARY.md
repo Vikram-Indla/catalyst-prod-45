@@ -244,3 +244,35 @@ epicProgress = completedPoints / totalPoints × 100
 - `src/pages/EpicBacklogWithSidebar.tsx` - Canonical comment added
 - `src/components/layout/ProgramRoomSidebar.tsx` - "Epic Backlog" menu item added
 - `src/App.tsx` - Routes added for `/programs/:programId/epics` and `/programs/:programId/epic-backlog`
+
+---
+
+## Phase II Step 1: Roll-ups & Program Backlog UX (Complete)
+
+### Roll-up Engine Enhancements (useEpicMutations.ts)
+
+| Function | Description |
+|----------|-------------|
+| `computeEpicRollUp()` | Calculates total_estimate, progress_pct, feature counts from linked Features |
+| `persistEpicRollUp()` | Saves roll-up data to Epic record |
+| `triggerFeatureRollUp` | Mutation triggered when Features change |
+| `triggerBatchRollUp` | Batch operation for multiple Epics |
+
+### New Components (Phase II)
+- `src/components/items/epics/EpicRollUpSummary.tsx` - Displays roll-up metrics in Epic details header
+- `src/hooks/useFeatureWithRollUp.ts` - Feature mutations with automatic Epic roll-up triggers
+
+### Enhanced Filters (BacklogFiltersDialog)
+- Status, Health, Technical Score range, Business Score range
+- Progress %, Target timeframe (quarter)
+
+### Phase II Validation Tests
+
+| Test | Status |
+|------|--------|
+| Feature estimate update → Epic total estimate updates | ✅ PASS |
+| Feature status update → Epic progress % updates | ✅ PASS |
+| Link/unlink Feature → Roll-up recalculates | ✅ PASS |
+| Filters and sorting work in Program Epic Backlog | ✅ PASS |
+| No PI/Portfolio leakage | ✅ PASS |
+| No duplicate routes/components created | ✅ PASS |

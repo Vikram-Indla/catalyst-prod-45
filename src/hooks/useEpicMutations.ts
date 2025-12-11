@@ -2,24 +2,43 @@
  * =====================================================
  * useEpicMutations - Canonical Epic Side Effects Orchestrator
  * =====================================================
- * Catalyst Epics vNext Phase 1
+ * Catalyst Epics vNext Phase II
  * 
  * MUTATIONS HANDLED:
  * - updateEpic: Update Epic fields with side effects
  * - deleteEpic: Soft delete, disassociates Features (remain in backlog)
  * - cancelEpic: Cancel Epic, disassociates Features (remain in backlog)
  * - updateTechnicalScoring: Update scoring inputs, recompute score
- * - triggerFeatureRollUp: Called when Feature changes
+ * - triggerFeatureRollUp: Called when a Feature changes
+ * - triggerBatchRollUp: Called when bulk operations affect multiple Epics
+ * 
+ * ROLL-UP CALCULATIONS (Phase II):
+ * - total_estimate: Sum of all linked Feature estimates
+ * - progress_pct: (# Features with status=done) / (total Features) * 100
+ * - feature_count_total: Total linked Features
+ * - feature_count_completed: Features with status=done
+ * - feature_count_in_progress: Features with status=implementing
+ * - feature_count_blocked: Features with blocked=true
  * 
  * SIDE EFFECTS APPLIED:
  * - Feature → Epic estimate roll-up (sum of Feature estimates)
- * - Epic progress persistence (weighted by Feature estimates)
+ * - Epic progress persistence (based on done Features)
+ * - Feature counts persistence
  * - Technical scoring recomputation (formula unchanged)
  * 
  * QUERIES INVALIDATED:
  * - ['epics'], ['backlog-items'], ['epic-wsjf'], ['enterprise-epics']
  * - ['epic-detail', epicId], ['epic', epicId], ['epic-technical-score', epicId]
- * - ['features'], ['epic-features', epicId]
+ * - ['features'], ['epic-features', epicId], ['epic-rollup', epicId]
+ * 
+ * TRIGGER CONDITIONS:
+ * Roll-up is triggered when:
+ * - Feature is linked to Epic
+ * - Feature is unlinked from Epic
+ * - Feature is deleted
+ * - Feature estimate changes
+ * - Feature status changes
+ * - Feature blocked status changes
  * 
  * NOTE: Technical Scoring stores in epic_wsjf table but UI shows "Tech Score"
  */
@@ -49,6 +68,16 @@ export interface EpicUpdateData {
   job_size?: number;
 }
 
+/** Roll-up data structure for Epic */
+export interface EpicRollUpData {
+  total_estimate: number;
+  progress_pct: number;
+  feature_count_total: number;
+  feature_count_completed: number;
+  feature_count_in_progress: number;
+  feature_count_blocked: number;
+}
+
 // Calculate Technical Score (same formula as WSJF)
 export const calculateTechnicalScore = (
   technicalValue: number,
@@ -59,6 +88,90 @@ export const calculateTechnicalScore = (
   if (jobSize === 0 || !technicalValue || !timeCriticality || !riskReduction) return null;
   const costOfDelay = technicalValue + timeCriticality + riskReduction;
   return Math.round((costOfDelay / jobSize) * 100) / 100;
+};
+
+/**
+ * PHASE II: Compute full roll-up data for an Epic from linked Features
+ * Returns computed roll-up data structure
+ */
+export const computeEpicRollUp = async (epicId: string): Promise<EpicRollUpData> => {
+  // Fetch all features linked to this epic
+  const { data: features, error } = await supabase
+    .from('features')
+    .select('id, progress_pct, status, estimate_points, blocked')
+    .eq('epic_id', epicId)
+    .is('deleted_at', null);
+
+  if (error || !features?.length) {
+    return {
+      total_estimate: 0,
+      progress_pct: 0,
+      feature_count_total: 0,
+      feature_count_completed: 0,
+      feature_count_in_progress: 0,
+      feature_count_blocked: 0,
+    };
+  }
+
+  // Calculate roll-up metrics
+  let totalEstimate = 0;
+  let completedCount = 0;
+  let inProgressCount = 0;
+  let blockedCount = 0;
+
+  features.forEach(feature => {
+    // Sum estimates
+    totalEstimate += feature.estimate_points || 0;
+    
+    // Count by status
+    const status = feature.status?.toLowerCase();
+    if (status === 'done' || status === 'accepted' || status === 'deployed') {
+      completedCount++;
+    } else if (status === 'implementing' || status === 'in_progress' || status === 'validating' || status === 'deploying') {
+      inProgressCount++;
+    }
+    
+    // Count blocked
+    if (feature.blocked) {
+      blockedCount++;
+    }
+  });
+
+  // Calculate progress as % of completed features
+  const progressPercent = features.length > 0 
+    ? Math.round((completedCount / features.length) * 100) 
+    : 0;
+
+  return {
+    total_estimate: totalEstimate,
+    progress_pct: progressPercent,
+    feature_count_total: features.length,
+    feature_count_completed: completedCount,
+    feature_count_in_progress: inProgressCount,
+    feature_count_blocked: blockedCount,
+  };
+};
+
+/**
+ * PHASE II: Persist roll-up data to Epic record
+ */
+export const persistEpicRollUp = async (epicId: string, rollUpData: EpicRollUpData): Promise<void> => {
+  const { error } = await supabase
+    .from('epics')
+    .update({ 
+      points_estimate: rollUpData.total_estimate,
+      progress_pct: rollUpData.progress_pct,
+      feature_count_total: rollUpData.feature_count_total,
+      feature_count_completed: rollUpData.feature_count_completed,
+      feature_count_in_progress: rollUpData.feature_count_in_progress,
+      feature_count_blocked: rollUpData.feature_count_blocked,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', epicId);
+
+  if (error) {
+    console.error('Failed to persist Epic roll-up:', error);
+  }
 };
 
 export function useEpicMutations() {
@@ -74,6 +187,7 @@ export function useEpicMutations() {
       queryClient.invalidateQueries({ queryKey: ['epic-detail', epicId] });
       queryClient.invalidateQueries({ queryKey: ['epic', epicId] });
       queryClient.invalidateQueries({ queryKey: ['epic-technical-score', epicId] });
+      queryClient.invalidateQueries({ queryKey: ['epic-rollup', epicId] });
     }
   };
 
@@ -87,76 +201,22 @@ export function useEpicMutations() {
 
   /**
    * Compute and persist Epic progress from linked Features
+   * @deprecated Use triggerFeatureRollUp mutation instead
    */
   const computeEpicProgress = async (epicId: string): Promise<number> => {
-    // Fetch all features linked to this epic
-    const { data: features, error } = await supabase
-      .from('features')
-      .select('id, progress_pct, status, estimate_points')
-      .eq('epic_id', epicId);
-
-    if (error || !features?.length) return 0;
-
-    // Calculate weighted progress based on estimate points
-    let totalPoints = 0;
-    let completedPoints = 0;
-
-    features.forEach(feature => {
-      const points = feature.estimate_points || 1;
-      totalPoints += points;
-      
-      // Use progress_pct if available, otherwise derive from status
-      // Feature statuses: funnel, analyzing, backlog, implementing
-      const progress = feature.progress_pct ?? 
-        (feature.status === 'implementing' ? 75 : 
-         feature.status === 'backlog' ? 25 :
-         feature.status === 'analyzing' ? 10 : 0);
-      
-      completedPoints += (points * progress) / 100;
-    });
-
-    const progressPercent = totalPoints > 0 
-      ? Math.round((completedPoints / totalPoints) * 100) 
-      : 0;
-
-    // Persist progress to Epic
-    await supabase
-      .from('epics')
-      .update({ 
-        progress_pct: progressPercent,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', epicId);
-
-    return progressPercent;
+    const rollUp = await computeEpicRollUp(epicId);
+    await persistEpicRollUp(epicId, rollUp);
+    return rollUp.progress_pct;
   };
 
   /**
    * Roll up Feature estimates to Epic
+   * @deprecated Use triggerFeatureRollUp mutation instead
    */
   const rollUpFeatureEstimates = async (epicId: string): Promise<number> => {
-    const { data: features, error } = await supabase
-      .from('features')
-      .select('estimate_points')
-      .eq('epic_id', epicId);
-
-    if (error || !features?.length) return 0;
-
-    // Sum all feature estimates
-    const totalEstimate = features.reduce((sum, f) => {
-      return sum + (f.estimate_points || 0);
-    }, 0);
-
-    // Update epic with rolled-up estimate
-    await supabase
-      .from('epics')
-      .update({ 
-        points_estimate: totalEstimate,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', epicId);
-
-    return totalEstimate;
+    const rollUp = await computeEpicRollUp(epicId);
+    await persistEpicRollUp(epicId, rollUp);
+    return rollUp.total_estimate;
   };
 
   /**
@@ -224,10 +284,6 @@ export function useEpicMutations() {
    */
   const deleteEpic = useMutation({
     mutationFn: async ({ epicId }: { epicId: string }) => {
-      // Disassociate all Features from this Epic (set epic_id to a default or leave orphaned)
-      // Note: epic_id is required in features table, so we can't set it to null
-      // Instead, we just soft delete the epic and features remain linked to deleted epic
-      
       // Soft delete the Epic
       const { error } = await supabase
         .from('epics')
@@ -343,18 +399,43 @@ export function useEpicMutations() {
   });
 
   /**
-   * Trigger roll-up from Features (called when a Feature changes)
+   * PHASE II: Trigger full roll-up from Features (called when a Feature changes)
+   * This is the canonical method to call when any Feature is modified
    */
   const triggerFeatureRollUp = useMutation({
     mutationFn: async ({ epicId }: { epicId: string }) => {
-      const [progress, estimate] = await Promise.all([
-        computeEpicProgress(epicId),
-        rollUpFeatureEstimates(epicId)
-      ]);
-      return { epicId, progress, estimate };
+      // Compute all roll-up metrics
+      const rollUpData = await computeEpicRollUp(epicId);
+      
+      // Persist to Epic record
+      await persistEpicRollUp(epicId, rollUpData);
+      
+      return { epicId, ...rollUpData };
     },
     onSuccess: ({ epicId }) => {
       invalidateEpicQueries(epicId);
+      invalidateFeatureQueries(epicId);
+    }
+  });
+
+  /**
+   * PHASE II: Batch roll-up for multiple Epics
+   * Used when bulk operations affect multiple Epics
+   */
+  const triggerBatchRollUp = useMutation({
+    mutationFn: async ({ epicIds }: { epicIds: string[] }) => {
+      const results = await Promise.all(
+        epicIds.map(async (epicId) => {
+          const rollUpData = await computeEpicRollUp(epicId);
+          await persistEpicRollUp(epicId, rollUpData);
+          return { epicId, ...rollUpData };
+        })
+      );
+      return results;
+    },
+    onSuccess: () => {
+      invalidateEpicQueries();
+      invalidateFeatureQueries();
     }
   });
 
@@ -364,6 +445,7 @@ export function useEpicMutations() {
     cancelEpic,
     updateTechnicalScoring,
     triggerFeatureRollUp,
+    triggerBatchRollUp,
     computeEpicProgress,
     rollUpFeatureEstimates,
     recomputeTechnicalScore,
