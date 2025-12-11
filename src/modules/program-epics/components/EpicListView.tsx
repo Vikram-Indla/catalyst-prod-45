@@ -130,22 +130,39 @@ export function EpicListView({ programId }: EpicListViewProps) {
   const [selectedEpic, setSelectedEpic] = useState<Epic | null>(null);
   const queryClient = useQueryClient();
 
-  // Fetch epics
+  // Fetch epics - show all if programId is actually a portfolio or doesn't exist in programs
   const { data: epics = [], refetch } = useQuery({
     queryKey: ['program-epics', programId],
     queryFn: async () => {
-      let query = supabase
+      // Check if programId is a valid program
+      if (programId) {
+        const { data: programCheck } = await supabase
+          .from('programs')
+          .select('id')
+          .eq('id', programId)
+          .maybeSingle();
+        
+        if (programCheck) {
+          // Valid program - filter by primary_program_id
+          const { data, error } = await supabase
+            .from('epics')
+            .select('*')
+            .is('deleted_at', null)
+            .is('parked_at', null)
+            .eq('primary_program_id', programId)
+            .order('global_rank');
+          if (error) throw error;
+          return (data || []) as Epic[];
+        }
+      }
+      
+      // No valid program filter - show all epics
+      const { data, error } = await supabase
         .from('epics')
         .select('*')
         .is('deleted_at', null)
         .is('parked_at', null)
         .order('global_rank');
-      
-      if (programId) {
-        query = query.eq('primary_program_id', programId);
-      }
-      
-      const { data, error } = await query;
       if (error) throw error;
       return (data || []) as Epic[];
     },
