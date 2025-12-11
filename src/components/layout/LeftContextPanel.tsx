@@ -201,12 +201,12 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   };
 
   const getFilteredMenuItems = () => {
-    // Use Enterprise menu items when tier is 'enterprise'
-    if (tier === 'enterprise') {
+    // Use Enterprise menu items when in enterprise workspace (route-based)
+    if (workspaceType === 'enterprise') {
       return getEnterpriseMenuItems();
     }
-    // Otherwise use regular menu items
-    const menuItems = getMenuItems(portfolioId, programId, tier);
+    // Otherwise use regular menu items for portfolio/program contexts
+    const menuItems = getMenuItems(portfolioId || undefined, programId || undefined, tier);
     return menuItems.filter(item => !item.tiers || item.tiers.includes(tier));
   };
 
@@ -249,7 +249,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
               EN
             </div>
           )}
-          {expanded && tier === 'enterprise' && (
+          {expanded && workspaceType === 'enterprise' && (
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded bg-brand-gold flex items-center justify-center text-white text-xs font-semibold">
                 EN
@@ -260,7 +260,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
               </div>
             </div>
           )}
-          {expanded && (tier === 'portfolio' || tier === 'program') && currentPortfolio && (
+          {expanded && (workspaceType === 'project' || workspaceType === 'program') && currentPortfolio && (
             <div className="flex items-center gap-3">
               <div className={cn("w-8 h-8 rounded flex items-center justify-center text-white text-xs font-semibold flex-shrink-0", currentPortfolio.color)}>
                 {currentPortfolio.abbr}
@@ -384,8 +384,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                     menuButton
                   )}
 
-                  {/* More items submenu - only for Enterprise tier */}
-                {isMoreItems && moreItemsExpanded && expanded && tier === 'enterprise' && (
+                  {/* More items submenu - only for Enterprise workspace */}
+                {isMoreItems && moreItemsExpanded && expanded && workspaceType === 'enterprise' && (
                   <div className="bg-accent/20">
                     {moreItemsSubMenu.map((subItem) => (
                       <button
@@ -403,8 +403,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                   </div>
                 )}
 
-                {/* Reports submenu - only for Enterprise tier */}
-                {isReports && reportsExpanded && expanded && tier === 'enterprise' && (
+                {/* Reports submenu - only for Enterprise workspace */}
+                {isReports && reportsExpanded && expanded && workspaceType === 'enterprise' && (
                   <div className="bg-accent/20">
                     {reportsSubMenu.map((subItem) => (
                       <button
@@ -422,8 +422,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
                   </div>
                 )}
 
-                {/* More pages submenu - only for Enterprise tier */}
-                {isMorePages && morePagesExpanded && expanded && tier === 'enterprise' && (
+                {/* More pages submenu - only for Enterprise workspace */}
+                {isMorePages && morePagesExpanded && expanded && workspaceType === 'enterprise' && (
                   <div className="bg-accent/20">
                     {morePagesSubMenu.map((subItem) => (
                       <button
