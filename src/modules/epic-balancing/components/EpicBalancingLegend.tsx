@@ -43,27 +43,17 @@ export function EpicBalancingLegend({
           {top5Epics.length > 0 ? (
             <TooltipProvider>
               {top5Epics.map((epic, index) => (
-                <Tooltip key={epic.id}>
+              <Tooltip key={epic.id}>
                   <TooltipTrigger asChild>
                     <button
                       onClick={() => onEpicClick?.(epic)}
-                      className="flex flex-col w-full text-left px-2 py-1.5 rounded-md hover:bg-accent/50 transition-colors"
+                      className="flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md hover:bg-accent/50 transition-colors"
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-muted-foreground w-4">{index + 1}.</span>
-                        <span className="text-sm text-brand-gold font-medium">{epic.key}</span>
-                        <span className="text-xs text-muted-foreground truncate flex-1">{epic.name}</span>
-                      </div>
-                      <div className="ml-6 mt-0.5">
-                        <span className={cn(
-                          "text-[10px] font-medium px-1.5 py-0.5 rounded",
-                          epic.plannedQuarter === 'Unscheduled' 
-                            ? "bg-muted text-muted-foreground" 
-                            : "bg-brand-gold/10 text-brand-gold"
-                        )}>
-                          {epic.plannedQuarter}
-                        </span>
-                      </div>
+                      <span className="text-xs font-medium text-muted-foreground w-4">{index + 1}.</span>
+                      <span className="text-sm text-brand-gold font-medium whitespace-nowrap">
+                        {epic.key} - {epic.plannedQuarter}
+                      </span>
+                      <span className="text-xs text-muted-foreground truncate flex-1">{epic.name}</span>
                     </button>
                   </TooltipTrigger>
                   <TooltipContent side="left" className="max-w-xs">
