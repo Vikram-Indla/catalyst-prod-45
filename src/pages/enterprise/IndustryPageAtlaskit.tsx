@@ -131,16 +131,25 @@ const tableStyles = `
     color: #172B4D !important;
   }
   
-  /* TABLE CELLS - BODY */
+  /* TABLE CELLS - BODY - Production-matched compact styling */
   [data-testid="dynamic-table"] td {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
     font-size: 14px !important;
     font-weight: 400 !important;
     color: #172B4D !important;
     line-height: 20px !important;
-    padding: 8px 16px !important;
+    padding: 10px 16px !important;
     border-top: 1px solid #DFE1E6 !important;
     vertical-align: middle !important;
+    max-height: 48px !important;
+  }
+  
+  /* Truncate long summary text */
+  [data-testid="dynamic-table"] td:nth-child(3) {
+    max-width: 350px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
   
   /* FIRST ROW NO TOP BORDER */
@@ -590,9 +599,13 @@ export default function IndustryPageAtlaskit() {
       content: request.end_date ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px') }}>
           {formatDate(request.end_date)}
-          {new Date(request.end_date) < new Date() && (
-            <AlertTriangle size={14} color={token('color.text.warning', '#FF991F')} />
-          )}
+          <span style={{ 
+            width: '8px', 
+            height: '8px', 
+            borderRadius: '50%', 
+            backgroundColor: new Date(request.end_date) < new Date() ? '#FF991F' : '#36B37E',
+            flexShrink: 0
+          }} />
         </div>
       ) : '-',
     },
