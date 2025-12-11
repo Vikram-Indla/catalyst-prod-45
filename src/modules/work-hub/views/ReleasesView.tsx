@@ -160,7 +160,7 @@ function ReleaseRow({
       <div className="min-w-[140px]">
         <button
           onClick={onClick}
-          className="text-[14px] font-medium text-blue-700 hover:underline text-left"
+          className="text-[14px] font-medium text-green-700 hover:underline text-left"
         >
           {release.name}
         </button>
@@ -312,7 +312,7 @@ export function ReleasesView() {
 
         {/* Create version button */}
         <Button 
-          className="h-9 px-4 text-[14px] font-medium bg-blue-600 hover:bg-blue-700 text-white gap-2"
+          className="h-9 px-4 text-[14px] font-medium bg-[#C69C6D] hover:bg-[#B8905F] text-white gap-2"
         >
           <Plus className="h-4 w-4" />
           Create version
