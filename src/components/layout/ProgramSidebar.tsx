@@ -169,33 +169,6 @@ export function ProgramSidebar({
                   </div>
                 </div>
               </div>
-
-              <div>
-                <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
-                  QUARTER
-                </label>
-                <Select 
-                  value={effectiveQuarter || undefined} 
-                  onValueChange={onQuarterChange}
-                  defaultValue={currentQuarter}
-                >
-                  <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
-                    <SelectValue placeholder={currentQuarter} />
-                  </SelectTrigger>
-                  <SelectContent className="bg-background border-border z-[100]">
-                    {quarters?.length ? quarters.map((q) => (
-                      <SelectItem key={q.id} value={q.name || q.id}>{q.name}</SelectItem>
-                    )) : (
-                      <>
-                        <SelectItem value="Q1 2025">Q1 2025</SelectItem>
-                        <SelectItem value="Q2 2025">Q2 2025</SelectItem>
-                        <SelectItem value="Q3 2025">Q3 2025</SelectItem>
-                        <SelectItem value="Q4 2025">Q4 2025</SelectItem>
-                      </>
-                    )}
-                  </SelectContent>
-                </Select>
-              </div>
             </>
           )}
         </div>
