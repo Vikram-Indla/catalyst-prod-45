@@ -120,25 +120,6 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
                 Click layers to drill down. Misaligned items shown in badges.
               </CardDescription>
             </div>
-            <div className="flex items-center gap-2">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                  </TooltipTrigger>
-                  <TooltipContent side="left" className="max-w-xs">
-                    <p className="text-xs">
-                      Counts show items aligned to strategy and planned in snapshot quarters.
-                      Misaligned items are linked but not in snapshot scope.
-                    </p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <Button variant="outline" size="sm" onClick={handleOpenFullView}>
-                <Maximize2 className="h-3.5 w-3.5 mr-1" />
-                Full View
-              </Button>
-            </div>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
