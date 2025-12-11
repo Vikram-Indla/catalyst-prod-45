@@ -67,9 +67,12 @@ export function ManageQuartersDrawer({ open, onClose, snapshot }: ManageQuarters
     if (isArchived) return;
     setSaving(true);
     try {
+      // Include any pending selections in the final save
+      const finalQuarters = [...assignedQuarters, ...selectedToAdd];
+      
       const { error } = await supabase
         .from('snapshot_configurations')
-        .update({ quarters: assignedQuarters })
+        .update({ quarters: finalQuarters })
         .eq('snapshot_id', snapshot.id);
       
       if (error) throw error;
@@ -85,11 +88,15 @@ export function ManageQuartersDrawer({ open, onClose, snapshot }: ManageQuarters
     }
   };
 
+  // Include pending selections in the count and change detection
+  const totalSelected = assignedQuarters.length + selectedToAdd.length;
+  
   const hasChanges = useMemo(() => {
     const original = configuration?.quarters || [];
-    if (original.length !== assignedQuarters.length) return true;
-    return !original.every((q) => assignedQuarters.includes(q));
-  }, [configuration?.quarters, assignedQuarters]);
+    const finalQuarters = [...assignedQuarters, ...selectedToAdd];
+    if (original.length !== finalQuarters.length) return true;
+    return !original.every((q) => finalQuarters.includes(q));
+  }, [configuration?.quarters, assignedQuarters, selectedToAdd]);
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
@@ -216,7 +223,7 @@ export function ManageQuartersDrawer({ open, onClose, snapshot }: ManageQuarters
 
         <SheetFooter className="border-t pt-4 flex items-center justify-between">
           <Badge variant="secondary" className="text-xs">
-            {assignedQuarters.length} quarter{assignedQuarters.length !== 1 ? 's' : ''} selected
+            {totalSelected} quarter{totalSelected !== 1 ? 's' : ''} selected
           </Badge>
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose}>
