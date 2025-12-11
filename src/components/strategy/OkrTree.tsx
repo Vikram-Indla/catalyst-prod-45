@@ -12,6 +12,7 @@ import { OKRTreeColumnsDialog, ColumnConfig } from './OKRTreeColumnsDialog';
 interface OkrTreeProps {
   selectedSnapshot: string;
   onObjectiveClick: (objective: any) => void;
+  onThemeClick?: (theme: any) => void;
 }
 
 function getHealthColor(health: string | null): string {
@@ -40,7 +41,7 @@ function getProgressColor(progress: number): string {
   return 'hsl(var(--destructive))';
 }
 
-export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
+export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: OkrTreeProps) {
   const navigate = useNavigate();
   const { data: treeData = [], isLoading } = useOKRTreeV2(selectedSnapshot);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
@@ -86,13 +87,16 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick }: OkrTreeProps) {
       <div key={item.id}>
         <div
           className={`grid items-center py-2.5 border-b hover:bg-muted/20 transition-colors focus:outline-none focus:ring-0 ${
-            isObjective ? 'cursor-pointer' : ''
+            isObjective || isTheme ? 'cursor-pointer' : ''
           } ${isTheme ? 'bg-muted/30' : ''}`}
           style={{
             gridTemplateColumns: '1fr 180px 80px 80px',
           }}
           onClick={() => {
-            if (isObjective) {
+            if (isTheme && onThemeClick) {
+              console.log('🎨 OkrTree: Theme clicked:', { id: item.id, title: item.title });
+              onThemeClick({ id: item.id, name: item.title, type: 'theme' });
+            } else if (isObjective) {
               console.log('🎯 OkrTree: Objective clicked:', { id: item.id, title: item.title });
               onObjectiveClick({ id: item.id, title: item.title, type: 'objective_v2' });
             }

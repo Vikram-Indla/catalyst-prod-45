@@ -10,6 +10,7 @@ import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
 import { CreateStrategyItemDropdown } from '@/components/strategy/CreateStrategyItemDropdown';
+import { ThemeDetailsDrawer } from '@/components/backlog/ThemeDetailsDrawer';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -23,6 +24,8 @@ export default function StrategyRoomPage() {
   const [selectedObjective, setSelectedObjective] = useState<any>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [snapshotSearchQuery, setSnapshotSearchQuery] = useState('');
+  const [selectedTheme, setSelectedTheme] = useState<any>(null);
+  const [themeDrawerOpen, setThemeDrawerOpen] = useState(false);
 
   // Fetch snapshots from database
   const { data: snapshots = [], isLoading: snapshotsLoading, refetch: refetchSnapshots } = useQuery({
@@ -68,6 +71,11 @@ export default function StrategyRoomPage() {
   const handleObjectiveClick = (objective: any) => {
     setSelectedObjective(objective);
     setDrawerOpen(true);
+  };
+
+  const handleThemeClick = (theme: any) => {
+    setSelectedTheme(theme);
+    setThemeDrawerOpen(true);
   };
 
   const filteredSnapshots = snapshots.filter((s) =>
@@ -162,6 +170,7 @@ export default function StrategyRoomPage() {
           <OkrTree
             selectedSnapshot={effectiveSelectedSnapshotId}
             onObjectiveClick={handleObjectiveClick}
+            onThemeClick={handleThemeClick}
           />
         </div>
       </div>
@@ -173,6 +182,16 @@ export default function StrategyRoomPage() {
         onClose={() => {
           setSelectedObjective(null);
           setDrawerOpen(false);
+        }}
+      />
+
+      {/* Theme Details Drawer */}
+      <ThemeDetailsDrawer
+        theme={selectedTheme}
+        isOpen={themeDrawerOpen}
+        onClose={() => {
+          setSelectedTheme(null);
+          setThemeDrawerOpen(false);
         }}
       />
     </div>
