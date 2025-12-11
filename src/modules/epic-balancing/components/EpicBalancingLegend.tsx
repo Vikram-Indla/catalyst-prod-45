@@ -88,34 +88,7 @@ export function EpicBalancingLegend({
         </div>
       </div>
 
-      {/* Priority to Execute Legend */}
-      <div>
-        <h3 className="text-sm font-semibold text-foreground mb-3">Priority to Execute</h3>
-        <div className="space-y-2">
-          {PRIORITIES.map(priority => (
-            <button
-              key={priority}
-              onClick={() => onToggleDriver(priority)}
-              className={cn(
-                "flex items-center gap-3 w-full text-left px-2 py-1.5 rounded-md transition-colors",
-                "hover:bg-accent/50",
-                hiddenDrivers.has(priority) && "opacity-40"
-              )}
-              aria-pressed={!hiddenDrivers.has(priority)}
-            >
-              <div 
-                className="w-5 h-5 rounded-sm flex-shrink-0"
-                style={{ backgroundColor: PRIORITY_TO_EXECUTE_COLORS[priority] }}
-              />
-              <span className="text-sm text-foreground">
-                {PRIORITY_TO_EXECUTE_LABELS[priority]}
-              </span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Summary Metrics */}
+      {/* Scoring Summary */}
       <div>
         <h3 className="text-sm font-semibold text-foreground mb-3">Scoring Summary</h3>
         <div className="space-y-2 text-sm">
