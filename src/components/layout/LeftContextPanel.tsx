@@ -273,8 +273,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
           )}
         </div>
 
-        {/* Filters section - only when expanded */}
-        {expanded && (
+        {/* Filters section - only when expanded AND has content to show */}
+        {expanded && (workspaceType === 'program' || tier === 'enterprise') && (
           <div className="px-4 py-4 border-b border-border">
               {/* Program Increment Filter - only show in program context, NOT enterprise/product */}
               {workspaceType === 'program' && (
