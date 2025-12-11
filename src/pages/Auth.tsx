@@ -14,13 +14,16 @@ import { PasswordInput } from "@/components/auth/PasswordInput";
 export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState<"existing" | "external">("existing");
+  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
   const [mustChangePassword, setMustChangePassword] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [loginError, setLoginError] = useState<string | null>(null);
-  const { signIn, user, loading } = useAuth();
+  const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
 
   // Check if user needs to change password after login
@@ -108,6 +111,50 @@ export default function Auth() {
     const lastRoute = getLastRoute();
     clearLastRoute();
     navigate(lastRoute);
+  };
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setLoginError(null);
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setLoginError("Passwords do not match");
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      setLoginError("Password must be at least 6 characters");
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await signUp(email, password, fullName);
+
+    if (error) {
+      setLoginError(error.message || "Failed to create account");
+      setIsLoading(false);
+      return;
+    }
+
+    // Switch to sign in mode after successful signup
+    setAuthMode("signin");
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setFullName("");
+    setIsLoading(false);
+  };
+
+  const resetForm = () => {
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
+    setFullName("");
+    setLoginError(null);
   };
 
   return (
@@ -324,25 +371,113 @@ export default function Auth() {
               {/* Conditional Content */}
               {userType === "existing" ? (
                 <>
-                  {/* Login Header */}
+                  {/* Sign In / Sign Up Toggle */}
+                  <div className="flex justify-center mb-6">
+                    <div className="inline-flex rounded-lg p-1" style={{
+                      backgroundColor: "rgba(26, 26, 26, 0.05)"
+                    }}>
+                      <button
+                        type="button"
+                        onClick={() => { setAuthMode("signin"); resetForm(); }}
+                        className="transition-all duration-200"
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          padding: "8px 20px",
+                          borderRadius: "6px",
+                          fontSize: "0.875rem",
+                          fontWeight: 500,
+                          border: "none",
+                          cursor: "pointer",
+                          backgroundColor: authMode === "signin" ? "#c69c6d" : "transparent",
+                          color: authMode === "signin" ? "#feffff" : "rgba(26, 26, 26, 0.6)",
+                        }}
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setAuthMode("signup"); resetForm(); }}
+                        className="transition-all duration-200"
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          padding: "8px 20px",
+                          borderRadius: "6px",
+                          fontSize: "0.875rem",
+                          fontWeight: 500,
+                          border: "none",
+                          cursor: "pointer",
+                          backgroundColor: authMode === "signup" ? "#c69c6d" : "transparent",
+                          color: authMode === "signup" ? "#feffff" : "rgba(26, 26, 26, 0.6)",
+                        }}
+                      >
+                        Sign Up
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Header */}
                   <h2 className="text-center mb-2" style={{
                     fontFamily: "'Playfair Display', serif",
                     fontSize: "clamp(1.5rem, 3vw, 1.875rem)",
                     fontWeight: 500,
                     color: "#1a1a1a"
                   }}>
-                    Welcome back
+                    {authMode === "signin" ? "Welcome back" : "Create an account"}
                   </h2>
                   <p className="text-center mb-6" style={{
                     fontFamily: "'DM Sans', sans-serif",
                     fontSize: "clamp(0.9rem, 2vw, 1rem)",
                     color: "rgba(26, 26, 26, 0.55)"
                   }}>
-                    Enter your credentials to access your account
+                    {authMode === "signin" 
+                      ? "Enter your credentials to access your account" 
+                      : "Fill in your details to get started"}
                   </p>
 
-                  {/* Login Form */}
-                  <form onSubmit={handleSignIn} className="space-y-4">
+                  {/* Auth Form */}
+                  <form onSubmit={authMode === "signin" ? handleSignIn : handleSignUp} className="space-y-4">
+                    {/* Full Name Field - Only for Sign Up */}
+                    {authMode === "signup" && (
+                      <div>
+                        <label htmlFor="fullName" className="block mb-1.5" style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontSize: "0.875rem",
+                          fontWeight: 500,
+                          color: "#1a1a1a"
+                        }}>
+                          Full Name
+                        </label>
+                        <input 
+                          id="fullName" 
+                          type="text" 
+                          value={fullName} 
+                          onChange={e => {
+                            setFullName(e.target.value);
+                            setLoginError(null);
+                          }} 
+                          placeholder="John Doe" 
+                          required 
+                          className="w-full transition-all outline-none" 
+                          style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            padding: "14px 18px",
+                            border: "2px solid rgba(26, 26, 26, 0.1)",
+                            borderRadius: "10px",
+                            fontSize: "1rem",
+                            backgroundColor: "#feffff"
+                          }} 
+                          onFocus={e => {
+                            e.target.style.borderColor = "#c69c6d";
+                            e.target.style.boxShadow = "0 0 0 3px rgba(198, 156, 109, 0.1)";
+                          }} 
+                          onBlur={e => {
+                            e.target.style.borderColor = "rgba(26, 26, 26, 0.1)";
+                            e.target.style.boxShadow = "none";
+                          }} 
+                        />
+                      </div>
+                    )}
+
                     {/* Email Field */}
                     <div>
                       <label htmlFor="email" className="block mb-1.5" style={{
@@ -359,7 +494,7 @@ export default function Auth() {
                         value={email} 
                         onChange={e => {
                           setEmail(e.target.value);
-                          setLoginError(null); // Clear error on input change
+                          setLoginError(null);
                         }} 
                         placeholder="name@company.com" 
                         required 
@@ -402,67 +537,92 @@ export default function Auth() {
                         value={password}
                         onChange={(val) => {
                           setPassword(val);
-                          setLoginError(null); // Clear error on input change
+                          setLoginError(null);
                         }}
-                        placeholder="Enter your password"
+                        placeholder={authMode === "signin" ? "Enter your password" : "Create a password"}
                         required
                         hasError={!!loginError}
                       />
-                      {/* Inline Error Message */}
-                      {loginError && (
-                        <p 
-                          className="mt-2 text-sm"
-                          style={{
-                            fontFamily: "'DM Sans', sans-serif",
-                            color: "#dc2626"
-                          }}
-                        >
-                          {loginError}
-                        </p>
-                      )}
                     </div>
 
-                    {/* Form Options Row */}
-                    <div className="flex items-center justify-between">
-                      {/* Remember Me */}
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all" style={{
-                          borderColor: "rgba(26, 26, 26, 0.2)",
-                          backgroundColor: rememberMe ? "#c69c6d" : "transparent",
-                          backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
-                          backgroundSize: "100% 100%",
-                          backgroundPosition: "center",
-                          backgroundRepeat: "no-repeat"
-                        }} />
-                        <span style={{
+                    {/* Confirm Password Field - Only for Sign Up */}
+                    {authMode === "signup" && (
+                      <div>
+                        <label htmlFor="confirmPassword" className="block mb-1.5" style={{
                           fontFamily: "'DM Sans', sans-serif",
                           fontSize: "0.875rem",
-                          color: "rgba(26, 26, 26, 0.7)"
+                          fontWeight: 500,
+                          color: "#1a1a1a"
                         }}>
-                          Remember me
-                        </span>
-                      </label>
+                          Confirm Password
+                        </label>
+                        <PasswordInput
+                          id="confirmPassword"
+                          value={confirmPassword}
+                          onChange={(val) => {
+                            setConfirmPassword(val);
+                            setLoginError(null);
+                          }}
+                          placeholder="Confirm your password"
+                          required
+                          hasError={!!loginError && loginError.includes("match")}
+                        />
+                      </div>
+                    )}
 
-                      {/* Forgot Password */}
-                      <button type="button" className="transition-colors" style={{
-                        fontFamily: "'DM Sans', sans-serif",
-                        fontSize: "0.875rem",
-                        color: "#c69c6d",
-                        fontWeight: 500
-                      }} onMouseEnter={e => {
-                        e.currentTarget.style.color = "#1a1a1a";
-                      }} onMouseLeave={e => {
-                        e.currentTarget.style.color = "#c69c6d";
-                      }}>
-                        Forgot password?
-                      </button>
-                    </div>
+                    {/* Inline Error Message */}
+                    {loginError && (
+                      <p 
+                        className="text-sm"
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          color: "#dc2626"
+                        }}
+                      >
+                        {loginError}
+                      </p>
+                    )}
 
-                    {/* Sign In Button */}
+                    {/* Form Options Row - Only for Sign In */}
+                    {authMode === "signin" && (
+                      <div className="flex items-center justify-between">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input type="checkbox" checked={rememberMe} onChange={e => setRememberMe(e.target.checked)} className="w-4 h-4 rounded border-2 cursor-pointer appearance-none transition-all" style={{
+                            borderColor: "rgba(26, 26, 26, 0.2)",
+                            backgroundColor: rememberMe ? "#c69c6d" : "transparent",
+                            backgroundImage: rememberMe ? "url(\"data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e\")" : "none",
+                            backgroundSize: "100% 100%",
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat"
+                          }} />
+                          <span style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: "0.875rem",
+                            color: "rgba(26, 26, 26, 0.7)"
+                          }}>
+                            Remember me
+                          </span>
+                        </label>
+                        <button type="button" className="transition-colors" style={{
+                          fontFamily: "'DM Sans', sans-serif",
+                          fontSize: "0.875rem",
+                          color: "#c69c6d",
+                          fontWeight: 500
+                        }} onMouseEnter={e => {
+                          e.currentTarget.style.color = "#1a1a1a";
+                        }} onMouseLeave={e => {
+                          e.currentTarget.style.color = "#c69c6d";
+                        }}>
+                          Forgot password?
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Submit Button */}
                     <button type="submit" disabled={isLoading} className="w-full relative overflow-hidden transition-all duration-300" style={{
                       fontFamily: "'DM Sans', sans-serif",
                       padding: "16px",
-                      backgroundColor: "#1a1a1a",
+                      backgroundColor: authMode === "signin" ? "#1a1a1a" : "#c69c6d",
                       color: "#feffff",
                       fontWeight: 600,
                       borderRadius: "10px",
@@ -473,7 +633,9 @@ export default function Auth() {
                     }} onMouseEnter={e => {
                       if (!isLoading) {
                         e.currentTarget.style.transform = "translateY(-2px)";
-                        e.currentTarget.style.boxShadow = "0 6px 20px rgba(26, 26, 26, 0.2)";
+                        e.currentTarget.style.boxShadow = authMode === "signin" 
+                          ? "0 6px 20px rgba(26, 26, 26, 0.2)"
+                          : "0 6px 20px rgba(198, 156, 109, 0.3)";
                       }
                     }} onMouseLeave={e => {
                       if (!isLoading) {
@@ -483,12 +645,12 @@ export default function Auth() {
                     }}>
                       <span className="relative flex items-center justify-center gap-2">
                         {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                        Sign In
+                        {authMode === "signin" ? "Sign In" : "Create Account"}
                       </span>
                     </button>
                   </form>
 
-                  {/* Jira Badge under login */}
+                  {/* Integration Badge */}
                   <div className="mt-6">
                     <IntegrationBadge />
                   </div>
