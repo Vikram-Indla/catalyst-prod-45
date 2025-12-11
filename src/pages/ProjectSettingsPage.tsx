@@ -1,20 +1,31 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { token } from '@atlaskit/tokens';
-import { Content, Main, PageLayout } from '@atlaskit/page-layout';
-import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
-import Tabs, { Tab, TabList, TabPanel } from '@atlaskit/tabs';
-import Form, { Field, ErrorMessage, HelperMessage } from '@atlaskit/form';
-import Textfield from '@atlaskit/textfield';
-import TextArea from '@atlaskit/textarea';
-import Button from '@atlaskit/button';
-import Select from '@atlaskit/select';
-import Toggle from '@atlaskit/toggle';
-import SectionMessage from '@atlaskit/section-message';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { AlertTriangle, Info } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import ProjectSidebar from '@/components/atlaskit/ProjectSidebar';
 
 interface Project {
   id: string;
@@ -23,28 +34,26 @@ interface Project {
   description: string;
   programId: string;
   programName: string;
-  lead: {
-    label: string;
-    value: string;
-  } | null;
-  type: {
-    label: string;
-    value: string;
-  };
+  lead: string;
+  type: string;
   category: string;
 }
+
+const mockUsers = [
+  { label: 'Vikram Indla', value: 'vikram-indla' },
+  { label: 'Jane Smith', value: 'jane-smith' },
+  { label: 'Bob Johnson', value: 'bob-johnson' },
+  { label: 'Alice Brown', value: 'alice-brown' },
+];
 
 export default function ProjectSettingsPage() {
   const { projectKey } = useParams<{ projectKey: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [selectedTab, setSelectedTab] = useState(0);
 
-  // Fetch project data
   const { data: project, isLoading } = useQuery({
     queryKey: ['project-settings', projectKey],
     queryFn: async () => {
-      // For now, use mock data - in production, fetch from database
       const mockProject: Project = {
         id: '1',
         key: projectKey || 'ICP',
@@ -52,14 +61,8 @@ export default function ProjectSettingsPage() {
         description: 'Invoice and compliance platform',
         programId: 'PROD',
         programName: 'Product Program',
-        lead: {
-          label: 'Vikram Indla',
-          value: 'vikram-indla',
-        },
-        type: {
-          label: 'Scrum',
-          value: 'scrum',
-        },
+        lead: 'vikram-indla',
+        type: 'Scrum',
         category: 'Company-managed software',
       };
       return mockProject;
@@ -67,10 +70,8 @@ export default function ProjectSettingsPage() {
     enabled: !!projectKey,
   });
 
-  // Update project mutation
   const updateProjectMutation = useMutation({
     mutationFn: async (data: Partial<Project>) => {
-      // TODO: Implement actual API call
       console.log('Updating project:', data);
       return data;
     },
@@ -85,425 +86,248 @@ export default function ProjectSettingsPage() {
 
   if (isLoading || !project) {
     return (
-      <div style={{ display: 'flex', height: '100vh' }}>
-        <ProjectSidebar projectKey={projectKey || ''} currentPage="settings" />
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <p>Loading...</p>
-        </div>
+      <div className="flex h-screen items-center justify-center">
+        <p>Loading...</p>
       </div>
     );
   }
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <ProjectSidebar projectKey={projectKey || ''} currentPage="settings" />
+    <div className="min-h-screen bg-muted/30 p-6">
+      {/* Breadcrumbs */}
+      <Breadcrumb className="mb-3">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to="/projects">Projects</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link to={`/projects/${projectKey}`}>{project.name}</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Settings</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-      <PageLayout>
-        <Content>
-          <Main>
-            <div style={{
-              padding: '24px 40px',
-              background: '#FAFBFC',
-              minHeight: '100vh',
-            }}>
-              {/* BREADCRUMBS */}
-              <div style={{ marginBottom: '12px' }}>
-                <Breadcrumbs>
-                  <BreadcrumbsItem href="/projects" text="Projects" />
-                  <BreadcrumbsItem href={`/projects/${projectKey}`} text={project.name} />
-                  <BreadcrumbsItem text="Settings" />
-                </Breadcrumbs>
-              </div>
+      {/* Page Header */}
+      <div className="mb-6">
+        <h1 className="text-xl font-medium text-foreground">Project settings</h1>
+        <p className="text-xs text-muted-foreground">
+          Manage settings for {project.name}
+        </p>
+      </div>
 
-              {/* PAGE HEADER */}
-              <div style={{ marginBottom: '24px' }}>
-                <h1 style={{
-                  fontSize: '20px',
-                  fontWeight: 500,
-                  lineHeight: '24px',
-                  color: '#172B4D',
-                  margin: '0 0 4px 0',
-                }}>
-                  Project settings
-                </h1>
-                <p style={{
-                  fontSize: '12px',
-                  lineHeight: '16px',
-                  color: '#5E6C84',
-                  margin: 0,
-                }}>
-                  Manage settings for {project.name}
-                </p>
-              </div>
+      {/* Tabs */}
+      <Tabs defaultValue="details">
+        <TabsList>
+          <TabsTrigger value="details">Details</TabsTrigger>
+          <TabsTrigger value="access">Access</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="features">Features</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced</TabsTrigger>
+        </TabsList>
 
-              {/* TABS */}
-              <Tabs
-                onChange={(index) => setSelectedTab(index)}
-                selected={selectedTab}
-                id="settings-tabs"
-              >
-                <TabList>
-                  <Tab>Details</Tab>
-                  <Tab>Access</Tab>
-                  <Tab>Notifications</Tab>
-                  <Tab>Features</Tab>
-                  <Tab>Advanced</Tab>
-                </TabList>
+        <TabsContent value="details" className="mt-4">
+          <DetailsTab
+            project={project}
+            onSave={(data) => updateProjectMutation.mutate(data)}
+            isSaving={updateProjectMutation.isPending}
+          />
+        </TabsContent>
 
-                {/* DETAILS TAB */}
-                <TabPanel>
-                  <div style={{ marginTop: '16px' }}>
-                    <DetailsTab
-                      project={project}
-                      onSave={(data) => updateProjectMutation.mutate(data)}
-                      isSaving={updateProjectMutation.isPending}
-                    />
-                  </div>
-                </TabPanel>
+        <TabsContent value="access" className="mt-4">
+          <AccessTab project={project} />
+        </TabsContent>
 
-                {/* ACCESS TAB */}
-                <TabPanel>
-                  <div style={{ marginTop: '16px' }}>
-                    <AccessTab project={project} />
-                  </div>
-                </TabPanel>
+        <TabsContent value="notifications" className="mt-4">
+          <NotificationsTab project={project} />
+        </TabsContent>
 
-                {/* NOTIFICATIONS TAB */}
-                <TabPanel>
-                  <div style={{ marginTop: '16px' }}>
-                    <NotificationsTab project={project} />
-                  </div>
-                </TabPanel>
+        <TabsContent value="features" className="mt-4">
+          <FeaturesTab project={project} />
+        </TabsContent>
 
-                {/* FEATURES TAB */}
-                <TabPanel>
-                  <div style={{ marginTop: '16px' }}>
-                    <FeaturesTab project={project} />
-                  </div>
-                </TabPanel>
-
-                {/* ADVANCED TAB */}
-                <TabPanel>
-                  <div style={{ marginTop: '16px' }}>
-                    <AdvancedTab project={project} />
-                  </div>
-                </TabPanel>
-              </Tabs>
-            </div>
-          </Main>
-        </Content>
-      </PageLayout>
+        <TabsContent value="advanced" className="mt-4">
+          <AdvancedTab project={project} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
-
-// ============================================
-// DETAILS TAB
-// ============================================
 
 function DetailsTab({ project, onSave, isSaving }: { project: Project; onSave: (data: any) => void; isSaving: boolean }) {
-  const mockUsers = [
-    { label: 'Vikram Indla', value: 'vikram-indla' },
-    { label: 'Jane Smith', value: 'jane-smith' },
-    { label: 'Bob Johnson', value: 'bob-johnson' },
-    { label: 'Alice Brown', value: 'alice-brown' },
-  ];
+  const [name, setName] = useState(project.name);
+  const [description, setDescription] = useState(project.description);
+  const [lead, setLead] = useState(project.lead);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors: Record<string, string> = {};
+    if (!name.trim()) newErrors.name = 'Project name is required';
+    if (name.trim().length < 3) newErrors.name = 'Name must be at least 3 characters';
+    if (!lead) newErrors.lead = 'Project lead is required';
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    
+    onSave({ name, description, lead });
+  };
 
   return (
-    <div style={{
-      background: '#FFFFFF',
-      border: '1px solid #DFE1E6',
-      borderRadius: '3px',
-      padding: '24px',
-      maxWidth: '600px',
-    }}>
-      <h2 style={{
-        fontSize: '14px',
-        fontWeight: 600,
-        color: '#172B4D',
-        margin: '0 0 16px 0',
-      }}>
-        Project details
-      </h2>
-
-      <Form onSubmit={(data) => { onSave(data); return Promise.resolve(); }}>
-        {({ formProps, submitting }) => (
-          <form {...formProps}>
-            {/* PROJECT KEY (READ-ONLY) */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#172B4D',
-                display: 'block',
-                marginBottom: '4px',
-              }}>
-                Key
-              </label>
-              <div style={{
-                padding: '8px 12px',
-                background: '#F4F5F7',
-                border: '1px solid #DFE1E6',
-                borderRadius: '3px',
-                fontSize: '14px',
-                color: '#172B4D',
-              }}>
-                {project.key}
-              </div>
-              <div style={{
-                fontSize: '11px',
-                color: '#5E6C84',
-                marginTop: '4px',
-              }}>
-                Project key cannot be changed
-              </div>
+    <Card className="max-w-xl">
+      <CardHeader>
+        <CardTitle className="text-sm font-semibold">Project details</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Key (read-only) */}
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Key</Label>
+            <div className="px-3 py-2 bg-muted border rounded-md text-sm">
+              {project.key}
             </div>
+            <p className="text-[11px] text-muted-foreground">
+              Project key cannot be changed
+            </p>
+          </div>
 
-            {/* PROGRAM (READ-ONLY WITH LINK) */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#172B4D',
-                display: 'block',
-                marginBottom: '4px',
-              }}>
-                Program
-              </label>
-              <div style={{
-                padding: '8px 12px',
-                background: '#F4F5F7',
-                border: '1px solid #DFE1E6',
-                borderRadius: '3px',
-                fontSize: '14px',
-              }}>
-                <a
-                  href={`/programs/${project.programId}`}
-                  style={{
-                    color: '#0052CC',
-                    textDecoration: 'none',
-                  }}
-                >
-                  {project.programName} ({project.programId})
-                </a>
-              </div>
-              <div style={{
-                fontSize: '11px',
-                color: '#5E6C84',
-                marginTop: '4px',
-              }}>
-                This project is linked to this program. Epics from this program can be linked to features in this project.
-              </div>
-            </div>
-
-            {/* PROJECT NAME */}
-            <Field
-              name="name"
-              label="Name"
-              isRequired
-              defaultValue={project.name}
-              validate={(value) => {
-                if (!value || value.trim().length === 0) {
-                  return 'Project name is required';
-                }
-                if (value.trim().length < 3) {
-                  return 'Name must be at least 3 characters';
-                }
-                return undefined;
-              }}
-            >
-              {({ fieldProps, error }) => (
-                <>
-                  <Textfield
-                    {...fieldProps}
-                    placeholder="Enter project name"
-                    autoComplete="off"
-                  />
-                  {error && <ErrorMessage>{error}</ErrorMessage>}
-                  <HelperMessage>
-                    The display name for this project
-                  </HelperMessage>
-                </>
-              )}
-            </Field>
-
-            {/* DESCRIPTION */}
-            <Field
-              name="description"
-              label="Description"
-              defaultValue={project.description}
-            >
-              {({ fieldProps }) => (
-                <>
-                  <TextArea
-                    placeholder="Project description"
-                    minimumRows={3}
-                    value={fieldProps.value || ''}
-                    onChange={(e) => fieldProps.onChange(e.target.value)}
-                    onBlur={fieldProps.onBlur}
-                  />
-                  <HelperMessage>
-                    A brief description of this project
-                  </HelperMessage>
-                </>
-              )}
-            </Field>
-
-            {/* PROJECT LEAD */}
-            <Field
-              name="lead"
-              label="Project lead"
-              isRequired
-              defaultValue={project.lead}
-              validate={(value) => {
-                if (!value) {
-                  return 'Project lead is required';
-                }
-                return undefined;
-              }}
-            >
-              {({ fieldProps, error }) => (
-                <>
-                  <Select
-                    {...fieldProps}
-                    inputId="project-lead"
-                    placeholder="Select project lead"
-                    options={mockUsers}
-                  />
-                  {error && <ErrorMessage>{error}</ErrorMessage>}
-                  <HelperMessage>
-                    The person responsible for this project
-                  </HelperMessage>
-                </>
-              )}
-            </Field>
-
-            {/* PROJECT TYPE (READ-ONLY) */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#172B4D',
-                display: 'block',
-                marginBottom: '4px',
-              }}>
-                Project type
-              </label>
-              <div style={{
-                padding: '8px 12px',
-                background: '#F4F5F7',
-                border: '1px solid #DFE1E6',
-                borderRadius: '3px',
-                fontSize: '14px',
-                color: '#172B4D',
-              }}>
-                {project.type.label}
-              </div>
-              <div style={{
-                fontSize: '11px',
-                color: '#5E6C84',
-                marginTop: '4px',
-              }}>
-                Project type cannot be changed after creation
-              </div>
-            </div>
-
-            {/* CATEGORY */}
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#172B4D',
-                display: 'block',
-                marginBottom: '4px',
-              }}>
-                Category
-              </label>
-              <div style={{
-                padding: '8px 12px',
-                background: '#F4F5F7',
-                border: '1px solid #DFE1E6',
-                borderRadius: '3px',
-                fontSize: '14px',
-                color: '#172B4D',
-              }}>
-                {project.category}
-              </div>
-              <div style={{
-                fontSize: '11px',
-                color: '#5E6C84',
-                marginTop: '4px',
-              }}>
-                Project category
-              </div>
-            </div>
-
-            {/* ACTIONS */}
-            <div style={{
-              display: 'flex',
-              gap: '8px',
-              marginTop: '24px',
-            }}>
-              <Button
-                appearance="primary"
-                type="submit"
-                isDisabled={submitting || isSaving}
+          {/* Program (read-only with link) */}
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Program</Label>
+            <div className="px-3 py-2 bg-muted border rounded-md text-sm">
+              <Link
+                to={`/programs/${project.programId}`}
+                className="text-primary hover:underline"
               >
-                {(submitting || isSaving) ? 'Saving...' : 'Save changes'}
-              </Button>
-              <Button appearance="subtle">
-                Cancel
-              </Button>
+                {project.programName} ({project.programId})
+              </Link>
             </div>
-          </form>
-        )}
-      </Form>
-    </div>
+            <p className="text-[11px] text-muted-foreground">
+              This project is linked to this program. Epics from this program can be linked to features in this project.
+            </p>
+          </div>
+
+          {/* Name */}
+          <div className="space-y-2">
+            <Label htmlFor="name" className="text-xs font-semibold">
+              Name <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter project name"
+            />
+            {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
+            <p className="text-[11px] text-muted-foreground">
+              The display name for this project
+            </p>
+          </div>
+
+          {/* Description */}
+          <div className="space-y-2">
+            <Label htmlFor="description" className="text-xs font-semibold">Description</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Project description"
+              rows={3}
+            />
+            <p className="text-[11px] text-muted-foreground">
+              A brief description of this project
+            </p>
+          </div>
+
+          {/* Lead */}
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">
+              Project lead <span className="text-destructive">*</span>
+            </Label>
+            <Select value={lead} onValueChange={setLead}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select project lead" />
+              </SelectTrigger>
+              <SelectContent>
+                {mockUsers.map((user) => (
+                  <SelectItem key={user.value} value={user.value}>
+                    {user.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {errors.lead && <p className="text-xs text-destructive">{errors.lead}</p>}
+            <p className="text-[11px] text-muted-foreground">
+              The person responsible for this project
+            </p>
+          </div>
+
+          {/* Type (read-only) */}
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Project type</Label>
+            <div className="px-3 py-2 bg-muted border rounded-md text-sm">
+              {project.type}
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Project type cannot be changed after creation
+            </p>
+          </div>
+
+          {/* Category (read-only) */}
+          <div className="space-y-2">
+            <Label className="text-xs font-semibold">Category</Label>
+            <div className="px-3 py-2 bg-muted border rounded-md text-sm">
+              {project.category}
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              Project category
+            </p>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2 pt-4">
+            <Button type="submit" disabled={isSaving}>
+              {isSaving ? 'Saving...' : 'Save changes'}
+            </Button>
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
-
-// ============================================
-// ACCESS TAB
-// ============================================
 
 function AccessTab({ project }: { project: Project }) {
   return (
-    <div style={{ maxWidth: '600px' }}>
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DFE1E6',
-        borderRadius: '3px',
-        padding: '24px',
-      }}>
-        <h2 style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: '#172B4D',
-          margin: '0 0 8px 0',
-        }}>
-          Project access
-        </h2>
-        <p style={{
-          fontSize: '12px',
-          color: '#5E6C84',
-          margin: '0 0 16px 0',
-        }}>
+    <Card className="max-w-xl">
+      <CardHeader>
+        <CardTitle className="text-sm font-semibold">Project access</CardTitle>
+        <CardDescription className="text-xs">
           Manage who can access this project and what they can do.
-        </p>
-
-        <SectionMessage appearance="information">
-          <p style={{ fontSize: '12px', margin: 0 }}>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription className="text-xs">
             Access management will be implemented in a future phase (Permissions & Security).
-          </p>
-        </SectionMessage>
-      </div>
-    </div>
+          </AlertDescription>
+        </Alert>
+      </CardContent>
+    </Card>
   );
 }
-
-// ============================================
-// NOTIFICATIONS TAB
-// ============================================
 
 function NotificationsTab({ project }: { project: Project }) {
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -514,94 +338,44 @@ function NotificationsTab({ project }: { project: Project }) {
   };
 
   return (
-    <div style={{ maxWidth: '600px' }}>
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DFE1E6',
-        borderRadius: '3px',
-        padding: '24px',
-      }}>
-        <h2 style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: '#172B4D',
-          margin: '0 0 16px 0',
-        }}>
-          Notification settings
-        </h2>
-
-        {/* EMAIL NOTIFICATIONS */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 0',
-          borderBottom: '1px solid #DFE1E6',
-        }}>
+    <Card className="max-w-xl">
+      <CardHeader>
+        <CardTitle className="text-sm font-semibold">Notification settings</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between py-3 border-b">
           <div>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: 500,
-              color: '#172B4D',
-              marginBottom: '4px',
-            }}>
-              Email notifications
-            </div>
-            <div style={{
-              fontSize: '12px',
-              color: '#5E6C84',
-            }}>
+            <div className="text-sm font-medium">Email notifications</div>
+            <div className="text-xs text-muted-foreground">
               Receive email updates for project activities
             </div>
           </div>
-          <Toggle
-            isChecked={emailNotifications}
-            onChange={() => setEmailNotifications(!emailNotifications)}
+          <Switch
+            checked={emailNotifications}
+            onCheckedChange={setEmailNotifications}
           />
         </div>
 
-        {/* SLACK NOTIFICATIONS */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 0',
-        }}>
+        <div className="flex items-center justify-between py-3">
           <div>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: 500,
-              color: '#172B4D',
-              marginBottom: '4px',
-            }}>
-              Slack notifications
-            </div>
-            <div style={{
-              fontSize: '12px',
-              color: '#5E6C84',
-            }}>
+            <div className="text-sm font-medium">Slack notifications</div>
+            <div className="text-xs text-muted-foreground">
               Send notifications to Slack channels
             </div>
           </div>
-          <Toggle
-            isChecked={slackNotifications}
-            onChange={() => setSlackNotifications(!slackNotifications)}
+          <Switch
+            checked={slackNotifications}
+            onCheckedChange={setSlackNotifications}
           />
         </div>
 
-        <div style={{ marginTop: '16px' }}>
-          <Button appearance="primary" onClick={handleSave}>
-            Save notification settings
-          </Button>
-        </div>
-      </div>
-    </div>
+        <Button onClick={handleSave} className="mt-4">
+          Save notification settings
+        </Button>
+      </CardContent>
+    </Card>
   );
 }
-
-// ============================================
-// FEATURES TAB
-// ============================================
 
 function FeaturesTab({ project }: { project: Project }) {
   const [issueTypes, setIssueTypes] = useState(true);
@@ -613,124 +387,48 @@ function FeaturesTab({ project }: { project: Project }) {
   };
 
   return (
-    <div style={{ maxWidth: '600px' }}>
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DFE1E6',
-        borderRadius: '3px',
-        padding: '24px',
-      }}>
-        <h2 style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: '#172B4D',
-          margin: '0 0 16px 0',
-        }}>
-          Project features
-        </h2>
-
-        {/* ISSUE TYPES */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 0',
-          borderBottom: '1px solid #DFE1E6',
-        }}>
+    <Card className="max-w-xl">
+      <CardHeader>
+        <CardTitle className="text-sm font-semibold">Project features</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center justify-between py-3 border-b">
           <div>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: 500,
-              color: '#172B4D',
-              marginBottom: '4px',
-            }}>
-              Issue types
-            </div>
-            <div style={{
-              fontSize: '12px',
-              color: '#5E6C84',
-            }}>
+            <div className="text-sm font-medium">Issue types</div>
+            <div className="text-xs text-muted-foreground">
               Enable custom issue types for this project
             </div>
           </div>
-          <Toggle
-            isChecked={issueTypes}
-            onChange={() => setIssueTypes(!issueTypes)}
-          />
+          <Switch checked={issueTypes} onCheckedChange={setIssueTypes} />
         </div>
 
-        {/* SPRINTS */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 0',
-          borderBottom: '1px solid #DFE1E6',
-        }}>
+        <div className="flex items-center justify-between py-3 border-b">
           <div>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: 500,
-              color: '#172B4D',
-              marginBottom: '4px',
-            }}>
-              Sprints
-            </div>
-            <div style={{
-              fontSize: '12px',
-              color: '#5E6C84',
-            }}>
+            <div className="text-sm font-medium">Sprints</div>
+            <div className="text-xs text-muted-foreground">
               Enable sprint planning and tracking
             </div>
           </div>
-          <Toggle
-            isChecked={sprints}
-            onChange={() => setSprints(!sprints)}
-          />
+          <Switch checked={sprints} onCheckedChange={setSprints} />
         </div>
 
-        {/* RELEASES */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '12px 0',
-        }}>
+        <div className="flex items-center justify-between py-3">
           <div>
-            <div style={{
-              fontSize: '14px',
-              fontWeight: 500,
-              color: '#172B4D',
-              marginBottom: '4px',
-            }}>
-              Releases
-            </div>
-            <div style={{
-              fontSize: '12px',
-              color: '#5E6C84',
-            }}>
+            <div className="text-sm font-medium">Releases</div>
+            <div className="text-xs text-muted-foreground">
               Enable release management
             </div>
           </div>
-          <Toggle
-            isChecked={releases}
-            onChange={() => setReleases(!releases)}
-          />
+          <Switch checked={releases} onCheckedChange={setReleases} />
         </div>
 
-        <div style={{ marginTop: '16px' }}>
-          <Button appearance="primary" onClick={handleSave}>
-            Save feature settings
-          </Button>
-        </div>
-      </div>
-    </div>
+        <Button onClick={handleSave} className="mt-4">
+          Save feature settings
+        </Button>
+      </CardContent>
+    </Card>
   );
 }
-
-// ============================================
-// ADVANCED TAB
-// ============================================
 
 function AdvancedTab({ project }: { project: Project }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -754,99 +452,73 @@ function AdvancedTab({ project }: { project: Project }) {
   };
 
   return (
-    <div style={{ maxWidth: '600px' }}>
-      {/* ARCHIVE SECTION */}
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DFE1E6',
-        borderRadius: '3px',
-        padding: '24px',
-        marginBottom: '16px',
-      }}>
-        <h2 style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: '#172B4D',
-          margin: '0 0 8px 0',
-        }}>
-          Archive project
-        </h2>
-        <p style={{
-          fontSize: '12px',
-          color: '#5E6C84',
-          margin: '0 0 12px 0',
-        }}>
-          Archived projects are hidden from the project list but can be restored later.
-        </p>
-        <Button appearance="warning" onClick={handleArchive}>
-          Archive project
-        </Button>
-      </div>
-
-      {/* DELETE SECTION */}
-      <div style={{
-        background: '#FFFFFF',
-        border: '1px solid #DE350B',
-        borderRadius: '3px',
-        padding: '24px',
-      }}>
-        <h2 style={{
-          fontSize: '14px',
-          fontWeight: 600,
-          color: '#DE350B',
-          margin: '0 0 8px 0',
-        }}>
-          Delete project
-        </h2>
-        <p style={{
-          fontSize: '12px',
-          color: '#5E6C84',
-          margin: '0 0 12px 0',
-        }}>
-          Permanently delete this project and all its issues. This action cannot be undone.
-        </p>
-
-        {!showDeleteConfirm ? (
-          <Button appearance="danger" onClick={() => setShowDeleteConfirm(true)}>
-            Delete project
+    <div className="max-w-xl space-y-4">
+      {/* Archive Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm font-semibold">Archive project</CardTitle>
+          <CardDescription className="text-xs">
+            Archived projects are hidden from the project list but can be restored later.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="secondary" onClick={handleArchive}>
+            Archive project
           </Button>
-        ) : (
-          <div>
-            <SectionMessage appearance="error" title="Confirm deletion">
-              <p style={{ fontSize: '12px', margin: '0 0 12px 0' }}>
-                Type <strong>{project.key}</strong> to confirm deletion:
-              </p>
-              <Textfield 
-                placeholder={project.key} 
-                value={deleteConfirmKey}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDeleteConfirmKey(e.target.value)}
-              />
-              <div style={{
-                display: 'flex',
-                gap: '8px',
-                marginTop: '12px',
-              }}>
-                <Button 
-                  appearance="danger" 
-                  onClick={handleDelete}
-                  isDisabled={deleteConfirmKey !== project.key}
-                >
-                  Delete permanently
-                </Button>
-                <Button
-                  appearance="subtle"
-                  onClick={() => {
-                    setShowDeleteConfirm(false);
-                    setDeleteConfirmKey('');
-                  }}
-                >
-                  Cancel
-                </Button>
-              </div>
-            </SectionMessage>
-          </div>
-        )}
-      </div>
+        </CardContent>
+      </Card>
+
+      {/* Delete Section */}
+      <Card className="border-destructive">
+        <CardHeader>
+          <CardTitle className="text-sm font-semibold text-destructive">Delete project</CardTitle>
+          <CardDescription className="text-xs">
+            Permanently delete this project and all its issues. This action cannot be undone.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {!showDeleteConfirm ? (
+            <Button variant="destructive" onClick={() => setShowDeleteConfirm(true)}>
+              Delete project
+            </Button>
+          ) : (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Confirm deletion</AlertTitle>
+              <AlertDescription className="space-y-3">
+                <p className="text-xs">
+                  Type <strong>{project.key}</strong> to confirm deletion:
+                </p>
+                <Input
+                  placeholder={project.key}
+                  value={deleteConfirmKey}
+                  onChange={(e) => setDeleteConfirmKey(e.target.value)}
+                />
+                <div className="flex gap-2">
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleDelete}
+                    disabled={deleteConfirmKey !== project.key}
+                  >
+                    Delete permanently
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setShowDeleteConfirm(false);
+                      setDeleteConfirmKey('');
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

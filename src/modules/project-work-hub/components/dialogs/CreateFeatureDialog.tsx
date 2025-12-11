@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
-import { token } from '@atlaskit/tokens';
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button';
-import Textfield from '@atlaskit/textfield';
-import TextArea from '@atlaskit/textarea';
-import Select, { ValueType } from '@atlaskit/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { WorkItem, Priority, StatusCategory } from '../../types';
-
-interface OptionType {
-  label: string;
-  value: string;
-}
 
 interface CreateFeatureDialogProps {
   isOpen: boolean;
@@ -20,7 +27,7 @@ interface CreateFeatureDialogProps {
   programId?: string;
 }
 
-const priorityOptions: OptionType[] = [
+const priorityOptions = [
   { label: 'Highest', value: 'HIGHEST' },
   { label: 'High', value: 'HIGH' },
   { label: 'Medium', value: 'MEDIUM' },
@@ -28,20 +35,20 @@ const priorityOptions: OptionType[] = [
   { label: 'Lowest', value: 'LOWEST' },
 ];
 
-const quarterOptions: OptionType[] = [
+const quarterOptions = [
   { label: 'Q1 2025', value: 'q1-2025' },
   { label: 'Q2 2025', value: 'q2-2025' },
   { label: 'Q3 2025', value: 'q3-2025' },
   { label: 'Q4 2025', value: 'q4-2025' },
 ];
 
-const releaseOptions: OptionType[] = [
+const releaseOptions = [
   { label: 'Release 1.0', value: 'rel-1.0' },
   { label: 'Release 1.1', value: 'rel-1.1' },
   { label: 'Release 2.0', value: 'rel-2.0' },
 ];
 
-const epicOptions: OptionType[] = [
+const epicOptions = [
   { label: 'EPIC-001: Platform Migration', value: 'epic-001' },
   { label: 'EPIC-002: User Experience', value: 'epic-002' },
   { label: 'EPIC-003: Performance Optimization', value: 'epic-003' },
@@ -56,10 +63,10 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
 }) => {
   const [summary, setSummary] = useState('');
   const [description, setDescription] = useState('');
-  const [epic, setEpic] = useState<OptionType | null>(null);
-  const [quarter, setQuarter] = useState<OptionType | null>(null);
-  const [release, setRelease] = useState<OptionType | null>(null);
-  const [priority, setPriority] = useState<OptionType | null>(priorityOptions[2]);
+  const [epic, setEpic] = useState('');
+  const [quarter, setQuarter] = useState('');
+  const [release, setRelease] = useState('');
+  const [priority, setPriority] = useState('MEDIUM');
 
   const handleSubmit = () => {
     if (!summary.trim() || !epic || !quarter || !release) return;
@@ -70,154 +77,134 @@ export const CreateFeatureDialog: React.FC<CreateFeatureDialogProps> = ({
       description: description.trim(),
       status: 'TODO',
       statusCategory: 'TODO' as StatusCategory,
-      priority: (priority?.value || 'MEDIUM') as Priority,
-      quarterId: quarter.value,
-      releaseVersionId: release.value,
-      epicId: epic.value,
+      priority: priority as Priority,
+      quarterId: quarter,
+      releaseVersionId: release,
+      epicId: epic,
     });
 
     // Reset form
     setSummary('');
     setDescription('');
-    setEpic(null);
-    setQuarter(null);
-    setRelease(null);
-    setPriority(priorityOptions[2]);
+    setEpic('');
+    setQuarter('');
+    setRelease('');
+    setPriority('MEDIUM');
     onClose();
   };
 
   const isValid = summary.trim() && epic && quarter && release;
 
-  if (!isOpen) return null;
-
   return (
-    <Modal onClose={onClose} width="medium">
-      <ModalHeader>
-        <ModalTitle>Create Feature</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Summary <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-            </label>
-            <Textfield
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Create Feature</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="summary">
+              Summary <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="summary"
               value={summary}
-              onChange={(e) => setSummary((e.target as HTMLInputElement).value)}
+              onChange={(e) => setSummary(e.target.value)}
               placeholder="Enter feature summary"
-              isRequired
             />
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Epic <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-            </label>
-            <Select
-              options={epicOptions}
-              value={epic}
-              onChange={(value) => setEpic(value as OptionType)}
-              placeholder="Select parent epic"
-              isClearable
-            />
+          <div className="space-y-2">
+            <Label htmlFor="epic">
+              Epic <span className="text-destructive">*</span>
+            </Label>
+            <Select value={epic} onValueChange={setEpic}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select parent epic" />
+              </SelectTrigger>
+              <SelectContent>
+                {epicOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: token('space.200', '16px') }}>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: token('space.050', '4px'),
-                fontSize: '12px',
-                fontWeight: 600,
-                color: token('color.text.subtle', '#626F86')
-              }}>
-                Quarter <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-              </label>
-              <Select
-                options={quarterOptions}
-                value={quarter}
-                onChange={(value) => setQuarter(value as OptionType)}
-                placeholder="Select quarter"
-                isClearable
-              />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="quarter">
+                Quarter <span className="text-destructive">*</span>
+              </Label>
+              <Select value={quarter} onValueChange={setQuarter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select quarter" />
+                </SelectTrigger>
+                <SelectContent>
+                  {quarterOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: token('space.050', '4px'),
-                fontSize: '12px',
-                fontWeight: 600,
-                color: token('color.text.subtle', '#626F86')
-              }}>
-                Release Version <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-              </label>
-              <Select
-                options={releaseOptions}
-                value={release}
-                onChange={(value) => setRelease(value as OptionType)}
-                placeholder="Select release"
-                isClearable
-              />
+            <div className="space-y-2">
+              <Label htmlFor="release">
+                Release Version <span className="text-destructive">*</span>
+              </Label>
+              <Select value={release} onValueChange={setRelease}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select release" />
+                </SelectTrigger>
+                <SelectContent>
+                  {releaseOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Priority
-            </label>
-            <Select
-              options={priorityOptions}
-              value={priority}
-              onChange={(value) => setPriority(value as OptionType)}
-              placeholder="Select priority"
-            />
+          <div className="space-y-2">
+            <Label htmlFor="priority">Priority</Label>
+            <Select value={priority} onValueChange={setPriority}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent>
+                {priorityOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Description
-            </label>
-            <TextArea
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
               value={description}
-              onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter feature description"
-              minimumRows={3}
+              rows={3}
             />
           </div>
         </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button appearance="primary" onClick={handleSubmit} isDisabled={!isValid}>
-          Create Feature
-        </Button>
-      </ModalFooter>
-    </Modal>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} disabled={!isValid}>
+            Create Feature
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
