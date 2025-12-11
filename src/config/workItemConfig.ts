@@ -87,14 +87,14 @@ export const workItemConfig: Record<WorkItemType, WorkItemConfig> = {
     category: 'program',
   },
   
-  // === PROJECT ===
+  // === PROJECT (TEAM module) ===
   'feature': {
     key: 'feature',
     label: 'Features',
     icon: Gem,
     color: 'text-workitem-feature',
     bgColor: 'bg-workitem-feature',
-    moduleCode: 'PROJECT',
+    moduleCode: 'TEAM',
     category: 'project',
   },
   'story': {
@@ -103,7 +103,7 @@ export const workItemConfig: Record<WorkItemType, WorkItemConfig> = {
     icon: FileText,
     color: 'text-workitem-story',
     bgColor: 'bg-workitem-story',
-    moduleCode: 'PROJECT',
+    moduleCode: 'TEAM',
     category: 'project',
   },
   'defect': {
@@ -112,7 +112,7 @@ export const workItemConfig: Record<WorkItemType, WorkItemConfig> = {
     icon: Bug,
     color: 'text-destructive',
     bgColor: 'bg-destructive',
-    moduleCode: 'PROJECT',
+    moduleCode: 'TEAM',
     category: 'project',
   },
   'incident': {
@@ -121,7 +121,7 @@ export const workItemConfig: Record<WorkItemType, WorkItemConfig> = {
     icon: Siren,
     color: 'text-destructive',
     bgColor: 'bg-destructive',
-    moduleCode: 'PROJECT',
+    moduleCode: 'TEAM',
     category: 'project',
   },
   
