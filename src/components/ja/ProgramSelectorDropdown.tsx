@@ -1,15 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { token } from '@atlaskit/tokens';
-import Textfield from '@atlaskit/textfield';
-import SearchIcon from '@atlaskit/icon/glyph/search';
-import AddIcon from '@atlaskit/icon/glyph/add';
-import SettingsIcon from '@atlaskit/icon/glyph/settings';
-import FolderIcon from '@atlaskit/icon/glyph/folder';
+import { Search, Plus, Settings, Folder } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useCatalystContext } from '@/contexts/CatalystContext';
 import { getProgramLandingRoute } from '@/lib/workspaceContext';
+import { Input } from '@/components/ui/input';
 
 interface ProgramSelectorDropdownProps {
   onClose: () => void;
@@ -61,68 +57,35 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
   }, [navigate, onClose]);
 
   return (
-    <div style={{
-      width: '320px',
-      background: token('elevation.surface.overlay', '#FFFFFF'),
-      borderRadius: token('border.radius', '3px'),
-      boxShadow: token('elevation.shadow.overlay', '0 4px 8px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)'),
-      overflow: 'hidden',
-    }}>
-      {/* HEADER - ATLASKIT SPEC */}
-      <div style={{
-        padding: `${token('space.150', '12px')} ${token('space.200', '16px')}`,
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-      }}>
-        <h3 style={{
-          fontSize: '11px',
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          color: token('color.text.subtlest', '#6B778C'),
-          margin: 0,
-        }}>
+    <div className="w-80 bg-popover border border-border rounded-md shadow-lg overflow-hidden">
+      {/* HEADER */}
+      <div className="px-4 py-3 border-b border-border">
+        <h3 className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           PROGRAMS
         </h3>
       </div>
 
-      {/* SEARCH - ATLASKIT TEXTFIELD */}
-      <div style={{
-        padding: token('space.150', '12px'),
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-      }}>
-        <Textfield
-          placeholder="Search programs..."
-          value={search}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
-          elemBeforeInput={
-            <div style={{ paddingLeft: token('space.100', '8px'), display: 'flex', alignItems: 'center' }}>
-              <SearchIcon label="" size="small" primaryColor={token('color.icon.subtle', '#6B778C')} />
-            </div>
-          }
-        />
+      {/* SEARCH */}
+      <div className="p-3 border-b border-border">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search programs..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9"
+          />
+        </div>
       </div>
 
       {/* PROGRAMS LIST */}
-      <div style={{
-        maxHeight: '300px',
-        overflowY: 'auto',
-      }}>
+      <div className="max-h-[300px] overflow-y-auto">
         {isLoading ? (
-          <div style={{
-            padding: token('space.300', '24px'),
-            textAlign: 'center',
-            fontSize: '14px',
-            color: token('color.text.subtlest', '#6B778C'),
-          }}>
+          <div className="p-6 text-center text-sm text-muted-foreground">
             Loading...
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{
-            padding: token('space.300', '24px'),
-            textAlign: 'center',
-            fontSize: '14px',
-            color: token('color.text.subtlest', '#6B778C'),
-          }}>
+          <div className="p-6 text-center text-sm text-muted-foreground">
             {search ? 'No programs found' : 'No programs available'}
           </div>
         ) : (
@@ -137,17 +100,15 @@ export const ProgramSelectorDropdown = React.memo(function ProgramSelectorDropdo
         )}
       </div>
 
-      {/* FOOTER - ATLASKIT SPEC */}
-      <div style={{
-        borderTop: `1px solid ${token('color.border', '#DFE1E6')}`,
-      }}>
+      {/* FOOTER */}
+      <div className="border-t border-border">
         <DropdownActionButton onClick={handleCreateClick} isPrimary>
-          <AddIcon label="" size="small" primaryColor={token('color.icon.subtle', '#6B778C')} />
+          <Plus className="h-4 w-4 text-muted-foreground" />
           Create Program
         </DropdownActionButton>
         
         <DropdownActionButton onClick={handleManageClick}>
-          <SettingsIcon label="" size="small" primaryColor={token('color.icon.subtle', '#6B778C')} />
+          <Settings className="h-4 w-4 text-muted-foreground" />
           Manage Programs
         </DropdownActionButton>
       </div>
@@ -170,39 +131,11 @@ const ProgramListItem = React.memo(function ProgramListItem({ id, name, onSelect
   return (
     <button
       onClick={handleClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: token('space.100', '8px'),
-        width: '100%',
-        padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
-        background: 'transparent',
-        border: 'none',
-        cursor: 'pointer',
-        textAlign: 'left',
-        transition: 'background 150ms',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = 'transparent';
-      }}
+      className="flex items-center gap-2 w-full px-4 py-2 text-left transition-colors hover:bg-muted"
     >
-      <FolderIcon
-        label=""
-        size="medium"
-        primaryColor={token('color.icon.subtle', '#6B778C')}
-      />
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          fontSize: '14px',
-          fontWeight: 400,
-          color: token('color.text', '#172B4D'),
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}>
+      <Folder className="h-5 w-5 text-muted-foreground" />
+      <div className="flex-1 min-w-0">
+        <div className="text-sm text-foreground truncate">
           {name}
         </div>
       </div>
@@ -210,7 +143,7 @@ const ProgramListItem = React.memo(function ProgramListItem({ id, name, onSelect
   );
 });
 
-// Action button component - ATLASKIT SPEC
+// Action button component
 interface DropdownActionButtonProps {
   onClick: () => void;
   children: React.ReactNode;
@@ -225,27 +158,7 @@ const DropdownActionButton = React.memo(function DropdownActionButton({
   return (
     <button
       onClick={onClick}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: token('space.100', '8px'),
-        width: '100%',
-        padding: `${token('space.100', '8px')} ${token('space.200', '16px')}`,
-        fontSize: '14px',
-        fontWeight: 400,
-        color: token('color.text', '#172B4D'),
-        background: 'transparent',
-        border: 'none',
-        cursor: 'pointer',
-        textAlign: 'left',
-        transition: 'background 150ms',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = token('color.background.neutral.hovered', '#F4F5F7');
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = 'transparent';
-      }}
+      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground transition-colors hover:bg-muted"
     >
       {children}
     </button>

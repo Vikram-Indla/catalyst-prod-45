@@ -1,9 +1,15 @@
 import React from 'react';
-import { token } from '@atlaskit/tokens';
-import Button from '@atlaskit/button';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Plus, ChevronDown, Zap, Bookmark, CheckSquare, Bug, AlertTriangle } from 'lucide-react';
 import { WorkItemType } from '../types';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface CreateWorkItemDropdownProps {
   onSelect: (type: WorkItemType) => void;
@@ -11,53 +17,40 @@ interface CreateWorkItemDropdownProps {
 
 export const CreateWorkItemDropdown: React.FC<CreateWorkItemDropdownProps> = ({ onSelect }) => {
   return (
-    <DropdownMenu
-      trigger={({ triggerRef, ...props }) => (
-        <Button
-          ref={triggerRef as any}
-          {...props}
-          appearance="primary"
-          iconBefore={<Plus size={16} />}
-          iconAfter={<ChevronDown size={16} />}
-        >
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button>
+          <Plus className="h-4 w-4 mr-1" />
           Create
+          <ChevronDown className="h-4 w-4 ml-1" />
         </Button>
-      )}
-    >
-      <DropdownItemGroup>
-        <DropdownItem
-          onClick={() => onSelect('FEATURE')}
-          elemBefore={<Zap size={16} color="#36B37E" />}
-        >
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuItem onClick={() => onSelect('FEATURE')} className="gap-2">
+          <Zap className="h-4 w-4 text-green-500" />
           Create Feature
-        </DropdownItem>
-        <DropdownItem
-          onClick={() => onSelect('STORY')}
-          elemBefore={<Bookmark size={16} color="#36B37E" />}
-        >
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onSelect('STORY')} className="gap-2">
+          <Bookmark className="h-4 w-4 text-green-500" />
           Create Story
-        </DropdownItem>
-        <DropdownItem
-          onClick={() => onSelect('SUBTASK')}
-          elemBefore={<CheckSquare size={16} color="#2684FF" />}
-        >
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onSelect('SUBTASK')} className="gap-2">
+          <CheckSquare className="h-4 w-4 text-blue-500" />
           Create Subtask
-        </DropdownItem>
-      </DropdownItemGroup>
-      <DropdownItemGroup title="Log Issue">
-        <DropdownItem
-          onClick={() => onSelect('DEFECT')}
-          elemBefore={<Bug size={16} color="#FF5630" />}
-        >
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="text-xs text-muted-foreground">Log Issue</DropdownMenuLabel>
+        
+        <DropdownMenuItem onClick={() => onSelect('DEFECT')} className="gap-2">
+          <Bug className="h-4 w-4 text-red-500" />
           Log Defect
-        </DropdownItem>
-        <DropdownItem
-          onClick={() => onSelect('INCIDENT')}
-          elemBefore={<AlertTriangle size={16} color="#FF991F" />}
-        >
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onSelect('INCIDENT')} className="gap-2">
+          <AlertTriangle className="h-4 w-4 text-amber-500" />
           Log Incident
-        </DropdownItem>
-      </DropdownItemGroup>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
     </DropdownMenu>
   );
 };

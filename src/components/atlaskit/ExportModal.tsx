@@ -1,8 +1,16 @@
 import { useState } from 'react';
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import { Radio } from '@atlaskit/radio';
-import Button from '@atlaskit/button';
-import { token } from '@atlaskit/tokens';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Info } from 'lucide-react';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -19,65 +27,46 @@ export function ExportModal({ isOpen, onClose, onExport }: ExportModalProps) {
   };
 
   return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose}>
-          <ModalHeader>
-            <ModalTitle>Export Requests</ModalTitle>
-          </ModalHeader>
-          
-          <ModalBody>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
-              <Radio
-                value="csv"
-                label="CSV (.csv)"
-                name="export-format"
-                isChecked={format === 'csv'}
-                onChange={() => setFormat('csv')}
-              />
-              <Radio
-                value="excel"
-                label="Excel (.xlsx)"
-                name="export-format"
-                isChecked={format === 'excel'}
-                onChange={() => setFormat('excel')}
-              />
-              <Radio
-                value="pdf"
-                label="PDF (.pdf)"
-                name="export-format"
-                isChecked={format === 'pdf'}
-                onChange={() => setFormat('pdf')}
-              />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Export Requests</DialogTitle>
+        </DialogHeader>
+        
+        <div className="py-4">
+          <RadioGroup value={format} onValueChange={(v) => setFormat(v as 'csv' | 'excel' | 'pdf')} className="flex flex-col gap-4">
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="csv" id="csv" />
+              <Label htmlFor="csv" className="cursor-pointer">CSV (.csv)</Label>
             </div>
-            
-            <div style={{
-              marginTop: token('space.300', '24px'),
-              padding: token('space.200', '16px'),
-              background: token('color.background.information', '#DEEBFF'),
-              borderRadius: '3px',
-              fontSize: '12px',
-              color: token('color.text.information', '#0747A6'),
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: token('space.100', '8px'),
-            }}>
-              <span>ℹ️</span>
-              <span>Export will include all visible columns and filtered data.</span>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="excel" id="excel" />
+              <Label htmlFor="excel" className="cursor-pointer">Excel (.xlsx)</Label>
             </div>
-          </ModalBody>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="pdf" id="pdf" />
+              <Label htmlFor="pdf" className="cursor-pointer">PDF (.pdf)</Label>
+            </div>
+          </RadioGroup>
           
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button appearance="primary" onClick={handleExport}>
-              Export
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
+          <Alert className="mt-6">
+            <Info className="h-4 w-4" />
+            <AlertDescription>
+              Export will include all visible columns and filtered data.
+            </AlertDescription>
+          </Alert>
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleExport}>
+            Export
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

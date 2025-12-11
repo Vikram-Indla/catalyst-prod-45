@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import { token } from '@atlaskit/tokens';
-import Button from '@atlaskit/button';
-import Lozenge from '@atlaskit/lozenge';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Search, ChevronDown, MoreHorizontal, MessageSquare } from 'lucide-react';
 import { useReleaseVersions } from '../../hooks/useReleaseVersions';
 import { ReleaseVersion } from '../../types';
 import { format } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ReleasesTabProps {
   projectId: string;
@@ -25,100 +30,47 @@ export const ReleasesTab: React.FC<ReleasesTabProps> = ({ projectId, onCreateVer
   );
 
   return (
-    <div style={{ 
-      padding: token('space.300', '24px'),
-      backgroundColor: token('elevation.surface', '#FFFFFF'),
-      minHeight: '100%',
-    }}>
+    <div className="p-6 bg-background min-h-full">
       {/* Controls */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: token('space.300', '24px'),
-      }}>
+      <div className="flex items-center justify-between mb-6">
         {/* Left */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
+        <div className="flex items-center gap-3">
           {/* Search */}
-          <div style={{ position: 'relative', width: 200 }}>
-            <Search 
-              size={16} 
-              style={{ 
-                position: 'absolute', 
-                left: 8, 
-                top: '50%', 
-                transform: 'translateY(-50%)',
-                color: token('color.icon.subtle', '#5E6C84'),
-              }} 
-            />
-            <input
+          <div className="relative w-[200px]">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
               type="text"
               placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: `${token('space.075', '6px')} ${token('space.100', '8px')} ${token('space.075', '6px')} 32px`,
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                borderRadius: '3px',
-                fontSize: '14px',
-                outline: 'none',
-              }}
+              className="pl-8 h-9"
             />
           </div>
 
           {/* Status Filter */}
-          <DropdownMenu
-            trigger={({ triggerRef, ...props }) => (
-              <button
-                ref={triggerRef as any}
-                {...props}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: token('space.050', '4px'),
-                  padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-                  backgroundColor: token('color.background.neutral', '#F4F5F7'),
-                  border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                  borderRadius: '3px',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  color: token('color.text', '#172B4D'),
-                }}
-              >
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1">
                 {statusFilter || 'All'}
-                <ChevronDown size={16} />
-              </button>
-            )}
-          >
-            <DropdownItemGroup>
-              <DropdownItem onClick={() => setStatusFilter(undefined)}>All</DropdownItem>
-              <DropdownItem onClick={() => setStatusFilter('UNRELEASED')}>Unreleased</DropdownItem>
-              <DropdownItem onClick={() => setStatusFilter('RELEASED')}>Released</DropdownItem>
-            </DropdownItemGroup>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setStatusFilter(undefined)}>All</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter('UNRELEASED')}>Unreleased</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setStatusFilter('RELEASED')}>Released</DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
         </div>
 
         {/* Right */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
-          <button
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: token('space.050', '4px'),
-              padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-              backgroundColor: 'transparent',
-              border: 'none',
-              fontSize: '14px',
-              cursor: 'pointer',
-              color: token('color.text.subtlest', '#5E6C84'),
-            }}
-          >
-            <MessageSquare size={16} />
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" className="gap-1 text-muted-foreground">
+            <MessageSquare className="h-4 w-4" />
             Give feedback
-          </button>
+          </Button>
 
-          <Button appearance="primary" onClick={onCreateVersion}>
+          <Button onClick={onCreateVersion}>
             Create version
           </Button>
         </div>
@@ -126,93 +78,32 @@ export const ReleasesTab: React.FC<ReleasesTabProps> = ({ projectId, onCreateVer
 
       {/* Release Versions Table */}
       <div>
-        <h3 style={{ 
-          fontSize: '16px', 
-          fontWeight: 600, 
-          color: token('color.text', '#172B4D'),
-          marginBottom: token('space.200', '16px'),
-        }}>
+        <h3 className="text-base font-semibold text-foreground mb-4">
           Release versions
         </h3>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: `2px solid ${token('color.border', '#DFE1E6')}` }}>
-              <th style={{ 
-                padding: token('space.100', '8px'), 
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                color: token('color.text.subtlest', '#5E6C84'),
-              }}>
+            <tr className="border-b-2 border-border">
+              <th className="p-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Version
               </th>
-              <th style={{ 
-                padding: token('space.100', '8px'), 
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                color: token('color.text.subtlest', '#5E6C84'),
-              }}>
+              <th className="p-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Status
               </th>
-              <th style={{ 
-                padding: token('space.100', '8px'), 
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                color: token('color.text.subtlest', '#5E6C84'),
-              }}>
+              <th className="p-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Progress
               </th>
-              <th style={{ 
-                padding: token('space.100', '8px'), 
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                color: token('color.text.subtlest', '#5E6C84'),
-              }}>
+              <th className="p-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Start date
               </th>
-              <th style={{ 
-                padding: token('space.100', '8px'), 
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                color: token('color.text.subtlest', '#5E6C84'),
-              }}>
+              <th className="p-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Release date
               </th>
-              <th style={{ 
-                padding: token('space.100', '8px'), 
-                textAlign: 'left',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                color: token('color.text.subtlest', '#5E6C84'),
-              }}>
+              <th className="p-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 Description
               </th>
-              <th style={{ 
-                padding: token('space.100', '8px'), 
-                textAlign: 'right',
-                fontSize: '11px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                color: token('color.text.subtlest', '#5E6C84'),
-              }}>
+              <th className="p-2 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                 More actions
               </th>
             </tr>
@@ -221,97 +112,64 @@ export const ReleasesTab: React.FC<ReleasesTabProps> = ({ projectId, onCreateVer
             {filteredVersions?.map((version) => (
               <tr 
                 key={version.id}
-                style={{ 
-                  borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-                  cursor: 'pointer',
-                }}
+                className="border-b border-border cursor-pointer hover:bg-muted/50"
                 onClick={() => onVersionClick(version)}
               >
-                <td style={{ padding: token('space.150', '12px') }}>
+                <td className="p-3">
                   <a 
                     href="#" 
-                    style={{ 
-                      color: token('color.link', '#0052CC'), 
-                      textDecoration: 'none',
-                      fontWeight: 500,
-                    }}
+                    className="text-primary font-medium hover:underline"
                     onClick={(e) => e.preventDefault()}
                   >
                     {version.name}
                   </a>
                 </td>
-                <td style={{ padding: token('space.150', '12px') }}>
-                  <Lozenge 
-                    appearance={version.status === 'RELEASED' ? 'success' : 'default'}
-                  >
+                <td className="p-3">
+                  <Badge variant={version.status === 'RELEASED' ? 'default' : 'secondary'}>
                     {version.status}
-                  </Lozenge>
+                  </Badge>
                 </td>
-                <td style={{ padding: token('space.150', '12px'), width: 200 }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    height: 8, 
-                    borderRadius: 4,
-                    overflow: 'hidden',
-                    backgroundColor: token('color.background.neutral', '#DFE1E6'),
-                  }}>
-                    <div style={{ 
-                      width: `${version.progress * 0.6}%`,
-                      backgroundColor: token('color.background.success.bold', '#36B37E'),
-                    }} />
-                    <div style={{ 
-                      width: `${version.progress * 0.4}%`,
-                      backgroundColor: token('color.background.brand.bold', '#0052CC'),
-                    }} />
+                <td className="p-3 w-[200px]">
+                  <div className="flex h-2 rounded overflow-hidden bg-muted">
+                    <div 
+                      className="bg-green-500"
+                      style={{ width: `${version.progress * 0.6}%` }} 
+                    />
+                    <div 
+                      className="bg-primary"
+                      style={{ width: `${version.progress * 0.4}%` }} 
+                    />
                   </div>
                 </td>
-                <td style={{ 
-                  padding: token('space.150', '12px'),
-                  color: token('color.text', '#172B4D'),
-                  fontSize: '14px',
-                }}>
+                <td className="p-3 text-sm text-foreground">
                   {version.startDate ? format(new Date(version.startDate), 'MMMM d, yyyy') : ''}
                 </td>
-                <td style={{ 
-                  padding: token('space.150', '12px'),
-                  color: version.releaseDate && new Date(version.releaseDate) < new Date() 
-                    ? token('color.text.danger', '#DE350B')
-                    : token('color.link', '#0052CC'),
-                  fontSize: '14px',
-                }}>
+                <td className={`p-3 text-sm ${
+                  version.releaseDate && new Date(version.releaseDate) < new Date() 
+                    ? 'text-destructive' 
+                    : 'text-primary'
+                }`}>
                   {version.releaseDate ? format(new Date(version.releaseDate), 'MMMM d, yyyy') : ''}
                 </td>
-                <td style={{ 
-                  padding: token('space.150', '12px'),
-                  color: token('color.text.subtlest', '#5E6C84'),
-                  fontSize: '14px',
-                }}>
+                <td className="p-3 text-sm text-muted-foreground">
                   {version.description || ''}
                 </td>
-                <td style={{ padding: token('space.150', '12px'), textAlign: 'right' }}>
-                  <DropdownMenu
-                    trigger={({ triggerRef, ...props }) => (
-                      <button
-                        ref={triggerRef as any}
-                        {...props}
+                <td className="p-3 text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="icon"
                         onClick={(e) => e.stopPropagation()}
-                        style={{
-                          padding: token('space.050', '4px'),
-                          backgroundColor: 'transparent',
-                          border: 'none',
-                          cursor: 'pointer',
-                          color: token('color.icon', '#5E6C84'),
-                        }}
                       >
-                        <MoreHorizontal size={16} />
-                      </button>
-                    )}
-                  >
-                    <DropdownItemGroup>
-                      <DropdownItem>Edit</DropdownItem>
-                      <DropdownItem>Release</DropdownItem>
-                      <DropdownItem>Archive</DropdownItem>
-                    </DropdownItemGroup>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      <DropdownMenuItem>Release</DropdownMenuItem>
+                      <DropdownMenuItem>Archive</DropdownMenuItem>
+                    </DropdownMenuContent>
                   </DropdownMenu>
                 </td>
               </tr>
@@ -320,11 +178,7 @@ export const ReleasesTab: React.FC<ReleasesTabProps> = ({ projectId, onCreateVer
         </table>
 
         {(!filteredVersions || filteredVersions.length === 0) && (
-          <div style={{
-            padding: token('space.600', '48px'),
-            textAlign: 'center',
-            color: token('color.text.subtlest', '#5E6C84'),
-          }}>
+          <div className="py-12 text-center text-muted-foreground">
             No release versions found
           </div>
         )}

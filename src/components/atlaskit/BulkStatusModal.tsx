@@ -1,8 +1,14 @@
 import { useState } from 'react';
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import { Radio } from '@atlaskit/radio';
-import Button from '@atlaskit/button';
-import { token } from '@atlaskit/tokens';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { PROCESS_STEPS } from '@/types/business-request';
 
 interface BulkStatusModalProps {
@@ -23,51 +29,37 @@ export function BulkStatusModal({ isOpen, onClose, onConfirm, selectedCount }: B
   };
 
   return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose}>
-          <ModalHeader>
-            <ModalTitle>Update Status</ModalTitle>
-          </ModalHeader>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Update Status</DialogTitle>
+        </DialogHeader>
+        
+        <div className="py-4">
+          <p className="mb-4 text-muted-foreground text-sm">
+            Change status for {selectedCount} selected request{selectedCount > 1 ? 's' : ''}
+          </p>
           
-          <ModalBody>
-            <p style={{ 
-              marginBottom: token('space.200', '16px'),
-              color: token('color.text.subtle', '#6B778C'),
-              fontSize: '14px',
-            }}>
-              Change status for {selectedCount} selected request{selectedCount > 1 ? 's' : ''}
-            </p>
-            
-            <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.150', '12px') }}>
-              {PROCESS_STEPS.map((step) => (
-                <Radio
-                  key={step.value}
-                  value={step.value}
-                  label={step.label}
-                  name="bulk-status"
-                  isChecked={selectedStatus === step.value}
-                  onChange={() => setSelectedStatus(step.value)}
-                />
-              ))}
-            </div>
-          </ModalBody>
-          
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button 
-              appearance="primary" 
-              onClick={handleConfirm}
-              isDisabled={!selectedStatus}
-            >
-              Update {selectedCount} Request{selectedCount > 1 ? 's' : ''}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
+          <RadioGroup value={selectedStatus} onValueChange={setSelectedStatus} className="flex flex-col gap-3">
+            {PROCESS_STEPS.map((step) => (
+              <div key={step.value} className="flex items-center space-x-2">
+                <RadioGroupItem value={step.value} id={step.value} />
+                <Label htmlFor={step.value} className="cursor-pointer">{step.label}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleConfirm} disabled={!selectedStatus}>
+            Update {selectedCount} Request{selectedCount > 1 ? 's' : ''}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

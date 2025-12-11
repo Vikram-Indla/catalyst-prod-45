@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button';
-import Checkbox from '@atlaskit/checkbox';
-import { token } from '@atlaskit/tokens';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import DragHandlerIcon from '@atlaskit/icon/glyph/drag-handler';
+import { GripVertical } from 'lucide-react';
 
 interface Column {
   key: string;
@@ -49,94 +54,73 @@ export function ColumnsConfigModal({ isOpen, onClose, columns, onColumnsChange }
   };
 
   return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose} width="small">
-          <ModalHeader>
-            <ModalTitle>Configure Columns</ModalTitle>
-          </ModalHeader>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Configure Columns</DialogTitle>
+        </DialogHeader>
+        
+        <div className="py-4">
+          <p className="mb-4 text-xs text-muted-foreground">
+            Drag to reorder. Check to show/hide columns.
+          </p>
           
-          <ModalBody>
-            <p style={{ 
-              marginBottom: token('space.200', '16px'),
-              color: token('color.text.subtle', '#6B778C'),
-              fontSize: '12px',
-            }}>
-              Drag to reorder. Check to show/hide columns.
-            </p>
-            
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="columns">
-                {(provided) => (
-                  <div {...provided.droppableProps} ref={provided.innerRef}>
-                    {localColumns.map((column, index) => (
-                      <Draggable key={column.key} draggableId={column.key} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            style={{
-                              ...provided.draggableProps.style,
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: token('space.100', '8px'),
-                              padding: token('space.100', '8px'),
-                              background: snapshot.isDragging 
-                                ? token('color.background.selected', '#DEEBFF')
-                                : token('elevation.surface', '#FFFFFF'),
-                              borderRadius: '3px',
-                              marginBottom: token('space.050', '4px'),
-                              border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                            }}
-                          >
-                            <div {...provided.dragHandleProps} style={{ cursor: 'grab' }}>
-                              <DragHandlerIcon label="Drag" size="small" />
-                            </div>
-                            <Checkbox
-                              isChecked={column.visible}
-                              onChange={() => handleToggle(column.key)}
-                              isDisabled={column.required}
-                            />
-                            <span style={{ 
-                              fontSize: '14px',
-                              color: token('color.text', '#172B4D'),
-                            }}>
-                              {column.label}
-                            </span>
-                            {column.required && (
-                              <span style={{ 
-                                fontSize: '11px',
-                                color: token('color.text.subtle', '#6B778C'),
-                                marginLeft: 'auto',
-                              }}>
-                                Required
-                              </span>
-                            )}
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="columns">
+              {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-1">
+                  {localColumns.map((column, index) => (
+                    <Draggable key={column.key} draggableId={column.key} index={index}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          className={`flex items-center gap-2 p-2 rounded-md border ${
+                            snapshot.isDragging ? 'bg-accent' : 'bg-background'
+                          }`}
+                        >
+                          <div {...provided.dragHandleProps} className="cursor-grab">
+                            <GripVertical className="h-4 w-4 text-muted-foreground" />
                           </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </ModalBody>
-          
-          <ModalFooter>
-            <Button appearance="subtle" onClick={handleReset}>
-              Reset to Default
-            </Button>
-            <Button appearance="subtle" onClick={onClose}>
+                          <Checkbox
+                            checked={column.visible}
+                            onCheckedChange={() => handleToggle(column.key)}
+                            disabled={column.required}
+                          />
+                          <span className="text-sm text-foreground flex-1">
+                            {column.label}
+                          </span>
+                          {column.required && (
+                            <span className="text-[11px] text-muted-foreground">
+                              Required
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </div>
+        
+        <DialogFooter className="flex-row justify-between sm:justify-between">
+          <Button variant="ghost" onClick={handleReset}>
+            Reset to Default
+          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button appearance="primary" onClick={handleApply}>
+            <Button onClick={handleApply}>
               Apply
             </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
