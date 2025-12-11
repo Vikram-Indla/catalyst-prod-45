@@ -68,9 +68,6 @@ const getMenuItems = (portfolioId?: string, programId?: string, tier?: string): 
   { id: 'initiatives', label: 'Initiatives', icon: Focus, path: '/initiatives', tiers: ['portfolio', 'program'] },
   { id: 'backlog', label: 'Backlog', icon: ListTree, path: '/items/epics', tiers: ['portfolio', 'program'] },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/roadmaps', tiers: ['portfolio', 'program'] },
-  { id: 'objective-tree', label: 'Objective tree', icon: Workflow, path: '/enterprise/okr-hub', tiers: ['portfolio', 'program', 'team'] },
-  { id: 'forecast', label: 'Forecast', icon: TrendingUp, path: portfolioId ? `/portfolio/${portfolioId}/forecast` : '/portfolio/1/forecast', tiers: ['portfolio', 'program'] },
-  { id: 'capacity', label: 'Capacity', icon: UsersIcon, path: '/capacity', tiers: ['program', 'team'] },
   { id: 'program-board', label: 'Program Board', icon: Blocks, path: '/programs/program-board', tiers: ['program'] },
   { id: 'dependencies', label: 'Dependencies', icon: Link, path: '/dependencies', tiers: ['program'] },
   { id: 'more-items', label: 'More items', icon: Blocks, path: '#', tiers: ['portfolio', 'program'], expandable: true },
@@ -270,29 +267,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
         </div>
 
         {/* Filters section - only when expanded AND has content to show */}
-        {expanded && (workspaceType === 'program' || tier === 'enterprise') && (
+        {expanded && tier === 'enterprise' && (
           <div className="px-4 py-4 border-b border-border">
-              {/* Program Increment Filter - only show in program context, NOT enterprise/product */}
-              {workspaceType === 'program' && (
-                <div>
-                  <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
-                    PROGRAM INCREMENT
-                  </label>
-                  <Select value={piIds[0] || undefined} onValueChange={(value) => setPiIds([value])}>
-                    <SelectTrigger className="h-9 text-sm w-full bg-background border-border">
-                      <SelectValue placeholder="Select PI" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border-border z-[100]">
-                      {pis.map(pi => (
-                        <SelectItem key={pi.id} value={pi.id}>
-                          {pi.code}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-
               {/* Snapshot selector for Enterprise */}
               {tier === 'enterprise' && (
                 <div>
