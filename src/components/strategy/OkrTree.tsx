@@ -17,20 +17,20 @@ interface OkrTreeProps {
 
 function getHealthColor(health: string | null): string {
   switch (health?.toLowerCase()) {
-    case 'good': return 'text-green-600';
-    case 'fair': return 'text-amber-500';
-    case 'poor': return 'text-red-500';
-    case 'at_risk': return 'text-amber-600';
+    case 'good': return 'text-secondary-green';
+    case 'fair': return 'text-brand-gold';
+    case 'poor': return 'text-destructive';
+    case 'at_risk': return 'text-brand-gold';
     default: return 'text-muted-foreground';
   }
 }
 
 function getHealthBgColor(health: string | null): string {
   switch (health?.toLowerCase()) {
-    case 'good': return 'bg-green-100 text-green-700';
-    case 'fair': return 'bg-amber-100 text-amber-700';
-    case 'poor': return 'bg-red-100 text-red-700';
-    case 'at_risk': return 'bg-amber-100 text-amber-700';
+    case 'good': return 'bg-secondary-green/10 text-secondary-green';
+    case 'fair': return 'bg-brand-gold/10 text-brand-gold';
+    case 'poor': return 'bg-destructive/10 text-destructive';
+    case 'at_risk': return 'bg-brand-gold/10 text-brand-gold';
     default: return 'bg-muted text-muted-foreground';
   }
 }
@@ -129,7 +129,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               </Badge>
             )}
             {isObjective && (
-              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+              <Badge variant="outline" className="bg-secondary-green/10 text-secondary-green border-secondary-green/30 text-xs">
                 <Target className="h-3 w-3 mr-1" />
                 Objective
               </Badge>
@@ -140,7 +140,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
               </Badge>
             )}
             
-            <span className={`text-sm ${isObjective ? 'text-blue-600 hover:underline' : 'text-foreground'} font-medium`}>
+            <span className={`text-sm ${isObjective ? 'text-secondary-green hover:underline' : 'text-foreground'} font-medium`}>
               {item.title}
             </span>
             
@@ -177,7 +177,7 @@ export function OkrTree({ selectedSnapshot, onObjectiveClick, onThemeClick }: Ok
             {item.owner ? (
               <Avatar className="h-8 w-8 border border-border">
                 <AvatarImage src={item.owner.avatar} alt={item.owner.name} />
-                <AvatarFallback className="text-xs bg-blue-900 text-white font-bold">
+                <AvatarFallback className="text-xs bg-brand-dark text-white font-bold">
                   {item.owner.initials}
                 </AvatarFallback>
               </Avatar>
