@@ -167,9 +167,9 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
 
   return (
     <div className="h-full w-full flex flex-col">
-      <div className="flex-1">
+      <div className="flex-1 min-h-0">
         <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart margin={{ top: 20, right: 20, bottom: 40, left: 60 }}>
+          <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 60 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
           
           <XAxis 
@@ -183,7 +183,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             label={{ 
               value: 'Job Size (relative effort / duration)', 
               position: 'bottom', 
-              offset: 40,
+              offset: 5,
               style: { fill: 'hsl(var(--muted-foreground))', fontSize: 12 }
             }}
           />
@@ -273,7 +273,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
       </div>
       
       {/* Bottom Legend */}
-      <div className="flex items-center justify-center gap-6 pt-4 pb-2">
+      <div className="flex items-center justify-center gap-6 py-3 border-t border-border shrink-0">
         <span className="text-sm font-medium text-foreground">Priority to Execute:</span>
         {(['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW'] as const).map((priority) => (
           <div key={priority} className="flex items-center gap-2">
