@@ -2,23 +2,15 @@ import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { token } from '@atlaskit/tokens';
-import { Content, Main, PageLayout } from '@atlaskit/page-layout';
-import Avatar from '@atlaskit/avatar';
-import Button from '@atlaskit/button';
-import ButtonGroup from '@atlaskit/button-group';
-import Lozenge from '@atlaskit/lozenge';
-import Tooltip from '@atlaskit/tooltip';
-import Spinner from '@atlaskit/spinner';
-import EmptyState from '@atlaskit/empty-state';
-import Textfield from '@atlaskit/textfield';
-import StarIcon from '@atlaskit/icon/glyph/star';
-import StarFilledIcon from '@atlaskit/icon/glyph/star-filled';
-import SearchIcon from '@atlaskit/icon/glyph/search';
-import GridIcon from '@atlaskit/icon/glyph/media-services/grid';
-import ListIcon from '@atlaskit/icon/glyph/list';
-import AddIcon from '@atlaskit/icon/glyph/add';
+import { Plus, Search, LayoutGrid, List, Star, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { CreateProgramDialog } from '@/components/programs/CreateProgramDialog';
+import { cn } from '@/lib/utils';
 
 interface Program {
   id: string;
@@ -97,166 +89,120 @@ export default function ProgramDirectory() {
 
   if (error) {
     return (
-      <PageLayout>
-        <Content>
-          <Main>
-            <div style={{ padding: '32px' }}>
-              <EmptyState
-                header="Error loading programs"
-                description="There was an error loading the program directory. Please try again."
-              />
-            </div>
-          </Main>
-        </Content>
-      </PageLayout>
+      <div className="min-h-screen bg-muted/30 p-8">
+        <Card className="max-w-md mx-auto">
+          <CardContent className="pt-6 text-center">
+            <h2 className="text-lg font-semibold text-foreground mb-2">Error loading programs</h2>
+            <p className="text-sm text-muted-foreground">
+              There was an error loading the program directory. Please try again.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <PageLayout>
-      <Content>
-        <Main>
-          <div style={{
-            padding: '32px',
-            background: '#FAFBFC',
-            minHeight: '100vh',
-          }}>
-            {/* PAGE HEADER */}
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '32px',
-            }}>
-              <div>
-                <h1 style={{
-                  fontSize: '24px',
-                  fontWeight: 500,
-                  color: '#172B4D',
-                  margin: 0,
-                  marginBottom: '4px',
-                }}>
-                  Programs
-                </h1>
-                <p style={{
-                  fontSize: '14px',
-                  color: '#6B778C',
-                  margin: 0,
-                }}>
-                  {filteredPrograms.length} program{filteredPrograms.length !== 1 ? 's' : ''}
-                </p>
-              </div>
+    <div className="min-h-screen bg-muted/30 p-8">
+      {/* PAGE HEADER */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-medium text-foreground mb-1">
+            Programs
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            {filteredPrograms.length} program{filteredPrograms.length !== 1 ? 's' : ''}
+          </p>
+        </div>
 
-              <Button
-                appearance="primary"
-                iconBefore={<AddIcon label="Create" size="small" />}
-                onClick={() => setShowCreateDialog(true)}
-              >
+        <Button onClick={() => setShowCreateDialog(true)} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Create program
+        </Button>
+      </div>
+
+      {/* CONTROLS BAR */}
+      <Card className="mb-6">
+        <CardContent className="p-4 flex justify-between items-center gap-4">
+          {/* Search */}
+          <div className="relative w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search programs..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          {/* View Toggle */}
+          <div className="flex gap-1">
+            <Button
+              variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('grid')}
+              className="gap-2"
+            >
+              <LayoutGrid className="h-4 w-4" />
+              Grid
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+              size="sm"
+              onClick={() => setViewMode('list')}
+              className="gap-2"
+            >
+              <List className="h-4 w-4" />
+              List
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* CONTENT */}
+      {isLoading ? (
+        <div className="flex justify-center items-center min-h-[200px]">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : filteredPrograms.length === 0 ? (
+        <Card className="max-w-md mx-auto">
+          <CardContent className="pt-6 text-center">
+            <h2 className="text-lg font-semibold text-foreground mb-2">No programs found</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              {searchQuery ? 'Try adjusting your search query' : 'Create your first program to get started'}
+            </p>
+            <div className="flex justify-center gap-2">
+              <Button onClick={() => setShowCreateDialog(true)}>
                 Create program
               </Button>
-            </div>
-
-            {/* CONTROLS BAR */}
-            <div style={{
-              background: '#FFFFFF',
-              padding: '16px',
-              borderRadius: '3px',
-              marginBottom: '24px',
-              boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              gap: '16px',
-            }}>
-              {/* Search */}
-              <div style={{ width: '320px' }}>
-                <Textfield
-                  placeholder="Search programs..."
-                  elemBeforeInput={
-                    <div style={{ marginLeft: '8px', display: 'flex', alignItems: 'center' }}>
-                      <SearchIcon label="Search" size="small" primaryColor="#6B778C" />
-                    </div>
-                  }
-                  value={searchQuery}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                />
-              </div>
-
-              {/* View Toggle */}
-              <ButtonGroup>
-                <Button
-                  isSelected={viewMode === 'grid'}
-                  onClick={() => setViewMode('grid')}
-                  iconBefore={<GridIcon label="Grid view" size="small" />}
-                >
-                  Grid
+              {searchQuery && (
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
+                  Clear search
                 </Button>
-                <Button
-                  isSelected={viewMode === 'list'}
-                  onClick={() => setViewMode('list')}
-                  iconBefore={<ListIcon label="List view" size="small" />}
-                >
-                  List
-                </Button>
-              </ButtonGroup>
+              )}
             </div>
-
-            {/* CONTENT */}
-            {isLoading ? (
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '200px',
-              }}>
-                <Spinner size="large" />
-              </div>
-            ) : filteredPrograms.length === 0 ? (
-              <EmptyState
-                header="No programs found"
-                description={searchQuery ? 'Try adjusting your search query' : 'Create your first program to get started'}
-                primaryAction={
-                  <Button 
-                    appearance="primary"
-                    onClick={() => setShowCreateDialog(true)}
-                  >
-                    Create program
-                  </Button>
-                }
-                secondaryAction={
-                  searchQuery ? (
-                    <Button 
-                      appearance="subtle"
-                      onClick={() => setSearchQuery('')}
-                    >
-                      Clear search
-                    </Button>
-                  ) : undefined
-                }
-              />
-            ) : viewMode === 'grid' ? (
-              <ProgramGrid 
-                programs={filteredPrograms}
-                onToggleStar={toggleStar}
-                onProgramClick={handleProgramClick}
-              />
-            ) : (
-              <ProgramList 
-                programs={filteredPrograms}
-                onToggleStar={toggleStar}
-                onProgramClick={handleProgramClick}
-              />
-            )}
-          </div>
-        </Main>
-      </Content>
+          </CardContent>
+        </Card>
+      ) : viewMode === 'grid' ? (
+        <ProgramGrid 
+          programs={filteredPrograms}
+          onToggleStar={toggleStar}
+          onProgramClick={handleProgramClick}
+        />
+      ) : (
+        <ProgramList 
+          programs={filteredPrograms}
+          onToggleStar={toggleStar}
+          onProgramClick={handleProgramClick}
+        />
+      )}
 
       {/* CREATE PROGRAM DIALOG */}
       <CreateProgramDialog
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
       />
-    </PageLayout>
+    </div>
   );
 }
 
@@ -272,11 +218,7 @@ interface ProgramGridProps {
 
 function ProgramGrid({ programs, onToggleStar, onProgramClick }: ProgramGridProps) {
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-      gap: '24px',
-    }}>
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6">
       {programs.map((program) => (
         <ProgramCard
           key={program.id}
@@ -303,133 +245,93 @@ function ProgramCard({ program, onToggleStar, onClick }: ProgramCardProps) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        background: '#FFFFFF',
-        borderRadius: '3px',
-        padding: '24px',
-        boxShadow: isHovered 
-          ? '0 4px 8px -2px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)'
-          : '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
-        border: '1px solid #DFE1E6',
-        transition: 'box-shadow 150ms, transform 150ms',
-        transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
-        cursor: 'pointer',
-        position: 'relative',
-      }}
-    >
-      {/* STAR BUTTON */}
-      <div style={{
-        position: 'absolute',
-        top: '12px',
-        right: '12px',
-        opacity: isHovered || program.isStarred ? 1 : 0,
-        transition: 'opacity 150ms',
-      }}>
-        <Tooltip content={program.isStarred ? 'Unstar' : 'Star'}>
-          <Button
-            appearance="subtle"
-            iconBefore={
-              program.isStarred ? (
-                <StarFilledIcon 
-                  label="Starred" 
-                  size="small" 
-                  primaryColor="#FFAB00"
-                />
-              ) : (
-                <StarIcon 
-                  label="Star" 
-                  size="small" 
-                  primaryColor="#6B778C"
-                />
-              )
-            }
-            onClick={(e: React.MouseEvent) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onToggleStar();
-            }}
-          />
-        </Tooltip>
-      </div>
+    <TooltipProvider>
+      <Card
+        onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={cn(
+          "cursor-pointer transition-all duration-150 relative",
+          isHovered && "shadow-lg -translate-y-0.5"
+        )}
+      >
+        <CardContent className="p-6">
+          {/* STAR BUTTON */}
+          <div className={cn(
+            "absolute top-3 right-3 transition-opacity duration-150",
+            isHovered || program.isStarred ? "opacity-100" : "opacity-0"
+          )}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onToggleStar();
+                  }}
+                >
+                  <Star 
+                    className={cn(
+                      "h-4 w-4",
+                      program.isStarred 
+                        ? "fill-amber-400 text-amber-400" 
+                        : "text-muted-foreground"
+                    )}
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {program.isStarred ? 'Unstar' : 'Star'}
+              </TooltipContent>
+            </Tooltip>
+          </div>
 
-      {/* PROGRAM INFO */}
-      <div style={{ marginBottom: '16px' }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '8px',
-        }}>
-          <h3 style={{
-            fontSize: '16px',
-            fontWeight: 600,
-            color: '#172B4D',
-            margin: 0,
-          }}>
-            {program.name}
-          </h3>
-          {program.isDefault && (
-            <Lozenge appearance="default">Default</Lozenge>
-          )}
-        </div>
-        
-        <p style={{
-          fontSize: '12px',
-          color: '#6B778C',
-          margin: 0,
-          marginBottom: '4px',
-        }}>
-          {program.key}
-        </p>
+          {/* PROGRAM INFO */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="text-base font-semibold text-foreground">
+                {program.name}
+              </h3>
+              {program.isDefault && (
+                <Badge variant="secondary">Default</Badge>
+              )}
+            </div>
+            
+            <p className="text-xs text-muted-foreground mb-1">
+              {program.key}
+            </p>
 
-        <p style={{
-          fontSize: '14px',
-          color: '#6B778C',
-          margin: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          display: '-webkit-box',
-          WebkitLineClamp: 2,
-          WebkitBoxOrient: 'vertical',
-          lineHeight: '20px',
-          minHeight: '40px',
-        }}>
-          {program.description}
-        </p>
-      </div>
+            <p className="text-sm text-muted-foreground line-clamp-2 min-h-[40px]">
+              {program.description}
+            </p>
+          </div>
 
-      {/* METADATA */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingTop: '16px',
-        borderTop: '1px solid #DFE1E6',
-      }}>
-        <div style={{
-          display: 'flex',
-          gap: '16px',
-          fontSize: '12px',
-          color: '#6B778C',
-        }}>
-          <span>{program.projectCount} project{program.projectCount !== 1 ? 's' : ''}</span>
-          <span>•</span>
-          <span>{program.epicCount} epic{program.epicCount !== 1 ? 's' : ''}</span>
-        </div>
+          {/* METADATA */}
+          <div className="flex justify-between items-center pt-4 border-t border-border">
+            <div className="flex gap-4 text-xs text-muted-foreground">
+              <span>{program.projectCount} project{program.projectCount !== 1 ? 's' : ''}</span>
+              <span>•</span>
+              <span>{program.epicCount} epic{program.epicCount !== 1 ? 's' : ''}</span>
+            </div>
 
-        <Tooltip content={program.lead.name}>
-          <Avatar
-            size="small"
-            src={program.lead.avatar}
-            name={program.lead.name}
-          />
-        </Tooltip>
-      </div>
-    </div>
+            <Tooltip>
+              <TooltipTrigger>
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={program.lead.avatar} alt={program.lead.name} />
+                  <AvatarFallback className="text-xs">
+                    {program.lead.name.substring(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              </TooltipTrigger>
+              <TooltipContent>{program.lead.name}</TooltipContent>
+            </Tooltip>
+          </div>
+        </CardContent>
+      </Card>
+    </TooltipProvider>
   );
 }
 
@@ -445,22 +347,19 @@ interface ProgramListProps {
 
 function ProgramList({ programs, onToggleStar, onProgramClick }: ProgramListProps) {
   return (
-    <div style={{
-      background: '#FFFFFF',
-      borderRadius: '3px',
-      boxShadow: '0 1px 1px rgba(9, 30, 66, 0.25), 0 0 1px rgba(9, 30, 66, 0.31)',
-      overflow: 'hidden',
-    }}>
-      {programs.map((program, index) => (
-        <ProgramListItem
-          key={program.id}
-          program={program}
-          onToggleStar={() => onToggleStar(program.id)}
-          onClick={() => onProgramClick(program.id)}
-          isLast={index === programs.length - 1}
-        />
-      ))}
-    </div>
+    <Card>
+      <CardContent className="p-0">
+        {programs.map((program, index) => (
+          <ProgramListItem
+            key={program.id}
+            program={program}
+            onToggleStar={() => onToggleStar(program.id)}
+            onClick={() => onProgramClick(program.id)}
+            isLast={index === programs.length - 1}
+          />
+        ))}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -479,102 +378,73 @@ function ProgramListItem({ program, onToggleStar, onClick, isLast }: ProgramList
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div
-      onClick={onClick}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '24px',
-        padding: '24px',
-        background: isHovered ? '#F4F5F7' : 'transparent',
-        borderBottom: isLast ? 'none' : '1px solid #DFE1E6',
-        cursor: 'pointer',
-        transition: 'background 150ms',
-      }}
-    >
-      {/* PROGRAM INFO */}
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '4px',
-        }}>
-          <h4 style={{
-            fontSize: '14px',
-            fontWeight: 600,
-            color: '#172B4D',
-            margin: 0,
-          }}>
-            {program.name}
-          </h4>
-          {program.isDefault && (
-            <Lozenge appearance="default">Default</Lozenge>
-          )}
-        </div>
-        
-        <p style={{
-          fontSize: '12px',
-          color: '#6B778C',
-          margin: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}>
-          {program.key} • {program.description}
-        </p>
-      </div>
-
-      {/* METADATA */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '24px',
-        flexShrink: 0,
-      }}>
-        <div style={{
-          fontSize: '12px',
-          color: '#6B778C',
-          textAlign: 'right',
-        }}>
-          <div>{program.projectCount} projects</div>
-          <div>{program.epicCount} epics</div>
+    <TooltipProvider>
+      <div
+        onClick={onClick}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className={cn(
+          "flex items-center gap-6 p-6 cursor-pointer transition-colors duration-150",
+          isHovered && "bg-muted/50",
+          !isLast && "border-b border-border"
+        )}
+      >
+        {/* PROGRAM INFO */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h4 className="text-sm font-semibold text-foreground">
+              {program.name}
+            </h4>
+            {program.isDefault && (
+              <Badge variant="secondary" className="text-xs">Default</Badge>
+            )}
+          </div>
+          
+          <p className="text-xs text-muted-foreground truncate">
+            {program.key} • {program.description}
+          </p>
         </div>
 
-        <Tooltip content={program.lead.name}>
-          <Avatar
-            size="small"
-            src={program.lead.avatar}
-            name={program.lead.name}
-          />
-        </Tooltip>
+        {/* METADATA */}
+        <div className="flex items-center gap-6 flex-shrink-0">
+          <div className="text-xs text-muted-foreground text-right">
+            <div>{program.projectCount} projects</div>
+            <div>{program.epicCount} epics</div>
+          </div>
 
-        <Button
-          appearance="subtle"
-          iconBefore={
-            program.isStarred ? (
-              <StarFilledIcon 
-                label="Starred" 
-                size="small" 
-                primaryColor="#FFAB00"
-              />
-            ) : (
-              <StarIcon 
-                label="Star" 
-                size="small" 
-                primaryColor="#6B778C"
-              />
-            )
-          }
-          onClick={(e: React.MouseEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onToggleStar();
-          }}
-        />
+          <Tooltip>
+            <TooltipTrigger>
+              <Avatar className="h-6 w-6">
+                <AvatarImage src={program.lead.avatar} alt={program.lead.name} />
+                <AvatarFallback className="text-xs">
+                  {program.lead.name.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </TooltipTrigger>
+            <TooltipContent>{program.lead.name}</TooltipContent>
+          </Tooltip>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onToggleStar();
+            }}
+          >
+            <Star 
+              className={cn(
+                "h-4 w-4",
+                program.isStarred 
+                  ? "fill-amber-400 text-amber-400" 
+                  : "text-muted-foreground"
+              )}
+            />
+          </Button>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }

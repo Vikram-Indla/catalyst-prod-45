@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { token } from '@atlaskit/tokens';
-import Modal, {
-  ModalBody,
-  ModalFooter,
-  ModalHeader,
-  ModalTitle,
-  ModalTransition,
-} from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button';
-import Textfield from '@atlaskit/textfield';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface CreateProgramDialogProps {
   open: boolean;
@@ -80,105 +80,65 @@ export function CreateProgramDialog({ open, onOpenChange }: CreateProgramDialogP
   };
 
   return (
-    <ModalTransition>
-      {open && (
-        <Modal onClose={handleClose} width="medium">
-          <form onSubmit={handleSubmit}>
-            <ModalHeader>
-              <ModalTitle>Create program</ModalTitle>
-            </ModalHeader>
-            <ModalBody>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200') }}>
-                <div>
-                  <label
-                    htmlFor="program-name"
-                    style={{
-                      display: 'block',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: token('color.text.subtle'),
-                      marginBottom: token('space.050'),
-                    }}
-                  >
-                    Name <span style={{ color: token('color.text.danger') }}>*</span>
-                  </label>
-                  <Textfield
-                    id="program-name"
-                    placeholder="Enter program name"
-                    value={name}
-                    onChange={(e) => handleNameChange((e.target as HTMLInputElement).value)}
-                    isRequired
-                    autoFocus
-                  />
-                </div>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <form onSubmit={handleSubmit}>
+          <DialogHeader>
+            <DialogTitle>Create program</DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex flex-col gap-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="program-name">
+                Name <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="program-name"
+                placeholder="Enter program name"
+                value={name}
+                onChange={(e) => handleNameChange(e.target.value)}
+                required
+                autoFocus
+              />
+            </div>
 
-                <div>
-                  <label
-                    htmlFor="program-key"
-                    style={{
-                      display: 'block',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: token('color.text.subtle'),
-                      marginBottom: token('space.050'),
-                    }}
-                  >
-                    Key
-                  </label>
-                  <Textfield
-                    id="program-key"
-                    placeholder="e.g., PROD"
-                    value={key}
-                    onChange={(e) => setKey((e.target as HTMLInputElement).value)}
-                  />
-                  <p
-                    style={{
-                      fontSize: '11px',
-                      color: token('color.text.subtlest'),
-                      marginTop: token('space.050'),
-                    }}
-                  >
-                    A unique identifier for this program
-                  </p>
-                </div>
+            <div className="space-y-2">
+              <Label htmlFor="program-key">Key</Label>
+              <Input
+                id="program-key"
+                placeholder="e.g., PROD"
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                A unique identifier for this program
+              </p>
+            </div>
 
-                <div>
-                  <label
-                    htmlFor="program-description"
-                    style={{
-                      display: 'block',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      color: token('color.text.subtle'),
-                      marginBottom: token('space.050'),
-                    }}
-                  >
-                    Description
-                  </label>
-                  <Textfield
-                    id="program-description"
-                    placeholder="Describe the purpose of this program"
-                    value={description}
-                    onChange={(e) => setDescription((e.target as HTMLInputElement).value)}
-                  />
-                </div>
-              </div>
-            </ModalBody>
-            <ModalFooter>
-              <Button appearance="subtle" onClick={handleClose}>
-                Cancel
-              </Button>
-              <Button
-                appearance="primary"
-                type="submit"
-                isDisabled={!name.trim() || createMutation.isPending}
-              >
-                {createMutation.isPending ? 'Creating...' : 'Create program'}
-              </Button>
-            </ModalFooter>
-          </form>
-        </Modal>
-      )}
-    </ModalTransition>
+            <div className="space-y-2">
+              <Label htmlFor="program-description">Description</Label>
+              <Input
+                id="program-description"
+                placeholder="Describe the purpose of this program"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={handleClose}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={!name.trim() || createMutation.isPending}
+            >
+              {createMutation.isPending ? 'Creating...' : 'Create program'}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
