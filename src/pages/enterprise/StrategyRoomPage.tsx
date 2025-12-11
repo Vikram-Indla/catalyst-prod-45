@@ -146,25 +146,25 @@ export default function StrategyRoomPage() {
             />
           </div>
 
-          {/* Strategy Pyramid - Scrollable on mobile */}
-          <div className="overflow-x-auto -mx-3 sm:mx-0">
-            <div className="min-w-[500px] sm:min-w-[600px] px-3 sm:px-0">
-              <StrategyPyramid 
-                onLayerClick={handlePyramidLayerClick} 
-                snapshotId={effectiveSelectedSnapshotId}
-              />
-            </div>
-          </div>
-
-          {/* Snapshot Progress and Misaligned Items */}
+          {/* Strategy Pyramid and Misaligned Items - Side by side */}
           <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-3 sm:gap-4">
-            <SnapshotProgress 
-              snapshotId={effectiveSelectedSnapshotId}
-            />
+            <div className="overflow-x-auto">
+              <div className="min-w-[500px] sm:min-w-0">
+                <StrategyPyramid 
+                  onLayerClick={handlePyramidLayerClick} 
+                  snapshotId={effectiveSelectedSnapshotId}
+                />
+              </div>
+            </div>
             <MisalignedWorkItems 
               snapshotId={effectiveSelectedSnapshotId}
             />
           </div>
+
+          {/* Snapshot Progress */}
+          <SnapshotProgress 
+            snapshotId={effectiveSelectedSnapshotId}
+          />
 
           {/* OKR Tree */}
           <OkrTree
