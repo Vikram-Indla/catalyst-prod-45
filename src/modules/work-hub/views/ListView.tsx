@@ -24,7 +24,7 @@ import {
   type GroupByOption,
   InlineDatePicker,
   InlineSummaryEdit,
-  WorkItemDetailPanel 
+  IssueDetailPanel 
 } from '../components';
 
 interface WorkItem {
