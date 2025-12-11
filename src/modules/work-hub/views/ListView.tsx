@@ -65,7 +65,7 @@ const mockItems: WorkItem[] = [
   { id: '17', type: 'Defect', key: 'ICP-101', summary: 'Menu item name does not match the required name', status: 'Closed', comments: 2, assignee: { name: 'Abdulrahman Saad' }, dueDate: null, priority: 'Medium', labels: [], created: '2025-08-11', updated: '2025-08-24', hasChildren: false },
 ];
 
-// Type icons matching Jira
+// Type icons
 const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
   Feature: { icon: <Zap className="h-4 w-4" />, color: 'text-purple-500' },
   Story: { icon: <Bookmark className="h-4 w-4" />, color: 'text-green-600' },
@@ -75,16 +75,16 @@ const typeIcons: Record<string, { icon: React.ReactNode; color: string }> = {
   Incident: { icon: <Settings2 className="h-4 w-4" />, color: 'text-orange-500' },
 };
 
-// Jira-exact status lozenge styles
+// Jira-semantic status lozenge styles
 const statusStyles: Record<string, { bg: string; text: string; label: string }> = {
-  'Backlog': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'BACKLOG' },
-  'To Do': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'TO DO' },
-  'In Progress': { bg: 'bg-[#DEEBFF]', text: 'text-[#0747A6]', label: 'IN PROGRESS' },
-  'In Requirement': { bg: 'bg-[#DEEBFF]', text: 'text-[#0747A6]', label: 'IN REQUIREMENTS' },
-  'In Production': { bg: 'bg-[#EAE6FF]', text: 'text-[#403294]', label: 'IN PRODUCTION' },
-  'Done': { bg: 'bg-[#E3FCEF]', text: 'text-[#006644]', label: 'DONE' },
-  'Closed': { bg: 'bg-[#DFE1E6]', text: 'text-[#42526E]', label: 'CLOSED' },
-  'Blocked': { bg: 'bg-[#FFEBE6]', text: 'text-[#BF2600]', label: 'BLOCKED' },
+  'Backlog': { bg: 'bg-slate-100', text: 'text-slate-700', label: 'BACKLOG' },
+  'To Do': { bg: 'bg-slate-100', text: 'text-slate-700', label: 'TO DO' },
+  'In Progress': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'IN PROGRESS' },
+  'In Requirement': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'IN REQUIREMENTS' },
+  'In Production': { bg: 'bg-green-100', text: 'text-green-800', label: 'IN PRODUCTION' },
+  'Done': { bg: 'bg-green-100', text: 'text-green-800', label: 'DONE' },
+  'Closed': { bg: 'bg-slate-100', text: 'text-slate-700', label: 'CLOSED' },
+  'Blocked': { bg: 'bg-red-100', text: 'text-red-700', label: 'BLOCKED' },
 };
 
 const statusOptions = ['Backlog', 'To Do', 'In Progress', 'In Requirement', 'In Production', 'Done', 'Closed', 'Blocked'];
@@ -103,11 +103,11 @@ const assigneeOptions = [
 ];
 
 const priorityIcons: Record<string, { icon: React.ReactNode; color: string }> = {
-  'Highest': { icon: <ChevronsUp className="h-4 w-4" />, color: 'text-[#FF5630]' },
-  'High': { icon: <ArrowUp className="h-4 w-4" />, color: 'text-[#FF7452]' },
-  'Medium': { icon: <Minus className="h-4 w-4" />, color: 'text-[#FFAB00]' },
-  'Low': { icon: <ArrowDown className="h-4 w-4" />, color: 'text-[#36B37E]' },
-  'Lowest': { icon: <ChevronsDown className="h-4 w-4" />, color: 'text-[#6B778C]' },
+  'Highest': { icon: <ChevronsUp className="h-4 w-4" />, color: 'text-red-500' },
+  'High': { icon: <ArrowUp className="h-4 w-4" />, color: 'text-orange-500' },
+  'Medium': { icon: <Minus className="h-4 w-4" />, color: 'text-amber-500' },
+  'Low': { icon: <ArrowDown className="h-4 w-4" />, color: 'text-green-500' },
+  'Lowest': { icon: <ChevronsDown className="h-4 w-4" />, color: 'text-slate-500' },
 };
 
 type SortField = string;
@@ -120,16 +120,16 @@ function StatusLozenge({ status, onStatusChange }: { status: string; onStatusCha
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="focus:outline-none focus:ring-2 focus:ring-[#4C9AFF] focus:ring-offset-1 rounded-sm">
+        <button className="focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded">
           <span className={cn(
-            "inline-flex items-center px-1.5 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wide cursor-pointer",
+            "inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-semibold uppercase cursor-pointer whitespace-nowrap",
             style.bg, style.text
           )}>
             {style.label}
           </span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-44 p-1 bg-white border border-[#DFE1E6] shadow-lg" align="start">
+      <PopoverContent className="w-44 p-1 bg-white border border-slate-200 shadow-lg" align="start">
         <div className="flex flex-col">
           {statusOptions.map((opt) => {
             const optStyle = statusStyles[opt] || statusStyles['Backlog'];
@@ -137,13 +137,13 @@ function StatusLozenge({ status, onStatusChange }: { status: string; onStatusCha
               <button
                 key={opt}
                 className={cn(
-                  "text-left px-2 py-1.5 text-sm rounded-[3px] hover:bg-[#F4F5F7] transition-colors",
-                  status === opt && "bg-[#E9F2FF]"
+                  "text-left px-2 py-1.5 text-sm rounded hover:bg-slate-50 transition-colors",
+                  status === opt && "bg-blue-50"
                 )}
                 onClick={() => onStatusChange(opt)}
               >
                 <span className={cn(
-                  "inline-flex items-center px-1.5 py-0.5 rounded-[3px] text-[10px] font-bold uppercase tracking-wide",
+                  "inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-semibold uppercase",
                   optStyle.bg, optStyle.text
                 )}>
                   {optStyle.label}
@@ -157,7 +157,7 @@ function StatusLozenge({ status, onStatusChange }: { status: string; onStatusCha
   );
 }
 
-// Jira-style assignee cell with "Assign to me" option
+// Jira-style assignee cell
 function AssigneeCell({ assignee, onAssigneeChange }: { 
   assignee: { name: string; avatar?: string } | null; 
   onAssigneeChange: (assignee: { name: string } | null) => void 
@@ -177,7 +177,7 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="flex items-center gap-2 hover:bg-[#F4F5F7] rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus:ring-2 focus:ring-[#4C9AFF] focus:ring-offset-1 min-w-0">
+        <button className="inline-flex items-center gap-2 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 min-w-0">
           {assignee ? (
             <>
               <Avatar className="h-6 w-6 flex-shrink-0">
@@ -185,31 +185,31 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
                   {getInitials(assignee.name)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-[13px] text-[#172B4D] truncate">{assignee.name}</span>
+              <span className="text-[14px] leading-5 text-slate-900 truncate">{assignee.name}</span>
             </>
           ) : (
-            <span className="text-[13px] text-[#6B778C]">Unassigned</span>
+            <span className="text-[14px] leading-5 text-slate-500">Unassigned</span>
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-64 p-0 bg-white border border-[#DFE1E6] shadow-lg" align="start">
-        <div className="p-2 border-b border-[#DFE1E6]">
+      <PopoverContent className="w-64 p-0 bg-white border border-slate-200 shadow-lg" align="start">
+        <div className="p-2 border-b border-slate-200">
           <Input
             placeholder="Search assignees..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-8 text-[13px] bg-[#F4F5F7] border-transparent rounded-[3px] focus:border-[#4C9AFF] focus:bg-white"
+            className="h-8 text-[14px] bg-slate-50 border-transparent rounded focus:border-blue-400 focus:bg-white"
           />
         </div>
         <div className="flex flex-col max-h-60 overflow-auto p-1">
           <button
-            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded-[3px] hover:bg-[#F4F5F7] transition-colors text-left text-[#0052CC]"
+            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-slate-50 transition-colors text-left text-blue-600"
             onClick={() => onAssigneeChange(null)}
           >
             Unassigned
           </button>
           <button
-            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded-[3px] hover:bg-[#DEEBFF] bg-[#E9F2FF] transition-colors text-left text-[#0052CC] font-medium"
+            className="flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-blue-100 bg-blue-50 transition-colors text-left text-blue-600 font-medium"
             onClick={() => onAssigneeChange({ name: 'Vikram India' })}
           >
             <Avatar className="h-6 w-6 flex-shrink-0">
@@ -217,13 +217,13 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
             </Avatar>
             Vikram India (Assign to me)
           </button>
-          <div className="h-px bg-[#DFE1E6] my-1" />
+          <div className="h-px bg-slate-200 my-1" />
           {filteredAssignees.map((opt) => (
             <button
               key={opt.name}
               className={cn(
-                "flex items-center gap-2 px-2 py-1.5 text-sm rounded-[3px] hover:bg-[#F4F5F7] transition-colors text-left",
-                assignee?.name === opt.name && "bg-[#E9F2FF]"
+                "flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-slate-50 transition-colors text-left",
+                assignee?.name === opt.name && "bg-blue-50"
               )}
               onClick={() => onAssigneeChange(opt)}
             >
@@ -232,7 +232,7 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
                   {getInitials(opt.name)}
                 </AvatarFallback>
               </Avatar>
-              <span className="text-[#172B4D]">{opt.name}</span>
+              <span className="text-slate-900">{opt.name}</span>
             </button>
           ))}
         </div>
@@ -252,25 +252,25 @@ function PriorityCell({ priority, onPriorityChange }: {
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="flex items-center gap-1 hover:bg-[#F4F5F7] rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus:ring-2 focus:ring-[#4C9AFF] focus:ring-offset-1">
+        <button className="inline-flex items-center gap-1.5 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1">
           <span className={info.color}>{info.icon}</span>
-          <span className="text-[13px] text-[#172B4D]">{priority}</span>
+          <span className="text-[14px] leading-5 text-slate-900">{priority}</span>
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-40 p-1 bg-white border border-[#DFE1E6] shadow-lg" align="start">
+      <PopoverContent className="w-40 p-1 bg-white border border-slate-200 shadow-lg" align="start">
         {priorityOptions.map((opt) => {
           const optInfo = priorityIcons[opt] || priorityIcons['Medium'];
           return (
             <button
               key={opt}
               className={cn(
-                "w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded-[3px] hover:bg-[#F4F5F7] transition-colors text-left",
-                priority === opt && "bg-[#E9F2FF]"
+                "w-full flex items-center gap-2 px-2 py-1.5 text-sm rounded hover:bg-slate-50 transition-colors text-left",
+                priority === opt && "bg-blue-50"
               )}
               onClick={() => onPriorityChange(opt)}
             >
               <span className={optInfo.color}>{optInfo.icon}</span>
-              <span className="text-[#172B4D]">{opt}</span>
+              <span className="text-slate-900">{opt}</span>
             </button>
           );
         })}
@@ -344,7 +344,6 @@ export function ListView() {
 
   const handleInlineEdit = (id: string, field: keyof WorkItem, value: any) => {
     setItems(items.map(item => item.id === id ? { ...item, [field]: value } : item));
-    // Update selected item if it's open
     if (selectedItem?.id === id) {
       setSelectedItem(prev => prev ? { ...prev, [field]: value } : null);
     }
@@ -381,7 +380,6 @@ export function ListView() {
       })
     : filteredItems;
 
-  // Group items if grouping is enabled
   const groupedItems = groupBy !== 'none' 
     ? sortedItems.reduce((acc, item) => {
         let groupKey: string;
@@ -413,20 +411,46 @@ export function ListView() {
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').slice(0, 2);
 
+  // Table header cell component for consistency
+  const TableHeader = ({ children, className, scope = "col" }: { children?: React.ReactNode; className?: string; scope?: "col" | "row" }) => (
+    <th 
+      scope={scope}
+      className={cn(
+        "px-3 py-2 text-left text-[12px] leading-4 font-medium text-slate-500 bg-slate-50 border-b border-r border-slate-200 last:border-r-0 whitespace-nowrap",
+        className
+      )}
+    >
+      {children}
+    </th>
+  );
+
+  // Table cell component for consistency
+  const TableCell = ({ children, className, onClick }: { children?: React.ReactNode; className?: string; onClick?: (e: React.MouseEvent) => void }) => (
+    <td 
+      className={cn(
+        "px-3 py-2.5 text-[14px] leading-5 text-slate-900 border-b border-r border-slate-200 last:border-r-0",
+        className
+      )}
+      onClick={onClick}
+    >
+      {children}
+    </td>
+  );
+
   return (
-    <div className="h-full flex bg-white" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+    <div className="h-full flex bg-white">
       {/* Main content area */}
-      <div className={cn("flex-1 flex flex-col min-w-0", selectedItem && "border-r border-[#DFE1E6]")}>
-        {/* Jira-style toolbar */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[#DFE1E6] bg-white">
+      <div className={cn("flex-1 flex flex-col min-w-0", selectedItem && "border-r border-slate-200")}>
+        {/* Toolbar */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200 bg-white">
           <div className="flex items-center gap-3">
             <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-[#6B778C]" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Search list"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 h-8 w-40 text-[13px] bg-[#F4F5F7] border-transparent rounded-[3px] focus:border-[#4C9AFF] focus:bg-white placeholder:text-[#6B778C]"
+                className="pl-9 h-8 w-44 text-[14px] bg-slate-50 border-transparent rounded focus:border-blue-400 focus:bg-white placeholder:text-slate-400"
               />
             </div>
             {/* Avatar group */}
@@ -438,344 +462,347 @@ export function ListView() {
                   </AvatarFallback>
                 </Avatar>
               ))}
-              <div className="h-7 w-7 rounded-full bg-[#DFE1E6] flex items-center justify-center text-[11px] text-[#6B778C] border-2 border-white font-medium">
+              <div className="h-7 w-7 rounded-full bg-slate-200 flex items-center justify-center text-[11px] text-slate-600 border-2 border-white font-medium">
                 +{assigneeOptions.length - 3}
               </div>
             </div>
-            <Button variant="ghost" size="sm" className="h-8 gap-1 text-[13px] text-[#42526E] hover:bg-[#F4F5F7] font-normal">
+            <Button variant="ghost" size="sm" className="h-8 gap-1 text-[14px] text-slate-600 hover:bg-slate-50 font-normal">
               Filter
               <ChevronDown className="h-4 w-4" />
             </Button>
           </div>
           <div className="flex items-center gap-2">
             <GroupByMenu value={groupBy} onChange={setGroupBy} />
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-[#F4F5F7]">
-              <Settings2 className="h-4 w-4 text-[#6B778C]" />
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50">
+              <Settings2 className="h-4 w-4 text-slate-500" />
             </Button>
-            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-[#F4F5F7]">
-              <MoreHorizontal className="h-4 w-4 text-[#6B778C]" />
+            <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-slate-50">
+              <MoreHorizontal className="h-4 w-4 text-slate-500" />
             </Button>
           </div>
         </div>
 
-        {/* Jira-style table */}
-        <div className="flex-1 overflow-auto">
-          <table className="w-full border-collapse" style={{ minWidth: '1100px' }}>
-            <thead className="bg-white sticky top-0 z-10">
-              <tr>
-                <th className="w-10 px-2 py-2 border-b border-[#DFE1E6]">
-                  <Checkbox
-                    checked={selectedItems.size === items.length && items.length > 0}
-                    onCheckedChange={handleSelectAll}
-                    className="rounded-[2px] border-[#DFE1E6] data-[state=checked]:bg-[#0052CC] data-[state=checked]:border-[#0052CC]"
-                  />
-                </th>
-                {isFieldVisible('type') && (
-                  <th className="w-20 px-2 py-2 text-left text-[11px] font-semibold text-[#6B778C] border-b border-[#DFE1E6] uppercase tracking-wider">Type</th>
-                )}
-                {isFieldVisible('key') && (
-                  <ColumnHeaderMenu
-                    field="key"
-                    label="Key"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                    onClearSort={handleClearSort}
-                    onHideField={handleHideField}
-                    className="w-20"
-                  />
-                )}
-                {isFieldVisible('summary') && (
-                  <ColumnHeaderMenu
-                    field="summary"
-                    label="Summary"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                    onClearSort={handleClearSort}
-                    onHideField={handleHideField}
-                    className="min-w-[280px]"
-                  />
-                )}
-                {isFieldVisible('status') && (
-                  <ColumnHeaderMenu
-                    field="status"
-                    label="Status"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                    onClearSort={handleClearSort}
-                    onHideField={handleHideField}
-                    className="w-32"
-                  />
-                )}
-                {isFieldVisible('comments') && (
-                  <th className="w-28 px-2 py-2 text-left text-[11px] font-semibold text-[#6B778C] border-b border-[#DFE1E6] uppercase tracking-wider">Comments</th>
-                )}
-                {isFieldVisible('assignee') && (
-                  <ColumnHeaderMenu
-                    field="assignee"
-                    label="Assignee"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                    onClearSort={handleClearSort}
-                    onHideField={handleHideField}
-                    className="w-40"
-                  />
-                )}
-                {isFieldVisible('dueDate') && (
-                  <ColumnHeaderMenu
-                    field="dueDate"
-                    label="Due date"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                    onClearSort={handleClearSort}
-                    onHideField={handleHideField}
-                    className="w-28"
-                  />
-                )}
-                {isFieldVisible('priority') && (
-                  <ColumnHeaderMenu
-                    field="priority"
-                    label="Priority"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                    onClearSort={handleClearSort}
-                    onHideField={handleHideField}
-                    className="w-24"
-                  />
-                )}
-                {isFieldVisible('labels') && (
-                  <th className="w-20 px-2 py-2 text-left text-[11px] font-semibold text-[#6B778C] border-b border-[#DFE1E6] uppercase tracking-wider">Labels</th>
-                )}
-                {isFieldVisible('created') && (
-                  <ColumnHeaderMenu
-                    field="created"
-                    label="Created"
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSort={handleSort}
-                    onClearSort={handleClearSort}
-                    onHideField={handleHideField}
-                    className="w-28"
-                  />
-                )}
-                <FieldPicker visibleFields={visibleFields} onToggleField={handleToggleField} />
-              </tr>
-            </thead>
-            <tbody>
-              {Object.entries(groupedItems).map(([groupKey, groupItems]) => (
-                <React.Fragment key={groupKey}>
-                  {groupBy !== 'none' && (
-                    <tr className="bg-[#F4F5F7]">
-                      <td colSpan={12} className="px-4 py-2">
-                        <div className="flex items-center gap-2">
-                          <ChevronDown className="h-4 w-4 text-[#6B778C]" />
-                          <span className="text-[13px] font-semibold text-[#172B4D]">{groupKey}</span>
-                          <span className="text-[12px] text-[#6B778C]">{groupItems.length}</span>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                  {groupItems.map((item) => {
-                    const typeInfo = typeIcons[item.type] || typeIcons['Task'];
-                    const isHovered = hoveredRow === item.id;
-                    const isSelected = selectedItems.has(item.id);
-                    const isDetailOpen = selectedItem?.id === item.id;
-                    
-                    return (
-                      <tr
-                        key={item.id}
-                        className={cn(
-                          "border-b border-[#EBECF0] transition-colors cursor-pointer",
-                          isHovered && "bg-[#F4F5F7]",
-                          isSelected && "bg-[#E9F2FF]",
-                          isDetailOpen && "bg-[#DEEBFF]"
-                        )}
-                        onClick={() => handleRowClick(item)}
-                        onMouseEnter={() => setHoveredRow(item.id)}
-                        onMouseLeave={() => setHoveredRow(null)}
-                      >
-                        {/* Checkbox + drag handle */}
-                        <td className="px-2 py-1" onClick={(e) => e.stopPropagation()}>
-                          <div className="flex items-center gap-0.5">
-                            {isHovered && (
-                              <GripVertical className="h-4 w-4 text-[#B3BAC5] cursor-grab" />
-                            )}
-                            <Checkbox
-                              checked={isSelected}
-                              onCheckedChange={(checked) => handleSelectItem(item.id, !!checked)}
-                              className="rounded-[2px] border-[#DFE1E6] data-[state=checked]:bg-[#0052CC] data-[state=checked]:border-[#0052CC]"
-                            />
-                          </div>
-                        </td>
-                        
-                        {/* Type with expand chevron */}
-                        {isFieldVisible('type') && (
-                          <td className="px-2 py-1">
-                            <div className="flex items-center gap-0.5">
-                              {item.hasChildren ? (
-                                <button 
-                                  onClick={(e) => handleToggleExpand(item.id, e)}
-                                  className="p-0.5 hover:bg-[#DFE1E6] rounded transition-colors"
-                                >
-                                  <ChevronRight className={cn(
-                                    "h-4 w-4 text-[#6B778C] transition-transform",
-                                    expandedItems.has(item.id) && "rotate-90"
-                                  )} />
-                                </button>
-                              ) : (
-                                <span className="w-5" />
-                              )}
-                              <span className={typeInfo.color} title={item.type}>
-                                {typeInfo.icon}
-                              </span>
-                              {isHovered && item.hasChildren && (
-                                <button 
-                                  onClick={(e) => e.stopPropagation()}
-                                  className="p-0.5 hover:bg-[#DFE1E6] rounded transition-colors ml-0.5"
-                                >
-                                  <Plus className="h-3.5 w-3.5 text-[#6B778C]" />
-                                </button>
-                              )}
+        {/* Card container wrapping the table */}
+        <div className="flex-1 p-4 overflow-hidden">
+          <div className="h-full flex flex-col rounded-lg border border-slate-200 bg-white overflow-hidden">
+            {/* Table container with horizontal scroll */}
+            <div className="flex-1 overflow-auto">
+              <table className="w-full border-collapse" style={{ minWidth: '1100px' }}>
+                <thead className="sticky top-0 z-10">
+                  <tr>
+                    {/* Checkbox column */}
+                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 border-b border-r border-slate-200">
+                      <Checkbox
+                        checked={selectedItems.size === items.length && items.length > 0}
+                        onCheckedChange={handleSelectAll}
+                        className="rounded border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                      />
+                    </th>
+                    {isFieldVisible('type') && (
+                      <TableHeader className="w-20">Type</TableHeader>
+                    )}
+                    {isFieldVisible('key') && (
+                      <ColumnHeaderMenu
+                        field="key"
+                        label="Key"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onClearSort={handleClearSort}
+                        onHideField={handleHideField}
+                        className="w-24"
+                      />
+                    )}
+                    {isFieldVisible('summary') && (
+                      <ColumnHeaderMenu
+                        field="summary"
+                        label="Summary"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onClearSort={handleClearSort}
+                        onHideField={handleHideField}
+                        className="min-w-[280px]"
+                      />
+                    )}
+                    {isFieldVisible('status') && (
+                      <ColumnHeaderMenu
+                        field="status"
+                        label="Status"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onClearSort={handleClearSort}
+                        onHideField={handleHideField}
+                        className="w-36"
+                      />
+                    )}
+                    {isFieldVisible('comments') && (
+                      <TableHeader className="w-28">Comments</TableHeader>
+                    )}
+                    {isFieldVisible('assignee') && (
+                      <ColumnHeaderMenu
+                        field="assignee"
+                        label="Assignee"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onClearSort={handleClearSort}
+                        onHideField={handleHideField}
+                        className="w-44"
+                      />
+                    )}
+                    {isFieldVisible('dueDate') && (
+                      <ColumnHeaderMenu
+                        field="dueDate"
+                        label="Due date"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onClearSort={handleClearSort}
+                        onHideField={handleHideField}
+                        className="w-28"
+                      />
+                    )}
+                    {isFieldVisible('priority') && (
+                      <ColumnHeaderMenu
+                        field="priority"
+                        label="Priority"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onClearSort={handleClearSort}
+                        onHideField={handleHideField}
+                        className="w-28"
+                      />
+                    )}
+                    {isFieldVisible('labels') && (
+                      <TableHeader className="w-24">Labels</TableHeader>
+                    )}
+                    {isFieldVisible('created') && (
+                      <ColumnHeaderMenu
+                        field="created"
+                        label="Created"
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSort={handleSort}
+                        onClearSort={handleClearSort}
+                        onHideField={handleHideField}
+                        className="w-28"
+                      />
+                    )}
+                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 border-b border-slate-200">
+                      <FieldPicker visibleFields={visibleFields} onToggleField={handleToggleField} />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(groupedItems).map(([groupKey, groupItems]) => (
+                    <React.Fragment key={groupKey}>
+                      {groupBy !== 'none' && (
+                        <tr className="bg-slate-50">
+                          <td colSpan={12} className="px-4 py-2 border-b border-slate-200">
+                            <div className="flex items-center gap-2">
+                              <ChevronDown className="h-4 w-4 text-slate-500" />
+                              <span className="text-[14px] font-semibold text-slate-900">{groupKey}</span>
+                              <span className="text-[12px] text-slate-500">{groupItems.length}</span>
                             </div>
                           </td>
-                        )}
+                        </tr>
+                      )}
+                      {groupItems.map((item) => {
+                        const typeInfo = typeIcons[item.type] || typeIcons['Task'];
+                        const isHovered = hoveredRow === item.id;
+                        const isSelected = selectedItems.has(item.id);
+                        const isDetailOpen = selectedItem?.id === item.id;
                         
-                        {/* Key */}
-                        {isFieldVisible('key') && (
-                          <td className="px-2 py-1">
-                            <span className="text-[13px] font-normal text-[#0052CC] hover:underline cursor-pointer">
-                              {item.key}
-                            </span>
-                          </td>
-                        )}
-                        
-                        {/* Summary */}
-                        {isFieldVisible('summary') && (
-                          <td className="px-2 py-1 max-w-[300px]">
-                            <InlineSummaryEdit 
-                              value={item.summary}
-                              onChange={(value) => handleInlineEdit(item.id, 'summary', value)}
-                              isSelected={isSelected}
-                            />
-                          </td>
-                        )}
-                        
-                        {/* Status */}
-                        {isFieldVisible('status') && (
-                          <td className="px-2 py-1">
-                            <StatusLozenge 
-                              status={item.status} 
-                              onStatusChange={(status) => handleInlineEdit(item.id, 'status', status)}
-                            />
-                          </td>
-                        )}
-                        
-                        {/* Comments */}
-                        {isFieldVisible('comments') && (
-                          <td className="px-2 py-1" onClick={(e) => e.stopPropagation()}>
-                            <button className="flex items-center gap-1 text-[13px] text-[#6B778C] hover:text-[#172B4D] hover:bg-[#F4F5F7] rounded px-1 py-0.5 -mx-1 transition-colors">
-                              <MessageSquare className="h-3.5 w-3.5" />
-                              {item.comments > 0 ? (
-                                <span>{item.comments} comment{item.comments > 1 ? 's' : ''}</span>
-                              ) : (
-                                <span>Add comment</span>
-                              )}
-                            </button>
-                          </td>
-                        )}
-                        
-                        {/* Assignee */}
-                        {isFieldVisible('assignee') && (
-                          <td className="px-2 py-1">
-                            <AssigneeCell 
-                              assignee={item.assignee} 
-                              onAssigneeChange={(assignee) => handleInlineEdit(item.id, 'assignee', assignee)}
-                            />
-                          </td>
-                        )}
-                        
-                        {/* Due date */}
-                        {isFieldVisible('dueDate') && (
-                          <td className="px-2 py-1">
-                            <InlineDatePicker
-                              value={item.dueDate}
-                              onChange={(date) => handleInlineEdit(item.id, 'dueDate', date)}
-                            />
-                          </td>
-                        )}
-                        
-                        {/* Priority */}
-                        {isFieldVisible('priority') && (
-                          <td className="px-2 py-1">
-                            <PriorityCell 
-                              priority={item.priority}
-                              onPriorityChange={(priority) => handleInlineEdit(item.id, 'priority', priority)}
-                            />
-                          </td>
-                        )}
-                        
-                        {/* Labels */}
-                        {isFieldVisible('labels') && (
-                          <td className="px-2 py-1">
-                            {item.labels.length > 0 ? (
-                              <div className="flex gap-1 flex-wrap">
-                                {item.labels.map((label) => (
-                                  <span key={label} className="text-[11px] text-[#6B778C] bg-[#DFE1E6] px-1.5 py-0.5 rounded-[3px]">
-                                    {label}
-                                  </span>
-                                ))}
+                        return (
+                          <tr
+                            key={item.id}
+                            className={cn(
+                              "transition-colors cursor-pointer",
+                              isHovered && !isSelected && !isDetailOpen && "bg-slate-50",
+                              isSelected && "bg-blue-50",
+                              isDetailOpen && "bg-blue-50"
+                            )}
+                            onClick={() => handleRowClick(item)}
+                            onMouseEnter={() => setHoveredRow(item.id)}
+                            onMouseLeave={() => setHoveredRow(null)}
+                          >
+                            {/* Checkbox + drag handle */}
+                            <TableCell className="w-10 px-2" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center gap-0.5">
+                                {isHovered && (
+                                  <GripVertical className="h-4 w-4 text-slate-300 cursor-grab" />
+                                )}
+                                <Checkbox
+                                  checked={isSelected}
+                                  onCheckedChange={(checked) => handleSelectItem(item.id, !!checked)}
+                                  className="rounded border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                                />
                               </div>
-                            ) : (
-                              <button className="text-[13px] text-[#6B778C] hover:text-[#0052CC]" onClick={(e) => e.stopPropagation()}>
-                                + Add label
-                              </button>
+                            </TableCell>
+                            
+                            {/* Type with expand chevron */}
+                            {isFieldVisible('type') && (
+                              <TableCell className="w-20">
+                                <div className="flex items-center gap-0.5">
+                                  {item.hasChildren ? (
+                                    <button 
+                                      onClick={(e) => handleToggleExpand(item.id, e)}
+                                      className="p-0.5 hover:bg-slate-100 rounded transition-colors"
+                                    >
+                                      <ChevronRight className={cn(
+                                        "h-4 w-4 text-slate-500 transition-transform",
+                                        expandedItems.has(item.id) && "rotate-90"
+                                      )} />
+                                    </button>
+                                  ) : (
+                                    <span className="w-5" />
+                                  )}
+                                  <span className={typeInfo.color} title={item.type}>
+                                    {typeInfo.icon}
+                                  </span>
+                                  {isHovered && item.hasChildren && (
+                                    <button 
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="p-0.5 hover:bg-slate-100 rounded transition-colors ml-0.5"
+                                    >
+                                      <Plus className="h-3.5 w-3.5 text-slate-500" />
+                                    </button>
+                                  )}
+                                </div>
+                              </TableCell>
                             )}
-                          </td>
-                        )}
-                        
-                        {/* Created */}
-                        {isFieldVisible('created') && (
-                          <td className="px-2 py-1">
-                            <div className="flex items-center gap-1 text-[13px] text-[#6B778C]">
-                              <Calendar className="h-3.5 w-3.5" />
-                              <span>{formatDate(item.created)}</span>
-                            </div>
-                          </td>
-                        )}
+                            
+                            {/* Key */}
+                            {isFieldVisible('key') && (
+                              <TableCell className="w-24">
+                                <span className="text-[14px] font-normal text-blue-600 hover:underline cursor-pointer whitespace-nowrap">
+                                  {item.key}
+                                </span>
+                              </TableCell>
+                            )}
+                            
+                            {/* Summary */}
+                            {isFieldVisible('summary') && (
+                              <TableCell className="min-w-[280px] max-w-[300px]">
+                                <InlineSummaryEdit 
+                                  value={item.summary}
+                                  onChange={(value) => handleInlineEdit(item.id, 'summary', value)}
+                                  isSelected={isSelected}
+                                />
+                              </TableCell>
+                            )}
+                            
+                            {/* Status */}
+                            {isFieldVisible('status') && (
+                              <TableCell className="w-36">
+                                <StatusLozenge 
+                                  status={item.status} 
+                                  onStatusChange={(status) => handleInlineEdit(item.id, 'status', status)}
+                                />
+                              </TableCell>
+                            )}
+                            
+                            {/* Comments */}
+                            {isFieldVisible('comments') && (
+                              <TableCell className="w-28" onClick={(e) => e.stopPropagation()}>
+                                <button className="inline-flex items-center gap-1 text-[14px] text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors">
+                                  <MessageSquare className="h-3.5 w-3.5" />
+                                  {item.comments > 0 ? (
+                                    <span>{item.comments} comment{item.comments > 1 ? 's' : ''}</span>
+                                  ) : (
+                                    <span>Add comment</span>
+                                  )}
+                                </button>
+                              </TableCell>
+                            )}
+                            
+                            {/* Assignee */}
+                            {isFieldVisible('assignee') && (
+                              <TableCell className="w-44">
+                                <AssigneeCell 
+                                  assignee={item.assignee} 
+                                  onAssigneeChange={(assignee) => handleInlineEdit(item.id, 'assignee', assignee)}
+                                />
+                              </TableCell>
+                            )}
+                            
+                            {/* Due date */}
+                            {isFieldVisible('dueDate') && (
+                              <TableCell className="w-28">
+                                <InlineDatePicker
+                                  value={item.dueDate}
+                                  onChange={(date) => handleInlineEdit(item.id, 'dueDate', date)}
+                                />
+                              </TableCell>
+                            )}
+                            
+                            {/* Priority */}
+                            {isFieldVisible('priority') && (
+                              <TableCell className="w-28">
+                                <PriorityCell 
+                                  priority={item.priority}
+                                  onPriorityChange={(priority) => handleInlineEdit(item.id, 'priority', priority)}
+                                />
+                              </TableCell>
+                            )}
+                            
+                            {/* Labels */}
+                            {isFieldVisible('labels') && (
+                              <TableCell className="w-24">
+                                {item.labels.length > 0 ? (
+                                  <div className="flex gap-1 flex-wrap">
+                                    {item.labels.map((label) => (
+                                      <span key={label} className="text-[11px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded">
+                                        {label}
+                                      </span>
+                                    ))}
+                                  </div>
+                                ) : (
+                                  <button className="text-[14px] text-slate-500 hover:text-blue-600" onClick={(e) => e.stopPropagation()}>
+                                    + Add label
+                                  </button>
+                                )}
+                              </TableCell>
+                            )}
+                            
+                            {/* Created */}
+                            {isFieldVisible('created') && (
+                              <TableCell className="w-28">
+                                <div className="inline-flex items-center gap-1 text-[14px] text-slate-500">
+                                  <Calendar className="h-3.5 w-3.5" />
+                                  <span>{formatDate(item.created)}</span>
+                                </div>
+                              </TableCell>
+                            )}
 
-                        {/* Spacer for field picker */}
-                        <td className="w-10"></td>
-                      </tr>
-                    );
-                  })}
-                </React.Fragment>
-              ))}
-              
-              {/* + Create row */}
-              <tr className="border-b border-[#EBECF0] hover:bg-[#F4F5F7] cursor-pointer">
-                <td colSpan={12} className="px-4 py-2">
-                  <button className="flex items-center gap-2 text-[13px] text-[#6B778C] hover:text-[#172B4D]">
-                    <Plus className="h-4 w-4" />
-                    Create
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                            {/* Spacer for field picker */}
+                            <TableCell className="w-10" />
+                          </tr>
+                        );
+                      })}
+                    </React.Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-        {/* Jira-style footer */}
-        <div className="px-4 py-2 border-t border-[#DFE1E6] text-[13px] text-[#6B778C] bg-white flex-shrink-0">
-          {selectedItems.size > 0 ? (
-            <span>{selectedItems.size} item{selectedItems.size > 1 ? 's' : ''} selected</span>
-          ) : (
-            <span>Showing {sortedItems.length} of {items.length} items</span>
-          )}
+            {/* Footer inside card */}
+            <div className="border-t border-slate-200 flex items-center justify-between px-4 py-2 bg-white flex-shrink-0">
+              <span className="text-[14px] text-slate-600">
+                {selectedItems.size > 0 
+                  ? `${selectedItems.size} item${selectedItems.size > 1 ? 's' : ''} selected`
+                  : `Showing ${sortedItems.length} of ${items.length} items`
+                }
+              </span>
+              <button className="inline-flex items-center gap-1 text-[14px] text-blue-600 hover:text-blue-700 font-medium">
+                <Plus className="h-4 w-4" />
+                Create
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
