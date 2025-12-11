@@ -851,7 +851,7 @@ export function ListView() {
 
       {/* Detail Panel */}
       {selectedItem && (
-        <WorkItemDetailPanel 
+        <IssueDetailPanel 
           item={selectedItem} 
           onClose={() => setSelectedItem(null)} 
         />
