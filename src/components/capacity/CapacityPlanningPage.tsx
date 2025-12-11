@@ -106,7 +106,7 @@ export function CapacityPlanningPage() {
       {/* Page Header - align header pattern */}
       <div className="h-[72px] border-b border-border bg-card flex-shrink-0 flex items-center justify-between px-6">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">Capacity & Allocation Planning</h1>
+          <h1 className="text-xl font-semibold text-foreground">Enterprise Capacity</h1>
           <p className="text-sm text-muted-foreground">Manage team capacity and allocations by week</p>
         </div>
         <Tooltip>
