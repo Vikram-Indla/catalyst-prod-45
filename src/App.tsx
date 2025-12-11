@@ -267,6 +267,7 @@ const App = () => (
               
               {/* Industry/Demand routes */}
               <Route path="/industry" element={<IndustryPage />} />
+              <Route path="/industry1" element={<IndustryPage />} />
               <Route path="/industry/industry" element={<IndustryPage />} />
               <Route path="/industry/dashboard" element={<DemandSummaryPage />} />
               <Route path="/industry/roadmaps" element={<ExecutiveRoadmapPage />} />
