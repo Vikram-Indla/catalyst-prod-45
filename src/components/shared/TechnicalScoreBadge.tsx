@@ -3,32 +3,34 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { TrendingUp } from 'lucide-react';
 
 /**
- * WSJFBadge Component (Legacy - now shows as "Tech Score")
- * Phase 0: Renamed from WSJF to Technical Score
+ * TechnicalScoreBadge Component
+ * Phase 0: Replaces WSJFBadge with Technical Score terminology
  * Displays Technical Score with color coding based on value
  */
 
-interface WSJFBadgeProps {
+interface TechnicalScoreBadgeProps {
   score: number | null;
-  businessValue?: number;
+  technicalValue?: number;
   timeCriticality?: number;
   riskReduction?: number;
   jobSize?: number;
   onClick?: () => void;
+  compact?: boolean;
 }
 
-export function WSJFBadge({ 
+export function TechnicalScoreBadge({ 
   score, 
-  businessValue, 
+  technicalValue, 
   timeCriticality, 
   riskReduction, 
   jobSize,
   onClick,
-}: WSJFBadgeProps) {
+  compact = false,
+}: TechnicalScoreBadgeProps) {
   if (!score || score === 0) {
     return (
       <Badge variant="outline" className="text-xs cursor-pointer" onClick={onClick}>
-        No Score
+        {compact ? '-' : 'No Score'}
       </Badge>
     );
   }
@@ -42,11 +44,11 @@ export function WSJFBadge({
   
   const variant = getVariant();
   
-  const tooltipContent = businessValue !== undefined && (
+  const tooltipContent = technicalValue !== undefined && (
     <div className="space-y-1">
       <div className="font-semibold">Technical Scoring Components:</div>
       <div className="text-xs space-y-0.5">
-        <div>Technical Value: {businessValue}</div>
+        <div>Technical Value: {technicalValue}</div>
         <div>Time Criticality: {timeCriticality}</div>
         <div>Risk Reduction: {riskReduction}</div>
         <div>Job Size: {jobSize}</div>

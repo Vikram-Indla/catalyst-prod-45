@@ -47,7 +47,7 @@ import { EpicValueTab } from './tabs/EpicValueTab';
 import { EpicMilestonesTab } from './tabs/EpicMilestonesTab';
 import { EpicSpendTab } from './tabs/EpicSpendTab';
 import { EpicForecastTab } from './tabs/EpicForecastTab';
-import { EpicWSJFTab } from './tabs/EpicWSJFTab';
+import { EpicTechnicalScoringTab } from './tabs/EpicTechnicalScoringTab';
 import { EpicLinksTab } from './tabs/EpicLinksTab';
 import { EpicChildrenTab } from './tabs/EpicChildrenTab';
 import { EpicDiscussionsTab } from './tabs/EpicDiscussionsTab';
@@ -548,7 +548,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
               <TabsTrigger value="milestones" className="executive-tab">Milestones</TabsTrigger>
               <TabsTrigger value="spend" className="executive-tab">Spend</TabsTrigger>
               <TabsTrigger value="forecast" className="executive-tab">Forecast</TabsTrigger>
-              <TabsTrigger value="wsjf" className="executive-tab">WSJF</TabsTrigger>
+              <TabsTrigger value="wsjf" className="executive-tab">Technical Scoring</TabsTrigger>
               <TabsTrigger value="links" className="executive-tab">Links</TabsTrigger>
               <TabsTrigger value="discussions" className="executive-tab">Discussions</TabsTrigger>
             </TabsList>
@@ -582,7 +582,7 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
                 <EpicForecastTab epic={epic} />
               </TabsContent>
               <TabsContent value="wsjf" className="m-0 focus-visible:outline-none">
-                <EpicWSJFTab epic={epic} />
+                <EpicTechnicalScoringTab epic={epic} />
               </TabsContent>
               <TabsContent value="links" className="m-0 focus-visible:outline-none">
                 <EpicLinksTab epic={epic} />
