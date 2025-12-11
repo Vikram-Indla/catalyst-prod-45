@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { useBacklogState } from '../hooks/useBacklogState';
 
 interface BacklogColumnsDialogProps {
   open: boolean;
@@ -18,7 +19,8 @@ interface BacklogColumnsDialogProps {
   onColumnsChange: (columns: string[]) => void;
 }
 
-const AVAILABLE_COLUMNS = [
+// Standard backlog columns (for Features, Stories, etc.)
+const STANDARD_COLUMNS = [
   { id: 'id', label: 'ID', default: true },
   { id: 'name', label: 'Name', default: true },
   { id: 'state', label: 'State', default: true },
@@ -33,7 +35,25 @@ const AVAILABLE_COLUMNS = [
   { id: 'portfolio', label: 'Portfolio', default: false },
 ];
 
-const DEFAULT_COLUMNS = AVAILABLE_COLUMNS.filter((col) => col.default).map((col) => col.id);
+// Epic Backlog specific columns (no Program/Portfolio, add roll-up fields)
+const EPIC_BACKLOG_COLUMNS = [
+  { id: 'id', label: 'ID', default: true },
+  { id: 'name', label: 'Name', default: true },
+  { id: 'state', label: 'State', default: true },
+  { id: 'processStep', label: 'Process Step', default: false },
+  { id: 'owner', label: 'Owner', default: true },
+  { id: 'health', label: 'Health', default: true },
+  // Roll-up columns for Epics
+  { id: 'progress', label: 'Progress %', default: true },
+  { id: 'featureCounts', label: 'Feature Counts', default: true },
+  { id: 'totalEstimate', label: 'Total Estimate', default: true },
+  // Scoring columns
+  { id: 'technicalScore', label: 'Technical Score', default: true },
+  { id: 'businessScore', label: 'Business Score', default: true },
+  // Additional Epic fields
+  { id: 'targetDate', label: 'Target Date', default: false },
+  { id: 'blocked', label: 'Blocked', default: false },
+];
 
 export function BacklogColumnsDialog({
   open,
@@ -41,7 +61,12 @@ export function BacklogColumnsDialog({
   columnsShown,
   onColumnsChange,
 }: BacklogColumnsDialogProps) {
+  const { isEpicBacklog } = useBacklogState();
   const [localColumns, setLocalColumns] = useState(columnsShown);
+
+  // Select appropriate columns based on mode
+  const AVAILABLE_COLUMNS = isEpicBacklog ? EPIC_BACKLOG_COLUMNS : STANDARD_COLUMNS;
+  const DEFAULT_COLUMNS = AVAILABLE_COLUMNS.filter((col) => col.default).map((col) => col.id);
 
   useEffect(() => {
     if (open) {
@@ -79,7 +104,7 @@ export function BacklogColumnsDialog({
         <DialogHeader>
           <DialogTitle>Configure Columns</DialogTitle>
           <DialogDescription>
-            Select which columns to display in the backlog view
+            Select which columns to display in the {isEpicBacklog ? 'Epic backlog' : 'backlog'} view
           </DialogDescription>
         </DialogHeader>
 
