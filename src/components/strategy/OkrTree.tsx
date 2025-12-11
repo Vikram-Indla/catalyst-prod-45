@@ -36,8 +36,8 @@ function getHealthBgColor(health: string | null): string {
 }
 
 function getProgressColor(progress: number): string {
-  if (progress >= 70) return 'hsl(var(--success))';
-  if (progress >= 40) return 'hsl(var(--warning))';
+  if (progress >= 70) return 'hsl(var(--secondary-green))';
+  if (progress >= 40) return 'hsl(var(--brand-gold))';
   return 'hsl(var(--destructive))';
 }
 
