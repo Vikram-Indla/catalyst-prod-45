@@ -1,6 +1,7 @@
 /**
  * Program Sidebar
  * Sidebar for Program-level context (per spec: no Tests, no More items)
+ * "Epic Backlog" entry points to canonical EpicBacklogWithSidebar route.
  */
 
 import { useState } from 'react';
@@ -20,6 +21,7 @@ import {
   Calendar,
   FileText,
   Settings,
+  Square,
 } from 'lucide-react';
 import {
   Select,
@@ -41,8 +43,10 @@ interface ProgramSidebarProps {
 
 // Program sidebar menu items (per spec - no Tests, no More items)
 // Note: label uses workspaceType to conditionally show "Program Room" or "Project Room"
+// Epic Backlog routes to canonical EpicBacklogWithSidebar component
 const getMenuItems = (workspaceLabel: string) => [
   { id: 'program-room', label: `${workspaceLabel} Room`, icon: LayoutDashboard, path: '/program/:programId/room' },
+  { id: 'epic-backlog', label: 'Epic Backlog', icon: Square, path: '/program/:programId/epic-backlog' },
   { id: 'work-tree', label: 'Work tree', icon: Network, path: '/program/:programId/work-tree' },
   { id: 'dependencies', label: 'Dependencies', icon: GitBranch, path: '/program/:programId/dependencies' },
   { id: 'roadmaps', label: 'Roadmaps', icon: Map, path: '/program/:programId/roadmaps' },
