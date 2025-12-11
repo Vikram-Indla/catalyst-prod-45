@@ -16,10 +16,9 @@ import { LabelsManagementDialog } from '@/components/epic-backlog/LabelsManageme
 import { CustomColumnsDialog } from '@/components/epic-backlog/CustomColumnsDialog';
 import { OrphanObjectsDialog } from '@/components/epic-backlog/OrphanObjectsDialog';
 import { ViewSwitcher, ViewMode, KanbanMode } from '@/components/backlog/ViewSwitcher';
-import { WSJFPrioritizationDialog } from '@/components/epic-backlog/WSJFPrioritizationDialog';
+import { MoreActionsMenu } from '@/components/epic-backlog/MoreActionsMenu';
 import { EnhancedBottomUpDialog } from '@/components/items/epics/dialogs/EnhancedBottomUpDialog';
-import { usePIProgress } from '@/hooks/usePIProgress';
-import { Star, Eye, TrendingUp, Download, ChevronDown, Plus, Grid3x3, Filter, Search, Tag } from 'lucide-react';
+import { Star, Eye, ChevronDown, Plus, Grid3x3, Filter, Search, Tag } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function EpicBacklog() {
@@ -39,12 +38,9 @@ export default function EpicBacklog() {
   const [bottomUpEstimateOpen, setBottomUpEstimateOpen] = useState(false);
   const [selectedEpicIds, setSelectedEpicIds] = useState<string[]>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
-    'id', 'name', 'tech_score'
+    'rank', 'name', 'theme', 'program', 'state', 'health', 'owner', 'dates', 'estimate'
   ]);
   const { toast } = useToast();
-
-  // Get PI Progress
-  const { data: piProgress } = usePIProgress('pi-5');
 
   // Fetch custom columns for Column View
   const { data: customColumns } = useQuery({
@@ -280,50 +276,15 @@ export default function EpicBacklog() {
                   )}
                 />
               </Button>
-              <h2 className="text-base sm:text-lg font-semibold">Epics for PI-5</h2>
+              <h2 className="text-base sm:text-lg font-semibold">All Items ({assignedEpics.length})</h2>
             </div>
-            <div className="flex flex-wrap items-center gap-2 sm:gap-4 lg:gap-6">
-              <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">Total: {assignedEpics.length}</span>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
-                onClick={() => setBottomUpEstimateOpen(true)}
-                disabled={selectedEpicIds.length === 0}
-              >
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden md:inline">Bottom-Up {selectedEpicIds.length > 0 && `(${selectedEpicIds.length})`}</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
-                onClick={() => setTechScoringModalOpen(true)}
-              >
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">Tech Scoring</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
-                onClick={handleExport}
-              >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">Export</span>
-              </Button>
-              <div className="flex items-center gap-2 hidden lg:flex">
-                <span className="text-xs sm:text-sm font-medium whitespace-nowrap">PI Progress:</span>
-                <div className="w-24 sm:w-32 h-2 bg-muted rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-brand-gold transition-all" 
-                    style={{ width: `${piProgress?.percentage || 0}%` }} 
-                  />
-                </div>
-                <span className="text-xs text-muted-foreground">
-                  {piProgress?.percentage || 0}%
-                </span>
-              </div>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <MoreActionsMenu
+                epicIds={selectedEpicIds.length > 0 ? selectedEpicIds : assignedEpics.map(e => e.id)}
+                onExport={handleExport}
+                onRefetch={refetch}
+                onBottomUpEstimate={() => setBottomUpEstimateOpen(true)}
+              />
             </div>
           </div>
 
@@ -546,17 +507,6 @@ export default function EpicBacklog() {
       <OrphanObjectsDialog 
         open={orphanObjectsDialogOpen}
         onOpenChange={setOrphanObjectsDialogOpen}
-      />
-      
-      {/* Technical Scoring Prioritization Dialog */}
-      <WSJFPrioritizationDialog
-        open={techScoringModalOpen}
-        onOpenChange={setTechScoringModalOpen}
-        epicIds={assignedEpics.map(e => e.id)}
-        onSuccess={() => {
-          refetch();
-          toast({ title: 'Technical scores updated', description: 'Epic prioritization has been updated' });
-        }}
       />
 
       {/* Bottom-Up Estimate Dialog */}
