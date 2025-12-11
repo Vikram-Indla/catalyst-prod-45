@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, Zap, AlertCircle, CheckSquare, FileText, Columns, RefreshCw, PanelRightOpen, PanelRightClose } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, Zap, AlertCircle, CheckSquare, FileText, Columns, RefreshCw, PanelRightOpen, PanelRightClose, Plus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AllWorkTicketList } from '../components/AllWorkTicketList';
 import { AllWorkDetailPanel } from '../components/AllWorkDetailPanel';
+import { CreateVersionDialog } from '../components/CreateVersionDialog';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -229,6 +230,9 @@ export function AllWorkView() {
   // Detail panel states
   const [detailModeEnabled, setDetailModeEnabled] = useState(false);
   const [selectedWorkItem, setSelectedWorkItem] = useState<WorkItem | null>(null);
+  
+  // Create version dialog state
+  const [createVersionOpen, setCreateVersionOpen] = useState(false);
   
   // Filter states
   const [assigneeOpen, setAssigneeOpen] = useState(false);
@@ -557,6 +561,17 @@ export function AllWorkView() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* Create Version Button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 px-3 text-[13px] gap-1 border-slate-200 text-slate-700 hover:bg-slate-50"
+              onClick={() => setCreateVersionOpen(true)}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Create version
+            </Button>
+
             {/* Group */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -786,6 +801,15 @@ export function AllWorkView() {
       <div className="px-4 py-2 text-[13px] text-slate-600 bg-white">
         Showing {countItems(mockItems)} items
       </div>
+
+      {/* Create Version Dialog */}
+      <CreateVersionDialog
+        open={createVersionOpen}
+        onOpenChange={setCreateVersionOpen}
+        onSave={(data) => {
+          console.log('Version created:', data);
+        }}
+      />
     </div>
   );
 }
