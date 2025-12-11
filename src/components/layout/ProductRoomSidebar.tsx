@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, ChevronRight, Box, ListTree, Map, BookOpen, Lock, Users } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Box, ListTree, Map, Lock, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -18,7 +18,6 @@ const menuItems = [
   { title: 'Demand Intake', path: '/industry', icon: ListTree, exact: true },
   { title: 'Roadmap', path: '/industry/roadmaps', icon: Map, exact: false },
   { title: 'Capacity', path: '/product/capacity', icon: Users, exact: true },
-  { title: 'Knowledge Hub', path: '/knowledge-hub', icon: BookOpen, exact: false },
 ];
 
 export function ProductRoomSidebar({ expanded, onToggle, className }: ProductRoomSidebarProps) {
