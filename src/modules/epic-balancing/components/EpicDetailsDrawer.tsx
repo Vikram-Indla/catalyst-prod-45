@@ -4,8 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { Link2 } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { EpicBalancingEpic } from '../types';
 
 interface EpicDetailsDrawerProps {
@@ -21,8 +24,36 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
     timeCriticality: '',
     investorEnablement: '',
     jobSize: '',
+    themeId: '',
+    businessRequestId: '',
   });
   const [saving, setSaving] = useState(false);
+
+  // Fetch themes from database
+  const { data: themes = [] } = useQuery({
+    queryKey: ['strategic-themes'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('strategic_themes')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch business requests from database
+  const { data: businessRequests = [] } = useQuery({
+    queryKey: ['business-requests'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('business_requests')
+        .select('id, title, request_key')
+        .order('request_key');
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
   useEffect(() => {
     if (epic) {
@@ -31,6 +62,8 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
         timeCriticality: epic.timeCriticality?.toString() ?? '',
         investorEnablement: epic.investorEnablement?.toString() ?? '',
         jobSize: epic.jobSize?.toString() ?? '',
+        themeId: epic.themeId ?? '',
+        businessRequestId: epic.businessRequestId ?? '',
       });
     }
   }, [epic]);
@@ -60,6 +93,10 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
     return null;
   })();
 
+  // Get selected theme and business request names
+  const selectedTheme = themes.find(t => t.id === formData.themeId);
+  const selectedBusinessRequest = businessRequests.find(br => br.id === formData.businessRequestId);
+
   const handleSave = async () => {
     setSaving(true);
     try {
@@ -73,6 +110,12 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
         jobSize: parseNumber(formData.jobSize),
         costOfDelay,
         technicalScore,
+        themeId: formData.themeId || null,
+        themeName: selectedTheme?.name || null,
+        businessRequestId: formData.businessRequestId || null,
+        businessRequestTitle: selectedBusinessRequest 
+          ? `${selectedBusinessRequest.request_key}: ${selectedBusinessRequest.title}`
+          : null,
       };
 
       onSave(updatedEpic);
@@ -172,20 +215,51 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
           {/* Linked Items */}
           <div className="space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Linked Items</h3>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 p-2 bg-accent/30 rounded-md">
-                <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Theme:</span>
-                <span className="text-sm font-medium text-foreground truncate">
-                  {epic.themeName || 'Not linked'}
-                </span>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <Label htmlFor="theme">Theme</Label>
+                </div>
+                <Select
+                  value={formData.themeId}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, themeId: value === 'none' ? '' : value }))}
+                >
+                  <SelectTrigger id="theme" className="w-full">
+                    <SelectValue placeholder="Select a theme" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border-border z-50">
+                    <SelectItem value="none">Not linked</SelectItem>
+                    {themes.map(theme => (
+                      <SelectItem key={theme.id} value={theme.id}>
+                        {theme.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="flex items-center gap-2 p-2 bg-accent/30 rounded-md">
-                <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                <span className="text-sm text-muted-foreground">Business Request:</span>
-                <span className="text-sm font-medium text-foreground truncate">
-                  {epic.businessRequestTitle || 'Not linked'}
-                </span>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Link2 className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <Label htmlFor="businessRequest">Business Request</Label>
+                </div>
+                <Select
+                  value={formData.businessRequestId}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, businessRequestId: value === 'none' ? '' : value }))}
+                >
+                  <SelectTrigger id="businessRequest" className="w-full">
+                    <SelectValue placeholder="Select a business request" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border-border z-50">
+                    <SelectItem value="none">Not linked</SelectItem>
+                    {businessRequests.map(br => (
+                      <SelectItem key={br.id} value={br.id}>
+                        {br.request_key}: {br.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
