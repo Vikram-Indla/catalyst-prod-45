@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell } from 'recharts';
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Cell, ReferenceArea } from 'recharts';
 import { 
   EpicBalancingEpic, 
   EpicBalancingStats, 
@@ -131,8 +131,8 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
     const maxScore = Math.max(...scores, 1);
     const scoreRange = maxScore - minScore || 1;
 
-    const minRadius = 12;
-    const maxRadius = 40;
+    const minRadius = 3;
+    const maxRadius = 10;
 
     return validEpics.map(epic => ({
       x: epic.jobSize!,
@@ -204,26 +204,50 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
             }}
           />
 
+          {/* Quadrant labels */}
+          <ReferenceArea
+            x1={0}
+            x2={stats.medianJobSize}
+            y1={stats.medianCostOfDelay}
+            y2={maxY}
+            fill="transparent"
+            label={{ value: 'Very High', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
+          />
+          <ReferenceArea
+            x1={stats.medianJobSize}
+            x2={maxX}
+            y1={stats.medianCostOfDelay}
+            y2={maxY}
+            fill="transparent"
+            label={{ value: 'High', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
+          />
+          <ReferenceArea
+            x1={0}
+            x2={stats.medianJobSize}
+            y1={0}
+            y2={stats.medianCostOfDelay}
+            fill="transparent"
+            label={{ value: 'Medium', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
+          />
+          <ReferenceArea
+            x1={stats.medianJobSize}
+            x2={maxX}
+            y1={0}
+            y2={stats.medianCostOfDelay}
+            fill="transparent"
+            label={{ value: 'Low', position: 'center', style: { fill: 'hsl(var(--muted-foreground))', fontSize: 14, fontWeight: 600 } }}
+          />
+
           {/* Median reference lines */}
           <ReferenceLine 
             x={stats.medianJobSize} 
             stroke="hsl(var(--muted-foreground))" 
             strokeDasharray="5 5"
-            label={{ 
-              value: 'Effort', 
-              position: 'top',
-              style: { fill: 'hsl(var(--muted-foreground))', fontSize: 11 }
-            }}
           />
           <ReferenceLine 
             y={stats.medianCostOfDelay} 
             stroke="hsl(var(--muted-foreground))" 
             strokeDasharray="5 5"
-            label={{ 
-              value: 'Value', 
-              position: 'right',
-              style: { fill: 'hsl(var(--muted-foreground))', fontSize: 11 }
-            }}
           />
 
           <Tooltip content={<CustomTooltip />} />
