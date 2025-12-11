@@ -5,3 +5,6 @@ export { InlineDatePicker } from './InlineDatePicker';
 export { InlineSummaryEdit } from './InlineSummaryEdit';
 export { WorkItemDetailPanel } from './WorkItemDetailPanel';
 export { IssueDetailPanel } from './IssueDetailPanel';
+export { AllWorkTicketList } from './AllWorkTicketList';
+export { AllWorkDetailPanel } from './AllWorkDetailPanel';
+export { CreateVersionDialog } from './CreateVersionDialog';
