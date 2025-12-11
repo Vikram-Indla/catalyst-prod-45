@@ -3,8 +3,6 @@ import {
   PriorityToExecute,
   PRIORITY_TO_EXECUTE_COLORS, 
   PRIORITY_TO_EXECUTE_LABELS,
-  AbilityToExecute,
-  ABILITY_TO_EXECUTE_STROKE
 } from '../types';
 import { cn } from '@/lib/utils';
 import { RotateCcw } from 'lucide-react';
@@ -20,7 +18,6 @@ interface EpicBalancingLegendProps {
 }
 
 const PRIORITIES: PriorityToExecute[] = ['VERY_HIGH', 'HIGH', 'MEDIUM', 'LOW'];
-const ABILITIES: AbilityToExecute[] = ['HIGH', 'MEDIUM', 'LOW'];
 
 export function EpicBalancingLegend({ 
   hiddenDrivers, 
@@ -53,25 +50,6 @@ export function EpicBalancingLegend({
                 {PRIORITY_TO_EXECUTE_LABELS[priority]}
               </span>
             </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Ability to Execute Legend */}
-      <div>
-        <h3 className="text-sm font-semibold text-foreground mb-3">Ability to Execute</h3>
-        <div className="space-y-3">
-          {ABILITIES.map(ability => (
-            <div key={ability} className="flex items-center gap-3 px-2">
-              <div 
-                className="w-8 h-8 rounded-full border-2 flex-shrink-0 bg-transparent"
-                style={{ 
-                  borderWidth: ABILITY_TO_EXECUTE_STROKE[ability] * 2,
-                  borderColor: 'hsl(var(--foreground))'
-                }}
-              />
-              <span className="text-sm text-foreground">{ability}</span>
-            </div>
           ))}
         </div>
       </div>
