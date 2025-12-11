@@ -295,6 +295,13 @@ const App = () => (
               <Route path="/program/:programId/epic-backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/program/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/program/:programId/program-board" element={<ProgramBoardWithSidebar />} />
+              <Route path="/program/:programId/dependencies" element={<DependenciesPage />} />
+              <Route path="/program/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
+              <Route path="/program/:programId/objectives-tree" element={<OKRHub />} />
+              <Route path="/program/:programId/forecast" element={<ForecastWithSidebar />} />
+              <Route path="/program/:programId/capacity" element={<CapacityWithSidebar />} />
+              <Route path="/program/:programId/quarters" element={<ProgramIncrements />} />
+              <Route path="/program/:programId/reports" element={<PlaceholderPage />} />
               <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
               <Route path="/work-tree" element={<WorkTreePage />} />

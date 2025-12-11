@@ -81,32 +81,31 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
 
       return null;
     },
+    enabled: !!epicId,
   });
 
-  // Fetch linked objectives via objective_epic_links
+  // Fetch linked objectives via objective_epic_links with separate query for objectives
   const { data: objectives = [] } = useQuery({
     queryKey: ['epic-strategy-objectives', epicId],
     queryFn: async (): Promise<ObjectiveData[]> => {
+      // First get the links
       const { data: links } = await supabase
         .from('objective_epic_links')
-        .select(`
-          objective_id,
-          objectives (
-            id,
-            name,
-            health,
-            key_result_progress,
-            tier
-          )
-        `)
+        .select('objective_id')
         .eq('epic_id', epicId);
 
-      if (!links) return [];
+      if (!links || links.length === 0) return [];
 
-      return links
-        .filter(l => l.objectives)
-        .map(l => l.objectives as ObjectiveData);
+      // Then fetch the objectives
+      const objectiveIds = links.map(l => l.objective_id);
+      const { data: objectivesData } = await supabase
+        .from('objectives')
+        .select('id, name, health, key_result_progress, tier')
+        .in('id', objectiveIds);
+
+      return (objectivesData || []) as ObjectiveData[];
     },
+    enabled: !!epicId,
   });
 
   const hasLinkage = theme || objectives.length > 0;
@@ -130,10 +129,13 @@ export function EpicStrategyContext({ epicId, themeId, compact = false }: EpicSt
   // Get health badge variant
   const getHealthVariant = (health?: string) => {
     switch (health?.toLowerCase()) {
-      case 'good': return 'default';
+      case 'good':
+      case 'green': return 'default';
       case 'at_risk':
-      case 'fair': return 'secondary';
-      case 'poor': return 'destructive';
+      case 'fair':
+      case 'amber': return 'secondary';
+      case 'poor':
+      case 'red': return 'destructive';
       default: return 'outline';
     }
   };
