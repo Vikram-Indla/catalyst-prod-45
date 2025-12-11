@@ -1,3 +1,16 @@
+/**
+ * =====================================================
+ * LEGACY Epic Details Panel (epic-backlog module)
+ * =====================================================
+ * 
+ * ⚠️ DEPRECATION NOTICE: This is a legacy implementation.
+ * The canonical Epic Details Panel is at:
+ *   src/components/items/epics/EpicDetailsPanel.tsx
+ * 
+ * This panel is kept for EpicBacklog.tsx compatibility but should
+ * be migrated to use the canonical component in a future phase.
+ */
+
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Sheet, SheetContent } from '@/components/ui/sheet';

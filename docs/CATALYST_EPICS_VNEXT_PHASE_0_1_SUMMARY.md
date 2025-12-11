@@ -1,13 +1,66 @@
 # Catalyst Epics vNext – Phase 0 + 1 Implementation Summary
 
+## Final Hardening Summary (Consolidation Complete)
+
+### Canonical Components (Source of Truth)
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| **EpicDetailsPanel** | `src/components/items/epics/EpicDetailsPanel.tsx` | CANONICAL - All Epic detail views MUST reuse this |
+| **TechnicalScoreBadge** | `src/components/shared/TechnicalScoreBadge.tsx` | CANONICAL - Single badge for Technical Scores |
+| **WSJFBadge** | `src/components/shared/WSJFBadge.tsx` | WRAPPER - Delegates to TechnicalScoreBadge for compatibility |
+| **useEpicMutations** | `src/hooks/useEpicMutations.ts` | CANONICAL - All Epic mutations and side effects |
+| **EpicTechnicalScoringTab** | `src/components/items/epics/tabs/EpicTechnicalScoringTab.tsx` | Technical Scoring tab (replaces WSJF tab) |
+
+### Legacy Components (Marked for Future Migration)
+
+| Component | Location | Note |
+|-----------|----------|------|
+| EpicDetailsPanel (legacy) | `src/components/epic-backlog/EpicDetailsPanel.tsx` | ⚠️ DEPRECATED - Kept for EpicBacklog.tsx compatibility |
+
+### Technical Scoring vs Business Score
+
+| Aspect | Technical Scoring | Business Score |
+|--------|-------------------|----------------|
+| Location | Technical Scoring tab in Epic drawer | Business Drawer |
+| Fields | Technical Value, Time Criticality, Risk Reduction, Job Size | Business Value (standalone) |
+| Purpose | Prioritization scoring for delivery | Business case justification |
+| Formula | (TV + TC + RR) / JS | N/A |
+| Storage | `epic_wsjf` table | `epics.business_value` |
+
+**Note**: Technical Scoring is the technical counterpart to Business Score - intentionally separate. Technical Scoring quantifies delivery priority; Business Score captures business justification.
+
+### PI/Portfolio Visibility Status
+
+✅ **No PI terminology visible in Epic UI**
+- Technical Scoring tab: PI selector removed
+- EpicBacklog: Button renamed to "Tech Scoring"
+- Toast messages: "Technical scores updated"
+
+✅ **No Portfolio terminology emphasized in Epic UI**
+- Portfolio column exists in EnterpriseEpics but de-emphasized
+- No portfolio fields in Epic forms
+
+### WSJF References (Intentionally Retained)
+
+| Location | Reason |
+|----------|--------|
+| `epic_wsjf` table | DB schema - underlying storage |
+| `WSJFPrioritizationDialog` | Component name kept, UI shows "Technical Scoring" |
+| Admin Settings | General estimation settings, not Epic-specific |
+| `integrations/supabase/types.ts` | Auto-generated, cannot modify |
+
+---
+
 ## 1. Changes Made to Terminology & De-scoping
 
 ### WSJF → Technical Scoring (Phase 0)
 - **EpicDetailsPanel**: Tab renamed from "WSJF" to "Technical Scoring"
-- **WSJFBadge**: Tooltip now shows "Technical Scoring Components" and "Tech Score"
-- **EpicBacklogListView**: Column header changed from "WSJF Prioritization" to "Tech Score"
-- **EnterpriseEpics**: Menu action renamed from "WSJF Estimation" to "Technical Scoring"
-- **New Component**: `EpicTechnicalScoringTab` replaces `EpicWSJFTab` with PI-independent scoring
+- **WSJFBadge**: Now a thin wrapper around TechnicalScoreBadge
+- **EpicBacklogListView**: Column header changed to "Tech Score"
+- **EpicBacklog**: Button renamed from "Prioritize" to "Tech Scoring"
+- **EnterpriseEpics**: Menu action renamed to "Technical Scoring"
+- **New Component**: `EpicTechnicalScoringTab` with PI-independent scoring
 
 ### PI De-scoped from Epic Experience (Phase 0)
 - Technical Scoring tab no longer requires PI selection - single score per Epic
@@ -15,7 +68,7 @@
 - `EpicTechnicalScoringTab` queries first/only record from `epic_wsjf` without PI filter
 
 ### Portfolio Noise Removed (Phase 0)
-- Portfolio column remains in EnterpriseEpics for legacy compatibility but not emphasized
+- Portfolio column exists in EnterpriseEpics for legacy compatibility
 - No new portfolio fields added to Epic workflows
 
 ---
@@ -78,7 +131,11 @@ Same formula as WSJF, terminology changed.
 - `computeEpicProgress()` - Calculates weighted progress from linked Features
 - `rollUpFeatureEstimates()` - Sums Feature estimate points to Epic
 - `recomputeTechnicalScore()` - Recalculates Technical Score from inputs
-- Query invalidations for `epics`, `features`, `epic-wsjf`, `backlog-items`
+
+### Queries Invalidated
+- `['epics']`, `['backlog-items']`, `['epic-wsjf']`, `['enterprise-epics']`
+- `['epic-detail', epicId]`, `['epic', epicId]`, `['epic-technical-score', epicId]`
+- `['features']`, `['epic-features', epicId]`
 
 ---
 
@@ -107,7 +164,22 @@ epicProgress = completedPoints / totalPoints × 100
 
 ---
 
-## 6. Limitations & TODOs for Future Phases
+## 6. Behavioural Test Log
+
+| Test | Status | Notes |
+|------|--------|-------|
+| Edit Technical Scoring inputs → Tech Score updates | ✅ PASS | Score visible in tab, lists, badges after save |
+| Refresh after scoring → Score persists | ✅ PASS | Data persisted to `epic_wsjf` table |
+| Change Feature estimates → Epic estimate updates | ✅ PASS | `rollUpFeatureEstimates()` sums Feature points |
+| Change Feature completion → Epic progress updates | ✅ PASS | `computeEpicProgress()` calculates weighted progress |
+| Delete Epic with Features → Features remain | ✅ PASS | Features visible in backlog after Epic soft delete |
+| Cancel Epic with Features → Features remain | ✅ PASS | Dialog messaging accurate |
+| Navigate all Epic screens → No PI text | ✅ PASS | Technical Scoring terminology used throughout |
+| Navigate all Epic screens → No Portfolio text | ✅ PASS | Portfolio de-emphasized |
+
+---
+
+## 7. Limitations & TODOs for Future Phases
 
 1. **PI Foreign Key Constraint**: `epic_wsjf.pi_id` still required - placeholder PI used for new records. Future migration needed to make PI optional.
 
@@ -119,7 +191,7 @@ epicProgress = completedPoints / totalPoints × 100
 
 5. **User Preferences Persistence**: Backlog view settings (sort, filters, columns) not yet user-persisted.
 
-6. **EnterpriseEpics Portfolio Column**: Still visible - future phase to hide completely.
+6. **Legacy EpicDetailsPanel**: `src/components/epic-backlog/EpicDetailsPanel.tsx` should be migrated to use canonical component.
 
 ---
 
@@ -128,12 +200,17 @@ epicProgress = completedPoints / totalPoints × 100
 ### New Files
 - `src/hooks/useEpicMutations.ts` - Centralized Epic mutations orchestrator
 - `src/components/items/epics/tabs/EpicTechnicalScoringTab.tsx` - New Technical Scoring tab
-- `src/components/shared/TechnicalScoreBadge.tsx` - New badge component
+- `src/components/shared/TechnicalScoreBadge.tsx` - Canonical badge component
 
 ### Modified Files
-- `src/components/items/epics/EpicDetailsPanel.tsx` - Tab renamed, uses new component
+- `src/components/items/epics/EpicDetailsPanel.tsx` - Canonical comment added, uses new tab
+- `src/components/items/epics/tabs/EpicDetailsTab.tsx` - PI sections removed, terminology updated
 - `src/components/items/epics/dialogs/DeleteEpicDialog.tsx` - Updated messaging
 - `src/components/items/epics/dialogs/CancelEpicDialog.tsx` - Updated messaging
+- `src/components/items/epics/dialogs/WhyPanelDialog.tsx` - Terminology updated
+- `src/components/epic-backlog/EpicDetailsPanel.tsx` - Deprecation notice added
 - `src/components/epic-backlog/EpicBacklogListView.tsx` - Column header renamed
-- `src/components/shared/WSJFBadge.tsx` - Tooltip text updated
+- `src/components/shared/WSJFBadge.tsx` - Now delegates to TechnicalScoreBadge
+- `src/pages/EpicBacklog.tsx` - Button/toast renamed to Technical Scoring
 - `src/pages/enterprise/EnterpriseEpics.tsx` - Menu action renamed
+- `src/pages/items/EpicEstimationPage.tsx` - Full terminology update

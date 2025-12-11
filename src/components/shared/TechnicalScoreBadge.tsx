@@ -1,12 +1,18 @@
+/**
+ * =====================================================
+ * CANONICAL Technical Score Badge - Catalyst Epics vNext
+ * =====================================================
+ * 
+ * This is the single badge component for displaying Technical Scores.
+ * WSJFBadge is now a legacy wrapper that delegates to this component.
+ * 
+ * Technical Score = (Technical Value + Time Criticality + Risk Reduction) / Job Size
+ * (Same formula as WSJF, rebranded for Catalyst)
+ */
+
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { TrendingUp } from 'lucide-react';
-
-/**
- * TechnicalScoreBadge Component
- * Phase 0: Replaces WSJFBadge with Technical Score terminology
- * Displays Technical Score with color coding based on value
- */
 
 interface TechnicalScoreBadgeProps {
   score: number | null;

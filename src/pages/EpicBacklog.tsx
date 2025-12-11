@@ -32,14 +32,14 @@ export default function EpicBacklog() {
   const [epicsExpanded, setEpicsExpanded] = useState(true);
   const [unassignedExpanded, setUnassignedExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [wsjfModalOpen, setWsjfModalOpen] = useState(false);
+  const [techScoringModalOpen, setTechScoringModalOpen] = useState(false);
   const [labelsDialogOpen, setLabelsDialogOpen] = useState(false);
   const [customColumnsDialogOpen, setCustomColumnsDialogOpen] = useState(false);
   const [orphanObjectsDialogOpen, setOrphanObjectsDialogOpen] = useState(false);
   const [bottomUpEstimateOpen, setBottomUpEstimateOpen] = useState(false);
   const [selectedEpicIds, setSelectedEpicIds] = useState<string[]>([]);
   const [visibleColumns, setVisibleColumns] = useState<string[]>([
-    'id', 'name', 'wsjf'
+    'id', 'name', 'tech_score'
   ]);
   const { toast } = useToast();
 
@@ -298,10 +298,10 @@ export default function EpicBacklog() {
                 variant="ghost" 
                 size="sm" 
                 className="gap-2 text-muted-foreground hover:text-foreground text-xs sm:text-sm"
-                onClick={() => setWsjfModalOpen(true)}
+                onClick={() => setTechScoringModalOpen(true)}
               >
                 <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">Prioritize</span>
+                <span className="hidden sm:inline">Tech Scoring</span>
               </Button>
               <Button 
                 variant="ghost" 
@@ -548,14 +548,14 @@ export default function EpicBacklog() {
         onOpenChange={setOrphanObjectsDialogOpen}
       />
       
-      {/* WSJF Prioritization Dialog */}
+      {/* Technical Scoring Prioritization Dialog */}
       <WSJFPrioritizationDialog
-        open={wsjfModalOpen}
-        onOpenChange={setWsjfModalOpen}
+        open={techScoringModalOpen}
+        onOpenChange={setTechScoringModalOpen}
         epicIds={assignedEpics.map(e => e.id)}
         onSuccess={() => {
           refetch();
-          toast({ title: 'WSJF scores updated', description: 'Epic prioritization has been updated' });
+          toast({ title: 'Technical scores updated', description: 'Epic prioritization has been updated' });
         }}
       />
 
