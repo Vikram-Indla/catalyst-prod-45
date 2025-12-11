@@ -392,8 +392,10 @@ const App = () => (
               <Route path="/work-spend-grid" element={<WorkSpendGrid />} />
               <Route path="/portfolio-insights" element={<PortfolioInsights />} />
               <Route path="/programs/:programId/room" element={<ProgramRoom />} />
+              <Route path="/programs/:programId/epics" element={<EpicsPage />} />
               <Route path="/programs/:programId/features" element={<FeaturesWithSidebar />} />
               <Route path="/programs/:programId/backlog" element={<BacklogWithSidebar />} />
+              <Route path="/programs/:programId/epic-backlog" element={<EpicBacklogWithSidebar />} />
               <Route path="/programs/:programId/roadmaps" element={<RoadmapsWithSidebar />} />
               <Route path="/programs/:programId/objective-tree" element={<OKRHub />} />
               <Route path="/programs/:programId/work-tree" element={<WorkTreePage />} />

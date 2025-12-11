@@ -1,3 +1,8 @@
+/**
+ * Canonical Program-level Epic backlog view for Catalyst Epics vNext.
+ * All navigation entry points for "Program → Epic Backlog" must route here.
+ * Works across Portfolio, Program, and Team scopes with automatic type detection.
+ */
 import { useParams, useLocation } from 'react-router-dom';
 import { BacklogStateProvider } from '@/modules/backlog/hooks/useBacklogState';
 import { BacklogWorkspace } from '@/modules/backlog/components/BacklogWorkspace';

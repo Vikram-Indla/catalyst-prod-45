@@ -195,6 +195,32 @@ epicProgress = completedPoints / totalPoints × 100
 
 ---
 
+## 8. Entry Points & Navigation (How to Access Epics)
+
+### Global Epics Access
+- **Path**: Main Navigation → **Items** → **Epics**
+- **Route**: `/items/epics`
+- **Component**: `EpicsPage` (canonical global Epics list)
+- **Condition**: Available when workspaceType is "program"
+
+### Program-Level Epic Backlog Access
+- **Path**: Program Workspace → Side Panel → **Epic Backlog**
+- **Route**: `/programs/:programId/epic-backlog`
+- **Component**: `EpicBacklogWithSidebar` (canonical Program Epic backlog)
+- **Behaviour**: Scoped to current Program context
+
+### Secondary Access (Under More Items)
+- **Path**: Program Side Panel → More items → **Epics**
+- **Route**: `/programs/:programId/epics`
+- **Component**: `EpicsPage` (same as global, Program-filtered)
+
+### Confirmation
+✅ No PI/Portfolio/WSJF nav entries exist for Epics  
+✅ No duplicate Epic entries in navigation (single "Epic Backlog" in main menu)  
+✅ All Epic details opened from these entry points use canonical `EpicDetailsPanel` and Technical Scoring implementation
+
+---
+
 ## Files Changed
 
 ### New Files
@@ -214,3 +240,7 @@ epicProgress = completedPoints / totalPoints × 100
 - `src/pages/EpicBacklog.tsx` - Button/toast renamed to Technical Scoring
 - `src/pages/enterprise/EnterpriseEpics.tsx` - Menu action renamed
 - `src/pages/items/EpicEstimationPage.tsx` - Full terminology update
+- `src/pages/items/EpicsPage.tsx` - Canonical comment added
+- `src/pages/EpicBacklogWithSidebar.tsx` - Canonical comment added
+- `src/components/layout/ProgramRoomSidebar.tsx` - "Epic Backlog" menu item added
+- `src/App.tsx` - Routes added for `/programs/:programId/epics` and `/programs/:programId/epic-backlog`

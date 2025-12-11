@@ -1,3 +1,8 @@
+/**
+ * Program Room Sidebar
+ * Navigation sidebar for Program-level context.
+ * "Epic Backlog" entry points to canonical EpicBacklogWithSidebar route.
+ */
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -20,7 +25,8 @@ import {
   Calendar,
   FileText,
   FlaskConical,
-  Lock
+  Lock,
+  Square
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -47,6 +53,7 @@ type MenuItem =
 
 const menuItems: MenuItem[] = [
   { id: 'room', label: 'Project Room', icon: LayoutDashboard, path: '/programs/:programId/room' },
+  { id: 'epic-backlog', label: 'Epic Backlog', icon: Square, path: '/programs/:programId/epic-backlog' },
   { id: 'features', label: 'Features', icon: Layers3, path: '/programs/:programId/features' },
   { id: 'backlog', label: 'Backlog', icon: Diamond, path: '/programs/:programId/backlog' },
   { id: 'program-board', label: 'Project board', icon: GitBranch, path: '/programs/:programId/program-board' },
