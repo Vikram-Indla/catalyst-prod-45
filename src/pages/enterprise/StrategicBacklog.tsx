@@ -6,14 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Plus, ChevronDown, Archive, CheckCircle2, LayoutGrid, Target, Palette, ListTree, Boxes } from 'lucide-react';
+import { Plus, ChevronDown, Archive, CheckCircle2, LayoutGrid, ListTree, Boxes } from 'lucide-react';
 import { OverviewTab } from '@/components/strategic-backlog/OverviewTab';
-import { MVVTab } from '@/components/strategic-backlog/MVVTab';
-import { GoalsTab } from '@/components/strategic-backlog/GoalsTab';
 import { ThemesTab } from '@/components/strategic-backlog/ThemesTab';
 import { EpicsTab } from '@/components/strategic-backlog/EpicsTab';
-import { CreateStrategyObjectDialog } from '@/components/strategic-backlog/CreateStrategyObjectDialog';
-import { CreateGoalDialog } from '@/components/strategic-backlog/CreateGoalDialog';
 import { CreateThemeDialog } from '@/components/strategic-backlog/CreateThemeDialog';
 import {
   useStrategyMissions,
@@ -24,7 +20,7 @@ import {
   useSnapshotStrategyLinks,
 } from '@/hooks/useStrategicBacklog';
 
-type CreateType = 'mission' | 'vision' | 'value' | 'goal' | 'theme' | null;
+type CreateType = 'theme' | null;
 
 export default function StrategicBacklog() {
   const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
@@ -98,11 +94,7 @@ export default function StrategicBacklog() {
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setCreateType('mission')}>Mission</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCreateType('vision')}>Vision</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCreateType('value')}>Value</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setCreateType('goal')}>Strategic Goal</DropdownMenuItem>
+              <DropdownMenuContent align="end" className="bg-background border-border">
                 <DropdownMenuItem onClick={() => setCreateType('theme')}>Theme</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -127,20 +119,6 @@ export default function StrategicBacklog() {
               >
                 <LayoutGrid className="h-3.5 w-3.5" />
                 Overview
-              </TabsTrigger>
-              <TabsTrigger 
-                value="mvv"
-                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
-              >
-                <Target className="h-3.5 w-3.5" />
-                MVV
-              </TabsTrigger>
-              <TabsTrigger 
-                value="goals"
-                className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground data-[state=active]:bg-brand-gold data-[state=active]:text-white data-[state=active]:shadow-sm flex items-center gap-1.5 hover:bg-muted/50 transition-colors"
-              >
-                <Palette className="h-3.5 w-3.5" />
-                Goals
               </TabsTrigger>
               <TabsTrigger 
                 value="themes" 
@@ -172,26 +150,6 @@ export default function StrategicBacklog() {
               />
             </TabsContent>
 
-            <TabsContent value="mvv" className="mt-6">
-              <MVVTab
-                missions={missions}
-                visions={visions}
-                values={values}
-                links={links || null}
-                snapshotId={snapshotId}
-                isArchived={isArchived}
-              />
-            </TabsContent>
-
-            <TabsContent value="goals" className="mt-6">
-              <GoalsTab
-                goals={goals}
-                links={links || null}
-                snapshotId={snapshotId}
-                isArchived={isArchived}
-              />
-            </TabsContent>
-
             <TabsContent value="themes" className="mt-6">
               <ThemesTab
                 themes={themes}
@@ -213,23 +171,6 @@ export default function StrategicBacklog() {
       )}
 
       {/* Create Dialogs */}
-      {(createType === 'mission' || createType === 'vision' || createType === 'value') && (
-        <CreateStrategyObjectDialog
-          open={true}
-          onOpenChange={(open) => !open && setCreateType(null)}
-          type={createType}
-          snapshotId={snapshotId}
-        />
-      )}
-
-      {createType === 'goal' && (
-        <CreateGoalDialog
-          open={true}
-          onOpenChange={(open) => !open && setCreateType(null)}
-          snapshotId={snapshotId}
-        />
-      )}
-
       {createType === 'theme' && (
         <CreateThemeDialog
           open={true}
