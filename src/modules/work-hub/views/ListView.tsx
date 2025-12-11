@@ -120,7 +120,7 @@ function StatusLozenge({ status, onStatusChange }: { status: string; onStatusCha
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded">
+        <button className="focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 rounded">
           <span className={cn(
             "inline-flex items-center px-3 py-0.5 rounded-full text-[11px] leading-4 font-semibold uppercase cursor-pointer whitespace-nowrap",
             style.bg, style.text
@@ -177,7 +177,7 @@ function AssigneeCell({ assignee, onAssigneeChange }: {
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="inline-flex items-center gap-2 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 min-w-0">
+        <button className="inline-flex items-center gap-2 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1 min-w-0">
           {assignee ? (
             <>
               <Avatar className="h-6 w-6 flex-shrink-0">
@@ -252,7 +252,7 @@ function PriorityCell({ priority, onPriorityChange }: {
   return (
     <Popover>
       <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
-        <button className="inline-flex items-center gap-1.5 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1">
+        <button className="inline-flex items-center gap-1.5 hover:bg-slate-50 rounded px-1 py-0.5 -mx-1 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-1">
           <span className={info.color}>{info.icon}</span>
           <span className="text-[14px] leading-5 text-slate-900">{priority}</span>
         </button>
@@ -438,7 +438,7 @@ export function ListView() {
   );
 
   return (
-    <div className="h-full flex bg-white">
+    <div className="h-full flex bg-white" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif" }}>
       {/* Main content area */}
       <div className={cn("flex-1 flex flex-col min-w-0", selectedItem && "border-r border-slate-200")}>
         {/* Toolbar */}
@@ -490,13 +490,15 @@ export function ListView() {
               <table className="w-full border-collapse" style={{ minWidth: '1100px' }}>
                 <thead className="sticky top-0 z-10">
                   <tr>
-                    {/* Checkbox column */}
-                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 border-b border-r border-slate-200">
-                      <Checkbox
-                        checked={selectedItems.size === items.length && items.length > 0}
-                        onCheckedChange={handleSelectAll}
-                        className="rounded border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                      />
+                    {/* Checkbox column - center aligned */}
+                    <th scope="col" className="w-10 px-2 py-2 bg-slate-50 border-b border-r border-slate-200 text-center">
+                      <div className="flex justify-center">
+                        <Checkbox
+                          checked={selectedItems.size === items.length && items.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="rounded border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                        />
+                      </div>
                     </th>
                     {isFieldVisible('type') && (
                       <TableHeader className="w-20">Type</TableHeader>
@@ -629,16 +631,16 @@ export function ListView() {
                             onMouseEnter={() => setHoveredRow(item.id)}
                             onMouseLeave={() => setHoveredRow(null)}
                           >
-                            {/* Checkbox + drag handle */}
-                            <TableCell className="w-10 px-2" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center gap-0.5">
+                            {/* Checkbox + drag handle - center aligned */}
+                            <TableCell className="w-10 px-2 text-center" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center justify-center gap-0.5">
                                 {isHovered && (
                                   <GripVertical className="h-4 w-4 text-slate-300 cursor-grab" />
                                 )}
                                 <Checkbox
                                   checked={isSelected}
                                   onCheckedChange={(checked) => handleSelectItem(item.id, !!checked)}
-                                  className="rounded border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                                  className="rounded border-slate-300 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                                 />
                               </div>
                             </TableCell>

@@ -65,7 +65,8 @@ a {
 }
 
 /* GLOBAL FOCUS RING - Only for inputs, textareas, and interactive form elements */
-input:focus-visible,
+/* Exclude checkboxes and elements that need blue focus */
+input:focus-visible:not([type="checkbox"]),
 textarea:focus-visible,
 select:focus-visible,
 [role="listbox"]:focus-visible,
@@ -75,13 +76,20 @@ select:focus-visible,
   outline-offset: 2px !important;
 }
 
-/* Buttons and links - subtle focus ring */
-button:focus-visible,
+/* Buttons and links - subtle focus ring (exclude list-view buttons) */
+button:focus-visible:not([data-blue-focus]),
 a:focus-visible,
-[role="button"]:focus-visible {
+[role="button"]:focus-visible:not([data-blue-focus]) {
   outline: 2px solid #C69C6D !important;
   outline-offset: 2px !important;
   box-shadow: none !important;
+}
+
+/* Blue focus for checkboxes and list view elements */
+[type="checkbox"]:focus-visible,
+[data-blue-focus]:focus-visible {
+  outline: 2px solid #2563eb !important;
+  outline-offset: 2px !important;
 }
 
 /* Remove ALL focus outlines and rings from divs, cards, and non-form elements */
