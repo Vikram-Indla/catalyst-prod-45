@@ -98,7 +98,7 @@ export default function StrategyRoomPage() {
   const [snapshotSearchQuery, setSnapshotSearchQuery] = useState('');
 
   // Fetch snapshots from database
-  const { data: snapshots = [], isLoading: snapshotsLoading } = useQuery({
+  const { data: snapshots = [], isLoading: snapshotsLoading, refetch: refetchSnapshots } = useQuery({
     queryKey: ['strategy-snapshots', appliedFilters.includeArchivedSnapshots],
     queryFn: async () => {
       let query = supabase
@@ -240,7 +240,7 @@ export default function StrategyRoomPage() {
       <div className="flex-1 overflow-auto p-3 sm:p-4 md:p-6 min-w-0">
         <div className="space-y-4 sm:space-y-6">
           {/* Mission/Vision/Values */}
-          <MissionVisionValues snapshot={selectedSnapshot} />
+          <MissionVisionValues snapshot={selectedSnapshot} onUpdate={refetchSnapshots} />
 
           {/* Execution and Goals Widgets */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
