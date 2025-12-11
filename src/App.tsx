@@ -42,6 +42,7 @@ import Features from "./pages/Features";
 import FeaturesPage from "./pages/items/FeaturesPage";
 import FeaturesBacklog from "./pages/FeaturesBacklog";
 import FeaturePrioritizationView from "./pages/items/FeaturePrioritizationView";
+import { EpicBalancingPage } from "./modules/epic-balancing";
 
 import Defects from "./pages/Defects";
 import Tasks from "./pages/Tasks";
@@ -304,6 +305,7 @@ const App = () => (
               <Route path="/program/:programId/forecast" element={<ForecastWithSidebar />} />
               <Route path="/program/:programId/capacity" element={<CapacityWithSidebar />} />
               <Route path="/program/:programId/quarters" element={<ProgramIncrements />} />
+              <Route path="/program/:programId/epic-balancing" element={<EpicBalancingPage />} />
               <Route path="/program/:programId/reports" element={<PlaceholderPage />} />
               <Route path="/team/:teamId/okr-hub" element={<OKRHub />} />
               <Route path="/enterprise/roadmaps" element={<RoadmapsPage />} />
