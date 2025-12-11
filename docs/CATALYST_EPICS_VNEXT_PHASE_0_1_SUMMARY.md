@@ -276,3 +276,65 @@ epicProgress = completedPoints / totalPoints × 100
 | Filters and sorting work in Program Epic Backlog | ✅ PASS |
 | No PI/Portfolio leakage | ✅ PASS |
 | No duplicate routes/components created | ✅ PASS |
+
+---
+
+## Epic Backlog Behaviour & Columns – Fixed
+
+### Issue Summary
+On the Program → Epic Backlog route, the table was incorrectly showing Features instead of Epics. The header displayed "Viewing: Features" and "Time: PI / All PIs" selectors, and the column configuration included Program/Portfolio.
+
+### Fixes Applied
+
+#### 1. Route Always Shows Epics (Not Features)
+- **Route**: `/program/:programId/epic-backlog`
+- **Component**: `EpicBacklogWithSidebar`
+- **Behaviour**: `initialType` is now hardcoded to `'epic'` (not derived from scope)
+- **Lock Mechanism**: New `isEpicBacklog={true}` prop passed to `BacklogStateProvider`
+
+#### 2. PI/Viewing Selectors Removed from Epic Backlog
+- When `isEpicBacklog` is true:
+  - Scope selector: Hidden
+  - "Viewing:" type selector: Hidden (locked to Epics)
+  - "Time: PI/Sprint" selectors: Hidden
+  - Title shows "Epic Backlog" with "Epics" badge instead
+- View selector remains (List, State, Process Flow, Column views)
+
+#### 3. Column Configuration Updated for Epic Backlog
+Removed columns:
+- ❌ Program
+- ❌ Portfolio
+
+Added columns (Epic roll-up fields):
+- ✅ Progress % (default: ON)
+- ✅ Feature Counts (default: ON)
+- ✅ Total Estimate (default: ON)
+- ✅ Technical Score (default: ON)
+- ✅ Business Score (default: ON)
+- ✅ Target Date (default: OFF)
+
+#### 4. State Provider Enforcement
+`BacklogStateProvider` now:
+- Ignores `type` URL param when `isEpicBacklog` is true
+- Forces `type: 'epic'` and `timeboxType: 'all'`
+- Uses Epic-specific default columns
+- `setType()` is a no-op when in Epic Backlog mode
+
+### Modified Files
+- `src/pages/EpicBacklogWithSidebar.tsx` - Force `type='epic'`, add `isEpicBacklog` flag
+- `src/modules/backlog/hooks/useBacklogState.tsx` - Add `isEpicBacklog` mode with type locking
+- `src/modules/backlog/components/BacklogHeader.tsx` - Conditionally hide selectors in Epic Backlog mode
+- `src/modules/backlog/components/BacklogColumnsDialog.tsx` - Epic-specific columns (no Program/Portfolio, add roll-ups)
+
+### Validation
+
+| Test | Status |
+|------|--------|
+| Create Epic from Epic Backlog → Epic appears immediately | ✅ PASS |
+| Refresh → Epic persists | ✅ PASS |
+| Header shows "Epic Backlog" label (not "Viewing: Features") | ✅ PASS |
+| No PI / All PIs selectors visible | ✅ PASS |
+| List shows Epics (not Features) | ✅ PASS |
+| Column config: Progress %, Feature Counts, Tech Score visible | ✅ PASS |
+| Column config: Program/Portfolio not present | ✅ PASS |
+| Toggling columns works correctly | ✅ PASS |
