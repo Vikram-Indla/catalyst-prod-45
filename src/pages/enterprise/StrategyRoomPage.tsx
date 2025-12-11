@@ -1,96 +1,23 @@
 import { useState, useEffect } from 'react';
-import { Filter } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
-import { StrategyRoomFiltersDrawer } from '@/components/strategy/StrategyRoomFiltersDrawer';
 import { MissionVisionValues } from '@/components/strategy/MissionVisionValues';
 import { ExecutionAgainstOutcomesWidget } from '@/components/strategy/ExecutionAgainstOutcomesWidget';
 import { StrategicGoalsWidget } from '@/components/strategy/StrategicGoalsWidget';
 import { StrategyPyramid } from '@/components/strategy/StrategyPyramid';
 import { SnapshotProgress } from '@/components/strategy/SnapshotProgress';
 import { MisalignedWorkItems } from '@/components/strategy/MisalignedWorkItems';
-
 import { OkrTree } from '@/components/strategy/OkrTree';
 import { ObjectiveDrawerV2 } from '@/modules/okr-v2';
 import { CreateStrategyItemDropdown } from '@/components/strategy/CreateStrategyItemDropdown';
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useStrategyRoomFiltersStore } from '@/stores/strategyRoomFiltersStore';
 
 // Type definition - OKR v2 only uses a single Objectives layer
 type ObjectiveLevel = "OBJECTIVES";
 
 export default function StrategyRoomPage() {
-  const navigate = useNavigate();
-  
-  // Filter store
-  const { 
-    appliedFilters, 
-    setSnapshotId, 
-    openDrawer, 
-    getActiveFilterCount 
-  } = useStrategyRoomFiltersStore();
-  
-  const activeFilterCount = getActiveFilterCount();
-
-  // Fetch program increments and use actual PI IDs  
-  const { data: programIncrements = [] } = useQuery({
-    queryKey: ['program-increments'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('program_increments')
-        .select('id, name, start_date, end_date')
-        .order('start_date', { ascending: false });
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Fetch programs for filter options
-  const { data: programs = [] } = useQuery({
-    queryKey: ['programs-for-filters'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('programs')
-        .select('id, name')
-        .order('name');
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Fetch teams for filter options
-  const { data: teams = [] } = useQuery({
-    queryKey: ['teams-for-filters'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('teams')
-        .select('id, name')
-        .order('name');
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Determine current quarter based on today's date
-  const getCurrentQuarterId = () => {
-    const today = new Date();
-    const currentPI = programIncrements.find(pi => {
-      const start = new Date(pi.start_date);
-      const end = new Date(pi.end_date);
-      return today >= start && today <= end;
-    });
-    return currentPI?.id;
-  };
-
-  const selectedPIs = appliedFilters.quarterIds.length > 0 
-    ? appliedFilters.quarterIds 
-    : programIncrements.slice(0, 2).map(pi => pi.id);
-
+  const [selectedSnapshotId, setSelectedSnapshotId] = useState<string>('');
   const [filterLevel, setFilterLevel] = useState<ObjectiveLevel | undefined>(undefined);
   const [filterPI, setFilterPI] = useState<string | undefined>(undefined);
   const [selectedObjective, setSelectedObjective] = useState<any>(null);
@@ -99,19 +26,13 @@ export default function StrategyRoomPage() {
 
   // Fetch snapshots from database
   const { data: snapshots = [], isLoading: snapshotsLoading, refetch: refetchSnapshots } = useQuery({
-    queryKey: ['strategy-snapshots', appliedFilters.includeArchivedSnapshots],
+    queryKey: ['strategy-snapshots'],
     queryFn: async () => {
-      let query = supabase
+      const { data, error } = await supabase
         .from('strategy_snapshots')
         .select('*')
+        .neq('status', 'archived')
         .order('created_at', { ascending: false });
-      
-      // Filter out archived if not showing archived
-      if (!appliedFilters.includeArchivedSnapshots) {
-        query = query.neq('status', 'archived');
-      }
-      
-      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
@@ -119,26 +40,20 @@ export default function StrategyRoomPage() {
 
   // Initialize snapshot ID when data loads
   useEffect(() => {
-    if (snapshots.length > 0 && !appliedFilters.snapshotId) {
+    if (snapshots.length > 0 && !selectedSnapshotId) {
       const defaultSnapshot = snapshots.find(s => s.name === 'Corporate Strategy 2025') || snapshots[0];
       if (defaultSnapshot) {
-        setSnapshotId(defaultSnapshot.id);
+        setSelectedSnapshotId(defaultSnapshot.id);
       }
     }
-  }, [snapshots, appliedFilters.snapshotId, setSnapshotId]);
+  }, [snapshots, selectedSnapshotId]);
 
-  const effectiveSelectedSnapshotId = appliedFilters.snapshotId || snapshots.find(s => s.name === 'Corporate Strategy 2025')?.id || snapshots[0]?.id || '';
+  const effectiveSelectedSnapshotId = selectedSnapshotId || snapshots.find(s => s.name === 'Corporate Strategy 2025')?.id || snapshots[0]?.id || '';
   
   const selectedSnapshot = snapshots.find((s) => s.id === effectiveSelectedSnapshotId);
 
   const handleSnapshotChange = (newSnapshotId: string) => {
-    setSnapshotId(newSnapshotId);
-  };
-
-  const handleLevelClick = (level: string) => {
-    // OKR v2: Single objectives layer only
-    setFilterLevel('OBJECTIVES');
-    setFilterPI(undefined);
+    setSelectedSnapshotId(newSnapshotId);
   };
 
   const handlePyramidLayerClick = (label: string) => {
@@ -150,11 +65,6 @@ export default function StrategyRoomPage() {
     // For Themes/Epics/Features, the pyramid drilldown drawer handles the display
   };
 
-  const handleHeatmapCellClick = (level: ObjectiveLevel, pi: string) => {
-    setFilterLevel(level);
-    setFilterPI(pi);
-  };
-
   const handleObjectiveClick = (objective: any) => {
     setSelectedObjective(objective);
     setDrawerOpen(true);
@@ -163,14 +73,6 @@ export default function StrategyRoomPage() {
   const filteredSnapshots = snapshots.filter((s) =>
     s.name.toLowerCase().includes(snapshotSearchQuery.toLowerCase())
   );
-
-  // Prepare filter options
-  const programOptions = programs.map(p => ({ value: p.id, label: p.name }));
-  const quarterOptions = programIncrements.map(pi => ({ value: pi.id, label: pi.name }));
-  const teamOptions = teams.map(t => ({ value: t.id, label: t.name }));
-
-  // Theme options - empty for now, can be populated when themes table is available
-  const themeOptions: { value: string; label: string }[] = [];
 
   if (snapshotsLoading || !effectiveSelectedSnapshotId) {
     return (
@@ -214,22 +116,6 @@ export default function StrategyRoomPage() {
         </div>
 
         <div className="flex items-center gap-2 flex-shrink-0">
-          <Button 
-            variant="outline" 
-            size="icon"
-            onClick={openDrawer}
-            className="relative h-9 w-9"
-          >
-            <Filter className="h-4 w-4" />
-            {activeFilterCount > 0 && (
-              <Badge 
-                variant="default" 
-                className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1.5 text-xs bg-brand-gold text-white"
-              >
-                {activeFilterCount}
-              </Badge>
-            )}
-          </Button>
           {effectiveSelectedSnapshotId && (
             <CreateStrategyItemDropdown snapshotId={effectiveSelectedSnapshotId} />
           )}
@@ -272,7 +158,6 @@ export default function StrategyRoomPage() {
             />
           </div>
 
-
           {/* OKR Tree */}
           <OkrTree
             selectedSnapshot={effectiveSelectedSnapshotId}
@@ -289,18 +174,6 @@ export default function StrategyRoomPage() {
           setSelectedObjective(null);
           setDrawerOpen(false);
         }}
-      />
-
-      {/* Strategy Room Filters Drawer */}
-      <StrategyRoomFiltersDrawer
-        snapshotName={selectedSnapshot?.name}
-        programOptions={programOptions}
-        quarterOptions={quarterOptions}
-        themeOptions={themeOptions}
-        teamOptions={teamOptions}
-        ownerOptions={[]}
-        userProgramIds={programs.slice(0, 2).map(p => p.id)}
-        currentQuarterId={getCurrentQuarterId()}
       />
     </div>
   );
