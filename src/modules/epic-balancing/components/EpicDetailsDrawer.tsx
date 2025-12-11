@@ -227,7 +227,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
                   value={formData.themeId}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, themeId: value === 'none' ? '' : value }))}
                 >
-                  <SelectTrigger id="theme" className="w-full">
+                  <SelectTrigger id="theme" className="w-full focus:ring-brand-gold focus:border-brand-gold">
                     <SelectValue placeholder="Select a theme" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-border z-50">
@@ -250,7 +250,7 @@ export function EpicDetailsDrawer({ epic, open, onClose, onSave }: EpicDetailsDr
                   value={formData.businessRequestId}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, businessRequestId: value === 'none' ? '' : value }))}
                 >
-                  <SelectTrigger id="businessRequest" className="w-full">
+                  <SelectTrigger id="businessRequest" className="w-full focus:ring-brand-gold focus:border-brand-gold">
                     <SelectValue placeholder="Select a business request" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border-border z-50">
