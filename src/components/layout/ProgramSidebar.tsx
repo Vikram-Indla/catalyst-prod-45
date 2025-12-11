@@ -152,7 +152,7 @@ export function ProgramSidebar({
         <div className={cn("h-[72px] px-4 flex items-center border-b shrink-0", !expanded && "px-2")}>
           {expanded ? (
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm flex-shrink-0">
+              <div className="w-10 h-10 rounded-lg bg-brand-gold flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
                 {program?.name?.substring(0, 2).toUpperCase() || 'DI'}
               </div>
               <div className="flex flex-col min-w-0">
@@ -163,7 +163,7 @@ export function ProgramSidebar({
               </div>
             </div>
           ) : (
-            <div className="w-10 h-10 rounded-lg bg-brand-gold/20 flex items-center justify-center text-brand-gold font-semibold text-sm mx-auto">
+            <div className="w-10 h-10 rounded-lg bg-brand-gold flex items-center justify-center text-white font-semibold text-sm mx-auto">
               {program?.name?.substring(0, 2).toUpperCase() || 'DI'}
             </div>
           )}
