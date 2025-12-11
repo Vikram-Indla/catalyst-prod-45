@@ -333,9 +333,6 @@ export function CatalystHeader() {
 
             {/* Tests Dropdown - Only visible in program context */}
             {showTestsDropdown && <TestsDropdown isActive />}
-
-            {/* Items Dropdown - After Starred */}
-            <ItemsDropdown />
           </nav>
 
           {/* Right Column: Actions - justify-self-end keeps it right-aligned */}
