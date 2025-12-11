@@ -51,7 +51,7 @@ export interface EpicBalancingResponse {
 
 // Priority to Execute labels
 export const PRIORITY_TO_EXECUTE_LABELS: Record<PriorityToExecute, string> = {
-  VERY_HIGH: "Very High",
+  VERY_HIGH: "Urgent",
   HIGH: "High",
   MEDIUM: "Medium",
   LOW: "Low",
