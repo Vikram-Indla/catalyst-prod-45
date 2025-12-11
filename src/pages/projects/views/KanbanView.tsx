@@ -1,6 +1,7 @@
 import React from 'react';
-import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
+import { Card, CardContent } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
 import { ProjectData } from '../../../types/project.types';
 
 interface KanbanViewProps {
@@ -56,146 +57,68 @@ export default function KanbanView({ project }: KanbanViewProps) {
     return items;
   };
 
+  const getInitials = (name: string) => name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '';
+
   return (
-    <div style={{
-      padding: '24px',
-      background: token('elevation.surface.sunken'),
-      minHeight: 'calc(100vh - 180px)',
-      overflowX: 'auto',
-    }}>
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(4, 280px)',
-        gap: '16px',
-        minWidth: 'fit-content',
-      }}>
+    <div className="p-6 bg-muted/50 min-h-[calc(100vh-180px)] overflow-x-auto">
+      <div className="grid grid-cols-4 gap-4 min-w-fit" style={{ gridTemplateColumns: 'repeat(4, 280px)' }}>
         {columns.map((column) => {
           const items = getItemsForColumn(column.id);
           
           return (
             <div
               key={column.id}
-              style={{
-                background: token('color.background.neutral'),
-                borderRadius: '4px',
-                minHeight: '400px',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
+              className="bg-muted rounded min-h-[400px] flex flex-col"
             >
               {/* COLUMN HEADER */}
-              <div style={{
-                padding: '12px 16px',
-                borderBottom: `1px solid ${token('color.border')}`,
-              }}>
-                <span style={{
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  color: token('color.text.subtlest'),
-                  letterSpacing: '0.5px',
-                }}>
+              <div className="px-4 py-3 border-b border-border">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   {column.title}
                   {items.length > 0 && (
-                    <span style={{ marginLeft: '8px', fontWeight: 400 }}>
-                      {items.length}
-                    </span>
+                    <span className="ml-2 font-normal">{items.length}</span>
                   )}
                 </span>
               </div>
 
               {/* CARDS CONTAINER */}
-              <div style={{
-                padding: '8px',
-                flex: 1,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-              }}>
+              <div className="p-2 flex-1 flex flex-col gap-2">
                 {items.length === 0 ? (
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    height: '100px',
-                    color: token('color.text.subtlest'),
-                    fontSize: '14px',
-                  }}>
+                  <div className="flex items-center justify-center h-24 text-sm text-muted-foreground">
                     No items
                   </div>
                 ) : (
                   items.map((item) => (
-                    <KanbanCard key={item.key} item={item} />
+                    <Card key={item.key} className="cursor-pointer hover:shadow-md transition-shadow">
+                      <CardContent className="p-3">
+                        {/* SUMMARY */}
+                        <div className="text-sm text-foreground mb-3 leading-5">
+                          {item.summary}
+                        </div>
+
+                        {/* FOOTER */}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-sm">{item.type === 'feature' ? '📦' : '📗'}</span>
+                            <a
+                              href={`/browse/${item.key}`}
+                              className="text-xs font-medium text-muted-foreground hover:text-primary"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              {item.key}
+                            </a>
+                          </div>
+                          <Avatar className="h-6 w-6">
+                            <AvatarFallback className="text-[9px]">{getInitials(item.assignee)}</AvatarFallback>
+                          </Avatar>
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))
                 )}
               </div>
             </div>
           );
         })}
-      </div>
-    </div>
-  );
-}
-
-function KanbanCard({ item }: { item: KanbanItem }) {
-  return (
-    <div style={{
-      background: token('elevation.surface'),
-      border: `1px solid ${token('color.border')}`,
-      borderRadius: '4px',
-      padding: '12px',
-      cursor: 'pointer',
-      boxShadow: '0 1px 1px rgba(9, 30, 66, 0.08)',
-      transition: 'box-shadow 0.2s ease, background 0.2s ease',
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.boxShadow = '0 4px 8px rgba(9, 30, 66, 0.16)';
-      e.currentTarget.style.background = token('elevation.surface.hovered');
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.boxShadow = '0 1px 1px rgba(9, 30, 66, 0.08)';
-      e.currentTarget.style.background = token('elevation.surface');
-    }}
-    >
-      {/* SUMMARY */}
-      <div style={{
-        fontSize: '14px',
-        color: token('color.text'),
-        marginBottom: '12px',
-        lineHeight: '20px',
-        fontWeight: 400,
-      }}>
-        {item.summary}
-      </div>
-
-      {/* FOOTER */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }}>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-        }}>
-          <span style={{ fontSize: '14px' }}>
-            {item.type === 'feature' ? '📦' : '📗'}
-          </span>
-          <a
-            href={`/browse/${item.key}`}
-            style={{
-              fontSize: '12px',
-              fontWeight: 500,
-              color: token('color.text.subtlest'),
-              textDecoration: 'none',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            {item.key}
-          </a>
-        </div>
-        <Avatar size="small" name={item.assignee} />
       </div>
     </div>
   );

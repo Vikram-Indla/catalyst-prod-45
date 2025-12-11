@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { token } from '@atlaskit/tokens';
-import Avatar from '@atlaskit/avatar';
-import Checkbox from '@atlaskit/checkbox';
-import DropdownMenu, { DropdownItem, DropdownItemGroup } from '@atlaskit/dropdown-menu';
 import { Search, Filter, ChevronDown, ChevronRight, MessageSquare, Settings2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { useWorkItemsHierarchy } from '../../hooks/useWorkItems';
 import { WorkItemWithChildren, WorkItem, ListViewMode } from '../../types';
 import { WorkTypeIcon } from '../WorkTypeIcon';
 import { PriorityIcon } from '../PriorityIcon';
 import { StatusLozenge } from '../StatusLozenge';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 interface ListTabProps {
   projectId: string;
@@ -49,166 +56,90 @@ export const ListTab: React.FC<ListTabProps> = ({ projectId, onItemClick, onFilt
   // Get unique assignees for avatar group
   const assignees = [...new Map(flatData?.filter(i => i.assigneeAvatar).map(i => [i.assigneeName, i]) || []).values()].slice(0, 4);
 
+  const getInitials = (name: string) => name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '';
+
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      height: '100%',
-      backgroundColor: token('elevation.surface', '#FFFFFF'),
-    }}>
+    <div className="flex flex-col h-full bg-background">
       {/* Top Control Bar */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: `${token('space.150', '12px')} ${token('space.200', '16px')}`,
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-      }}>
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         {/* Left side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.150', '12px') }}>
+        <div className="flex items-center gap-3">
           {/* Search */}
-          <div style={{ position: 'relative', width: 180 }}>
-            <Search 
-              size={16} 
-              style={{ 
-                position: 'absolute', 
-                left: 8, 
-                top: '50%', 
-                transform: 'translateY(-50%)',
-                color: token('color.icon.subtle', '#5E6C84'),
-              }} 
-            />
-            <input
+          <div className="relative w-44">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
               type="text"
               placeholder="Search list"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: `${token('space.075', '6px')} ${token('space.100', '8px')} ${token('space.075', '6px')} 32px`,
-                border: `1px solid ${token('color.border', '#DFE1E6')}`,
-                borderRadius: '3px',
-                fontSize: '14px',
-                outline: 'none',
-              }}
+              className="pl-8 h-8"
             />
           </div>
 
           {/* Assignee Avatars */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            {assignees.map((item, idx) => (
-              <div 
-                key={item.assigneeName}
-                style={{ 
-                  marginLeft: idx > 0 ? '-8px' : 0,
-                  zIndex: assignees.length - idx,
-                }}
-              >
-                <Avatar 
-                  size="small" 
-                  src={item.assigneeAvatar}
-                  name={item.assigneeName}
-                />
-              </div>
+          <div className="flex items-center -space-x-2">
+            {assignees.map((item) => (
+              <Avatar key={item.assigneeName} className="h-6 w-6 border-2 border-background">
+                <AvatarImage src={item.assigneeAvatar} alt={item.assigneeName} />
+                <AvatarFallback className="text-[10px]">{getInitials(item.assigneeName || '')}</AvatarFallback>
+              </Avatar>
             ))}
             {flatData && flatData.length > 4 && (
-              <span style={{
-                marginLeft: token('space.050', '4px'),
-                fontSize: '12px',
-                color: token('color.text.subtlest', '#5E6C84'),
-              }}>
-                +6
-              </span>
+              <span className="ml-2 text-xs text-muted-foreground">+6</span>
             )}
           </div>
 
           {/* Filter Button */}
-          <button
-            onClick={onFilterClick}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: token('space.050', '4px'),
-              padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-              backgroundColor: 'transparent',
-              border: 'none',
-              fontSize: '14px',
-              cursor: 'pointer',
-              color: token('color.text', '#172B4D'),
-            }}
-          >
-            <Filter size={16} />
+          <Button variant="ghost" size="sm" onClick={onFilterClick} className="gap-1">
+            <Filter className="h-4 w-4" />
             Filter
-            <ChevronDown size={16} />
-          </button>
+            <ChevronDown className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Right side */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
+        <div className="flex items-center gap-2">
           {/* Group Dropdown */}
-          <DropdownMenu
-            trigger={({ triggerRef, ...props }) => (
-              <button
-                ref={triggerRef as any}
-                {...props}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: token('space.050', '4px'),
-                  padding: `${token('space.075', '6px')} ${token('space.150', '12px')}`,
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  color: token('color.text', '#172B4D'),
-                }}
-              >
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="sm" className="gap-1">
                 Group
-                <ChevronDown size={16} />
-              </button>
-            )}
-          >
-            <DropdownItemGroup>
-              <DropdownItem onClick={() => setGroupBy('none')}>None (Hierarchy)</DropdownItem>
-              <DropdownItem onClick={() => setGroupBy('assignee')}>Assignee</DropdownItem>
-              <DropdownItem onClick={() => setGroupBy('status')}>Status</DropdownItem>
-              <DropdownItem onClick={() => setGroupBy('quarter')}>Quarter</DropdownItem>
-              <DropdownItem onClick={() => setGroupBy('priority')}>Priority</DropdownItem>
-            </DropdownItemGroup>
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setGroupBy('none')}>None (Hierarchy)</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setGroupBy('assignee')}>Assignee</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setGroupBy('status')}>Status</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setGroupBy('quarter')}>Quarter</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setGroupBy('priority')}>Priority</DropdownMenuItem>
+            </DropdownMenuContent>
           </DropdownMenu>
 
-          <button
-            style={{
-              padding: token('space.075', '6px'),
-              backgroundColor: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: token('color.icon', '#5E6C84'),
-            }}
-          >
-            <Settings2 size={20} />
-          </button>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Settings2 className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
       {/* Table */}
-      <div style={{ flex: 1, overflow: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <div className="flex-1 overflow-auto">
+        <table className="w-full border-collapse">
           <thead>
-            <tr style={{ borderBottom: `2px solid ${token('color.border', '#DFE1E6')}` }}>
-              <th style={{ width: 40, padding: token('space.100', '8px') }}>
+            <tr className="border-b-2 border-border">
+              <th className="w-10 p-2">
                 <Checkbox />
               </th>
-              <th style={{ width: 60, padding: token('space.100', '8px'), textAlign: 'left' }}>Type</th>
-              <th style={{ width: 100, padding: token('space.100', '8px'), textAlign: 'left' }}>Key</th>
-              <th style={{ padding: token('space.100', '8px'), textAlign: 'left' }}>Summary</th>
-              <th style={{ width: 120, padding: token('space.100', '8px'), textAlign: 'left' }}>Status</th>
-              <th style={{ width: 100, padding: token('space.100', '8px'), textAlign: 'left' }}>Comments</th>
-              <th style={{ width: 150, padding: token('space.100', '8px'), textAlign: 'left' }}>Assignee</th>
-              <th style={{ width: 100, padding: token('space.100', '8px'), textAlign: 'left' }}>Due date</th>
-              <th style={{ width: 80, padding: token('space.100', '8px'), textAlign: 'left' }}>Priority</th>
-              <th style={{ width: 120, padding: token('space.100', '8px'), textAlign: 'left' }}>Created</th>
-              <th style={{ width: 120, padding: token('space.100', '8px'), textAlign: 'left' }}>Updated</th>
+              <th className="w-14 p-2 text-left text-xs font-medium text-muted-foreground">Type</th>
+              <th className="w-24 p-2 text-left text-xs font-medium text-muted-foreground">Key</th>
+              <th className="p-2 text-left text-xs font-medium text-muted-foreground">Summary</th>
+              <th className="w-28 p-2 text-left text-xs font-medium text-muted-foreground">Status</th>
+              <th className="w-24 p-2 text-left text-xs font-medium text-muted-foreground">Comments</th>
+              <th className="w-36 p-2 text-left text-xs font-medium text-muted-foreground">Assignee</th>
+              <th className="w-24 p-2 text-left text-xs font-medium text-muted-foreground">Due date</th>
+              <th className="w-20 p-2 text-left text-xs font-medium text-muted-foreground">Priority</th>
+              <th className="w-28 p-2 text-left text-xs font-medium text-muted-foreground">Created</th>
+              <th className="w-28 p-2 text-left text-xs font-medium text-muted-foreground">Updated</th>
             </tr>
           </thead>
           <tbody>
@@ -254,79 +185,68 @@ const HierarchyRow: React.FC<{
 }> = ({ item, level, expandedRows, selectedRows, onToggle, onSelect, onClick }) => {
   const isExpanded = expandedRows.has(item.id);
   const isSelected = selectedRows.has(item.id);
-  const indent = level * 24;
+  
+  const getInitials = (name: string) => name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '';
 
   return (
     <>
       <tr 
-        style={{ 
-          borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-          cursor: 'pointer',
-        }}
+        className="border-b border-border hover:bg-muted/50 cursor-pointer"
         onClick={() => onClick(item)}
       >
-        <td style={{ padding: token('space.100', '8px') }} onClick={(e) => e.stopPropagation()}>
+        <td className="p-2" onClick={(e) => e.stopPropagation()}>
           <Checkbox 
-            isChecked={isSelected}
-            onChange={() => onSelect(item.id)}
+            checked={isSelected}
+            onCheckedChange={() => onSelect(item.id)}
           />
         </td>
-        <td style={{ padding: token('space.100', '8px') }}>
-          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: indent }}>
+        <td className="p-2">
+          <div className="flex items-center" style={{ paddingLeft: level * 24 }}>
             {item.hasChildren && (
               <button
                 onClick={(e) => { e.stopPropagation(); onToggle(item.id); }}
-                style={{
-                  padding: 2,
-                  backgroundColor: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  marginRight: token('space.050', '4px'),
-                }}
+                className="p-0.5 hover:bg-muted rounded mr-1"
               >
-                {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </button>
             )}
             <WorkTypeIcon type={item.type} />
           </div>
         </td>
-        <td style={{ padding: token('space.100', '8px') }}>
-          <a href="#" style={{ color: token('color.link', '#0052CC'), textDecoration: 'none' }}>
-            {item.key}
-          </a>
+        <td className="p-2">
+          <a href="#" className="text-primary hover:underline text-sm">{item.key}</a>
         </td>
-        <td style={{ padding: token('space.100', '8px'), color: token('color.text', '#172B4D') }}>
-          {item.summary}
-        </td>
-        <td style={{ padding: token('space.100', '8px') }}>
+        <td className="p-2 text-sm text-foreground">{item.summary}</td>
+        <td className="p-2">
           <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
         </td>
-        <td style={{ padding: token('space.100', '8px') }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px'), color: token('color.text.subtlest', '#5E6C84') }}>
-            <MessageSquare size={14} />
-            {item.commentsCount > 0 ? `${item.commentsCount} comment${item.commentsCount > 1 ? 's' : ''}` : 'Add comment'}
+        <td className="p-2">
+          <div className="flex items-center gap-1 text-muted-foreground text-sm">
+            <MessageSquare className="h-3.5 w-3.5" />
+            {item.commentsCount > 0 ? `${item.commentsCount}` : 'Add'}
           </div>
         </td>
-        <td style={{ padding: token('space.100', '8px') }}>
+        <td className="p-2">
           {item.assigneeName && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
-              <Avatar size="xsmall" src={item.assigneeAvatar} name={item.assigneeName} />
-              <span style={{ fontSize: '14px', color: token('color.text', '#172B4D') }}>
-                {item.assigneeName}
-              </span>
+            <div className="flex items-center gap-2">
+              <Avatar className="h-5 w-5">
+                <AvatarImage src={item.assigneeAvatar} alt={item.assigneeName} />
+                <AvatarFallback className="text-[9px]">{getInitials(item.assigneeName)}</AvatarFallback>
+              </Avatar>
+              <span className="text-sm text-foreground truncate">{item.assigneeName}</span>
             </div>
           )}
         </td>
-        <td style={{ padding: token('space.100', '8px'), color: token('color.text.subtlest', '#5E6C84'), fontSize: '14px' }}>
+        <td className="p-2 text-sm text-muted-foreground">
           {item.dueDate ? format(new Date(item.dueDate), 'MMM d, yyyy') : ''}
         </td>
-        <td style={{ padding: token('space.100', '8px') }}>
+        <td className="p-2">
           <PriorityIcon priority={item.priority} showLabel />
         </td>
-        <td style={{ padding: token('space.100', '8px'), color: token('color.text.subtlest', '#5E6C84'), fontSize: '14px' }}>
+        <td className="p-2 text-sm text-muted-foreground">
           {format(new Date(item.createdAt), 'MMM d, yyyy')}
         </td>
-        <td style={{ padding: token('space.100', '8px'), color: token('color.text.subtlest', '#5E6C84'), fontSize: '14px' }}>
+        <td className="p-2 text-sm text-muted-foreground">
           {format(new Date(item.updatedAt), 'MMM d, yyyy')}
         </td>
       </tr>
@@ -353,53 +273,53 @@ const FlatRow: React.FC<{
   onSelect: () => void;
   onClick: () => void;
 }> = ({ item, selected, onSelect, onClick }) => {
+  const getInitials = (name: string) => name?.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() || '';
+  
   return (
     <tr 
-      style={{ 
-        borderBottom: `1px solid ${token('color.border', '#DFE1E6')}`,
-        cursor: 'pointer',
-      }}
+      className="border-b border-border hover:bg-muted/50 cursor-pointer"
       onClick={onClick}
     >
-      <td style={{ padding: token('space.100', '8px') }} onClick={(e) => e.stopPropagation()}>
-        <Checkbox isChecked={selected} onChange={onSelect} />
+      <td className="p-2" onClick={(e) => e.stopPropagation()}>
+        <Checkbox checked={selected} onCheckedChange={onSelect} />
       </td>
-      <td style={{ padding: token('space.100', '8px') }}>
+      <td className="p-2">
         <WorkTypeIcon type={item.type} />
       </td>
-      <td style={{ padding: token('space.100', '8px') }}>
-        <a href="#" style={{ color: token('color.link', '#0052CC') }}>{item.key}</a>
+      <td className="p-2">
+        <a href="#" className="text-primary hover:underline text-sm">{item.key}</a>
       </td>
-      <td style={{ padding: token('space.100', '8px'), color: token('color.text', '#172B4D') }}>
-        {item.summary}
-      </td>
-      <td style={{ padding: token('space.100', '8px') }}>
+      <td className="p-2 text-sm text-foreground">{item.summary}</td>
+      <td className="p-2">
         <StatusLozenge status={item.status} statusCategory={item.statusCategory} />
       </td>
-      <td style={{ padding: token('space.100', '8px'), color: token('color.text.subtlest', '#5E6C84') }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: token('space.050', '4px') }}>
-          <MessageSquare size={14} />
+      <td className="p-2 text-muted-foreground text-sm">
+        <div className="flex items-center gap-1">
+          <MessageSquare className="h-3.5 w-3.5" />
           {item.commentsCount > 0 ? `${item.commentsCount}` : 'Add'}
         </div>
       </td>
-      <td style={{ padding: token('space.100', '8px') }}>
+      <td className="p-2">
         {item.assigneeName && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: token('space.100', '8px') }}>
-            <Avatar size="xsmall" src={item.assigneeAvatar} name={item.assigneeName} />
-            <span>{item.assigneeName}</span>
+          <div className="flex items-center gap-2">
+            <Avatar className="h-5 w-5">
+              <AvatarImage src={item.assigneeAvatar} alt={item.assigneeName} />
+              <AvatarFallback className="text-[9px]">{getInitials(item.assigneeName)}</AvatarFallback>
+            </Avatar>
+            <span className="text-sm">{item.assigneeName}</span>
           </div>
         )}
       </td>
-      <td style={{ padding: token('space.100', '8px'), color: token('color.text.subtlest', '#5E6C84') }}>
+      <td className="p-2 text-sm text-muted-foreground">
         {item.dueDate ? format(new Date(item.dueDate), 'MMM d') : ''}
       </td>
-      <td style={{ padding: token('space.100', '8px') }}>
+      <td className="p-2">
         <PriorityIcon priority={item.priority} />
       </td>
-      <td style={{ padding: token('space.100', '8px'), color: token('color.text.subtlest', '#5E6C84') }}>
+      <td className="p-2 text-sm text-muted-foreground">
         {format(new Date(item.createdAt), 'MMM d, yyyy')}
       </td>
-      <td style={{ padding: token('space.100', '8px'), color: token('color.text.subtlest', '#5E6C84') }}>
+      <td className="p-2 text-sm text-muted-foreground">
         {format(new Date(item.updatedAt), 'MMM d')}
       </td>
     </tr>

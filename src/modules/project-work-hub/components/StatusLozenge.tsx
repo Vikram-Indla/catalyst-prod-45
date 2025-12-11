@@ -1,13 +1,14 @@
 import React from 'react';
-import Lozenge from '@atlaskit/lozenge';
+import { Badge } from '@/components/ui/badge';
 import { StatusCategory } from '../types';
+import { cn } from '@/lib/utils';
 
 interface StatusLozengeProps {
   status: string;
   statusCategory?: StatusCategory;
 }
 
-const getAppearance = (status: string, category?: StatusCategory): 'default' | 'inprogress' | 'success' | 'removed' | 'new' | 'moved' => {
+const getAppearance = (status: string, category?: StatusCategory): 'default' | 'inprogress' | 'success' | 'removed' => {
   const statusLower = status.toLowerCase();
   
   // Check category first
@@ -25,9 +26,6 @@ const getAppearance = (status: string, category?: StatusCategory): 'default' | '
   if (statusLower.includes('fail') || statusLower.includes('blocked')) {
     return 'removed';
   }
-  if (statusLower.includes('new') || statusLower.includes('open')) {
-    return 'new';
-  }
   
   return 'default';
 };
@@ -38,10 +36,22 @@ const formatStatus = (status: string): string => {
     .replace(/\b\w/g, l => l.toUpperCase());
 };
 
+const appearanceStyles: Record<string, string> = {
+  default: 'bg-slate-100 text-slate-700 border-slate-200',
+  inprogress: 'bg-blue-100 text-blue-700 border-blue-200',
+  success: 'bg-green-100 text-green-700 border-green-200',
+  removed: 'bg-red-100 text-red-700 border-red-200',
+};
+
 export const StatusLozenge: React.FC<StatusLozengeProps> = ({ status, statusCategory }) => {
+  const appearance = getAppearance(status, statusCategory);
+  
   return (
-    <Lozenge appearance={getAppearance(status, statusCategory)} isBold>
+    <span className={cn(
+      "inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold uppercase border",
+      appearanceStyles[appearance]
+    )}>
       {formatStatus(status)}
-    </Lozenge>
+    </span>
   );
 };
