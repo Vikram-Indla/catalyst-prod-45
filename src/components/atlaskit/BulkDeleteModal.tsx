@@ -1,7 +1,14 @@
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button';
-import { token } from '@atlaskit/tokens';
-import WarningIcon from '@atlaskit/icon/glyph/warning';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { AlertTriangle } from 'lucide-react';
 
 interface BulkDeleteModalProps {
   isOpen: boolean;
@@ -17,59 +24,38 @@ export function BulkDeleteModal({ isOpen, onClose, onConfirm, selectedCount }: B
   };
 
   return (
-    <ModalTransition>
-      {isOpen && (
-        <Modal onClose={onClose}>
-          <ModalHeader>
-            <ModalTitle appearance="danger">Delete Requests</ModalTitle>
-          </ModalHeader>
-          
-          <ModalBody>
-            <div style={{ 
-              display: 'flex', 
-              alignItems: 'flex-start', 
-              gap: token('space.200', '16px'),
-            }}>
-              <div style={{
-                padding: token('space.100', '8px'),
-                background: token('color.background.danger', '#FFEBE6'),
-                borderRadius: '50%',
-                flexShrink: 0,
-              }}>
-                <WarningIcon label="Warning" primaryColor={token('color.icon.danger', '#DE350B')} />
+    <AlertDialog open={isOpen} onOpenChange={onClose}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-destructive flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Delete Requests
+          </AlertDialogTitle>
+          <AlertDialogDescription asChild>
+            <div className="flex items-start gap-4 pt-2">
+              <div className="p-2 bg-destructive/10 rounded-full flex-shrink-0">
+                <AlertTriangle className="h-5 w-5 text-destructive" />
               </div>
-              <div>
-                <p style={{ 
-                  margin: 0,
-                  marginBottom: token('space.100', '8px'),
-                  color: token('color.text', '#172B4D'),
-                  fontSize: '14px',
-                  fontWeight: 500,
-                }}>
+              <div className="space-y-2">
+                <p className="font-medium text-foreground">
                   Are you sure you want to delete {selectedCount} request{selectedCount > 1 ? 's' : ''}?
                 </p>
-                <p style={{ 
-                  margin: 0,
-                  color: token('color.text.subtle', '#6B778C'),
-                  fontSize: '14px',
-                }}>
+                <p className="text-muted-foreground">
                   This action cannot be undone. All associated data, comments, and attachments will be permanently removed.
                 </p>
               </div>
             </div>
-          </ModalBody>
-          
-          <ModalFooter>
-            <Button appearance="subtle" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button appearance="danger" onClick={handleConfirm}>
-              Delete {selectedCount} Request{selectedCount > 1 ? 's' : ''}
-            </Button>
-          </ModalFooter>
-        </Modal>
-      )}
-    </ModalTransition>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            Delete {selectedCount} Request{selectedCount > 1 ? 's' : ''}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
