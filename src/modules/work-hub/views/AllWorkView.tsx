@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, Zap, AlertCircle, CheckSquare, FileText, Columns, RefreshCw } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, MoreHorizontal, Download, LayoutGrid, List, Zap, AlertCircle, CheckSquare, FileText, Columns, RefreshCw, PanelRightOpen, PanelRightClose } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -18,6 +18,10 @@ import {
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AllWorkTicketList } from '../components/AllWorkTicketList';
+import { AllWorkDetailPanel } from '../components/AllWorkDetailPanel';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface WorkItem {
   id: string;
@@ -30,7 +34,9 @@ interface WorkItem {
   assignee: string | null;
   created: string;
   parent: string | null;
+  parentType?: 'Feature' | 'Epic';
   children?: WorkItem[];
+  description?: string;
 }
 
 const mockItems: WorkItem[] = [
@@ -44,10 +50,12 @@ const mockItems: WorkItem[] = [
     reporter: 'Mohammed Hassan',
     assignee: 'Yazeed Daraz',
     created: 'Dec 07, 2025, 3:11 PM',
-    parent: null,
+    parent: 'EPIC-45',
+    parentType: 'Epic',
+    description: 'The system is displaying alignment issues in the Competitiveness Portal. This affects the user experience and needs to be fixed urgently.',
     children: [
-      { id: '1-1', type: 'Story', key: 'ICP-363', summary: 'Operation L2, L3 update Solutions inside the assigned solutions packages...', status: 'In Progress', statusCategory: 'in_progress', reporter: 'Mohammed Hassan', assignee: 'Abdulrahman Saad', created: 'Nov 30, 2025, 12:42 PM', parent: 'ICP-371' },
-      { id: '1-2', type: 'Task', key: 'ICP-362', summary: 'a testing account that has a factory before 2022', status: 'Backlog', statusCategory: 'todo', reporter: 'Mohammed Hassan', assignee: 'Faisal Javed Paracha', created: 'Nov 25, 2025, 12:44 PM', parent: 'ICP-371' },
+      { id: '1-1', type: 'Story', key: 'ICP-363', summary: 'Operation L2, L3 update Solutions inside the assigned solutions packages...', status: 'In Progress', statusCategory: 'in_progress', reporter: 'Mohammed Hassan', assignee: 'Abdulrahman Saad', created: 'Nov 30, 2025, 12:42 PM', parent: 'ICP-371', parentType: 'Feature' },
+      { id: '1-2', type: 'Task', key: 'ICP-362', summary: 'a testing account that has a factory before 2022', status: 'Backlog', statusCategory: 'todo', reporter: 'Mohammed Hassan', assignee: 'Faisal Javed Paracha', created: 'Nov 25, 2025, 12:44 PM', parent: 'ICP-371', parentType: 'Feature' },
     ],
   },
   {
@@ -60,9 +68,11 @@ const mockItems: WorkItem[] = [
     reporter: 'Mohammed Hassan',
     assignee: 'menna nasser',
     created: 'Nov 19, 2025, 6:22 PM',
-    parent: null,
+    parent: 'FTR-128',
+    parentType: 'Feature',
+    description: 'The disclaimer message for Bank account Information should be removed when it is not applicable to the current context.',
     children: [
-      { id: '2-1', type: 'Subtask', key: 'ICP-352', summary: 'Change the rebate start date for one license', status: 'In Production', statusCategory: 'done', reporter: 'Mohammed Hassan', assignee: 'Abdulrahman Saad', created: 'Nov 17, 2025, 6:23 PM', parent: 'ICP-354' },
+      { id: '2-1', type: 'Subtask', key: 'ICP-352', summary: 'Change the rebate start date for one license', status: 'In Production', statusCategory: 'done', reporter: 'Mohammed Hassan', assignee: 'Abdulrahman Saad', created: 'Nov 17, 2025, 6:23 PM', parent: 'ICP-354', parentType: 'Feature' },
     ],
   },
   {
@@ -75,7 +85,8 @@ const mockItems: WorkItem[] = [
     reporter: 'Mohammed Hassan',
     assignee: 'Mazen',
     created: 'Nov 17, 2025, 4:09 PM',
-    parent: null,
+    parent: 'EPIC-42',
+    parentType: 'Epic',
   },
   {
     id: '4',
@@ -87,7 +98,9 @@ const mockItems: WorkItem[] = [
     reporter: 'Mohammed Hassan Ali Mohamm...',
     assignee: 'eid mahmoud',
     created: 'Nov 15, 2025, 3:57 PM',
-    parent: null,
+    parent: 'FTR-99',
+    parentType: 'Feature',
+    description: 'Automate the financial evaluation process to reduce manual work and improve accuracy.',
   },
 ];
 
@@ -207,10 +220,15 @@ function FilterButton({
 }
 
 export function AllWorkView() {
+  const navigate = useNavigate();
   const [showHierarchy, setShowHierarchy] = useState(true);
   const [hideDone, setHideDone] = useState(false);
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set(['1', '2']));
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  
+  // Detail panel states
+  const [detailModeEnabled, setDetailModeEnabled] = useState(false);
+  const [selectedWorkItem, setSelectedWorkItem] = useState<WorkItem | null>(null);
   
   // Filter states
   const [assigneeOpen, setAssigneeOpen] = useState(false);
@@ -229,6 +247,30 @@ export function AllWorkView() {
   const [enabledColumns, setEnabledColumns] = useState<Set<string>>(
     new Set(availableColumns.filter(c => c.enabled).map(c => c.id))
   );
+
+  // Handle clicking a ticket row
+  const handleRowClick = (item: WorkItem) => {
+    if (detailModeEnabled) {
+      setSelectedWorkItem(item);
+    } else {
+      // When not in detail mode, enable it and show the item
+      setDetailModeEnabled(true);
+      setSelectedWorkItem(item);
+    }
+  };
+
+  // Handle navigating to parent (Feature/Epic)
+  const handleNavigateToParent = (parentKey: string, parentType: 'Feature' | 'Epic') => {
+    toast.info(`Navigating to ${parentType}: ${parentKey}`);
+    // In production, navigate to the actual route
+    // navigate(`/items/${parentType.toLowerCase()}s/${parentKey}`);
+  };
+
+  // Close detail panel
+  const handleCloseDetail = () => {
+    setSelectedWorkItem(null);
+    setDetailModeEnabled(false);
+  };
 
   const toggleExpand = (id: string) => {
     const newExpanded = new Set(expandedItems);
@@ -249,12 +291,19 @@ export function AllWorkView() {
   const renderRow = (item: WorkItem, level: number = 0) => {
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedItems.has(item.id);
+    const isSelected = selectedWorkItem?.id === item.id;
 
     return (
       <React.Fragment key={item.id}>
-        <tr className="hover:bg-slate-50 border-b border-slate-200 group">
+        <tr 
+          className={cn(
+            "hover:bg-slate-50 border-b border-slate-200 group cursor-pointer",
+            isSelected && detailModeEnabled && "bg-blue-50"
+          )}
+          onClick={() => handleRowClick(item)}
+        >
           {/* Checkbox */}
-          <td className="px-2 py-2 w-8">
+          <td className="px-2 py-2 w-8" onClick={(e) => e.stopPropagation()}>
             <Checkbox
               checked={selectedItems.has(item.id)}
               onCheckedChange={(checked) => {
@@ -266,7 +315,7 @@ export function AllWorkView() {
             />
           </td>
           {/* Expand/collapse */}
-          <td className="px-1 py-2 w-6">
+          <td className="px-1 py-2 w-6" onClick={(e) => e.stopPropagation()}>
             {showHierarchy && hasChildren ? (
               <button
                 onClick={() => toggleExpand(item.id)}
@@ -327,11 +376,21 @@ export function AllWorkView() {
             <span className="text-[13px] text-slate-700 whitespace-nowrap">{item.created}</span>
           </td>
           {/* Parent */}
-          <td className="px-3 py-2">
-            <span className="text-[13px] text-slate-500">{item.parent || 'None'}</span>
+          <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
+            {item.parent ? (
+              <button
+                onClick={() => handleNavigateToParent(item.parent!, item.parentType || 'Feature')}
+                className="text-[13px] text-blue-500 hover:underline flex items-center gap-1"
+              >
+                {item.parent}
+                <ChevronRight className="h-3 w-3" />
+              </button>
+            ) : (
+              <span className="text-[13px] text-slate-500">None</span>
+            )}
           </td>
           {/* Actions */}
-          <td className="px-2 py-2 w-8">
+          <td className="px-2 py-2 w-8" onClick={(e) => e.stopPropagation()}>
             <button className="opacity-0 group-hover:opacity-100 p-1 hover:bg-slate-100 rounded">
               <MoreHorizontal className="h-4 w-4 text-slate-500" />
             </button>
@@ -540,6 +599,37 @@ export function AllWorkView() {
               </button>
             </div>
 
+            {/* Detail Panel Toggle */}
+            <Button 
+              variant={detailModeEnabled ? "default" : "outline"} 
+              size="icon" 
+              className={cn(
+                "h-8 w-8",
+                detailModeEnabled 
+                  ? "bg-blue-600 hover:bg-blue-700 text-white" 
+                  : "border-slate-200 text-slate-600 hover:bg-slate-100"
+              )}
+              onClick={() => {
+                if (detailModeEnabled) {
+                  setDetailModeEnabled(false);
+                  setSelectedWorkItem(null);
+                } else {
+                  setDetailModeEnabled(true);
+                  // Auto-select first item if none selected
+                  if (!selectedWorkItem && mockItems.length > 0) {
+                    setSelectedWorkItem(mockItems[0]);
+                  }
+                }
+              }}
+              title={detailModeEnabled ? "Close detail panel" : "Open detail panel"}
+            >
+              {detailModeEnabled ? (
+                <PanelRightClose className="h-4 w-4" />
+              ) : (
+                <PanelRightOpen className="h-4 w-4" />
+              )}
+            </Button>
+
             {/* More Options */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -574,95 +664,122 @@ export function AllWorkView() {
         </div>
       </div>
 
-      {/* Table Container - Jira style */}
-      <div className="flex-1 overflow-auto bg-white border-t border-slate-200">
-        <table className="min-w-full border-collapse">
-          <thead className="bg-white sticky top-0 z-10 border-b border-slate-200">
-            <tr>
-              <th className="w-8 px-2 py-2">
-                <Checkbox />
-              </th>
-              <th className="w-6 px-1 py-2"></th>
-              <th className="px-2 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                Work
-              </th>
-              <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                Reporter
-              </th>
-              <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                Assignee
-              </th>
-              <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                <div className="flex items-center gap-1">
-                  Created
-                  <ChevronDown className="h-3 w-3" />
-                </div>
-              </th>
-              <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
-                Parent
-              </th>
-              <th className="w-10 px-2 py-2">
-                {/* Column Configuration Popover */}
-                <Popover open={columnsOpen} onOpenChange={setColumnsOpen}>
-                  <PopoverTrigger asChild>
-                    <button className="p-1 hover:bg-slate-100 rounded">
-                      <Columns className="h-4 w-4 text-slate-500" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-64 p-0 bg-white border-slate-200 shadow-lg" align="end">
-                    <div className="p-3 border-b border-slate-100">
-                      <Tabs defaultValue="my-defaults" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 h-8">
-                          <TabsTrigger value="my-defaults" className="text-[12px] data-[state=active]:text-blue-600">
-                            My defaults
-                            <RefreshCw className="h-3 w-3 ml-1" />
-                          </TabsTrigger>
-                          <TabsTrigger value="system" className="text-[12px]">System</TabsTrigger>
-                        </TabsList>
-                      </Tabs>
+      {/* Main Content Area */}
+      <div className="flex-1 flex overflow-hidden border-t border-slate-200">
+        {/* Split View - Ticket List (when detail mode enabled) */}
+        {detailModeEnabled && (
+          <div className="w-[320px] flex-shrink-0 border-r border-slate-200 overflow-hidden">
+            <AllWorkTicketList
+              items={mockItems}
+              selectedItemId={selectedWorkItem?.id || null}
+              onSelectItem={(item) => setSelectedWorkItem(item)}
+              onNavigateToParent={handleNavigateToParent}
+            />
+          </div>
+        )}
+
+        {/* Table or Detail Panel based on mode */}
+        {detailModeEnabled && selectedWorkItem ? (
+          /* Detail Panel */
+          <div className="flex-1 overflow-hidden">
+            <AllWorkDetailPanel
+              item={selectedWorkItem}
+              onClose={handleCloseDetail}
+              onNavigateToParent={handleNavigateToParent}
+            />
+          </div>
+        ) : (
+          /* Regular Table View */
+          <div className="flex-1 overflow-auto bg-white">
+            <table className="min-w-full border-collapse">
+              <thead className="bg-white sticky top-0 z-10 border-b border-slate-200">
+                <tr>
+                  <th className="w-8 px-2 py-2">
+                    <Checkbox />
+                  </th>
+                  <th className="w-6 px-1 py-2"></th>
+                  <th className="px-2 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
+                    Work
+                  </th>
+                  <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
+                    Reporter
+                  </th>
+                  <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
+                    Assignee
+                  </th>
+                  <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
+                    <div className="flex items-center gap-1">
+                      Created
+                      <ChevronDown className="h-3 w-3" />
                     </div>
-                    <div className="p-3 border-b border-slate-100">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <Input
-                          placeholder="Search columns"
-                          value={columnSearch}
-                          onChange={(e) => setColumnSearch(e.target.value)}
-                          className="pl-9 h-8 text-[13px] border-slate-200"
-                        />
-                      </div>
-                    </div>
-                    <div className="max-h-64 overflow-y-auto p-2">
-                      {availableColumns
-                        .filter(col => col.name.toLowerCase().includes(columnSearch.toLowerCase()))
-                        .map((column) => (
-                          <label key={column.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 cursor-pointer rounded">
-                            <Checkbox
-                              checked={enabledColumns.has(column.id)}
-                              onCheckedChange={(checked) => {
-                                const newSet = new Set(enabledColumns);
-                                if (checked) newSet.add(column.id);
-                                else newSet.delete(column.id);
-                                setEnabledColumns(newSet);
-                              }}
+                  </th>
+                  <th className="px-3 py-2 text-left text-[11px] leading-[16px] font-medium text-slate-500">
+                    Parent
+                  </th>
+                  <th className="w-10 px-2 py-2">
+                    {/* Column Configuration Popover */}
+                    <Popover open={columnsOpen} onOpenChange={setColumnsOpen}>
+                      <PopoverTrigger asChild>
+                        <button className="p-1 hover:bg-slate-100 rounded">
+                          <Columns className="h-4 w-4 text-slate-500" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-64 p-0 bg-white border-slate-200 shadow-lg" align="end">
+                        <div className="p-3 border-b border-slate-100">
+                          <Tabs defaultValue="my-defaults" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2 h-8">
+                              <TabsTrigger value="my-defaults" className="text-[12px] data-[state=active]:text-blue-600">
+                                My defaults
+                                <RefreshCw className="h-3 w-3 ml-1" />
+                              </TabsTrigger>
+                              <TabsTrigger value="system" className="text-[12px]">System</TabsTrigger>
+                            </TabsList>
+                          </Tabs>
+                        </div>
+                        <div className="p-3 border-b border-slate-100">
+                          <div className="relative">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                              placeholder="Search columns"
+                              value={columnSearch}
+                              onChange={(e) => setColumnSearch(e.target.value)}
+                              className="pl-9 h-8 text-[13px] border-slate-200"
                             />
-                            <span className="text-[13px] text-slate-700">{column.name}</span>
-                          </label>
-                        ))}
-                    </div>
-                    <div className="p-3 border-t border-slate-100 flex justify-between items-center">
-                      <button className="text-[12px] text-blue-600 hover:underline">Create a field</button>
-                      <span className="text-[11px] text-slate-500">{enabledColumns.size} of {availableColumns.length}</span>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockItems.map((item) => renderRow(item))}
-          </tbody>
-        </table>
+                          </div>
+                        </div>
+                        <div className="max-h-64 overflow-y-auto p-2">
+                          {availableColumns
+                            .filter(col => col.name.toLowerCase().includes(columnSearch.toLowerCase()))
+                            .map((column) => (
+                              <label key={column.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-slate-50 cursor-pointer rounded">
+                                <Checkbox
+                                  checked={enabledColumns.has(column.id)}
+                                  onCheckedChange={(checked) => {
+                                    const newSet = new Set(enabledColumns);
+                                    if (checked) newSet.add(column.id);
+                                    else newSet.delete(column.id);
+                                    setEnabledColumns(newSet);
+                                  }}
+                                />
+                                <span className="text-[13px] text-slate-700">{column.name}</span>
+                              </label>
+                            ))}
+                        </div>
+                        <div className="p-3 border-t border-slate-100 flex justify-between items-center">
+                          <button className="text-[12px] text-blue-600 hover:underline">Create a field</button>
+                          <span className="text-[11px] text-slate-500">{enabledColumns.size} of {availableColumns.length}</span>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {mockItems.map((item) => renderRow(item))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Footer */}
