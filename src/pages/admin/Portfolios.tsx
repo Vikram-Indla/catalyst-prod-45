@@ -25,6 +25,7 @@ interface Portfolio {
 export default function Portfolios() {
   const queryClient = useQueryClient();
   const [editingProgram, setEditingProgram] = useState<Portfolio | null>(null);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '' });
 
   const { data: programs, isLoading } = useQuery({
@@ -39,6 +40,27 @@ export default function Portfolios() {
     }
   });
 
+  const createMutation = useMutation({
+    mutationFn: async ({ name }: { name: string }) => {
+      const { error } = await supabase
+        .from('portfolios')
+        .insert({ name, status: 'active' });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['programs-directory'] });
+      queryClient.invalidateQueries({ queryKey: ['portfolios'] });
+      toast.success('Program created successfully');
+      setIsAddDialogOpen(false);
+      setFormData({ name: '' });
+    },
+    onError: (error) => {
+      toast.error('Failed to create program: ' + error.message);
+    }
+  });
+
   const updateMutation = useMutation({
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
       const { error } = await supabase
@@ -49,6 +71,9 @@ export default function Portfolios() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['programs-directory'] });
+      queryClient.invalidateQueries({ queryKey: ['portfolios'] });
       toast.success('Program updated successfully');
       setEditingProgram(null);
     },
@@ -70,6 +95,19 @@ export default function Portfolios() {
     });
   };
 
+  const handleCreate = () => {
+    if (!formData.name.trim()) {
+      toast.error('Program name is required');
+      return;
+    }
+    createMutation.mutate({ name: formData.name });
+  };
+
+  const openAddDialog = () => {
+    setFormData({ name: '' });
+    setIsAddDialogOpen(true);
+  };
+
   return (
     <AdminGuard>
       <ResponsivePageContainer>
@@ -77,7 +115,7 @@ export default function Portfolios() {
           title="Programs"
           description="Configure program structure and enterprise associations"
           actions={
-            <Button className="bg-brand-gold hover:bg-brand-gold-hover">
+            <Button className="bg-brand-gold hover:bg-brand-gold-hover" onClick={openAddDialog}>
               <Plus className="h-4 w-4 mr-2" />
               Add Program
             </Button>
@@ -98,7 +136,7 @@ export default function Portfolios() {
               <CardTitle className="text-sm font-medium">Active Programs</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{programs?.length || 0}</div>
+              <div className="text-2xl font-bold">{programs?.filter(p => p.status === 'active').length || 0}</div>
             </CardContent>
           </Card>
           <Card>
@@ -131,6 +169,10 @@ export default function Portfolios() {
 
             {isLoading ? (
               <div className="text-center py-[var(--s8)] text-muted-foreground">Loading programs...</div>
+            ) : programs?.length === 0 ? (
+              <div className="text-center py-[var(--s8)] text-muted-foreground">
+                No programs found. Click "Add Program" to create one.
+              </div>
             ) : (
               <ResponsiveTableWrapper minWidth={600}>
                 <table className="w-full">
@@ -150,8 +192,12 @@ export default function Portfolios() {
                         <td className="p-3 text-sm">-</td>
                         <td className="p-3 text-sm">-</td>
                         <td className="p-3 text-sm">
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
-                            Active
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs ${
+                            program.status === 'active' 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {program.status === 'active' ? 'Active' : 'Archived'}
                           </span>
                         </td>
                         <td className="p-3 text-sm text-right">
@@ -168,6 +214,38 @@ export default function Portfolios() {
           </CardContent>
         </Card>
 
+        {/* Add Program Dialog */}
+        <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add Program</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="add-name">Program Name</Label>
+                <Input
+                  id="add-name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter program name"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleCreate} 
+                disabled={createMutation.isPending}
+                className="bg-brand-gold hover:bg-brand-gold-hover"
+              >
+                {createMutation.isPending ? 'Creating...' : 'Create'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Edit Program Dialog */}
         <Dialog open={!!editingProgram} onOpenChange={(open) => !open && setEditingProgram(null)}>
           <DialogContent className="sm:max-w-md">
@@ -176,9 +254,9 @@ export default function Portfolios() {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Program Name</Label>
+                <Label htmlFor="edit-name">Program Name</Label>
                 <Input
-                  id="name"
+                  id="edit-name"
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 />
