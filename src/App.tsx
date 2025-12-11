@@ -187,6 +187,7 @@ import BusinessRequests from "./pages/enterprise/BusinessRequests";
 import MiningComingSoon from "./pages/enterprise/MiningComingSoon";
 import IndustryPage from "./pages/enterprise/IndustryPageAtlaskit";
 import IndustryComingSoon from "./pages/enterprise/IndustryComingSoon";
+import DemandSummaryPage from "./pages/enterprise/DemandSummaryPage";
 import ProductRoomPage from "./pages/ProductRoomPage";
 import CapacityPage from "./pages/product/CapacityPage";
 import ExecutiveRoadmapPage from "./pages/enterprise/ExecutiveRoadmapPage";
@@ -268,6 +269,7 @@ const App = () => (
               {/* Industry/Demand routes */}
               <Route path="/industry" element={<IndustryPage />} />
               <Route path="/industry/industry" element={<IndustryPage />} />
+              <Route path="/industry/dashboard" element={<DemandSummaryPage />} />
               <Route path="/industry/roadmaps" element={<ExecutiveRoadmapPage />} />
               <Route path="/industry/reports" element={<IndustryComingSoon />} />
               

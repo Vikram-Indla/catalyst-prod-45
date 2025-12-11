@@ -46,7 +46,7 @@ import { useBusinessRequests } from '@/hooks/useBusinessRequests';
 import { CreateBusinessRequestModal } from '@/components/business-requests/CreateBusinessRequestModal';
 import { BusinessRequestDrawer } from '@/components/business-requests/BusinessRequestDrawer';
 import { ViewToggle, ViewMode } from '@/components/business-requests/ViewToggle';
-import KanbanBoard from '@/components/atlaskit/KanbanBoard';
+import { StatusSummaryKanbanView } from '@/components/business-requests/StatusSummaryKanbanView';
 import { PROCESS_STEPS } from '@/types/business-request';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -712,6 +712,13 @@ export default function IndustryPageAtlaskit() {
 
 
               <Button
+                onClick={() => toast({ title: 'Saved Filters coming soon' })}
+                iconBefore={<FilterIcon label="Saved Filters" size="small" />}
+              >
+                {!isMobile && 'Saved Filters'}
+              </Button>
+
+              <Button
                 onClick={() => setFiltersDialogOpen(true)}
                 iconBefore={<FilterIcon label="Filter" size="small" />}
                 appearance={activeFilterCount > 0 ? 'primary' : 'default'}
@@ -744,7 +751,10 @@ export default function IndustryPageAtlaskit() {
                 <Spinner size="large" />
               </div>
             ) : viewMode === 'kanban' ? (
-              <KanbanBoard />
+              <StatusSummaryKanbanView 
+                requests={sortedRequests}
+                onRequestSelect={(id) => setSelectedRequestId(id)}
+              />
             ) : sortedRequests.length > 0 ? (
               <>
                 <style>{tableStyles}</style>
