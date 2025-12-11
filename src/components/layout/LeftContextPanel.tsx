@@ -98,6 +98,7 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
   const [morePagesExpanded, setMorePagesExpanded] = useState(false);
   const {
     tier,
+    workspaceType,
     portfolioId,
     setPortfolioId,
     programId,
@@ -275,8 +276,8 @@ export function LeftContextPanel({ className }: LeftContextPanelProps) {
         {/* Filters section - only when expanded */}
         {expanded && (
           <div className="px-4 py-4 border-b border-border">
-              {/* Program Increment Filter */}
-              {(tier === 'portfolio' || tier === 'program') && (
+              {/* Program Increment Filter - only show in program context, NOT enterprise/product */}
+              {workspaceType === 'program' && (
                 <div>
                   <label className="text-[11px] font-semibold text-muted-foreground uppercase mb-2 block tracking-wider">
                     PROGRAM INCREMENT
