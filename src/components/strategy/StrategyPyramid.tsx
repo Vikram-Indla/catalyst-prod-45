@@ -54,10 +54,10 @@ export function StrategyPyramid({ onLayerClick, snapshotId }: StrategyPyramidPro
   const level5 = getXAtY(y5);
 
   const colors = {
-    objectives: 'hsl(28, 39%, 58%)',
-    themes: 'hsl(28, 39%, 54%)',
-    epics: 'hsl(28, 37%, 50%)',
-    features: 'hsl(28, 35%, 46%)',
+    objectives: 'hsl(var(--secondary-green))',
+    themes: 'hsl(var(--secondary-bronze))',
+    epics: 'hsl(var(--brand-gold))',
+    features: 'hsl(var(--secondary-champagne))',
   };
 
   const handleLayerClick = (layer: string) => {
