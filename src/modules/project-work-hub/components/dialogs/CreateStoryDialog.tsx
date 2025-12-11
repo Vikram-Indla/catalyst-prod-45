@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
-import { token } from '@atlaskit/tokens';
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button';
-import Textfield from '@atlaskit/textfield';
-import TextArea from '@atlaskit/textarea';
-import Select from '@atlaskit/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { WorkItem, Priority, StatusCategory } from '../../types';
-
-interface OptionType {
-  label: string;
-  value: string;
-}
 
 interface CreateStoryDialogProps {
   isOpen: boolean;
@@ -20,7 +27,7 @@ interface CreateStoryDialogProps {
   features?: WorkItem[];
 }
 
-const priorityOptions: OptionType[] = [
+const priorityOptions = [
   { label: 'Highest', value: 'HIGHEST' },
   { label: 'High', value: 'HIGH' },
   { label: 'Medium', value: 'MEDIUM' },
@@ -28,21 +35,20 @@ const priorityOptions: OptionType[] = [
   { label: 'Lowest', value: 'LOWEST' },
 ];
 
-const quarterOptions: OptionType[] = [
+const quarterOptions = [
   { label: 'Q1 2025', value: 'q1-2025' },
   { label: 'Q2 2025', value: 'q2-2025' },
   { label: 'Q3 2025', value: 'q3-2025' },
   { label: 'Q4 2025', value: 'q4-2025' },
 ];
 
-const releaseOptions: OptionType[] = [
+const releaseOptions = [
   { label: 'Release 1.0', value: 'rel-1.0' },
   { label: 'Release 1.1', value: 'rel-1.1' },
   { label: 'Release 2.0', value: 'rel-2.0' },
 ];
 
-// Mock features for selection
-const featureOptions: OptionType[] = [
+const featureOptions = [
   { label: 'FEAT-001: User Authentication', value: 'feat-001' },
   { label: 'FEAT-002: Dashboard Redesign', value: 'feat-002' },
   { label: 'FEAT-003: API Integration', value: 'feat-003' },
@@ -57,10 +63,10 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
 }) => {
   const [summary, setSummary] = useState('');
   const [description, setDescription] = useState('');
-  const [feature, setFeature] = useState<OptionType | null>(null);
-  const [quarter, setQuarter] = useState<OptionType | null>(null);
-  const [release, setRelease] = useState<OptionType | null>(null);
-  const [priority, setPriority] = useState<OptionType | null>(priorityOptions[2]);
+  const [feature, setFeature] = useState('');
+  const [quarter, setQuarter] = useState('');
+  const [release, setRelease] = useState('');
+  const [priority, setPriority] = useState('MEDIUM');
   const [acceptanceCriteria, setAcceptanceCriteria] = useState('');
 
   const handleSubmit = () => {
@@ -72,180 +78,149 @@ export const CreateStoryDialog: React.FC<CreateStoryDialogProps> = ({
       description: description.trim(),
       status: 'TODO',
       statusCategory: 'TODO' as StatusCategory,
-      priority: (priority?.value || 'MEDIUM') as Priority,
-      quarterId: quarter.value,
-      releaseVersionId: release.value,
-      parentId: feature.value,
+      priority: priority as Priority,
+      quarterId: quarter,
+      releaseVersionId: release,
+      parentId: feature,
     });
 
     // Reset form
     setSummary('');
     setDescription('');
-    setFeature(null);
-    setQuarter(null);
-    setRelease(null);
-    setPriority(priorityOptions[2]);
+    setFeature('');
+    setQuarter('');
+    setRelease('');
+    setPriority('MEDIUM');
     setAcceptanceCriteria('');
     onClose();
   };
 
   const isValid = summary.trim() && feature && quarter && release;
 
-  if (!isOpen) return null;
-
   return (
-    <Modal onClose={onClose} width="medium">
-      <ModalHeader>
-        <ModalTitle>Create Story</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Summary <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-            </label>
-            <Textfield
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Create Story</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="summary">
+              Summary <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="summary"
               value={summary}
-              onChange={(e) => setSummary((e.target as HTMLInputElement).value)}
+              onChange={(e) => setSummary(e.target.value)}
               placeholder="Enter story summary"
-              isRequired
             />
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Feature <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-            </label>
-            <Select
-              options={featureOptions}
-              value={feature}
-              onChange={(value) => setFeature(value as OptionType)}
-              placeholder="Select parent feature (required)"
-              isClearable
-            />
-            <p style={{ 
-              fontSize: '11px', 
-              color: token('color.text.subtlest', '#8993A4'),
-              marginTop: token('space.050', '4px')
-            }}>
+          <div className="space-y-2">
+            <Label htmlFor="feature">
+              Feature <span className="text-destructive">*</span>
+            </Label>
+            <Select value={feature} onValueChange={setFeature}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select parent feature (required)" />
+              </SelectTrigger>
+              <SelectContent>
+                {featureOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
               Stories must belong to a Feature
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: token('space.200', '16px') }}>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: token('space.050', '4px'),
-                fontSize: '12px',
-                fontWeight: 600,
-                color: token('color.text.subtle', '#626F86')
-              }}>
-                Quarter <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-              </label>
-              <Select
-                options={quarterOptions}
-                value={quarter}
-                onChange={(value) => setQuarter(value as OptionType)}
-                placeholder="Select quarter"
-                isClearable
-              />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="quarter">
+                Quarter <span className="text-destructive">*</span>
+              </Label>
+              <Select value={quarter} onValueChange={setQuarter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select quarter" />
+                </SelectTrigger>
+                <SelectContent>
+                  {quarterOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: token('space.050', '4px'),
-                fontSize: '12px',
-                fontWeight: 600,
-                color: token('color.text.subtle', '#626F86')
-              }}>
-                Release Version <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-              </label>
-              <Select
-                options={releaseOptions}
-                value={release}
-                onChange={(value) => setRelease(value as OptionType)}
-                placeholder="Select release"
-                isClearable
-              />
+            <div className="space-y-2">
+              <Label htmlFor="release">
+                Release Version <span className="text-destructive">*</span>
+              </Label>
+              <Select value={release} onValueChange={setRelease}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select release" />
+                </SelectTrigger>
+                <SelectContent>
+                  {releaseOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Priority
-            </label>
-            <Select
-              options={priorityOptions}
-              value={priority}
-              onChange={(value) => setPriority(value as OptionType)}
-              placeholder="Select priority"
-            />
+          <div className="space-y-2">
+            <Label htmlFor="priority">Priority</Label>
+            <Select value={priority} onValueChange={setPriority}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent>
+                {priorityOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Description
-            </label>
-            <TextArea
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
               value={description}
-              onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter story description"
-              minimumRows={3}
+              rows={3}
             />
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Acceptance Criteria
-            </label>
-            <TextArea
+          <div className="space-y-2">
+            <Label htmlFor="acceptance">Acceptance Criteria</Label>
+            <Textarea
+              id="acceptance"
               value={acceptanceCriteria}
-              onChange={(e) => setAcceptanceCriteria((e.target as HTMLTextAreaElement).value)}
+              onChange={(e) => setAcceptanceCriteria(e.target.value)}
               placeholder="Enter acceptance criteria (one per line)"
-              minimumRows={3}
+              rows={3}
             />
           </div>
         </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button appearance="primary" onClick={handleSubmit} isDisabled={!isValid}>
-          Create Story
-        </Button>
-      </ModalFooter>
-    </Modal>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} disabled={!isValid}>
+            Create Story
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
-import { token } from '@atlaskit/tokens';
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '@atlaskit/modal-dialog';
-import Button from '@atlaskit/button';
-import Textfield from '@atlaskit/textfield';
-import TextArea from '@atlaskit/textarea';
-import Select from '@atlaskit/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { WorkItem, Priority, StatusCategory } from '../../types';
-
-interface OptionType {
-  label: string;
-  value: string;
-}
 
 interface LogDefectDialogProps {
   isOpen: boolean;
@@ -20,7 +27,7 @@ interface LogDefectDialogProps {
   stories?: WorkItem[];
 }
 
-const priorityOptions: OptionType[] = [
+const priorityOptions = [
   { label: 'Highest', value: 'HIGHEST' },
   { label: 'High', value: 'HIGH' },
   { label: 'Medium', value: 'MEDIUM' },
@@ -28,21 +35,20 @@ const priorityOptions: OptionType[] = [
   { label: 'Lowest', value: 'LOWEST' },
 ];
 
-const quarterOptions: OptionType[] = [
+const quarterOptions = [
   { label: 'Q1 2025', value: 'q1-2025' },
   { label: 'Q2 2025', value: 'q2-2025' },
   { label: 'Q3 2025', value: 'q3-2025' },
   { label: 'Q4 2025', value: 'q4-2025' },
 ];
 
-const releaseOptions: OptionType[] = [
+const releaseOptions = [
   { label: 'Release 1.0', value: 'rel-1.0' },
   { label: 'Release 1.1', value: 'rel-1.1' },
   { label: 'Release 2.0', value: 'rel-2.0' },
 ];
 
-// Mock stories for selection
-const storyOptions: OptionType[] = [
+const storyOptions = [
   { label: 'STORY-001: Implement login form', value: 'story-001' },
   { label: 'STORY-002: Create user profile page', value: 'story-002' },
   { label: 'STORY-003: Add notification system', value: 'story-003' },
@@ -57,10 +63,10 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
 }) => {
   const [summary, setSummary] = useState('');
   const [description, setDescription] = useState('');
-  const [story, setStory] = useState<OptionType | null>(null);
-  const [quarter, setQuarter] = useState<OptionType | null>(null);
-  const [release, setRelease] = useState<OptionType | null>(null);
-  const [priority, setPriority] = useState<OptionType | null>(priorityOptions[1]); // Default High for defects
+  const [story, setStory] = useState('');
+  const [quarter, setQuarter] = useState('');
+  const [release, setRelease] = useState('');
+  const [priority, setPriority] = useState('HIGH');
 
   const handleSubmit = () => {
     if (!summary.trim() || !story || !quarter || !release || !priority) return;
@@ -71,161 +77,139 @@ export const LogDefectDialog: React.FC<LogDefectDialogProps> = ({
       description: description.trim(),
       status: 'OPEN',
       statusCategory: 'TODO' as StatusCategory,
-      priority: priority.value as Priority,
-      quarterId: quarter.value,
-      releaseVersionId: release.value,
-      parentId: story.value,
+      priority: priority as Priority,
+      quarterId: quarter,
+      releaseVersionId: release,
+      parentId: story,
     });
 
     // Reset form
     setSummary('');
     setDescription('');
-    setStory(null);
-    setQuarter(null);
-    setRelease(null);
-    setPriority(priorityOptions[1]);
+    setStory('');
+    setQuarter('');
+    setRelease('');
+    setPriority('HIGH');
     onClose();
   };
 
   const isValid = summary.trim() && story && quarter && release && priority;
 
-  if (!isOpen) return null;
-
   return (
-    <Modal onClose={onClose} width="medium">
-      <ModalHeader>
-        <ModalTitle>Log Defect</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: token('space.200', '16px') }}>
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Summary <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-            </label>
-            <Textfield
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle>Log Defect</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="summary">
+              Summary <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="summary"
               value={summary}
-              onChange={(e) => setSummary((e.target as HTMLInputElement).value)}
+              onChange={(e) => setSummary(e.target.value)}
               placeholder="Enter defect summary"
-              isRequired
             />
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Story <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-            </label>
-            <Select
-              options={storyOptions}
-              value={story}
-              onChange={(value) => setStory(value as OptionType)}
-              placeholder="Select related story (required)"
-              isClearable
-            />
-            <p style={{ 
-              fontSize: '11px', 
-              color: token('color.text.subtlest', '#8993A4'),
-              marginTop: token('space.050', '4px')
-            }}>
+          <div className="space-y-2">
+            <Label htmlFor="story">
+              Story <span className="text-destructive">*</span>
+            </Label>
+            <Select value={story} onValueChange={setStory}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select related story (required)" />
+              </SelectTrigger>
+              <SelectContent>
+                {storyOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
               Defects must be linked to a Story
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: token('space.200', '16px') }}>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: token('space.050', '4px'),
-                fontSize: '12px',
-                fontWeight: 600,
-                color: token('color.text.subtle', '#626F86')
-              }}>
-                Quarter <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-              </label>
-              <Select
-                options={quarterOptions}
-                value={quarter}
-                onChange={(value) => setQuarter(value as OptionType)}
-                placeholder="Select quarter"
-                isClearable
-              />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="quarter">
+                Quarter <span className="text-destructive">*</span>
+              </Label>
+              <Select value={quarter} onValueChange={setQuarter}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select quarter" />
+                </SelectTrigger>
+                <SelectContent>
+                  {quarterOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: token('space.050', '4px'),
-                fontSize: '12px',
-                fontWeight: 600,
-                color: token('color.text.subtle', '#626F86')
-              }}>
-                Release Version <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-              </label>
-              <Select
-                options={releaseOptions}
-                value={release}
-                onChange={(value) => setRelease(value as OptionType)}
-                placeholder="Select release"
-                isClearable
-              />
+            <div className="space-y-2">
+              <Label htmlFor="release">
+                Release Version <span className="text-destructive">*</span>
+              </Label>
+              <Select value={release} onValueChange={setRelease}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select release" />
+                </SelectTrigger>
+                <SelectContent>
+                  {releaseOptions.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Priority <span style={{ color: token('color.text.danger', '#E34935') }}>*</span>
-            </label>
-            <Select
-              options={priorityOptions}
-              value={priority}
-              onChange={(value) => setPriority(value as OptionType)}
-              placeholder="Select priority"
-            />
+          <div className="space-y-2">
+            <Label htmlFor="priority">
+              Priority <span className="text-destructive">*</span>
+            </Label>
+            <Select value={priority} onValueChange={setPriority}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select priority" />
+              </SelectTrigger>
+              <SelectContent>
+                {priorityOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          <div>
-            <label style={{ 
-              display: 'block', 
-              marginBottom: token('space.050', '4px'),
-              fontSize: '12px',
-              fontWeight: 600,
-              color: token('color.text.subtle', '#626F86')
-            }}>
-              Description
-            </label>
-            <TextArea
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
               value={description}
-              onChange={(e) => setDescription((e.target as HTMLTextAreaElement).value)}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe the defect, steps to reproduce, and expected behavior"
-              minimumRows={4}
+              rows={4}
             />
           </div>
         </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button appearance="subtle" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button appearance="primary" onClick={handleSubmit} isDisabled={!isValid}>
-          Log Defect
-        </Button>
-      </ModalFooter>
-    </Modal>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} disabled={!isValid}>
+            Log Defect
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
