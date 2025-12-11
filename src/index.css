@@ -132,7 +132,7 @@
   /* Border */
   --border: var(--n40);                        /* #DFE1E6 */
   --input: var(--n40);
-  --ring: var(--brand-gold);                   /* #C69C6D */
+  --ring: var(--b400);                        /* #0052CC - blue focus ring */
   
   /* State colors */
   --success: var(--g300);                      /* #36B37E */
