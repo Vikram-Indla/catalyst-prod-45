@@ -281,7 +281,7 @@ export function EpicBalancingChart({ epics, stats, onEpicClick }: EpicBalancingC
               className="w-4 h-4 rounded-sm"
               style={{ backgroundColor: PRIORITY_TO_EXECUTE_COLORS[priority] }}
             />
-            <span className="text-sm text-muted-foreground">{PRIORITY_TO_EXECUTE_LABELS[priority]}</span>
+            <span className="text-sm text-secondary-green">{PRIORITY_TO_EXECUTE_LABELS[priority]}</span>
           </div>
         ))}
       </div>
