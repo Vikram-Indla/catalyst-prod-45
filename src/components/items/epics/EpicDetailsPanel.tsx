@@ -67,6 +67,7 @@ import { EpicLinksTab } from './tabs/EpicLinksTab';
 import { EpicChildrenTab } from './tabs/EpicChildrenTab';
 import { EpicDiscussionsTab } from './tabs/EpicDiscussionsTab';
 import { EpicRollUpSummary } from './EpicRollUpSummary';
+import { EpicStrategyContext } from './EpicStrategyContext';
 import { DeleteEpicDialog } from './dialogs/DeleteEpicDialog';
 import { CancelEpicDialog } from './dialogs/CancelEpicDialog';
 import { SplitEpicDialog } from './dialogs/SplitEpicDialog';
@@ -556,6 +557,11 @@ export function EpicDetailsPanel({ epic: initialEpic, open, onClose }: EpicDetai
           {/* PHASE II: Roll-up Summary Section */}
           <div className="px-5 py-3 border-b border-border/40 bg-muted/10">
             <EpicRollUpSummary epic={epic} />
+          </div>
+          
+          {/* PHASE II Step 2: Strategy Context Section (read-only) */}
+          <div className="px-5 py-3 border-b border-border/40">
+            <EpicStrategyContext epicId={epic.id} themeId={epic.theme_id} />
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">

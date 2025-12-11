@@ -50,6 +50,9 @@ const EPIC_BACKLOG_COLUMNS = [
   // Scoring columns
   { id: 'technicalScore', label: 'Technical Score', default: true },
   { id: 'businessScore', label: 'Business Score', default: true },
+  // Strategy context (Phase II Step 2)
+  { id: 'linkedObjective', label: 'Linked Objective', default: false },
+  { id: 'linkedTheme', label: 'Linked Theme', default: false },
   // Additional Epic fields
   { id: 'targetDate', label: 'Target Date', default: false },
   { id: 'blocked', label: 'Blocked', default: false },
